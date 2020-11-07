@@ -23,7 +23,7 @@ Please install the latest version of
 already existing version up to date, before you clone our shared repository by:
 
 ```
-git clone git@git.rwth-aachen.de:MABeeskow/gebpy.git
+git clone git@github.com:MABeeskow/GebPy.git
 ```
 
 The path where you carry out this command will now include the git repository as 
