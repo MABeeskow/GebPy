@@ -3,7 +3,7 @@
 
 # -----------------------------------------------
 
-# Name:		Seismology_Single-Wiggle.py
+# Name:		GebPy.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
 # Date:		05.11.2020
