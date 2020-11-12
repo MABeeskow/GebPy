@@ -6,20 +6,20 @@ are determined by the mineral assemblage besides structural features.
 
 ### Getting Started
 
-We use GitLab for the cooperative work among the members of our working group. 
+We use GitHub for the cooperative work among the members of our working group. 
 By using this tool, we can keep all codes under version control and can easily 
 share a stable version of GebPy.
 Before a new feature will be added to the stable version of the master branch,
 all new features have to be developed and tested in at least one additional 
 branch first, before they will be committed to the stable version.  
 
-More detailed information about GitLab with focus on the functionality and the 
-workflow can be found behind [here](https://docs.gitlab.com/ee/gitlab-basics/)
+More detailed information about GitHub with focus on the functionality and the 
+workflow can be found [here](https://github.com/features).
 
 ### Prerequisites/Installing
 
 Please install the latest version of 
-[Git](https://docs.gitlab.com/ee/topics/git/how_to_install_git/) or keep your
+[Git](https://github.com/git-guides/install-git) or keep your
 already existing version up to date, before you clone our shared repository by:
 
 ```
