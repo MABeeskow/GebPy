@@ -1,0 +1,11 @@
+*-checkpoint.ipynb
+**/.DS_Store
+*.py[cod]
+*.pyc
+.DS_Store
+
+__pycache__/
+*.py[cod]
+*.pyc
+notebooks/.ipynb_checkpoints/
+tests/.ipynb_checkpoints/
