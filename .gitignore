@@ -3,9 +3,12 @@
 *.py[cod]
 *.pyc
 .DS_Store
+notebooks/*.png
+notebooks/*.csv
 
 __pycache__/
 *.py[cod]
 *.pyc
 notebooks/.ipynb_checkpoints/
 tests/.ipynb_checkpoints/
+outputs/
