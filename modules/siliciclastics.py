@@ -923,6 +923,7 @@ class shale:
         self.w_Fe = w_Fe
         #
         # mineralogy
+        chem_org = minerals.natives.organic_matter("")
         chem_qz = minerals.oxides.quartz("")
         chem_afs = minerals.feldspars.alkalifeldspar(self, "Na")
         chem_pl = minerals.feldspars.plagioclase(self, "Na")
@@ -937,13 +938,13 @@ class shale:
         chem_ccp = minerals.sulfides.chalcopyrite("")
         chem_cc = minerals.sulfides.chalcocite("")
         #
-        w_OQz = chem_quartz[6][0]
-        w_SiQz = chem_quartz[6][1]
-        w_OAfs = chem_alkalifeldspar[6][0]
-        w_NaAfs = chem_alkalifeldspar[6][1]
+        #w_OQz = chem_quartz[6][0]
+        #w_SiQz = chem_quartz[6][1]
+        #w_OAfs = chem_alkalifeldspar[6][0]
+        #w_NaAfs = chem_alkalifeldspar[6][1]
         #w_AlAfs
-        w_FeChl = chem_chlorite[6][5]
-        w_FeHem = chem_hematite[6][1]
+        #w_FeChl = chem_chlorite[6][5]
+        #w_FeHem = chem_hematite[6][1]
         #
         # [molar mass, density, bulk modulus, vP]
         chemWater = [18.0146, 997, 2.08, 1444]
@@ -957,231 +958,193 @@ class shale:
         composition = []
         while cond == False:
             if self.w_Fe == None:
-                magicnumber = rd.randint(0, 6)
-                if magicnumber == 0:    # Qz-rich
+                magicnumber = rd.randint(0, 5)
+                if magicnumber == 0:    # Clay-rich
                     w_ore = round(0.0, 4)
-                    w_Hem2 = rd.randint(0, 100)/100
-                    w_Hem = round(w_ore*w_Hem2, 4)
-                    w_Qz = round(rd.randint(90, int((1-w_ore)*100))/100, 4)
-                    w_Fsp = round(rd.randint(0, int((1-w_Qz)*100))/100, 4)
+                    w_Py2 = rd.randint(0, 100)/100
+                    w_Py = round(w_ore*w_Py2, 4)
+                    w_Bn2 = rd.randint(0, 100)/100
+                    w_Bn = round(w_ore*w_Bn2, 4)
+                    w_Ccp2 = rd.randint(0, 100)/100
+                    w_Ccp = round(w_ore*w_Ccp2, 4)
+                    w_Cc2 = rd.randint(0, 100)/100
+                    w_Cc = round(w_ore*w_Cc2, 4)
+                    w_clay = round(rd.randint(50, int((1-w_ore)*100))/100, 4)
+                    w_ilt2 = rd.randint(0, 100)/100
+                    w_kln2 = rd.randint(0, int((1-w_ilt2)*100))/100
+                    w_chl2 = rd.randint(0, int((1-w_ilt2-w_kln2)*100))/100
+                    w_mnt2 = 1-w_ilt2-w_kln2-w_chl2
+                    w_ilt = round(w_clay*w_ilt2, 4)
+                    w_kln = round(w_clay*w_kln2, 4)
+                    w_chl = round(w_clay*w_chl2, 4)
+                    w_mnt = round(w_clay*w_mnt2, 4)
+                    w_qz = round(rd.randint(0, int((1-w_ore-w_clay)*100))/100, 4)
+                    w_fsp = round(rd.randint(0, int((1-w_ore-w_clay-w_qz)*100))/100, 4)
                     w_Afs2 = rd.randint(0, 100)/100
                     w_Pl2 = 1 - w_Afs2
-                    w_Afs = round(w_Fsp*w_Afs2, 4)
-                    w_Pl = round(w_Fsp*w_Pl2, 4)
-                    w_rf = round(1 - w_Qz - w_Fsp, 4)
-                    magicnumber2 = rd.randint(0, 2)
-                    if magicnumber2 == 0:
-                        w_Cal2 = rd.randint(75, 100)/100
-                        w_Chl2 = rd.randint(0, int((1-w_Cal2)*100))/100
-                        w_Ms2 = 1 - w_Cal2 - w_Chl2
-                        w_Cal = round(w_rf*w_Cal2, 4)
-                        w_Chl = round(w_rf*w_Chl2, 4)
-                        w_Ms = round(w_rf*w_Ms2, 4)
-                    elif magicnumber2 == 1:
-                        magicnumber3 = rd.randint(0, 1)
-                        if magicnumber3 == 0:
-                            w_Chl2 = rd.randint(75, 100)/100
-                            w_Ms2 = rd.randint(0, int((1-w_Chl2)*100))/100
-                        else:
-                            w_Ms2 = rd.randint(75, 100)/100
-                            w_Chl2 = rd.randint(0, int((1-w_Ms2)*100))/100
-                        w_Cal2 = 1 - w_Chl2 - w_Ms2
-                        w_Cal = round(w_rf*w_Cal2, 4)
-                        w_Chl = round(w_rf*w_Chl2, 4)
-                        w_Ms = round(w_rf*w_Ms2, 4)
-                    elif magicnumber2 == 2:
-                        w_Cal2 = rd.randint(0, 100)/100
-                        w_Chl2 = rd.randint(0, int((1-w_Cal2)*100))/100
-                        w_Ms2 = 1 - w_Cal2 - w_Chl2
-                        w_Cal = round(w_rf*w_Cal2, 4)
-                        w_Chl = round(w_rf*w_Chl2, 4)
-                        w_Ms = round(w_rf*w_Ms2, 4)
-                elif magicnumber == 1:    # Afs-rich
+                    w_Afs = round(w_fsp*w_Afs2, 4)
+                    w_Pl = round(w_fsp*w_Pl2, 4)
+                    w_carb = round(rd.randint(0, int((1-w_ore-w_clay-w_qz-w_fsp)*100))/100, 4)
+                    w_cal2 = rd.randint(0, 100)/100
+                    w_dol2 = 1 - w_cal2
+                    w_cal = round(w_carb*w_cal2, 4)
+                    w_dol = round(w_carb*w_dol2, 4)
+                    w_org = round(1-w_ore-w_clay-w_qz-w_fsp-w_carb, 4)
+                elif magicnumber == 1:    # Qz-rich
                     w_ore = round(0.0, 4)
-                    w_Hem2 = rd.randint(0, 100)/100
-                    w_Hem = round(w_ore*w_Hem2, 4)
-                    w_Fsp = round(rd.randint(25, int((1-w_ore)*75))/100, 4)
-                    w_Afs2 = rd.randint(75, 100)/100
-                    w_Pl2 = 1 - w_Afs2
-                    w_Afs = round(w_Fsp*w_Afs2, 4)
-                    w_Pl = round(w_Fsp*w_Pl2, 4)
-                    w_Qz = round(rd.randint(25, int((1-w_ore-w_Fsp)*100))/100, 4)
-                    w_rf = round(1 - w_Qz - w_Fsp - w_ore, 4)
-                    magicnumber2 = rd.randint(0, 2)
-                    if magicnumber2 == 0:
-                        w_Cal2 = rd.randint(75, 100)/100
-                        w_Chl2 = rd.randint(0, int((1-w_Cal2)*100))/100
-                        w_Ms2 = 1 - w_Cal2 - w_Chl2
-                        w_Cal = round(w_rf*w_Cal2, 4)
-                        w_Chl = round(w_rf*w_Chl2, 4)
-                        w_Ms = round(w_rf*w_Ms2, 4)
-                    elif magicnumber2 == 1:
-                        magicnumber3 = rd.randint(0, 1)
-                        if magicnumber3 == 0:
-                            w_Chl2 = rd.randint(75, 100)/100
-                            w_Ms2 = rd.randint(0, int((1-w_Chl2)*100))/100
-                        else:
-                            w_Ms2 = rd.randint(75, 100)/100
-                            w_Chl2 = rd.randint(0, int((1-w_Ms2)*100))/100
-                        w_Cal2 = 1 - w_Chl2 - w_Ms2
-                        w_Cal = round(w_rf*w_Cal2, 4)
-                        w_Chl = round(w_rf*w_Chl2, 4)
-                        w_Ms = round(w_rf*w_Ms2, 4)
-                    elif magicnumber2 == 2:
-                        w_Cal2 = rd.randint(0, 100)/100
-                        w_Chl2 = rd.randint(0, int((1-w_Cal2)*100))/100
-                        w_Ms2 = 1 - w_Cal2 - w_Chl2
-                        w_Cal = round(w_rf*w_Cal2, 4)
-                        w_Chl = round(w_rf*w_Chl2, 4)
-                        w_Ms = round(w_rf*w_Ms2, 4)
-                elif magicnumber == 2:    # Pl-rich
-                    w_ore = round(0.0, 4)
-                    w_Hem2 = rd.randint(0, 100)/100
-                    w_Hem = round(w_ore*w_Hem2, 4)
-                    w_Fsp = round(rd.randint(25, int((1-w_ore)*75))/100, 4)
-                    w_Pl2 = rd.randint(75, 100)/100
-                    w_Afs2 = 1 - w_Pl2
-                    w_Pl = round(w_Fsp*w_Pl2, 4)
-                    w_Afs = round(w_Fsp*w_Afs2, 4)
-                    w_Qz = round(rd.randint(25, int((1-w_ore-w_Fsp)*100))/100, 4)
-                    w_rf = round(1 - w_Qz - w_Fsp, 4)
-                    magicnumber2 = rd.randint(0, 2)
-                    if magicnumber2 == 0:
-                        w_Cal2 = rd.randint(75, 100)/100
-                        w_Chl2 = rd.randint(0, int((1-w_Cal2)*100))/100
-                        w_Ms2 = 1 - w_Cal2 - w_Chl2
-                        w_Cal = round(w_rf*w_Cal2, 4)
-                        w_Chl = round(w_rf*w_Chl2, 4)
-                        w_Ms = round(w_rf*w_Ms2, 4)
-                    elif magicnumber2 == 1:
-                        magicnumber3 = rd.randint(0, 1)
-                        if magicnumber3 == 0:
-                            w_Chl2 = rd.randint(75, 100)/100
-                            w_Ms2 = rd.randint(0, int((1-w_Chl2)*100))/100
-                        else:
-                            w_Ms2 = rd.randint(75, 100)/100
-                            w_Chl2 = rd.randint(0, int((1-w_Ms2)*100))/100
-                        w_Cal2 = 1 - w_Chl2 - w_Ms2
-                        w_Cal = round(w_rf*w_Cal2, 4)
-                        w_Chl = round(w_rf*w_Chl2, 4)
-                        w_Ms = round(w_rf*w_Ms2, 4)
-                    elif magicnumber2 == 2:
-                        w_Cal2 = rd.randint(0, 100)/100
-                        w_Chl2 = rd.randint(0, int((1-w_Cal2)*100))/100
-                        w_Ms2 = 1 - w_Cal2 - w_Chl2
-                        w_Cal = round(w_rf*w_Cal2, 4)
-                        w_Chl = round(w_rf*w_Chl2, 4)
-                        w_Ms = round(w_rf*w_Ms2, 4)
-                elif magicnumber == 3:    # Cal-rich
-                    w_ore = round(0.0, 4)
-                    w_Hem2 = rd.randint(0, 100)/100
-                    w_Hem = round(w_ore*w_Hem2, 4)
-                    w_rf = round(rd.randint(25, 50)/100, 4)
-                    w_Qz = round(rd.randint(25, int((1-w_rf)*100))/100, 4)
-                    w_Fsp = round(1 - w_rf - w_Qz, 4)
+                    w_Py2 = rd.randint(0, 100)/100
+                    w_Py = round(w_ore*w_Py2, 4)
+                    w_Bn2 = rd.randint(0, 100)/100
+                    w_Bn = round(w_ore*w_Bn2, 4)
+                    w_Ccp2 = rd.randint(0, 100)/100
+                    w_Ccp = round(w_ore*w_Ccp2, 4)
+                    w_Cc2 = rd.randint(0, 100)/100
+                    w_Cc = round(w_ore*w_Cc2, 4)
+                    w_qz = round(rd.randint(25, 50)/100, 4)
+                    w_clay = round(rd.randint(50, int((1-w_ore-w_qz)*100))/100, 4)
+                    w_ilt2 = rd.randint(0, 100)/100
+                    w_kln2 = rd.randint(0, int((1-w_ilt2)*100))/100
+                    w_chl2 = rd.randint(0, int((1-w_ilt2-w_kln2)*100))/100
+                    w_mnt2 = 1-w_ilt2-w_kln2-w_chl2
+                    w_ilt = round(w_clay*w_ilt2, 4)
+                    w_kln = round(w_clay*w_kln2, 4)
+                    w_chl = round(w_clay*w_chl2, 4)
+                    w_mnt = round(w_clay*w_mnt2, 4)
+                    w_fsp = round(rd.randint(0, int((1-w_ore-w_clay-w_qz)*100))/100, 4)
                     w_Afs2 = rd.randint(0, 100)/100
                     w_Pl2 = 1 - w_Afs2
-                    w_Afs = round(w_Fsp*w_Afs2, 4)
-                    w_Pl = round(w_Fsp*w_Pl2, 4)
-                    w_Cal2 = rd.randint(75, 100)/100
-                    w_Chl2 = rd.randint(0, int((1-w_Cal2)*100))/100
-                    w_Ms2 = 1 - w_Cal2 - w_Chl2
-                    w_Cal = round(w_rf*w_Cal2, 4)
-                    w_Chl = round(w_rf*w_Chl2, 4)
-                    w_Ms = round(w_rf*w_Ms2, 4)
-                elif magicnumber == 4:    # Chl+Ms-rich
+                    w_Afs = round(w_fsp*w_Afs2, 4)
+                    w_Pl = round(w_fsp*w_Pl2, 4)
+                    w_carb = round(rd.randint(0, int((1-w_ore-w_clay-w_qz-w_fsp)*100))/100, 4)
+                    w_cal2 = rd.randint(0, 100)/100
+                    w_dol2 = 1 - w_cal2
+                    w_cal = round(w_carb*w_cal2, 4)
+                    w_dol = round(w_carb*w_dol2, 4)
+                    w_org = round(1-w_ore-w_clay-w_qz-w_fsp-w_carb, 4)
+                elif magicnumber == 2:    # Fsp-rich
                     w_ore = round(0.0, 4)
-                    w_Hem2 = rd.randint(0, 100)/100
-                    w_Hem = round(w_ore*w_Hem2, 4)
-                    w_rf = round(rd.randint(25, 50)/100, 4)
-                    w_Qz = round(rd.randint(25, int((1-w_rf)*100))/100, 4)
-                    w_Fsp = round(1 - w_rf - w_Qz, 4)
+                    w_Py2 = rd.randint(0, 100)/100
+                    w_Py = round(w_ore*w_Py2, 4)
+                    w_Bn2 = rd.randint(0, 100)/100
+                    w_Bn = round(w_ore*w_Bn2, 4)
+                    w_Ccp2 = rd.randint(0, 100)/100
+                    w_Ccp = round(w_ore*w_Ccp2, 4)
+                    w_Cc2 = rd.randint(0, 100)/100
+                    w_Cc = round(w_ore*w_Cc2, 4)
+                    w_fsp = round(rd.randint(15, 30)/100, 4)
                     w_Afs2 = rd.randint(0, 100)/100
                     w_Pl2 = 1 - w_Afs2
-                    w_Afs = round(w_Fsp*w_Afs2, 4)
-                    w_Pl = round(w_Fsp*w_Pl2, 4)
-                    w_Chl2 = rd.randint(50, 100)/100
-                    w_Ms2 = rd.randint(0, int((1-w_Chl2)*100))/100
-                    w_Cal2 = 1 - w_Chl2 - w_Ms2
-                    w_Cal = round(w_rf*w_Cal2, 4)
-                    w_Chl = round(w_rf*w_Chl2, 4)
-                    w_Ms = round(w_rf*w_Ms2, 4)
-                elif magicnumber == 5:    # Hem-rich
-                    w_ore = round(rd.randint(10, 20)/100, 4)
-                    w_Hem2 = rd.randint(0, 100)/100
-                    w_Hem = round(w_ore*w_Hem2, 4)
-                    w_Qz = round(rd.randint(50, 80)/100, 4)
-                    w_Fsp = round(rd.randint(0, int((1-w_ore-w_Qz)*100))/100, 4)
-                    w_Afs2 = rd.randint(0, 100)/100
-                    w_Pl2 = 1 - w_Afs2
-                    w_Afs = round(w_Fsp*w_Afs2, 4)
-                    w_Pl = round(w_Fsp*w_Pl2, 4)
-                    w_rf = round(1 - w_Qz - w_Fsp - w_ore, 4)
-                    magicnumber2 = rd.randint(0, 2)
-                    if magicnumber2 == 0:
-                        w_Cal2 = rd.randint(75, 100)/100
-                        w_Chl2 = rd.randint(0, int((1-w_Cal2)*100))/100
-                        w_Ms2 = 1 - w_Cal2 - w_Chl2
-                        w_Cal = round(w_rf*w_Cal2, 4)
-                        w_Chl = round(w_rf*w_Chl2, 4)
-                        w_Ms = round(w_rf*w_Ms2, 4)
-                    elif magicnumber2 == 1:
-                        magicnumber3 = rd.randint(0, 1)
-                        if magicnumber3 == 0:
-                            w_Chl2 = rd.randint(75, 100)/100
-                            w_Ms2 = rd.randint(0, int((1-w_Chl2)*100))/100
-                        else:
-                            w_Ms2 = rd.randint(75, 100)/100
-                            w_Chl2 = rd.randint(0, int((1-w_Ms2)*100))/100
-                        w_Cal2 = 1 - w_Chl2 - w_Ms2
-                        w_Cal = round(w_rf*w_Cal2, 4)
-                        w_Chl = round(w_rf*w_Chl2, 4)
-                        w_Ms = round(w_rf*w_Ms2, 4)
-                    elif magicnumber2 == 2:
-                        w_Cal2 = rd.randint(0, 100)/100
-                        w_Chl2 = rd.randint(0, int((1-w_Cal2)*100))/100
-                        w_Ms2 = 1 - w_Cal2 - w_Chl2
-                        w_Cal = round(w_rf*w_Cal2, 4)
-                        w_Chl = round(w_rf*w_Chl2, 4)
-                        w_Ms = round(w_rf*w_Ms2, 4)
-                elif magicnumber == 6:    # intermediate
-                    w_Qz = round(rd.randint(50, 75)/100, 4)
-                    w_Fsp = round(rd.randint(0, 25)/100, 4)
-                    w_Afs2 = rd.randint(0, 100)/100
-                    w_Pl2 = 1 - w_Afs2
-                    w_Afs = round(w_Fsp*w_Afs2, 4)
-                    w_Pl = round(w_Fsp*w_Pl2, 4)
-                    w_rf = round(1 - w_Qz - w_Fsp, 4)
-                    magicnumber2 = rd.randint(0, 2)
-                    if magicnumber2 == 0:
-                        w_Cal2 = rd.randint(75, 100)/100
-                        w_Chl2 = rd.randint(0, int((1-w_Cal2)*100))/100
-                        w_Ms2 = 1 - w_Cal2 - w_Chl2
-                        w_Cal = round(w_rf*w_Cal2, 4)
-                        w_Chl = round(w_rf*w_Chl2, 4)
-                        w_Ms = round(w_rf*w_Ms2, 4)
-                    elif magicnumber2 == 1:
-                        magicnumber3 = rd.randint(0, 1)
-                        if magicnumber3 == 0:
-                            w_Chl2 = rd.randint(75, 100)/100
-                            w_Ms2 = rd.randint(0, int((1-w_Chl2)*100))/100
-                        else:
-                            w_Ms2 = rd.randint(75, 100)/100
-                            w_Chl2 = rd.randint(0, int((1-w_Ms2)*100))/100
-                        w_Cal2 = 1 - w_Chl2 - w_Ms2
-                        w_Cal = round(w_rf*w_Cal2, 4)
-                        w_Chl = round(w_rf*w_Chl2, 4)
-                        w_Ms = round(w_rf*w_Ms2, 4)
-                    elif magicnumber2 == 2:
-                        w_Cal2 = rd.randint(0, 100)/100
-                        w_Chl2 = rd.randint(0, int((1-w_Cal2)*100))/100
-                        w_Ms2 = 1 - w_Cal2 - w_Chl2
-                        w_Cal = round(w_rf*w_Cal2, 4)
-                        w_Chl = round(w_rf*w_Chl2, 4)
-                        w_Ms = round(w_rf*w_Ms2, 4)
+                    w_Afs = round(w_fsp*w_Afs2, 4)
+                    w_Pl = round(w_fsp*w_Pl2, 4)
+                    w_clay = round(rd.randint(50, int((1-w_ore-w_fsp)*100))/100, 4)
+                    w_ilt2 = rd.randint(0, 100)/100
+                    w_kln2 = rd.randint(0, int((1-w_ilt2)*100))/100
+                    w_chl2 = rd.randint(0, int((1-w_ilt2-w_kln2)*100))/100
+                    w_mnt2 = 1-w_ilt2-w_kln2-w_chl2
+                    w_ilt = round(w_clay*w_ilt2, 4)
+                    w_kln = round(w_clay*w_kln2, 4)
+                    w_chl = round(w_clay*w_chl2, 4)
+                    w_mnt = round(w_clay*w_mnt2, 4)
+                    w_qz = round(rd.randint(0, int((1-w_ore-w_clay-w_fsp)*100))/100, 4)
+                    w_carb = round(rd.randint(0, int((1-w_ore-w_clay-w_qz-w_fsp)*100))/100, 4)
+                    w_cal2 = rd.randint(0, 100)/100
+                    w_dol2 = 1 - w_cal2
+                    w_cal = round(w_carb*w_cal2, 4)
+                    w_dol = round(w_carb*w_dol2, 4)
+                    w_org = round(1-w_ore-w_clay-w_qz-w_fsp-w_carb, 4)
+                elif magicnumber == 3:    # Carb-rich
                     w_ore = round(0.0, 4)
-                    w_Hem2 = rd.randint(0, 100)/100
-                    w_Hem = round(w_ore*w_Hem2, 4)
+                    w_Py2 = rd.randint(0, 100)/100
+                    w_Py = round(w_ore*w_Py2, 4)
+                    w_Bn2 = rd.randint(0, 100)/100
+                    w_Bn = round(w_ore*w_Bn2, 4)
+                    w_Ccp2 = rd.randint(0, 100)/100
+                    w_Ccp = round(w_ore*w_Ccp2, 4)
+                    w_Cc2 = rd.randint(0, 100)/100
+                    w_Cc = round(w_ore*w_Cc2, 4)
+                    w_carb = round(rd.randint(5, 15)/100, 4)
+                    w_cal2 = rd.randint(0, 100)/100
+                    w_dol2 = 1 - w_cal2
+                    w_cal = round(w_carb*w_cal2, 4)
+                    w_dol = round(w_carb*w_dol2, 4)
+                    w_clay = round(rd.randint(50, int((1-w_ore-w_carb)*100))/100, 4)
+                    w_ilt2 = rd.randint(0, 100)/100
+                    w_kln2 = rd.randint(0, int((1-w_ilt2)*100))/100
+                    w_chl2 = rd.randint(0, int((1-w_ilt2-w_kln2)*100))/100
+                    w_mnt2 = 1-w_ilt2-w_kln2-w_chl2
+                    w_ilt = round(w_clay*w_ilt2, 4)
+                    w_kln = round(w_clay*w_kln2, 4)
+                    w_chl = round(w_clay*w_chl2, 4)
+                    w_mnt = round(w_clay*w_mnt2, 4)
+                    w_qz = round(rd.randint(0, int((1-w_ore-w_clay-w_carb)*100))/100, 4)
+                    w_fsp = round(rd.randint(0, int((1-w_ore-w_clay-w_qz-w_carb)*100))/100, 4)
+                    w_Afs2 = rd.randint(0, 100)/100
+                    w_Pl2 = 1 - w_Afs2
+                    w_Afs = round(w_fsp*w_Afs2, 4)
+                    w_Pl = round(w_fsp*w_Pl2, 4)
+                    w_org = round(1-w_ore-w_clay-w_qz-w_fsp-w_carb, 4)
+                elif magicnumber == 4:    # Org-rich
+                    w_ore = round(0.0, 4)
+                    w_Py2 = rd.randint(0, 100)/100
+                    w_Py = round(w_ore*w_Py2, 4)
+                    w_Bn2 = rd.randint(0, 100)/100
+                    w_Bn = round(w_ore*w_Bn2, 4)
+                    w_Ccp2 = rd.randint(0, 100)/100
+                    w_Ccp = round(w_ore*w_Ccp2, 4)
+                    w_Cc2 = rd.randint(0, 100)/100
+                    w_Cc = round(w_ore*w_Cc2, 4)
+                    w_org = round(1-w_ore, 4)
+                    w_clay = round(rd.randint(50, int((1-w_ore-w_org)*100))/100, 4)
+                    w_ilt2 = rd.randint(0, 100)/100
+                    w_kln2 = rd.randint(0, int((1-w_ilt2)*100))/100
+                    w_chl2 = rd.randint(0, int((1-w_ilt2-w_kln2)*100))/100
+                    w_mnt2 = 1-w_ilt2-w_kln2-w_chl2
+                    w_ilt = round(w_clay*w_ilt2, 4)
+                    w_kln = round(w_clay*w_kln2, 4)
+                    w_chl = round(w_clay*w_chl2, 4)
+                    w_mnt = round(w_clay*w_mnt2, 4)
+                    w_qz = round(rd.randint(0, int((1-w_ore-w_clay-w_org)*100))/100, 4)
+                    w_fsp = round(rd.randint(0, int((1-w_ore-w_clay-w_qz-w_org)*100))/100, 4)
+                    w_Afs2 = rd.randint(0, 100)/100
+                    w_Pl2 = 1 - w_Afs2
+                    w_Afs = round(w_fsp*w_Afs2, 4)
+                    w_Pl = round(w_fsp*w_Pl2, 4)
+                    w_carb = round(rd.randint(0, int((1-w_ore-w_clay-w_qz-w_fsp-w_org)*100))/100, 4)
+                    w_cal2 = rd.randint(0, 100)/100
+                    w_dol2 = 1 - w_cal2
+                    w_cal = round(w_carb*w_cal2, 4)
+                    w_dol = round(w_carb*w_dol2, 4)
+                elif magicnumber == 5:    # Ore-rich
+                    w_ore = round(rd.randint(15, 45)/100, 4)
+                    w_Py2 = rd.randint(0, 100)/100
+                    w_Py = round(w_ore*w_Py2, 4)
+                    w_Bn2 = rd.randint(0, 100)/100
+                    w_Bn = round(w_ore*w_Bn2, 4)
+                    w_Ccp2 = rd.randint(0, 100)/100
+                    w_Ccp = round(w_ore*w_Ccp2, 4)
+                    w_Cc2 = rd.randint(0, 100)/100
+                    w_Cc = round(w_ore*w_Cc2, 4)
+                    w_clay = round(rd.randint(33, int((1-w_ore)*100))/100, 4)
+                    w_ilt2 = rd.randint(0, 100)/100
+                    w_kln2 = rd.randint(0, int((1-w_ilt2)*100))/100
+                    w_chl2 = rd.randint(0, int((1-w_ilt2-w_kln2)*100))/100
+                    w_mnt2 = 1-w_ilt2-w_kln2-w_chl2
+                    w_ilt = round(w_clay*w_ilt2, 4)
+                    w_kln = round(w_clay*w_kln2, 4)
+                    w_chl = round(w_clay*w_chl2, 4)
+                    w_mnt = round(w_clay*w_mnt2, 4)
+                    w_qz = round(rd.randint(0, int((1-w_ore-w_clay)*100))/100, 4)
+                    w_fsp = round(rd.randint(0, int((1-w_ore-w_clay-w_qz)*100))/100, 4)
+                    w_Afs2 = rd.randint(0, 100)/100
+                    w_Pl2 = 1 - w_Afs2
+                    w_Afs = round(w_fsp*w_Afs2, 4)
+                    w_Pl = round(w_fsp*w_Pl2, 4)
+                    w_carb = round(rd.randint(0, int((1-w_ore-w_clay-w_qz-w_fsp)*100))/100, 4)
+                    w_cal2 = rd.randint(0, 100)/100
+                    w_dol2 = 1 - w_cal2
+                    w_cal = round(w_carb*w_cal2, 4)
+                    w_dol = round(w_carb*w_dol2, 4)
+                    w_org = round(1-w_ore-w_clay-w_qz-w_fsp-w_carb, 4)
             else:
                 condition = False
                 while condition == False:
