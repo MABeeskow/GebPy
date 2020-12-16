@@ -1565,6 +1565,7 @@ class phyllosilicates:
         w_Fe = round(0.1*iron[2]/M, 4)
         w_Si = round(3.5*silicon[2]/M, 4)
         weights = [w_K, w_H, w_O, w_Al, w_Mg, w_Fe, w_Si]
+        composition = [w_H, w_O, w_Mg, w_Al, w_Si, w_K, w_Fe]
         amounts = [0.6, 0.4*3+2+2, 0.4+10+2, 1.3, 0.3, 0.1, 3.5]
         data_rho_e = CrystalPhysics([element, amounts, rho])
         rho_e = data_rho_e.calculate_electron_density()
@@ -1579,6 +1580,7 @@ class phyllosilicates:
         data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 2), round(vPvS, 2)])
         data.append([round(vP, 1), round(vS, 1)])
         data.append([round(GR, 2), round(PE, 2), round(U, 2), p])
+        data.append(composition)
         #
         return data
     #
@@ -1959,6 +1961,7 @@ class phyllosilicates:
         w_H = round(4*hydrogen[2]/M, 4)
         w_Si = round(2*silicon[2]/M, 4)
         weights = [w_Al, w_O, w_H, w_Si]
+        composition = [w_H, w_O, w_Al, w_Si]
         PE = bg.calculate_pe(self, x_list=weights, elements_list=element)
         U = PE*rho*10**(-3)
         # Electrical resistivity
@@ -1970,6 +1973,7 @@ class phyllosilicates:
         data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 2), round(vPvS, 2)])
         data.append([round(vP, 1), round(vS, 1)])
         data.append([round(GR, 2), round(PE, 2), round(U, 2), p])
+        data.append(composition)
         #
         return data
     #
@@ -2110,6 +2114,7 @@ class phyllosilicates:
         w_O = round((10+1+n)*oxygen[2]/M, 4)
         w_H = round((2+n*2)*hydrogen[2]/M, 4)
         weights = [w_Na, w_Ca, w_Al, w_Mg, w_Si, w_O, w_H]
+        composition = [w_H, w_O, w_Na, w_Mg, w_Al, w_Si, w_Ca]
         PE = bg.calculate_pe(self, x_list=weights, elements_list=element)
         U = PE*rho*10**(-3)
         # Electrical resistivity
@@ -2121,6 +2126,7 @@ class phyllosilicates:
         data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 2), round(vPvS, 2)])
         data.append([round(vP, 1), round(vS, 1)])
         data.append([round(GR, 2), round(PE, 2), round(U, 2)])
+        data.append(composition)
         #
         return data
 #
@@ -2251,6 +2257,7 @@ class Biotites:
             data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 2), round(vPvS, 2)])
             data.append([round(vP, 1), round(vS, 1)])
             data.append([round(GR, 2), round(PE, 2), round(U, 2), p])
+            data.append(weights)
         elif self.keyword == "Mg":
             x = round(rd.uniform(0.68, 1), 2)
             y = round(rd.uniform(0, 1), 2)
@@ -2352,6 +2359,7 @@ class Biotites:
             data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 2), round(vPvS, 2)])
             data.append([round(vP, 1), round(vS, 1)])
             data.append([round(GR, 2), round(PE, 2), round(U, 2), p])
+            data.append(weights)
         elif self.keyword == "Fe":
             x = round(rd.uniform(0, 0.33), 2)
             y = round(rd.uniform(0, 1), 2)
@@ -2453,6 +2461,7 @@ class Biotites:
             data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 2), round(vPvS, 2)])
             data.append([round(vP, 1), round(vS, 1)])
             data.append([round(GR, 2), round(PE, 2), round(U, 2), p])
+            data.append(weights)
         if self.keyword == "Biotite":
             x = round(rd.uniform(0, 1), 2)
             y = round(rd.uniform(0, 1), 2)
@@ -2554,7 +2563,7 @@ class Biotites:
             data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 2), round(vPvS, 2)])
             data.append([round(vP, 1), round(vS, 1)])
             data.append([round(GR, 2), round(PE, 2), round(U, 2), p])
-
+            data.append(weights)
         #
         return data
 #
@@ -5311,6 +5320,7 @@ class sulfides:
         w_Fe = round(iron[2]/M, 4)
         w_S = round(2*sulfur[2]/M, 4)
         weights = [w_Fe, w_S]
+        composition = [w_S, w_Fe]
         PE = bg.calculate_pe(self, x_list=weights, elements_list=element)
         U = PE*rho*10**(-3)
         # Electrical resistivity
@@ -5322,6 +5332,7 @@ class sulfides:
         data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 2), round(vPvS, 2)])
         data.append([round(vP, 1), round(vS, 1)])
         data.append([round(GR, 2), round(PE, 2), round(U, 2)])
+        data.append(composition)
         #
         return data
     #

@@ -303,6 +303,15 @@ class geochemistry:
         print(data_sandstone5)
         print(data_sandstone6)
 
+        data = siliciclastics.shale()
+        data_shale1 = data.create_simple_shale()
+        data_shale2 = data.create_simple_shale()
+        data_shale3 = data.create_simple_shale()
+        data_shale4 = data.create_simple_shale(w_C=0.05)
+        print(data_shale1)
+        print(data_shale2)
+        print(data_shale3)
+        print(data_shale4)
         #
         mineralsSandstone = [chemQuartz, chemCalcite, chemDolomite, chemAlkalifeldspar, chemPlagioclase, chemBiotite, chemGlauconite]
         mineralsShale = [chemQuartz, chemKaolinite, chemChlorite, chemIllite, chemCalcite, chemDolomite, chemAlkalifeldspar, chemPlagioclase]
