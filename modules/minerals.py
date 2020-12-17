@@ -126,6 +126,8 @@ class natives:
         #
         # Molar mass
         M = round(carbon[2], 3)
+        w_C = carbon[2]/M
+        composition = [w_C]
         # Density
         dataV = CrystalPhysics([[2.467, 6.71], [], "hexagonal"])
         V = dataV.calculate_volume()
@@ -156,6 +158,7 @@ class natives:
         data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 2), round(vPvS, 2)])
         data.append([round(vP, 1), round(vS, 1)])
         data.append([round(GR, 2), round(PE, 2)])
+        data.append(composition)
         #
         return data
     #
@@ -1931,7 +1934,6 @@ class phyllosilicates:
         mineral = "Kln"
         #
         # Molar mass
-        x = rd.uniform(0, 1)
         M = round(2*aluminium[2] + 4*(oxygen[2]+hydrogen[2]) + 2*silicon[2] + 5*oxygen[2], 3)
         # Density
         dataV = CrystalPhysics([[5.13, 8.89, 7.25], [90.0, 104.5, 89.8], "triclinic"])
@@ -2070,9 +2072,9 @@ class phyllosilicates:
         # Molar mass
         condition = False
         while condition == False:
-            x = round(rd.uniform(0.5, 1), 2)
-            y = round(rd.uniform(0.5, 1), 2)
-            n = rd.randint(0,20)
+            x = round(rd.uniform(0.6, 0.7), 2)
+            y = round(rd.uniform(0.9, 1), 2)
+            n = rd.randint(10,12)
             M = round(0.3*(x*sodium[2]+(1-x)*calcium[2]) + 2*(y*aluminium[2]+(1-y)*magnesium[2]) + 4*silicon[2] + 10*oxygen[2] + (oxygen[2]+2*hydrogen[2]) + n*(2*hydrogen[2]+oxygen[2]), 2)
             # Density
             dataV = CrystalPhysics([[5.17, 8.94, 9.95], [99.9], "monoclinic"])
@@ -2462,10 +2464,10 @@ class Biotites:
             data.append([round(vP, 1), round(vS, 1)])
             data.append([round(GR, 2), round(PE, 2), round(U, 2), p])
             data.append(weights)
-        if self.keyword == "Biotite":
-            x = round(rd.uniform(0, 1), 2)
-            y = round(rd.uniform(0, 1), 2)
-            z = round(rd.uniform(0, 1), 2)
+        elif self.keyword == "Biotite":
+            x = round(rd.uniform(0.9, 1), 2)
+            y = round(rd.uniform(0, 0.25), 2)
+            z = round(rd.uniform(0, 0.5), 2)
             mineral = "Bt"
             #
             # Molar mass
@@ -2559,6 +2561,69 @@ class Biotites:
             #
             data.append(mineral)
             data.append([round(M, 2), round(x, 2), round(y, 2), round(z, 2)])
+            data.append(round(rho, 1))
+            data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 2), round(vPvS, 2)])
+            data.append([round(vP, 1), round(vS, 1)])
+            data.append([round(GR, 2), round(PE, 2), round(U, 2), p])
+            data.append(weights)
+        #
+        elif self.keyword == "simple":
+            x = round(rd.uniform(0.9, 1), 2)
+            y = round(rd.uniform(0, 0.25), 2)
+            mineral = "Bt"
+            #
+            # Molar mass
+            M = round(potassium[2] + 3*(x*magnesium[2]+(1-x)*iron[2]) + aluminium[2] + 3*silicon[2] + 10*oxygen[2] + 2*(y*(oxygen[2]+hydrogen[2])+(1-y)*flourine[2]), 3)
+            # Density
+            M_Phl = round(potassium[2] + 3*magnesium[2] + aluminium[2] + 3*silicon[2] + 10*oxygen[2] + 2*(y*(oxygen[2]+hydrogen[2])+(1-y)*flourine[2]), 3)
+            M_Ann = round(potassium[2] + 3*iron[2] + aluminium[2] + 3*silicon[2] + 10*oxygen[2] + 2*(y*(oxygen[2]+hydrogen[2])+(1-y)*flourine[2]), 3)
+            dataV_Phl = CrystalPhysics([[5.3078, 9.1901, 10.1547], [100.08], "monoclinic"])
+            V_Phl = dataV_Phl.calculate_volume()
+            dataRho_Phl = CrystalPhysics([M_Phl, 2, V_Phl])
+            rho_Phl = dataRho_Phl.calculate_bulk_density()
+            dataV_Ann = CrystalPhysics([[5.3860, 9.3241, 10.2683], [100.63], "monoclinic"])
+            V_Ann = dataV_Ann.calculate_volume()
+            dataRho_Ann = CrystalPhysics([M_Ann, 2, V_Ann])
+            rho_Ann = dataRho_Ann.calculate_bulk_density()
+            rho = x*((1-y)*rho_Phl) + (1-x)*(y*rho_Ann)
+            # Bulk modulus
+            K_Phl = 103.78*10**9
+            K_Ann = 114.72*10**9 # estimated!
+            K = x*((1-y)*K_Phl) + (1-x)*(y*K_Ann)
+            # Shear modulus
+            G_Phl = 61.69*10**9
+            G_Ann = 58.61*10**9
+            G = x*((1-y)*G_Phl) + (1-x)*(y*G_Ann)
+            # Young's modulus
+            E = (9*K*G)/(3*K + G)
+            # Poisson's ratio
+            nu = (3*K - 2*G)/(2*(3*K + G))
+            # vP/vS
+            vPvS = ((K + 4/3*G)/G)**0.5
+            # P-wave velocity
+            vP = ((K + 4/3*G)/rho)**0.5
+            # S-wave velocity
+            vS = (G/rho)**0.5
+            # Gamma ray
+            GR = (1-x)*potassium[2]/M*100*16
+            # Photoelectricity
+            #element = [hydrogen, oxygen, flourine, magnesium, aluminium, silicon, potassium, iron]
+            w_H = round(2*y*hydrogen[2]/M, 4)
+            w_O = round((10+2*y)*oxygen[2]/M, 4)
+            w_F = round(2*(1-y)*flourine[2]/M, 4)
+            w_Mg = round(3*x*magnesium[2]/M, 4)
+            w_Al = round(aluminium[2]/M, 4)
+            w_Si = round(3*silicon[2]/M, 4)
+            w_K = round(potassium[2]/M, 4)
+            w_Fe = round(3*(1-x)*iron[2]/M, 4)
+            weights = [w_H, w_O, w_F, w_Mg, w_Al, w_Si, w_K, w_Fe]
+            PE = bg.calculate_pe(self, x_list=weights, elements_list=element)
+            U = PE*rho*10**(-3)
+            # Electrical resistivity
+            p = 500100
+            #
+            data.append(mineral)
+            data.append([round(M, 2), round(x, 2), round(y, 2)])
             data.append(round(rho, 1))
             data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 2), round(vPvS, 2)])
             data.append([round(vP, 1), round(vS, 1)])
