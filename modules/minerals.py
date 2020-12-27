@@ -395,6 +395,7 @@ class oxides:
         w_U = round(uranium[2]/M, 4)
         w_O = round(2*oxygen[2]/M, 4)
         weights = [w_U, w_O]
+        compositon = [w_O, w_U]
         PE = bg.calculate_pe(self, x_list=weights, elements_list=element)
         U = PE*rho_e*10**(-3)
         # Electrical resistivity
@@ -406,6 +407,7 @@ class oxides:
         data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 2), round(vPvS, 2)])
         data.append([round(vP, 1), round(vS, 1)])
         data.append([round(GR, 2), round(PE, 2), round(U, 2), p])
+        data.append(compositon)
         #
         return data
     #
@@ -1189,6 +1191,7 @@ class carbonates:
         x_C = round(2*carbon[2]/M, 4)
         x_O = round(2*3*oxygen[2]/M, 4)
         weights = [x_Ca, x_Mg, x_C, x_O]
+        composition = [x_C, x_O, x_Mg, x_Ca]
         amounts = [1, 1, 2, 3]
         data_rho_e = CrystalPhysics([element, amounts, rho])
         rho_e = data_rho_e.calculate_electron_density()
@@ -1203,6 +1206,7 @@ class carbonates:
         data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 2), round(vPvS, 2)])
         data.append([round(vP, 1), round(vS, 1)])
         data.append([round(GR, 2), round(PE, 2), round(U, 2), p])
+        data.append(composition)
         #
         return data
     #
@@ -1245,6 +1249,7 @@ class carbonates:
         x_C = round(carbon[2]/M, 4)
         x_O = round(3*oxygen[2]/M, 4)
         weights = [x_Fe, x_C, x_O]
+        composition = [x_C, x_O, x_Fe]
         amounts = [1, 1, 3]
         data_rho_e = CrystalPhysics([element, amounts, rho])
         rho_e = data_rho_e.calculate_electron_density()
@@ -1259,6 +1264,7 @@ class carbonates:
         data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 2), round(vPvS, 2)])
         data.append([round(vP, 1), round(vS, 1)])
         data.append([round(GR, 2), round(PE, 2), round(U, 2)])
+        data.append(composition)
         #
         return data
     #
@@ -1494,6 +1500,7 @@ class carbonates:
         x_C = round(1*carbon[2]/M, 4)
         x_O = round(3*oxygen[2]/M, 4)
         weights = [x_Ca, x_C, x_O]
+        composition = [x_C, x_O, x_Ca]
         amounts = [1, 1, 3]
         data_rho_e = CrystalPhysics([element, amounts, rho])
         rho_e = data_rho_e.calculate_electron_density()
@@ -1508,6 +1515,7 @@ class carbonates:
         data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 2), round(vPvS, 2)])
         data.append([round(vP, 1), round(vS, 1)])
         data.append([round(GR, 2), round(PE, 2), round(U, 2), p])
+        data.append(composition)
         #
         return data
     #
@@ -3944,7 +3952,7 @@ class feldspars:
             data.append(composition)
         elif self.keyword == "Na":
             mineral = "Kfs"
-            x = round(rd.uniform(0.6, 1), 2)
+            x = round(rd.uniform(0.75, 1), 2)
             #if x >= 0.9:
             #    mineral = "Ab"
             #elif x < 0.9 and x >= 0.63:
@@ -4018,7 +4026,7 @@ class feldspars:
             data.append(composition)
         elif self.keyword == "K":
             mineral = "Kfs"
-            x = round(rd.uniform(0, 0.4), 2)
+            x = round(rd.uniform(0, 0.25), 2)
             #if x >= 0.9:
             #    mineral = "Ab"
             #elif x < 0.9 and x >= 0.63:
@@ -4090,7 +4098,7 @@ class feldspars:
             data.append([round(vP, 1), round(vS, 1)])
             data.append([round(GR, 2), round(PE, 2), round(U, 2), p])
             data.append(composition)
-        if self.keyword == "Alkalifeldspar":
+        if self.keyword == "Alkalifeldspar" or self.keyword == "Afs" or self.keyword == "Kfs":
             x = round(rd.uniform(0, 1), 2)
             mineral = "Kfs"
             #
@@ -4251,7 +4259,7 @@ class feldspars:
             data.append([round(GR, 2), round(PE, 2), round(U, 2), p])
             data.append(composition)
         elif self.keyword == "Na":
-            x = round(rd.uniform(0.6, 1), 2)
+            x = round(rd.uniform(0.75, 1), 2)
             mineral = "Pl"
             #if x >= 0.9:
             #    mineral = "Ab"
@@ -4325,7 +4333,7 @@ class feldspars:
             data.append([round(GR, 2), round(PE, 2), round(U, 2), p])
             data.append(composition)
         elif self.keyword == "Ca":
-            x = round(rd.uniform(0, 0.4), 2)
+            x = round(rd.uniform(0, 0.25), 2)
             mineral = "Pl"
             #if x >= 0.9:
             #    mineral = "Ab"
@@ -4398,7 +4406,7 @@ class feldspars:
             data.append([round(vP, 1), round(vS, 1)])
             data.append([round(GR, 2), round(PE, 2), round(U, 2), p])
             data.append(composition)
-        elif self.keyword == "Plagioclase":
+        elif self.keyword == "Plagioclase" or self.keyword == "Pl":
             x = round(rd.uniform(0, 1), 2)
             mineral = "Pl"
             #

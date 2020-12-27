@@ -939,8 +939,9 @@ class shale:
         chem_kln = minerals.phyllosilicates.kaolinite("")
         chem_mnt = minerals.phyllosilicates.montmorillonite("")
         chem_py = minerals.sulfides.pyrite("")
+        chem_urn = minerals.oxides.uraninite("")
         #
-        mineralogy = [chem_org, chem_qz, chem_cal, chem_py, chem_ilt, chem_kln, chem_mnt, chem_bt, chem_ms]
+        mineralogy = [chem_org, chem_qz, chem_cal, chem_py, chem_ilt, chem_kln, chem_mnt, chem_bt, chem_ms, chem_urn]
         #for i in range(len(mineralogy)):
         #    print(mineralogy[i][0], mineralogy[i][6])
         #
@@ -963,10 +964,7 @@ class shale:
         w_FeIlt = chem_ilt[6][6]
         #
         # [molar mass, density, bulk modulus, vP]
-        chemWater = [18.0146, 997, 2.08, 1444]
         water = fluids.Water.water("")
-        chemOil = [0.83 * chemC[2] + 0.11 * chemH[2] + 0.05 * chemS[2] + 0.005 * (chemO[2] + chemN[2]), 0.9, 1.35, 1225]
-        chemGas = [0.83 * chemC[2] + 0.11 * chemH[2] + 0.05 * chemS[2] + 0.005 * (chemO[2] + chemN[2]), 0.8, 0.081, 475]
         #
         data = []
         #
@@ -975,29 +973,30 @@ class shale:
         while cond == False:
             if self.w_C == None and self.w_F == None and self.w_Na == None and self.w_Mg == None and self.w_S == None and self.w_K == None and self.w_Ca == None and self.w_Fe == None:
                 magicnumber = rd.randint(0, 4)
-                magicnumber = 0
+                #magicnumber = 0
                 if magicnumber == 0:    # Clay-rich
                     w_ore = round(rd.randint(0, 5)/100, 4)
                     w_Py = w_ore
-                    w_clay = round(rd.randint(75, int((1-w_ore)*100))/100, 4)
+                    w_clay = round(rd.randint(50, int((0.75-w_ore)*100))/100, 4)
                     magicclay = rd.randint(1, 30)
-                    if magicclay < 11:
+                    #magicclay = 20 # for testing
+                    if magicclay < 6:
                         w_ilt2 = rd.randint(50, 100)/100
                         w_kln2 = rd.randint(0, int((1-w_ilt2)*100))/100
                         w_mnt2 = 1-w_ilt2-w_kln2
                         w_ilt = round(w_clay*w_ilt2, 4)
                         w_kln = round(w_clay*w_kln2, 4)
                         w_mnt = round(w_clay*w_mnt2, 4)
-                    elif magicclay > 10 and magicclay < 21:
+                    elif magicclay > 5 and magicclay < 11:
                         w_kln2 = rd.randint(50, 100)/100
-                        w_ilt2 = rd.randint(0, int((1-w_kln2)*100))/100
+                        w_ilt2 = rd.randint(int(0.1*(1-w_kln2)*100), int((1-w_kln2)*100))/100
                         w_mnt2 = 1-w_ilt2-w_kln2
                         w_ilt = round(w_clay*w_ilt2, 4)
                         w_kln = round(w_clay*w_kln2, 4)
                         w_mnt = round(w_clay*w_mnt2, 4)
                     else:
                         w_mnt2 = rd.randint(68, 100)/100
-                        w_ilt2 = rd.randint(0, int((1-w_mnt2)*100))/100
+                        w_ilt2 = rd.randint(int(0.1*(1-w_mnt2)*100), int((1-w_mnt2)*100))/100
                         w_kln2 = 1-w_ilt2-w_mnt2
                         w_ilt = round(w_clay*w_ilt2, 4)
                         w_kln = round(w_clay*w_kln2, 4)
@@ -1009,7 +1008,8 @@ class shale:
                     w_ms = round(w_mica*w_ms2, 4)
                     w_bt = round(w_mica*w_bt2, 4)
                     w_cal = round(rd.randint(0, int((1-w_ore-w_clay-w_qz-w_mica)*100))/100, 4)
-                    w_org = round(1-w_ore-w_clay-w_qz-w_mica-w_cal, 4)
+                    w_urn = round(rd.randint(0, 5)/100000, 6)
+                    w_org = round(1-w_ore-w_clay-w_qz-w_mica-w_cal-w_urn, 4)
                 elif magicnumber == 1:    # Qz-rich
                     w_ore = round(rd.randint(0, 5)/100, 4)
                     w_Py = w_ore
@@ -1043,7 +1043,8 @@ class shale:
                     w_ms = round(w_mica*w_ms2, 4)
                     w_bt = round(w_mica*w_bt2, 4)
                     w_cal = round(rd.randint(0, int((1-w_ore-w_clay-w_qz-w_mica)*100))/100, 4)
-                    w_org = round(1-w_ore-w_clay-w_qz-w_mica-w_cal, 4)
+                    w_urn = round(rd.randint(0, 5)/100000, 6)
+                    w_org = round(1-w_ore-w_clay-w_qz-w_mica-w_cal-w_urn, 4)
                 elif magicnumber == 2:    # Mica-rich
                     w_ore = round(rd.randint(0, 5)/100, 4)
                     w_Py = w_ore
@@ -1077,7 +1078,8 @@ class shale:
                         w_mnt = round(w_clay*w_mnt2, 4)
                     w_qz = round(rd.randint(0, int((1-w_ore-w_clay-w_mica)*100))/100, 4)
                     w_cal = round(rd.randint(0, int((1-w_ore-w_clay-w_qz-w_mica)*100))/100, 4)
-                    w_org = round(1-w_ore-w_clay-w_qz-w_mica-w_cal, 4)
+                    w_urn = round(rd.randint(0, 5)/100000, 6)
+                    w_org = round(1-w_ore-w_clay-w_qz-w_mica-w_cal-w_urn, 4)
                 elif magicnumber == 3:    # Cal-rich
                     w_ore = round(rd.randint(0, 5)/100, 4)
                     w_Py = w_ore
@@ -1111,7 +1113,8 @@ class shale:
                     w_bt2 = 1 - w_ms2
                     w_ms = round(w_mica*w_ms2, 4)
                     w_bt = round(w_mica*w_bt2, 4)
-                    w_org = round(1-w_ore-w_clay-w_qz-w_mica-w_cal, 4)
+                    w_urn = round(rd.randint(0, 5)/100000, 6)
+                    w_org = round(1-w_ore-w_clay-w_qz-w_mica-w_cal-w_urn, 4)
                 elif magicnumber == 4:    # Org-rich
                     w_ore = round(rd.randint(15, 25)/100, 4)
                     w_Py = w_ore
@@ -1145,7 +1148,8 @@ class shale:
                     w_bt2 = 1 - w_ms2
                     w_ms = round(w_mica*w_ms2, 4)
                     w_bt = round(w_mica*w_bt2, 4)
-                    w_cal = round(1-w_ore-w_clay-w_qz-w_mica-w_org, 4)
+                    w_urn = round(rd.randint(0, 5)/100000, 6)
+                    w_cal = round(1-w_ore-w_clay-w_qz-w_mica-w_org-w_urn, 4)
             elif self.w_C != None:
                 condition = False
                 while condition == False:
@@ -1165,7 +1169,8 @@ class shale:
                 w_kln = round(w_clay*w_kln2, 4)
                 w_mnt = round(w_clay*w_mnt2, 4)
                 w_qz = round(rd.randint(0, int((1-w_ore-w_clay-w_org-w_cal)*100))/100, 4)
-                w_mica = round(1-w_ore-w_clay-w_qz-w_org-w_cal, 4)
+                w_urn = round(rd.randint(0, 5)/100000, 6)
+                w_mica = round(1-w_ore-w_clay-w_qz-w_org-w_cal-w_urn, 4)
                 w_ms2 = rd.randint(0, 100)/100
                 w_bt2 = 1 - w_ms2
                 w_ms = round(w_mica*w_ms2, 4)
@@ -1207,7 +1212,8 @@ class shale:
                     w_mnt = round(w_clay*w_mnt2, 4)
                 w_qz = round(rd.randint(0, int((1-w_ore-w_clay-w_mica)*100))/100, 4)
                 w_cal = round(rd.randint(0, int((1-w_ore-w_clay-w_qz-w_mica)*100))/100, 4)
-                w_org = round(1-w_ore-w_clay-w_qz-w_mica-w_cal, 4)
+                w_urn = round(rd.randint(0, 5)/100000, 6)
+                w_org = round(1-w_ore-w_clay-w_qz-w_mica-w_cal-w_urn, 4)
             elif self.w_Na != None:
                 condition = False
                 while condition == False:
@@ -1230,7 +1236,8 @@ class shale:
                 w_bt = round(w_mica*w_bt2, 4)
                 w_cal = round(rd.randint(0, int((1-w_clay-w_qz-w_mica)*100))/100, 4)
                 w_org = round(1-w_clay-w_qz-w_mica-w_cal, 4)
-                w_ore = round(rd.randint(0, int((1-w_clay-w_qz-w_mica-w_org)*100))/100, 4)
+                w_urn = round(rd.randint(0, 5)/100000, 6)
+                w_ore = round(rd.randint(0, int((1-w_clay-w_qz-w_mica-w_org-w_urn)*100))/100, 4)
                 w_Py = w_ore
             elif self.w_Mg != None:
                 condition = False
@@ -1255,7 +1262,8 @@ class shale:
                 w_ms2 = 1-w_bt2
                 w_ms = round(w_mica*w_ms2, 4)
                 w_cal = round(rd.randint(0, int((1-w_ore-w_clay-w_qz-w_mica)*100))/100, 4)
-                w_org = round(1-w_ore-w_clay-w_qz-w_mica-w_cal, 4)
+                w_urn = round(rd.randint(0, 5)/100000, 6)
+                w_org = round(1-w_ore-w_clay-w_qz-w_mica-w_cal-w_urn, 4)
             elif self.w_S != None:
                 condition = False
                 while condition == False:
@@ -1295,7 +1303,8 @@ class shale:
                 w_bt2 = 1 - w_ms2
                 w_ms = round(w_mica*w_ms2, 4)
                 w_bt = round(w_mica*w_bt2, 4)
-                w_cal = round(1-w_ore-w_clay-w_qz-w_mica-w_org, 4)
+                w_urn = round(rd.randint(0, 5)/100000, 6)
+                w_cal = round(1-w_ore-w_clay-w_qz-w_mica-w_org-w_urn, 4)
             elif self.w_K != None:
                 condition = False
                 while condition == False:
@@ -1334,7 +1343,8 @@ class shale:
                         condition = False
                 w_qz = round(rd.randint(0, int((1-w_ore-w_clay-w_mica)*100))/100, 4)
                 w_cal = round(rd.randint(0, int((1-w_ore-w_clay-w_qz-w_mica)*100))/100, 4)
-                w_org = round(1-w_ore-w_clay-w_qz-w_mica-w_cal, 4)
+                w_urn = round(rd.randint(0, 5)/100000, 6)
+                w_org = round(1-w_ore-w_clay-w_qz-w_mica-w_cal-w_urn, 4)
             elif self.w_Ca != None:
                 condition_1 = False
                 while condition_1 == False:
@@ -1360,7 +1370,8 @@ class shale:
                     w_bt2 = 1 - w_ms2
                     w_ms = round(w_mica*w_ms2, 4)
                     w_bt = round(w_mica*w_bt2, 4)
-                    w_org = round(1-w_ore-w_clay-w_qz-w_mica-w_cal, 4)
+                    w_urn = round(rd.randint(0, 5)/100000, 6)
+                    w_org = round(1-w_ore-w_clay-w_qz-w_mica-w_cal-w_urn, 4)
                     if w_org >= 0:
                         condition_2 = True
                     else:
@@ -1406,16 +1417,17 @@ class shale:
                 condition = False
                 while condition == False:
                     w_qz = round(rd.randint(0, int((1-w_ore-w_clay-w_org)*100))/100, 4)
-                    w_cal = round(1-w_ore-w_clay-w_qz-w_mica-w_org, 4)
+                    w_urn = round(rd.randint(0, 5)/100000, 6)
+                    w_cal = round(1-w_ore-w_clay-w_qz-w_mica-w_org-w_urn, 4)
                     if w_qz >= 0 and w_cal >= 0:
                         condition = True
                     else:
                         condition = False
-            sumMin = round(w_org + w_qz + w_cal + w_Py + w_ilt + w_kln + w_mnt + w_bt + w_ms, 4)
+            sumMin = round(w_org + w_qz + w_cal + w_Py + w_ilt + w_kln + w_mnt + w_bt + w_ms + w_urn, 4)
             #
             w_H = round(chem_ilt[6][0]*w_ilt + chem_kln[6][0]*w_kln + chem_mnt[6][0]*w_mnt + chem_bt[6][0]*w_bt + chem_ms[6][0]*w_ms, 4)
             w_C = round(chem_org[6][0]*w_org + chem_cal[6][0]*w_cal, 4)
-            w_O = round(chem_qz[6][0]*w_qz + chem_cal[6][1]*w_cal + chem_ilt[6][1]*w_ilt + chem_kln[6][1]*w_kln + chem_mnt[6][1]*w_mnt + chem_bt[6][1]*w_bt + chem_ms[6][1]*w_ms, 4)
+            w_O = round(chem_qz[6][0]*w_qz + chem_cal[6][1]*w_cal + chem_ilt[6][1]*w_ilt + chem_kln[6][1]*w_kln + chem_mnt[6][1]*w_mnt + chem_bt[6][1]*w_bt + chem_ms[6][1]*w_ms + chem_urn[6][0]*w_urn, 4)
             w_F = round(chem_bt[6][2]*w_bt + chem_ms[6][2]*w_ms, 4)
             w_Na = round(chem_mnt[6][2]*w_mnt, 4)
             w_Mg = round(chem_ilt[6][2]*w_ilt + chem_mnt[6][3]*w_mnt + chem_bt[6][3]*w_bt, 4)
@@ -1425,18 +1437,19 @@ class shale:
             w_K = round(chem_ilt[6][5]*w_ilt + chem_bt[6][6]*w_bt + chem_ms[6][5]*w_ms, 4)
             w_Ca = round(chem_cal[6][2]*w_cal + chem_mnt[6][6]*w_mnt, 4)
             w_Fe = round(chem_py[6][1]*w_Py + chem_ilt[6][6]*w_ilt + chem_bt[6][7]*w_bt, 4)
-            sumConc = round(w_H + w_C + w_O + w_F + w_Na + w_Mg + w_Al + w_Si + w_S + w_K + w_Ca + w_Fe, 4)
+            w_U = round(chem_urn[6][1]*w_urn, 6)
+            sumConc = round(w_H + w_C + w_O + w_F + w_Na + w_Mg + w_Al + w_Si + w_S + w_K + w_Ca + w_Fe + w_U, 4)
             #
             if sumMin == 1 and sumConc == 1:
                 cond = True
-                composition.extend((["Org", w_org, round(chem_org[1], 2)], ["Qz", w_qz, round(chem_qz[1], 2)], ["Cal", w_cal, round(chem_cal[1], 2)], ["Py", w_Py, round(chem_py[1], 2)], ["Ilt", w_ilt, round(chem_ilt[1], 2)], ["Kln", w_kln, round(chem_kln[1], 2)], ["Mnt", w_mnt, round(chem_mnt[1][0], 2), round(chem_mnt[1][1], 2)], ["Bt", w_bt, round(chem_bt[1][0], 2), round(chem_bt[1][1], 2), round(chem_bt[1][2], 2)], ["Ms", w_ms, round(chem_ms[1], 2)]))
-                concentrations = [w_H, w_C, w_O, w_F, w_Na, w_Mg, w_Al, w_Si, w_S, w_K, w_Ca, w_Fe]
+                composition.extend((["Org", w_org, round(chem_org[1], 2)], ["Qz", w_qz, round(chem_qz[1], 2)], ["Cal", w_cal, round(chem_cal[1], 2)], ["Py", w_Py, round(chem_py[1], 2)], ["Ilt", w_ilt, round(chem_ilt[1], 2)], ["Kln", w_kln, round(chem_kln[1], 2)], ["Mnt", w_mnt, round(chem_mnt[1][0], 2), round(chem_mnt[1][1], 2)], ["Bt", w_bt, round(chem_bt[1][0], 2), round(chem_bt[1][1], 2), round(chem_bt[1][2], 2)], ["Ms", w_ms, round(chem_ms[1], 2)], ["Urn", w_urn, round(chem_urn[1], 2)]))
+                concentrations = [w_H, w_C, w_O, w_F, w_Na, w_Mg, w_Al, w_Si, w_S, w_K, w_Ca, w_Fe, w_U]
             else:
                 cond = False
         data.append(composition)
         #
-        rhoSolid = (w_org*chem_org[2] + w_qz*chem_qz[2] + w_cal*chem_cal[2] + w_Py*chem_py[2] + w_ilt*chem_ilt[2] + w_kln*chem_kln[2] + w_mnt*chem_mnt[2] + w_bt*chem_bt[2] + w_ms*chem_ms[2]) / 1000
-        X = [w_org, w_qz, w_cal, w_Py, w_ilt, w_kln, w_mnt, w_bt, w_ms]
+        rhoSolid = (w_org*chem_org[2] + w_qz*chem_qz[2] + w_cal*chem_cal[2] + w_Py*chem_py[2] + w_ilt*chem_ilt[2] + w_kln*chem_kln[2] + w_mnt*chem_mnt[2] + w_bt*chem_bt[2] + w_ms*chem_ms[2] + w_urn*chem_urn[2]) / 1000
+        X = [w_org, w_qz, w_cal, w_Py, w_ilt, w_kln, w_mnt, w_bt, w_ms, w_urn]
         K_list = [mineralogy[i][3][0] for i in range(len(mineralogy))]
         G_list = [mineralogy[i][3][1] for i in range(len(mineralogy))]
         K_geo = elast.calc_geometric_mean(self, X, K_list)
@@ -1457,15 +1470,15 @@ class shale:
         E_bulk = (9*K_bulk*G_bulk)/(3*K_bulk+G_bulk)
         phiD = (rhoSolid - rho) / (rhoSolid - water[2] / 1000)
         phiN = (2 * phi ** 2 - phiD ** 2) ** (0.5)
-        GR = w_org*chem_org[5][0] + w_qz*chem_qz[5][0] + w_cal*chem_cal[5][0] + w_Py*chem_py[5][0] + w_ilt*chem_ilt[5][0] + w_kln*chem_kln[5][0] + w_mnt*chem_mnt[5][0] + w_bt*chem_bt[5][0] + w_ms*chem_ms[5][0]
-        PE = w_org*chem_org[5][1] + w_qz*chem_qz[5][1] + w_cal*chem_cal[5][1] + w_Py*chem_py[5][1] + w_ilt*chem_ilt[5][1] + w_kln*chem_kln[5][1] + w_mnt*chem_mnt[5][1] + w_bt*chem_bt[5][1] + w_ms*chem_ms[5][1]
+        GR = w_org*chem_org[5][0] + w_qz*chem_qz[5][0] + w_cal*chem_cal[5][0] + w_Py*chem_py[5][0] + w_ilt*chem_ilt[5][0] + w_kln*chem_kln[5][0] + w_mnt*chem_mnt[5][0] + w_bt*chem_bt[5][0] + w_ms*chem_ms[5][0] + w_urn*chem_urn[5][0]
+        PE = w_org*chem_org[5][1] + w_qz*chem_qz[5][1] + w_cal*chem_cal[5][1] + w_Py*chem_py[5][1] + w_ilt*chem_ilt[5][1] + w_kln*chem_kln[5][1] + w_mnt*chem_mnt[5][1] + w_bt*chem_bt[5][1] + w_ms*chem_ms[5][1] + w_urn*chem_urn[5][1]
         poisson_seismic = 0.5*(vP**2 - 2*vS**2)/(vP**2 - vS**2)
         poisson_elastic = (3*K_bulk - 2*G_bulk)/(6*K_bulk + 2*G_bulk)
-        poisson_mineralogical = w_org*chem_org[3][3] + w_qz*chem_qz[3][3] + w_cal*chem_cal[3][3] + w_Py*chem_py[3][3] + w_ilt*chem_ilt[3][3] + w_kln*chem_kln[3][3] + w_mnt*chem_mnt[3][3] + w_bt*chem_bt[3][3] + w_ms*chem_ms[3][3]
+        poisson_mineralogical = w_org*chem_org[3][3] + w_qz*chem_qz[3][3] + w_cal*chem_cal[3][3] + w_Py*chem_py[3][3] + w_ilt*chem_ilt[3][3] + w_kln*chem_kln[3][3] + w_mnt*chem_mnt[3][3] + w_bt*chem_bt[3][3] + w_ms*chem_ms[3][3] + w_urn*chem_urn[3][3]
         #
         data.append([round(rho, 3), round(rhoSolid, 3), round(water[2] / 1000, 6)])
         data.append([round(K_bulk*10**(-6), 2), round(G_bulk*10**(-6), 2), round(E_bulk*10**(-6), 2), round(poisson_mineralogical, 3)])
-        data.append([round(vP, 2), round(vS, 2), round(vP_solid, 2), round(chemWater[3], 2)])
+        data.append([round(vP, 2), round(vS, 2), round(vP_solid, 2), round(water[4][0], 2)])
         data.append([round(phi, 3), round(phiD, 3), round(phiN, 3)])
         data.append("water")
         data.append([round(GR, 3), round(PE, 3)])

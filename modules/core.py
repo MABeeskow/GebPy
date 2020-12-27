@@ -6,7 +6,7 @@
 # Name:		core.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		30.04.2020
+# Date:		27.12.2020
 
 #-----------------------------------------------
 
@@ -19,7 +19,7 @@ from modules import minerals
 from modules.elements import elements
 import matplotlib.pyplot as plt
 from modules.geochemistry import elementanalysis
-from modules import siliciclastics
+from modules import siliciclastics, carbonates
 
 ## CONSTANTS / PROPERTIES
 pi = constants.pi
@@ -312,6 +312,20 @@ class geochemistry:
         print(data_shale2)
         print(data_shale3)
         print(data_shale4)
+        #
+        data = carbonates.limestone("water", 100)
+        data_limestone1 = data.create_simple_limestone()
+        print(data_limestone1)
+        data_limestone2 = data.create_simple_limestone(w_Mg=0.025)
+        print(data_limestone2)
+        #data_limestone3 = data.create_simple_limestone(w_Mg=0.05)
+        #data_limestone4 = data.create_simple_limestone(w_K=0.05)
+        #data_limestone5 = data.create_simple_limestone(w_Ca=0.3)
+        #data_limestone6 = data.create_simple_limestone(w_Fe=0.05)
+        #print(data_limestone3)
+        #print(data_limestone4)
+        #print(data_limestone5)
+        #print(data_limestone6)
         #
         mineralsSandstone = [chemQuartz, chemCalcite, chemDolomite, chemAlkalifeldspar, chemPlagioclase, chemBiotite, chemGlauconite]
         mineralsShale = [chemQuartz, chemKaolinite, chemChlorite, chemIllite, chemCalcite, chemDolomite, chemAlkalifeldspar, chemPlagioclase]

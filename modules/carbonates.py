@@ -21,7 +21,7 @@ from modules.geophysics import Elasticity as elast
 
 class limestone:
     #
-    def __init__(self, fluid, actualThickness):
+    def __init__(self, fluid=None, actualThickness=None):
         self.fluid = fluid
         self.actualThickness = actualThickness
     #
@@ -341,6 +341,443 @@ class limestone:
         #  limestone = [[mineralogical compositon], [densities], [elastic properties], [seismic velocities], [porosities], fluid name, GR]
         #
         return limestone
+    #
+    def create_simple_limestone(self, w_Na=None, w_Mg=None, w_K=None, w_Ca=None, w_Fe=None):
+        #
+        self.w_Na = w_Na
+        self.w_Mg = w_Mg
+        self.w_K = w_K
+        self.w_Ca = w_Ca
+        self.w_Fe = w_Fe
+        #
+        # mineralogy
+        chem_cal = minerals.carbonates.calcite("")
+        chem_arg = minerals.carbonates.aragonite("")
+        chem_dol = minerals.carbonates.dolomite("")
+        chem_sd = minerals.carbonates.siderite("")
+        chem_qz = minerals.oxides.quartz("")
+        chem_kfs = minerals.feldspars.alkalifeldspar(self, "Kfs")
+        chem_pl = minerals.feldspars.plagioclase(self, "Pl")
+        chem_mnt = minerals.phyllosilicates.montmorillonite("")
+        chem_kln = minerals.phyllosilicates.kaolinite("")
+        chem_chl = minerals.phyllosilicates.chamosite("")
+        chem_py = minerals.sulfides.pyrite("")
+        #
+        mineralogy = [chem_cal, chem_arg, chem_dol, chem_sd, chem_qz, chem_kfs, chem_pl, chem_mnt, chem_kln, chem_chl, chem_py]
+        #for i in range(len(mineralogy)):
+        #    print(mineralogy[i][0], mineralogy[i][6])
+        #
+        # [molar mass, density, bulk modulus, vP]
+        water = fluids.Water.water("")
+        #
+        data = []
+        #
+        cond = False
+        composition = []
+        while cond == False:
+            if self.w_Na == None and self.w_Mg == None and self.w_K == None and self.w_Ca == None and self.w_Fe == None:
+                magicnumber = rd.randint(0, 6)
+                if magicnumber == 0:    # Cal-rich
+                    w_carb = round(rd.randint(90, 100)/100, 4)
+                    w_cal2 = rd.randint(90, 100)/100
+                    w_arg2 = rd.randint(0, int((1-w_cal2)*100))/100
+                    w_dol2 = rd.randint(0, int((1-w_cal2-w_arg2)*100))/100
+                    w_sd2 = 1-w_cal2-w_arg2-w_dol2
+                    w_cal = round(w_carb*w_cal2, 4)
+                    w_arg = round(w_carb*w_arg2, 4)
+                    w_dol = round(w_carb*w_dol2, 4)
+                    w_sd = round(w_carb*w_sd2, 4)
+                    w_qz = round(rd.randint(0, int((1-w_carb)*100))/100, 4)
+                    w_fsp = round(rd.randint(0, int((1-w_carb-w_qz)*100))/100, 4)
+                    w_kfs2 = rd.randint(0, 100)/100
+                    w_pl2 = 1-w_kfs2
+                    w_kfs = round(w_fsp*w_kfs2, 4)
+                    w_pl = round(w_fsp*w_pl2, 4)
+                    w_clay = round(rd.randint(0, int((1-w_carb-w_qz-w_fsp)*100))/100, 4)
+                    w_mnt2 = rd.randint(0, 100)/100
+                    w_kln2 = rd.randint(0, int((1-w_mnt2)*100))/100
+                    w_chl2 = 1-w_mnt2-w_kln2
+                    w_mnt = round(w_clay*w_mnt2, 4)
+                    w_kln = round(w_clay*w_kln2, 4)
+                    w_chl = round(w_clay*w_chl2, 4)
+                    w_py = round(1-w_carb-w_qz-w_fsp-w_clay, 4)
+                elif magicnumber == 1:    # Arg-rich
+                    w_carb = round(rd.randint(90, 100)/100, 4)
+                    w_arg2 = rd.randint(90, 100)/100
+                    w_cal2 = rd.randint(0, int((1-w_arg2)*100))/100
+                    w_dol2 = rd.randint(0, int((1-w_cal2-w_arg2)*100))/100
+                    w_sd2 = 1-w_cal2-w_arg2-w_dol2
+                    w_cal = round(w_carb*w_cal2, 4)
+                    w_arg = round(w_carb*w_arg2, 4)
+                    w_dol = round(w_carb*w_dol2, 4)
+                    w_sd = round(w_carb*w_sd2, 4)
+                    w_qz = round(rd.randint(0, int((1-w_carb)*100))/100, 4)
+                    w_fsp = round(rd.randint(0, int((1-w_carb-w_qz)*100))/100, 4)
+                    w_kfs2 = rd.randint(0, 100)/100
+                    w_pl2 = 1-w_kfs2
+                    w_kfs = round(w_fsp*w_kfs2, 4)
+                    w_pl = round(w_fsp*w_pl2, 4)
+                    w_clay = round(rd.randint(0, int((1-w_carb-w_qz-w_fsp)*100))/100, 4)
+                    w_mnt2 = rd.randint(0, 100)/100
+                    w_kln2 = rd.randint(0, int((1-w_mnt2)*100))/100
+                    w_chl2 = 1-w_mnt2-w_kln2
+                    w_mnt = round(w_clay*w_mnt2, 4)
+                    w_kln = round(w_clay*w_kln2, 4)
+                    w_chl = round(w_clay*w_chl2, 4)
+                    w_py = round(1-w_carb-w_qz-w_fsp-w_clay, 4)
+                elif magicnumber == 2:    # Dol-rich
+                    w_carb = round(rd.randint(90, 100)/100, 4)
+                    w_cal2 = rd.randint(50, 75)/100
+                    w_dol2 = rd.randint(25, int((1-w_cal2)*100))/100
+                    w_arg2 = rd.randint(0, int((1-w_cal2-w_dol2)*100))/100
+                    w_sd2 = 1-w_cal2-w_arg2-w_dol2
+                    w_cal = round(w_carb*w_cal2, 4)
+                    w_arg = round(w_carb*w_arg2, 4)
+                    w_dol = round(w_carb*w_dol2, 4)
+                    w_sd = round(w_carb*w_sd2, 4)
+                    w_qz = round(rd.randint(0, int((1-w_carb)*100))/100, 4)
+                    w_fsp = round(rd.randint(0, int((1-w_carb-w_qz)*100))/100, 4)
+                    w_kfs2 = rd.randint(0, 100)/100
+                    w_pl2 = 1-w_kfs2
+                    w_kfs = round(w_fsp*w_kfs2, 4)
+                    w_pl = round(w_fsp*w_pl2, 4)
+                    w_clay = round(rd.randint(0, int((1-w_carb-w_qz-w_fsp)*100))/100, 4)
+                    w_mnt2 = rd.randint(0, 100)/100
+                    w_kln2 = rd.randint(0, int((1-w_mnt2)*100))/100
+                    w_chl2 = 1-w_mnt2-w_kln2
+                    w_mnt = round(w_clay*w_mnt2, 4)
+                    w_kln = round(w_clay*w_kln2, 4)
+                    w_chl = round(w_clay*w_chl2, 4)
+                    w_py = round(1-w_carb-w_qz-w_fsp-w_clay, 4)
+                elif magicnumber == 3:    # Mixed
+                    w_carb = round(rd.randint(60, 75)/100, 4)
+                    w_cal2 = rd.randint(40, 60)/100
+                    w_arg2 = rd.randint(0, 10)/100
+                    w_dol2 = rd.randint(0, int((1-w_cal2-w_arg2)*100))/100
+                    w_sd2 = 1-w_cal2-w_arg2-w_dol2
+                    w_cal = round(w_carb*w_cal2, 4)
+                    w_arg = round(w_carb*w_arg2, 4)
+                    w_dol = round(w_carb*w_dol2, 4)
+                    w_sd = round(w_carb*w_sd2, 4)
+                    w_qz = round(rd.randint(0, int((1-w_carb)*100))/100, 4)
+                    w_fsp = round(rd.randint(0, int((1-w_carb-w_qz)*100))/100, 4)
+                    w_kfs2 = rd.randint(0, 100)/100
+                    w_pl2 = 1-w_kfs2
+                    w_kfs = round(w_fsp*w_kfs2, 4)
+                    w_pl = round(w_fsp*w_pl2, 4)
+                    w_clay = round(rd.randint(0, int((1-w_carb-w_qz-w_fsp)*100))/100, 4)
+                    w_mnt2 = rd.randint(0, 100)/100
+                    w_kln2 = rd.randint(0, int((1-w_mnt2)*100))/100
+                    w_chl2 = 1-w_mnt2-w_kln2
+                    w_mnt = round(w_clay*w_mnt2, 4)
+                    w_kln = round(w_clay*w_kln2, 4)
+                    w_chl = round(w_clay*w_chl2, 4)
+                    w_py = round(1-w_carb-w_qz-w_fsp-w_clay, 4)
+                elif magicnumber == 4:    # Qz-rich
+                    w_carb = round(rd.randint(60, 75)/100, 4)
+                    w_cal2 = rd.randint(40, 60)/100
+                    w_arg2 = rd.randint(0, 10)/100
+                    w_dol2 = rd.randint(0, int((1-w_cal2-w_arg2)*100))/100
+                    w_sd2 = 1-w_cal2-w_arg2-w_dol2
+                    w_cal = round(w_carb*w_cal2, 4)
+                    w_arg = round(w_carb*w_arg2, 4)
+                    w_dol = round(w_carb*w_dol2, 4)
+                    w_sd = round(w_carb*w_sd2, 4)
+                    w_qz = round(rd.randint(15, int((1-w_carb)*100))/100, 4)
+                    w_fsp = round(rd.randint(0, int((1-w_carb-w_qz)*100))/100, 4)
+                    w_kfs2 = rd.randint(0, 100)/100
+                    w_pl2 = 1-w_kfs2
+                    w_kfs = round(w_fsp*w_kfs2, 4)
+                    w_pl = round(w_fsp*w_pl2, 4)
+                    w_clay = round(rd.randint(0, int((1-w_carb-w_qz-w_fsp)*100))/100, 4)
+                    w_mnt2 = rd.randint(0, 100)/100
+                    w_kln2 = rd.randint(0, int((1-w_mnt2)*100))/100
+                    w_chl2 = 1-w_mnt2-w_kln2
+                    w_mnt = round(w_clay*w_mnt2, 4)
+                    w_kln = round(w_clay*w_kln2, 4)
+                    w_chl = round(w_clay*w_chl2, 4)
+                    w_py = round(1-w_carb-w_qz-w_fsp-w_clay, 4)
+                elif magicnumber == 5:    # Fsp-rich
+                    w_carb = round(rd.randint(60, 75)/100, 4)
+                    w_cal2 = rd.randint(40, 60)/100
+                    w_arg2 = rd.randint(0, 10)/100
+                    w_dol2 = rd.randint(0, int((1-w_cal2-w_arg2)*100))/100
+                    w_sd2 = 1-w_cal2-w_arg2-w_dol2
+                    w_cal = round(w_carb*w_cal2, 4)
+                    w_arg = round(w_carb*w_arg2, 4)
+                    w_dol = round(w_carb*w_dol2, 4)
+                    w_sd = round(w_carb*w_sd2, 4)
+                    w_fsp = round(rd.randint(15, int((1-w_carb)*100))/100, 4)
+                    w_kfs2 = rd.randint(0, 100)/100
+                    w_pl2 = 1-w_kfs2
+                    w_kfs = round(w_fsp*w_kfs2, 4)
+                    w_pl = round(w_fsp*w_pl2, 4)
+                    w_qz = round(rd.randint(0, int((1-w_carb-w_fsp)*100))/100, 4)
+                    w_clay = round(rd.randint(0, int((1-w_carb-w_qz-w_fsp)*100))/100, 4)
+                    w_mnt2 = rd.randint(0, 100)/100
+                    w_kln2 = rd.randint(0, int((1-w_mnt2)*100))/100
+                    w_chl2 = 1-w_mnt2-w_kln2
+                    w_mnt = round(w_clay*w_mnt2, 4)
+                    w_kln = round(w_clay*w_kln2, 4)
+                    w_chl = round(w_clay*w_chl2, 4)
+                    w_py = round(1-w_carb-w_qz-w_fsp-w_clay, 4)
+                elif magicnumber == 6:    # Clay-rich
+                    w_carb = round(rd.randint(60, 75)/100, 4)
+                    w_cal2 = rd.randint(40, 60)/100
+                    w_arg2 = rd.randint(0, 10)/100
+                    w_dol2 = rd.randint(0, int((1-w_cal2-w_arg2)*100))/100
+                    w_sd2 = 1-w_cal2-w_arg2-w_dol2
+                    w_cal = round(w_carb*w_cal2, 4)
+                    w_arg = round(w_carb*w_arg2, 4)
+                    w_dol = round(w_carb*w_dol2, 4)
+                    w_sd = round(w_carb*w_sd2, 4)
+                    w_clay = round(rd.randint(15, int((1-w_carb)*100))/100, 4)
+                    w_mnt2 = rd.randint(0, 100)/100
+                    w_kln2 = rd.randint(0, int((1-w_mnt2)*100))/100
+                    w_chl2 = 1-w_mnt2-w_kln2
+                    w_mnt = round(w_clay*w_mnt2, 4)
+                    w_kln = round(w_clay*w_kln2, 4)
+                    w_chl = round(w_clay*w_chl2, 4)
+                    w_qz = round(rd.randint(0, int((1-w_carb-w_clay)*100))/100, 4)
+                    w_fsp = round(rd.randint(0, int((1-w_carb-w_clay-w_qz)*100))/100, 4)
+                    w_kfs2 = rd.randint(0, 100)/100
+                    w_pl2 = 1-w_kfs2
+                    w_kfs = round(w_fsp*w_kfs2, 4)
+                    w_pl = round(w_fsp*w_pl2, 4)
+                    w_py = round(1-w_carb-w_qz-w_fsp-w_clay, 4)
+            elif self.w_Na != None:
+                condition = False
+                while condition == False:
+                    condition_1 = False
+                    while condition_1 == False:
+                        chem_kfs = minerals.feldspars.alkalifeldspar(self, "Na")
+                        chem_pl = minerals.feldspars.plagioclase(self, "Na")
+                        w_fsp = round(rd.randint(5, 15)/100, 4)
+                        w_kfs2 = rd.randint(0, 100)/100
+                        w_pl2 = 1-w_kfs2
+                        w_kfs = round(w_fsp*w_kfs2, 4)
+                        w_pl = round(w_fsp*w_pl2, 4)
+                        w_mnt = round((self.w_Na - chem_kfs[6][1]*w_kfs - chem_pl[6][1]*w_pl)/(chem_mnt[6][2]), 4)
+                        if w_mnt >= 0.0:
+                            condition_1 = True
+                        else:
+                            condition_1 = False
+                    w_clay = round(rd.randint(int(w_mnt*100+1), int(w_mnt*100+10))/100, 4)
+                    w_mnt2 = w_mnt/w_clay
+                    w_kln2 = rd.randint(0, int((1-w_mnt2)*100))/100
+                    w_chl2 = 1-w_mnt2-w_kln2
+                    w_kln = round(w_clay*w_kln2, 4)
+                    w_chl = round(w_clay*w_chl2, 4)
+                    if w_fsp + w_clay <= 1.0 and w_kfs >= 0.0 and w_pl >= 0.0 and w_mnt >= 0.0 and w_kln >= 0.0 and w_chl >= 0.0:
+                        condition = True
+                    else:
+                        condition = False
+                w_carb = round(rd.randint(int(0.75*(1-w_fsp-w_clay)*100), int((1-w_fsp-w_clay)*100))/100, 4)
+                w_cal2 = rd.randint(40, 60)/100
+                w_arg2 = rd.randint(0, 10)/100
+                w_dol2 = rd.randint(0, int((1-w_cal2-w_arg2)*100))/100
+                w_sd2 = 1-w_cal2-w_arg2-w_dol2
+                w_cal = round(w_carb*w_cal2, 4)
+                w_arg = round(w_carb*w_arg2, 4)
+                w_dol = round(w_carb*w_dol2, 4)
+                w_sd = round(w_carb*w_sd2, 4)
+                w_qz = round(rd.randint(0, int((1-w_carb-w_fsp-w_clay)*100))/100, 4)
+                w_py = round(1-w_carb-w_qz-w_fsp-w_clay, 4)
+            elif self.w_Mg != None:
+                condition = False
+                while condition == False:
+                    w_clay = round(rd.randint(0, 5)/100, 4)
+                    w_mnt2 = rd.randint(0, 100)/100
+                    w_kln2 = rd.randint(0, int((1-w_mnt2)*100))/100
+                    w_chl2 = 1-w_mnt2-w_kln2
+                    w_mnt = round(w_clay*w_mnt2, 4)
+                    w_kln = round(w_clay*w_kln2, 4)
+                    w_chl = round(w_clay*w_chl2, 4)
+                    w_dol = round((self.w_Mg - chem_mnt[6][3]*w_mnt - chem_chl[6][4]*w_chl)/(chem_dol[6][2]), 4)
+                    w_carb = round(rd.randint(int(0.75*(1-w_dol-w_clay)*100), int(0.9*(1-w_dol-w_clay)*100))/100, 4)
+                    w_dol2 = w_dol/w_carb
+                    print(w_dol, w_carb, w_dol2)
+                    w_cal2 = rd.randint(int(0.75*(1-w_dol2)*100), int((1-w_dol2)*100))/100
+                    w_arg2 = rd.randint(0, int((1-w_dol2-w_cal2)*100))/100
+                    w_sd2 = 1-w_cal2-w_arg2-w_dol2
+                    w_cal = round(w_carb*w_cal2, 4)
+                    w_arg = round(w_carb*w_arg2, 4)
+                    w_sd = round(w_carb*w_sd2, 4)
+                    if w_clay + w_carb <= 1.0:
+                        condition = True
+                    else:
+                        condition = False
+                w_qz = round(rd.randint(0, int((1-w_carb-w_clay)*100))/100, 4)
+                w_fsp = round(rd.randint(0, int((1-w_carb-w_qz-w_clay)*100))/100, 4)
+                w_kfs2 = rd.randint(0, 100)/100
+                w_pl2 = 1-w_kfs2
+                w_kfs = round(w_fsp*w_kfs2, 4)
+                w_pl = round(w_fsp*w_pl2, 4)
+                w_py = round(1-w_carb-w_qz-w_fsp-w_clay, 4)
+            elif self.w_K != None:
+                condition = False
+                while condition == False:
+                    w_kfs = self.w_K/chem_kfs[6][4]
+                    w_fsp = round(rd.randint(0, 15)/100, 4)
+                    w_kfs2 = w_kfs/w_fsp
+                    w_pl2 = 1-w_kfs2
+                    w_pl = round(w_fsp*w_pl2, 4)
+                    if w_fsp <= 1.0:
+                        condition = True
+                    else:
+                        condition = False
+                w_carb = round(rd.randint(60, 75)/100, 4)
+                w_cal2 = rd.randint(40, 60)/100
+                w_arg2 = rd.randint(0, 10)/100
+                w_dol2 = rd.randint(0, int((1-w_cal2-w_arg2)*100))/100
+                w_sd2 = 1-w_cal2-w_arg2-w_dol2
+                w_cal = round(w_carb*w_cal2, 4)
+                w_arg = round(w_carb*w_arg2, 4)
+                w_dol = round(w_carb*w_dol2, 4)
+                w_sd = round(w_carb*w_sd2, 4)
+                w_qz = round(rd.randint(0, int((1-w_carb-w_fsp)*100))/100, 4)
+                w_clay = round(rd.randint(0, int((1-w_carb-w_qz-w_fsp)*100))/100, 4)
+                w_mnt2 = rd.randint(0, 100)/100
+                w_kln2 = rd.randint(0, int((1-w_mnt2)*100))/100
+                w_chl2 = 1-w_mnt2-w_kln2
+                w_mnt = round(w_clay*w_mnt2, 4)
+                w_kln = round(w_clay*w_kln2, 4)
+                w_chl = round(w_clay*w_chl2, 4)
+                w_py = round(1-w_carb-w_qz-w_fsp-w_clay, 4)
+            elif self.w_Ca != None:
+                condition = False
+                while condition == False:
+                    w_fsp = round(rd.randint(0, 5)/100, 4)
+                    w_kfs2 = rd.randint(0, 100)/100
+                    w_pl2 = 1-w_kfs2
+                    w_kfs = round(w_fsp*w_kfs2, 4)
+                    w_pl = round(w_fsp*w_pl2, 4)
+                    w_clay = round(rd.randint(0, 5)/100, 4)
+                    w_mnt2 = rd.randint(0, 100)/100
+                    w_kln2 = rd.randint(0, int((1-w_mnt2)*100))/100
+                    w_chl2 = 1-w_mnt2-w_kln2
+                    w_mnt = round(w_clay*w_mnt2, 4)
+                    w_kln = round(w_clay*w_kln2, 4)
+                    w_chl = round(w_clay*w_chl2, 4)
+                    w_carb = round(rd.randint(60, 90)/100, 4)
+                    w_arg2 = rd.randint(0, 10)/100
+                    w_dol2 = rd.randint(0, 20)/100
+                    w_arg = round(w_carb*w_arg2, 4)
+                    w_dol = round(w_carb*w_dol2, 4)
+                    w_cal = (self.w_Ca - chem_dol[6][3]*w_dol - chem_arg[6][2]*w_arg - chem_pl[6][4]*w_pl - chem_mnt[6][6]*w_mnt)/(chem_cal[6][2])
+                    w_cal2 = w_cal/w_carb
+                    w_sd2 = 1-w_cal2-w_arg2-w_dol2
+                    w_sd = round(w_carb*w_sd2, 4)
+                    if w_fsp + w_clay + w_carb <= 1.0:
+                        condition = True
+                    else:
+                        condition = False
+                w_qz = round(rd.randint(0, int((1-w_carb-w_fsp-w_clay)*100))/100, 4)
+                w_py = round(1-w_carb-w_qz-w_fsp-w_clay, 4)
+            elif self.w_Fe != None:
+                condition = False
+                while condition == False:
+                    w_carb = round(rd.randint(60, 75)/100, 4)
+                    w_cal2 = rd.randint(40, 60)/100
+                    w_arg2 = rd.randint(0, 10)/100
+                    w_dol2 = rd.randint(0, int((1-w_cal2-w_arg2)*100))/100
+                    w_sd2 = 1-w_cal2-w_arg2-w_dol2
+                    w_cal = round(w_carb*w_cal2, 4)
+                    w_arg = round(w_carb*w_arg2, 4)
+                    w_dol = round(w_carb*w_dol2, 4)
+                    w_sd = round(w_carb*w_sd2, 4)
+                    w_clay = round(rd.randint(0, 10)/100, 4)
+                    w_mnt2 = rd.randint(0, 100)/100
+                    w_kln2 = rd.randint(0, int((1-w_mnt2)*100))/100
+                    w_chl2 = 1-w_mnt2-w_kln2
+                    w_mnt = round(w_clay*w_mnt2, 4)
+                    w_kln = round(w_clay*w_kln2, 4)
+                    w_chl = round(w_clay*w_chl2, 4)
+                    w_py = (self.w_Fe - chem_sd[6][2]*w_sd - chem_chl[6][5]*w_chl)/(chem_py[6][1])
+                    if w_carb + w_clay + w_py <= 1.0:
+                        condition = True
+                    else:
+                        condition = False
+                w_qz = round(rd.randint(0, int((1-w_carb-w_clay-w_py)*100))/100, 4)
+                w_fsp = round(1-w_carb-w_clay-w_py-w_qz, 4)
+                w_kfs2 = rd.randint(0, 100)/100
+                w_pl2 = 1-w_kfs2
+                w_kfs = round(w_fsp*w_kfs2, 4)
+                w_pl = round(w_fsp*w_pl2, 4)
+            #
+            if w_cal >= 0.0 and w_arg >= 0.0 and w_dol >= 0.0 and w_sd >= 0.0 and w_qz >= 0.0 and w_kfs  >= 0.0 and w_pl >= 0.0 and w_mnt >= 0.0 and w_kln >= 0.0 and w_chl >= 0.0 and w_py >= 0.0:
+                sumMin = round(w_cal + w_arg + w_dol + w_sd + w_qz + w_kfs + w_pl + w_mnt + w_kln + w_chl + w_py, 4)
+            else:
+                break
+            #
+            w_H = round(chem_mnt[6][0]*w_mnt + chem_kln[6][0]*w_kln + chem_chl[6][0]*w_chl, 4)
+            w_C = round(chem_cal[6][0]*w_cal + chem_arg[6][0]*w_arg + chem_dol[6][0]*w_dol + chem_sd[6][0]*w_sd, 4)
+            w_O = round(chem_cal[6][1]*w_cal + chem_arg[6][1]*w_arg + chem_dol[6][1]*w_dol + chem_sd[6][1]*w_sd + chem_qz[6][1]*w_qz + chem_kfs[6][0]*w_kfs + chem_pl[6][0]*w_pl + chem_mnt[6][1]*w_mnt + chem_kln[6][1]*w_kln + chem_chl[6][1]*w_chl, 4)
+            w_Na = round(chem_kfs[6][1]*w_kfs + chem_pl[6][1]*w_pl + chem_mnt[6][2]*w_mnt, 4)
+            w_Mg = round(chem_dol[6][2]*w_dol + chem_mnt[6][3]*w_mnt + chem_chl[6][4]*w_chl, 4)
+            w_Al = round(chem_kfs[6][2]*w_kfs + chem_pl[6][2]*w_pl + chem_mnt[6][4]*w_mnt + chem_kln[6][2]*w_kln + chem_chl[6][2]*w_chl, 4)
+            w_Si = round(chem_qz[6][1]*w_qz + chem_kfs[6][3]*w_kfs + chem_pl[6][3]*w_pl + chem_mnt[6][5]*w_mnt + chem_kln[6][3]*w_kln + chem_chl[6][3]*w_chl, 4)
+            w_S = round(chem_py[6][0]*w_py, 4)
+            w_K = round(chem_kfs[6][4]*w_kfs, 4)
+            w_Ca = round(chem_cal[6][2]*w_cal + chem_arg[6][2]*w_arg + chem_dol[6][3]*w_dol + chem_pl[6][4]*w_pl + chem_mnt[6][6]*w_mnt, 4)
+            w_Fe = round(chem_sd[6][2]*w_sd + chem_py[6][1]*w_py + chem_chl[6][5]*w_chl, 4)
+            sumConc = round(w_H + w_C + w_O + w_Na + w_Mg + w_Al + w_Si + w_S + w_K + w_Ca + w_Fe, 4)
+            #
+            if sumMin == 1 and sumConc == 1:
+                cond = True
+                composition.extend((["Cal", w_cal, round(chem_cal[1], 2)], ["Arg", w_arg, round(chem_arg[1], 2)], ["Dol", w_dol, round(chem_dol[1], 2)], ["Sd", w_sd, round(chem_sd[1], 2)], ["Qz", w_qz, round(chem_qz[1], 2)], ["Kfs", w_kfs, round(chem_kfs[1][0], 2), round(chem_kfs[1][1], 2)], ["Pl", w_pl, round(chem_pl[1][0], 2), round(chem_pl[1][1], 2)], ["Mnt", w_mnt, round(chem_mnt[1][0], 2), round(chem_mnt[1][1], 2)], ["Kln", w_kln, round(chem_kln[1], 2)], ["Chl", w_chl, round(chem_chl[1], 2)], ["Py", w_py, round(chem_py[1], 2)]))
+                concentrations = [w_H, w_C, w_O, w_Na, w_Mg, w_Al, w_Si, w_S, w_K, w_Ca, w_Fe]
+            else:
+                cond = False
+        data.append(composition)
+        #
+        rhoSolid = (w_cal*chem_cal[2] + w_arg*chem_arg[2] + w_dol*chem_dol[2] + w_sd*chem_sd[2] + w_qz*chem_qz[2] + w_kfs*chem_kfs[2] + w_pl*chem_pl[2] + w_mnt*chem_mnt[2] + w_kln*chem_kln[2] + w_chl*chem_chl[2] + w_py*chem_py[2]) / 1000
+        X = [w_cal, w_arg, w_dol, w_sd, w_qz, w_kfs, w_pl, w_mnt, w_kln, w_chl, w_py]
+        K_list = [mineralogy[i][3][0] for i in range(len(mineralogy))]
+        G_list = [mineralogy[i][3][1] for i in range(len(mineralogy))]
+        K_geo = elast.calc_geometric_mean(self, X, K_list)
+        G_geo = elast.calc_geometric_mean(self, X, G_list)
+        K_solid = K_geo
+        G_solid = G_geo
+        vP_solid = np.sqrt((K_solid*10**9+4/3*G_solid*10**9)/(rhoSolid*10**3))
+        vS_solid = np.sqrt((G_solid*10**9)/(rhoSolid*10**3))
+        E_solid = (9*K_solid*G_solid)/(3*K_solid+G_solid)
+        nu_solid = (3*K_solid-2*G_solid)/(2*(3*K_solid+G_solid))
+        #
+        if self.actualThickness <= 1000:
+            phi = rd.randint(35, 40)/100
+        elif self.actualThickness > 1000 and self.actualThickness <= 2000:
+            phi = rd.randint(30, 35)/100
+        elif self.actualThickness > 2000 and self.actualThickness <= 3000:
+            phi = rd.randint(20, 30)/100
+        elif self.actualThickness > 3000 and self.actualThickness <= 4000:
+            phi = rd.randint(10, 20)/100
+        elif self.actualThickness > 4000:
+            phi = rd.randint(5, 10)/100
+        #
+        rho = (1 - phi) * rhoSolid + phi * water[2] / 1000
+        vP = (1-phi)*vP_solid + phi*water[4][0]
+        vS = (1 - phi) * vS_solid
+        G_bulk = vS**2 * rho
+        K_bulk = vP**2 * rho - 4/3*G_bulk
+        E_bulk = (9*K_bulk*G_bulk)/(3*K_bulk+G_bulk)
+        phiD = (rhoSolid - rho) / (rhoSolid - water[2] / 1000)
+        phiN = (2 * phi ** 2 - phiD ** 2) ** (0.5)
+        GR = w_cal*chem_cal[5][0] + w_arg*chem_arg[5][0] + w_dol*chem_dol[5][0] + w_sd*chem_sd[5][0] + w_qz*chem_qz[5][0] + w_kfs*chem_kfs[5][0] + w_pl*chem_pl[5][0] + w_mnt*chem_mnt[5][0] + w_kln*chem_kln[5][0] + w_chl*chem_chl[5][0] + w_py*chem_py[5][0]
+        PE = w_cal*chem_cal[5][1] + w_arg*chem_arg[5][1] + w_dol*chem_dol[5][1] + w_sd*chem_sd[5][1] + w_qz*chem_qz[5][1] + w_kfs*chem_kfs[5][1] + w_pl*chem_pl[5][1] + w_mnt*chem_mnt[5][1] + w_kln*chem_kln[5][1] + w_chl*chem_chl[5][1] + w_py*chem_py[5][1]
+        poisson_seismic = 0.5*(vP**2 - 2*vS**2)/(vP**2 - vS**2)
+        poisson_elastic = (3*K_bulk - 2*G_bulk)/(6*K_bulk + 2*G_bulk)
+        poisson_mineralogical = w_cal*chem_cal[3][3] + w_arg*chem_arg[3][3] + w_dol*chem_dol[3][3] + w_sd*chem_sd[3][3] + w_qz*chem_qz[3][3] + w_kfs*chem_kfs[3][3] + w_pl*chem_pl[3][3] + w_mnt*chem_mnt[3][3] + w_kln*chem_kln[3][3] + w_chl*chem_chl[3][3] + w_py*chem_py[3][3]
+        #
+        data.append([round(rho, 3), round(rhoSolid, 3), round(water[2] / 1000, 6)])
+        data.append([round(K_bulk*10**(-6), 2), round(G_bulk*10**(-6), 2), round(E_bulk*10**(-6), 2), round(poisson_mineralogical, 3)])
+        data.append([round(vP, 2), round(vS, 2), round(vP_solid, 2), round(water[4][0], 2)])
+        data.append([round(phi, 3), round(phiD, 3), round(phiN, 3)])
+        data.append("water")
+        data.append([round(GR, 3), round(PE, 3)])
+        data.append(concentrations)
+        #
+        return data
     #
 class dolomite:
     #
