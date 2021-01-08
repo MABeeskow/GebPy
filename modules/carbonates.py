@@ -596,7 +596,6 @@ class limestone:
                     w_dol = round((self.w_Mg - chem_mnt[6][3]*w_mnt - chem_chl[6][4]*w_chl)/(chem_dol[6][2]), 4)
                     w_carb = round(rd.randint(int(0.75*(1-w_dol-w_clay)*100), int(0.9*(1-w_dol-w_clay)*100))/100, 4)
                     w_dol2 = w_dol/w_carb
-                    print(w_dol, w_carb, w_dol2)
                     w_cal2 = rd.randint(int(0.75*(1-w_dol2)*100), int((1-w_dol2)*100))/100
                     w_arg2 = rd.randint(0, int((1-w_dol2-w_cal2)*100))/100
                     w_sd2 = 1-w_cal2-w_arg2-w_dol2
@@ -617,12 +616,12 @@ class limestone:
             elif self.w_K != None:
                 condition = False
                 while condition == False:
-                    w_kfs = self.w_K/chem_kfs[6][4]
-                    w_fsp = round(rd.randint(0, 15)/100, 4)
+                    w_kfs = round(self.w_K/chem_kfs[6][4], 4)
+                    w_fsp = round(rd.randint(0, 20)/100, 4)
                     w_kfs2 = w_kfs/w_fsp
                     w_pl2 = 1-w_kfs2
                     w_pl = round(w_fsp*w_pl2, 4)
-                    if w_fsp <= 1.0:
+                    if w_fsp <= 1.0 and w_kfs2 <= 1.0:
                         condition = True
                     else:
                         condition = False
@@ -708,7 +707,7 @@ class limestone:
             if w_cal >= 0.0 and w_arg >= 0.0 and w_dol >= 0.0 and w_sd >= 0.0 and w_qz >= 0.0 and w_kfs  >= 0.0 and w_pl >= 0.0 and w_mnt >= 0.0 and w_kln >= 0.0 and w_chl >= 0.0 and w_py >= 0.0:
                 sumMin = round(w_cal + w_arg + w_dol + w_sd + w_qz + w_kfs + w_pl + w_mnt + w_kln + w_chl + w_py, 4)
             else:
-                break
+                sumMin = 0
             #
             w_H = round(chem_mnt[6][0]*w_mnt + chem_kln[6][0]*w_kln + chem_chl[6][0]*w_chl, 4)
             w_C = round(chem_cal[6][0]*w_cal + chem_arg[6][0]*w_arg + chem_dol[6][0]*w_dol + chem_sd[6][0]*w_sd, 4)
@@ -722,6 +721,7 @@ class limestone:
             w_Ca = round(chem_cal[6][2]*w_cal + chem_arg[6][2]*w_arg + chem_dol[6][3]*w_dol + chem_pl[6][4]*w_pl + chem_mnt[6][6]*w_mnt, 4)
             w_Fe = round(chem_sd[6][2]*w_sd + chem_py[6][1]*w_py + chem_chl[6][5]*w_chl, 4)
             sumConc = round(w_H + w_C + w_O + w_Na + w_Mg + w_Al + w_Si + w_S + w_K + w_Ca + w_Fe, 4)
+            #print("Amount:", sumMin, "C:", sumConc)
             #
             if sumMin == 1 and sumConc == 1:
                 cond = True

@@ -316,7 +316,7 @@ class geochemistry:
         data = carbonates.limestone("water", 100)
         data_limestone1 = data.create_simple_limestone()
         print(data_limestone1)
-        data_limestone2 = data.create_simple_limestone(w_Mg=0.025)
+        data_limestone2 = data.create_simple_limestone(w_K=0.01)
         print(data_limestone2)
         #data_limestone3 = data.create_simple_limestone(w_Mg=0.05)
         #data_limestone4 = data.create_simple_limestone(w_K=0.05)
