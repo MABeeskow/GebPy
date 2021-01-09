@@ -1356,6 +1356,11 @@ class carbonates:
             x_Fe = round(rd.uniform(0.0, 1-x_Mn), 2)
             x_Mg = round(1 - x_Fe - x_Mn, 2)
             M = round(calcium[2] + (x_Fe*iron[2] + x_Mg*magnesium[2] + x_Mn*manganese[2]) + 2*(carbon[2]+3*oxygen[2]), 3)
+        elif keyword == "Pure" or keyword == "pure":
+            x_Mn = round(0.0, 2)
+            x_Fe = round(1.0, 2)
+            x_Mg = round(0.0, 2)
+            M = round(calcium[2] + (x_Fe*iron[2] + x_Mg*magnesium[2] + x_Mn*manganese[2]) + 2*(carbon[2]+3*oxygen[2]), 3)
         # Density
         dataV = CrystalPhysics([[4.83, 16.167], [], "trigonal"])
         V = dataV.calculate_volume()
@@ -1386,6 +1391,7 @@ class carbonates:
         w_C = round(2*carbon[2]/M, 4)
         w_O = round(2*3*oxygen[2]/M, 4)
         weights = [w_Ca, w_Fe, w_Mg, w_Mn, w_C, w_O]
+        composition = [w_C, w_O, w_Mg, w_Ca, w_Mn, w_Fe]
         amounts = [1, x_Fe, x_Mg, x_Mn, 2, 6]
         data_rho_e = CrystalPhysics([element, amounts, rho])
         rho_e = data_rho_e.calculate_electron_density()
@@ -1398,6 +1404,7 @@ class carbonates:
         data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 2), round(vPvS, 2)])
         data.append([round(vP, 1), round(vS, 1)])
         data.append([round(GR, 2), round(PE, 2), round(U, 2)])
+        data.append(composition)
         #
         return data
     #
