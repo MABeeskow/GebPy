@@ -14,6 +14,7 @@
 import numpy as np
 from numpy import round
 from random import *
+import random as rd
 from modules import minerals
 from modules.elements import elements
 from modules.geophysics import BoreholeGeophysics as bg
@@ -114,7 +115,8 @@ class Water:
         dataV = minerals.CrystalPhysics([[4.51, 7.35], [], "hexagonal"])
         V = dataV.calculate_volume()
         dataRho = minerals.CrystalPhysics([M, 4, V])
-        rho = dataRho.calculate_bulk_density()
+        rho_calc = dataRho.calculate_bulk_density()
+        rho = rho_calc*1000/rho_calc
         # Bulk modulus
         K = 2.1*10**9
         # Shear modulus
@@ -144,3 +146,129 @@ class Water:
         #
         return data
     #
+class Hydrocarbons:
+    #
+    def __init__(self):
+        pass
+    #
+    def oil(self):
+        # [symbol, atomic number, atomic mass, molar volume, density, bulk modulus, shear modulus, young's modulus, vP, vS]
+        hydrogen = elements.H(self)
+        carbon = elements.C(self)
+        nitrogen = elements.N(self)
+        oxygen = elements.O(self)
+        sulfur = elements.S(self)
+        element = [hydrogen, carbon, nitrogen, oxygen, sulfur]
+        #
+        data = []
+        #
+        fluid = "oil"
+        #
+        # Molar mass
+        condition = False
+        while condition == False:
+            w_C = round(rd.uniform(0.83, 0.85), 4)
+            w_H = round(rd.uniform(0.10, 0.14), 4)
+            w_N = round(rd.uniform(0.001, 0.02), 4)
+            w_O = round(rd.uniform(0.0005, 0.015), 4)
+            w_S = round(1-w_C-w_H-w_N-w_O, 4)
+            w = w_H + w_C + w_N + w_O + w_S
+            if w == 1.0:
+                condition = True
+            else:
+                continue
+        M = round(w_H*hydrogen[2] + w_C*carbon[2] + w_N*nitrogen[2] + w_O*oxygen[2] + w_S*sulfur[2], 3)
+        weights = [w_H, w_C, w_N, w_O, w_S]
+        # Density
+        V_m = round(w_H*hydrogen[3] + w_C*carbon[3] + w_N*nitrogen[3] + w_O*oxygen[3] + w_S*sulfur[3], 3)
+        rho = round(M/1000/V_m/0.0135, 4)
+        # Bulk modulus
+        K = round(w_H*hydrogen[5] + w_C*carbon[5] + w_N*nitrogen[5] + w_O*oxygen[5] + w_S*sulfur[5], 3)
+        # Shear modulus
+        G = 0.0
+        # Young's modulus
+        E = (9*K*G)/(3*K + G)
+        # Poisson's ratio
+        nu = (3*K - 2*G)/(2*(3*K + G))
+        # vP/vS
+        vPvS = np.inf
+        # P-wave velocity
+        vP = ((K + 4/3*G)/(rho))**(0.5)
+        # S-wave velocity
+        vS = ((G)/(rho))**(0.5)
+        # Gamma ray
+        GR = 0
+        # Photoelectricity
+        PE = bg.calculate_pe(self, x_list=weights, elements_list=element)
+        U = PE*rho*10**(-3)
+        #
+        data.append(fluid)
+        data.append(round(M,2))
+        data.append(round(rho,1))
+        data.append([round(K*10**(-9),2), round(G*10**(-9),2), round(E*10**(-9),2), round(nu,2), round(vPvS,2)])
+        data.append([round(vP,1), round(vS,1)])
+        data.append([round(GR,2), round(PE,2), round(U,2)])
+        data.append(weights)
+        #
+        return data
+    #
+    def natural_gas(self):
+        # [symbol, atomic number, atomic mass, molar volume, density, bulk modulus, shear modulus, young's modulus, vP, vS]
+        hydrogen = elements.H(self)
+        carbon = elements.C(self)
+        nitrogen = elements.N(self)
+        oxygen = elements.O(self)
+        sulfur = elements.S(self)
+        element = [hydrogen, carbon, nitrogen, oxygen, sulfur]
+        #
+        data = []
+        #
+        fluid = "gas"
+        #
+        # Molar mass
+        condition = False
+        while condition == False:
+            w_C = round(rd.uniform(0.83, 0.85), 4)
+            w_H = round(rd.uniform(0.10, 0.14), 4)
+            w_N = round(rd.uniform(0.001, 0.02), 4)
+            w_O = round(rd.uniform(0.0005, 0.015), 4)
+            w_S = round(1-w_C-w_H-w_N-w_O, 4)
+            w = w_H + w_C + w_N + w_O + w_S
+            if w == 1.0:
+                condition = True
+            else:
+                continue
+        M = round(w_H*hydrogen[2] + w_C*carbon[2] + w_N*nitrogen[2] + w_O*oxygen[2] + w_S*sulfur[2], 3)
+        weights = [w_H, w_C, w_N, w_O, w_S]
+        # Density
+        V_m = round(w_H*hydrogen[3] + w_C*carbon[3] + w_N*nitrogen[3] + w_O*oxygen[3] + w_S*sulfur[3], 3)
+        rho = round(M/1000/V_m/0.0155, 4)
+        # Bulk modulus
+        K = round(w_H*hydrogen[5] + w_C*carbon[5] + w_N*nitrogen[5] + w_O*oxygen[5] + w_S*sulfur[5], 3)
+        # Shear modulus
+        G = 0.0
+        # Young's modulus
+        E = (9*K*G)/(3*K + G)
+        # Poisson's ratio
+        nu = (3*K - 2*G)/(2*(3*K + G))
+        # vP/vS
+        vPvS = np.inf
+        # P-wave velocity
+        vP = ((K + 4/3*G)/(rho))**(0.5)
+        # S-wave velocity
+        vS = ((G)/(rho))**(0.5)
+        # Gamma ray
+        GR = 0
+        # Photoelectricity
+        PE = bg.calculate_pe(self, x_list=weights, elements_list=element)
+        U = PE*rho*10**(-3)
+        #
+        data.append(fluid)
+        data.append(round(M,2))
+        data.append(round(rho,1))
+        data.append([round(K*10**(-9),2), round(G*10**(-9),2), round(E*10**(-9),2), round(nu,2), round(vPvS,2)])
+        data.append([round(vP,1), round(vS,1)])
+        data.append([round(GR,2), round(PE,2), round(U,2)])
+        data.append(weights)
+        #
+        return data

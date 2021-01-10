@@ -44,7 +44,12 @@ class elements:
         chemC = ["C", 6, 12.011, 5.3146 * 10 ** (-6), 2260, 11.9, 8.9, 21.5, 3243, 1984, 1375]
         #
         return chemC
-
+    #
+    def N(self):  # N
+        # [symbol, atomic number, atomic mass, molar volume, density, bulk modulus, shear modulus, young's modulus, vP, vS, resistivity]
+        data = ["N", 7, 14.007, 13.54*10**(-6), 1026, 2.44, 0.0, 0.0, 335.25, 0.0, 0.0*10**(-8)]
+        #
+        return data
     #
     def O(self):  # O
         # [symbol, atomic number, atomic mass, molar volume, density, bulk modulus, shear modulus, young's modulus, vP, vS]

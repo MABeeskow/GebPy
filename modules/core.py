@@ -20,6 +20,7 @@ from modules.elements import elements
 import matplotlib.pyplot as plt
 from modules.geochemistry import elementanalysis
 from modules import siliciclastics, carbonates
+from modules import fluids
 
 ## CONSTANTS / PROPERTIES
 pi = constants.pi
@@ -336,6 +337,16 @@ class geochemistry:
         print(data_dolomite_03)
         data_dolomite_04 = data.create_simple_dolomite(w_Fe=0.025)
         print(data_dolomite_04)
+        #
+        data = fluids.Hydrocarbons()
+        data_oil_01 = data.oil()
+        print(data_oil_01)
+        data_gas_01 = data.natural_gas()
+        print(data_gas_01)
+        #
+        data = fluids.Water()
+        data_water_01 = data.water()
+        print(data_water_01)
         #
         mineralsSandstone = [chemQuartz, chemCalcite, chemDolomite, chemAlkalifeldspar, chemPlagioclase, chemBiotite, chemGlauconite]
         mineralsShale = [chemQuartz, chemKaolinite, chemChlorite, chemIllite, chemCalcite, chemDolomite, chemAlkalifeldspar, chemPlagioclase]
