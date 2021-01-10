@@ -1278,13 +1278,19 @@ class dolomite:
                     w_pl = round(w_fsp*w_pl2, 4)
                     w_py = round(1-w_carb-w_qz-w_fsp-w_clay, 4)
             elif self.w_Mg != None:
-                w_dol = round(self.w_Mg/chem_dol[6][2], 4)
-                if w_dol <= 1.0:
-                    w_carb = round(rd.randint(75, 100)/100, 4)
-                else:
-                    print("Amount of Dol is larger than 1.")
-                    break
-                w_dol2 = w_dol/w_carb
+                condition = False
+                while condition == False:
+                    w_dol = round(self.w_Mg/chem_dol[6][2], 4)
+                    if w_dol <= 1.0:
+                        w_carb = round(rd.randint(75, 100)/100, 4)
+                    else:
+                        print("Amount of Dol is larger than 1.")
+                        break
+                    w_dol2 = w_dol/w_carb
+                    if w_dol2 <= 1.0:
+                        condition = True
+                    else:
+                        continue
                 w_ank2 = rd.randint(0, int((1-w_dol2)*100))/100
                 w_sd2 = rd.randint(0, int((1-w_dol2-w_ank2)*100))/100
                 w_cal2 = 1-w_dol2-w_ank2-w_sd2

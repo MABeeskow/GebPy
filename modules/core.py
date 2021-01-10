@@ -332,7 +332,7 @@ class geochemistry:
         print(data_dolomite_01)
         data_dolomite_02 = data.create_simple_dolomite(w_Mg=0.1)
         print(data_dolomite_02)
-        data_dolomite_03 = data.create_simple_dolomite(w_Ca=0.05)
+        data_dolomite_03 = data.create_simple_dolomite(w_Ca=0.15)
         print(data_dolomite_03)
         data_dolomite_04 = data.create_simple_dolomite(w_Fe=0.025)
         print(data_dolomite_04)
