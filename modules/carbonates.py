@@ -342,13 +342,14 @@ class limestone:
         #
         return limestone
     #
-    def create_simple_limestone(self, w_Na=None, w_Mg=None, w_K=None, w_Ca=None, w_Fe=None):
+    def create_simple_limestone(self, w_Na=None, w_Mg=None, w_K=None, w_Ca=None, w_Fe=None, amounts=None):
         #
         self.w_Na = w_Na
         self.w_Mg = w_Mg
         self.w_K = w_K
         self.w_Ca = w_Ca
         self.w_Fe = w_Fe
+        self.amounts = amounts
         #
         # mineralogy
         chem_cal = minerals.carbonates.calcite("")
@@ -375,11 +376,11 @@ class limestone:
         cond = False
         composition = []
         while cond == False:
-            if self.w_Na == None and self.w_Mg == None and self.w_K == None and self.w_Ca == None and self.w_Fe == None:
+            if self.w_Na == None and self.w_Mg == None and self.w_K == None and self.w_Ca == None and self.w_Fe == None and self.amounts == None:
                 magicnumber = rd.randint(0, 6)
                 if magicnumber == 0:    # Cal-rich
-                    w_carb = round(rd.randint(90, 100)/100, 4)
-                    w_cal2 = rd.randint(90, 100)/100
+                    w_carb = round(rd.uniform(0.90, 1.0), 4)
+                    w_cal2 = rd.uniform(0.85, 0.95)
                     w_arg2 = rd.randint(0, int((1-w_cal2)*100))/100
                     w_dol2 = rd.randint(0, int((1-w_cal2-w_arg2)*100))/100
                     w_sd2 = 1-w_cal2-w_arg2-w_dol2
@@ -402,8 +403,8 @@ class limestone:
                     w_chl = round(w_clay*w_chl2, 4)
                     w_py = round(1-w_carb-w_qz-w_fsp-w_clay, 4)
                 elif magicnumber == 1:    # Arg-rich
-                    w_carb = round(rd.randint(90, 100)/100, 4)
-                    w_arg2 = rd.randint(90, 100)/100
+                    w_carb = round(rd.uniform(0.90, 1.0), 4)
+                    w_arg2 = rd.uniform(0.85, 0.95)
                     w_cal2 = rd.randint(0, int((1-w_arg2)*100))/100
                     w_dol2 = rd.randint(0, int((1-w_cal2-w_arg2)*100))/100
                     w_sd2 = 1-w_cal2-w_arg2-w_dol2
@@ -426,7 +427,7 @@ class limestone:
                     w_chl = round(w_clay*w_chl2, 4)
                     w_py = round(1-w_carb-w_qz-w_fsp-w_clay, 4)
                 elif magicnumber == 2:    # Dol-rich
-                    w_carb = round(rd.randint(90, 100)/100, 4)
+                    w_carb = round(rd.uniform(0.90, 1.0), 4)
                     w_cal2 = rd.randint(50, 75)/100
                     w_dol2 = rd.randint(25, int((1-w_cal2)*100))/100
                     w_arg2 = rd.randint(0, int((1-w_cal2-w_dol2)*100))/100
@@ -450,7 +451,7 @@ class limestone:
                     w_chl = round(w_clay*w_chl2, 4)
                     w_py = round(1-w_carb-w_qz-w_fsp-w_clay, 4)
                 elif magicnumber == 3:    # Mixed
-                    w_carb = round(rd.randint(60, 75)/100, 4)
+                    w_carb = round(rd.uniform(0.60, 0.75), 4)
                     w_cal2 = rd.randint(40, 60)/100
                     w_arg2 = rd.randint(0, 10)/100
                     w_dol2 = rd.randint(0, int((1-w_cal2-w_arg2)*100))/100
@@ -474,7 +475,7 @@ class limestone:
                     w_chl = round(w_clay*w_chl2, 4)
                     w_py = round(1-w_carb-w_qz-w_fsp-w_clay, 4)
                 elif magicnumber == 4:    # Qz-rich
-                    w_carb = round(rd.randint(60, 75)/100, 4)
+                    w_carb = round(rd.uniform(0.60, 0.75), 4)
                     w_cal2 = rd.randint(40, 60)/100
                     w_arg2 = rd.randint(0, 10)/100
                     w_dol2 = rd.randint(0, int((1-w_cal2-w_arg2)*100))/100
@@ -483,7 +484,7 @@ class limestone:
                     w_arg = round(w_carb*w_arg2, 4)
                     w_dol = round(w_carb*w_dol2, 4)
                     w_sd = round(w_carb*w_sd2, 4)
-                    w_qz = round(rd.randint(15, int((1-w_carb)*100))/100, 4)
+                    w_qz = round(rd.uniform(0.1, 0.2), 4)
                     w_fsp = round(rd.randint(0, int((1-w_carb-w_qz)*100))/100, 4)
                     w_kfs2 = rd.randint(0, 100)/100
                     w_pl2 = 1-w_kfs2
@@ -498,7 +499,7 @@ class limestone:
                     w_chl = round(w_clay*w_chl2, 4)
                     w_py = round(1-w_carb-w_qz-w_fsp-w_clay, 4)
                 elif magicnumber == 5:    # Fsp-rich
-                    w_carb = round(rd.randint(60, 75)/100, 4)
+                    w_carb = round(rd.uniform(0.60, 0.75), 4)
                     w_cal2 = rd.randint(40, 60)/100
                     w_arg2 = rd.randint(0, 10)/100
                     w_dol2 = rd.randint(0, int((1-w_cal2-w_arg2)*100))/100
@@ -507,7 +508,7 @@ class limestone:
                     w_arg = round(w_carb*w_arg2, 4)
                     w_dol = round(w_carb*w_dol2, 4)
                     w_sd = round(w_carb*w_sd2, 4)
-                    w_fsp = round(rd.randint(15, int((1-w_carb)*100))/100, 4)
+                    w_fsp = round(rd.uniform(0.1, 0.2), 4)
                     w_kfs2 = rd.randint(0, 100)/100
                     w_pl2 = 1-w_kfs2
                     w_kfs = round(w_fsp*w_kfs2, 4)
@@ -522,7 +523,7 @@ class limestone:
                     w_chl = round(w_clay*w_chl2, 4)
                     w_py = round(1-w_carb-w_qz-w_fsp-w_clay, 4)
                 elif magicnumber == 6:    # Clay-rich
-                    w_carb = round(rd.randint(60, 75)/100, 4)
+                    w_carb = round(rd.uniform(0.60, 0.75), 4)
                     w_cal2 = rd.randint(40, 60)/100
                     w_arg2 = rd.randint(0, 10)/100
                     w_dol2 = rd.randint(0, int((1-w_cal2-w_arg2)*100))/100
@@ -531,7 +532,7 @@ class limestone:
                     w_arg = round(w_carb*w_arg2, 4)
                     w_dol = round(w_carb*w_dol2, 4)
                     w_sd = round(w_carb*w_sd2, 4)
-                    w_clay = round(rd.randint(15, int((1-w_carb)*100))/100, 4)
+                    w_clay = round(rd.uniform(0.1, 0.2), 4)
                     w_mnt2 = rd.randint(0, 100)/100
                     w_kln2 = rd.randint(0, int((1-w_mnt2)*100))/100
                     w_chl2 = 1-w_mnt2-w_kln2
@@ -703,6 +704,18 @@ class limestone:
                 w_pl2 = 1-w_kfs2
                 w_kfs = round(w_fsp*w_kfs2, 4)
                 w_pl = round(w_fsp*w_pl2, 4)
+            elif type(self.amounts) is list:
+                w_cal = round(abs(np.random.normal(self.amounts[0], 0.025)), 4)
+                w_arg = round(abs(np.random.normal(self.amounts[1], 0.025)), 4)
+                w_dol = round(abs(np.random.normal(self.amounts[2], 0.025)), 4)
+                w_sd = round(abs(np.random.normal(self.amounts[3], 0.025)), 4)
+                w_qz = round(abs(np.random.normal(self.amounts[4], 0.025)), 4)
+                w_kfs = round(abs(np.random.normal(self.amounts[5], 0.025)), 4)
+                w_pl = round(abs(np.random.normal(self.amounts[6], 0.025)), 4)
+                w_mnt = round(abs(np.random.normal(self.amounts[7], 0.025)), 4)
+                w_kln = round(abs(np.random.normal(self.amounts[8], 0.025)), 4)
+                w_chl = round(abs(np.random.normal(self.amounts[9], 0.025)), 4)
+                w_py = round(1-w_cal-w_arg-w_dol-w_sd-w_qz-w_kfs-w_pl-w_mnt-w_kln-w_chl, 4)
             #
             if w_cal >= 0.0 and w_arg >= 0.0 and w_dol >= 0.0 and w_sd >= 0.0 and w_qz >= 0.0 and w_kfs  >= 0.0 and w_pl >= 0.0 and w_mnt >= 0.0 and w_kln >= 0.0 and w_chl >= 0.0 and w_py >= 0.0:
                 sumMin = round(w_cal + w_arg + w_dol + w_sd + w_qz + w_kfs + w_pl + w_mnt + w_kln + w_chl + w_py, 4)
@@ -727,6 +740,7 @@ class limestone:
                 cond = True
                 composition.extend((["Cal", w_cal, round(chem_cal[1], 2)], ["Arg", w_arg, round(chem_arg[1], 2)], ["Dol", w_dol, round(chem_dol[1], 2)], ["Sd", w_sd, round(chem_sd[1], 2)], ["Qz", w_qz, round(chem_qz[1], 2)], ["Kfs", w_kfs, round(chem_kfs[1][0], 2), round(chem_kfs[1][1], 2)], ["Pl", w_pl, round(chem_pl[1][0], 2), round(chem_pl[1][1], 2)], ["Mnt", w_mnt, round(chem_mnt[1][0], 2), round(chem_mnt[1][1], 2)], ["Kln", w_kln, round(chem_kln[1], 2)], ["Chl", w_chl, round(chem_chl[1], 2)], ["Py", w_py, round(chem_py[1], 2)]))
                 concentrations = [w_H, w_C, w_O, w_Na, w_Mg, w_Al, w_Si, w_S, w_K, w_Ca, w_Fe]
+                amounts = [w_cal, w_arg, w_dol, w_sd, w_qz, w_kfs, w_pl, w_mnt, w_kln, w_chl, w_py]
             else:
                 cond = False
         data.append(composition)
@@ -776,6 +790,7 @@ class limestone:
         data.append("water")
         data.append([round(GR, 3), round(PE, 3)])
         data.append(concentrations)
+        data.append(amounts)
         #
         return data
     #
@@ -1106,11 +1121,12 @@ class dolomite:
         #
         return dolomite
     #
-    def create_simple_dolomite(self, w_Mg=None, w_Ca=None, w_Fe=None):
+    def create_simple_dolomite(self, w_Mg=None, w_Ca=None, w_Fe=None, amounts=None):
         #
         self.w_Mg = w_Mg
         self.w_Ca = w_Ca
         self.w_Fe = w_Fe
+        self.amounts = amounts
         #
         # mineralogy
         chem_dol = minerals.carbonates.dolomite("")
@@ -1135,7 +1151,7 @@ class dolomite:
         cond = False
         composition = []
         while cond == False:
-            if self.w_Mg == None and self.w_Ca == None and self.w_Fe == None:
+            if self.w_Mg == None and self.w_Ca == None and self.w_Fe == None and self.amounts == None:
                 magicnumber = rd.randint(0, 6)
                 if magicnumber == 0:    # Dol-rich
                     w_carb = round(rd.randint(90, 100)/100, 4)
@@ -1179,8 +1195,8 @@ class dolomite:
                     w_py = round(1-w_carb-w_qz-w_fsp-w_clay, 4)
                 elif magicnumber == 2:    # Sd-rich
                     w_carb = round(rd.randint(90, 100)/100, 4)
-                    w_dol2 = rd.randint(60, 90)/100
-                    w_sd2 = rd.randint(10, int((1-w_dol2)*100))/100
+                    w_dol2 = rd.uniform(0.6, 0.9)
+                    w_sd2 = rd.uniform(0.1, (1-w_dol2))
                     w_ank2 = rd.randint(0, int((1-w_dol2-w_sd2)*100))/100
                     w_cal2 = 1-w_dol2-w_ank2-w_sd2
                     w_dol = round(w_carb*w_dol2, 4)
@@ -1258,18 +1274,17 @@ class dolomite:
                     w_kln = round(w_clay*w_kln2, 4)
                     w_py = round(1-w_carb-w_qz-w_fsp-w_clay, 4)
                 elif magicnumber == 6:    # Clay-rich
-                    w_carb = round(rd.randint(75, 85)/100, 4)
-                    w_dol2 = rd.randint(80, 90)/100
-                    w_ank2 = rd.randint(0, int((1-w_dol2)*100))/100
-                    w_sd2 = rd.randint(0, int((1-w_dol2-w_ank2)*100))/100
+                    w_carb = round(rd.uniform(0.75, 0.85), 4)
+                    w_dol2 = rd.uniform(0.8, 0.9)
+                    w_ank2 = rd.uniform(0, (1-w_dol2))
+                    w_sd2 = rd.uniform(0, (1-w_dol2-w_ank2))
                     w_cal2 = 1-w_dol2-w_ank2-w_sd2
                     w_dol = round(w_carb*w_dol2, 4)
                     w_ank = round(w_carb*w_ank2, 4)
                     w_sd = round(w_carb*w_sd2, 4)
                     w_cal = round(w_carb*w_cal2, 4)
-                    w_clay = round(rd.randint(10, int((1-w_carb)*100))/100, 4)
-                    w_kln2 = w_clay
-                    w_kln = round(w_clay*w_kln2, 4)
+                    w_clay = round(rd.uniform(0.1, (1-w_carb)), 4)
+                    w_kln = w_clay
                     w_qz = round(rd.randint(0, int((1-w_carb-w_clay)*100))/100, 4)
                     w_fsp = round(rd.randint(0, int((1-w_carb-w_qz-w_clay)*100))/100, 4)
                     w_kfs2 = rd.randint(0, 100)/100
@@ -1354,6 +1369,16 @@ class dolomite:
                 w_clay = round(1-w_py-w_carb-w_qz-w_fsp, 4)
                 w_kln2 = w_clay
                 w_kln = round(w_clay*w_kln2, 4)
+            elif type(self.amounts) is list:
+                w_dol = round(abs(np.random.normal(self.amounts[0], 0.025)), 4)
+                w_ank = round(abs(np.random.normal(self.amounts[1], 0.025)), 4)
+                w_sd = round(abs(np.random.normal(self.amounts[2], 0.025)), 4)
+                w_cal = round(abs(np.random.normal(self.amounts[3], 0.025)), 4)
+                w_qz = round(abs(np.random.normal(self.amounts[4], 0.025)), 4)
+                w_kfs = round(abs(np.random.normal(self.amounts[5], 0.025)), 4)
+                w_pl = round(abs(np.random.normal(self.amounts[6], 0.025)), 4)
+                w_kln = round(abs(np.random.normal(self.amounts[7], 0.025)), 4)
+                w_py = round(1-w_dol-w_ank-w_sd-w_cal-w_qz-w_kfs-w_pl-w_kln, 4)
             #
             if w_dol >= 0.0 and w_ank >= 0.0 and w_sd >= 0.0 and w_cal >= 0.0 and w_qz >= 0.0 and w_kfs  >= 0.0 and w_pl >= 0.0 and w_kln >= 0.0 and w_py >= 0.0:
                 sumMin = round(w_dol + w_ank + w_sd + w_cal + w_qz + w_kfs + w_pl + w_kln + w_py, 4)
@@ -1378,6 +1403,7 @@ class dolomite:
                 cond = True
                 composition.extend((["Dol", w_dol, round(chem_dol[1], 2)], ["Ank", w_ank, round(chem_ank[1][0], 2)], ["Sd", w_sd, round(chem_sd[1], 2)], ["Cal", w_cal, round(chem_cal[1], 2)], ["Qz", w_qz, round(chem_qz[1], 2)], ["Kfs", w_kfs, round(chem_kfs[1][0], 2), round(chem_kfs[1][1], 2)], ["Pl", w_pl, round(chem_pl[1][0], 2), round(chem_pl[1][1], 2)], ["Kln", w_kln, round(chem_kln[1], 2)], ["Py", w_py, round(chem_py[1], 2)]))
                 concentrations = [w_H, w_C, w_O, w_Na, w_Mg, w_Al, w_Si, w_S, w_K, w_Ca, w_Fe]
+                amounts = [w_dol, w_ank, w_sd, w_cal, w_qz, w_kfs, w_pl, w_kln, w_py]
             else:
                 cond = False
         data.append(composition)
@@ -1396,13 +1422,13 @@ class dolomite:
         nu_solid = (3*K_solid-2*G_solid)/(2*(3*K_solid+G_solid))
         #
         if self.actualThickness <= 1000:
-            phi = rd.randint(35, 40)/100
+            phi = rd.randint(25, 30)/100
         elif self.actualThickness > 1000 and self.actualThickness <= 2000:
-            phi = rd.randint(30, 35)/100
+            phi = rd.randint(20, 25)/100
         elif self.actualThickness > 2000 and self.actualThickness <= 3000:
-            phi = rd.randint(20, 30)/100
+            phi = rd.randint(15, 20)/100
         elif self.actualThickness > 3000 and self.actualThickness <= 4000:
-            phi = rd.randint(10, 20)/100
+            phi = rd.randint(10, 15)/100
         elif self.actualThickness > 4000:
             phi = rd.randint(5, 10)/100
         #
@@ -1427,5 +1453,6 @@ class dolomite:
         data.append("water")
         data.append([round(GR, 3), round(PE, 3)])
         data.append(concentrations)
+        data.append(amounts)
         #
         return data

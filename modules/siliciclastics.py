@@ -274,7 +274,7 @@ class sandstone:
         #
         return sandstone
     
-    def create_simple_sandstone(self, w_Fe=None):
+    def create_simple_sandstone(self, w_Fe=None, amounts=None):
         # [symbol, atomic number, atomic mass, oxidation states, melting point, boiling point, density, electronegativity]
         chemH = ["H", 1, 1.0078, 1, 13.99, 20.271, 0.084, 2.2]
         chemC = ["C", 6, 12.009, 4, 0.0, 3915, 3510, 2.55]
@@ -287,6 +287,7 @@ class sandstone:
         chemFe = ["Fe", 26, 55.845, 3, 1811, 3134, 7870, 1.83]
         #
         self.w_Fe = w_Fe
+        self.amounts = amounts
         #
         # [chemical formula, molar mass, density, bulk modulus, shear modulus, vP, vS]
         chem_quartz = minerals.oxides.quartz("")
@@ -316,7 +317,7 @@ class sandstone:
         cond = False
         composition = []
         while cond == False:
-            if self.w_Fe == None:
+            if self.w_Fe == None and self.amounts == None:
                 magicnumber = rd.randint(0, 6)
                 if magicnumber == 0:    # Qz-rich
                     w_ore = round(0.0, 4)
@@ -542,7 +543,7 @@ class sandstone:
                     w_ore = round(0.0, 4)
                     w_Hem2 = rd.randint(0, 100)/100
                     w_Hem = round(w_ore*w_Hem2, 4)
-            else:
+            elif self.w_Fe != None:
                 condition = False
                 while condition == False:
                     w_rf = round(rd.randint(0, 10)/100, 4)
@@ -585,7 +586,19 @@ class sandstone:
                 w_Pl2 = 1 - w_Afs2
                 w_Afs = round(w_Fsp*w_Afs2, 4)
                 w_Pl = round(w_Fsp*w_Pl2, 4)
-            sumMin = w_Qz + w_Afs + w_Pl + w_Cal + w_Chl + w_Ms + w_Hem
+            elif type(self.amounts) is list:
+                w_Qz = round(abs(np.random.normal(self.amounts[0], 0.025)), 4)
+                w_Afs = round(abs(np.random.normal(self.amounts[1], 0.025)), 4)
+                w_Pl = round(abs(np.random.normal(self.amounts[2], 0.025)), 4)
+                w_Cal = round(abs(np.random.normal(self.amounts[3], 0.025)), 4)
+                w_Chl = round(abs(np.random.normal(self.amounts[4], 0.025)), 4)
+                w_Ms = round(abs(np.random.normal(self.amounts[5], 0.025)), 4)
+                w_Hem = round(1-w_Qz-w_Afs-w_Pl-w_Cal-w_Chl-w_Ms, 4)
+            #
+            if w_Qz >= 0.0 and w_Afs >= 0.0 and w_Pl >= 0.0 and w_Cal >= 0.0 and w_Chl >= 0.0 and w_Ms  >= 0.0 and w_Hem >= 0.0:
+                sumMin = round(w_Qz + w_Afs + w_Pl + w_Cal + w_Chl + w_Ms + w_Hem, 4)
+            else:
+                sumMin = 0
             #
             w_H = round(chem_muscovite[6][0]*w_Ms + chem_chlorite[6][0]*w_Chl, 4)
             w_C = round(chem_calcite[6][0]*w_Cal, 4)
@@ -604,6 +617,7 @@ class sandstone:
                 cond = True
                 composition.extend((["Qz", w_Qz, round(chem_quartz[1], 2)], ["Kfs", w_Afs, round(chem_alkalifeldspar[1][0], 2), round(chem_alkalifeldspar[1][1], 2)], ["Pl", w_Pl, round(chem_plagioclase[1][0], 2), round(chem_plagioclase[1][1], 2)], ["Cal", w_Cal, round(chem_calcite[1], 2)], ["Chl", w_Chl, round(chem_chlorite[1], 2)], ["Ms", w_Ms, round(chem_muscovite[1], 2)], ["Hem", w_Hem, round(chem_hematite[1], 2)]))
                 concentrations = [w_H, w_C, w_O, w_F, w_Na, w_Mg, w_Al, w_Si, w_K, w_Ca, w_Fe_calc]
+                amounts = [w_Qz, w_Afs, w_Pl, w_Cal, w_Chl, w_Ms, w_Hem]
             else:
                 cond = False
         data.append(composition)
@@ -657,6 +671,7 @@ class sandstone:
             data.append("water")
             data.append([round(GR, 3), round(PE, 3)])
             data.append(concentrations)
+            data.append(amounts)
         elif self.fluid == "oil":
             rho = (1 - phi) * rhoSolid + phi * chemOil[1] / 1000
             vP = (1-phi)*vP_solid + phi*chemOil[3]
@@ -680,6 +695,7 @@ class sandstone:
             data.append("oil")
             data.append([round(GR, 3), round(PE, 3)])
             data.append(concentrations)
+            data.append(amounts)
         elif self.fluid == "gas":
             rho = (1 - phi) * rhoSolid + phi * chemGas[1] / 1000
             vP = (1-phi)*vP_solid + phi*chemGas[3]
@@ -703,6 +719,7 @@ class sandstone:
             data.append("gas")
             data.append([round(GR, 3), round(PE, 3)])
             data.append(concentrations)
+            data.append(amounts)
         #
         return data
     #
@@ -908,7 +925,7 @@ class shale:
         #
         return shale
     #
-    def create_simple_shale(self, w_C=None, w_F=None, w_Na=None, w_Mg=None, w_S=None, w_K=None, w_Ca=None, w_Fe=None):
+    def create_simple_shale(self, w_C=None, w_F=None, w_Na=None, w_Mg=None, w_S=None, w_K=None, w_Ca=None, w_Fe=None, amounts=None):
         # [symbol, atomic number, atomic mass, oxidation states, melting point, boiling point, density, electronegativity]
         chemH = ["H", 1, 1.0078, 1, 13.99, 20.271, 0.084, 2.2]
         chemC = ["C", 6, 12.009, 4, 0.0, 3915, 3510, 2.55]
@@ -928,6 +945,7 @@ class shale:
         self.w_K = w_K
         self.w_Ca = w_Ca
         self.w_Fe = w_Fe
+        self.amounts = amounts
         #
         # mineralogy
         chem_org = minerals.natives.organic_matter("")
@@ -971,7 +989,7 @@ class shale:
         cond = False
         composition = []
         while cond == False:
-            if self.w_C == None and self.w_F == None and self.w_Na == None and self.w_Mg == None and self.w_S == None and self.w_K == None and self.w_Ca == None and self.w_Fe == None:
+            if self.w_C == None and self.w_F == None and self.w_Na == None and self.w_Mg == None and self.w_S == None and self.w_K == None and self.w_Ca == None and self.w_Fe == None and self.amounts == None:
                 magicnumber = rd.randint(0, 4)
                 #magicnumber = 0
                 if magicnumber == 0:    # Clay-rich
@@ -1423,7 +1441,22 @@ class shale:
                         condition = True
                     else:
                         condition = False
-            sumMin = round(w_org + w_qz + w_cal + w_Py + w_ilt + w_kln + w_mnt + w_bt + w_ms + w_urn, 4)
+            elif type(self.amounts) is list:
+                w_urn = round(abs(np.random.normal(self.amounts[9], 1e-05)), 6)
+                w_org = round(abs(np.random.normal(self.amounts[0], 0.025)), 4)
+                w_qz = round(abs(np.random.normal(self.amounts[1], 0.025)), 4)
+                w_cal = round(abs(np.random.normal(self.amounts[2], 0.025)), 4)
+                w_Py = round(abs(np.random.normal(self.amounts[3], 0.025)), 4)
+                w_ilt = round(abs(np.random.normal(self.amounts[4], 0.025)), 4)
+                w_kln = round(abs(np.random.normal(self.amounts[5], 0.025)), 4)
+                w_mnt = round(abs(np.random.normal(self.amounts[6], 0.025)), 4)
+                w_bt = round(abs(np.random.normal(self.amounts[7], 0.025)), 4)
+                w_ms = round(1-w_org-w_qz-w_cal-w_ilt-w_kln-w_mnt-w_bt-w_urn, 4)
+            #
+            if w_org >= 0.0 and w_qz >= 0.0 and w_cal >= 0.0 and w_Py >= 0.0 and w_ilt >= 0.0 and w_kln >= 0.0 and w_mnt >= 0.0 and w_bt >= 0.0 and w_ms >= 0.0 and w_urn >= 0.0:
+                sumMin = round(w_org + w_qz + w_cal + w_Py + w_ilt + w_kln + w_mnt + w_bt + w_ms + w_urn, 4)
+            else:
+                sumMin = 0
             #
             w_H = round(chem_ilt[6][0]*w_ilt + chem_kln[6][0]*w_kln + chem_mnt[6][0]*w_mnt + chem_bt[6][0]*w_bt + chem_ms[6][0]*w_ms, 4)
             w_C = round(chem_org[6][0]*w_org + chem_cal[6][0]*w_cal, 4)
@@ -1444,6 +1477,7 @@ class shale:
                 cond = True
                 composition.extend((["Org", w_org, round(chem_org[1], 2)], ["Qz", w_qz, round(chem_qz[1], 2)], ["Cal", w_cal, round(chem_cal[1], 2)], ["Py", w_Py, round(chem_py[1], 2)], ["Ilt", w_ilt, round(chem_ilt[1], 2)], ["Kln", w_kln, round(chem_kln[1], 2)], ["Mnt", w_mnt, round(chem_mnt[1][0], 2), round(chem_mnt[1][1], 2)], ["Bt", w_bt, round(chem_bt[1][0], 2), round(chem_bt[1][1], 2), round(chem_bt[1][2], 2)], ["Ms", w_ms, round(chem_ms[1], 2)], ["Urn", w_urn, round(chem_urn[1], 2)]))
                 concentrations = [w_H, w_C, w_O, w_F, w_Na, w_Mg, w_Al, w_Si, w_S, w_K, w_Ca, w_Fe, w_U]
+                amounts = [w_org, w_qz, w_cal, w_Py, w_ilt, w_kln, w_mnt, w_bt, w_ms, w_urn]
             else:
                 cond = False
         data.append(composition)
@@ -1483,6 +1517,7 @@ class shale:
         data.append("water")
         data.append([round(GR, 3), round(PE, 3)])
         data.append(concentrations)
+        data.append(amounts)
         #
         return data
     #
