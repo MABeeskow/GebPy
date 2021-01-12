@@ -108,83 +108,358 @@ class plutonic:
         #  granite = [[mineralogical compositon], [densities], [elastic properties], [seismic velocities], [porosities], fluid name, GR]
         #
         return granite
+    #
+class Plutonic:
+    #
+    def __init__(self, fluid, actualThickness):
+        self.fluid = fluid
+        self.actualThickness = actualThickness
+    #
+    def create_simple_granite(self, w_Mg=None, w_K=None, w_Ca=None, w_Fe=None, amounts=None):
         #
-
-    def createPeridotite(self):
+        self.w_Mg = w_Mg
+        self.w_K = w_K
+        self.w_Ca = w_Ca
+        self.w_Fe = w_Fe
+        self.amounts = amounts
+        #
         # [chemical formula, molar mass, density, bulk modulus, shear modulus, vP, vS]
-        chemOlivine = minerals.nesosilicates.olivine("")
-        chemQuartz = minerals.oxides.quartz("")
-        chemOrthoclase = minerals.tectosilicates.orthoclase("")
-        chemAlbite = minerals.tectosilicates.albite("")
-        chemAnorthite = minerals.tectosilicates.anorthite("")
-        chemBiotite = minerals.Biotites.biotite_group(self, "Biotite")
-        chemMuscovite = minerals.phyllosilicates.muscovite("")
-        chemPyrite = minerals.sulfides.pyrite("")
+        quartz = minerals.oxides.quartz("")
+        alkalifeldspar = minerals.feldspars.alkalifeldspar(self, "K")
+        plagioclase = minerals.feldspars.plagioclase(self, "Na")
+        biotite = minerals.Biotites.biotite_group(self, "Biotite")
+        muscovite = minerals.phyllosilicates.muscovite("")
+        actinolite = minerals.inosilicates.actinolite("")
+        tremolite = minerals.inosilicates.tremolite("")
         #
-        # [chemical formula, molar mass, density, bulk modulus, shear modulus, vP, vS]
-        chemWater = minerals.oxides.water("")
+        mineralogy = [quartz, alkalifeldspar, plagioclase, biotite, muscovite, actinolite, tremolite]
         #
-        peridotite = []
+        water = fluids.Water.water("")
+        #
+        data = []
         #
         cond = False
         composition = []
         while cond == False:
-            xQuartz = round(randint(30, 36) / 100, 2)
-            xOrthoclase = round(randint(24, 32) / 100, 2)
-            xPlagioclase = round(randint(22, 34) / 100, 2)
-            xAlbite2 = round(randint(0, 100) / 100, 2)
-            xAnorthite2 = 1 - xAlbite2
-            xAlbite = round(xPlagioclase * xAlbite2, 2)
-            xAnorthite = round(xPlagioclase * xAnorthite2, 2)
-            xMica = round(randint(4, 9) / 100, 2)
-            xBiotite2 = round(randint(0, 100) / 100, 2)
-            xMuscovite2 = 1 - xBiotite2
-            xBiotite = round(xMica * xBiotite2, 2)
-            xMuscovite = round(xMica * xMuscovite2, 2)
-            xPyrite = round(randint(0, 5) / 100, 2)
-            sumMin = round(xQuartz + xOrthoclase + xAlbite + xAnorthite + xBiotite + xMuscovite + xPyrite, 2)
-            if sumMin == 1:
+            if self.w_Mg == None and self.w_K == None and self.w_Ca == None and self.w_Fe == None and self.amounts == None:
+                magicnumber = rd.randint(0, 4)
+                if magicnumber == 0:    # Mixed
+                    w_qz = round(rd.uniform(0, 1), 4)
+                    w_fsp = round(rd.uniform(0, (1-w_qz)), 4)
+                    w_kfs2 = round(rd.uniform(0, 1), 4)
+                    w_pl2 = round((1-w_kfs2), 4)
+                    w_kfs = round(w_fsp*w_kfs2, 4)
+                    w_pl = round(w_fsp*w_pl2, 4)
+                    w_mica = round(rd.uniform(0, (1-w_qz-w_fsp)), 4)
+                    w_bt2 = round(rd.uniform(0, 1), 4)
+                    w_ms2 = round((1-w_bt2), 4)
+                    w_bt = round(w_mica*w_bt2, 4)
+                    w_ms = round(w_mica*w_ms2, 4)
+                    w_amph = round((1-w_qz-w_fsp-w_mica), 4)
+                    w_act2 = round(rd.uniform(0, 1), 4)
+                    w_tr2 = round((1-w_act2), 4)
+                    w_act = round(w_amph*w_act2, 4)
+                    w_tr = round(w_amph*w_tr2, 4)
+                elif magicnumber == 1:    # Qz-rich
+                    w_qz = round(rd.uniform(0.75, 1), 4)
+                    w_fsp = round(rd.uniform(0, (1-w_qz)), 4)
+                    w_kfs2 = round(rd.uniform(0, 1), 4)
+                    w_pl2 = round((1-w_kfs2), 4)
+                    w_kfs = round(w_fsp*w_kfs2, 4)
+                    w_pl = round(w_fsp*w_pl2, 4)
+                    w_mica = round(rd.uniform(0, (1-w_qz-w_fsp)), 4)
+                    w_bt2 = round(rd.uniform(0, 1), 4)
+                    w_ms2 = round((1-w_bt2), 4)
+                    w_bt = round(w_mica*w_bt2, 4)
+                    w_ms = round(w_mica*w_ms2, 4)
+                    w_amph = round((1-w_qz-w_fsp-w_mica), 4)
+                    w_act2 = round(rd.uniform(0, 1), 4)
+                    w_tr2 = round((1-w_act2), 4)
+                    w_act = round(w_amph*w_act2, 4)
+                    w_tr = round(w_amph*w_tr2, 4)
+                elif magicnumber == 2:    # Fsp-rich
+                    w_fsp = round(rd.uniform(0.75, 1), 4)
+                    w_kfs2 = round(rd.uniform(0, 1), 4)
+                    w_pl2 = round((1-w_kfs2), 4)
+                    w_kfs = round(w_fsp*w_kfs2, 4)
+                    w_pl = round(w_fsp*w_pl2, 4)
+                    w_qz = round(rd.uniform(0, (1-w_fsp)), 4)
+                    w_mica = round(rd.uniform(0, (1-w_qz-w_fsp)), 4)
+                    w_bt2 = round(rd.uniform(0, 1), 4)
+                    w_ms2 = round((1-w_bt2), 4)
+                    w_bt = round(w_mica*w_bt2, 4)
+                    w_ms = round(w_mica*w_ms2, 4)
+                    w_amph = round((1-w_qz-w_fsp-w_mica), 4)
+                    w_act2 = round(rd.uniform(0, 1), 4)
+                    w_tr2 = round((1-w_act2), 4)
+                    w_act = round(w_amph*w_act2, 4)
+                    w_tr = round(w_amph*w_tr2, 4)
+                elif magicnumber == 3:    # Fsp-rich (Kfs)
+                    w_fsp = round(rd.uniform(0.75, 1), 4)
+                    w_kfs2 = round(rd.uniform(0.75, 1), 4)
+                    w_pl2 = round((1-w_kfs2), 4)
+                    w_kfs = round(w_fsp*w_kfs2, 4)
+                    w_pl = round(w_fsp*w_pl2, 4)
+                    w_qz = round(rd.uniform(0, (1-w_fsp)), 4)
+                    w_mica = round(rd.uniform(0, (1-w_qz-w_fsp)), 4)
+                    w_bt2 = round(rd.uniform(0, 1), 4)
+                    w_ms2 = round((1-w_bt2), 4)
+                    w_bt = round(w_mica*w_bt2, 4)
+                    w_ms = round(w_mica*w_ms2, 4)
+                    w_amph = round((1-w_qz-w_fsp-w_mica), 4)
+                    w_act2 = round(rd.uniform(0, 1), 4)
+                    w_tr2 = round((1-w_act2), 4)
+                    w_act = round(w_amph*w_act2, 4)
+                    w_tr = round(w_amph*w_tr2, 4)
+                elif magicnumber == 4:    # Fsp-rich (Pl)
+                    w_fsp = round(rd.uniform(0.75, 1), 4)
+                    w_pl2 = round(rd.uniform(0.75, 1), 4)
+                    w_kfs2 = round((1-w_pl2), 4)
+                    w_kfs = round(w_fsp*w_kfs2, 4)
+                    w_pl = round(w_fsp*w_pl2, 4)
+                    w_qz = round(rd.uniform(0, (1-w_fsp)), 4)
+                    w_mica = round(rd.uniform(0, (1-w_qz-w_fsp)), 4)
+                    w_bt2 = round(rd.uniform(0, 1), 4)
+                    w_ms2 = round((1-w_bt2), 4)
+                    w_bt = round(w_mica*w_bt2, 4)
+                    w_ms = round(w_mica*w_ms2, 4)
+                    w_amph = round((1-w_qz-w_fsp-w_mica), 4)
+                    w_act2 = round(rd.uniform(0, 1), 4)
+                    w_tr2 = round((1-w_act2), 4)
+                    w_act = round(w_amph*w_act2, 4)
+                    w_tr = round(w_amph*w_tr2, 4)
+            elif self.w_Mg != None:
+                w_amph = round(rd.uniform(0, 0.025), 4)
+                w_act2 = round(rd.uniform(0, 1), 4)
+                w_tr2 = round((1-w_act2), 4)
+                w_act = round(w_amph*w_act2, 4)
+                w_tr = round(w_amph*w_tr2, 4)
+                w_bt = round((self.w_Mg - w_act*actinolite[6][2] - w_tr*tremolite[6][2])/(biotite[6][3]), 4)
+                w_mica = round(rd.uniform(0, 0.025), 4)
+                w_bt2 = round(w_bt/w_mica, 4)
+                w_ms2 = round((1-w_bt2), 4)
+                w_ms = round(w_mica*w_ms2, 4)
+                #
+                w_qz = round(rd.uniform(0, (1-w_amph-w_mica)), 4)
+                w_fsp = round(rd.uniform(0, (1-w_amph-w_mica-w_qz)), 4)
+                w_kfs2 = round(rd.uniform(0, 1), 4)
+                w_pl2 = round((1-w_kfs2), 4)
+                w_kfs = round(w_fsp*w_kfs2, 4)
+                w_pl = round(w_fsp*w_pl2, 4)
+            elif self.w_K != None:
+                w_mica = round(rd.uniform(0, 0.025), 4)
+                w_bt2 = round(rd.uniform(0, 1), 4)
+                w_ms2 = round((1-w_bt2), 4)
+                w_bt = round(w_mica*w_bt2, 4)
+                w_ms = round(w_mica*w_ms2, 4)
+                w_kfs = round((self.w_K - w_bt*biotite[6][6] - w_ms*muscovite[6][5])/(alkalifeldspar[6][4]), 4)
+                w_fsp = round(rd.uniform(0, (1-w_mica)), 4)
+                w_kfs2 = round(w_kfs/w_fsp, 4)
+                w_pl2 = round((1-w_kfs2), 4)
+                w_pl = round(w_fsp*w_pl2, 4)
+                #
+                w_qz = round(rd.uniform(0, (1-w_mica-w_fsp)), 4)
+                w_amph = round((1-w_qz-w_fsp-w_mica), 4)
+                w_act2 = round(rd.uniform(0, 1), 4)
+                w_tr2 = round((1-w_act2), 4)
+                w_act = round(w_amph*w_act2, 4)
+                w_tr = round(w_amph*w_tr2, 4)
+            elif self.w_Ca != None:
+                w_amph = round(rd.uniform(0, 0.025), 4)
+                w_act2 = round(rd.uniform(0, 1), 4)
+                w_tr2 = round((1-w_act2), 4)
+                w_act = round(w_amph*w_act2, 4)
+                w_tr = round(w_amph*w_tr2, 4)
+                w_pl = round((self.w_Ca - w_act*actinolite[6][4] - w_tr*tremolite[6][4])/(plagioclase[6][4]), 4)
+                w_fsp = round(rd.uniform(0, (1-w_amph)), 4)
+                w_pl2 = round(w_pl/w_fsp, 4)
+                w_kfs2 = round((1-w_pl2), 4)
+                w_kfs = round(w_fsp*w_kfs2, 4)
+                #
+                w_qz = round((1-w_amph-w_fsp), 4)
+                w_mica = round((1-w_amph-w_qz-w_fsp), 4)
+                w_bt2 = round(rd.uniform(0, 1), 4)
+                w_ms2 = round((1-w_bt2), 4)
+                w_bt = round(w_mica*w_bt2, 4)
+                w_ms = round(w_mica*w_ms2, 4)
+            elif self.w_Fe != None:
+                w_amph = round(rd.uniform(0, 0.025), 4)
+                w_act2 = round(rd.uniform(0, 1), 4)
+                w_tr2 = round((1-w_act2), 4)
+                w_act = round(w_amph*w_act2, 4)
+                w_tr = round(w_amph*w_tr2, 4)
+                w_bt = round((self.w_Fe - w_act*actinolite[6][5])/(biotite[6][7]), 4)
+                w_mica = round(rd.uniform(0, 0.025), 4)
+                w_bt2 = round(w_bt/w_mica, 4)
+                w_ms2 = round((1-w_bt2), 4)
+                w_ms = round(w_mica*w_ms2, 4)
+                #
+                w_qz = round(rd.uniform(0, (1-w_amph-w_mica)), 4)
+                w_fsp = round(rd.uniform(0, (1-w_amph-w_mica-w_qz)), 4)
+                w_kfs2 = round(rd.uniform(0, 1), 4)
+                w_pl2 = round((1-w_kfs2), 4)
+                w_kfs = round(w_fsp*w_kfs2, 4)
+                w_pl = round(w_fsp*w_pl2, 4)
+            elif type(self.amounts) is list:
+                w_qz = round(abs(np.random.normal(self.amounts[0], 0.025)), 4)
+                w_kfs = round(abs(np.random.normal(self.amounts[1], 0.025)), 4)
+                w_pl = round(abs(np.random.normal(self.amounts[2], 0.025)), 4)
+                w_bt = round(abs(np.random.normal(self.amounts[3], 0.025)), 4)
+                w_ms = round(abs(np.random.normal(self.amounts[4], 0.025)), 4)
+                w_act = round(abs(np.random.normal(self.amounts[5], 0.025)), 4)
+                w_tr = round(1-w_qz-w_kfs-w_pl-w_bt-w_ms-w_act, 4)
+            #
+            if w_qz >= 0.0 and w_kfs >= 0.0 and w_pl >= 0.0 and w_bt >= 0.0 and w_ms >= 0.0 and w_act >= 0.0 and w_tr >= 0.0:
+                sumMin = round(w_qz + w_kfs + w_pl + w_bt + w_ms + w_act + w_tr, 4)
+            else:
+                sumMin = 0
+            #
+            w_H = round(w_bt*biotite[6][0] + w_ms*muscovite[6][0] + w_act*actinolite[6][0] + w_tr*tremolite[6][0], 4)
+            w_O = round(w_qz*quartz[6][0] + w_kfs*alkalifeldspar[6][0] + w_pl*plagioclase[6][0] + w_bt*biotite[6][1] + w_ms*muscovite[6][1] + w_act*actinolite[6][1] + w_tr*tremolite[6][1], 4)
+            w_F = round(w_bt*biotite[6][2] + w_ms*muscovite[6][2], 4)
+            w_Na = round(w_kfs*alkalifeldspar[6][1] + w_pl*plagioclase[6][1], 4)
+            w_Mg = round(w_bt*biotite[6][3] + w_act*actinolite[6][2] + w_tr*tremolite[6][2], 4)
+            w_Al = round(w_kfs*alkalifeldspar[6][2] + w_pl*plagioclase[6][2] + w_bt*biotite[6][4] + w_ms*muscovite[6][3], 4)
+            w_Si = round(w_qz*quartz[6][1] + w_kfs*alkalifeldspar[6][3] + w_pl*plagioclase[6][3] + w_bt*biotite[6][5] + w_ms*muscovite[6][4] + w_act*actinolite[6][3] + w_tr*tremolite[6][3], 4)
+            w_K = round(w_kfs*alkalifeldspar[6][4] + w_bt*biotite[6][6] + w_ms*muscovite[6][5], 4)
+            w_Ca = round(w_pl*plagioclase[6][4] + w_act*actinolite[6][4] + w_tr*tremolite[6][4], 4)
+            w_Fe = round(w_bt*biotite[6][7] + w_act*actinolite[6][5], 4)
+            sumConc = round(w_H + w_O + w_F + w_Na + w_Mg + w_Al + w_Si + w_K + w_Ca + w_Fe, 4)
+            #print("Amount:", sumMin, "C:", sumConc)
+            #
+            if sumMin == 1 and sumConc == 1:
                 cond = True
-                composition.extend([["Qz", round(xQuartz, 2)], ["Or", round(xOrthoclase, 2)], ["Ab", round(xAlbite, 2)],
-                                    ["An", round(xAnorthite, 2)], ["Bt", round(xBiotite, 2)],
-                                    ["Ms", round(xMuscovite, 2)], ["Py", round(xPyrite, 2)]])
+                composition.extend((["Qz", w_qz, round(quartz[1], 2)], ["Kfs", w_kfs, round(alkalifeldspar[1][0], 2), round(alkalifeldspar[1][1], 2)], ["Pl", w_pl, round(plagioclase[1][0], 2), round(plagioclase[1][1], 2)], ["Bt", w_bt, round(biotite[1][0], 2), round(biotite[1][1], 2), round(biotite[1][2], 2)], ["Ms", w_ms, round(muscovite[1], 2)], ["Act", w_act, round(actinolite[1][0], 2), round(actinolite[1][1], 2)], ["Tr", w_tr, round(tremolite[1], 2)]))
+                concentrations = [w_H, w_O, w_F, w_Na, w_Mg, w_Al, w_Si, w_K, w_Ca, w_Fe]
+                amounts = [w_qz, w_kfs, w_pl, w_bt, w_ms, w_act, w_tr]
             else:
                 cond = False
-        xQuartz = composition[0][1]
-        xOrthoclase = composition[1][1]
-        xAlbite = composition[2][1]
-        xAnorthite = composition[3][1]
-        xBiotite = composition[4][1]
-        xMuscovite = composition[5][1]
-        xPyrite = composition[6][1]
-        peridotite.append(composition)
+        data.append(composition)
         #
-        rhoSolid = (xQuartz*chemQuartz[2] + xOrthoclase*chemOrthoclase[2] + xAlbite * chemAlbite[1] + xAnorthite * chemAnorthite[1] + xBiotite * chemBiotite[2] + xMuscovite * chemMuscovite[1] + xPyrite * chemPyrite[1]) / 1000
-        vPSolid = xQuartz*chemQuartz[4][0] + xOrthoclase*chemOrthoclase[4][0] + xAlbite * chemAlbite[4] + xAnorthite * chemAnorthite[4] + xBiotite * chemBiotite[4][0] + xMuscovite * chemMuscovite[4] + xPyrite * chemPyrite[4]
-        vSSolid = xQuartz*chemQuartz[4][1] + xOrthoclase*chemOrthoclase[4][1] + xAlbite * chemAlbite[5] + xAnorthite * chemAnorthite[5] + xBiotite * chemBiotite[4][1] + xMuscovite * chemMuscovite[5] + xPyrite * chemPyrite[5]
+        rhoSolid = (w_qz*quartz[2] + w_kfs*alkalifeldspar[2] + w_pl*plagioclase[2] + w_bt*biotite[2] + w_ms*muscovite[2] + w_act*actinolite[2] + w_tr*tremolite[2]) / 1000
+        X = [w_qz, w_kfs, w_pl, w_bt, w_ms, w_act, w_tr]
+        K_list = [mineralogy[i][3][0] for i in range(len(mineralogy))]
+        G_list = [mineralogy[i][3][1] for i in range(len(mineralogy))]
+        K_geo = elast.calc_geometric_mean(self, X, K_list)
+        G_geo = elast.calc_geometric_mean(self, X, G_list)
+        K_solid = K_geo
+        G_solid = G_geo
+        vP_solid = np.sqrt((K_solid*10**9+4/3*G_solid*10**9)/(rhoSolid*10**3))
+        vS_solid = np.sqrt((G_solid*10**9)/(rhoSolid*10**3))
+        E_solid = (9*K_solid*G_solid)/(3*K_solid+G_solid)
+        nu_solid = (3*K_solid-2*G_solid)/(2*(3*K_solid+G_solid))
         #
-        phi = randint(0, 2) / 100
-        rho = (1 - phi) * rhoSolid + phi * chemWater[2] / 1000
-        vP = (1 - phi) * vPSolid + phi * chemWater[5]
-        vS = (1 - phi) * vSSolid
-        shearModulus = vS ** 2 * rho
-        bulkModulus = vP ** 2 * rho - 4 / 3 * shearModulus
-        phiD = (rhoSolid - rho) / (rhoSolid - chemWater[2] / 1000)
+        if self.actualThickness <= 1000:
+            phi = rd.uniform(0.0, 0.025)
+        elif self.actualThickness > 1000 and self.actualThickness <= 2000:
+            phi = rd.uniform(0.0, 0.025)
+        elif self.actualThickness > 2000 and self.actualThickness <= 3000:
+            phi = rd.uniform(0.0, 0.025)
+        elif self.actualThickness > 3000 and self.actualThickness <= 4000:
+            phi = rd.uniform(0.0, 0.025)
+        elif self.actualThickness > 4000:
+            phi = rd.uniform(0.0, 0.025)
+        #
+        rho = (1 - phi) * rhoSolid + phi * water[2] / 1000
+        vP = (1-phi)*vP_solid + phi*water[4][0]
+        vS = (1 - phi) * vS_solid
+        G_bulk = vS**2 * rho
+        K_bulk = vP**2 * rho - 4/3*G_bulk
+        E_bulk = (9*K_bulk*G_bulk)/(3*K_bulk+G_bulk)
+        phiD = (rhoSolid - rho) / (rhoSolid - water[2] / 1000)
         phiN = (2 * phi ** 2 - phiD ** 2) ** (0.5)
-        phiWyllie = (chemWater[4]) / (vP) * (vPSolid - vP) / (vPSolid - chemWater[4])
-        phiRaymer = [np.real(chemWater[5] / (2 * vPSolid) - ((chemWater[5] ** 2) / (4 * vPSolid ** 2) - (vP - vPSolid) / (vPSolid)) ** 0.5), np.real(chemWater[5] / (2 * vPSolid) + ((chemWater[5] ** 2) / (4 * vPSolid ** 2) - (vP - vPSolid) / (vPSolid)) ** 0.5)]
-        GR = xQuartz*chemQuartz[5][0] + xOrthoclase*chemOrthoclase[5][0] + xAlbite*chemAlbite[6] + xAnorthite*chemAnorthite[6] + xBiotite*chemBiotite[5][0] + xMuscovite*chemMuscovite[6]
+        GR = w_qz*quartz[5][0] + w_kfs*alkalifeldspar[5][0] + w_pl*plagioclase[5][0] + w_bt*biotite[5][0] + w_ms*muscovite[5][0] + w_act*actinolite[5][0] + w_tr*tremolite[5][0]
+        PE = w_qz*quartz[5][1] + w_kfs*alkalifeldspar[5][1] + w_pl*plagioclase[5][1] + w_bt*biotite[5][1] + w_ms*muscovite[5][1] + w_act*actinolite[5][1] + w_tr*tremolite[5][1]
+        poisson_seismic = 0.5*(vP**2 - 2*vS**2)/(vP**2 - vS**2)
+        poisson_elastic = (3*K_bulk - 2*G_bulk)/(6*K_bulk + 2*G_bulk)
+        poisson_mineralogical = w_qz*quartz[3][3] + w_kfs*alkalifeldspar[3][3] + w_pl*plagioclase[3][3] + w_bt*biotite[3][3] + w_ms*muscovite[3][3] + w_act*actinolite[3][3] + w_tr*tremolite[3][3]
         #
-        peridotite.append([round(rho, 3), round(rhoSolid, 3), round(chemWater[2] / 1000, 6)])
-        peridotite.append([round(bulkModulus, 3), round(shearModulus, 3), round(poisson_mineralogical, 3)])
-        peridotite.append([round(vP, 2), round(vS, 2), round(vPSolid, 2), round(chemWater[4], 2)])
-        peridotite.append([round(phi, 3), round(phiD, 3), round(phiN, 3), round(phiWyllie, 3), phiRaymer])
-        peridotite.append("water")
-        peridotite.append(GR)
+        data.append([round(rho, 3), round(rhoSolid, 3), round(water[2] / 1000, 6)])
+        data.append([round(K_bulk*10**(-6), 2), round(G_bulk*10**(-6), 2), round(E_bulk*10**(-6), 2), round(poisson_mineralogical, 3)])
+        data.append([round(vP, 2), round(vS, 2), round(vP_solid, 2), round(water[4][0], 2)])
+        data.append([round(phi, 3), round(phiD, 3), round(phiN, 3)])
+        data.append("water")
+        data.append([round(GR, 3), round(PE, 3)])
+        data.append(concentrations)
+        data.append(amounts)
         #
-        #  peridotite = [[mineralogical compositon], [densities], [elastic properties], [seismic velocities], [porosities], fluid name, GR]
+        return data
         #
-        return peridotite
+    # def createPeridotite(self):
+    #     # [chemical formula, molar mass, density, bulk modulus, shear modulus, vP, vS]
+    #     chemOlivine = minerals.nesosilicates.olivine("")
+    #     chemQuartz = minerals.oxides.quartz("")
+    #     chemOrthoclase = minerals.tectosilicates.orthoclase("")
+    #     chemAlbite = minerals.tectosilicates.albite("")
+    #     chemAnorthite = minerals.tectosilicates.anorthite("")
+    #     chemBiotite = minerals.Biotites.biotite_group(self, "Biotite")
+    #     chemMuscovite = minerals.phyllosilicates.muscovite("")
+    #     chemPyrite = minerals.sulfides.pyrite("")
+    #     #
+    #     # [chemical formula, molar mass, density, bulk modulus, shear modulus, vP, vS]
+    #     chemWater = minerals.oxides.water("")
+    #     #
+    #     peridotite = []
+    #     #
+    #     cond = False
+    #     composition = []
+    #     while cond == False:
+    #         xQuartz = round(randint(30, 36) / 100, 2)
+    #         xOrthoclase = round(randint(24, 32) / 100, 2)
+    #         xPlagioclase = round(randint(22, 34) / 100, 2)
+    #         xAlbite2 = round(randint(0, 100) / 100, 2)
+    #         xAnorthite2 = 1 - xAlbite2
+    #         xAlbite = round(xPlagioclase * xAlbite2, 2)
+    #         xAnorthite = round(xPlagioclase * xAnorthite2, 2)
+    #         xMica = round(randint(4, 9) / 100, 2)
+    #         xBiotite2 = round(randint(0, 100) / 100, 2)
+    #         xMuscovite2 = 1 - xBiotite2
+    #         xBiotite = round(xMica * xBiotite2, 2)
+    #         xMuscovite = round(xMica * xMuscovite2, 2)
+    #         xPyrite = round(randint(0, 5) / 100, 2)
+    #         sumMin = round(xQuartz + xOrthoclase + xAlbite + xAnorthite + xBiotite + xMuscovite + xPyrite, 2)
+    #         if sumMin == 1:
+    #             cond = True
+    #             composition.extend([["Qz", round(xQuartz, 2)], ["Or", round(xOrthoclase, 2)], ["Ab", round(xAlbite, 2)],
+    #                                 ["An", round(xAnorthite, 2)], ["Bt", round(xBiotite, 2)],
+    #                                 ["Ms", round(xMuscovite, 2)], ["Py", round(xPyrite, 2)]])
+    #         else:
+    #             cond = False
+    #     xQuartz = composition[0][1]
+    #     xOrthoclase = composition[1][1]
+    #     xAlbite = composition[2][1]
+    #     xAnorthite = composition[3][1]
+    #     xBiotite = composition[4][1]
+    #     xMuscovite = composition[5][1]
+    #     xPyrite = composition[6][1]
+    #     peridotite.append(composition)
+    #     #
+    #     rhoSolid = (xQuartz*chemQuartz[2] + xOrthoclase*chemOrthoclase[2] + xAlbite * chemAlbite[1] + xAnorthite * chemAnorthite[1] + xBiotite * chemBiotite[2] + xMuscovite * chemMuscovite[1] + xPyrite * chemPyrite[1]) / 1000
+    #     vPSolid = xQuartz*chemQuartz[4][0] + xOrthoclase*chemOrthoclase[4][0] + xAlbite * chemAlbite[4] + xAnorthite * chemAnorthite[4] + xBiotite * chemBiotite[4][0] + xMuscovite * chemMuscovite[4] + xPyrite * chemPyrite[4]
+    #     vSSolid = xQuartz*chemQuartz[4][1] + xOrthoclase*chemOrthoclase[4][1] + xAlbite * chemAlbite[5] + xAnorthite * chemAnorthite[5] + xBiotite * chemBiotite[4][1] + xMuscovite * chemMuscovite[5] + xPyrite * chemPyrite[5]
+    #     #
+    #     phi = randint(0, 2) / 100
+    #     rho = (1 - phi) * rhoSolid + phi * chemWater[2] / 1000
+    #     vP = (1 - phi) * vPSolid + phi * chemWater[5]
+    #     vS = (1 - phi) * vSSolid
+    #     shearModulus = vS ** 2 * rho
+    #     bulkModulus = vP ** 2 * rho - 4 / 3 * shearModulus
+    #     phiD = (rhoSolid - rho) / (rhoSolid - chemWater[2] / 1000)
+    #     phiN = (2 * phi ** 2 - phiD ** 2) ** (0.5)
+    #     phiWyllie = (chemWater[4]) / (vP) * (vPSolid - vP) / (vPSolid - chemWater[4])
+    #     phiRaymer = [np.real(chemWater[5] / (2 * vPSolid) - ((chemWater[5] ** 2) / (4 * vPSolid ** 2) - (vP - vPSolid) / (vPSolid)) ** 0.5), np.real(chemWater[5] / (2 * vPSolid) + ((chemWater[5] ** 2) / (4 * vPSolid ** 2) - (vP - vPSolid) / (vPSolid)) ** 0.5)]
+    #     GR = xQuartz*chemQuartz[5][0] + xOrthoclase*chemOrthoclase[5][0] + xAlbite*chemAlbite[6] + xAnorthite*chemAnorthite[6] + xBiotite*chemBiotite[5][0] + xMuscovite*chemMuscovite[6]
+    #     #
+    #     peridotite.append([round(rho, 3), round(rhoSolid, 3), round(chemWater[2] / 1000, 6)])
+    #     peridotite.append([round(bulkModulus, 3), round(shearModulus, 3), round(poisson_mineralogical, 3)])
+    #     peridotite.append([round(vP, 2), round(vS, 2), round(vPSolid, 2), round(chemWater[4], 2)])
+    #     peridotite.append([round(phi, 3), round(phiD, 3), round(phiN, 3), round(phiWyllie, 3), phiRaymer])
+    #     peridotite.append("water")
+    #     peridotite.append(GR)
+    #     #
+    #     #  peridotite = [[mineralogical compositon], [densities], [elastic properties], [seismic velocities], [porosities], fluid name, GR]
+    #     #
+    #     return peridotite
 #
 class volcanic:
     #

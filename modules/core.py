@@ -19,7 +19,7 @@ from modules import minerals
 from modules.elements import elements
 import matplotlib.pyplot as plt
 from modules.geochemistry import elementanalysis
-from modules import siliciclastics, carbonates
+from modules import siliciclastics, carbonates, igneous
 from modules import fluids
 
 ## CONSTANTS / PROPERTIES
@@ -290,17 +290,21 @@ class geochemistry:
         #print(chemCalcite)
         #print(chem_aragonite)
 
-        data = siliciclastics.sandstone("water", 100)
-        data_sandstone1 = data.create_simple_sandstone()
-        print(data_sandstone1)
-        data_sandstone1a = data.create_simple_sandstone(amounts=data_sandstone1[8])
-        print(data_sandstone1a)
-        data_sandstone1b = data.create_simple_sandstone(amounts=data_sandstone1a[8])
-        print(data_sandstone1b)
-        data_sandstone1c = data.create_simple_sandstone(amounts=data_sandstone1b[8])
-        print(data_sandstone1c)
-        data_sandstone1d = data.create_simple_sandstone(amounts=data_sandstone1c[8])
-        print(data_sandstone1d)
+        data = igneous.Plutonic("water", 4000)
+        data_granite_01 = data.create_simple_granite()
+        print(data_granite_01)
+        #
+        # data = siliciclastics.sandstone("water", 100)
+        # data_sandstone1 = data.create_simple_sandstone()
+        # print(data_sandstone1)
+        # data_sandstone1a = data.create_simple_sandstone(amounts=data_sandstone1[8])
+        # print(data_sandstone1a)
+        # data_sandstone1b = data.create_simple_sandstone(amounts=data_sandstone1a[8])
+        # print(data_sandstone1b)
+        # data_sandstone1c = data.create_simple_sandstone(amounts=data_sandstone1b[8])
+        # print(data_sandstone1c)
+        # data_sandstone1d = data.create_simple_sandstone(amounts=data_sandstone1c[8])
+        # print(data_sandstone1d)
         # data_sandstone2 = data.create_simple_sandstone(w_Fe=0.1)
         # data_sandstone3 = data.create_simple_sandstone(w_Fe=0.2)
         # data_sandstone4 = data.create_simple_sandstone(w_Fe=0.3)

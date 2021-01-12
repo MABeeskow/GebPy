@@ -3363,6 +3363,7 @@ class inosilicates:
         w_O = round(2*(11+1)*oxygen[2]/M, 4)
         w_H = round(2*hydrogen[2]/M, 4)
         weights = [w_Ca, w_Mg, w_Si, w_O, w_H]
+        composition = [w_H, w_O, w_Mg, w_Si, w_Ca]
         PE = bg.calculate_pe(self, x_list=weights, elements_list=element)
         U = PE*rho*10**(-3)
         #
@@ -3372,6 +3373,7 @@ class inosilicates:
         data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 2), round(vPvS, 2)])
         data.append([round(vP, 1), round(vS, 1)])
         data.append([round(GR, 2), round(PE, 2), round(U, 2)])
+        data.append(composition)
         #
         return data
     #
@@ -3421,6 +3423,7 @@ class inosilicates:
         w_O = round((22+2)*oxygen[2]/M, 4)
         w_H = round(2*hydrogen[2]/M, 4)
         weights = [w_Ca, w_Mg, w_Fe, w_Si, w_O, w_H]
+        composition = [w_H, w_O, w_Mg, w_Si, w_Ca, w_Fe]
         PE = bg.calculate_pe(self, x_list=weights, elements_list=element)
         U = PE*rho*10**(-3)
         #
@@ -3430,6 +3433,7 @@ class inosilicates:
         data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 2), round(vPvS, 2)])
         data.append([round(vP, 1), round(vS, 1)])
         data.append([round(GR, 2), round(PE, 2), round(U, 2)])
+        data.append(composition)
         #
         return data
     #
