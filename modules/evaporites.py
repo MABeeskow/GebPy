@@ -14,7 +14,7 @@
 import numpy as np
 from numpy import round
 from random import *
-from modules import minerals
+from modules import minerals, geochemistry
 import random as rd
 from modules import fluids
 from modules.geophysics import Elasticity as elast
@@ -206,3 +206,254 @@ class evaporites:
         #
         return anhydrite
         #
+class Evaporites:
+    #
+    def __init__(self, fluid, actualThickness):
+        self.fluid = fluid
+        self.actualThickness = actualThickness
+    #
+    def create_simple_rocksalt(self, w_Na=None, w_Cl=None, amounts=None):
+        #
+        self.w_Na = w_Na
+        self.w_Cl = w_Cl
+        self.amounts = amounts
+        #
+        # [chemical formula, molar mass, density, bulk modulus, shear modulus, vP, vS]
+        halite = minerals.halides.halite("")
+        anhydrite = minerals.sulfates.anhydrite("")
+        gypsum = minerals.sulfates.gypsum("")
+        sylvite = minerals.halides.sylvite("")
+        #
+        mineralogy = [halite, anhydrite, gypsum, sylvite]
+        #
+        water = fluids.Water.water("")
+        #
+        data = []
+        #
+        cond = False
+        composition = []
+        while cond == False:
+            if self.w_Na == None and self.w_Cl == None and self.amounts == None:
+                w_hl = round(abs(rd.uniform(0.9, 1)), 4)
+                w_acc = round((1-w_hl), 4)
+                w_anh = round(abs(w_acc*rd.uniform(0, 1)), 4)
+                w_gp = round(abs(w_acc*rd.uniform(0, (1-w_anh))), 4)
+                w_syl = round(abs(w_acc*(1-w_anh-w_gp)), 4)
+            elif self.w_Na != None:
+                w_hl = round((self.w_Na)/(halite[6][0]), 4)
+                w_acc = round((1-w_hl), 4)
+                w_anh = round(abs(w_acc*rd.uniform(0, 1)), 4)
+                w_gp = round(abs(w_acc*rd.uniform(0, (1-w_anh))), 4)
+                w_syl = round(abs(w_acc*(1-w_anh-w_gp)), 4)
+            elif self.w_Cl != None:
+                w_acc = round(abs(rd.uniform(0.0, 0.1)), 4)
+                w_syl = round(abs(w_acc*rd.uniform(0, 1)), 4)
+                w_anh = round(abs(w_acc*rd.uniform(0, (1-w_syl))), 4)
+                w_gp = round(abs(w_acc*(1-w_syl-w_anh)), 4)
+                w_hl = round((self.w_Cl-w_syl*sylvite[6][0])/(halite[6][0]), 4)
+            elif type(self.amounts) is list:
+                w_hl = round(abs(np.random.normal(self.amounts[0], 0.025)), 4)
+                w_anh = round(abs(np.random.normal(self.amounts[1], 0.025)), 4)
+                w_gp = round(abs(np.random.normal(self.amounts[2], 0.025)), 4)
+                w_syl = round(1-w_hl-w_anh-w_gp, 4)
+            #
+            if w_hl >= 0.0 and w_anh >= 0.0 and w_gp >= 0.0 and w_syl >= 0.0:
+                sumMin = round(w_hl + w_anh + w_gp + w_syl, 4)
+            else:
+                sumMin = 0
+            #
+            w_H = round(w_gp*gypsum[6][0], 4)
+            w_O = round(w_anh*anhydrite[6][0] + w_gp*gypsum[6][1], 4)
+            w_Na = round(w_hl*halite[6][0], 4)
+            w_S = round(w_anh*anhydrite[6][1] + w_gp*gypsum[6][2], 4)
+            w_Cl = round(w_hl*halite[6][1] + w_syl*sylvite[6][0], 4)
+            w_K = round(w_syl*sylvite[6][1], 4)
+            w_Ca = round(w_anh*anhydrite[6][2] + w_gp*gypsum[6][3], 4)
+            sumConc = round(w_H + w_O + w_Na + w_S + w_Cl + w_K + w_Ca, 4)
+            #print("Amount:", sumMin, "C:", sumConc)
+            #
+            if sumMin == 1 and sumConc == 1:
+                composition.extend((["Hl", w_hl, round(halite[1], 2)], ["Anh", w_anh, round(anhydrite[1], 2)], ["Gp", w_gp, round(gypsum[1], 2)], ["Syl", w_syl, round(sylvite[1], 2)]))
+                concentrations = [w_H, w_O, w_Na, w_S, w_Cl, w_K, w_Ca]
+                amounts = [w_hl, w_anh, w_gp, w_syl]
+                phi_V = geochemistry.Fractions.calculate_volume_fraction(self, mineralogy=mineralogy, w=amounts)
+                #print(np.around(phi_V, 4))
+                if 0.95 <= phi_V[0] <= 1.0:
+                    cond = True
+                else:
+                    composition = []
+                    cond = False
+            else:
+                cond = False
+        data.append(composition)
+        #
+        rhoSolid = (w_hl*halite[2] + w_anh*anhydrite[2] + w_gp*gypsum[2] + w_syl*sylvite[2]) / 1000
+        X = [w_hl, w_anh, w_gp, w_syl]
+        K_list = [mineralogy[i][3][0] for i in range(len(mineralogy))]
+        G_list = [mineralogy[i][3][1] for i in range(len(mineralogy))]
+        K_geo = elast.calc_geometric_mean(self, X, K_list)
+        G_geo = elast.calc_geometric_mean(self, X, G_list)
+        K_solid = K_geo
+        G_solid = G_geo
+        vP_solid = np.sqrt((K_solid*10**9+4/3*G_solid*10**9)/(rhoSolid*10**3))
+        vS_solid = np.sqrt((G_solid*10**9)/(rhoSolid*10**3))
+        E_solid = (9*K_solid*G_solid)/(3*K_solid+G_solid)
+        nu_solid = (3*K_solid-2*G_solid)/(2*(3*K_solid+G_solid))
+        #
+        if self.actualThickness <= 1000:
+            phi = rd.uniform(0.0, 0.025)
+        elif self.actualThickness > 1000 and self.actualThickness <= 2000:
+            phi = rd.uniform(0.0, 0.025)
+        elif self.actualThickness > 2000 and self.actualThickness <= 3000:
+            phi = rd.uniform(0.0, 0.025)
+        elif self.actualThickness > 3000 and self.actualThickness <= 4000:
+            phi = rd.uniform(0.0, 0.025)
+        elif self.actualThickness > 4000:
+            phi = rd.uniform(0.0, 0.025)
+        #
+        rho = (1 - phi) * rhoSolid + phi * water[2] / 1000
+        vP = (1-phi)*vP_solid + phi*water[4][0]
+        vS = (1 - phi) * vS_solid
+        G_bulk = vS**2 * rho
+        K_bulk = vP**2 * rho - 4/3*G_bulk
+        E_bulk = (9*K_bulk*G_bulk)/(3*K_bulk+G_bulk)
+        phiD = (rhoSolid - rho) / (rhoSolid - water[2] / 1000)
+        phiN = (2 * phi ** 2 - phiD ** 2) ** (0.5)
+        GR = w_hl*halite[5][0] + w_anh*anhydrite[5][0] + w_gp*gypsum[5][0] + w_syl*sylvite[5][0]
+        PE = w_hl*halite[5][1] + w_anh*anhydrite[5][1] + w_gp*gypsum[5][1] + w_syl*sylvite[5][1]
+        poisson_seismic = 0.5*(vP**2 - 2*vS**2)/(vP**2 - vS**2)
+        poisson_elastic = (3*K_bulk - 2*G_bulk)/(6*K_bulk + 2*G_bulk)
+        poisson_mineralogical = w_hl*halite[3][3] + w_anh*anhydrite[3][3] + w_gp*gypsum[3][3] + w_syl*sylvite[3][3]
+        #
+        data.append([round(rho, 3), round(rhoSolid, 3), round(water[2] / 1000, 6)])
+        data.append([round(K_bulk*10**(-6), 2), round(G_bulk*10**(-6), 2), round(E_bulk*10**(-6), 2), round(poisson_mineralogical, 3)])
+        data.append([round(vP, 2), round(vS, 2), round(vP_solid, 2), round(water[4][0], 2)])
+        data.append([round(phi, 3), round(phiD, 3), round(phiN, 3)])
+        data.append("water")
+        data.append([round(GR, 3), round(PE, 3)])
+        data.append(concentrations)
+        data.append(amounts)
+        #
+        return data
+    #
+    def create_simple_anhydrite(self, w_Ca=None, amounts=None):
+        #
+        self.w_Ca = w_Ca
+        self.amounts = amounts
+        #
+        # [chemical formula, molar mass, density, bulk modulus, shear modulus, vP, vS]
+        anhydrite = minerals.sulfates.anhydrite("")
+        calcite = minerals.carbonates.calcite("")
+        dolomite = minerals.carbonates.dolomite("")
+        gypsum = minerals.sulfates.gypsum("")
+        halite = minerals.halides.halite("")
+        #
+        mineralogy = [anhydrite, calcite, dolomite, gypsum, halite]
+        #
+        water = fluids.Water.water("")
+        #
+        data = []
+        #
+        cond = False
+        composition = []
+        while cond == False:
+            if self.w_Ca == None and self.amounts == None:
+                w_anh = round(abs(rd.uniform(0.8, 1)), 4)
+                w_acc = round((1-w_anh), 4)
+                w_cal = round(abs(w_acc*rd.uniform(0, 1)), 4)
+                w_dol = round(abs(w_acc*rd.uniform(0, (1-w_cal))), 4)
+                w_gp = round(abs(w_acc*rd.uniform(0, (1-w_cal-w_dol))), 4)
+                w_hl = round(abs(w_acc*(1-w_cal-w_dol-w_gp)), 4)
+            elif self.w_Ca != None:
+                w_acc = round(abs(rd.uniform(0, 0.2)), 4)
+                w_cal = round(abs(w_acc*rd.uniform(0, 1)), 4)
+                w_dol = round(abs(w_acc*rd.uniform(0, (1-w_cal))), 4)
+                w_gp = round(abs(w_acc*rd.uniform(0, (1-w_cal-w_dol))), 4)
+                w_hl = round(abs(w_acc*(1-w_cal-w_dol-w_gp)), 4)
+                w_anh = round((self.w_Ca - w_cal*calcite[6][2] - w_dol*dolomite[6][3] - w_gp*gypsum[6][3])/(anhydrite[6][2]), 4)
+            elif type(self.amounts) is list:
+                w_anh = round(abs(np.random.normal(self.amounts[0], 0.025)), 4)
+                w_cal = round(abs(np.random.normal(self.amounts[1], 0.025)), 4)
+                w_dol = round(abs(np.random.normal(self.amounts[2], 0.025)), 4)
+                w_gp = round(abs(np.random.normal(self.amounts[3], 0.025)), 4)
+                w_hl = round(1-w_anh-w_cal-w_dol-w_gp, 4)
+            #
+            if w_anh >= 0.0 and w_cal >= 0.0 and w_dol >= 0.0 and w_gp >= 0.0 and w_hl >= 0.0:
+                sumMin = round(w_anh + w_cal + w_dol + w_gp + w_hl, 4)
+            else:
+                sumMin = 0
+            #
+            w_H = round(w_gp*gypsum[6][0], 4)
+            w_C = round(w_cal*calcite[6][0] + w_dol*dolomite[6][0], 4)
+            w_O = round(w_anh*anhydrite[6][0] + w_cal*calcite[6][1] + w_dol*dolomite[6][1] + w_gp*gypsum[6][1], 4)
+            w_Na = round(w_hl*halite[6][0], 4)
+            w_Mg = round(w_dol*dolomite[6][2], 4)
+            w_S = round(w_anh*anhydrite[6][1] + w_gp*gypsum[6][2], 4)
+            w_Cl = round(w_hl*halite[6][1], 4)
+            w_Ca = round(w_anh*anhydrite[6][2] + w_cal*calcite[6][2] + w_dol*dolomite[6][3] + w_gp*gypsum[6][3], 4)
+            sumConc = round(w_H + w_C + w_O + w_Na + w_Mg + w_S + w_Cl + w_Ca, 4)
+            #print("Amount:", sumMin, "C:", sumConc)
+            #
+            if sumMin == 1 and sumConc == 1:
+                composition.extend((["Anh", w_anh, round(anhydrite[1], 2)], ["Cal", w_cal, round(calcite[1], 2)], ["Dol", w_dol, round(dolomite[1], 2)], ["Gp", w_gp, round(gypsum[1], 2)], ["Hl", w_hl, round(halite[1], 2)]))
+                concentrations = [w_H, w_C, w_O, w_Na, w_Mg, w_S, w_Cl, w_Ca]
+                amounts = [w_anh, w_cal, w_dol, w_gp, w_hl]
+                phi_V = geochemistry.Fractions.calculate_volume_fraction(self, mineralogy=mineralogy, w=amounts)
+                #print(np.around(phi_V, 4))
+                if 0.8 <= phi_V[0] <= 1.0:
+                    cond = True
+                else:
+                    composition = []
+                    cond = False
+            else:
+                cond = False
+        data.append(composition)
+        #
+        rhoSolid = (w_anh*anhydrite[2] + w_cal*calcite[2] + w_dol*dolomite[2] + w_gp*gypsum[2] + w_hl*halite[2]) / 1000
+        X = [w_anh, w_cal, w_dol, w_gp, w_hl]
+        K_list = [mineralogy[i][3][0] for i in range(len(mineralogy))]
+        G_list = [mineralogy[i][3][1] for i in range(len(mineralogy))]
+        K_geo = elast.calc_geometric_mean(self, X, K_list)
+        G_geo = elast.calc_geometric_mean(self, X, G_list)
+        K_solid = K_geo
+        G_solid = G_geo
+        vP_solid = np.sqrt((K_solid*10**9+4/3*G_solid*10**9)/(rhoSolid*10**3))
+        vS_solid = np.sqrt((G_solid*10**9)/(rhoSolid*10**3))
+        E_solid = (9*K_solid*G_solid)/(3*K_solid+G_solid)
+        nu_solid = (3*K_solid-2*G_solid)/(2*(3*K_solid+G_solid))
+        #
+        if self.actualThickness <= 1000:
+            phi = rd.uniform(0.0, 0.025)
+        elif self.actualThickness > 1000 and self.actualThickness <= 2000:
+            phi = rd.uniform(0.0, 0.025)
+        elif self.actualThickness > 2000 and self.actualThickness <= 3000:
+            phi = rd.uniform(0.0, 0.025)
+        elif self.actualThickness > 3000 and self.actualThickness <= 4000:
+            phi = rd.uniform(0.0, 0.025)
+        elif self.actualThickness > 4000:
+            phi = rd.uniform(0.0, 0.025)
+        #
+        rho = (1 - phi) * rhoSolid + phi * water[2] / 1000
+        vP = (1-phi)*vP_solid + phi*water[4][0]
+        vS = (1 - phi) * vS_solid
+        G_bulk = vS**2 * rho
+        K_bulk = vP**2 * rho - 4/3*G_bulk
+        E_bulk = (9*K_bulk*G_bulk)/(3*K_bulk+G_bulk)
+        phiD = (rhoSolid - rho) / (rhoSolid - water[2] / 1000)
+        phiN = (2 * phi ** 2 - phiD ** 2) ** (0.5)
+        GR = w_anh*anhydrite[5][0] + w_cal*calcite[5][0] + w_dol*dolomite[5][0] + w_gp*gypsum[5][0] + w_hl*halite[5][0]
+        PE = w_anh*anhydrite[5][1] + w_cal*calcite[5][1] + w_dol*dolomite[5][1] + w_gp*gypsum[5][1] + w_hl*halite[5][1]
+        poisson_seismic = 0.5*(vP**2 - 2*vS**2)/(vP**2 - vS**2)
+        poisson_elastic = (3*K_bulk - 2*G_bulk)/(6*K_bulk + 2*G_bulk)
+        poisson_mineralogical = w_anh*anhydrite[3][3] + w_cal*calcite[3][3] + w_dol*dolomite[3][3] + w_gp*gypsum[3][3] + w_hl*halite[3][3]
+        #
+        data.append([round(rho, 3), round(rhoSolid, 3), round(water[2] / 1000, 6)])
+        data.append([round(K_bulk*10**(-6), 2), round(G_bulk*10**(-6), 2), round(E_bulk*10**(-6), 2), round(poisson_mineralogical, 3)])
+        data.append([round(vP, 2), round(vS, 2), round(vP_solid, 2), round(water[4][0], 2)])
+        data.append([round(phi, 3), round(phiD, 3), round(phiN, 3)])
+        data.append("water")
+        data.append([round(GR, 3), round(PE, 3)])
+        data.append(concentrations)
+        data.append(amounts)
+        #
+        return data

@@ -5215,6 +5215,7 @@ class halides:
         data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 2), round(vPvS, 2)])
         data.append([round(vP, 1), round(vS, 1)])
         data.append([round(GR, 2), round(PE, 2), round(U, 2)])
+        data.append(weights)
         #
         return data
     #
@@ -5255,6 +5256,7 @@ class halides:
         w_K = round(potassium[2]/M, 4)
         w_Cl = round(chemCl[2]/M, 4)
         weights = [w_K, w_Cl]
+        composition = [w_Cl, w_K]
         PE = bg.calculate_pe(self, x_list=weights, elements_list=element)
         U = PE*rho*10**(-3)
         #
@@ -5264,6 +5266,7 @@ class halides:
         data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 2), round(vPvS, 2)])
         data.append([round(vP, 1), round(vS, 1)])
         data.append([round(GR, 2), round(PE, 2), round(U, 2)])
+        data.append(composition)
         #
         return data
     #
@@ -6345,7 +6348,8 @@ class sulfates:
         w_Ca = round(calcium[2]/M, 4)
         w_S = round(sulfur[2]/M, 4)
         w_O = round(4*oxygen[2]/M, 4)
-        weights = [w_Ca, w_S, w_S]
+        weights = [w_Ca, w_S, w_O]
+        composition = [w_O, w_S, w_Ca]
         PE = bg.calculate_pe(self, x_list=weights, elements_list=element)
         U = PE*rho*10**(-3)
         #
@@ -6355,6 +6359,7 @@ class sulfates:
         data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 2), round(vPvS, 2)])
         data.append([round(vP, 1), round(vS, 1)])
         data.append([round(GR, 2), round(PE, 2), round(U, 2)])
+        data.append(composition)
         #
         return data
     #
@@ -6398,7 +6403,8 @@ class sulfates:
         w_S = round(sulfur[2]/M, 4)
         w_O = round((4+2)*oxygen[2]/M, 4)
         w_H = round(2*2*hydrogen[2]/M, 4)
-        weights = [w_Ca, w_S, w_S, w_H]
+        weights = [w_Ca, w_S, w_O, w_H]
+        composition = [w_H, w_O, w_S, w_Ca]
         PE = bg.calculate_pe(self, x_list=weights, elements_list=element)
         U = PE*rho*10**(-3)
         #
@@ -6408,6 +6414,7 @@ class sulfates:
         data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 2), round(vPvS, 2)])
         data.append([round(vP, 1), round(vS, 1)])
         data.append([round(GR, 2), round(PE, 2), round(U, 2)])
+        data.append(composition)
         #
         return data
     #

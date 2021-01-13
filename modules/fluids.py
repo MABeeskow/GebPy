@@ -19,6 +19,60 @@ from modules import minerals
 from modules.elements import elements
 from modules.geophysics import BoreholeGeophysics as bg
 
+class Gas:
+    #
+    def __init__(self):
+        pass
+    #
+    def air(self):
+        # [symbol, atomic number, atomic mass, molar volume, density, bulk modulus, shear modulus, young's modulus, vP, vS]
+        nitrogen = elements.N(self)
+        oxygen = elements.O(self)
+        argon = elements.Ar(self)
+        element = [nitrogen, oxygen, argon]
+        #
+        data = []
+        #
+        fluid = "air"
+        #
+        # Molar mass
+        w_N = 0.78
+        w_O = 0.21
+        w_Ar = 0.01
+        M = round(w_N*nitrogen[2] + w_O*oxygen[2] + w_Ar*argon[2], 3)
+        weights = [w_N, w_O, w_Ar]
+        # Density
+        rho = 1.2041
+        # Bulk modulus
+        K = round(131126.49, 3)
+        # Shear modulus
+        G = 0.0
+        # Young's modulus
+        E = (9*K*G)/(3*K + G)
+        # Poisson's ratio
+        nu = (3*K - 2*G)/(2*(3*K + G))
+        # vP/vS
+        vPvS = np.inf
+        # P-wave velocity
+        vP = ((K + 4/3*G)/(rho))**(0.5)
+        # S-wave velocity
+        vS = ((G)/(rho))**(0.5)
+        # Gamma ray
+        GR = 0
+        # Photoelectricity
+        PE = bg.calculate_pe(self, x_list=weights, elements_list=element)
+        U = PE*rho*10**(-3)
+        #
+        data.append(fluid)
+        data.append(round(M,2))
+        data.append(round(rho,1))
+        data.append([round(K*10**(-9),2), round(G*10**(-9),2), round(E*10**(-9),2), round(nu,2), round(vPvS,2)])
+        data.append([round(vP,1), round(vS,1)])
+        data.append([round(GR,2), round(PE,2), round(U,2)])
+        data.append(weights)
+        #
+        return data
+#
 class Water:
     #
     def __init__(self):

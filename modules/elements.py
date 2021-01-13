@@ -105,7 +105,12 @@ class elements:
         chemSi = ["Cl", 17, 35.446, 1.739 * 10 ** (-5), 2030, 1.1, 0.0, 0.0, 206, 0.0]
         #
         return chemSi
-
+    #
+    def Ar(self):  # Ar
+        # [symbol, atomic number, atomic mass, molar volume, density, bulk modulus, shear modulus, young's modulus, vP, vS, resistivity]
+        data = ["Ar", 18, 39.948, 2.256*10**(-5), 83.81, 8.53*10**(-3), 0.0, 0.0, 319, 0.0, 0.0*10**(-8)]
+        #
+        return data
     #
     def K(self):  # K
         # [symbol, atomic number, atomic mass, molar volume, density, bulk modulus, shear modulus, young's modulus, vP, vS]

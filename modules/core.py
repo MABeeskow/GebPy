@@ -6,7 +6,7 @@
 # Name:		core.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		27.12.2020
+# Date:		13.01.2021
 
 #-----------------------------------------------
 
@@ -14,12 +14,13 @@
 import numpy as np
 from scipy import constants
 from numpy import round
+import sys
 from random import *
 from modules import minerals
 from modules.elements import elements
 import matplotlib.pyplot as plt
 from modules.geochemistry import elementanalysis
-from modules import siliciclastics, carbonates, igneous
+from modules import siliciclastics, carbonates, igneous, evaporites
 from modules import fluids
 
 ## CONSTANTS / PROPERTIES
@@ -290,41 +291,55 @@ class geochemistry:
         #print(chemCalcite)
         #print(chem_aragonite)
 
-        print("Igneous rocks: Plutonics")
-        data = igneous.Plutonic("water", 4000)
-        data_granite_01 = data.create_simple_granite()
-        print(data_granite_01)
-        data_syenite_01 = data.create_simple_syenite()
-        print(data_syenite_01)
-        data_monzonite_01 = data.create_simple_monzonite()
-        print(data_monzonite_01)
-        data_gabbro_01 = data.create_simple_gabbro()
-        print(data_gabbro_01)
-        data_diorite_01 = data.create_simple_diorite()
-        print(data_diorite_01)
-        data_granodiorite_01 = data.create_simple_granodiorite()
-        print(data_granodiorite_01)
-        data_tonalite_01 = data.create_simple_tonalite()
-        print(data_tonalite_01)
-        data_quartzrich_granitoid_01 = data.create_simple_quartzrich_granitoid()
-        print(data_quartzrich_granitoid_01)
-        data_quartzolite_01 = data.create_simple_quartzolite()
-        print(data_quartzolite_01)
+        # print("Evaporites")
+        # data = evaporites.Evaporites("water", 2500)
+        # data_rocksalt_01 = data.create_simple_rocksalt()
+        # print(data_rocksalt_01)
+        # data_anhydrite_01 = data.create_simple_anhydrite()
+        # print(data_anhydrite_01)
 
-        print("Igneous rocks: Volcanics")
-        data = igneous.Volcanic("water", 4000)
-        data_basalt_01 = data.create_simple_basalt()
-        print(data_basalt_01)
-        data_andesite_01 = data.create_simple_andesite()
-        print(data_andesite_01)
-        data_latite_01 = data.create_simple_latite()
-        print(data_latite_01)
-        data_trachyte_01 = data.create_simple_trachyte()
-        print(data_trachyte_01)
-        data_rhyolite_01 = data.create_simple_rhyolite()
-        print(data_rhyolite_01)
-        data_dacite_01 = data.create_simple_dacite()
-        print(data_dacite_01)
+        # print("Soils")
+        # data = siliciclastics.Soil()
+        # data_soil_01 = data.create_simple_soil()
+        # print(data_soil_01)
+        # data_sand_01 = data.create_simple_sand()
+        # print(data_sand_01)
+
+        # print("Igneous rocks: Plutonics")
+        # data = igneous.Plutonic("water", 4000)
+        # data_granite_01 = data.create_simple_granite()
+        # print(data_granite_01)
+        # data_syenite_01 = data.create_simple_syenite()
+        # print(data_syenite_01)
+        # data_monzonite_01 = data.create_simple_monzonite()
+        # print(data_monzonite_01)
+        # data_gabbro_01 = data.create_simple_gabbro()
+        # print(data_gabbro_01)
+        # data_diorite_01 = data.create_simple_diorite()
+        # print(data_diorite_01)
+        # data_granodiorite_01 = data.create_simple_granodiorite()
+        # print(data_granodiorite_01)
+        # data_tonalite_01 = data.create_simple_tonalite()
+        # print(data_tonalite_01)
+        # data_quartzrich_granitoid_01 = data.create_simple_quartzrich_granitoid()
+        # print(data_quartzrich_granitoid_01)
+        # data_quartzolite_01 = data.create_simple_quartzolite()
+        # print(data_quartzolite_01)
+
+        # print("Igneous rocks: Volcanics")
+        # data = igneous.Volcanic("water", 4000)
+        # data_basalt_01 = data.create_simple_basalt()
+        # print(data_basalt_01)
+        # data_andesite_01 = data.create_simple_andesite()
+        # print(data_andesite_01)
+        # data_latite_01 = data.create_simple_latite()
+        # print(data_latite_01)
+        # data_trachyte_01 = data.create_simple_trachyte()
+        # print(data_trachyte_01)
+        # data_rhyolite_01 = data.create_simple_rhyolite()
+        # print(data_rhyolite_01)
+        # data_dacite_01 = data.create_simple_dacite()
+        # print(data_dacite_01)
 
         # data = igneous.Plutonic("water", 4000)
         # data_granite_01 = data.create_simple_granite()

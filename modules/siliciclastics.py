@@ -19,6 +19,219 @@ from modules import minerals
 from modules import fluids
 from modules.geophysics import Elasticity as elast
 
+class Soil:
+    #
+    def __init__(self):
+        pass
+    #
+    def create_simple_soil(self, w_C=None, amounts=None):
+        self.w_C = w_C
+        self.amounts = amounts
+        #
+        # [chemical formula, molar mass, density, bulk modulus, shear modulus, vP, vS]
+        quartz = minerals.oxides.quartz("")
+        illite = minerals.phyllosilicates.illite("")
+        kaolinite = minerals.phyllosilicates.kaolinite("")
+        organic = minerals.natives.organic_matter("")
+        #
+        mineralogy = [quartz, illite, kaolinite, organic]
+        #
+        # [molar mass, density, bulk modulus, vP]
+        water = fluids.Water.water("")
+        air = fluids.Gas.air("")
+        #
+        data = []
+        #
+        cond = False
+        composition = []
+        while cond == False:
+            if self.w_C == None and self.amounts == None:
+                w_org = 0.05
+                w_qz = round(abs(rd.uniform(0.5, 0.95)), 4)
+                w_ilt = round(abs(rd.uniform(0.0, (1-w_org-w_qz))), 4)
+                w_kln = round(abs(1-w_qz-w_ilt-w_org), 4)
+            elif self.w_C != None:
+                w_org = round(self.w_C, 4)
+                w_mineral = round(1-w_org, 4)
+                w_qz = round(abs(w_mineral*rd.uniform(0.25, 1)), 4)
+                w_ilt = round(abs(w_mineral*rd.uniform(0, (1-w_qz))), 4)
+                w_kln = round(abs(w_mineral*(1-w_qz-w_ilt)), 4)
+            elif type(self.amounts) is list:
+                w_qz = round(abs(np.random.normal(self.amounts[0], 0.025)), 4)
+                w_ilt = round(abs(np.random.normal(self.amounts[1], 0.025)), 4)
+                w_kln = round(abs(np.random.normal(self.amounts[2], 0.025)), 4)
+                w_org = round(1-w_qz-w_ilt-w_kln, 4)
+            #
+            if w_qz >= 0.0 and w_ilt >= 0.0 and w_kln >= 0.0 and w_org >= 0.0:
+                sumMin = round(w_qz + w_ilt + w_kln + w_org, 4)
+            else:
+                sumMin = 0
+            #
+            w_H = round(w_ilt*illite[6][0] + w_kln*kaolinite[6][0], 4)
+            w_C = round(w_org, 4)
+            w_O = round(w_qz*quartz[6][0] + w_ilt*illite[6][1] + w_kln*kaolinite[6][1], 4)
+            w_Mg = round(w_ilt*illite[6][2], 4)
+            w_Al = round(w_ilt*illite[6][3] + w_kln*kaolinite[6][2], 4)
+            w_Si = round(w_qz*quartz[6][1] + w_ilt*illite[6][4] + w_kln*kaolinite[6][3], 4)
+            w_K = round(w_ilt*illite[6][5], 4)
+            w_Fe = round(w_ilt*illite[6][6], 4)
+            sumConc = w_H + w_C + w_O + w_Mg + w_Al + w_Si + w_K + w_Fe
+            #
+            if sumMin == 1 and sumConc == 1:
+                cond = True
+                composition.extend((["Qz", w_qz, round(quartz[1], 2)], ["Ilt", w_ilt, round(illite[1], 2)], ["Kln", w_kln, round(kaolinite[1], 2)], ["Org", w_org, round(organic[1], 2)]))
+                concentrations = [w_H, w_C, w_O, w_Mg, w_Al, w_Si, w_K, w_Fe]
+                amounts = [w_qz, w_ilt, w_kln, w_org]
+            else:
+                cond = False
+        data.append(composition)
+        #
+        rhoSolid = (w_qz*quartz[2] + w_ilt*illite[2] + w_kln*kaolinite[2] + w_org*organic[2])/1000
+        X = [w_qz, w_ilt, w_kln, w_org]
+        K_list = [mineralogy[i][3][0] for i in range(len(mineralogy))]
+        G_list = [mineralogy[i][3][1] for i in range(len(mineralogy))]
+        K_geo = elast.calc_geometric_mean(self, X, K_list)
+        G_geo = elast.calc_geometric_mean(self, X, G_list)
+        K_solid = K_geo
+        G_solid = G_geo
+        #vP_solid = np.sqrt((K_solid*10**9+4/3*G_solid*10**9)/(rhoSolid*10**3))
+        #vS_solid = np.sqrt((G_solid*10**9)/(rhoSolid*10**3))
+        vP_solid = w_qz*quartz[4][0] + w_ilt*illite[4][0] + w_kln*kaolinite[4][0] + w_org*organic[4][0]
+        vS_solid = w_qz*quartz[4][1] + w_ilt*illite[4][1] + w_kln*kaolinite[4][1] + w_org*organic[4][1]
+        E_solid = (9*K_solid*G_solid)/(3*K_solid+G_solid)
+        nu_solid = (3*K_solid-2*G_solid)/(2*(3*K_solid+G_solid))
+        #
+        phi = rd.uniform(0.5, 0.65)
+        #
+        rho = (1 - phi) * rhoSolid + phi * (0.5*water[2]+0.5*air[2]) / 1000
+        vP = ((1-phi)*vP_solid + phi*(0.5*water[4][0] + 0.5*air[4][0]))/3
+        vS = ((1 - phi) * vS_solid)/3
+        G_bulk = vS**2 * rho
+        K_bulk = vP**2 * rho - 4/3*G_bulk
+        E_bulk = (9*K_bulk*G_bulk)/(3*K_bulk+G_bulk)
+        phiD = (rhoSolid - rho) / (rhoSolid - (0.5*water[2]+0.5*air[2]) / 1000)
+        phiN = (2 * phi ** 2 - phiD ** 2) ** (0.5)
+        GR = w_qz*quartz[5][0] + w_ilt*illite[5][0] + w_kln*kaolinite[5][0] + w_org*organic[5][0]
+        PE = w_qz*quartz[5][1] + w_ilt*illite[5][1] + w_kln*kaolinite[5][1] + w_org*organic[5][1]
+        poisson_seismic = 0.5*(vP**2 - 2*vS**2)/(vP**2 - vS**2)
+        poisson_elastic = (3*K_bulk - 2*G_bulk)/(6*K_bulk + 2*G_bulk)
+        poisson_mineralogical = w_qz*quartz[3][3] + w_ilt*illite[3][3] + w_kln*kaolinite[3][3] + w_org*organic[3][3]
+        #
+        data.append([round(rho, 3), round(rhoSolid, 3), round(water[2] / 1000, 6), round(air[2], 3)])
+        data.append([round(K_bulk*10**(-6), 2), round(G_bulk*10**(-6), 2), round(E_bulk*10**(-6), 2), round(poisson_mineralogical, 3)])
+        data.append([round(vP, 2), round(vS, 2), round(vP_solid, 2), round(water[4][0], 2), round(air[4][0], 2)])
+        data.append([round(phi, 3), round(phiD, 3), round(phiN, 3)])
+        data.append(["water", "air"])
+        data.append([round(GR, 3), round(PE, 3)])
+        data.append(concentrations)
+        data.append(amounts)
+        #
+        return data
+    #
+    def create_simple_sand(self, w_C=None, amounts=None):
+        self.w_C = w_C
+        self.amounts = amounts
+        #
+        # [chemical formula, molar mass, density, bulk modulus, shear modulus, vP, vS]
+        quartz = minerals.oxides.quartz("")
+        illite = minerals.phyllosilicates.illite("")
+        kaolinite = minerals.phyllosilicates.kaolinite("")
+        organic = minerals.natives.organic_matter("")
+        #
+        mineralogy = [quartz, illite, kaolinite, organic]
+        #
+        # [molar mass, density, bulk modulus, vP]
+        water = fluids.Water.water("")
+        air = fluids.Gas.air("")
+        #
+        data = []
+        #
+        cond = False
+        composition = []
+        while cond == False:
+            if self.w_C == None and self.amounts == None:
+                w_org = 0.05
+                w_qz = round(abs(rd.uniform(0.85, 0.95)), 4)
+                w_ilt = round(abs(rd.uniform(0.0, (1-w_org-w_qz))), 4)
+                w_kln = round(abs(1-w_qz-w_ilt-w_org), 4)
+            elif self.w_C != None:
+                w_org = round(self.w_C, 4)
+                w_mineral = round(1-w_org, 4)
+                w_qz = round(abs(w_mineral*rd.uniform(0.25, 1)), 4)
+                w_ilt = round(abs(w_mineral*rd.uniform(0, (1-w_qz))), 4)
+                w_kln = round(abs(w_mineral*(1-w_qz-w_ilt)), 4)
+            elif type(self.amounts) is list:
+                w_qz = round(abs(np.random.normal(self.amounts[0], 0.025)), 4)
+                w_ilt = round(abs(np.random.normal(self.amounts[1], 0.025)), 4)
+                w_kln = round(abs(np.random.normal(self.amounts[2], 0.025)), 4)
+                w_org = round(1-w_qz-w_ilt-w_kln, 4)
+            #
+            if w_qz >= 0.0 and w_ilt >= 0.0 and w_kln >= 0.0 and w_org >= 0.0:
+                sumMin = round(w_qz + w_ilt + w_kln + w_org, 4)
+            else:
+                sumMin = 0
+            #
+            w_H = round(w_ilt*illite[6][0] + w_kln*kaolinite[6][0], 4)
+            w_C = round(w_org, 4)
+            w_O = round(w_qz*quartz[6][0] + w_ilt*illite[6][1] + w_kln*kaolinite[6][1], 4)
+            w_Mg = round(w_ilt*illite[6][2], 4)
+            w_Al = round(w_ilt*illite[6][3] + w_kln*kaolinite[6][2], 4)
+            w_Si = round(w_qz*quartz[6][1] + w_ilt*illite[6][4] + w_kln*kaolinite[6][3], 4)
+            w_K = round(w_ilt*illite[6][5], 4)
+            w_Fe = round(w_ilt*illite[6][6], 4)
+            sumConc = w_H + w_C + w_O + w_Mg + w_Al + w_Si + w_K + w_Fe
+            #
+            if sumMin == 1 and sumConc == 1:
+                cond = True
+                composition.extend((["Qz", w_qz, round(quartz[1], 2)], ["Ilt", w_ilt, round(illite[1], 2)], ["Kln", w_kln, round(kaolinite[1], 2)], ["Org", w_org, round(organic[1], 2)]))
+                concentrations = [w_H, w_C, w_O, w_Mg, w_Al, w_Si, w_K, w_Fe]
+                amounts = [w_qz, w_ilt, w_kln, w_org]
+            else:
+                cond = False
+        data.append(composition)
+        #
+        rhoSolid = (w_qz*quartz[2] + w_ilt*illite[2] + w_kln*kaolinite[2] + w_org*organic[2])/1000
+        X = [w_qz, w_ilt, w_kln, w_org]
+        K_list = [mineralogy[i][3][0] for i in range(len(mineralogy))]
+        G_list = [mineralogy[i][3][1] for i in range(len(mineralogy))]
+        K_geo = elast.calc_geometric_mean(self, X, K_list)
+        G_geo = elast.calc_geometric_mean(self, X, G_list)
+        K_solid = K_geo
+        G_solid = G_geo
+        #vP_solid = np.sqrt((K_solid*10**9+4/3*G_solid*10**9)/(rhoSolid*10**3))
+        #vS_solid = np.sqrt((G_solid*10**9)/(rhoSolid*10**3))
+        vP_solid = w_qz*quartz[4][0] + w_ilt*illite[4][0] + w_kln*kaolinite[4][0] + w_org*organic[4][0]
+        vS_solid = w_qz*quartz[4][1] + w_ilt*illite[4][1] + w_kln*kaolinite[4][1] + w_org*organic[4][1]
+        E_solid = (9*K_solid*G_solid)/(3*K_solid+G_solid)
+        nu_solid = (3*K_solid-2*G_solid)/(2*(3*K_solid+G_solid))
+        #
+        phi = rd.uniform(0.5, 0.65)
+        #
+        rho = (1 - phi) * rhoSolid + phi * water[2] / 1000
+        vP = ((1-phi)*vP_solid + phi*water[4][0])/3
+        vS = ((1 - phi) * vS_solid)/3
+        G_bulk = vS**2 * rho
+        K_bulk = vP**2 * rho - 4/3*G_bulk
+        E_bulk = (9*K_bulk*G_bulk)/(3*K_bulk+G_bulk)
+        phiD = (rhoSolid - rho) / (rhoSolid - water[2]/1000)
+        phiN = (2 * phi ** 2 - phiD ** 2) ** (0.5)
+        GR = w_qz*quartz[5][0] + w_ilt*illite[5][0] + w_kln*kaolinite[5][0] + w_org*organic[5][0]
+        PE = w_qz*quartz[5][1] + w_ilt*illite[5][1] + w_kln*kaolinite[5][1] + w_org*organic[5][1]
+        poisson_seismic = 0.5*(vP**2 - 2*vS**2)/(vP**2 - vS**2)
+        poisson_elastic = (3*K_bulk - 2*G_bulk)/(6*K_bulk + 2*G_bulk)
+        poisson_mineralogical = w_qz*quartz[3][3] + w_ilt*illite[3][3] + w_kln*kaolinite[3][3] + w_org*organic[3][3]
+        #
+        data.append([round(rho, 3), round(rhoSolid, 3), round(water[2] / 1000, 6)])
+        data.append([round(K_bulk*10**(-6), 2), round(G_bulk*10**(-6), 2), round(E_bulk*10**(-6), 2), round(poisson_mineralogical, 3)])
+        data.append([round(vP, 2), round(vS, 2), round(vP_solid, 2), round(water[4][0], 2)])
+        data.append([round(phi, 3), round(phiD, 3), round(phiN, 3)])
+        data.append("water")
+        data.append([round(GR, 3), round(PE, 3)])
+        data.append(concentrations)
+        data.append(amounts)
+        #
+        return data
+#
 class sandstone:
     #
     def __init__(self, fluid, actualThickness):

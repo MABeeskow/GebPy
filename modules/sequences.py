@@ -16,7 +16,7 @@ from numpy import round
 import random as rd
 from random import randint
 from modules.carbonates import limestone, dolomite
-from modules.siliciclastics import sandstone, shale, ore
+from modules.siliciclastics import sandstone, shale, ore, Soil
 from modules.igneous import plutonic, volcanic
 from modules.evaporites import evaporites
 from modules import minerals
@@ -1009,3 +1009,24 @@ class MineralDeposits:
     #
     def create_vms_deposit(self):
         s = 0
+#
+class SedimentaryBasin:
+    #
+    def __init__(self, actualThickness, parts):
+        self.actualThickness = actualThickness
+        self.parts = parts
+    #
+    def create_soil(self):
+        sequence = []
+        thicknessUnit = rd.randint(5, 15)
+        newThickness = self.actualThickness + thicknessUnit
+        #
+        N = self.parts
+        d = float(thicknessUnit/N)
+        #
+        for i in range(N):
+            data = Soil()
+            data_soil = data.create_simple_soil()
+            top = self.actualThickness + i*d
+            bottom = top + d
+            sequence.append(["soil", round(d,1), round(top,1), round(bottom,1), data_soil[1:]])
