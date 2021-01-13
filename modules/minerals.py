@@ -3157,6 +3157,64 @@ class nesosilicates:
         #
         return data
     #
+    def topaz(self):  # Al2SiO4(F,OH)2
+        # [symbol, atomic number, atomic mass, molar volume, density, bulk modulus, shear modulus, young's modulus, vP, vS]
+        hydrogen = elements.H(self)
+        oxygen = elements.O(self)
+        fluorine = elements.F(self)
+        aluminium = elements.Al(self)
+        silicon = elements.Si(self)
+        #
+        # data = [ mineral, molar mass, density, [K, G, E, nu, vP/vS], [vP, vS], GR ]
+        data = []
+        #
+        mineral = "Tpz"
+        #
+        # Molar mass
+        x = round(rd.uniform(0.5, 0.6), 2)
+        M = round(2*aluminium[2] + silicon[2] + 4*oxygen[2] + 2*(x*fluorine[2] + (1-x)*(oxygen[2]+hydrogen[2])), 3)
+        # Density
+        dataV = CrystalPhysics([[4.35, 8.8, 8.4], [], "orthorhombic"])
+        V = dataV.calculate_volume()
+        dataRho = CrystalPhysics([M, 4, V])
+        rho = dataRho.calculate_bulk_density()
+        # Bulk modulus
+        K = 166*10**9
+        # Shear modulus
+        G = 114*10**9
+        # Young's modulus
+        E = (9*K*G)/(3*K + G)
+        # Poisson's ratio
+        nu = (3*K - 2*G)/(2*(3*K + G))
+        # vP/vS
+        vPvS = ((K + 4/3*G)/G)**0.5
+        # P-wave velocity
+        vP = ((K + 4/3*G)/rho)**0.5
+        # S-wave velocity
+        vS = (G/rho)**0.5
+        # Gamma ray
+        GR = 0
+        # Photoelectricity
+        element = [hydrogen, oxygen, fluorine, aluminium, silicon]
+        w_H = round(2*(1-x)*hydrogen[2]/M, 4)
+        w_O = round((4*oxygen[2] + 2*(1-x)*oxygen[2])/M, 4)
+        w_F = round(2*x*fluorine[2]/M, 4)
+        w_Al = round(2*aluminium[2]/M, 4)
+        w_Si = round(silicon[2]/M, 4)
+        weights = [w_H, w_O, w_F, w_Al, w_Si]
+        PE = bg.calculate_pe(self, x_list=weights, elements_list=element)
+        U = PE*rho*10**(-3)
+        #
+        data.append(mineral)
+        data.append([round(M, 2), x])
+        data.append(round(rho, 1))
+        data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 2), round(vPvS, 2)])
+        data.append([round(vP, 1), round(vS, 1)])
+        data.append([round(GR, 2), round(PE, 2), round(U, 2)])
+        data.append(weights)
+        #
+        return data
+    #
 ################
 # INOSILICATES #
 ################
@@ -6637,13 +6695,13 @@ class Tourmalines:
     #
     def schorl(self):   # NaFe3Al6(BO3)3Si6O18(OH)4
         # [symbol, atomic number, atomic mass, molar volume, density, bulk modulus, shear modulus, young's modulus, vP, vS]
-        sodium = elements.Na(self)
-        iron = elements.Fe(self)
-        aluminium = elements.Al(self)
+        hydrogen = elements.H(self)
         boron = elements.B(self)
         oxygen = elements.O(self)
+        sodium = elements.Na(self)
+        aluminium = elements.Al(self)
         silicon = elements.Si(self)
-        hydrogen = elements.H(self)
+        iron = elements.Fe(self)
         #
         data = []
         #
@@ -6682,6 +6740,7 @@ class Tourmalines:
         w_Si = round(6*silicon[2]/M, 4)
         w_H = round(4*hydrogen[2]/M, 4)
         weights = [w_Na, w_Fe, w_Al, w_B, w_O, w_Si, w_H]
+        composition = [w_H, w_B, w_O, w_Na, w_Al, w_Si, w_Fe]
         PE = bg.calculate_pe(self, x_list=weights, elements_list=element)
         U = PE*rho*10**(-3)
         #
@@ -6691,6 +6750,7 @@ class Tourmalines:
         data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 2), round(vPvS, 2)])
         data.append([round(vP, 1), round(vS, 1)])
         data.append([round(GR, 2), round(PE, 2), round(U, 2)])
+        data.append(composition)
         #
         return data
     #
