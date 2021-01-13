@@ -909,3 +909,20 @@ class elementanalysis:
                     data_Fe = w_Fe*self.m[i][j][1]
                     data.append([self.m[i][0], [[chem_O[0], data_O], [chem_Mg[0], data_Mg], [chem_Si[0], data_Si], [chem_Mn[0], data_Mn], [chem_Fe[0], data_Fe]]])
         return data
+#
+class Fractions:
+    #
+    def __init__(self,):
+        pass
+    #
+    def calculate_volume_fraction(self, mineralogy, w):
+        self.mineralogy = mineralogy
+        self.w = w
+        #
+        V0 = np.sum([self.w[i]/self.mineralogy[i][2] for i in range(len(self.mineralogy))])
+        #
+        phi = []
+        for i in range(len(self.mineralogy)):
+            phi.append(self.w[i]/(self.mineralogy[i][2]*V0))
+        #
+        return phi
