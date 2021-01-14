@@ -1018,15 +1018,48 @@ class SedimentaryBasin:
     #
     def create_soil(self):
         sequence = []
-        thicknessUnit = rd.randint(5, 15)
+        thicknessUnit = rd.randint(1, 10)
         newThickness = self.actualThickness + thicknessUnit
         #
         N = self.parts
         d = float(thicknessUnit/N)
         #
         for i in range(N):
-            data = Soil()
-            data_soil = data.create_simple_soil()
-            top = self.actualThickness + i*d
-            bottom = top + d
-            sequence.append(["soil", round(d,1), round(top,1), round(bottom,1), data_soil[1:]])
+            if i == 0:
+                data = Soil()
+                data_soil = data.create_simple_soil()
+                top = self.actualThickness + i*d
+                bottom = top + d
+                sequence.append(["soil", round(d,1), round(top,1), round(bottom,1), data_soil])
+            else:
+                data = Soil()
+                data_soil = data.create_simple_soil(amounts=sequence[-1][4][-1])
+                top = self.actualThickness + i*d
+                bottom = top + d
+                sequence.append(["soil", round(d,1), round(top,1), round(bottom,1), data_soil])
+        #
+        return sequence
+    #
+    def create_sand(self):
+        sequence = []
+        thicknessUnit = rd.randint(1, 10)
+        newThickness = self.actualThickness + thicknessUnit
+        #
+        N = self.parts
+        d = float(thicknessUnit/N)
+        #
+        for i in range(N):
+            if i == 0:
+                data = Soil()
+                data_sand = data.create_simple_sand()
+                top = self.actualThickness + i*d
+                bottom = top + d
+                sequence.append(["sand", round(d,1), round(top,1), round(bottom,1), data_sand])
+            else:
+                data = Soil()
+                data_sand = data.create_simple_sand(amounts=sequence[-1][4][-1])
+                top = self.actualThickness + i*d
+                bottom = top + d
+                sequence.append(["sand", round(d,1), round(top,1), round(bottom,1), data_sand])
+        #
+        return sequence

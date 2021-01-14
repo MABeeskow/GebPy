@@ -62,7 +62,7 @@ class Soil:
                 w_kln = round(abs(np.random.normal(self.amounts[2], 0.025)), 4)
                 w_org = round(1-w_qz-w_ilt-w_kln, 4)
             #
-            if w_qz >= 0.0 and w_ilt >= 0.0 and w_kln >= 0.0 and w_org >= 0.0:
+            if 0.0 <= w_qz <= 1.0 and 0.0 <= w_ilt <= 1.0 and 0.0 <= w_kln <= 1.0 and 0.0 <= w_org <= 1.0:
                 sumMin = round(w_qz + w_ilt + w_kln + w_org, 4)
             else:
                 sumMin = 0
@@ -79,7 +79,8 @@ class Soil:
             #
             if sumMin == 1 and sumConc == 1:
                 cond = True
-                composition.extend((["Qz", w_qz, round(quartz[1], 2)], ["Ilt", w_ilt, round(illite[1], 2)], ["Kln", w_kln, round(kaolinite[1], 2)], ["Org", w_org, round(organic[1], 2)]))
+                #composition.extend((["Qz", w_qz, round(quartz[1], 2)], ["Ilt", w_ilt, round(illite[1], 2)], ["Kln", w_kln, round(kaolinite[1], 2)], ["Org", w_org, round(organic[1], 2)]))
+                composition.extend((["Qz", "Ilt", "Kln", "Org"]))
                 concentrations = [w_H, w_C, w_O, w_Mg, w_Al, w_Si, w_K, w_Fe]
                 amounts = [w_qz, w_ilt, w_kln, w_org]
             else:
@@ -150,8 +151,8 @@ class Soil:
         composition = []
         while cond == False:
             if self.w_C == None and self.amounts == None:
-                w_org = 0.05
-                w_qz = round(abs(rd.uniform(0.85, 0.95)), 4)
+                w_org = 0.025
+                w_qz = round(abs(rd.uniform(0.85, 0.975)), 4)
                 w_ilt = round(abs(rd.uniform(0.0, (1-w_org-w_qz))), 4)
                 w_kln = round(abs(1-w_qz-w_ilt-w_org), 4)
             elif self.w_C != None:
@@ -166,7 +167,7 @@ class Soil:
                 w_kln = round(abs(np.random.normal(self.amounts[2], 0.025)), 4)
                 w_org = round(1-w_qz-w_ilt-w_kln, 4)
             #
-            if w_qz >= 0.0 and w_ilt >= 0.0 and w_kln >= 0.0 and w_org >= 0.0:
+            if 0.0 <= w_qz <= 1.0 and 0.0 <= w_ilt <= 1.0 and 0.0 <= w_kln <= 1.0 and 0.0 <= w_org <= 1.0:
                 sumMin = round(w_qz + w_ilt + w_kln + w_org, 4)
             else:
                 sumMin = 0
@@ -183,7 +184,8 @@ class Soil:
             #
             if sumMin == 1 and sumConc == 1:
                 cond = True
-                composition.extend((["Qz", w_qz, round(quartz[1], 2)], ["Ilt", w_ilt, round(illite[1], 2)], ["Kln", w_kln, round(kaolinite[1], 2)], ["Org", w_org, round(organic[1], 2)]))
+                #composition.extend((["Qz", w_qz, round(quartz[1], 2)], ["Ilt", w_ilt, round(illite[1], 2)], ["Kln", w_kln, round(kaolinite[1], 2)], ["Org", w_org, round(organic[1], 2)]))
+                composition.extend((["Qz", "Ilt", "Kln", "Org"]))
                 concentrations = [w_H, w_C, w_O, w_Mg, w_Al, w_Si, w_K, w_Fe]
                 amounts = [w_qz, w_ilt, w_kln, w_org]
             else:
@@ -205,7 +207,7 @@ class Soil:
         E_solid = (9*K_solid*G_solid)/(3*K_solid+G_solid)
         nu_solid = (3*K_solid-2*G_solid)/(2*(3*K_solid+G_solid))
         #
-        phi = rd.uniform(0.5, 0.65)
+        phi = rd.uniform(0.45, 0.55)
         #
         rho = (1 - phi) * rhoSolid + phi * water[2] / 1000
         vP = ((1-phi)*vP_solid + phi*water[4][0])/3
