@@ -17,7 +17,7 @@ import random as rd
 from random import randint
 from modules.carbonates import limestone, dolomite
 from modules.siliciclastics import sandstone, shale, ore, Soil
-from modules.igneous import plutonic, volcanic
+from modules.igneous import plutonic, volcanic, Plutonic, Volcanic
 from modules.evaporites import evaporites
 from modules import minerals
 from modules.elements import elements
@@ -1012,9 +1012,10 @@ class MineralDeposits:
 #
 class SedimentaryBasin:
     #
-    def __init__(self, actualThickness, parts):
+    def __init__(self, actualThickness=0, parts=10, maximum_thickness=None):
         self.actualThickness = actualThickness
         self.parts = parts
+        self.maximum_thickness = maximum_thickness
     #
     def create_soil(self):
         sequence = []
@@ -1028,7 +1029,7 @@ class SedimentaryBasin:
             if i == 0:
                 data = Soil()
                 data_soil = data.create_simple_soil()
-                top = self.actualThickness + i*d
+                top = self.actualThickness
                 bottom = top + d
                 sequence.append(["soil", round(d,1), round(top,1), round(bottom,1), data_soil])
             else:
@@ -1052,7 +1053,7 @@ class SedimentaryBasin:
             if i == 0:
                 data = Soil()
                 data_sand = data.create_simple_sand()
-                top = self.actualThickness + i*d
+                top = self.actualThickness
                 bottom = top + d
                 sequence.append(["sand", round(d,1), round(top,1), round(bottom,1), data_sand])
             else:
@@ -1061,5 +1062,98 @@ class SedimentaryBasin:
                 top = self.actualThickness + i*d
                 bottom = top + d
                 sequence.append(["sand", round(d,1), round(top,1), round(bottom,1), data_sand])
+        #
+        return sequence
+    #
+    def create_sandstone(self):
+        sequence = []
+        thicknessUnit = rd.randint(1, 10)
+        newThickness = self.actualThickness + thicknessUnit
+        #
+        N = self.parts
+        d = float(thicknessUnit/N)
+        #
+        for i in range(N):
+            if i == 0:
+                data = sandstone("water", actualThickness=self.actualThickness)
+                data_sandstone = data.create_simple_sandstone()
+                top = self.actualThickness
+                bottom = top + d
+                sequence.append(["sandstone", round(d,1), round(top,1), round(bottom,1), data_sandstone])
+            else:
+                data = sandstone("water", actualThickness=bottom)
+                data_sandstone = data.create_simple_sandstone(amounts=sequence[-1][-1][8])
+                top = self.actualThickness + i*d
+                bottom = top + d
+                sequence.append(["sandstone", round(d,1), round(top,1), round(bottom,1), data_sandstone])
+        #
+        return sequence
+    #
+    def create_shale(self):
+        sequence = []
+        thicknessUnit = rd.randint(1, 10)
+        newThickness = self.actualThickness + thicknessUnit
+        #
+        N = self.parts
+        d = float(thicknessUnit/N)
+        #
+        for i in range(N):
+            if i == 0:
+                data = shale()
+                data_shale = data.create_simple_shale()
+                top = self.actualThickness
+                bottom = top + d
+                sequence.append(["shale", round(d,1), round(top,1), round(bottom,1), data_shale])
+            else:
+                data = shale()
+                data_shale = data.create_simple_shale(amounts=sequence[-1][-1][8])
+                top = self.actualThickness + i*d
+                bottom = top + d
+                sequence.append(["shale", round(d,1), round(top,1), round(bottom,1), data_shale])
+        #
+        return sequence
+    #
+    def create_sedimentary_basin(self):
+        sequence = []
+        n_units = rd.randint(2, 20)
+        #
+        condition = False
+        while condition == False:
+            if len(sequence) == 0:
+                data = SedimentaryBasin()
+                data_soil = data.create_soil()
+                sequence.append(data_soil)
+                actual_depth = sequence[-1][-1][3]
+            elif 0 < len(sequence) < n_units-1:
+                magicnumber = rd.randint(0, 1)
+                if magicnumber == 0:
+                    data = SedimentaryBasin(actualThickness=actual_depth)
+                    data_sandstone = data.create_sandstone()
+                    #data = sandstone("water", actualThickness=actual_depth)
+                    #data_sandstone = data.create_simple_sandstone()
+                    sequence.append(data_sandstone)
+                    actual_depth = sequence[-1][-1][3]
+                elif magicnumber == 1:
+                    data = SedimentaryBasin(actualThickness=actual_depth)
+                    data_shale = data.create_shale()
+                    sequence.append(data_shale)
+                    actual_depth = sequence[-1][-1][3]
+                    #print(actual_depth)
+            elif len(sequence) == n_units-1:
+                magicnumber = rd.randint(0, 1)
+                if magicnumber == 0:
+                    #print(actual_depth)
+                    data = Plutonic("water", actualThickness=actual_depth)
+                    data_granite = data.create_simple_granite()
+                    sequence.append(data_granite)
+                    actual_depth = sequence[-1][-1][3]
+                elif magicnumber == 1:
+                    #print(actual_depth)
+                    data = Volcanic("water", actualThickness=actual_depth)
+                    data_basalt = data.create_simple_basalt()
+                    sequence.append(data_basalt)
+                    actual_depth = sequence[-1][-1][3]
+            elif len(sequence) == n_units:
+                condition = True
         #
         return sequence
