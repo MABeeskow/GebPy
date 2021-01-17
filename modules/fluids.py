@@ -220,7 +220,8 @@ class Hydrocarbons:
         #
         # Molar mass
         condition = False
-        while condition == False:
+        condition_2 = False
+        while condition == False and condition_2 == False:
             w_C = round(rd.uniform(0.83, 0.85), 4)
             w_H = round(rd.uniform(0.10, 0.14), 4)
             w_N = round(rd.uniform(0.001, 0.02), 4)
@@ -228,14 +229,19 @@ class Hydrocarbons:
             w_S = round(1-w_C-w_H-w_N-w_O, 4)
             w = w_H + w_C + w_N + w_O + w_S
             if w == 1.0:
-                condition = True
+                M = round(w_H*hydrogen[2] + w_C*carbon[2] + w_N*nitrogen[2] + w_O*oxygen[2] + w_S*sulfur[2], 3)
+                weights = [w_H, w_C, w_N, w_O, w_S]
+                # Density
+                V_m = round(w_H*hydrogen[3] + w_C*carbon[3] + w_N*nitrogen[3] + w_O*oxygen[3] + w_S*sulfur[3], 3)
+                rho = round(M/1000/V_m/0.0135, 4)
+                if 850 <= rho <= 950:
+                    condition = True
+                    condition_2 = True
+                else:
+                    condition = False
+                    condition_2 = False
             else:
-                continue
-        M = round(w_H*hydrogen[2] + w_C*carbon[2] + w_N*nitrogen[2] + w_O*oxygen[2] + w_S*sulfur[2], 3)
-        weights = [w_H, w_C, w_N, w_O, w_S]
-        # Density
-        V_m = round(w_H*hydrogen[3] + w_C*carbon[3] + w_N*nitrogen[3] + w_O*oxygen[3] + w_S*sulfur[3], 3)
-        rho = round(M/1000/V_m/0.0135, 4)
+                condition = False
         # Bulk modulus
         K = round(w_H*hydrogen[5] + w_C*carbon[5] + w_N*nitrogen[5] + w_O*oxygen[5] + w_S*sulfur[5], 3)
         # Shear modulus
@@ -281,7 +287,8 @@ class Hydrocarbons:
         #
         # Molar mass
         condition = False
-        while condition == False:
+        condition_2 = False
+        while condition == False and condition_2 == False:
             w_C = round(rd.uniform(0.83, 0.85), 4)
             w_H = round(rd.uniform(0.10, 0.14), 4)
             w_N = round(rd.uniform(0.001, 0.02), 4)
@@ -289,14 +296,18 @@ class Hydrocarbons:
             w_S = round(1-w_C-w_H-w_N-w_O, 4)
             w = w_H + w_C + w_N + w_O + w_S
             if w == 1.0:
-                condition = True
+                M = round(w_H*hydrogen[2] + w_C*carbon[2] + w_N*nitrogen[2] + w_O*oxygen[2] + w_S*sulfur[2], 3)
+                weights = [w_H, w_C, w_N, w_O, w_S]
+                # Density
+                V_m = round(w_H*hydrogen[3] + w_C*carbon[3] + w_N*nitrogen[3] + w_O*oxygen[3] + w_S*sulfur[3], 3)
+                rho = round(M/1000/V_m/0.0145, 4)
+                if 750 <= rho <= 850:
+                    condition = True
+                    condition_2 = True
+                else:
+                    continue
             else:
-                continue
-        M = round(w_H*hydrogen[2] + w_C*carbon[2] + w_N*nitrogen[2] + w_O*oxygen[2] + w_S*sulfur[2], 3)
-        weights = [w_H, w_C, w_N, w_O, w_S]
-        # Density
-        V_m = round(w_H*hydrogen[3] + w_C*carbon[3] + w_N*nitrogen[3] + w_O*oxygen[3] + w_S*sulfur[3], 3)
-        rho = round(M/1000/V_m/0.0155, 4)
+                condition = False
         # Bulk modulus
         K = round(w_H*hydrogen[5] + w_C*carbon[5] + w_N*nitrogen[5] + w_O*oxygen[5] + w_S*sulfur[5], 3)
         # Shear modulus

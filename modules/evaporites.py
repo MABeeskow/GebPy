@@ -273,7 +273,8 @@ class Evaporites:
             #print("Amount:", sumMin, "C:", sumConc)
             #
             if sumMin == 1 and sumConc == 1:
-                composition.extend((["Hl", w_hl, round(halite[1], 2)], ["Anh", w_anh, round(anhydrite[1], 2)], ["Gp", w_gp, round(gypsum[1], 2)], ["Syl", w_syl, round(sylvite[1], 2)]))
+                #composition.extend((["Hl", w_hl, round(halite[1], 2)], ["Anh", w_anh, round(anhydrite[1], 2)], ["Gp", w_gp, round(gypsum[1], 2)], ["Syl", w_syl, round(sylvite[1], 2)]))
+                composition.extend((["Hl", "Anh", "Gp", "Syl"]))
                 concentrations = [w_H, w_O, w_Na, w_S, w_Cl, w_K, w_Ca]
                 amounts = [w_hl, w_anh, w_gp, w_syl]
                 phi_V = geochemistry.Fractions.calculate_volume_fraction(self, mineralogy=mineralogy, w=amounts)

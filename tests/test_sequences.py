@@ -38,11 +38,30 @@ for i in range(len(data_sandstone)):
     print(data_sandstone[i])
 
 print("")
+data = sequences.SedimentaryBasin()
+data_sandstone = data.create_sandstone(fluid="gas")
+for i in range(len(data_sandstone)):
+    print(data_sandstone[i])
+
+print("")
+data = sequences.SedimentaryBasin()
+data_sandstone = data.create_sandstone(fluid="oil")
+for i in range(len(data_sandstone)):
+    print(data_sandstone[i])
+
+print("")
 # Test shale generation within SedimentaryBasin class
 data = sequences.SedimentaryBasin()
 data_shale = data.create_shale()
 for i in range(len(data_shale)):
     print(data_shale[i])
+
+print("")
+# Test rock salt generation within SedimentaryBasin class
+data = sequences.SedimentaryBasin()
+data_rocksalt = data.create_rocksalt()
+for i in range(len(data_rocksalt)):
+    print(data_rocksalt[i])
 
 print("")
 # Test sedimentary basin generation within SedimentaryBasin class

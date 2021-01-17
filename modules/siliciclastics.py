@@ -104,13 +104,13 @@ class Soil:
         #
         phi = rd.uniform(0.5, 0.65)
         #
-        rho = (1 - phi) * rhoSolid + phi * (0.5*water[2]+0.5*air[2]) / 1000
+        rho = (1 - phi) * rhoSolid + phi * (0.5*water[2]+0.5*air[2]/1000) / 1000
         vP = ((1-phi)*vP_solid + phi*(0.5*water[4][0] + 0.5*air[4][0]))/3
         vS = ((1 - phi) * vS_solid)/3
         G_bulk = vS**2 * rho
         K_bulk = vP**2 * rho - 4/3*G_bulk
         E_bulk = (9*K_bulk*G_bulk)/(3*K_bulk+G_bulk)
-        phiD = (rhoSolid - rho) / (rhoSolid - (0.5*water[2]+0.5*air[2]) / 1000)
+        phiD = (rhoSolid - rho) / (rhoSolid - (0.5*water[2]+0.5*air[2]/1000) / 1000)
         phiN = (2 * phi ** 2 - phiD ** 2) ** (0.5)
         GR = w_qz*quartz[5][0] + w_ilt*illite[5][0] + w_kln*kaolinite[5][0] + w_org*organic[5][0]
         PE = w_qz*quartz[5][1] + w_ilt*illite[5][1] + w_kln*kaolinite[5][1] + w_org*organic[5][1]
@@ -118,7 +118,7 @@ class Soil:
         poisson_elastic = (3*K_bulk - 2*G_bulk)/(6*K_bulk + 2*G_bulk)
         poisson_mineralogical = w_qz*quartz[3][3] + w_ilt*illite[3][3] + w_kln*kaolinite[3][3] + w_org*organic[3][3]
         #
-        data.append([round(rho, 3), round(rhoSolid, 3), round(water[2] / 1000, 6), round(air[2], 3)])
+        data.append([round(rho, 3), round(rhoSolid, 3), round(water[2] / 1000, 6), round(air[2]/1000, 3)])
         data.append([round(K_bulk*10**(-6), 2), round(G_bulk*10**(-6), 2), round(E_bulk*10**(-6), 2), round(poisson_mineralogical, 3)])
         data.append([round(vP, 2), round(vS, 2), round(vP_solid, 2), round(water[4][0], 2), round(air[4][0], 2)])
         data.append([round(phi, 3), round(phiD, 3), round(phiN, 3)])
@@ -524,6 +524,8 @@ class sandstone:
         # [molar mass, density, bulk modulus, vP]
         chemWater = [18.0146, 997, 2.08, 1444]
         water = fluids.Water.water("")
+        oil = fluids.Hydrocarbons.oil("")
+        gas = fluids.Hydrocarbons.natural_gas("")
         chemOil = [0.83 * chemC[2] + 0.11 * chemH[2] + 0.05 * chemS[2] + 0.005 * (chemO[2] + chemN[2]), 0.9, 1.35, 1225]
         chemGas = [0.83 * chemC[2] + 0.11 * chemH[2] + 0.05 * chemS[2] + 0.005 * (chemO[2] + chemN[2]), 0.8, 0.081, 475]
         #
@@ -880,22 +882,22 @@ class sandstone:
             poisson_mineralogical = w_Qz*chem_quartz[3][3] + w_Afs*chem_alkalifeldspar[3][3] + w_Pl*chem_plagioclase[3][3] + w_Cal*chem_calcite[3][3] + w_Chl*chem_chlorite[3][3] + w_Ms*chem_muscovite[3][3] + w_Hem*chem_hematite[3][3]
             #print("Poisson:", round(poisson_seismic,3), round(poisson_elastic,3), round(poisson_mineralogical,3))
             #
-            data.append([round(rho, 3), round(rhoSolid, 3), round(water[2] / 1000, 6)])
+            data.append([round(rho, 3), round(rhoSolid, 3), round(water[2] / 1000, 3)])
             data.append([round(K_bulk*10**(-6), 2), round(G_bulk*10**(-6), 2), round(E_bulk*10**(-6), 2), round(poisson_mineralogical, 3)])
-            data.append([round(vP, 2), round(vS, 2), round(vP_solid, 2), round(chemWater[3], 2)])
+            data.append([round(vP, 2), round(vS, 2), round(vP_solid, 2), round(water[4][0], 2)])
             data.append([round(phi, 3), round(phiD, 3), round(phiN, 3)])
             data.append("water")
             data.append([round(GR, 3), round(PE, 3)])
             data.append(concentrations)
             data.append(amounts)
         elif self.fluid == "oil":
-            rho = (1 - phi) * rhoSolid + phi * chemOil[1] / 1000
-            vP = (1-phi)*vP_solid + phi*chemOil[3]
+            rho = (1 - phi) * rhoSolid + phi * oil[2] / 1000
+            vP = (1-phi)*vP_solid + phi*oil[4][0]
             vS = (1 - phi) * vS_solid
             G_bulk = vS**2 * rho
             K_bulk = vP**2 * rho - 4/3*G_bulk
             E_bulk = (9*K_bulk*G_bulk)/(3*K_bulk+G_bulk)
-            phiD = (rhoSolid - rho) / (rhoSolid - chemOil[1] / 1000)
+            phiD = (rhoSolid - rho) / (rhoSolid - oil[2] / 1000)
             phiN = (2 * phi ** 2 - phiD ** 2) ** (0.5)
             GR = w_Qz*chem_quartz[5][0] + w_Afs*chem_alkalifeldspar[5][0] + w_Pl*chem_plagioclase[5][0] + w_Cal*chem_calcite[5][0] + w_Chl*chem_chlorite[5][0] + w_Ms*chem_muscovite[5][0] + w_Hem*chem_hematite[5][0]
             PE = w_Qz*chem_quartz[5][1] + w_Afs*chem_alkalifeldspar[5][1] + w_Pl*chem_plagioclase[5][1] + w_Cal*chem_calcite[5][1] + w_Chl*chem_chlorite[5][1] + w_Ms*chem_muscovite[5][1] + w_Hem*chem_hematite[5][1]
@@ -904,22 +906,22 @@ class sandstone:
             poisson_mineralogical = w_Qz*chem_quartz[3][3] + w_Afs*chem_alkalifeldspar[3][3] + w_Pl*chem_plagioclase[3][3] + w_Cal*chem_calcite[3][3] + w_Chl*chem_chlorite[3][3] + w_Ms*chem_muscovite[3][3] + w_Hem*chem_hematite[3][3]
             #print("Poisson:", round(poisson_seismic,3), round(poisson_elastic,3), round(poisson_mineralogical,3))
             #
-            data.append([round(rho, 3), round(rhoSolid, 3), round(water[2] / 1000, 6)])
+            data.append([round(rho, 3), round(rhoSolid, 3), round(oil[2] / 1000, 3)])
             data.append([round(K_bulk*10**(-6), 2), round(G_bulk*10**(-6), 2), round(E_bulk*10**(-6), 2), round(poisson_mineralogical, 3)])
-            data.append([round(vP, 2), round(vS, 2), round(vP_solid, 2), round(chemOil[3], 2)])
+            data.append([round(vP, 2), round(vS, 2), round(vP_solid, 2), round(oil[4][0], 2)])
             data.append([round(phi, 3), round(phiD, 3), round(phiN, 3)])
             data.append("oil")
             data.append([round(GR, 3), round(PE, 3)])
             data.append(concentrations)
             data.append(amounts)
         elif self.fluid == "gas":
-            rho = (1 - phi) * rhoSolid + phi * chemGas[1] / 1000
-            vP = (1-phi)*vP_solid + phi*chemGas[3]
+            rho = (1 - phi) * rhoSolid + phi * gas[2] / 1000
+            vP = (1-phi)*vP_solid + phi*oil[4][0]
             vS = (1 - phi) * vS_solid
             G_bulk = vS**2 * rho
             K_bulk = vP**2 * rho - 4/3*G_bulk
             E_bulk = (9*K_bulk*G_bulk)/(3*K_bulk+G_bulk)
-            phiD = (rhoSolid - rho) / (rhoSolid - chemGas[1] / 1000)
+            phiD = (rhoSolid - rho) / (rhoSolid - gas[2] / 1000)
             phiN = (2 * phi ** 2 - phiD ** 2) ** (0.5)
             GR = w_Qz*chem_quartz[5][0] + w_Afs*chem_alkalifeldspar[5][0] + w_Pl*chem_plagioclase[5][0] + w_Cal*chem_calcite[5][0] + w_Chl*chem_chlorite[5][0] + w_Ms*chem_muscovite[5][0] + w_Hem*chem_hematite[5][0]
             PE = w_Qz*chem_quartz[5][1] + w_Afs*chem_alkalifeldspar[5][1] + w_Pl*chem_plagioclase[5][1] + w_Cal*chem_calcite[5][1] + w_Chl*chem_chlorite[5][1] + w_Ms*chem_muscovite[5][1] + w_Hem*chem_hematite[5][1]
@@ -928,9 +930,9 @@ class sandstone:
             poisson_mineralogical = w_Qz*chem_quartz[3][3] + w_Afs*chem_alkalifeldspar[3][3] + w_Pl*chem_plagioclase[3][3] + w_Cal*chem_calcite[3][3] + w_Chl*chem_chlorite[3][3] + w_Ms*chem_muscovite[3][3] + w_Hem*chem_hematite[3][3]
             #print("Poisson:", round(poisson_seismic,3), round(poisson_elastic,3), round(poisson_mineralogical,3))
             #
-            data.append([round(rho, 3), round(rhoSolid, 3), round(chemWater[1] / 1000, 6)])
+            data.append([round(rho, 3), round(rhoSolid, 3), round(gas[2] / 1000, 3)])
             data.append([round(K_bulk*10**(-6), 2), round(G_bulk*10**(-6), 2), round(E_bulk*10**(-6), 2), round(poisson_mineralogical, 3)])
-            data.append([round(vP, 2), round(vS, 2), round(vP_solid, 2), round(chemGas[3], 2)])
+            data.append([round(vP, 2), round(vS, 2), round(vP_solid, 2), round(gas[4][0], 2)])
             data.append([round(phi, 3), round(phiD, 3), round(phiN, 3)])
             data.append("gas")
             data.append([round(GR, 3), round(PE, 3)])
