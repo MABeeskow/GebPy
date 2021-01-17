@@ -1043,7 +1043,7 @@ class SedimentaryBasin:
     #
     def create_sand(self):
         sequence = []
-        thicknessUnit = rd.randint(1, 10)
+        thicknessUnit = rd.randint(1, 15)
         newThickness = self.actualThickness + thicknessUnit
         #
         N = self.parts
@@ -1067,7 +1067,7 @@ class SedimentaryBasin:
     #
     def create_sandstone(self):
         sequence = []
-        thicknessUnit = rd.randint(1, 10)
+        thicknessUnit = rd.randint(1, 20)
         newThickness = self.actualThickness + thicknessUnit
         #
         N = self.parts
@@ -1091,7 +1091,7 @@ class SedimentaryBasin:
     #
     def create_shale(self):
         sequence = []
-        thicknessUnit = rd.randint(1, 10)
+        thicknessUnit = rd.randint(1, 15)
         newThickness = self.actualThickness + thicknessUnit
         #
         N = self.parts
@@ -1113,6 +1113,54 @@ class SedimentaryBasin:
         #
         return sequence
     #
+    def create_granite(self):
+        sequence = []
+        thicknessUnit = rd.randint(1, 20)
+        newThickness = self.actualThickness + thicknessUnit
+        #
+        N = self.parts
+        d = float(thicknessUnit/N)
+        #
+        for i in range(N):
+            if i == 0:
+                data = Plutonic("water", actualThickness=self.actualThickness)
+                data_granite = data.create_simple_granite()
+                top = self.actualThickness
+                bottom = top + d
+                sequence.append(["granite", round(d,1), round(top,1), round(bottom,1), data_granite])
+            else:
+                data = Plutonic("water", actualThickness=self.actualThickness)
+                data_granite = data.create_simple_granite(amounts=sequence[-1][-1][8])
+                top = self.actualThickness + i*d
+                bottom = top + d
+                sequence.append(["granite", round(d,1), round(top,1), round(bottom,1), data_granite])
+        #
+        return sequence
+    #
+    def create_basalt(self):
+        sequence = []
+        thicknessUnit = rd.randint(1, 20)
+        newThickness = self.actualThickness + thicknessUnit
+        #
+        N = self.parts
+        d = float(thicknessUnit/N)
+        #
+        for i in range(N):
+            if i == 0:
+                data = Volcanic("water", actualThickness=self.actualThickness)
+                data_basalt = data.create_simple_basalt()
+                top = self.actualThickness
+                bottom = top + d
+                sequence.append(["basalt", round(d,1), round(top,1), round(bottom,1), data_basalt])
+            else:
+                data = Volcanic("water", actualThickness=self.actualThickness)
+                data_basalt = data.create_simple_basalt(amounts=sequence[-1][-1][8])
+                top = self.actualThickness + i*d
+                bottom = top + d
+                sequence.append(["basalt", round(d,1), round(top,1), round(bottom,1), data_basalt])
+        #
+        return sequence
+    #
     def create_sedimentary_basin(self):
         sequence = []
         n_units = rd.randint(2, 20)
@@ -1123,6 +1171,11 @@ class SedimentaryBasin:
                 data = SedimentaryBasin()
                 data_soil = data.create_soil()
                 sequence.append(data_soil)
+                actual_depth = sequence[-1][-1][3]
+            elif len(sequence) == 1:
+                data = SedimentaryBasin(actualThickness=actual_depth)
+                data_sand = data.create_sand()
+                sequence.append(data_sand)
                 actual_depth = sequence[-1][-1][3]
             elif 0 < len(sequence) < n_units-1:
                 magicnumber = rd.randint(0, 1)
@@ -1143,14 +1196,14 @@ class SedimentaryBasin:
                 magicnumber = rd.randint(0, 1)
                 if magicnumber == 0:
                     #print(actual_depth)
-                    data = Plutonic("water", actualThickness=actual_depth)
-                    data_granite = data.create_simple_granite()
+                    data = SedimentaryBasin(actualThickness=actual_depth)
+                    data_granite = data.create_granite()
                     sequence.append(data_granite)
                     actual_depth = sequence[-1][-1][3]
                 elif magicnumber == 1:
                     #print(actual_depth)
-                    data = Volcanic("water", actualThickness=actual_depth)
-                    data_basalt = data.create_simple_basalt()
+                    data = SedimentaryBasin(actualThickness=actual_depth)
+                    data_basalt = data.create_basalt()
                     sequence.append(data_basalt)
                     actual_depth = sequence[-1][-1][3]
             elif len(sequence) == n_units:

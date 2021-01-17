@@ -1206,35 +1206,18 @@ class shale:
         composition = []
         while cond == False:
             if self.w_C == None and self.w_F == None and self.w_Na == None and self.w_Mg == None and self.w_S == None and self.w_K == None and self.w_Ca == None and self.w_Fe == None and self.amounts == None:
-                magicnumber = rd.randint(0, 4)
+                magicnumber = rd.randint(0, 2)
                 #magicnumber = 0
                 if magicnumber == 0:    # Clay-rich
                     w_ore = round(rd.randint(0, 5)/100, 4)
                     w_Py = w_ore
-                    w_clay = round(rd.randint(50, int((0.75-w_ore)*100))/100, 4)
-                    magicclay = rd.randint(1, 30)
-                    #magicclay = 20 # for testing
-                    if magicclay < 6:
-                        w_ilt2 = rd.randint(50, 100)/100
-                        w_kln2 = rd.randint(0, int((1-w_ilt2)*100))/100
-                        w_mnt2 = 1-w_ilt2-w_kln2
-                        w_ilt = round(w_clay*w_ilt2, 4)
-                        w_kln = round(w_clay*w_kln2, 4)
-                        w_mnt = round(w_clay*w_mnt2, 4)
-                    elif magicclay > 5 and magicclay < 11:
-                        w_kln2 = rd.randint(50, 100)/100
-                        w_ilt2 = rd.randint(int(0.1*(1-w_kln2)*100), int((1-w_kln2)*100))/100
-                        w_mnt2 = 1-w_ilt2-w_kln2
-                        w_ilt = round(w_clay*w_ilt2, 4)
-                        w_kln = round(w_clay*w_kln2, 4)
-                        w_mnt = round(w_clay*w_mnt2, 4)
-                    else:
-                        w_mnt2 = rd.randint(68, 100)/100
-                        w_ilt2 = rd.randint(int(0.1*(1-w_mnt2)*100), int((1-w_mnt2)*100))/100
-                        w_kln2 = 1-w_ilt2-w_mnt2
-                        w_ilt = round(w_clay*w_ilt2, 4)
-                        w_kln = round(w_clay*w_kln2, 4)
-                        w_mnt = round(w_clay*w_mnt2, 4)
+                    w_clay = round(rd.randint(45, int((0.70-w_ore)*100))/100, 4)
+                    w_ilt2 = rd.randint(50, 100)/100
+                    w_kln2 = rd.randint(0, int((1-w_ilt2)*100))/100
+                    w_mnt2 = 1-w_ilt2-w_kln2
+                    w_ilt = round(w_clay*w_ilt2, 4)
+                    w_kln = round(w_clay*w_kln2, 4)
+                    w_mnt = round(w_clay*w_mnt2, 4)
                     w_qz = round(rd.randint(0, int((1-w_ore-w_clay)*100))/100, 4)
                     w_mica = round(rd.randint(0, int((1-w_ore-w_clay-w_qz)*100))/100, 4)
                     w_ms2 = rd.randint(0, 100)/100
@@ -1249,28 +1232,12 @@ class shale:
                     w_Py = w_ore
                     w_qz = round(rd.randint(25, 50)/100, 4)
                     w_clay = round(rd.randint(40, int((1-w_ore-w_qz)*100))/100, 4)
-                    magicclay = rd.randint(1, 30)
-                    if magicclay < 11:
-                        w_ilt2 = rd.randint(50, 100)/100
-                        w_kln2 = rd.randint(0, int((1-w_ilt2)*100))/100
-                        w_mnt2 = 1-w_ilt2-w_kln2
-                        w_ilt = round(w_clay*w_ilt2, 4)
-                        w_kln = round(w_clay*w_kln2, 4)
-                        w_mnt = round(w_clay*w_mnt2, 4)
-                    elif magicclay > 10 and magicclay < 21:
-                        w_kln2 = rd.randint(50, 100)/100
-                        w_ilt2 = rd.randint(0, int((1-w_kln2)*100))/100
-                        w_mnt2 = 1-w_ilt2-w_kln2
-                        w_ilt = round(w_clay*w_ilt2, 4)
-                        w_kln = round(w_clay*w_kln2, 4)
-                        w_mnt = round(w_clay*w_mnt2, 4)
-                    else:
-                        w_mnt2 = rd.randint(68, 100)/100
-                        w_ilt2 = rd.randint(0, int((1-w_mnt2)*100))/100
-                        w_kln2 = 1-w_ilt2-w_mnt2
-                        w_ilt = round(w_clay*w_ilt2, 4)
-                        w_kln = round(w_clay*w_kln2, 4)
-                        w_mnt = round(w_clay*w_mnt2, 4)
+                    w_ilt2 = rd.randint(50, 100)/100
+                    w_kln2 = rd.randint(0, int((1-w_ilt2)*100))/100
+                    w_mnt2 = 1-w_ilt2-w_kln2
+                    w_ilt = round(w_clay*w_ilt2, 4)
+                    w_kln = round(w_clay*w_kln2, 4)
+                    w_mnt = round(w_clay*w_mnt2, 4)
                     w_mica = round(rd.randint(0, int((1-w_ore-w_clay-w_qz)*100))/100, 4)
                     w_ms2 = rd.randint(0, 100)/100
                     w_bt2 = 1 - w_ms2
@@ -1288,102 +1255,16 @@ class shale:
                     w_ms = round(w_mica*w_ms2, 4)
                     w_bt = round(w_mica*w_bt2, 4)
                     w_clay = round(rd.randint(50, int((1-w_ore-w_mica)*100))/100, 4)
-                    magicclay = rd.randint(1, 30)
-                    if magicclay < 11:
-                        w_ilt2 = rd.randint(50, 100)/100
-                        w_kln2 = rd.randint(0, int((1-w_ilt2)*100))/100
-                        w_mnt2 = 1-w_ilt2-w_kln2
-                        w_ilt = round(w_clay*w_ilt2, 4)
-                        w_kln = round(w_clay*w_kln2, 4)
-                        w_mnt = round(w_clay*w_mnt2, 4)
-                    elif magicclay > 10 and magicclay < 21:
-                        w_kln2 = rd.randint(50, 100)/100
-                        w_ilt2 = rd.randint(0, int((1-w_kln2)*100))/100
-                        w_mnt2 = 1-w_ilt2-w_kln2
-                        w_ilt = round(w_clay*w_ilt2, 4)
-                        w_kln = round(w_clay*w_kln2, 4)
-                        w_mnt = round(w_clay*w_mnt2, 4)
-                    else:
-                        w_mnt2 = rd.randint(68, 100)/100
-                        w_ilt2 = rd.randint(0, int((1-w_mnt2)*100))/100
-                        w_kln2 = 1-w_ilt2-w_mnt2
-                        w_ilt = round(w_clay*w_ilt2, 4)
-                        w_kln = round(w_clay*w_kln2, 4)
-                        w_mnt = round(w_clay*w_mnt2, 4)
+                    w_ilt2 = rd.randint(50, 100)/100
+                    w_kln2 = rd.randint(0, int((1-w_ilt2)*100))/100
+                    w_mnt2 = 1-w_ilt2-w_kln2
+                    w_ilt = round(w_clay*w_ilt2, 4)
+                    w_kln = round(w_clay*w_kln2, 4)
+                    w_mnt = round(w_clay*w_mnt2, 4)
                     w_qz = round(rd.randint(0, int((1-w_ore-w_clay-w_mica)*100))/100, 4)
                     w_cal = round(rd.randint(0, int((1-w_ore-w_clay-w_qz-w_mica)*100))/100, 4)
                     w_urn = round(rd.randint(0, 5)/100000, 6)
                     w_org = round(1-w_ore-w_clay-w_qz-w_mica-w_cal-w_urn, 4)
-                elif magicnumber == 3:    # Cal-rich
-                    w_ore = round(rd.randint(0, 5)/100, 4)
-                    w_Py = w_ore
-                    w_cal = round(rd.randint(5, 15)/100, 4)
-                    w_clay = round(rd.randint(50, int((1-w_ore-w_cal)*100))/100, 4)
-                    magicclay = rd.randint(1, 30)
-                    if magicclay < 11:
-                        w_ilt2 = rd.randint(50, 100)/100
-                        w_kln2 = rd.randint(0, int((1-w_ilt2)*100))/100
-                        w_mnt2 = 1-w_ilt2-w_kln2
-                        w_ilt = round(w_clay*w_ilt2, 4)
-                        w_kln = round(w_clay*w_kln2, 4)
-                        w_mnt = round(w_clay*w_mnt2, 4)
-                    elif magicclay > 10 and magicclay < 21:
-                        w_kln2 = rd.randint(50, 100)/100
-                        w_ilt2 = rd.randint(0, int((1-w_kln2)*100))/100
-                        w_mnt2 = 1-w_ilt2-w_kln2
-                        w_ilt = round(w_clay*w_ilt2, 4)
-                        w_kln = round(w_clay*w_kln2, 4)
-                        w_mnt = round(w_clay*w_mnt2, 4)
-                    else:
-                        w_mnt2 = rd.randint(68, 100)/100
-                        w_ilt2 = rd.randint(0, int((1-w_mnt2)*100))/100
-                        w_kln2 = 1-w_ilt2-w_mnt2
-                        w_ilt = round(w_clay*w_ilt2, 4)
-                        w_kln = round(w_clay*w_kln2, 4)
-                        w_mnt = round(w_clay*w_mnt2, 4)
-                    w_qz = round(rd.randint(0, int((1-w_ore-w_clay-w_cal)*100))/100, 4)
-                    w_mica = round(rd.randint(0, int((1-w_ore-w_clay-w_qz-w_cal)*100))/100, 4)
-                    w_ms2 = rd.randint(0, 100)/100
-                    w_bt2 = 1 - w_ms2
-                    w_ms = round(w_mica*w_ms2, 4)
-                    w_bt = round(w_mica*w_bt2, 4)
-                    w_urn = round(rd.randint(0, 5)/100000, 6)
-                    w_org = round(1-w_ore-w_clay-w_qz-w_mica-w_cal-w_urn, 4)
-                elif magicnumber == 4:    # Org-rich
-                    w_ore = round(rd.randint(15, 25)/100, 4)
-                    w_Py = w_ore
-                    w_org = round(rd.randint(2, 5)/100, 4)
-                    w_clay = round(rd.randint(50, int((1-w_ore-w_org)*100))/100, 4)
-                    magicclay = rd.randint(1, 30)
-                    if magicclay < 11:
-                        w_ilt2 = rd.randint(50, 100)/100
-                        w_kln2 = rd.randint(0, int((1-w_ilt2)*100))/100
-                        w_mnt2 = 1-w_ilt2-w_kln2
-                        w_ilt = round(w_clay*w_ilt2, 4)
-                        w_kln = round(w_clay*w_kln2, 4)
-                        w_mnt = round(w_clay*w_mnt2, 4)
-                    elif magicclay > 10 and magicclay < 21:
-                        w_kln2 = rd.randint(50, 100)/100
-                        w_ilt2 = rd.randint(0, int((1-w_kln2)*100))/100
-                        w_mnt2 = 1-w_ilt2-w_kln2
-                        w_ilt = round(w_clay*w_ilt2, 4)
-                        w_kln = round(w_clay*w_kln2, 4)
-                        w_mnt = round(w_clay*w_mnt2, 4)
-                    else:
-                        w_mnt2 = rd.randint(68, 100)/100
-                        w_ilt2 = rd.randint(0, int((1-w_mnt2)*100))/100
-                        w_kln2 = 1-w_ilt2-w_mnt2
-                        w_ilt = round(w_clay*w_ilt2, 4)
-                        w_kln = round(w_clay*w_kln2, 4)
-                        w_mnt = round(w_clay*w_mnt2, 4)
-                    w_qz = round(rd.randint(0, int((1-w_ore-w_clay-w_org)*100))/100, 4)
-                    w_mica = round(rd.randint(0, int((1-w_ore-w_clay-w_qz-w_org)*100))/100, 4)
-                    w_ms2 = rd.randint(0, 100)/100
-                    w_bt2 = 1 - w_ms2
-                    w_ms = round(w_mica*w_ms2, 4)
-                    w_bt = round(w_mica*w_bt2, 4)
-                    w_urn = round(rd.randint(0, 5)/100000, 6)
-                    w_cal = round(1-w_ore-w_clay-w_qz-w_mica-w_org-w_urn, 4)
             elif self.w_C != None:
                 condition = False
                 while condition == False:
@@ -1422,28 +1303,12 @@ class shale:
                 w_ore = round(rd.randint(0, 5)/100, 4)
                 w_Py = w_ore
                 w_clay = round(rd.randint(50, int((1-w_ore-w_mica)*100))/100, 4)
-                magicclay = rd.randint(1, 30)
-                if magicclay < 11:
-                    w_ilt2 = rd.randint(50, 100)/100
-                    w_kln2 = rd.randint(0, int((1-w_ilt2)*100))/100
-                    w_mnt2 = 1-w_ilt2-w_kln2
-                    w_ilt = round(w_clay*w_ilt2, 4)
-                    w_kln = round(w_clay*w_kln2, 4)
-                    w_mnt = round(w_clay*w_mnt2, 4)
-                elif magicclay > 10 and magicclay < 21:
-                    w_kln2 = rd.randint(50, 100)/100
-                    w_ilt2 = rd.randint(0, int((1-w_kln2)*100))/100
-                    w_mnt2 = 1-w_ilt2-w_kln2
-                    w_ilt = round(w_clay*w_ilt2, 4)
-                    w_kln = round(w_clay*w_kln2, 4)
-                    w_mnt = round(w_clay*w_mnt2, 4)
-                else:
-                    w_mnt2 = rd.randint(68, 100)/100
-                    w_ilt2 = rd.randint(0, int((1-w_mnt2)*100))/100
-                    w_kln2 = 1-w_ilt2-w_mnt2
-                    w_ilt = round(w_clay*w_ilt2, 4)
-                    w_kln = round(w_clay*w_kln2, 4)
-                    w_mnt = round(w_clay*w_mnt2, 4)
+                w_ilt2 = rd.randint(50, 100)/100
+                w_kln2 = rd.randint(0, int((1-w_ilt2)*100))/100
+                w_mnt2 = 1-w_ilt2-w_kln2
+                w_ilt = round(w_clay*w_ilt2, 4)
+                w_kln = round(w_clay*w_kln2, 4)
+                w_mnt = round(w_clay*w_mnt2, 4)
                 w_qz = round(rd.randint(0, int((1-w_ore-w_clay-w_mica)*100))/100, 4)
                 w_cal = round(rd.randint(0, int((1-w_ore-w_clay-w_qz-w_mica)*100))/100, 4)
                 w_urn = round(rd.randint(0, 5)/100000, 6)
@@ -1509,28 +1374,12 @@ class shale:
                 w_ore = w_Py
                 w_org = round(rd.randint(2, 5)/100, 4)
                 w_clay = round(rd.randint(50, int((1-w_ore-w_org)*100))/100, 4)
-                magicclay = rd.randint(1, 30)
-                if magicclay < 6:
-                    w_ilt2 = rd.randint(50, 100)/100
-                    w_kln2 = rd.randint(0, int((1-w_ilt2)*100))/100
-                    w_mnt2 = 1-w_ilt2-w_kln2
-                    w_ilt = round(w_clay*w_ilt2, 4)
-                    w_kln = round(w_clay*w_kln2, 4)
-                    w_mnt = round(w_clay*w_mnt2, 4)
-                elif magicclay > 5 and magicclay < 11:
-                    w_kln2 = rd.randint(50, 100)/100
-                    w_ilt2 = rd.randint(0, int((1-w_kln2)*100))/100
-                    w_mnt2 = 1-w_ilt2-w_kln2
-                    w_ilt = round(w_clay*w_ilt2, 4)
-                    w_kln = round(w_clay*w_kln2, 4)
-                    w_mnt = round(w_clay*w_mnt2, 4)
-                else:
-                    w_mnt2 = rd.randint(68, 100)/100
-                    w_ilt2 = rd.randint(0, int((1-w_mnt2)*100))/100
-                    w_kln2 = 1-w_ilt2-w_mnt2
-                    w_ilt = round(w_clay*w_ilt2, 4)
-                    w_kln = round(w_clay*w_kln2, 4)
-                    w_mnt = round(w_clay*w_mnt2, 4)
+                w_ilt2 = rd.randint(50, 100)/100
+                w_kln2 = rd.randint(0, int((1-w_ilt2)*100))/100
+                w_mnt2 = 1-w_ilt2-w_kln2
+                w_ilt = round(w_clay*w_ilt2, 4)
+                w_kln = round(w_clay*w_kln2, 4)
+                w_mnt = round(w_clay*w_mnt2, 4)
                 w_qz = round(rd.randint(0, int((1-w_ore-w_clay-w_org)*100))/100, 4)
                 w_mica = round(rd.randint(0, int((1-w_ore-w_clay-w_qz-w_org)*100))/100, 4)
                 w_ms2 = rd.randint(0, 100)/100
@@ -1548,28 +1397,12 @@ class shale:
                     w_bt2 = rd.randint(0, 100)/100
                     w_bt = round(w_mica*w_bt2, 4)
                     w_clay = round(rd.randint(50, int((1-w_ore-w_mica)*100))/100, 4)
-                    magicclay = rd.randint(1, 30)
-                    if magicclay < 6:
-                        w_ilt2 = rd.randint(50, 100)/100
-                        w_kln2 = rd.randint(0, int((1-w_ilt2)*100))/100
-                        w_mnt2 = 1-w_ilt2-w_kln2
-                        w_ilt = round(w_clay*w_ilt2, 4)
-                        w_kln = round(w_clay*w_kln2, 4)
-                        w_mnt = round(w_clay*w_mnt2, 4)
-                    elif magicclay > 5 and magicclay < 11:
-                        w_kln2 = rd.randint(50, 100)/100
-                        w_ilt2 = rd.randint(0, int((1-w_kln2)*100))/100
-                        w_mnt2 = 1-w_ilt2-w_kln2
-                        w_ilt = round(w_clay*w_ilt2, 4)
-                        w_kln = round(w_clay*w_kln2, 4)
-                        w_mnt = round(w_clay*w_mnt2, 4)
-                    else:
-                        w_mnt2 = rd.randint(68, 100)/100
-                        w_ilt2 = rd.randint(0, int((1-w_mnt2)*100))/100
-                        w_kln2 = 1-w_ilt2-w_mnt2
-                        w_ilt = round(w_clay*w_ilt2, 4)
-                        w_kln = round(w_clay*w_kln2, 4)
-                        w_mnt = round(w_clay*w_mnt2, 4)
+                    w_ilt2 = rd.randint(50, 100)/100
+                    w_kln2 = rd.randint(0, int((1-w_ilt2)*100))/100
+                    w_mnt2 = 1-w_ilt2-w_kln2
+                    w_ilt = round(w_clay*w_ilt2, 4)
+                    w_kln = round(w_clay*w_kln2, 4)
+                    w_mnt = round(w_clay*w_mnt2, 4)
                     w_ms = round((self.w_K - w_KIlt*w_ilt - w_KBt*w_bt)/(w_KMs), 4)
                     if w_ore + w_bt + w_ms + w_clay <= 1.0:
                         condition = True
@@ -1615,28 +1448,12 @@ class shale:
                 while condition == False:
                     w_org = round(rd.randint(2, 8)/100, 4)
                     w_clay = round(rd.randint(35, 70)/100, 4)
-                    magicclay = rd.randint(1, 40)
-                    if magicclay < 11:
-                        w_ilt2 = rd.randint(50, 100)/100
-                        w_kln2 = rd.randint(0, int((1-w_ilt2)*100))/100
-                        w_mnt2 = 1-w_ilt2-w_kln2
-                        w_ilt = round(w_clay*w_ilt2, 4)
-                        w_kln = round(w_clay*w_kln2, 4)
-                        w_mnt = round(w_clay*w_mnt2, 4)
-                    elif magicclay > 10 and magicclay < 21:
-                        w_kln2 = rd.randint(50, 100)/100
-                        w_ilt2 = rd.randint(0, int((1-w_kln2)*100))/100
-                        w_mnt2 = 1-w_ilt2-w_kln2
-                        w_ilt = round(w_clay*w_ilt2, 4)
-                        w_kln = round(w_clay*w_kln2, 4)
-                        w_mnt = round(w_clay*w_mnt2, 4)
-                    else:
-                        w_mnt2 = rd.randint(68, 100)/100
-                        w_ilt2 = rd.randint(0, int((1-w_mnt2)*100))/100
-                        w_kln2 = 1-w_ilt2-w_mnt2
-                        w_ilt = round(w_clay*w_ilt2, 4)
-                        w_kln = round(w_clay*w_kln2, 4)
-                        w_mnt = round(w_clay*w_mnt2, 4)
+                    w_ilt2 = rd.randint(50, 100)/100
+                    w_kln2 = rd.randint(0, int((1-w_ilt2)*100))/100
+                    w_mnt2 = 1-w_ilt2-w_kln2
+                    w_ilt = round(w_clay*w_ilt2, 4)
+                    w_kln = round(w_clay*w_kln2, 4)
+                    w_mnt = round(w_clay*w_mnt2, 4)
                     w_mica = round(rd.randint(0, int((1-w_clay-w_org)*100))/100, 4)
                     w_ms2 = rd.randint(0, 100)/100
                     w_bt2 = 1 - w_ms2
