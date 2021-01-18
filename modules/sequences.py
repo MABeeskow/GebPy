@@ -1225,9 +1225,9 @@ class SedimentaryBasin:
         #
         return sequence
     #
-    def create_sedimentary_basin(self):
+    def create_sedimentary_basin(self, maximum_thickness=150):
+        self.maximum_thickness = maximum_thickness
         sequence = []
-        maximum_thickness = 150
         n_units = rd.randint(10, 30)
         #
         condition = False
@@ -1243,25 +1243,25 @@ class SedimentaryBasin:
                 sequence.append(data_sand)
                 actual_depth = sequence[-1][-1][3]
             #elif 0 < len(sequence) < n_units-1 and sequence[-1][-1][0] not in ["shale", "rock salt"] and sequence[-1][-1][-1][5] not in ["gas", "oil"]:
-            elif actual_depth < 0.9*maximum_thickness and sequence[-1][-1][0] not in ["shale", "rock salt"] and sequence[-1][-1][-1][5] not in ["gas", "oil"]:
-                magicnumber = rd.randint(0, 4)
-                if magicnumber in [0, 1]:
+            elif actual_depth < 0.9*self.maximum_thickness and sequence[-1][-1][0] not in ["shale", "rock salt"] and sequence[-1][-1][-1][5] not in ["gas", "oil"]:
+                magicnumber = rd.randint(0, 10)
+                if 0 <= magicnumber <= 4:
                     data = SedimentaryBasin(actualThickness=actual_depth)
                     data_sandstone = data.create_sandstone()
                     sequence.append(data_sandstone)
                     actual_depth = sequence[-1][-1][3]
-                elif magicnumber in [2, 3]:
+                elif 5 <= magicnumber <= 9:
                     data = SedimentaryBasin(actualThickness=actual_depth)
                     data_shale = data.create_shale()
                     sequence.append(data_shale)
                     actual_depth = sequence[-1][-1][3]
-                elif magicnumber == 4:
+                elif magicnumber == 10:
                     data = SedimentaryBasin(actualThickness=actual_depth)
                     data_rocksalt = data.create_rocksalt()
                     sequence.append(data_rocksalt)
                     actual_depth = sequence[-1][-1][3]
             #elif 0 < len(sequence) < n_units-1 and sequence[-1][-1][0] in ["shale", "rock salt"]:
-            elif actual_depth < 0.9*maximum_thickness and sequence[-1][-1][0] in ["shale", "rock salt"]:
+            elif actual_depth < 0.9*self.maximum_thickness and sequence[-1][-1][0] in ["shale", "rock salt"]:
                 magicnumber = rd.randint(0, 4)
                 if magicnumber == 0:
                     data = SedimentaryBasin(actualThickness=actual_depth)
@@ -1279,19 +1279,19 @@ class SedimentaryBasin:
                     sequence.append(data_sandstone)
                     actual_depth = sequence[-1][-1][3]
             #elif 0 < len(sequence) < n_units-1 and sequence[-1][-1][-1][5] == "gas":
-            elif actual_depth < 0.9*maximum_thickness and sequence[-1][-1][-1][5] == "gas":
+            elif actual_depth < 0.9*self.maximum_thickness and sequence[-1][-1][-1][5] == "gas":
                 data = SedimentaryBasin(actualThickness=actual_depth)
                 data_sandstone = data.create_sandstone(fluid="oil")
                 sequence.append(data_sandstone)
                 actual_depth = sequence[-1][-1][3]
             #elif 0 < len(sequence) < n_units-1 and sequence[-1][-1][-1][5] == "oil":
-            elif actual_depth < 0.9*maximum_thickness and sequence[-1][-1][-1][5] == "oil":
+            elif actual_depth < 0.9*self.maximum_thickness and sequence[-1][-1][-1][5] == "oil":
                 data = SedimentaryBasin(actualThickness=actual_depth)
                 data_sandstone = data.create_sandstone(fluid="water")
                 sequence.append(data_sandstone)
                 actual_depth = sequence[-1][-1][3]
             #elif len(sequence) == n_units-1:
-            elif actual_depth >= 0.9*maximum_thickness and actual_depth < maximum_thickness:
+            elif actual_depth >= 0.9*self.maximum_thickness and actual_depth < maximum_thickness:
                 magicnumber = rd.randint(0, 1)
                 if magicnumber == 0:
                     data = SedimentaryBasin(actualThickness=actual_depth)
@@ -1305,7 +1305,7 @@ class SedimentaryBasin:
                     actual_depth = sequence[-1][-1][3]
             #elif len(sequence) == n_units:
             #    condition = True
-            elif actual_depth >= maximum_thickness:
+            elif actual_depth >= self.maximum_thickness:
                 condition = True
         #
         return sequence

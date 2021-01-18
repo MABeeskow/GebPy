@@ -66,6 +66,110 @@ for i in range(len(data_rocksalt)):
 print("")
 # Test sedimentary basin generation within SedimentaryBasin class
 data = sequences.SedimentaryBasin()
-data_sedbasin = data.create_sedimentary_basin()
+data_sedbasin = data.create_sedimentary_basin(maximum_thickness=500)
+rock = []
+top = []
+bottom = []
+rho = []
+vP = []
+vS = []
+vPvS = []
+phi = []
+gr = []
+pe = []
+rock_sorted = []
+rho_sorted = []
+vP_sorted = []
+vS_sorted = []
+vPvS_sorted = []
+phi_sorted = []
+gr_sorted = []
+pe_sorted = []
 for i in range(len(data_sedbasin)):
+    if data_sedbasin[i][0][0] not in rock_sorted:
+        rock_sorted.append(data_sedbasin[i][0][0])
+        rho_sorted.append([data_sedbasin[i][0][0], []])
+        vP_sorted.append([data_sedbasin[i][0][0], []])
+        vS_sorted.append([data_sedbasin[i][0][0], []])
+        vPvS_sorted.append([data_sedbasin[i][0][0], []])
+        phi_sorted.append([data_sedbasin[i][0][0], []])
+        gr_sorted.append([data_sedbasin[i][0][0], []])
+        pe_sorted.append([data_sedbasin[i][0][0], []])
+for i in range(len(data_sedbasin)):
+    for j in range(len(data_sedbasin[i])):
+        for k in range(len(rock_sorted)):
+            if data_sedbasin[i][0][0] == rho_sorted[k][0]:
+                rho_sorted[k][1].append(data_sedbasin[i][j][4][1][0])
+                vP_sorted[k][1].append(data_sedbasin[i][j][4][3][0])
+                vS_sorted[k][1].append(data_sedbasin[i][j][4][3][1])
+                vPvS_sorted[k][1].append(data_sedbasin[i][j][4][3][0]/data_sedbasin[i][j][4][3][1])
+                phi_sorted[k][1].append(data_sedbasin[i][j][4][4][0])
+                gr_sorted[k][1].append(data_sedbasin[i][j][4][6][0])
+                pe_sorted[k][1].append(data_sedbasin[i][j][4][6][1])
+for i in range(len(data_sedbasin)):
+    for j in range(len(data_sedbasin[i])):
+        rock.append(data_sedbasin[i][j][0])
+        top.append(data_sedbasin[i][j][2])
+        bottom.append(data_sedbasin[i][j][3])
+        rho.append(data_sedbasin[i][j][4][1][0])
+        vP.append(data_sedbasin[i][j][4][3][0])
+        vS.append(data_sedbasin[i][j][4][3][1])
+        vPvS.append(data_sedbasin[i][j][4][3][0]/data_sedbasin[i][j][4][3][1])
+        phi.append(data_sedbasin[i][j][4][4][0])
+        gr.append(data_sedbasin[i][j][4][6][0])
+        pe.append(data_sedbasin[i][j][4][6][1])
     print(data_sedbasin[i])
+
+fig, ax = plt.subplots(1, 1, dpi=100)
+for i in range(len(rock_sorted)):
+    plt.scatter(rho_sorted[i][1], vP_sorted[i][1], label=rock_sorted[i], alpha=0.8)
+plt.grid()
+plt.xlabel("$\\varrho$")
+plt.ylabel("$v_P$")
+plt.legend()
+plt.show()
+
+fig, ax = plt.subplots(1, 1, dpi=100)
+for i in range(len(rock_sorted)):
+    plt.scatter(rho_sorted[i][1], vS_sorted[i][1], label=rock_sorted[i], alpha=0.8)
+plt.grid()
+plt.xlabel("$\\varrho$")
+plt.ylabel("$v_S$")
+plt.legend()
+plt.show()
+
+fig, ax = plt.subplots(1, 1, dpi=100)
+for i in range(len(rock_sorted)):
+    plt.scatter(rho_sorted[i][1], vPvS_sorted[i][1], label=rock_sorted[i], alpha=0.8)
+plt.grid()
+plt.xlabel("$\\varrho$")
+plt.ylabel("$v_P/v_S$")
+plt.legend()
+plt.show()
+
+fig, ax = plt.subplots(1, 1, dpi=100)
+for i in range(len(rock_sorted)):
+    plt.scatter(rho_sorted[i][1], phi_sorted[i][1], label=rock_sorted[i], alpha=0.8)
+plt.grid()
+plt.xlabel("$\\varrho$")
+plt.ylabel("$\\varphi$")
+plt.legend()
+plt.show()
+
+fig, ax = plt.subplots(1, 1, dpi=100)
+for i in range(len(rock_sorted)):
+    plt.scatter(rho_sorted[i][1], gr_sorted[i][1], label=rock_sorted[i], alpha=0.8)
+plt.grid()
+plt.xlabel("$\\varrho$")
+plt.ylabel("GR")
+plt.legend()
+plt.show()
+
+fig, ax = plt.subplots(1, 1, dpi=100)
+for i in range(len(rock_sorted)):
+    plt.scatter(rho_sorted[i][1], pe_sorted[i][1], label=rock_sorted[i], alpha=0.8)
+plt.grid()
+plt.xlabel("$\\varrho$")
+plt.ylabel("PE")
+plt.legend()
+plt.show()

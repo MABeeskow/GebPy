@@ -848,8 +848,8 @@ class sandstone:
         G_list = [mineralogy[i][3][1] for i in range(len(mineralogy))]
         K_geo = elast.calc_geometric_mean(self, X, K_list)
         G_geo = elast.calc_geometric_mean(self, X, G_list)
-        K_solid = K_geo
-        G_solid = G_geo
+        K_solid = K_geo/2
+        G_solid = G_geo/2
         vP_solid = np.sqrt((K_solid*10**9+4/3*G_solid*10**9)/(rhoSolid*10**3))
         vS_solid = np.sqrt((G_solid*10**9)/(rhoSolid*10**3))
         E_solid = (9*K_solid*G_solid)/(3*K_solid+G_solid)
@@ -1524,8 +1524,8 @@ class shale:
         G_list = [mineralogy[i][3][1] for i in range(len(mineralogy))]
         K_geo = elast.calc_geometric_mean(self, X, K_list)
         G_geo = elast.calc_geometric_mean(self, X, G_list)
-        K_solid = K_geo
-        G_solid = G_geo
+        K_solid = K_geo/6
+        G_solid = G_geo/6
         vP_solid = np.sqrt((K_solid*10**9+4/3*G_solid*10**9)/(rhoSolid*10**3))
         vS_solid = np.sqrt((G_solid*10**9)/(rhoSolid*10**3))
         E_solid = (9*K_solid*G_solid)/(3*K_solid+G_solid)
