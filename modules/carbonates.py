@@ -370,6 +370,8 @@ class limestone:
         #
         # [molar mass, density, bulk modulus, vP]
         water = fluids.Water.water("")
+        oil = fluids.Hydrocarbons.oil("")
+        gas = fluids.Hydrocarbons.natural_gas("")
         #
         data = []
         #
@@ -738,7 +740,8 @@ class limestone:
             #
             if sumMin == 1 and sumConc == 1:
                 cond = True
-                composition.extend((["Cal", w_cal, round(chem_cal[1], 2)], ["Arg", w_arg, round(chem_arg[1], 2)], ["Dol", w_dol, round(chem_dol[1], 2)], ["Sd", w_sd, round(chem_sd[1], 2)], ["Qz", w_qz, round(chem_qz[1], 2)], ["Kfs", w_kfs, round(chem_kfs[1][0], 2), round(chem_kfs[1][1], 2)], ["Pl", w_pl, round(chem_pl[1][0], 2), round(chem_pl[1][1], 2)], ["Mnt", w_mnt, round(chem_mnt[1][0], 2), round(chem_mnt[1][1], 2)], ["Kln", w_kln, round(chem_kln[1], 2)], ["Chl", w_chl, round(chem_chl[1], 2)], ["Py", w_py, round(chem_py[1], 2)]))
+                #composition.extend((["Cal", w_cal, round(chem_cal[1], 2)], ["Arg", w_arg, round(chem_arg[1], 2)], ["Dol", w_dol, round(chem_dol[1], 2)], ["Sd", w_sd, round(chem_sd[1], 2)], ["Qz", w_qz, round(chem_qz[1], 2)], ["Kfs", w_kfs, round(chem_kfs[1][0], 2), round(chem_kfs[1][1], 2)], ["Pl", w_pl, round(chem_pl[1][0], 2), round(chem_pl[1][1], 2)], ["Mnt", w_mnt, round(chem_mnt[1][0], 2), round(chem_mnt[1][1], 2)], ["Kln", w_kln, round(chem_kln[1], 2)], ["Chl", w_chl, round(chem_chl[1], 2)], ["Py", w_py, round(chem_py[1], 2)]))
+                composition.extend((["Cal", "Arg", "Dol", "Sd", "Qz", "Kfs", "Pl", "Mnt", "Kln", "Chl", "Py"]))
                 concentrations = [w_H, w_C, w_O, w_Na, w_Mg, w_Al, w_Si, w_S, w_K, w_Ca, w_Fe]
                 amounts = [w_cal, w_arg, w_dol, w_sd, w_qz, w_kfs, w_pl, w_mnt, w_kln, w_chl, w_py]
             else:
@@ -769,28 +772,75 @@ class limestone:
         elif self.actualThickness > 4000:
             phi = rd.randint(5, 10)/100
         #
-        rho = (1 - phi) * rhoSolid + phi * water[2] / 1000
-        vP = (1-phi)*vP_solid + phi*water[4][0]
-        vS = (1 - phi) * vS_solid
-        G_bulk = vS**2 * rho
-        K_bulk = vP**2 * rho - 4/3*G_bulk
-        E_bulk = (9*K_bulk*G_bulk)/(3*K_bulk+G_bulk)
-        phiD = (rhoSolid - rho) / (rhoSolid - water[2] / 1000)
-        phiN = (2 * phi ** 2 - phiD ** 2) ** (0.5)
-        GR = w_cal*chem_cal[5][0] + w_arg*chem_arg[5][0] + w_dol*chem_dol[5][0] + w_sd*chem_sd[5][0] + w_qz*chem_qz[5][0] + w_kfs*chem_kfs[5][0] + w_pl*chem_pl[5][0] + w_mnt*chem_mnt[5][0] + w_kln*chem_kln[5][0] + w_chl*chem_chl[5][0] + w_py*chem_py[5][0]
-        PE = w_cal*chem_cal[5][1] + w_arg*chem_arg[5][1] + w_dol*chem_dol[5][1] + w_sd*chem_sd[5][1] + w_qz*chem_qz[5][1] + w_kfs*chem_kfs[5][1] + w_pl*chem_pl[5][1] + w_mnt*chem_mnt[5][1] + w_kln*chem_kln[5][1] + w_chl*chem_chl[5][1] + w_py*chem_py[5][1]
-        poisson_seismic = 0.5*(vP**2 - 2*vS**2)/(vP**2 - vS**2)
-        poisson_elastic = (3*K_bulk - 2*G_bulk)/(6*K_bulk + 2*G_bulk)
-        poisson_mineralogical = w_cal*chem_cal[3][3] + w_arg*chem_arg[3][3] + w_dol*chem_dol[3][3] + w_sd*chem_sd[3][3] + w_qz*chem_qz[3][3] + w_kfs*chem_kfs[3][3] + w_pl*chem_pl[3][3] + w_mnt*chem_mnt[3][3] + w_kln*chem_kln[3][3] + w_chl*chem_chl[3][3] + w_py*chem_py[3][3]
-        #
-        data.append([round(rho, 3), round(rhoSolid, 3), round(water[2] / 1000, 6)])
-        data.append([round(K_bulk*10**(-6), 2), round(G_bulk*10**(-6), 2), round(E_bulk*10**(-6), 2), round(poisson_mineralogical, 3)])
-        data.append([round(vP, 2), round(vS, 2), round(vP_solid, 2), round(water[4][0], 2)])
-        data.append([round(phi, 3), round(phiD, 3), round(phiN, 3)])
-        data.append("water")
-        data.append([round(GR, 3), round(PE, 3)])
-        data.append(concentrations)
-        data.append(amounts)
+        if self.fluid == "water":
+            rho = (1 - phi) * rhoSolid + phi * water[2] / 1000
+            vP = (1-phi)*vP_solid + phi*water[4][0]
+            vS = (1 - phi) * vS_solid
+            G_bulk = vS**2 * rho
+            K_bulk = vP**2 * rho - 4/3*G_bulk
+            E_bulk = (9*K_bulk*G_bulk)/(3*K_bulk+G_bulk)
+            phiD = (rhoSolid - rho) / (rhoSolid - water[2] / 1000)
+            phiN = (2 * phi ** 2 - phiD ** 2) ** (0.5)
+            GR = w_cal*chem_cal[5][0] + w_arg*chem_arg[5][0] + w_dol*chem_dol[5][0] + w_sd*chem_sd[5][0] + w_qz*chem_qz[5][0] + w_kfs*chem_kfs[5][0] + w_pl*chem_pl[5][0] + w_mnt*chem_mnt[5][0] + w_kln*chem_kln[5][0] + w_chl*chem_chl[5][0] + w_py*chem_py[5][0]
+            PE = w_cal*chem_cal[5][1] + w_arg*chem_arg[5][1] + w_dol*chem_dol[5][1] + w_sd*chem_sd[5][1] + w_qz*chem_qz[5][1] + w_kfs*chem_kfs[5][1] + w_pl*chem_pl[5][1] + w_mnt*chem_mnt[5][1] + w_kln*chem_kln[5][1] + w_chl*chem_chl[5][1] + w_py*chem_py[5][1]
+            poisson_seismic = 0.5*(vP**2 - 2*vS**2)/(vP**2 - vS**2)
+            poisson_elastic = (3*K_bulk - 2*G_bulk)/(6*K_bulk + 2*G_bulk)
+            poisson_mineralogical = w_cal*chem_cal[3][3] + w_arg*chem_arg[3][3] + w_dol*chem_dol[3][3] + w_sd*chem_sd[3][3] + w_qz*chem_qz[3][3] + w_kfs*chem_kfs[3][3] + w_pl*chem_pl[3][3] + w_mnt*chem_mnt[3][3] + w_kln*chem_kln[3][3] + w_chl*chem_chl[3][3] + w_py*chem_py[3][3]
+            #
+            data.append([round(rho, 3), round(rhoSolid, 3), round(water[2] / 1000, 6)])
+            data.append([round(K_bulk*10**(-6), 2), round(G_bulk*10**(-6), 2), round(E_bulk*10**(-6), 2), round(poisson_mineralogical, 3)])
+            data.append([round(vP, 2), round(vS, 2), round(vP_solid, 2), round(water[4][0], 2)])
+            data.append([round(phi, 3), round(phiD, 3), round(phiN, 3)])
+            data.append("water")
+            data.append([round(GR, 3), round(PE, 3)])
+            data.append(concentrations)
+            data.append(amounts)
+        elif self.fluid == "oil":
+            rho = (1 - phi) * rhoSolid + phi * oil[2] / 1000
+            vP = (1-phi)*vP_solid + phi*oil[4][0]
+            vS = (1 - phi) * vS_solid
+            G_bulk = vS**2 * rho
+            K_bulk = vP**2 * rho - 4/3*G_bulk
+            E_bulk = (9*K_bulk*G_bulk)/(3*K_bulk+G_bulk)
+            phiD = (rhoSolid - rho) / (rhoSolid - oil[2] / 1000)
+            phiN = (2 * phi ** 2 - phiD ** 2) ** (0.5)
+            GR = w_cal*chem_cal[5][0] + w_arg*chem_arg[5][0] + w_dol*chem_dol[5][0] + w_sd*chem_sd[5][0] + w_qz*chem_qz[5][0] + w_kfs*chem_kfs[5][0] + w_pl*chem_pl[5][0] + w_mnt*chem_mnt[5][0] + w_kln*chem_kln[5][0] + w_chl*chem_chl[5][0] + w_py*chem_py[5][0]
+            PE = w_cal*chem_cal[5][1] + w_arg*chem_arg[5][1] + w_dol*chem_dol[5][1] + w_sd*chem_sd[5][1] + w_qz*chem_qz[5][1] + w_kfs*chem_kfs[5][1] + w_pl*chem_pl[5][1] + w_mnt*chem_mnt[5][1] + w_kln*chem_kln[5][1] + w_chl*chem_chl[5][1] + w_py*chem_py[5][1]
+            poisson_seismic = 0.5*(vP**2 - 2*vS**2)/(vP**2 - vS**2)
+            poisson_elastic = (3*K_bulk - 2*G_bulk)/(6*K_bulk + 2*G_bulk)
+            poisson_mineralogical = w_cal*chem_cal[3][3] + w_arg*chem_arg[3][3] + w_dol*chem_dol[3][3] + w_sd*chem_sd[3][3] + w_qz*chem_qz[3][3] + w_kfs*chem_kfs[3][3] + w_pl*chem_pl[3][3] + w_mnt*chem_mnt[3][3] + w_kln*chem_kln[3][3] + w_chl*chem_chl[3][3] + w_py*chem_py[3][3]
+            #
+            data.append([round(rho, 3), round(rhoSolid, 3), round(oil[2] / 1000, 6)])
+            data.append([round(K_bulk*10**(-6), 2), round(G_bulk*10**(-6), 2), round(E_bulk*10**(-6), 2), round(poisson_mineralogical, 3)])
+            data.append([round(vP, 2), round(vS, 2), round(vP_solid, 2), round(oil[4][0], 2)])
+            data.append([round(phi, 3), round(phiD, 3), round(phiN, 3)])
+            data.append("oil")
+            data.append([round(GR, 3), round(PE, 3)])
+            data.append(concentrations)
+            data.append(amounts)
+        elif self.fluid == "gas":
+            rho = (1 - phi) * rhoSolid + phi * gas[2] / 1000
+            vP = (1-phi)*vP_solid + phi*gas[4][0]
+            vS = (1 - phi) * vS_solid
+            G_bulk = vS**2 * rho
+            K_bulk = vP**2 * rho - 4/3*G_bulk
+            E_bulk = (9*K_bulk*G_bulk)/(3*K_bulk+G_bulk)
+            phiD = (rhoSolid - rho) / (rhoSolid - gas[2] / 1000)
+            phiN = (2 * phi ** 2 - phiD ** 2) ** (0.5)
+            GR = w_cal*chem_cal[5][0] + w_arg*chem_arg[5][0] + w_dol*chem_dol[5][0] + w_sd*chem_sd[5][0] + w_qz*chem_qz[5][0] + w_kfs*chem_kfs[5][0] + w_pl*chem_pl[5][0] + w_mnt*chem_mnt[5][0] + w_kln*chem_kln[5][0] + w_chl*chem_chl[5][0] + w_py*chem_py[5][0]
+            PE = w_cal*chem_cal[5][1] + w_arg*chem_arg[5][1] + w_dol*chem_dol[5][1] + w_sd*chem_sd[5][1] + w_qz*chem_qz[5][1] + w_kfs*chem_kfs[5][1] + w_pl*chem_pl[5][1] + w_mnt*chem_mnt[5][1] + w_kln*chem_kln[5][1] + w_chl*chem_chl[5][1] + w_py*chem_py[5][1]
+            poisson_seismic = 0.5*(vP**2 - 2*vS**2)/(vP**2 - vS**2)
+            poisson_elastic = (3*K_bulk - 2*G_bulk)/(6*K_bulk + 2*G_bulk)
+            poisson_mineralogical = w_cal*chem_cal[3][3] + w_arg*chem_arg[3][3] + w_dol*chem_dol[3][3] + w_sd*chem_sd[3][3] + w_qz*chem_qz[3][3] + w_kfs*chem_kfs[3][3] + w_pl*chem_pl[3][3] + w_mnt*chem_mnt[3][3] + w_kln*chem_kln[3][3] + w_chl*chem_chl[3][3] + w_py*chem_py[3][3]
+            #
+            data.append([round(rho, 3), round(rhoSolid, 3), round(gas[2] / 1000, 6)])
+            data.append([round(K_bulk*10**(-6), 2), round(G_bulk*10**(-6), 2), round(E_bulk*10**(-6), 2), round(poisson_mineralogical, 3)])
+            data.append([round(vP, 2), round(vS, 2), round(vP_solid, 2), round(gas[4][0], 2)])
+            data.append([round(phi, 3), round(phiD, 3), round(phiN, 3)])
+            data.append("gas")
+            data.append([round(GR, 3), round(PE, 3)])
+            data.append(concentrations)
+            data.append(amounts)
         #
         return data
     #
@@ -1401,7 +1451,8 @@ class dolomite:
             #
             if sumMin == 1 and sumConc == 1:
                 cond = True
-                composition.extend((["Dol", w_dol, round(chem_dol[1], 2)], ["Ank", w_ank, round(chem_ank[1][0], 2)], ["Sd", w_sd, round(chem_sd[1], 2)], ["Cal", w_cal, round(chem_cal[1], 2)], ["Qz", w_qz, round(chem_qz[1], 2)], ["Kfs", w_kfs, round(chem_kfs[1][0], 2), round(chem_kfs[1][1], 2)], ["Pl", w_pl, round(chem_pl[1][0], 2), round(chem_pl[1][1], 2)], ["Kln", w_kln, round(chem_kln[1], 2)], ["Py", w_py, round(chem_py[1], 2)]))
+                #composition.extend((["Dol", w_dol, round(chem_dol[1], 2)], ["Ank", w_ank, round(chem_ank[1][0], 2)], ["Sd", w_sd, round(chem_sd[1], 2)], ["Cal", w_cal, round(chem_cal[1], 2)], ["Qz", w_qz, round(chem_qz[1], 2)], ["Kfs", w_kfs, round(chem_kfs[1][0], 2), round(chem_kfs[1][1], 2)], ["Pl", w_pl, round(chem_pl[1][0], 2), round(chem_pl[1][1], 2)], ["Kln", w_kln, round(chem_kln[1], 2)], ["Py", w_py, round(chem_py[1], 2)]))
+                composition.extend((["Dol", "Ank", "Sd", "Cal", "Qz", "Kfs", "Pl", "Kln", "Py"]))
                 concentrations = [w_H, w_C, w_O, w_Na, w_Mg, w_Al, w_Si, w_S, w_K, w_Ca, w_Fe]
                 amounts = [w_dol, w_ank, w_sd, w_cal, w_qz, w_kfs, w_pl, w_kln, w_py]
             else:

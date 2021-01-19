@@ -265,8 +265,8 @@ class Plutonic:
         G_geo = elast.calc_geometric_mean(self, X, G_list)
         K_solid = K_geo
         G_solid = G_geo
-        vP_solid = np.sqrt((K_solid*10**9+4/3*G_solid*10**9)/(rhoSolid*10**3))
-        vS_solid = np.sqrt((G_solid*10**9)/(rhoSolid*10**3))
+        vP_solid = 0.85*np.sqrt((K_solid*10**9+4/3*G_solid*10**9)/(rhoSolid*10**3))
+        vS_solid = 0.85*np.sqrt((G_solid*10**9)/(rhoSolid*10**3))
         E_solid = (9*K_solid*G_solid)/(3*K_solid+G_solid)
         nu_solid = (3*K_solid-2*G_solid)/(2*(3*K_solid+G_solid))
         #
@@ -1900,21 +1900,21 @@ class Volcanic:
         G_geo = elast.calc_geometric_mean(self, X, G_list)
         K_solid = K_geo
         G_solid = G_geo
-        vP_solid = np.sqrt((K_solid*10**9+4/3*G_solid*10**9)/(rhoSolid*10**3))
-        vS_solid = np.sqrt((G_solid*10**9)/(rhoSolid*10**3))
+        vP_solid = 0.775*np.sqrt((K_solid*10**9+4/3*G_solid*10**9)/(rhoSolid*10**3))
+        vS_solid = 0.775*np.sqrt((G_solid*10**9)/(rhoSolid*10**3))
         E_solid = (9*K_solid*G_solid)/(3*K_solid+G_solid)
         nu_solid = (3*K_solid-2*G_solid)/(2*(3*K_solid+G_solid))
         #
         if self.actualThickness <= 1000:
-            phi = rd.uniform(0.20, 0.25)
+            phi = rd.uniform(0.08, 0.10)
         elif self.actualThickness > 1000 and self.actualThickness <= 2000:
-            phi = rd.uniform(0.15, 0.20)
+            phi = rd.uniform(0.06, 0.08)
         elif self.actualThickness > 2000 and self.actualThickness <= 3000:
-            phi = rd.uniform(0.10, 0.15)
+            phi = rd.uniform(0.04, 0.06)
         elif self.actualThickness > 3000 and self.actualThickness <= 4000:
-            phi = rd.uniform(0.05, 0.10)
+            phi = rd.uniform(0.02, 0.04)
         elif self.actualThickness > 4000:
-            phi = rd.uniform(0.0, 0.05)
+            phi = rd.uniform(0.0, 0.02)
         #
         rho = (1 - phi) * rhoSolid + phi * water[2] / 1000
         vP = (1-phi)*vP_solid + phi*water[4][0]

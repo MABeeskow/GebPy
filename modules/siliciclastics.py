@@ -1227,7 +1227,7 @@ class shale:
                     w_ms = round(w_mica*w_ms2, 4)
                     w_bt = round(w_mica*w_bt2, 4)
                     w_cal = round(rd.randint(0, int((1-w_ore-w_clay-w_qz-w_mica)*100))/100, 4)
-                    w_urn = round(rd.randint(0, 5)/100000, 6)
+                    w_urn = round(rd.randint(0, 5)/300000, 6)
                     w_org = round(1-w_ore-w_clay-w_qz-w_mica-w_cal-w_urn, 4)
                 elif magicnumber == 1:    # Qz-rich
                     w_ore = round(rd.randint(0, 5)/100, 4)
@@ -1477,7 +1477,7 @@ class shale:
                     else:
                         condition = False
             elif type(self.amounts) is list:
-                w_urn = round(abs(np.random.normal(self.amounts[9], 1e-05)), 6)
+                w_urn = round(abs(np.random.normal(self.amounts[9], 5e-07)), 6)
                 w_org = round(abs(np.random.normal(self.amounts[0], 0.025)), 4)
                 w_qz = round(abs(np.random.normal(self.amounts[1], 0.025)), 4)
                 w_cal = round(abs(np.random.normal(self.amounts[2], 0.025)), 4)
@@ -1508,7 +1508,9 @@ class shale:
             w_U = round(chem_urn[6][1]*w_urn, 6)
             sumConc = round(w_H + w_C + w_O + w_F + w_Na + w_Mg + w_Al + w_Si + w_S + w_K + w_Ca + w_Fe + w_U, 4)
             #
-            if sumMin == 1 and sumConc == 1:
+            GR = w_org*chem_org[5][0] + w_qz*chem_qz[5][0] + w_cal*chem_cal[5][0] + w_Py*chem_py[5][0] + w_ilt*chem_ilt[5][0] + w_kln*chem_kln[5][0] + w_mnt*chem_mnt[5][0] + w_bt*chem_bt[5][0] + w_ms*chem_ms[5][0] + w_urn*chem_urn[5][0]
+            #
+            if sumMin == 1 and sumConc == 1 and GR <= 300:
                 cond = True
                 #composition.extend((["Org", w_org, round(chem_org[1], 2)], ["Qz", w_qz, round(chem_qz[1], 2)], ["Cal", w_cal, round(chem_cal[1], 2)], ["Py", w_Py, round(chem_py[1], 2)], ["Ilt", w_ilt, round(chem_ilt[1], 2)], ["Kln", w_kln, round(chem_kln[1], 2)], ["Mnt", w_mnt, round(chem_mnt[1][0], 2), round(chem_mnt[1][1], 2)], ["Bt", w_bt, round(chem_bt[1][0], 2), round(chem_bt[1][1], 2), round(chem_bt[1][2], 2)], ["Ms", w_ms, round(chem_ms[1], 2)], ["Urn", w_urn, round(chem_urn[1], 2)]))
                 composition.extend((["Org", "Qz", "Cal", "Py", "Ilt", "Kln", "Mnt", "Bt", "Ms", "Urn"]))

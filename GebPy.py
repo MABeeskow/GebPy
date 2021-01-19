@@ -2031,7 +2031,10 @@ dataPlotHist = plotting.histogram()
 #        found = True
 #    else:
 #        found = False
-
+print(sortedUnits[0])
+print(sortedUnits[1])
+print(sortedUnits[2])
+print(nUnits, len(nUnits))
 ## MULTIPLOT
 fig, (ax1, ax2, ax3, ax4, ax5) = plt.subplots(1, 5, sharey=True, figsize=(9, 12))
 fig.subplots_adjust(wspace=0.25)
