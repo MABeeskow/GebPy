@@ -381,7 +381,7 @@ class limestone:
             if self.w_Na == None and self.w_Mg == None and self.w_K == None and self.w_Ca == None and self.w_Fe == None and self.amounts == None:
                 magicnumber = rd.randint(0, 6)
                 if magicnumber == 0:    # Cal-rich
-                    w_carb = round(rd.uniform(0.90, 1.0), 4)
+                    w_carb = round(rd.uniform(0.8, 0.9), 4)
                     w_cal2 = rd.uniform(0.85, 0.95)
                     w_arg2 = rd.randint(0, int((1-w_cal2)*100))/100
                     w_dol2 = rd.randint(0, int((1-w_cal2-w_arg2)*100))/100

@@ -5,6 +5,7 @@
 .DS_Store
 notebooks/*.png
 notebooks/*.csv
+tests/*.png
 
 __pycache__/
 *.py[cod]

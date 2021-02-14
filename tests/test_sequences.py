@@ -156,7 +156,7 @@ for i in range(len(data_sedbasin)):
         pe.append(data_sedbasin[i][j][4][6][1])
     print(data_sedbasin[i])
 
-colors = [["soil", "peru"], ["sand", "sandybrown"], ["sandstone", "tan"], ["limestone", "lightblue"], ["shale", "olivedrab"], ["rock salt", "teal"], ["granite", "lightpink"], ["basalt", "grey"]]
+colors = [["soil", "peru"], ["sand", "sandybrown"], ["sandstone", "tan"], ["limestone", "lightblue"], ["shale", "olivedrab"], ["rock salt", "hotpink"], ["granite", "darkorange"], ["basalt", "grey"]]
 units_sorted = []
 for i in range(len(rock_sorted)):
     units_sorted.append([rock_sorted[i]])
@@ -168,9 +168,12 @@ for i in range(len(colors)):
     for j in range(len(units_sorted)):
         if units_sorted[j][0] == colors[i][0] and colors[i][1] not in units_sorted[j]:
             units_sorted[j].append(colors[i][1])
+print("units_sorted:", units_sorted)
+legend_lithology = []
 n_units = []
 for i in range(len(units_sorted)):
     n_units.append(len(units_sorted[i])-2)
+    legend_lithology.append(mpatches.Patch(facecolor=units_sorted[i][-1], hatch="", label=units_sorted[i][0]))
 print("")
 for i in range(len(n_units)):
     print(units_sorted[i][0], units_sorted[i][-1], n_units[i])
@@ -306,6 +309,10 @@ ax5.set_xlim(0, 5)
 ax5.set_xticks([])
 ax5.set_ylim(0, 500)
 ax5.set_yticks(np.arange(0, 500+50, 50))
+ax5.margins(0.3, 0.0)
 plt.gca().invert_yaxis()
 plt.rc('axes', axisbelow=True)
+ax5.legend(handles=legend_lithology, loc="upper right", bbox_to_anchor=(2.0, 1.0), shadow=True, ncol=1, prop={'size': 8}, frameon=False)
+plt.tight_layout()
+plt.savefig("Test_Stratigraphy_01.png", bbox_inches="tight")
 plt.show()
