@@ -11,6 +11,7 @@
 # -----------------------------------------------
 
 ## MODULES
+import sys
 import numpy as np
 import random as rd
 import  matplotlib as mpl
@@ -101,8 +102,9 @@ for i in range(len(data_basalt)):
 
 print("")
 # Test sedimentary basin generation within SedimentaryBasin class
+max_thickness = 500
 data = sequences.SedimentaryBasin()
-data_sedbasin = data.create_sedimentary_basin(maximum_thickness=500)
+data_sedbasin = data.create_sedimentary_basin(maximum_thickness=max_thickness)
 rock = []
 top = []
 bottom = []
@@ -156,7 +158,7 @@ for i in range(len(data_sedbasin)):
         pe.append(data_sedbasin[i][j][4][6][1])
     print(data_sedbasin[i])
 
-colors = [["soil", "peru"], ["sand", "sandybrown"], ["sandstone", "tan"], ["limestone", "lightblue"], ["shale", "olivedrab"], ["rock salt", "hotpink"], ["granite", "darkorange"], ["basalt", "grey"]]
+colors = [["soil", "peru"], ["sand", "moccasin"], ["sandstone", "tan"], ["limestone", "lightblue"], ["shale", "olivedrab"], ["rock salt", "violet"], ["granite", "darkorange"], ["basalt", "grey"]]
 units_sorted = []
 for i in range(len(rock_sorted)):
     units_sorted.append([rock_sorted[i]])
@@ -176,105 +178,135 @@ for i in range(len(units_sorted)):
     legend_lithology.append(mpatches.Patch(facecolor=units_sorted[i][-1], hatch="", label=units_sorted[i][0]))
 print("")
 for i in range(len(n_units)):
-    print(units_sorted[i][0], units_sorted[i][-1], n_units[i])
+    print(units_sorted[i][0], n_units[i])
 print("sum:", sum(n_units))
 
+try:
+    test_sb = open("Test_Sedimentary-Basin.csv", "w")
+except:
+    print("Error")
+    sys.exit(0)
+test_sb.write(str("LITHOLOGY") + "," + str("THICKNESS") + "," + str("TOP") + "," + str("BOTTOM") + "," + str("RHOB") + "," + str("VP") + "," + str("VS") + "," + str("GR") + "," + str("PE") + "," + str("PHIN") + "," + str("POISSON") + "," + str("FLUID") + "\n")
+for i in range(len(data_sedbasin)):
+    for j in range(len(data_sedbasin[i])):
+        if data_sedbasin[i][j][0] == "soil":
+            test_sb.write(str(data_sedbasin[i][j][0]) + "," + str(data_sedbasin[i][j][1]) + "," + str(data_sedbasin[i][j][2]) + "," + str(data_sedbasin[i][j][3]) + "," + str(data_sedbasin[i][j][4][1][0]) + "," + str(data_sedbasin[i][j][4][3][0]) + "," + str(data_sedbasin[i][j][4][3][1]) + "," + str(data_sedbasin[i][j][4][6][0]) + "," + str(data_sedbasin[i][j][4][6][1]) + "," + str(data_sedbasin[i][j][4][4][0]) + "," + str(data_sedbasin[i][j][4][2][3]) + "," + str(data_sedbasin[i][j][4][5][0]) + "\n")
+        else:
+            test_sb.write(str(data_sedbasin[i][j][0]) + "," + str(data_sedbasin[i][j][1]) + "," + str(data_sedbasin[i][j][2]) + "," + str(data_sedbasin[i][j][3]) + "," + str(data_sedbasin[i][j][4][1][0]) + "," + str(data_sedbasin[i][j][4][3][0]) + "," + str(data_sedbasin[i][j][4][3][1]) + "," + str(data_sedbasin[i][j][4][6][0]) + "," + str(data_sedbasin[i][j][4][6][1]) + "," + str(data_sedbasin[i][j][4][4][0]) + "," + str(data_sedbasin[i][j][4][2][3]) + "," + str(data_sedbasin[i][j][4][5]) + "\n")
+#
 fig, ax = plt.subplots(1, 1, dpi=100)
 for i in range(len(rock_sorted)):
-    plt.scatter(rho_sorted[i][1], vP_sorted[i][1], label=units_sorted[i][0], color=units_sorted[i][-1], alpha=0.9)
-plt.grid()
-plt.xlabel("$\\varrho$")
-plt.ylabel("$v_P$")
-plt.legend(fontsize="x-small", framealpha=1.0)
+    plt.scatter(rho_sorted[i][1], vP_sorted[i][1], label=units_sorted[i][0], color=units_sorted[i][-1], edgecolors="black", alpha=0.9)
+plt.grid(color="grey", linestyle="dashed")
+plt.xlabel("$\\varrho$ [g/cm$^3$]")
+plt.ylabel("$v_P$ [m/s]")
+plt.legend(loc="best", fontsize="x-small", framealpha=1.0)
+ax.set_axisbelow(True)
+plt.savefig("Test_01.png", bbox_inches="tight")
 plt.show()
 
 fig, ax = plt.subplots(1, 1, dpi=100)
 for i in range(len(rock_sorted)):
-    plt.scatter(rho_sorted[i][1], vS_sorted[i][1], label=units_sorted[i][0], color=units_sorted[i][-1], alpha=0.9)
-plt.grid()
-plt.xlabel("$\\varrho$")
-plt.ylabel("$v_S$")
-plt.legend(fontsize="x-small", framealpha=1.0)
+    plt.scatter(rho_sorted[i][1], vS_sorted[i][1], label=units_sorted[i][0], color=units_sorted[i][-1], edgecolors="black", alpha=0.9)
+plt.grid(color="grey", linestyle="dashed")
+plt.xlabel("$\\varrho$ [g/cm$^3$]")
+plt.ylabel("$v_S$ [m/s]")
+plt.legend(loc="best", fontsize="x-small", framealpha=1.0)
+ax.set_axisbelow(True)
+plt.savefig("Test_02.png", bbox_inches="tight")
 plt.show()
 
 fig, ax = plt.subplots(1, 1, dpi=100)
 for i in range(len(rock_sorted)):
-    plt.scatter(rho_sorted[i][1], vPvS_sorted[i][1], label=units_sorted[i][0], color=units_sorted[i][-1], alpha=0.9)
-plt.grid()
-plt.xlabel("$\\varrho$")
-plt.ylabel("$v_P/v_S$")
-plt.legend(fontsize="x-small", framealpha=1.0)
+    plt.scatter(rho_sorted[i][1], vPvS_sorted[i][1], label=units_sorted[i][0], color=units_sorted[i][-1], edgecolors="black", alpha=0.9)
+plt.grid(color="grey", linestyle="dashed")
+plt.xlabel("$\\varrho$ [g/cm$^3$]")
+plt.ylabel("$v_P/v_S$ [1]")
+plt.legend(loc="best", fontsize="x-small", framealpha=1.0)
+ax.set_axisbelow(True)
+plt.savefig("Test_03.png", bbox_inches="tight")
 plt.show()
 
 fig, ax = plt.subplots(1, 1, dpi=100)
 for i in range(len(rock_sorted)):
-    plt.scatter(rho_sorted[i][1], phi_sorted[i][1], label=units_sorted[i][0], color=units_sorted[i][-1], alpha=0.9)
-plt.grid()
-plt.xlabel("$\\varrho$")
-plt.ylabel("$\\varphi$")
-plt.legend(fontsize="x-small", framealpha=1.0)
+    plt.scatter(rho_sorted[i][1], phi_sorted[i][1], label=units_sorted[i][0], color=units_sorted[i][-1], edgecolors="black", alpha=0.9)
+plt.grid(color="grey", linestyle="dashed")
+plt.xlabel("$\\varrho$ [g/cm$^3$]")
+plt.ylabel("$\\varphi$ [1]")
+plt.legend(loc="best", fontsize="x-small", framealpha=1.0)
+ax.set_axisbelow(True)
+plt.savefig("Test_04.png", bbox_inches="tight")
 plt.show()
 
 fig, ax = plt.subplots(1, 1, dpi=100)
 for i in range(len(rock_sorted)):
-    plt.scatter(rho_sorted[i][1], gr_sorted[i][1], label=units_sorted[i][0], color=units_sorted[i][-1], alpha=0.9)
-plt.grid()
-plt.xlabel("$\\varrho$")
-plt.ylabel("GR")
-plt.legend(fontsize="x-small", framealpha=1.0)
+    plt.scatter(rho_sorted[i][1], gr_sorted[i][1], label=units_sorted[i][0], color=units_sorted[i][-1], edgecolors="black", alpha=0.9)
+plt.grid(color="grey", linestyle="dashed")
+plt.xlabel("$\\varrho$ [g/cm$^3$]")
+plt.ylabel("GR [API]")
+plt.legend(loc="best", fontsize="x-small", framealpha=1.0)
+ax.set_axisbelow(True)
+plt.savefig("Test_05.png", bbox_inches="tight")
 plt.show()
 
 fig, ax = plt.subplots(1, 1, dpi=100)
 for i in range(len(rock_sorted)):
-    plt.scatter(rho_sorted[i][1], pe_sorted[i][1], label=units_sorted[i][0], color=units_sorted[i][-1], alpha=0.9)
-plt.grid()
-plt.xlabel("$\\varrho$")
-plt.ylabel("PE")
-plt.legend(fontsize="x-small", framealpha=1.0)
+    plt.scatter(rho_sorted[i][1], pe_sorted[i][1], label=units_sorted[i][0], color=units_sorted[i][-1], edgecolors="black", alpha=0.9)
+plt.grid(color="grey", linestyle="dashed")
+plt.xlabel("$\\varrho$ [g/cm$^3$]")
+plt.ylabel("PE [barns/electron]")
+plt.legend(loc="best", fontsize="x-small", framealpha=1.0)
+ax.set_axisbelow(True)
+plt.savefig("Test_06.png", bbox_inches="tight")
 plt.show()
 
 fig, (ax1, ax2, ax3, ax4, ax5) = plt.subplots(1, 5, sharey='row', gridspec_kw={'wspace': 0.15}, figsize=(9, 12))
 fig.subplots_adjust(wspace=0.25)
 # 1
 ax1.plot(gr, top, color="#00549F", linewidth=2)
-ax1.set_xlabel("GR (API)")
-ax1.set_ylabel("Depth (m)")
+ax1.set_xlabel("GR [API]")
+ax1.set_ylabel("Depth [m]")
 #ax1.set_xscale('log')
 ax1.set_xlim(0, 300)
 ax1.set_xticks(np.arange(0, 400, 100))
-ax1.set_ylim(0, 500)
-ax1.set_yticks(np.arange(0, 500+50, 50))
-ax1.grid(True)
+ax1.set_ylim(0, max_thickness)
+ax1.set_yticks(np.arange(0, max_thickness+50, 50))
+ax1.grid(color="grey", linestyle="dashed")
 plt.gca().invert_yaxis()
 plt.rc('axes', axisbelow=True)
 # 2
 vP_edit = [vP[i]/1000 for i in range(len(vP))]
 vS_edit = [vS[i]/1000 for i in range(len(vS))]
 ax2.plot(vP_edit, top, color="#00549F", linewidth=2)
-ax2.set_xlabel("vP (km/s)")
+ax2.set_xlabel("$v_P$ [km/s]")
 ax2.set_xlim(0, 8.5)
 ax2.set_xticks(np.arange(0, 8.5, 2.0))
-ax2.set_ylim(0, 500)
-ax2.set_yticks(np.arange(0, 500+50, 50))
+ax2.xaxis.label.set_color("#00549F")
+ax2.set_ylim(0, max_thickness)
+ax2.set_yticks(np.arange(0, max_thickness+50, 50))
+ax2.grid(color="grey", linestyle="dashed")
 ax2_2 = ax2.twiny()
 ax2_2.plot(vS_edit, top, color="#CC071E", linewidth=2)
-ax2_2.set_xlabel("vS (km/s)")
+ax2_2.set_xlabel("$v_S$ [km/s]")
 ax2_2.set_xlim(0, 8.5)
 ax2_2.set_xticks(np.arange(0, 8.5, 2.0))
 ax2_2.minorticks_on()
-ax2_2.grid(True)
+ax2_2.xaxis.label.set_color("#CC071E")
+ax2_2.grid(color="grey", linestyle="dashed")
 plt.gca().invert_yaxis()
 plt.rc('axes', axisbelow=True)
 # 3
 phi_edit = [phi[i]*100 for i in range(len(phi))]
 ax3.plot(rho, top, color="#57AB27", linewidth=2)
-ax3.set_xlabel("$\\varrho$ [g/cm^3]")
+ax3.set_xlabel("$\\varrho$ [g/cm$^3$]")
 #ax3.set_xlim(1.7, 3.3)
 ax3.set_xlim(1.6, 3.2)
 #ax3.set_xticks(np.around(np.linspace(1.7, 3.3, 4, endpoint=True), decimals=1))
 ax3.set_xticks(np.around(np.linspace(1.6, 3.2, 4, endpoint=True), decimals=1))
-ax3.set_ylim(0, 500)
-ax3.set_yticks(np.arange(0, 500+50, 50))
+ax3.xaxis.label.set_color("#57AB27")
+ax3.set_ylim(0, max_thickness)
+ax3.set_yticks(np.arange(0, max_thickness+50, 50))
+ax3.grid(color="grey", linestyle="dashed")
 ax3_2 = ax3.twiny()
 ax3_2.plot(phi_edit, top, color="#00549F", linewidth=2)
 ax3_2.set_xlabel("$\\varphi$ [1]")
@@ -283,21 +315,22 @@ ax3_2.set_xlim(60, 0)
 #ax3_2.set_xticks(np.around(np.linspace(57, -27, 6, endpoint=True), decimals=0))
 ax3_2.set_xticks(np.around(np.linspace(60, 0, 6, endpoint=True), decimals=0))
 ax3_2.minorticks_on()
-ax3_2.grid(True)
+ax3_2.xaxis.label.set_color("#00549F")
+ax3_2.grid(color="grey", linestyle="dashed")
 plt.gca().invert_yaxis()
 plt.rc('axes', axisbelow=True)
 # 4
 ax4.plot(pe, top, color="#00549F", linewidth=2)
-ax4.set_xlabel("PE (barns/electron)")
+ax4.set_xlabel("PE [barns/electron]")
 ax4.set_xscale('log')
 #ax4.set_xlim(0, 40)
 #ax4.set_xticks(np.arange(0, max(gr)+100, 100))
 ax4.get_xaxis().set_major_formatter(mpl.ticker.ScalarFormatter())
 ax4.get_xaxis().set_minor_formatter(mpl.ticker.ScalarFormatter())
 ax4.xaxis.set_minor_formatter(NullFormatter())
-ax4.set_ylim(0, 500)
-ax4.set_yticks(np.arange(0, 500+50, 50))
-ax4.grid(True)
+ax4.set_ylim(0, max_thickness)
+ax4.set_yticks(np.arange(0, max_thickness+50, 50))
+ax4.grid(color="grey", linestyle="dashed", which="both")
 plt.gca().invert_yaxis()
 plt.rc('axes', axisbelow=True)
 # 5
@@ -307,8 +340,8 @@ for i in range(len(n_units)):
 ax5.set_xlabel("Lithology")
 ax5.set_xlim(0, 5)
 ax5.set_xticks([])
-ax5.set_ylim(0, 500)
-ax5.set_yticks(np.arange(0, 500+50, 50))
+ax5.set_ylim(0, max_thickness)
+ax5.set_yticks(np.arange(0, max_thickness+50, 50))
 ax5.margins(0.3, 0.0)
 plt.gca().invert_yaxis()
 plt.rc('axes', axisbelow=True)

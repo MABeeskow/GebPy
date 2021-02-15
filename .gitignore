@@ -6,6 +6,7 @@
 notebooks/*.png
 notebooks/*.csv
 tests/*.png
+tests/*.csv
 
 __pycache__/
 *.py[cod]
