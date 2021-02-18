@@ -11,6 +11,8 @@
 #-----------------------------------------------
 
 ## MODULES
+from typing import List, Any
+
 import numpy as np
 from numpy import round
 import random as rd
@@ -22,6 +24,318 @@ from modules.evaporites import evaporites, Evaporites
 from modules import minerals
 from modules.elements import elements
 from modules import fluids
+
+class DataProcessing:
+    #
+    def __init__(self, dataset):
+        self.dataset = dataset
+    #
+    def extract_lithology(self, type="sequence"):
+        """Returns a list that contains the lithology of a previously generated sequence or the name of a rock.
+        **Arguments**:
+            type: sequence, rock
+        **Outputs**:
+            data: list of rock names
+        """
+        data = []
+        if type == "sequence":
+            for i in range(len(self.dataset)):
+                for j in range(len(self.dataset[i])):
+                    data.append(self.dataset[i][j][0])
+        else:
+            data.append(self.dataset[0][0])
+        #
+        return data
+    #
+    def extract_thickness(self, type="sequence"):
+        """Returns a list that contains the thickness of previously generated rock units.
+        **Arguments**:
+            type: sequence, rock
+        **Outputs**:
+            data: list of thicknesses
+        """
+        data = []
+        if type == "sequence":
+            for i in range(len(self.dataset)):
+                for j in range(len(self.dataset[i])):
+                    data.append(self.dataset[i][j][1])
+        else:
+            for i in range(len(self.dataset)):
+                data.append(self.dataset[i][1])
+        #
+        return np.array(data)
+    #
+    def extract_top(self, type="sequence"):
+        """Returns a list that contains the top depths of previously generated rock units.
+        **Arguments**:
+            type: sequence, rock
+        **Outputs**:
+            data: list of top depths
+        """
+        data = []
+        if type == "sequence":
+            for i in range(len(self.dataset)):
+                for j in range(len(self.dataset[i])):
+                    data.append(self.dataset[i][j][2])
+        else:
+            for i in range(len(self.dataset)):
+                data.append(self.dataset[i][2])
+        #
+        return np.array(data)
+    #
+    def extract_bottom(self, type="sequence"):
+        """Returns a list that contains the bottom depths of previously generated rock units.
+        **Arguments**:
+            type: sequence, rock
+        **Outputs**:
+            data: list of bottom depths
+        """
+        data = []
+        if type == "sequence":
+            for i in range(len(self.dataset)):
+                for j in range(len(self.dataset[i])):
+                    data.append(self.dataset[i][j][3])
+        else:
+            for i in range(len(self.dataset)):
+                data.append(self.dataset[i][3])
+        #
+        return np.array(data)
+    #
+    def extract_mineralogy(self, type="sequence"):
+        """Returns a list that contains the mineralogical assemblage of the previously generated rock units.
+        **Arguments**:
+            type: sequence, rock
+        **Outputs**:
+            data: list of incorporated minerals
+        """
+        data = []
+        if type == "sequence":
+            for i in range(len(self.dataset)):
+                for j in range(len(self.dataset[i])):
+                    data.append(self.dataset[i][j][4][0][1])
+        else:
+            data = self.dataset[0][4][0][1]
+        #
+        return data
+    #
+    def extract_elements(self, type="sequence"):
+        """Returns a list that contains the chemical elements incorporated in the previously generated rock units.
+        **Arguments**:
+            type: sequence, rock
+        **Outputs**:
+            data: list of incorporated elements
+        """
+        data = []
+        if type == "sequence":
+            for i in range(len(self.dataset)):
+                for j in range(len(self.dataset[i])):
+                    data.append(self.dataset[i][j][4][0][0])
+        else:
+            data = self.dataset[0][4][0][0]
+        #
+        return data
+    #
+    def extract_densities(self, type="sequence", keyword="bulk"):
+        """Returns a list that contains the densities of the previously generated rock units.
+        **Arguments**:
+            type: sequence, rock
+            keyword: all, bulk, solid, fluid
+        **Outputs**:
+            data: list of densities
+        """
+        data = []
+        if type == "sequence":
+            for i in range(len(self.dataset)):
+                for j in range(len(self.dataset[i])):
+                    if keyword == "all":
+                        data.append(self.dataset[i][j][4][1])
+                    elif keyword == "bulk":
+                        data.append(self.dataset[i][j][4][1][0])
+                    elif keyword == "solid":
+                        data.append(self.dataset[i][j][4][1][1])
+                    elif keyword == "fluid":
+                        data.append(self.dataset[i][j][4][1][2])
+        else:
+            for i in range(len(self.dataset)):
+                if keyword == "all":
+                    data.append(self.dataset[i][4][1])
+                elif keyword == "bulk":
+                    data.append(self.dataset[i][4][1][0])
+                elif keyword == "solid":
+                    data.append(self.dataset[i][4][1][1])
+                elif keyword == "fluid":
+                    data.append(self.dataset[i][4][1][2])
+        #
+        return np.array(data)
+    #
+    def extract_elastic_moduli(self, type="sequence", keyword="bulk"):
+        """Returns a list that contains the elastic moduli of the previously generated rock units.
+        **Arguments**:
+            type: sequence, rock
+        **Outputs**:
+            data: list of elastic moduli
+        """
+        data = []
+        if type == "sequence":
+            for i in range(len(self.dataset)):
+                for j in range(len(self.dataset[i])):
+                    if keyword == "all":
+                        data.append(self.dataset[i][j][4][2])
+                    elif keyword == "bulk" or keyword == "K":
+                        data.append(self.dataset[i][j][4][2][0])
+                    elif keyword == "shear" or keyword == "G":
+                        data.append(self.dataset[i][j][4][2][1])
+                    elif keyword == "young" or keyword == "E":
+                        data.append(self.dataset[i][j][4][2][2])
+                    elif keyword == "poisson" or keyword == "mu":
+                        data.append(self.dataset[i][j][4][2][3])
+        else:
+            for i in range(len(self.dataset)):
+                if keyword == "all":
+                    data.append(self.dataset[i][4][2])
+                elif keyword == "bulk" or keyword == "K":
+                    data.append(self.dataset[i][4][2][0])
+                elif keyword == "shear" or keyword == "G":
+                    data.append(self.dataset[i][4][2][1])
+                elif keyword == "young" or keyword == "E":
+                    data.append(self.dataset[i][4][2][2])
+                elif keyword == "poisson" or keyword == "mu":
+                    data.append(self.dataset[i][4][2][3])
+        #
+        return np.array(data)
+    #
+    def extract_seismic_velocities(self, type="sequence", keyword="p-wave"):
+        """Returns a list that contains the seismic velocities of the previously generated rock units.
+        **Arguments**:
+            type: sequence, rock
+        **Outputs**:
+            data: list of seismic velocities
+        """
+        data = []
+        if type == "sequence":
+            for i in range(len(self.dataset)):
+                for j in range(len(self.dataset[i])):
+                    if keyword == "all":
+                        data.append(self.dataset[i][j][4][3])
+                    elif keyword in ["p-wave", "compressional", "vP"]:
+                        data.append(self.dataset[i][j][4][3][0])
+                    elif keyword in ["s-wave", "shear", "vS"]:
+                        data.append(self.dataset[i][j][4][3][1])
+        else:
+            for i in range(len(self.dataset)):
+                if keyword == "all":
+                    data.append(self.dataset[i][4][3])
+                elif keyword in ["p-wave", "compressional", "vP"]:
+                    data.append(self.dataset[i][4][3][0])
+                elif keyword in ["s-wave", "shear", "vS"]:
+                    data.append(self.dataset[i][4][3][1])
+        #
+        return np.array(data)
+    #
+    def extract_porosity(self, type="sequence"):
+        """Returns a list that contains the porosities of the previously generated rock units.
+        **Arguments**:
+            type: sequence, rock
+        **Outputs**:
+            data: list of porosities
+        """
+        data = []
+        if type == "sequence":
+            for i in range(len(self.dataset)):
+                for j in range(len(self.dataset[i])):
+                    data.append(self.dataset[i][j][4][4][0])
+        else:
+            for i in range(len(self.dataset)):
+                data.append(self.dataset[i][4][4][0])
+        #
+        return np.array(data)
+    #
+    def extract_fluid(self, type="sequence"):
+        """Returns a list that contains the fluid within the previously generated rock units.
+        **Arguments**:
+            type: sequence, rock
+        **Outputs**:
+            data: list of fluids
+        """
+        data = []
+        if type == "sequence":
+            data.append(self.dataset[0][0][4][5])
+        else:
+            data.append(self.dataset[0][4][5])
+        #
+        return data
+    #
+    def extract_gamma_ray(self, type="sequence"):
+        """Returns a list that contains the natural gamma ray values of the previously generated rock units.
+        **Arguments**:
+            type: sequence, rock
+        **Outputs**:
+            data: list of natural gamma ray values
+        """
+        data = []
+        if type == "sequence":
+            for i in range(len(self.dataset)):
+                for j in range(len(self.dataset[i])):
+                    data.append(self.dataset[i][j][4][6][0])
+        else:
+            for i in range(len(self.dataset)):
+                data.append(self.dataset[i][4][6][0])
+        #
+        return np.array(data)
+    #
+    def extract_photoelectricity(self, type="sequence"):
+        """Returns a list that contains the photoelectricity values of the previously generated rock units.
+        **Arguments**:
+            type: sequence, rock
+        **Outputs**:
+            data: list of photoelectricity values
+        """
+        data = []
+        if type == "sequence":
+            for i in range(len(self.dataset)):
+                for j in range(len(self.dataset[i])):
+                    data.append(self.dataset[i][j][4][6][1])
+        else:
+            for i in range(len(self.dataset)):
+                data.append(self.dataset[i][4][6][1])
+        #
+        return np.array(data)
+    #
+    def extract_element_amounts(self, type="sequence"):
+        """Returns a list that contains the amounts of the elements within the previously generated rock units.
+        **Arguments**:
+            type: sequence, rock
+        **Outputs**:
+            data: list of element amounts
+        """
+        data = []
+        if type == "sequence":
+            for i in range(len(self.dataset)):
+                for j in range(len(self.dataset[i])):
+                    data.append(self.dataset[i][j][4][7])
+        else:
+            for i in range(len(self.dataset)):
+                data.append(self.dataset[i][4][7])
+        #
+        return np.array(data)
+    #
+    def extract_mineral_amounts(self, type="sequence"):
+        """Returns a list that contains the amounts of the minerals within the previously generated rock units.
+        **Arguments**:
+            type: sequence, rock
+        **Outputs**:
+            data: list of mineral amounts
+        """
+        data = []
+        if type == "sequence":
+            for i in range(len(self.dataset)):
+                for j in range(len(self.dataset[i])):
+                    data.append(self.dataset[i][j][4][8])
+        else:
+            for i in range(len(self.dataset)):
+                data.append(self.dataset[i][4][8])
+        #
+        return np.array(data)
 
 class surface:
     #
@@ -1012,7 +1326,7 @@ class MineralDeposits:
 #
 class SedimentaryBasin:
     #
-    def __init__(self, actualThickness=0, parts=10, maximum_thickness=None):
+    def __init__(self, actualThickness=0, parts=None, maximum_thickness=None):
         self.actualThickness = actualThickness
         self.parts = parts
         self.maximum_thickness = maximum_thickness
@@ -1022,11 +1336,13 @@ class SedimentaryBasin:
         thicknessUnit = rd.randint(5, 10)
         newThickness = self.actualThickness + thicknessUnit
         #
-        N = self.parts
-        d = float(thicknessUnit/N)
-        d = 1.0
+        if self.parts == None:
+            d = 1.0
+            self.parts = thicknessUnit
+        else:
+            d = float(thicknessUnit/self.parts)
         #
-        for i in range(thicknessUnit):
+        for i in range(self.parts):
             if i == 0:
                 data = Soil()
                 data_soil = data.create_simple_soil()
@@ -1047,11 +1363,13 @@ class SedimentaryBasin:
         thicknessUnit = rd.randint(5, 15)
         newThickness = self.actualThickness + thicknessUnit
         #
-        N = self.parts
-        d = float(thicknessUnit/N)
-        d = 1.0
+        if self.parts == None:
+            d = 1.0
+            self.parts = thicknessUnit
+        else:
+            d = float(thicknessUnit/self.parts)
         #
-        for i in range(thicknessUnit):
+        for i in range(self.parts):
             if i == 0:
                 data = Soil()
                 data_sand = data.create_simple_sand()
@@ -1073,11 +1391,13 @@ class SedimentaryBasin:
         thicknessUnit = rd.randint(5, 20)
         newThickness = self.actualThickness + thicknessUnit
         #
-        N = self.parts
-        d = float(thicknessUnit/N)
-        d = 1.0
+        if self.parts == None:
+            d = 1.0
+            self.parts = thicknessUnit
+        else:
+            d = float(thicknessUnit/self.parts)
         #
-        for i in range(thicknessUnit):
+        for i in range(self.parts):
             if i == 0 and self.fluid == "water":
                 data = sandstone("water", actualThickness=self.actualThickness)
                 data_sandstone = data.create_simple_sandstone()
@@ -1123,11 +1443,13 @@ class SedimentaryBasin:
         thicknessUnit = rd.randint(5, 20)
         newThickness = self.actualThickness + thicknessUnit
         #
-        N = self.parts
-        d = float(thicknessUnit/N)
-        d = 1.0
+        if self.parts == None:
+            d = 1.0
+            self.parts = thicknessUnit
+        else:
+            d = float(thicknessUnit/self.parts)
         #
-        for i in range(thicknessUnit):
+        for i in range(self.parts):
             if i == 0 and self.fluid == "water":
                 data = limestone("water", actualThickness=self.actualThickness)
                 data_limestone = data.create_simple_limestone()
@@ -1172,11 +1494,13 @@ class SedimentaryBasin:
         thicknessUnit = rd.randint(5, 15)
         newThickness = self.actualThickness + thicknessUnit
         #
-        N = self.parts
-        d = float(thicknessUnit/N)
-        d = 1.0
+        if self.parts == None:
+            d = 1.0
+            self.parts = thicknessUnit
+        else:
+            d = float(thicknessUnit/self.parts)
         #
-        for i in range(thicknessUnit):
+        for i in range(self.parts):
             if i == 0:
                 data = shale()
                 data_shale = data.create_simple_shale()
@@ -1197,11 +1521,13 @@ class SedimentaryBasin:
         thicknessUnit = rd.randint(5, 20)
         newThickness = self.actualThickness + thicknessUnit
         #
-        N = self.parts
-        d = float(thicknessUnit/N)
-        d = 1.0
+        if self.parts == None:
+            d = 1.0
+            self.parts = thicknessUnit
+        else:
+            d = float(thicknessUnit/self.parts)
         #
-        for i in range(thicknessUnit):
+        for i in range(self.parts):
             if i == 0:
                 data = Evaporites("water", actualThickness=self.actualThickness)
                 data_halite = data.create_simple_rocksalt()
@@ -1226,11 +1552,13 @@ class SedimentaryBasin:
             thicknessUnit = self.thickness
         newThickness = self.actualThickness + thicknessUnit
         #
-        N = self.parts
-        d = float(thicknessUnit/N)
-        d = 1.0
+        if self.parts == None:
+            d = 1.0
+            self.parts = thicknessUnit
+        else:
+            d = float(thicknessUnit/self.parts)
         #
-        for i in range(thicknessUnit):
+        for i in range(self.parts):
             if i == 0:
                 data = Plutonic("water", actualThickness=self.actualThickness)
                 data_granite = data.create_simple_granite()
@@ -1255,11 +1583,13 @@ class SedimentaryBasin:
             thicknessUnit = self.thickness
         newThickness = self.actualThickness + thicknessUnit
         #
-        N = self.parts
-        d = float(thicknessUnit/N)
-        d = 1.0
+        if self.parts == None:
+            d = 1.0
+            self.parts = thicknessUnit
+        else:
+            d = float(thicknessUnit/self.parts)
         #
-        for i in range(thicknessUnit):
+        for i in range(self.parts):
             if i == 0:
                 data = Volcanic("water", actualThickness=self.actualThickness)
                 data_basalt = data.create_simple_basalt()
@@ -1283,12 +1613,12 @@ class SedimentaryBasin:
         condition = False
         while condition == False:
             if len(sequence) == 0:
-                data = SedimentaryBasin()
+                data = SedimentaryBasin(parts=self.parts)
                 data_soil = data.create_soil()
                 sequence.append(data_soil)
                 actual_depth = sequence[-1][-1][3]
             elif len(sequence) == 1:
-                data = SedimentaryBasin(actualThickness=actual_depth)
+                data = SedimentaryBasin(parts=self.parts, actualThickness=actual_depth)
                 data_sand = data.create_sand()
                 sequence.append(data_sand)
                 actual_depth = sequence[-1][-1][3]
@@ -1296,22 +1626,22 @@ class SedimentaryBasin:
             elif actual_depth < 0.9*self.maximum_thickness and sequence[-1][-1][0] not in ["shale", "rock salt"] and sequence[-1][-1][-1][5] not in ["gas", "oil"]:
                 magicnumber = rd.randint(1, 40)
                 if 1 <= magicnumber <= 16:
-                    data = SedimentaryBasin(actualThickness=actual_depth)
+                    data = SedimentaryBasin(parts=self.parts, actualThickness=actual_depth)
                     data_sandstone = data.create_sandstone()
                     sequence.append(data_sandstone)
                     actual_depth = sequence[-1][-1][3]
                 elif 33 <= magicnumber <= 38:
-                    data = SedimentaryBasin(actualThickness=actual_depth)
+                    data = SedimentaryBasin(parts=self.parts, actualThickness=actual_depth)
                     data_limestone = data.create_limestone()
                     sequence.append(data_limestone)
                     actual_depth = sequence[-1][-1][3]
                 elif 17 <= magicnumber <= 32:
-                    data = SedimentaryBasin(actualThickness=actual_depth)
+                    data = SedimentaryBasin(parts=self.parts, actualThickness=actual_depth)
                     data_shale = data.create_shale()
                     sequence.append(data_shale)
                     actual_depth = sequence[-1][-1][3]
                 elif magicnumber > 38:
-                    data = SedimentaryBasin(actualThickness=actual_depth)
+                    data = SedimentaryBasin(parts=self.parts, actualThickness=actual_depth)
                     data_rocksalt = data.create_rocksalt()
                     sequence.append(data_rocksalt)
                     actual_depth = sequence[-1][-1][3]
@@ -1319,44 +1649,44 @@ class SedimentaryBasin:
             elif actual_depth < 0.9*self.maximum_thickness and sequence[-1][-1][0] in ["shale", "rock salt"]:
                 magicnumber = rd.randint(0, 11)
                 if magicnumber == 0:
-                    data = SedimentaryBasin(actualThickness=actual_depth)
+                    data = SedimentaryBasin(parts=self.parts, actualThickness=actual_depth)
                     data_sandstone = data.create_sandstone(fluid="gas")
                     sequence.append(data_sandstone)
                     actual_depth = sequence[-1][-1][3]
                 elif magicnumber == 1:
-                    data = SedimentaryBasin(actualThickness=actual_depth)
+                    data = SedimentaryBasin(parts=self.parts, actualThickness=actual_depth)
                     data_limestone = data.create_limestone(fluid="gas")
                     sequence.append(data_limestone)
                     actual_depth = sequence[-1][-1][3]
                 elif magicnumber == 2:
-                    data = SedimentaryBasin(actualThickness=actual_depth)
+                    data = SedimentaryBasin(parts=self.parts, actualThickness=actual_depth)
                     data_sandstone = data.create_sandstone(fluid="oil")
                     sequence.append(data_sandstone)
                     actual_depth = sequence[-1][-1][3]
                 elif magicnumber == 3:
-                    data = SedimentaryBasin(actualThickness=actual_depth)
+                    data = SedimentaryBasin(parts=self.parts, actualThickness=actual_depth)
                     data_limestone = data.create_limestone(fluid="oil")
                     sequence.append(data_limestone)
                     actual_depth = sequence[-1][-1][3]
                 elif 4 <= magicnumber <= 5:
-                    data = SedimentaryBasin(actualThickness=actual_depth)
+                    data = SedimentaryBasin(parts=self.parts, actualThickness=actual_depth)
                     data_sandstone = data.create_sandstone(fluid="water")
                     sequence.append(data_sandstone)
                     actual_depth = sequence[-1][-1][3]
                 elif magicnumber > 5:
-                    data = SedimentaryBasin(actualThickness=actual_depth)
+                    data = SedimentaryBasin(parts=self.parts, actualThickness=actual_depth)
                     data_shale = data.create_shale()
                     sequence.append(data_shale)
                     actual_depth = sequence[-1][-1][3]
             #elif 0 < len(sequence) < n_units-1 and sequence[-1][-1][-1][5] == "gas":
             elif actual_depth < 0.9*self.maximum_thickness and sequence[-1][-1][-1][5] == "gas":
-                data = SedimentaryBasin(actualThickness=actual_depth)
+                data = SedimentaryBasin(parts=self.parts, actualThickness=actual_depth)
                 data_sandstone = data.create_sandstone(fluid="oil")
                 sequence.append(data_sandstone)
                 actual_depth = sequence[-1][-1][3]
             #elif 0 < len(sequence) < n_units-1 and sequence[-1][-1][-1][5] == "oil":
             elif actual_depth < 0.9*self.maximum_thickness and sequence[-1][-1][-1][5] == "oil":
-                data = SedimentaryBasin(actualThickness=actual_depth)
+                data = SedimentaryBasin(parts=self.parts, actualThickness=actual_depth)
                 data_sandstone = data.create_sandstone(fluid="water")
                 sequence.append(data_sandstone)
                 actual_depth = sequence[-1][-1][3]
@@ -1364,12 +1694,12 @@ class SedimentaryBasin:
             elif actual_depth >= 0.9*self.maximum_thickness and actual_depth < maximum_thickness:
                 magicnumber = rd.randint(0, 1)
                 if magicnumber == 0:
-                    data = SedimentaryBasin(actualThickness=actual_depth)
+                    data = SedimentaryBasin(parts=self.parts, actualThickness=actual_depth)
                     data_granite = data.create_granite(thickness=int(maximum_thickness-actual_depth))
                     sequence.append(data_granite)
                     actual_depth = sequence[-1][-1][3]
                 elif magicnumber == 1:
-                    data = SedimentaryBasin(actualThickness=actual_depth)
+                    data = SedimentaryBasin(parts=self.parts, actualThickness=actual_depth)
                     data_basalt = data.create_basalt(thickness=int(maximum_thickness-actual_depth))
                     sequence.append(data_basalt)
                     actual_depth = sequence[-1][-1][3]

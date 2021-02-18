@@ -170,7 +170,7 @@ for i in range(len(colors)):
     for j in range(len(units_sorted)):
         if units_sorted[j][0] == colors[i][0] and colors[i][1] not in units_sorted[j]:
             units_sorted[j].append(colors[i][1])
-print("units_sorted:", units_sorted)
+#print("units_sorted:", units_sorted)
 legend_lithology = []
 n_units = []
 for i in range(len(units_sorted)):

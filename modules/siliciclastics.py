@@ -838,7 +838,10 @@ class sandstone:
                 amounts = [w_Qz, w_Afs, w_Pl, w_Cal, w_Chl, w_Ms, w_Hem]
             else:
                 cond = False
-        data.append(composition)
+        element_list = ["H", "C", "O", "F", "Na", "Mg", "Al", "Si", "K", "Ca", "Fe"]
+        mineral_list = ["Qz", "Kfs", "Pl", "Cal", "Chl", "Ms", "Hem"]
+        #data.append(composition)
+        data.append([element_list, mineral_list])
         #
         mineralogy = [chem_quartz, chem_alkalifeldspar, chem_plagioclase, chem_calcite, chem_chlorite, chem_muscovite, chem_hematite]
         #
@@ -856,15 +859,15 @@ class sandstone:
         nu_solid = (3*K_solid-2*G_solid)/(2*(3*K_solid+G_solid))
         #
         if self.actualThickness <= 1000 and self.w_Fe == None:
-            phi = randint(25, 35)/100
+            phi = rd.uniform(0.25, 0.35)
         elif self.actualThickness > 1000 and self.actualThickness <= 2000 and self.w_Fe == None:
-            phi = randint(20, 25)/100
+            phi = rd.uniform(0.20, 0.25)
         elif self.actualThickness > 2000 and self.actualThickness <= 3000 and self.w_Fe == None:
-            phi = randint(15, 20)/100
+            phi = rd.uniform(0.15, 0.20)
         elif self.actualThickness > 3000 and self.actualThickness <= 4000 and self.w_Fe == None:
-            phi = randint(10, 15)/100
+            phi = rd.uniform(0.10, 0.15)
         elif self.actualThickness > 4000 or self.w_Fe != None:
-            phi = randint(0, 10)/100
+            phi = rd.uniform(0.05, 0.10)
         #
         if self.fluid == "water" or self.w_Fe != None:
             rho = (1 - phi) * rhoSolid + phi * water[2] / 1000
