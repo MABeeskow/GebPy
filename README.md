@@ -1,5 +1,7 @@
 # GebPy
 
+developed by Maximilian A. Beeskow
+
 GebPy is a Python-based tool for the generation of geophysical and geochemical 
 data of the subsurface. The main assumption of GepPy is that all rock properties 
 are determined by the mineral assemblage besides structural features.
