@@ -1315,14 +1315,6 @@ class subsurface:
             sequence.append(["ore", round(d,1), round(top,1), round(bottom,1), rho, velocities, GR, phiN, fluid, composition, round(poisson,2), round(PE,2)])
         #
         return sequence
-    #
-class MineralDeposits:
-    #
-    def __init__(self):
-        pass
-    #
-    def create_vms_deposit(self):
-        s = 0
 #
 class SedimentaryBasin:
     #
@@ -1385,17 +1377,20 @@ class SedimentaryBasin:
         #
         return sequence
     #
-    def create_sandstone(self, fluid="water"):
+    def create_sandstone(self, thickness=None, fluid="water"):
         self.fluid = fluid
         sequence = []
-        thicknessUnit = rd.randint(5, 20)
-        newThickness = self.actualThickness + thicknessUnit
+        if thickness == None:
+            thickness_rock = rd.randint(5, 20)
+        else:
+            thickness_rock = thickness
+        newThickness = self.actualThickness + thickness_rock
         #
         if self.parts == None:
             d = 1.0
-            self.parts = thicknessUnit
+            self.parts = thickness_rock
         else:
-            d = float(thicknessUnit/self.parts)
+            d = float(thickness_rock/self.parts)
         #
         for i in range(self.parts):
             if i == 0 and self.fluid == "water":
@@ -1622,7 +1617,6 @@ class SedimentaryBasin:
                 data_sand = data.create_sand()
                 sequence.append(data_sand)
                 actual_depth = sequence[-1][-1][3]
-            #elif 0 < len(sequence) < n_units-1 and sequence[-1][-1][0] not in ["shale", "rock salt"] and sequence[-1][-1][-1][5] not in ["gas", "oil"]:
             elif actual_depth < 0.9*self.maximum_thickness and sequence[-1][-1][0] not in ["shale", "rock salt"] and sequence[-1][-1][-1][5] not in ["gas", "oil"]:
                 magicnumber = rd.randint(1, 40)
                 if 1 <= magicnumber <= 16:
@@ -1645,7 +1639,6 @@ class SedimentaryBasin:
                     data_rocksalt = data.create_rocksalt()
                     sequence.append(data_rocksalt)
                     actual_depth = sequence[-1][-1][3]
-            #elif 0 < len(sequence) < n_units-1 and sequence[-1][-1][0] in ["shale", "rock salt"]:
             elif actual_depth < 0.9*self.maximum_thickness and sequence[-1][-1][0] in ["shale", "rock salt"]:
                 magicnumber = rd.randint(0, 11)
                 if magicnumber == 0:
@@ -1678,19 +1671,16 @@ class SedimentaryBasin:
                     data_shale = data.create_shale()
                     sequence.append(data_shale)
                     actual_depth = sequence[-1][-1][3]
-            #elif 0 < len(sequence) < n_units-1 and sequence[-1][-1][-1][5] == "gas":
             elif actual_depth < 0.9*self.maximum_thickness and sequence[-1][-1][-1][5] == "gas":
                 data = SedimentaryBasin(parts=self.parts, actualThickness=actual_depth)
                 data_sandstone = data.create_sandstone(fluid="oil")
                 sequence.append(data_sandstone)
                 actual_depth = sequence[-1][-1][3]
-            #elif 0 < len(sequence) < n_units-1 and sequence[-1][-1][-1][5] == "oil":
             elif actual_depth < 0.9*self.maximum_thickness and sequence[-1][-1][-1][5] == "oil":
                 data = SedimentaryBasin(parts=self.parts, actualThickness=actual_depth)
                 data_sandstone = data.create_sandstone(fluid="water")
                 sequence.append(data_sandstone)
                 actual_depth = sequence[-1][-1][3]
-            #elif len(sequence) == n_units-1:
             elif actual_depth >= 0.9*self.maximum_thickness and actual_depth < maximum_thickness:
                 magicnumber = rd.randint(0, 1)
                 if magicnumber == 0:
@@ -1703,8 +1693,6 @@ class SedimentaryBasin:
                     data_basalt = data.create_basalt(thickness=int(maximum_thickness-actual_depth))
                     sequence.append(data_basalt)
                     actual_depth = sequence[-1][-1][3]
-            #elif len(sequence) == n_units:
-            #    condition = True
             elif actual_depth >= self.maximum_thickness:
                 condition = True
         #

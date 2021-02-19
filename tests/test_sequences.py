@@ -6,7 +6,7 @@
 # Name:		test_sequences.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		14.01.2021
+# Date:		19.02.2021
 
 # -----------------------------------------------
 
@@ -266,7 +266,6 @@ fig.subplots_adjust(wspace=0.25)
 ax1.plot(gr, top, color="#00549F", linewidth=2)
 ax1.set_xlabel("GR [API]")
 ax1.set_ylabel("Depth [m]")
-#ax1.set_xscale('log')
 ax1.set_xlim(0, 300)
 ax1.set_xticks(np.arange(0, 400, 100))
 ax1.set_ylim(0, max_thickness)
@@ -299,9 +298,7 @@ plt.rc('axes', axisbelow=True)
 phi_edit = [phi[i]*100 for i in range(len(phi))]
 ax3.plot(rho, top, color="#57AB27", linewidth=2)
 ax3.set_xlabel("$\\varrho$ [g/cm$^3$]")
-#ax3.set_xlim(1.7, 3.3)
 ax3.set_xlim(1.6, 3.2)
-#ax3.set_xticks(np.around(np.linspace(1.7, 3.3, 4, endpoint=True), decimals=1))
 ax3.set_xticks(np.around(np.linspace(1.6, 3.2, 4, endpoint=True), decimals=1))
 ax3.xaxis.label.set_color("#57AB27")
 ax3.set_ylim(0, max_thickness)
@@ -310,9 +307,7 @@ ax3.grid(color="grey", linestyle="dashed")
 ax3_2 = ax3.twiny()
 ax3_2.plot(phi_edit, top, color="#00549F", linewidth=2)
 ax3_2.set_xlabel("$\\varphi$ [1]")
-#ax3_2.set_xlim(57, -27)
 ax3_2.set_xlim(60, 0)
-#ax3_2.set_xticks(np.around(np.linspace(57, -27, 6, endpoint=True), decimals=0))
 ax3_2.set_xticks(np.around(np.linspace(60, 0, 6, endpoint=True), decimals=0))
 ax3_2.minorticks_on()
 ax3_2.xaxis.label.set_color("#00549F")
@@ -322,9 +317,7 @@ plt.rc('axes', axisbelow=True)
 # 4
 ax4.plot(pe, top, color="#00549F", linewidth=2)
 ax4.set_xlabel("PE [barns/electron]")
-ax4.set_xscale('log')
-#ax4.set_xlim(0, 40)
-#ax4.set_xticks(np.arange(0, max(gr)+100, 100))
+ax4.set_xscale("log")
 ax4.get_xaxis().set_major_formatter(mpl.ticker.ScalarFormatter())
 ax4.get_xaxis().set_minor_formatter(mpl.ticker.ScalarFormatter())
 ax4.xaxis.set_minor_formatter(NullFormatter())

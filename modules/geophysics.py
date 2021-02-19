@@ -73,13 +73,6 @@ class seismics:
             reflection.append((self.input[i]-self.input[i-1])/(self.input[i]+self.input[i-1]))
         #
         return reflection
-     #
-    def calculateRickerWavelet(self):
-        # input = reflection
-        width = 2.0
-        wavelet = signal.ricker(self.input, width)
-        #
-        return wavelet
     #
     def calculatet0(self):
         # input = sequences
@@ -105,54 +98,61 @@ class seismics:
         dts = 1/v_s*10**6
         #
         return dtc, dts
+#
+class Seismology:
     #
-    def calculateTrace(self):
-        # input = reflection
-        widths = np.arange(1, len(self.input)+1)
-        cwt, freq = pywt.cwt(self.input, widths, "mexh", method="conv")
-        data = [cwt, freq]
-        #
-        #plt.imshow(cwt, extent=[-1, 1, 1, len(self.input)], cmap='viridis', aspect='auto', vmax=abs(cwt).max(), vmin=-abs(cwt).max())
-        #plt.show()
+    def __init__(self,):
+        pass
+    #
+    def calculate_impedance(self, velocity, density):
+        """Returns an array that contains the impedance values of the previously generated rock units.
+        **Arguments**:
+            velocity: array, list of velocity values
+            density: array, list of density values
+        **Outputs**:
+            data: array of seismic impedance values
+        """
+        data = velocity*density
         #
         return data
     #
-    def seismic_wiggle(self):
-        dt=0.004
-        ranges = None
-        normalize=False
-        scale=1.
-        color='k'
-        input = np.asarray([self.input])
-        npts, ntraces = input.shape
-        #npts = len(self.input)
-        #ntraces = 1
-        if ntraces < 1:
-            raise IndexError("Nothing to plot")
-        if npts < 1:
-            raise IndexError("Nothing to plot")
-        t = np.linspace(0, dt*npts, npts)
-        amp = 1.  # normalization factor
-        gmin = 0.  # global minimum
-        toffset = 0.  # offset in time to make 0 centered
-        if normalize:
-            gmax = input.max()
-            gmin = input.min()
-            amp = (gmax-gmin)
-            toffset = 0.5
-        plt.ylim(max(t), 0)
-        if ranges is None:
-            ranges = (0, ntraces)
-        x0, x1 = ranges
-        # horizontal increment
-        dx = float((x1-x0)/ntraces)
-        plt.xlim(x0, x1)
-        for i, trace in enumerate(input.transpose()):
-            tr = (((trace-gmin)/amp)-toffset)*scale*dx
-            x = x0+i*dx  # x positon for this trace
-            plt.plot(x+tr, t, 'k')
-            plt.fill_betweenx(t, x+tr, x, tr > 0, color=color)
-            plt.show()
+    def calculate_reflection_coefficient(self, impedance):
+        """Returns an array that contains the reflection coefficient values of the previously generated rock units.
+        **Arguments**:
+            impedance: array, list of impedance values
+        **Outputs**:
+            data: array of reflection coefficient values
+        """
+        data = []
+        for i in range(1, len(impedance)):
+            data.append((impedance[i]-impedance[i-1])/(impedance[i]+impedance[i-1]))
+        #
+        return np.array(data)
+    #
+    def calculate_transmission_coefficient(self, impedance):
+        """Returns an array that contains the transmission coefficient values of the previously generated rock units.
+        **Arguments**:
+            impedance: array, list of impedance values
+        **Outputs**:
+            data: array of transmission coefficient values
+        """
+        data = []
+        for i in range(1, len(impedance)):
+            data.append((2*impedance[i-1])/(impedance[i]+impedance[i-1]))
+        #
+        return np.array(data)
+    #
+    def calculate_t0(self, thickness, velocity):
+        """Returns an array that contains the two-way travel times of the previously generated rock units.
+        **Arguments**:
+            thickness: array, list of thickness values
+            velocity: array, list of velocity values
+        **Outputs**:
+            data: array of two-way travel times
+        """
+        data = (2*thickness)/(velocity)
+        #
+        return np.array(data)
 #
 class Elasticity:
     #
