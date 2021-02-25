@@ -104,7 +104,7 @@ print("")
 # Test sedimentary basin generation within SedimentaryBasin class
 max_thickness = 500
 data = sequences.SedimentaryBasin()
-data_sedbasin = data.create_sedimentary_basin(maximum_thickness=max_thickness)
+data_sedbasin = data.create_sedimentary_basin(maximum_thickness=max_thickness, csv_stratigraphy=True, csv_lithology=True)
 rock = []
 top = []
 bottom = []
@@ -115,6 +115,9 @@ vPvS = []
 phi = []
 gr = []
 pe = []
+z = []
+kmod = []
+gmod = []
 rock_sorted = []
 rho_sorted = []
 vP_sorted = []
@@ -123,6 +126,9 @@ vPvS_sorted = []
 phi_sorted = []
 gr_sorted = []
 pe_sorted = []
+z_sorted = []
+kmod_sorted = []
+gmod_sorted = []
 for i in range(len(data_sedbasin)):
     if data_sedbasin[i][0][0] not in rock_sorted:
         rock_sorted.append(data_sedbasin[i][0][0])
@@ -133,6 +139,9 @@ for i in range(len(data_sedbasin)):
         phi_sorted.append([data_sedbasin[i][0][0], []])
         gr_sorted.append([data_sedbasin[i][0][0], []])
         pe_sorted.append([data_sedbasin[i][0][0], []])
+        z_sorted.append([data_sedbasin[i][0][0], []])
+        kmod_sorted.append([data_sedbasin[i][0][0], []])
+        gmod_sorted.append([data_sedbasin[i][0][0], []])
 for i in range(len(data_sedbasin)):
     for j in range(len(data_sedbasin[i])):
         for k in range(len(rock_sorted)):
@@ -144,6 +153,9 @@ for i in range(len(data_sedbasin)):
                 phi_sorted[k][1].append(data_sedbasin[i][j][4][4][0])
                 gr_sorted[k][1].append(data_sedbasin[i][j][4][6][0])
                 pe_sorted[k][1].append(data_sedbasin[i][j][4][6][1])
+                z_sorted[k][1].append(data_sedbasin[i][j][4][1][0]*data_sedbasin[i][j][4][3][0])
+                kmod_sorted[k][1].append(data_sedbasin[i][j][4][2][0])
+                gmod_sorted[k][1].append(data_sedbasin[i][j][4][2][1])
 for i in range(len(data_sedbasin)):
     for j in range(len(data_sedbasin[i])):
         rock.append(data_sedbasin[i][j][0])
@@ -156,6 +168,9 @@ for i in range(len(data_sedbasin)):
         phi.append(data_sedbasin[i][j][4][4][0])
         gr.append(data_sedbasin[i][j][4][6][0])
         pe.append(data_sedbasin[i][j][4][6][1])
+        z.append(data_sedbasin[i][j][4][1][0]*data_sedbasin[i][j][4][3][0])
+        kmod.append(data_sedbasin[i][j][4][2][0])
+        gmod.append(data_sedbasin[i][j][4][2][1])
     print(data_sedbasin[i])
 
 colors = [["soil", "peru"], ["sand", "moccasin"], ["sandstone", "tan"], ["limestone", "lightblue"], ["shale", "olivedrab"], ["rock salt", "violet"], ["granite", "darkorange"], ["basalt", "grey"]]
@@ -181,19 +196,7 @@ for i in range(len(n_units)):
     print(units_sorted[i][0], n_units[i])
 print("sum:", sum(n_units))
 
-try:
-    test_sb = open("Test_Sedimentary-Basin.csv", "w")
-except:
-    print("Error")
-    sys.exit(0)
-test_sb.write(str("LITHOLOGY") + "," + str("THICKNESS") + "," + str("TOP") + "," + str("BOTTOM") + "," + str("RHOB") + "," + str("VP") + "," + str("VS") + "," + str("GR") + "," + str("PE") + "," + str("PHIN") + "," + str("POISSON") + "," + str("FLUID") + "\n")
-for i in range(len(data_sedbasin)):
-    for j in range(len(data_sedbasin[i])):
-        if data_sedbasin[i][j][0] == "soil":
-            test_sb.write(str(data_sedbasin[i][j][0]) + "," + str(data_sedbasin[i][j][1]) + "," + str(data_sedbasin[i][j][2]) + "," + str(data_sedbasin[i][j][3]) + "," + str(data_sedbasin[i][j][4][1][0]) + "," + str(data_sedbasin[i][j][4][3][0]) + "," + str(data_sedbasin[i][j][4][3][1]) + "," + str(data_sedbasin[i][j][4][6][0]) + "," + str(data_sedbasin[i][j][4][6][1]) + "," + str(data_sedbasin[i][j][4][4][0]) + "," + str(data_sedbasin[i][j][4][2][3]) + "," + str(data_sedbasin[i][j][4][5][0]) + "\n")
-        else:
-            test_sb.write(str(data_sedbasin[i][j][0]) + "," + str(data_sedbasin[i][j][1]) + "," + str(data_sedbasin[i][j][2]) + "," + str(data_sedbasin[i][j][3]) + "," + str(data_sedbasin[i][j][4][1][0]) + "," + str(data_sedbasin[i][j][4][3][0]) + "," + str(data_sedbasin[i][j][4][3][1]) + "," + str(data_sedbasin[i][j][4][6][0]) + "," + str(data_sedbasin[i][j][4][6][1]) + "," + str(data_sedbasin[i][j][4][4][0]) + "," + str(data_sedbasin[i][j][4][2][3]) + "," + str(data_sedbasin[i][j][4][5]) + "\n")
-#
+## PLOTTING
 fig, ax = plt.subplots(1, 1, dpi=100)
 for i in range(len(rock_sorted)):
     plt.scatter(rho_sorted[i][1], vP_sorted[i][1], label=units_sorted[i][0], color=units_sorted[i][-1], edgecolors="black", alpha=0.9)
@@ -341,4 +344,84 @@ plt.rc('axes', axisbelow=True)
 ax5.legend(handles=legend_lithology, loc="upper right", bbox_to_anchor=(2.0, 1.0), shadow=True, ncol=1, prop={'size': 8}, frameon=False)
 plt.tight_layout()
 plt.savefig("Test_Stratigraphy_01.png", bbox_inches="tight")
+plt.show()
+
+fig, (ax1, ax2, ax3, ax4, ax5) = plt.subplots(1, 5, sharey='row', gridspec_kw={'wspace': 0.15}, figsize=(9, 12))
+fig.subplots_adjust(wspace=0.25)
+# 1
+ax1.plot(np.array(z)/1000, top, color="#00549F", linewidth=2)
+ax1.set_xlabel("Z [kNs/m$^3$]")
+ax1.set_ylabel("Depth [m]")
+#ax1.set_xlim(0, 300)
+#ax1.set_xticks(np.arange(0, 400, 100))
+ax1.set_ylim(0, max_thickness)
+ax1.set_yticks(np.arange(0, max_thickness+50, 50))
+ax1.grid(color="grey", linestyle="dashed")
+plt.gca().invert_yaxis()
+plt.rc('axes', axisbelow=True)
+# 2
+ax2.plot(vP_edit, top, color="#00549F", linewidth=2)
+ax2.set_xlabel("$v_P$ [km/s]")
+ax2.set_xlim(0, 8.5)
+ax2.set_xticks(np.arange(0, 8.5, 2.0))
+ax2.xaxis.label.set_color("#00549F")
+ax2.set_ylim(0, max_thickness)
+ax2.set_yticks(np.arange(0, max_thickness+50, 50))
+ax2.grid(color="grey", linestyle="dashed")
+ax2_2 = ax2.twiny()
+ax2_2.plot(vS_edit, top, color="#CC071E", linewidth=2)
+ax2_2.set_xlabel("$v_S$ [km/s]")
+ax2_2.set_xlim(0, 8.5)
+ax2_2.set_xticks(np.arange(0, 8.5, 2.0))
+ax2_2.minorticks_on()
+ax2_2.xaxis.label.set_color("#CC071E")
+ax2_2.grid(color="grey", linestyle="dashed")
+plt.gca().invert_yaxis()
+plt.rc('axes', axisbelow=True)
+# 3
+ax3.plot(kmod, top, color="#57AB27", linewidth=2)
+ax3.set_xlabel("K [GPa]")
+ax3.set_xlim(0, 60)
+ax3.set_xticks(np.arange(0, 60, 20))
+ax3.xaxis.label.set_color("#57AB27")
+ax3.set_ylim(0, max_thickness)
+ax3.set_yticks(np.arange(0, max_thickness+50, 50))
+ax3.grid(color="grey", linestyle="dashed")
+ax3_2 = ax3.twiny()
+ax3_2.plot(gmod, top, color="#00549F", linewidth=2)
+ax3_2.set_xlabel("G [GPa]")
+ax3_2.set_xlim(0, 60)
+ax3_2.set_xticks(np.arange(0, 60, 20))
+ax3_2.minorticks_on()
+ax3_2.xaxis.label.set_color("#00549F")
+ax3_2.grid(color="grey", linestyle="dashed")
+plt.gca().invert_yaxis()
+plt.rc('axes', axisbelow=True)
+# 4
+ax4.plot(pe, top, color="#00549F", linewidth=2)
+ax4.set_xlabel("PE [barns/electron]")
+ax4.set_xscale("log")
+ax4.get_xaxis().set_major_formatter(mpl.ticker.ScalarFormatter())
+ax4.get_xaxis().set_minor_formatter(mpl.ticker.ScalarFormatter())
+ax4.xaxis.set_minor_formatter(NullFormatter())
+ax4.set_ylim(0, max_thickness)
+ax4.set_yticks(np.arange(0, max_thickness+50, 50))
+ax4.grid(color="grey", linestyle="dashed", which="both")
+plt.gca().invert_yaxis()
+plt.rc('axes', axisbelow=True)
+# 5
+for i in range(len(n_units)):
+    for j in range(1, n_units[i]+1):
+        ax5.hist(np.linspace(units_sorted[i][j][0], units_sorted[i][j][1]), bins=len(n_units), color=units_sorted[i][-1], orientation="horizontal")
+ax5.set_xlabel("Lithology")
+ax5.set_xlim(0, 5)
+ax5.set_xticks([])
+ax5.set_ylim(0, max_thickness)
+ax5.set_yticks(np.arange(0, max_thickness+50, 50))
+ax5.margins(0.3, 0.0)
+plt.gca().invert_yaxis()
+plt.rc('axes', axisbelow=True)
+ax5.legend(handles=legend_lithology, loc="upper right", bbox_to_anchor=(2.0, 1.0), shadow=True, ncol=1, prop={'size': 8}, frameon=False)
+plt.tight_layout()
+plt.savefig("Test_Stratigraphy_02.png", bbox_inches="tight")
 plt.show()
