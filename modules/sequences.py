@@ -1600,7 +1600,7 @@ class SedimentaryBasin:
         #
         return sequence
     #
-    def create_sedimentary_basin(self, maximum_thickness=150, csv_stratigraphy=False, csv_lithology=False):
+    def create_sedimentary_basin(self, maximum_thickness=150, csv_stratigraphy=False, csv_lithology=False, excludeRocksalt=False, excludeLimestone=False):
         self.maximum_thickness = maximum_thickness
         sequence = []
         n_units = rd.randint(10, 30)
@@ -1618,68 +1618,102 @@ class SedimentaryBasin:
                 sequence.append(data_sand)
                 actual_depth = sequence[-1][-1][3]
             elif actual_depth < 0.9*self.maximum_thickness and sequence[-1][-1][0] not in ["shale", "rock salt"] and sequence[-1][-1][-1][5] not in ["gas", "oil"]:
-                magicnumber = rd.randint(1, 40)
-                if 1 <= magicnumber <= 16:
-                    data = SedimentaryBasin(parts=self.parts, actualThickness=actual_depth)
-                    data_sandstone = data.create_sandstone()
-                    sequence.append(data_sandstone)
-                    actual_depth = sequence[-1][-1][3]
-                elif 33 <= magicnumber <= 38:
-                    data = SedimentaryBasin(parts=self.parts, actualThickness=actual_depth)
-                    data_limestone = data.create_limestone()
-                    sequence.append(data_limestone)
-                    actual_depth = sequence[-1][-1][3]
-                elif 17 <= magicnumber <= 32:
-                    data = SedimentaryBasin(parts=self.parts, actualThickness=actual_depth)
-                    data_shale = data.create_shale()
-                    sequence.append(data_shale)
-                    actual_depth = sequence[-1][-1][3]
-                elif magicnumber > 38:
-                    data = SedimentaryBasin(parts=self.parts, actualThickness=actual_depth)
-                    data_rocksalt = data.create_rocksalt()
-                    sequence.append(data_rocksalt)
-                    actual_depth = sequence[-1][-1][3]
+                condition_2 = False
+                while condition_2 == False:
+                    magicnumber = rd.random()
+                    if magicnumber < 0.4:
+                        data = SedimentaryBasin(parts=self.parts, actualThickness=actual_depth)
+                        data_sandstone = data.create_sandstone()
+                        sequence.append(data_sandstone)
+                        actual_depth = sequence[-1][-1][3]
+                        condition_2 = True
+                    elif 0.4 <= magicnumber < 0.8:
+                        data = SedimentaryBasin(parts=self.parts, actualThickness=actual_depth)
+                        data_shale = data.create_shale()
+                        sequence.append(data_shale)
+                        actual_depth = sequence[-1][-1][3]
+                        condition_2 = True
+                    elif 0.8 <= magicnumber < 0.95 and excludeLimestone == False:
+                        data = SedimentaryBasin(parts=self.parts, actualThickness=actual_depth)
+                        data_limestone = data.create_limestone()
+                        sequence.append(data_limestone)
+                        actual_depth = sequence[-1][-1][3]
+                        condition_2 = True
+                    elif magicnumber >= 0.95 and excludeRocksalt == False:
+                        data = SedimentaryBasin(parts=self.parts, actualThickness=actual_depth)
+                        data_rocksalt = data.create_rocksalt()
+                        sequence.append(data_rocksalt)
+                        actual_depth = sequence[-1][-1][3]
+                        condition_2 = True
+                    elif magicnumber >= 0.95 and excludeRocksalt == True:
+                        condition_2 = False
             elif actual_depth < 0.9*self.maximum_thickness and sequence[-1][-1][0] in ["shale", "rock salt"]:
-                magicnumber = rd.randint(0, 11)
-                if magicnumber == 0:
-                    data = SedimentaryBasin(parts=self.parts, actualThickness=actual_depth)
-                    data_sandstone = data.create_sandstone(fluid="gas")
-                    sequence.append(data_sandstone)
-                    actual_depth = sequence[-1][-1][3]
-                elif magicnumber == 1:
-                    data = SedimentaryBasin(parts=self.parts, actualThickness=actual_depth)
-                    data_limestone = data.create_limestone(fluid="gas")
-                    sequence.append(data_limestone)
-                    actual_depth = sequence[-1][-1][3]
-                elif magicnumber == 2:
-                    data = SedimentaryBasin(parts=self.parts, actualThickness=actual_depth)
-                    data_sandstone = data.create_sandstone(fluid="oil")
-                    sequence.append(data_sandstone)
-                    actual_depth = sequence[-1][-1][3]
-                elif magicnumber == 3:
-                    data = SedimentaryBasin(parts=self.parts, actualThickness=actual_depth)
-                    data_limestone = data.create_limestone(fluid="oil")
-                    sequence.append(data_limestone)
-                    actual_depth = sequence[-1][-1][3]
-                elif 4 <= magicnumber <= 5:
-                    data = SedimentaryBasin(parts=self.parts, actualThickness=actual_depth)
-                    data_sandstone = data.create_sandstone(fluid="water")
-                    sequence.append(data_sandstone)
-                    actual_depth = sequence[-1][-1][3]
-                elif magicnumber > 5:
-                    data = SedimentaryBasin(parts=self.parts, actualThickness=actual_depth)
-                    data_shale = data.create_shale()
-                    sequence.append(data_shale)
-                    actual_depth = sequence[-1][-1][3]
-            elif actual_depth < 0.9*self.maximum_thickness and sequence[-1][-1][-1][5] == "gas":
+                condition_3 = False
+                while condition_3 == False:
+                    magicnumber = rd.random()
+                    if magicnumber < 0.1 and excludeLimestone == False:
+                        data = SedimentaryBasin(parts=self.parts, actualThickness=actual_depth)
+                        data_limestone = data.create_limestone(fluid="gas")
+                        sequence.append(data_limestone)
+                        actual_depth = sequence[-1][-1][3]
+                        condition_3 = True
+                    elif 0.1 <= magicnumber < 0.2 and excludeLimestone == False:
+                        data = SedimentaryBasin(parts=self.parts, actualThickness=actual_depth)
+                        data_limestone = data.create_limestone(fluid="oil")
+                        sequence.append(data_limestone)
+                        actual_depth = sequence[-1][-1][3]
+                        condition_3 = True
+                    elif 0.2 <= magicnumber < 0.3:
+                        data = SedimentaryBasin(parts=self.parts, actualThickness=actual_depth)
+                        data_sandstone = data.create_sandstone(fluid="gas")
+                        sequence.append(data_sandstone)
+                        actual_depth = sequence[-1][-1][3]
+                        condition_3 = True
+                    elif 0.3 <= magicnumber < 0.4:
+                        data = SedimentaryBasin(parts=self.parts, actualThickness=actual_depth)
+                        data_sandstone = data.create_sandstone(fluid="oil")
+                        sequence.append(data_sandstone)
+                        actual_depth = sequence[-1][-1][3]
+                        condition_3 = True
+                    elif 0.4 <= magicnumber < 0.6:
+                        data = SedimentaryBasin(parts=self.parts, actualThickness=actual_depth)
+                        data_sandstone = data.create_sandstone(fluid="water")
+                        sequence.append(data_sandstone)
+                        actual_depth = sequence[-1][-1][3]
+                        condition_3 = True
+                    elif 0.6 <= magicnumber < 0.8 and excludeLimestone == False:
+                        data = SedimentaryBasin(parts=self.parts, actualThickness=actual_depth)
+                        data_limestone = data.create_limestone(fluid="water")
+                        sequence.append(data_limestone)
+                        actual_depth = sequence[-1][-1][3]
+                        condition_3 = True
+                    elif magicnumber >= 0.8:
+                        data = SedimentaryBasin(parts=self.parts, actualThickness=actual_depth)
+                        data_shale = data.create_shale()
+                        sequence.append(data_shale)
+                        actual_depth = sequence[-1][-1][3]
+                        condition_3 = True
+                    elif excludeLimestone == True:
+                        condition_3 = False
+            elif actual_depth < 0.9*self.maximum_thickness and sequence[-1][-1][4][5] == "gas" and sequence[-1][-1][0] == "sandstone":
                 data = SedimentaryBasin(parts=self.parts, actualThickness=actual_depth)
                 data_sandstone = data.create_sandstone(fluid="oil")
                 sequence.append(data_sandstone)
                 actual_depth = sequence[-1][-1][3]
-            elif actual_depth < 0.9*self.maximum_thickness and sequence[-1][-1][-1][5] == "oil":
+            elif actual_depth < 0.9*self.maximum_thickness and sequence[-1][-1][4][5] == "oil" and sequence[-1][-1][0] == "sandstone":
                 data = SedimentaryBasin(parts=self.parts, actualThickness=actual_depth)
                 data_sandstone = data.create_sandstone(fluid="water")
                 sequence.append(data_sandstone)
+                actual_depth = sequence[-1][-1][3]
+            elif actual_depth < 0.9*self.maximum_thickness and sequence[-1][-1][4][5] == "gas" and sequence[-1][-1][0] == "limestone" and excludeLimestone == False:
+                data = SedimentaryBasin(parts=self.parts, actualThickness=actual_depth)
+                data_limestone = data.create_limestone(fluid="oil")
+                sequence.append(data_limestone)
+                actual_depth = sequence[-1][-1][3]
+            elif actual_depth < 0.9*self.maximum_thickness and sequence[-1][-1][4][5] == "oil" and sequence[-1][-1][0] == "limestone" and excludeLimestone == False:
+                data = SedimentaryBasin(parts=self.parts, actualThickness=actual_depth)
+                data_limestone = data.create_limestone(fluid="water")
+                sequence.append(data_limestone)
                 actual_depth = sequence[-1][-1][3]
             elif actual_depth >= 0.9*self.maximum_thickness and actual_depth < maximum_thickness:
                 magicnumber = rd.randint(0, 1)
@@ -1695,6 +1729,7 @@ class SedimentaryBasin:
                     actual_depth = sequence[-1][-1][3]
             elif actual_depth >= self.maximum_thickness:
                 condition = True
+            #print("Actual depth for", len(sequence), "units:", actual_depth, "m. -->", sequence[-1][-1][0], sequence[-1][-1][4][5])
         #
         units_list = []
         for i in range(len(sequence)):
@@ -1745,18 +1780,18 @@ class SedimentaryBasin:
                     if sequence[i][j][0] == "soil":
                         file_soil.write(str(sequence[i][j][0]) + "," + str(sequence[i][j][1]) + "," + str(sequence[i][j][2]) + "," + str(sequence[i][j][3]) + "," + str(sequence[i][j][4][1][0]) + "," + str(sequence[i][j][4][1][1]) + "," + str(sequence[i][j][4][1][2]) + "," + str(sequence[i][j][4][1][3]) + "," + str(sequence[i][j][4][3][0]) + "," + str(sequence[i][j][4][3][1]) + "," + str(sequence[i][j][4][6][0]) + "," + str(sequence[i][j][4][6][1]) + "," + str(sequence[i][j][4][4][0]) + "," + str(sequence[i][j][4][2][0]) + "," + str(sequence[i][j][4][2][1]) + "," + str(sequence[i][j][4][2][2]) + "," + str(sequence[i][j][4][2][3]) + "," + str(sequence[i][j][4][5][0]) + "," + str(sequence[i][j][4][8][0]) + "," + str(sequence[i][j][4][8][1]) + "," + str(sequence[i][j][4][8][2]) + "," + str(sequence[i][j][4][8][3]) + "\n")
                     elif sequence[i][j][0] == "sand":
-                        file_sand.write(str(sequence[i][j][0]) + "," + str(sequence[i][j][1]) + "," + str(sequence[i][j][2]) + "," + str(sequence[i][j][3]) + "," + str(sequence[i][j][4][1][0]) + "," + str(sequence[i][j][4][1][1]) + "," + str(sequence[i][j][4][1][2]) + "," + str(sequence[i][j][4][3][0]) + "," + str(sequence[i][j][4][3][1]) + "," + str(sequence[i][j][4][6][0]) + "," + str(sequence[i][j][4][6][1]) + "," + str(sequence[i][j][4][4][0]) + "," + str(sequence[i][j][4][2][0]) + "," + str(sequence[i][j][4][2][1]) + "," + str(sequence[i][j][4][2][2]) + "," + str(sequence[i][j][4][2][3]) + "," + str(sequence[i][j][4][5][0]) + "," + str(sequence[i][j][4][8][0]) + "," + str(sequence[i][j][4][8][1]) + "," + str(sequence[i][j][4][8][2]) + "," + str(sequence[i][j][4][8][3]) + "\n")
+                        file_sand.write(str(sequence[i][j][0]) + "," + str(sequence[i][j][1]) + "," + str(sequence[i][j][2]) + "," + str(sequence[i][j][3]) + "," + str(sequence[i][j][4][1][0]) + "," + str(sequence[i][j][4][1][1]) + "," + str(sequence[i][j][4][1][2]) + "," + str(sequence[i][j][4][3][0]) + "," + str(sequence[i][j][4][3][1]) + "," + str(sequence[i][j][4][6][0]) + "," + str(sequence[i][j][4][6][1]) + "," + str(sequence[i][j][4][4][0]) + "," + str(sequence[i][j][4][2][0]) + "," + str(sequence[i][j][4][2][1]) + "," + str(sequence[i][j][4][2][2]) + "," + str(sequence[i][j][4][2][3]) + "," + str(sequence[i][j][4][5]) + "," + str(sequence[i][j][4][8][0]) + "," + str(sequence[i][j][4][8][1]) + "," + str(sequence[i][j][4][8][2]) + "," + str(sequence[i][j][4][8][3]) + "\n")
                     elif sequence[i][j][0] == "sandstone":
-                        file_sandstone.write(str(sequence[i][j][0]) + "," + str(sequence[i][j][1]) + "," + str(sequence[i][j][2]) + "," + str(sequence[i][j][3]) + "," + str(sequence[i][j][4][1][0]) + "," + str(sequence[i][j][4][1][1]) + "," + str(sequence[i][j][4][1][2]) + "," + str(sequence[i][j][4][3][0]) + "," + str(sequence[i][j][4][3][1]) + "," + str(sequence[i][j][4][6][0]) + "," + str(sequence[i][j][4][6][1]) + "," + str(sequence[i][j][4][4][0]) + "," + str(sequence[i][j][4][2][0]) + "," + str(sequence[i][j][4][2][1]) + "," + str(sequence[i][j][4][2][2]) + "," + str(sequence[i][j][4][2][3]) + "," + str(sequence[i][j][4][5][0]) + "," + str(sequence[i][j][4][8][0]) + "," + str(sequence[i][j][4][8][1]) + "," + str(sequence[i][j][4][8][2]) + "," + str(sequence[i][j][4][8][3]) + "," + str(sequence[i][j][4][8][4]) + "," + str(sequence[i][j][4][8][5]) + "," + str(sequence[i][j][4][8][6]) + "\n")
+                        file_sandstone.write(str(sequence[i][j][0]) + "," + str(sequence[i][j][1]) + "," + str(sequence[i][j][2]) + "," + str(sequence[i][j][3]) + "," + str(sequence[i][j][4][1][0]) + "," + str(sequence[i][j][4][1][1]) + "," + str(sequence[i][j][4][1][2]) + "," + str(sequence[i][j][4][3][0]) + "," + str(sequence[i][j][4][3][1]) + "," + str(sequence[i][j][4][6][0]) + "," + str(sequence[i][j][4][6][1]) + "," + str(sequence[i][j][4][4][0]) + "," + str(sequence[i][j][4][2][0]) + "," + str(sequence[i][j][4][2][1]) + "," + str(sequence[i][j][4][2][2]) + "," + str(sequence[i][j][4][2][3]) + "," + str(sequence[i][j][4][5]) + "," + str(sequence[i][j][4][8][0]) + "," + str(sequence[i][j][4][8][1]) + "," + str(sequence[i][j][4][8][2]) + "," + str(sequence[i][j][4][8][3]) + "," + str(sequence[i][j][4][8][4]) + "," + str(sequence[i][j][4][8][5]) + "," + str(sequence[i][j][4][8][6]) + "\n")
                     elif sequence[i][j][0] == "limestone":
-                        file_limestone.write(str(sequence[i][j][0]) + "," + str(sequence[i][j][1]) + "," + str(sequence[i][j][2]) + "," + str(sequence[i][j][3]) + "," + str(sequence[i][j][4][1][0]) + "," + str(sequence[i][j][4][1][1]) + "," + str(sequence[i][j][4][1][2]) + "," + str(sequence[i][j][4][3][0]) + "," + str(sequence[i][j][4][3][1]) + "," + str(sequence[i][j][4][6][0]) + "," + str(sequence[i][j][4][6][1]) + "," + str(sequence[i][j][4][4][0]) + "," + str(sequence[i][j][4][2][0]) + "," + str(sequence[i][j][4][2][1]) + "," + str(sequence[i][j][4][2][2]) + "," + str(sequence[i][j][4][2][3]) + "," + str(sequence[i][j][4][5][0]) + "," + str(sequence[i][j][4][8][0]) + "," + str(sequence[i][j][4][8][1]) + "," + str(sequence[i][j][4][8][2]) + "," + str(sequence[i][j][4][8][3]) + "," + str(sequence[i][j][4][8][4]) + "," + str(sequence[i][j][4][8][5]) + "," + str(sequence[i][j][4][8][6]) + "," + str(sequence[i][j][4][8][7]) + "," + str(sequence[i][j][4][8][8]) + "," + str(sequence[i][j][4][8][9]) + "," + str(sequence[i][j][4][8][10]) + "\n")
+                        file_limestone.write(str(sequence[i][j][0]) + "," + str(sequence[i][j][1]) + "," + str(sequence[i][j][2]) + "," + str(sequence[i][j][3]) + "," + str(sequence[i][j][4][1][0]) + "," + str(sequence[i][j][4][1][1]) + "," + str(sequence[i][j][4][1][2]) + "," + str(sequence[i][j][4][3][0]) + "," + str(sequence[i][j][4][3][1]) + "," + str(sequence[i][j][4][6][0]) + "," + str(sequence[i][j][4][6][1]) + "," + str(sequence[i][j][4][4][0]) + "," + str(sequence[i][j][4][2][0]) + "," + str(sequence[i][j][4][2][1]) + "," + str(sequence[i][j][4][2][2]) + "," + str(sequence[i][j][4][2][3]) + "," + str(sequence[i][j][4][5]) + "," + str(sequence[i][j][4][8][0]) + "," + str(sequence[i][j][4][8][1]) + "," + str(sequence[i][j][4][8][2]) + "," + str(sequence[i][j][4][8][3]) + "," + str(sequence[i][j][4][8][4]) + "," + str(sequence[i][j][4][8][5]) + "," + str(sequence[i][j][4][8][6]) + "," + str(sequence[i][j][4][8][7]) + "," + str(sequence[i][j][4][8][8]) + "," + str(sequence[i][j][4][8][9]) + "," + str(sequence[i][j][4][8][10]) + "\n")
                     elif sequence[i][j][0] == "shale":
-                        file_shale.write(str(sequence[i][j][0]) + "," + str(sequence[i][j][1]) + "," + str(sequence[i][j][2]) + "," + str(sequence[i][j][3]) + "," + str(sequence[i][j][4][1][0]) + "," + str(sequence[i][j][4][1][1]) + "," + str(sequence[i][j][4][1][2]) + "," + str(sequence[i][j][4][3][0]) + "," + str(sequence[i][j][4][3][1]) + "," + str(sequence[i][j][4][6][0]) + "," + str(sequence[i][j][4][6][1]) + "," + str(sequence[i][j][4][4][0]) + "," + str(sequence[i][j][4][2][0]) + "," + str(sequence[i][j][4][2][1]) + "," + str(sequence[i][j][4][2][2]) + "," + str(sequence[i][j][4][2][3]) + "," + str(sequence[i][j][4][5][0]) + "," + str(sequence[i][j][4][8][0]) + "," + str(sequence[i][j][4][8][1]) + "," + str(sequence[i][j][4][8][2]) + "," + str(sequence[i][j][4][8][3]) + "," + str(sequence[i][j][4][8][4]) + "," + str(sequence[i][j][4][8][5]) + "," + str(sequence[i][j][4][8][6]) + "," + str(sequence[i][j][4][8][7]) + "," + str(sequence[i][j][4][8][8]) + "," + str(sequence[i][j][4][8][9]) + "\n")
+                        file_shale.write(str(sequence[i][j][0]) + "," + str(sequence[i][j][1]) + "," + str(sequence[i][j][2]) + "," + str(sequence[i][j][3]) + "," + str(sequence[i][j][4][1][0]) + "," + str(sequence[i][j][4][1][1]) + "," + str(sequence[i][j][4][1][2]) + "," + str(sequence[i][j][4][3][0]) + "," + str(sequence[i][j][4][3][1]) + "," + str(sequence[i][j][4][6][0]) + "," + str(sequence[i][j][4][6][1]) + "," + str(sequence[i][j][4][4][0]) + "," + str(sequence[i][j][4][2][0]) + "," + str(sequence[i][j][4][2][1]) + "," + str(sequence[i][j][4][2][2]) + "," + str(sequence[i][j][4][2][3]) + "," + str(sequence[i][j][4][5]) + "," + str(sequence[i][j][4][8][0]) + "," + str(sequence[i][j][4][8][1]) + "," + str(sequence[i][j][4][8][2]) + "," + str(sequence[i][j][4][8][3]) + "," + str(sequence[i][j][4][8][4]) + "," + str(sequence[i][j][4][8][5]) + "," + str(sequence[i][j][4][8][6]) + "," + str(sequence[i][j][4][8][7]) + "," + str(sequence[i][j][4][8][8]) + "," + str(sequence[i][j][4][8][9]) + "\n")
                     elif sequence[i][j][0] == "rock salt":
-                        file_rocksalt.write(str(sequence[i][j][0]) + "," + str(sequence[i][j][1]) + "," + str(sequence[i][j][2]) + "," + str(sequence[i][j][3]) + "," + str(sequence[i][j][4][1][0]) + "," + str(sequence[i][j][4][1][1]) + "," + str(sequence[i][j][4][1][2]) + "," + str(sequence[i][j][4][3][0]) + "," + str(sequence[i][j][4][3][1]) + "," + str(sequence[i][j][4][6][0]) + "," + str(sequence[i][j][4][6][1]) + "," + str(sequence[i][j][4][4][0]) + "," + str(sequence[i][j][4][2][0]) + "," + str(sequence[i][j][4][2][1]) + "," + str(sequence[i][j][4][2][2]) + "," + str(sequence[i][j][4][2][3]) + "," + str(sequence[i][j][4][5][0]) + "," + str(sequence[i][j][4][8][0]) + "," + str(sequence[i][j][4][8][1]) + "," + str(sequence[i][j][4][8][2]) + "," + str(sequence[i][j][4][8][3]) + "\n")
+                        file_rocksalt.write(str(sequence[i][j][0]) + "," + str(sequence[i][j][1]) + "," + str(sequence[i][j][2]) + "," + str(sequence[i][j][3]) + "," + str(sequence[i][j][4][1][0]) + "," + str(sequence[i][j][4][1][1]) + "," + str(sequence[i][j][4][1][2]) + "," + str(sequence[i][j][4][3][0]) + "," + str(sequence[i][j][4][3][1]) + "," + str(sequence[i][j][4][6][0]) + "," + str(sequence[i][j][4][6][1]) + "," + str(sequence[i][j][4][4][0]) + "," + str(sequence[i][j][4][2][0]) + "," + str(sequence[i][j][4][2][1]) + "," + str(sequence[i][j][4][2][2]) + "," + str(sequence[i][j][4][2][3]) + "," + str(sequence[i][j][4][5]) + "," + str(sequence[i][j][4][8][0]) + "," + str(sequence[i][j][4][8][1]) + "," + str(sequence[i][j][4][8][2]) + "," + str(sequence[i][j][4][8][3]) + "\n")
                     elif sequence[i][j][0] == "granite":
-                        file_granite.write(str(sequence[i][j][0]) + "," + str(sequence[i][j][1]) + "," + str(sequence[i][j][2]) + "," + str(sequence[i][j][3]) + "," + str(sequence[i][j][4][1][0]) + "," + str(sequence[i][j][4][1][1]) + "," + str(sequence[i][j][4][1][2]) + "," + str(sequence[i][j][4][3][0]) + "," + str(sequence[i][j][4][3][1]) + "," + str(sequence[i][j][4][6][0]) + "," + str(sequence[i][j][4][6][1]) + "," + str(sequence[i][j][4][4][0]) + "," + str(sequence[i][j][4][2][0]) + "," + str(sequence[i][j][4][2][1]) + "," + str(sequence[i][j][4][2][2]) + "," + str(sequence[i][j][4][2][3]) + "," + str(sequence[i][j][4][5][0]) + "," + str(sequence[i][j][4][8][0]) + "," + str(sequence[i][j][4][8][1]) + "," + str(sequence[i][j][4][8][2]) + "," + str(sequence[i][j][4][8][3]) + "," + str(sequence[i][j][4][8][4]) + "," + str(sequence[i][j][4][8][5]) + "," + str(sequence[i][j][4][8][6]) + "," + str(sequence[i][j][4][8][7]) + "\n")
+                        file_granite.write(str(sequence[i][j][0]) + "," + str(sequence[i][j][1]) + "," + str(sequence[i][j][2]) + "," + str(sequence[i][j][3]) + "," + str(sequence[i][j][4][1][0]) + "," + str(sequence[i][j][4][1][1]) + "," + str(sequence[i][j][4][1][2]) + "," + str(sequence[i][j][4][3][0]) + "," + str(sequence[i][j][4][3][1]) + "," + str(sequence[i][j][4][6][0]) + "," + str(sequence[i][j][4][6][1]) + "," + str(sequence[i][j][4][4][0]) + "," + str(sequence[i][j][4][2][0]) + "," + str(sequence[i][j][4][2][1]) + "," + str(sequence[i][j][4][2][2]) + "," + str(sequence[i][j][4][2][3]) + "," + str(sequence[i][j][4][5]) + "," + str(sequence[i][j][4][8][0]) + "," + str(sequence[i][j][4][8][1]) + "," + str(sequence[i][j][4][8][2]) + "," + str(sequence[i][j][4][8][3]) + "," + str(sequence[i][j][4][8][4]) + "," + str(sequence[i][j][4][8][5]) + "," + str(sequence[i][j][4][8][6]) + "," + str(sequence[i][j][4][8][7]) + "\n")
                     elif sequence[i][j][0] == "basalt":
-                        file_basalt.write(str(sequence[i][j][0]) + "," + str(sequence[i][j][1]) + "," + str(sequence[i][j][2]) + "," + str(sequence[i][j][3]) + "," + str(sequence[i][j][4][1][0]) + "," + str(sequence[i][j][4][1][1]) + "," + str(sequence[i][j][4][1][2]) + "," + str(sequence[i][j][4][3][0]) + "," + str(sequence[i][j][4][3][1]) + "," + str(sequence[i][j][4][6][0]) + "," + str(sequence[i][j][4][6][1]) + "," + str(sequence[i][j][4][4][0]) + "," + str(sequence[i][j][4][2][0]) + "," + str(sequence[i][j][4][2][1]) + "," + str(sequence[i][j][4][2][2]) + "," + str(sequence[i][j][4][2][3]) + "," + str(sequence[i][j][4][5][0]) + "," + str(sequence[i][j][4][8][0]) + "," + str(sequence[i][j][4][8][1]) + "," + str(sequence[i][j][4][8][2]) + "," + str(sequence[i][j][4][8][3]) + "," + str(sequence[i][j][4][8][4]) + "," + str(sequence[i][j][4][8][5]) + "," + str(sequence[i][j][4][8][6]) + "," + str(sequence[i][j][4][8][7]) + "\n")
+                        file_basalt.write(str(sequence[i][j][0]) + "," + str(sequence[i][j][1]) + "," + str(sequence[i][j][2]) + "," + str(sequence[i][j][3]) + "," + str(sequence[i][j][4][1][0]) + "," + str(sequence[i][j][4][1][1]) + "," + str(sequence[i][j][4][1][2]) + "," + str(sequence[i][j][4][3][0]) + "," + str(sequence[i][j][4][3][1]) + "," + str(sequence[i][j][4][6][0]) + "," + str(sequence[i][j][4][6][1]) + "," + str(sequence[i][j][4][4][0]) + "," + str(sequence[i][j][4][2][0]) + "," + str(sequence[i][j][4][2][1]) + "," + str(sequence[i][j][4][2][2]) + "," + str(sequence[i][j][4][2][3]) + "," + str(sequence[i][j][4][5]) + "," + str(sequence[i][j][4][8][0]) + "," + str(sequence[i][j][4][8][1]) + "," + str(sequence[i][j][4][8][2]) + "," + str(sequence[i][j][4][8][3]) + "," + str(sequence[i][j][4][8][4]) + "," + str(sequence[i][j][4][8][5]) + "," + str(sequence[i][j][4][8][6]) + "," + str(sequence[i][j][4][8][7]) + "\n")
         #
         return sequence

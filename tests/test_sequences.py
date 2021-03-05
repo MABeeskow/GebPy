@@ -104,7 +104,7 @@ print("")
 # Test sedimentary basin generation within SedimentaryBasin class
 max_thickness = 500
 data = sequences.SedimentaryBasin()
-data_sedbasin = data.create_sedimentary_basin(maximum_thickness=max_thickness, csv_stratigraphy=True, csv_lithology=True)
+data_sedbasin = data.create_sedimentary_basin(maximum_thickness=max_thickness, csv_stratigraphy=True, csv_lithology=True, excludeRocksalt=True, excludeLimestone=True)
 rock = []
 top = []
 bottom = []
