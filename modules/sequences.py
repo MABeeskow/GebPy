@@ -1322,7 +1322,7 @@ class SedimentaryBasin:
         self.parts = parts
         self.maximum_thickness = maximum_thickness
     #
-    def create_soil(self):
+    def create_soil(self, grainsize=False):
         sequence = []
         thicknessUnit = rd.randint(5, 10)
         newThickness = self.actualThickness + thicknessUnit
@@ -1336,20 +1336,20 @@ class SedimentaryBasin:
         for i in range(self.parts):
             if i == 0:
                 data = Soil()
-                data_soil = data.create_simple_soil()
+                data_soil = data.create_simple_soil(grainsize_list=grainsize)
                 top = self.actualThickness
                 bottom = top + d
                 sequence.append(["soil", round(d, 1), round(top, 1), round(bottom, 1), data_soil])
             else:
                 data = Soil()
-                data_soil = data.create_simple_soil(amounts=sequence[-1][4][-2])
+                data_soil = data.create_simple_soil(amounts=sequence[-1][4][-2], grainsize_list=grainsize)
                 top = self.actualThickness + i*d
                 bottom = top + d
                 sequence.append(["soil", round(d, 1), round(top, 1), round(bottom, 1), data_soil])
         #
         return sequence
     #
-    def create_sand(self):
+    def create_sand(self, grainsize=False):
         sequence = []
         thicknessUnit = rd.randint(5, 15)
         newThickness = self.actualThickness + thicknessUnit
@@ -1363,13 +1363,13 @@ class SedimentaryBasin:
         for i in range(self.parts):
             if i == 0:
                 data = Soil()
-                data_sand = data.create_simple_sand()
+                data_sand = data.create_simple_sand(grainsize_list=grainsize)
                 top = self.actualThickness
                 bottom = top + d
                 sequence.append(["sand", round(d, 1), round(top, 1), round(bottom, 1), data_sand])
             else:
                 data = Soil()
-                data_sand = data.create_simple_sand(amounts=sequence[-1][4][-2])
+                data_sand = data.create_simple_sand(amounts=sequence[-1][4][-2], grainsize_list=grainsize)
                 top = self.actualThickness + i*d
                 bottom = top + d
                 sequence.append(["sand", round(d, 1), round(top, 1), round(bottom, 1), data_sand])

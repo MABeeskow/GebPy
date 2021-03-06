@@ -23,14 +23,14 @@ from modules import sequences
 ## TESTING
 # Test soil generation within SedimentaryBasin class
 data = sequences.SedimentaryBasin()
-data_soil = data.create_soil()
+data_soil = data.create_soil(grainsize=True)
 for i in range(len(data_soil)):
     print(data_soil[i])
 
 print("")
 # Test sand generation within SedimentaryBasin class
 data = sequences.SedimentaryBasin()
-data_sand = data.create_sand()
+data_sand = data.create_sand(grainsize=True)
 for i in range(len(data_sand)):
     print(data_sand[i])
 

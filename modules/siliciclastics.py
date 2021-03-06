@@ -87,14 +87,15 @@ class Soil:
                 cond = False
         #
         grainsize = []
+        n_Grains = 100
         if w_qz > 0:
-            grainsize.append([rd.randint(2, 2000) for i in range(20)])
+            grainsize.append([rd.randint(2, 2000) for i in range(int(round(w_qz*n_Grains, 0)))])
         if w_ilt > 0:
-            grainsize.append(list(np.around([rd.uniform(1, 2) for i in range(10)], 2)))
+            grainsize.append(list(np.around([rd.uniform(1, 2) for i in range(int(round(w_ilt*n_Grains, 0)))], 2)))
         if w_kln > 0:
-            grainsize.append(list(np.around([rd.uniform(1, 2) for i in range(10)], 2)))
+            grainsize.append(list(np.around([rd.uniform(1, 2) for i in range(int(round(w_kln*n_Grains, 0)))], 2)))
         if w_org > 0:
-            grainsize.append([rd.randint(2, 63) for i in range(20)])
+            grainsize.append([rd.randint(2, 63) for i in range(int(round(w_org*n_Grains, 0)))])
         #
         rhoSolid = (w_qz*quartz[2] + w_ilt*illite[2] + w_kln*kaolinite[2] + w_org*organic[2])/1000
         X = [w_qz, w_ilt, w_kln, w_org]
@@ -204,14 +205,15 @@ class Soil:
                 cond = False
         #
         grainsize = []
+        n_Grains = 100
         if w_qz > 0:
-            grainsize.append([rd.randint(2, 2000) for i in range(20)])
+            grainsize.append([rd.randint(2, 2000) for i in range(int(round(w_qz*n_Grains, 0)))])
         if w_ilt > 0:
-            grainsize.append(list(np.around([rd.uniform(1, 2) for i in range(10)], 2)))
+            grainsize.append(list(np.around([rd.uniform(1, 2) for i in range(int(round(w_ilt*n_Grains, 0)))], 2)))
         if w_kln > 0:
-            grainsize.append(list(np.around([rd.uniform(1, 2) for i in range(10)], 2)))
+            grainsize.append(list(np.around([rd.uniform(1, 2) for i in range(int(round(w_kln*n_Grains, 0)))], 2)))
         if w_org > 0:
-            grainsize.append([rd.randint(2, 63) for i in range(20)])
+            grainsize.append([rd.randint(2, 63) for i in range(int(round(w_org*n_Grains, 0)))])
         #
         rhoSolid = (w_qz*quartz[2] + w_ilt*illite[2] + w_kln*kaolinite[2] + w_org*organic[2])/1000
         X = [w_qz, w_ilt, w_kln, w_org]
