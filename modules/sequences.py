@@ -11,7 +11,6 @@
 #-----------------------------------------------
 
 ## MODULES
-from typing import List, Any
 import sys
 import numpy as np
 from numpy import round
@@ -392,7 +391,7 @@ class surface:
             phiD = (rhoSolid - rho) / (rhoSolid - chemSeawater[1]/1000 / 1000)
             #phiN = ((2 * phi ** 2 - phiD ** 2) ** (0.5))*100
             phiN = 100
-            sequence.extend(["water", thicknessUnit, self.actualThickness, newThickness, round(rho,3), velocities, round(GR,1), round(phiN,1), "water", composition, round(poisson,2), round(PE,2)])
+            sequence.extend(["water", thicknessUnit, self.actualThickness, newThickness, round(rho,3), velocities, round(GR, 1), round(phiN, 1), "water", composition, round(poisson,2), round(PE,2)])
         elif self.surface == "dry sand":
             thicknessUnit = randint(10, 50)
             newThickness = self.actualThickness + thicknessUnit
@@ -432,7 +431,7 @@ class surface:
             PE = xQuartz*chemQuartz[5][1] + xCalcite*chemCalcite[5][1] + xDolomite*chemDolomite[5][1] + xOrthoclase*chemOrthoclase[5][1] + xBiotite * chemBiotite[5][1]
             phiD = (rhoSolid - rho) / (rhoSolid - chemWater[1] / 1000)
             phiN = ((2 * phi ** 2 - phiD ** 2) ** (0.5))*100
-            sequence.extend(["dry sand", thicknessUnit, self.actualThickness, newThickness, round(rho,3), velocities, round(GR,1), round(phiN,1), "water", composition, round(poisson,2), round(PE,2)])
+            sequence.extend(["dry sand", thicknessUnit, self.actualThickness, newThickness, round(rho,3), velocities, round(GR, 1), round(phiN, 1), "water", composition, round(poisson,2), round(PE,2)])
         elif self.surface == "soil":
             thicknessUnit = randint(10, 50)
             newThickness = self.actualThickness + thicknessUnit
@@ -472,7 +471,7 @@ class surface:
             PE = xQuartz*chemQuartz[5][1] + xCalcite*chemCalcite[5][1] + xOrthoclase*chemOrthoclase[5][1] + xBiotite * chemBiotite[5][1]
             phiD = (rhoSolid - rho)/(rhoSolid - (chemWater[1] + 1.2920)/1000)
             phiN = np.real((2*phi**2 - phiD**2)**(0.5))*100
-            sequence.extend(["soil", thicknessUnit, self.actualThickness, newThickness, round(rho,3), velocities, round(GR,1), round(phiN,1), "water", composition, round(poisson,2), round(PE,2)])
+            sequence.extend(["soil", thicknessUnit, self.actualThickness, newThickness, round(rho,3), velocities, round(GR, 1), round(phiN, 1), "water", composition, round(poisson,2), round(PE,2)])
         #
         return sequence
     #
@@ -532,7 +531,7 @@ class sand:
         PE = xQuartz*chemQuartz[5][1] + xCalcite*chemCalcite[5][1] + xDolomite*chemDolomite[5][1] + xOrthoclase*chemOrthoclase[5][1] + xBiotite*chemBiotite[5][1]
         phiD = (rhoSolid - rho)/(rhoSolid - chemWater[1]/1000)
         phiN = np.real((2*phi**2 - phiD**2)**(0.5))*100
-        sequence.extend(["wet sand", thicknessUnit, self.actualThickness, newThickness, round(rho,3), velocities, round(GR,1), round(phiN,1), "water", composition, round(poisson,2), round(PE,2)])
+        sequence.extend(["wet sand", thicknessUnit, self.actualThickness, newThickness, round(rho,3), velocities, round(GR, 1), round(phiN, 1), "water", composition, round(poisson,2), round(PE,2)])
         #
         return sequence
 #
@@ -576,7 +575,7 @@ class subsurface:
                     shearModulus = dataSandstone[2][1]
                     #poisson = (vP**2 - 2*vS**2)/(2*(vP**2 - vS**2))
                     poisson = dataSandstone[2][3]
-                    sequence.append(["sandstone", round(d,1), round(top,1), round(bottom,1), rho, velocities, GR, phiN, fluid, composition, round(poisson,2), round(PE,2), dataSandstone[2]])
+                    sequence.append(["sandstone", round(d, 1), round(top, 1), round(bottom, 1), rho, velocities, GR, phiN, fluid, composition, round(poisson,2), round(PE,2), dataSandstone[2]])
             ###############
             # oil - water #
             ###############
@@ -602,7 +601,7 @@ class subsurface:
                     shearModulus = dataSandstone[2][1]
                     #poisson = (vP**2 - 2*vS**2)/(2*(vP**2 - vS**2))
                     poisson = dataSandstone[2][3]
-                    sequence.append(["sandstone", round(d,1), round(top,1), round(bottom,1), rho, velocities, GR, phiN, fluid, composition, round(poisson,2), round(PE,2), dataSandstone[2]])
+                    sequence.append(["sandstone", round(d, 1), round(top, 1), round(bottom, 1), rho, velocities, GR, phiN, fluid, composition, round(poisson,2), round(PE,2), dataSandstone[2]])
                 #
                 thicknessUnit2 = randint(minThickness, maxThickness)
                 N = self.parts
@@ -625,7 +624,7 @@ class subsurface:
                     shearModulus = dataSandstone[2][1]
                     #poisson = (vP**2 - 2*vS**2)/(2*(vP**2 - vS**2))
                     poisson = dataSandstone[2][3]
-                    sequence.append(["sandstone", round(d2,1), round(top2,1), round(bottom2,1), rho, velocities, GR, phiN, fluid, composition, round(poisson,2), round(PE,2), dataSandstone[2]])
+                    sequence.append(["sandstone", round(d2, 1), round(top2, 1), round(bottom2, 1), rho, velocities, GR, phiN, fluid, composition, round(poisson,2), round(PE,2), dataSandstone[2]])
             #####################
             # gas - oil - water #
             #####################
@@ -651,7 +650,7 @@ class subsurface:
                     shearModulus = dataSandstone[2][1]
                     #poisson = (vP**2 - 2*vS**2)/(2*(vP**2 - vS**2))
                     poisson = dataSandstone[2][3]
-                    sequence.append(["sandstone", round(d,1), round(top,1), round(bottom,1), rho, velocities, GR, phiN, fluid, composition, round(poisson,2), round(PE,2), dataSandstone[2]])
+                    sequence.append(["sandstone", round(d, 1), round(top, 1), round(bottom, 1), rho, velocities, GR, phiN, fluid, composition, round(poisson,2), round(PE,2), dataSandstone[2]])
                 #
                 thicknessUnit2 = randint(minThickness, maxThickness)
                 N = self.parts
@@ -674,7 +673,7 @@ class subsurface:
                     shearModulus = dataSandstone[2][1]
                     #poisson = (vP**2 - 2*vS**2)/(2*(vP**2 - vS**2))
                     poisson = dataSandstone[2][3]
-                    sequence.append(["sandstone", round(d2,1), round(top2,1), round(bottom2,1), rho, velocities, GR, phiN, fluid, composition, round(poisson,2), round(PE,2), dataSandstone[2]])
+                    sequence.append(["sandstone", round(d2, 1), round(top2, 1), round(bottom2, 1), rho, velocities, GR, phiN, fluid, composition, round(poisson,2), round(PE,2), dataSandstone[2]])
                     #
                 thicknessUnit3 = randint(minThickness, maxThickness)
                 N = self.parts
@@ -697,7 +696,7 @@ class subsurface:
                     shearModulus = dataSandstone[2][1]
                     #poisson = (vP**2 - 2*vS**2)/(2*(vP**2 - vS**2))
                     poisson = dataSandstone[2][3]
-                    sequence.append(["sandstone", round(d3,1), round(top3,1), round(bottom3,1), rho, velocities, GR, phiN, fluid, composition, round(poisson,2), round(PE,2), dataSandstone[2]])
+                    sequence.append(["sandstone", round(d3, 1), round(top3, 1), round(bottom3, 1), rho, velocities, GR, phiN, fluid, composition, round(poisson,2), round(PE,2), dataSandstone[2]])
         else:
             #########
             # water #
@@ -724,7 +723,7 @@ class subsurface:
                 shearModulus = dataSandstone[2][1]
                 #poisson = (vP**2 - 2*vS**2)/(2*(vP**2 - vS**2))
                 poisson = dataSandstone[2][3]
-                sequence.append(["sandstone", round(d,1), round(top,1), round(bottom,1), rho, velocities, GR, phiN, fluid, composition, round(poisson,2), round(PE,2), dataSandstone[2]])
+                sequence.append(["sandstone", round(d, 1), round(top, 1), round(bottom, 1), rho, velocities, GR, phiN, fluid, composition, round(poisson,2), round(PE,2), dataSandstone[2]])
         #
         return sequence
     #
@@ -764,7 +763,7 @@ class subsurface:
                         shearModulus = dataLimestone[2][1]
                         #poisson = (vP**2 - 2*vS**2)/(2*(vP**2 - vS**2))
                         poisson = dataLimestone[2][3]
-                        sequence.append(["limestone", round(d,1), round(top,1), round(bottom,1), rho, velocities, GR, phiN, fluid, composition, round(poisson,2), round(PE,2)])
+                        sequence.append(["limestone", round(d, 1), round(top, 1), round(bottom, 1), rho, velocities, GR, phiN, fluid, composition, round(poisson,2), round(PE,2)])
                 ###############
                 # oil - water #
                 ###############
@@ -790,7 +789,7 @@ class subsurface:
                         shearModulus = dataLimestone[2][1]
                         #poisson = (vP**2 - 2*vS**2)/(2*(vP**2 - vS**2))
                         poisson = dataLimestone[2][3]
-                        sequence.append(["limestone", round(d,1), round(top,1), round(bottom,1), rho, velocities, GR, phiN, fluid, composition, round(poisson,2), round(PE,2)])
+                        sequence.append(["limestone", round(d, 1), round(top, 1), round(bottom, 1), rho, velocities, GR, phiN, fluid, composition, round(poisson,2), round(PE,2)])
                     #
                     thicknessUnit2 = randint(minThickness, maxThickness)
                     N = self.parts
@@ -813,7 +812,7 @@ class subsurface:
                         shearModulus = dataLimestone[2][1]
                         #poisson = (vP**2 - 2*vS**2)/(2*(vP**2 - vS**2))
                         poisson = dataLimestone[2][3]
-                        sequence.append(["limestone", round(d2,1), round(top2,1), round(bottom2,1), rho, velocities, GR, phiN, fluid, composition, round(poisson,2), round(PE,2)])
+                        sequence.append(["limestone", round(d2, 1), round(top2, 1), round(bottom2, 1), rho, velocities, GR, phiN, fluid, composition, round(poisson,2), round(PE,2)])
                 #####################
                 # gas - oil - water #
                 #####################
@@ -839,7 +838,7 @@ class subsurface:
                         shearModulus = dataLimestone[2][1]
                         #poisson = (vP**2 - 2*vS**2)/(2*(vP**2 - vS**2))
                         poisson = dataLimestone[2][3]
-                        sequence.append(["limestone", round(d,1), round(top,1), round(bottom,1), rho, velocities, GR, phiN, fluid, composition, round(poisson,2), round(PE,2)])
+                        sequence.append(["limestone", round(d, 1), round(top, 1), round(bottom, 1), rho, velocities, GR, phiN, fluid, composition, round(poisson,2), round(PE,2)])
                     #
                     thicknessUnit2 = randint(minThickness, maxThickness)
                     N = self.parts
@@ -862,7 +861,7 @@ class subsurface:
                         shearModulus = dataLimestone[2][1]
                         #poisson = (vP**2 - 2*vS**2)/(2*(vP**2 - vS**2))
                         poisson = dataLimestone[2][3]
-                        sequence.append(["limestone", round(d2,1), round(top2,1), round(bottom2,1), rho, velocities, GR, phiN, fluid, composition, round(poisson,2), round(PE,2)])
+                        sequence.append(["limestone", round(d2, 1), round(top2, 1), round(bottom2, 1), rho, velocities, GR, phiN, fluid, composition, round(poisson,2), round(PE,2)])
                         #
                     thicknessUnit3 = randint(minThickness, maxThickness)
                     N = self.parts
@@ -885,7 +884,7 @@ class subsurface:
                         shearModulus = dataLimestone[2][1]
                         #poisson = (vP**2 - 2*vS**2)/(2*(vP**2 - vS**2))
                         poisson = dataLimestone[2][3]
-                        sequence.append(["limestone", round(d3,1), round(top3,1), round(bottom3,1), rho, velocities, GR, phiN, fluid, composition, round(poisson,2), round(PE,2)])
+                        sequence.append(["limestone", round(d3, 1), round(top3, 1), round(bottom3, 1), rho, velocities, GR, phiN, fluid, composition, round(poisson,2), round(PE,2)])
             else:
                 #########
                 # water #
@@ -911,7 +910,7 @@ class subsurface:
                     shearModulus = dataLimestone[2][1]
                     #poisson = (vP**2 - 2*vS**2)/(2*(vP**2 - vS**2))
                     poisson = dataLimestone[2][3]
-                    sequence.append(["limestone", round(d,1), round(top,1), round(bottom,1), rho, velocities, GR, phiN, fluid, composition, round(poisson,2), round(PE,2)])
+                    sequence.append(["limestone", round(d, 1), round(top, 1), round(bottom, 1), rho, velocities, GR, phiN, fluid, composition, round(poisson,2), round(PE,2)])
                 #
         elif magicnumber == 1 or self.keyword == "dolomite":
             if self.rockType == "shale" or self.rockType == "halite" or self.rockType == "anhydrite":
@@ -941,7 +940,7 @@ class subsurface:
                         shearModulus = dataDolomite[2][1]
                         #poisson = (vP**2 - 2*vS**2)/(2*(vP**2 - vS**2))
                         poisson = dataDolomite[2][3]
-                        sequence.append(["dolomite", round(d,1), round(top,1), round(bottom,1), rho, velocities, GR, phiN, fluid, composition, round(poisson,2), round(PE,2)])
+                        sequence.append(["dolomite", round(d, 1), round(top, 1), round(bottom, 1), rho, velocities, GR, phiN, fluid, composition, round(poisson,2), round(PE,2)])
                 ###############
                 # oil - water #
                 ###############
@@ -967,7 +966,7 @@ class subsurface:
                         shearModulus = dataDolomite[2][1]
                         #poisson = (vP**2 - 2*vS**2)/(2*(vP**2 - vS**2))
                         poisson = dataDolomite[2][3]
-                        sequence.append(["dolomite", round(d,1), round(top,1), round(bottom,1), rho, velocities, GR, phiN, fluid, composition, round(poisson,2), round(PE,2)])
+                        sequence.append(["dolomite", round(d, 1), round(top, 1), round(bottom, 1), rho, velocities, GR, phiN, fluid, composition, round(poisson,2), round(PE,2)])
                     #
                     thicknessUnit2 = randint(minThickness, maxThickness)
                     N = self.parts
@@ -990,7 +989,7 @@ class subsurface:
                         shearModulus = dataDolomite[2][1]
                         #poisson = (vP**2 - 2*vS**2)/(2*(vP**2 - vS**2))
                         poisson = dataDolomite[2][3]
-                        sequence.append(["dolomite", round(d2,1), round(top2,1), round(bottom2,1), rho, velocities, GR, phiN, fluid, composition, round(poisson,2), round(PE,2)])
+                        sequence.append(["dolomite", round(d2, 1), round(top2, 1), round(bottom2, 1), rho, velocities, GR, phiN, fluid, composition, round(poisson,2), round(PE,2)])
                 #####################
                 # gas - oil - water #
                 #####################
@@ -1016,7 +1015,7 @@ class subsurface:
                         shearModulus = dataDolomite[2][1]
                         #poisson = (vP**2 - 2*vS**2)/(2*(vP**2 - vS**2))
                         poisson = dataDolomite[2][3]
-                        sequence.append(["dolomite", round(d,1), round(top,1), round(bottom,1), rho, velocities, GR, phiN, fluid, composition, round(poisson,2), round(PE,2)])
+                        sequence.append(["dolomite", round(d, 1), round(top, 1), round(bottom, 1), rho, velocities, GR, phiN, fluid, composition, round(poisson,2), round(PE,2)])
                     #
                     thicknessUnit2 = randint(minThickness, maxThickness)
                     N = self.parts
@@ -1039,7 +1038,7 @@ class subsurface:
                         shearModulus = dataDolomite[2][1]
                         #poisson = (vP**2 - 2*vS**2)/(2*(vP**2 - vS**2))
                         poisson = dataDolomite[2][3]
-                        sequence.append(["dolomite", round(d2,1), round(top2,1), round(bottom2,1), rho, velocities, GR, phiN, fluid, composition, round(poisson,2), round(PE,2)])
+                        sequence.append(["dolomite", round(d2, 1), round(top2, 1), round(bottom2, 1), rho, velocities, GR, phiN, fluid, composition, round(poisson,2), round(PE,2)])
                     #
                     thicknessUnit3 = randint(minThickness, maxThickness)
                     N = self.parts
@@ -1062,7 +1061,7 @@ class subsurface:
                         shearModulus = dataDolomite[2][1]
                         #poisson = (vP**2 - 2*vS**2)/(2*(vP**2 - vS**2))
                         poisson = dataDolomite[2][3]
-                        sequence.append(["dolomite", round(d3,1), round(top3,1), round(bottom3,1), rho, velocities, GR, phiN, fluid, composition, round(poisson,2), round(PE,2)])
+                        sequence.append(["dolomite", round(d3, 1), round(top3, 1), round(bottom3, 1), rho, velocities, GR, phiN, fluid, composition, round(poisson,2), round(PE,2)])
             else:
                 #########
                 # water #
@@ -1088,7 +1087,7 @@ class subsurface:
                     shearModulus = dataDolomite[2][1]
                     #poisson = (vP**2 - 2*vS**2)/(2*(vP**2 - vS**2))
                     poisson = dataDolomite[2][3]
-                    sequence.append(["dolomite", round(d,1), round(top,1), round(bottom,1), rho, velocities, GR, phiN, fluid, composition, round(poisson,2), round(PE,2)])
+                    sequence.append(["dolomite", round(d, 1), round(top, 1), round(bottom, 1), rho, velocities, GR, phiN, fluid, composition, round(poisson,2), round(PE,2)])
         #
         return sequence
     #
@@ -1119,7 +1118,7 @@ class subsurface:
             shearModulus = dataShale[2][1]
             #poisson = (vP**2 - 2*vS**2)/(2*(vP**2 - vS**2))
             poisson = dataShale[2][3]
-            sequence.append(["shale", round(d,1), round(top,1), round(bottom,1), rho, velocities, GR, phiN, fluid, composition, round(poisson,2), round(PE,2)])
+            sequence.append(["shale", round(d, 1), round(top, 1), round(bottom, 1), rho, velocities, GR, phiN, fluid, composition, round(poisson,2), round(PE,2)])
         #
         return sequence
     #
@@ -1153,7 +1152,7 @@ class subsurface:
                 shearModulus = dataHalite[2][1]
                 #poisson = (vP**2 - 2*vS**2)/(2*(vP**2 - vS**2))
                 poisson = dataHalite[2][3]
-                sequence.append(["halite", round(d,1), round(top,1), round(bottom,1), rho, velocities, GR, phiN, fluid, composition, round(poisson,2), round(PE,2)])
+                sequence.append(["halite", round(d, 1), round(top, 1), round(bottom, 1), rho, velocities, GR, phiN, fluid, composition, round(poisson,2), round(PE,2)])
         elif magicnumber == 1 or keyword == "Anhydrite":
             thicknessUnit = randint(minThickness, maxThickness)
             N = self.parts
@@ -1176,7 +1175,7 @@ class subsurface:
                 shearModulus = dataAnhydrite[2][1]
                 #poisson = (vP**2 - 2*vS**2)/(2*(vP**2 - vS**2))
                 poisson = dataAnhydrite[2][3]
-                sequence.append(["anhydrite", round(d,1), round(top,1), round(bottom,1), rho, velocities, GR, phiN, fluid, composition, round(poisson,2), round(PE,2)])
+                sequence.append(["anhydrite", round(d, 1), round(top, 1), round(bottom, 1), rho, velocities, GR, phiN, fluid, composition, round(poisson,2), round(PE,2)])
         #
         return sequence
     #
@@ -1211,7 +1210,7 @@ class subsurface:
                     shearModulus = dataGranite[2][1]
                     #poisson = (vP**2 - 2*vS**2)/(2*(vP**2 - vS**2))
                     poisson = dataGranite[2][3]
-                    sequence.append(["granite", round(d,1), round(top,1), round(bottom,1), rho, velocities, GR, phiN, fluid, composition, round(poisson,2), round(PE,2)])
+                    sequence.append(["granite", round(d, 1), round(top, 1), round(bottom, 1), rho, velocities, GR, phiN, fluid, composition, round(poisson,2), round(PE,2)])
             elif magicnumber == 1:
                 thicknessUnit = randint(minThickness, maxThickness)
                 N = self.parts
@@ -1234,7 +1233,7 @@ class subsurface:
                     shearModulus = dataBasalt[2][1]
                     #poisson = (vP**2 - 2*vS**2)/(2*(vP**2 - vS**2))
                     poisson = dataBasalt[2][3]
-                    sequence.append(["basalt", round(d,1), round(top,1), round(bottom,1), rho, velocities, GR, phiN, fluid, composition, round(poisson,2), round(PE,2)])
+                    sequence.append(["basalt", round(d, 1), round(top, 1), round(bottom, 1), rho, velocities, GR, phiN, fluid, composition, round(poisson,2), round(PE,2)])
         elif rock == "granite":
             thicknessUnit = randint(minThickness, maxThickness)
             N = self.parts
@@ -1257,7 +1256,7 @@ class subsurface:
                 shearModulus = dataGranite[2][1]
                 #poisson = (vP**2 - 2*vS**2)/(2*(vP**2 - vS**2))
                 poisson = dataGranite[2][3]
-                sequence.append(["granite", round(d,1), round(top,1), round(bottom,1), rho, velocities, GR, phiN, fluid, composition, round(poisson,2), round(PE,2)])
+                sequence.append(["granite", round(d, 1), round(top, 1), round(bottom, 1), rho, velocities, GR, phiN, fluid, composition, round(poisson,2), round(PE,2)])
         elif rock == "basalt":
             thicknessUnit = randint(minThickness, maxThickness)
             N = self.parts
@@ -1280,7 +1279,7 @@ class subsurface:
                 shearModulus = dataBasalt[2][1]
                 #poisson = (vP**2 - 2*vS**2)/(2*(vP**2 - vS**2))
                 poisson = dataBasalt[2][3]
-                sequence.append(["basalt", round(d,1), round(top,1), round(bottom,1), rho, velocities, GR, phiN, fluid, composition, round(poisson,2), round(PE,2)])
+                sequence.append(["basalt", round(d, 1), round(top, 1), round(bottom, 1), rho, velocities, GR, phiN, fluid, composition, round(poisson,2), round(PE,2)])
         #
         return sequence
         #
@@ -1312,7 +1311,7 @@ class subsurface:
             shearModulus = data_ore_Fe[2][1]
             #poisson = (vP**2 - 2*vS**2)/(2*(vP**2 - vS**2))
             poisson = data_ore_Fe[2][3]
-            sequence.append(["ore", round(d,1), round(top,1), round(bottom,1), rho, velocities, GR, phiN, fluid, composition, round(poisson,2), round(PE,2)])
+            sequence.append(["ore", round(d, 1), round(top, 1), round(bottom, 1), rho, velocities, GR, phiN, fluid, composition, round(poisson,2), round(PE,2)])
         #
         return sequence
 #
@@ -1340,13 +1339,13 @@ class SedimentaryBasin:
                 data_soil = data.create_simple_soil()
                 top = self.actualThickness
                 bottom = top + d
-                sequence.append(["soil", round(d,1), round(top,1), round(bottom,1), data_soil])
+                sequence.append(["soil", round(d, 1), round(top, 1), round(bottom, 1), data_soil])
             else:
                 data = Soil()
-                data_soil = data.create_simple_soil(amounts=sequence[-1][4][-1])
+                data_soil = data.create_simple_soil(amounts=sequence[-1][4][-2])
                 top = self.actualThickness + i*d
                 bottom = top + d
-                sequence.append(["soil", round(d,1), round(top,1), round(bottom,1), data_soil])
+                sequence.append(["soil", round(d, 1), round(top, 1), round(bottom, 1), data_soil])
         #
         return sequence
     #
@@ -1367,13 +1366,13 @@ class SedimentaryBasin:
                 data_sand = data.create_simple_sand()
                 top = self.actualThickness
                 bottom = top + d
-                sequence.append(["sand", round(d,1), round(top,1), round(bottom,1), data_sand])
+                sequence.append(["sand", round(d, 1), round(top, 1), round(bottom, 1), data_sand])
             else:
                 data = Soil()
-                data_sand = data.create_simple_sand(amounts=sequence[-1][4][-1])
+                data_sand = data.create_simple_sand(amounts=sequence[-1][4][-2])
                 top = self.actualThickness + i*d
                 bottom = top + d
-                sequence.append(["sand", round(d,1), round(top,1), round(bottom,1), data_sand])
+                sequence.append(["sand", round(d, 1), round(top, 1), round(bottom, 1), data_sand])
         #
         return sequence
     #
@@ -1398,37 +1397,37 @@ class SedimentaryBasin:
                 data_sandstone = data.create_simple_sandstone()
                 top = self.actualThickness
                 bottom = top + d
-                sequence.append(["sandstone", round(d,1), round(top,1), round(bottom,1), data_sandstone])
+                sequence.append(["sandstone", round(d, 1), round(top, 1), round(bottom, 1), data_sandstone])
             elif i == 0 and self.fluid == "gas":
                 data = sandstone("gas", actualThickness=self.actualThickness)
                 data_sandstone = data.create_simple_sandstone()
                 top = self.actualThickness
                 bottom = top + d
-                sequence.append(["sandstone", round(d,1), round(top,1), round(bottom,1), data_sandstone])
+                sequence.append(["sandstone", round(d, 1), round(top, 1), round(bottom, 1), data_sandstone])
             elif i == 0 and self.fluid == "oil":
                 data = sandstone("oil", actualThickness=self.actualThickness)
                 data_sandstone = data.create_simple_sandstone()
                 top = self.actualThickness
                 bottom = top + d
-                sequence.append(["sandstone", round(d,1), round(top,1), round(bottom,1), data_sandstone])
+                sequence.append(["sandstone", round(d, 1), round(top, 1), round(bottom, 1), data_sandstone])
             elif i > 0 and self.fluid == "water":
                 data = sandstone("water", actualThickness=bottom)
                 data_sandstone = data.create_simple_sandstone(amounts=sequence[-1][-1][8])
                 top = self.actualThickness + i*d
                 bottom = top + d
-                sequence.append(["sandstone", round(d,1), round(top,1), round(bottom,1), data_sandstone])
+                sequence.append(["sandstone", round(d, 1), round(top, 1), round(bottom, 1), data_sandstone])
             elif i > 0 and self.fluid == "gas":
                 data = sandstone("gas", actualThickness=bottom)
                 data_sandstone = data.create_simple_sandstone(amounts=sequence[-1][-1][8])
                 top = self.actualThickness + i*d
                 bottom = top + d
-                sequence.append(["sandstone", round(d,1), round(top,1), round(bottom,1), data_sandstone])
+                sequence.append(["sandstone", round(d, 1), round(top, 1), round(bottom, 1), data_sandstone])
             elif i > 0 and self.fluid == "oil":
                 data = sandstone("oil", actualThickness=bottom)
                 data_sandstone = data.create_simple_sandstone(amounts=sequence[-1][-1][8])
                 top = self.actualThickness + i*d
                 bottom = top + d
-                sequence.append(["sandstone", round(d,1), round(top,1), round(bottom,1), data_sandstone])
+                sequence.append(["sandstone", round(d, 1), round(top, 1), round(bottom, 1), data_sandstone])
         #
         return sequence
     #
@@ -1450,37 +1449,37 @@ class SedimentaryBasin:
                 data_limestone = data.create_simple_limestone()
                 top = self.actualThickness
                 bottom = top + d
-                sequence.append(["limestone", round(d,1), round(top,1), round(bottom,1), data_limestone])
+                sequence.append(["limestone", round(d, 1), round(top, 1), round(bottom, 1), data_limestone])
             elif i == 0 and self.fluid == "gas":
                 data = limestone("gas", actualThickness=self.actualThickness)
                 data_limestone = data.create_simple_limestone()
                 top = self.actualThickness
                 bottom = top + d
-                sequence.append(["limestone", round(d,1), round(top,1), round(bottom,1), data_limestone])
+                sequence.append(["limestone", round(d, 1), round(top, 1), round(bottom, 1), data_limestone])
             elif i == 0 and self.fluid == "oil":
                 data = limestone("oil", actualThickness=self.actualThickness)
                 data_limestone = data.create_simple_limestone()
                 top = self.actualThickness
                 bottom = top + d
-                sequence.append(["limestone", round(d,1), round(top,1), round(bottom,1), data_limestone])
+                sequence.append(["limestone", round(d, 1), round(top, 1), round(bottom, 1), data_limestone])
             elif i > 0 and self.fluid == "water":
                 data = limestone("water", actualThickness=bottom)
                 data_limestone = data.create_simple_limestone(amounts=sequence[-1][-1][8])
                 top = self.actualThickness + i*d
                 bottom = top + d
-                sequence.append(["limestone", round(d,1), round(top,1), round(bottom,1), data_limestone])
+                sequence.append(["limestone", round(d, 1), round(top, 1), round(bottom, 1), data_limestone])
             elif i > 0 and self.fluid == "gas":
                 data = limestone("gas", actualThickness=bottom)
                 data_limestone = data.create_simple_limestone(amounts=sequence[-1][-1][8])
                 top = self.actualThickness + i*d
                 bottom = top + d
-                sequence.append(["limestone", round(d,1), round(top,1), round(bottom,1), data_limestone])
+                sequence.append(["limestone", round(d, 1), round(top, 1), round(bottom, 1), data_limestone])
             elif i > 0 and self.fluid == "oil":
                 data = limestone("oil", actualThickness=bottom)
                 data_limestone = data.create_simple_limestone(amounts=sequence[-1][-1][8])
                 top = self.actualThickness + i*d
                 bottom = top + d
-                sequence.append(["limestone", round(d,1), round(top,1), round(bottom,1), data_limestone])
+                sequence.append(["limestone", round(d, 1), round(top, 1), round(bottom, 1), data_limestone])
         #
         return sequence
     #
@@ -1501,13 +1500,13 @@ class SedimentaryBasin:
                 data_shale = data.create_simple_shale()
                 top = self.actualThickness
                 bottom = top + d
-                sequence.append(["shale", round(d,1), round(top,1), round(bottom,1), data_shale])
+                sequence.append(["shale", round(d, 1), round(top, 1), round(bottom, 1), data_shale])
             else:
                 data = shale()
                 data_shale = data.create_simple_shale(amounts=sequence[-1][-1][8])
                 top = self.actualThickness + i*d
                 bottom = top + d
-                sequence.append(["shale", round(d,1), round(top,1), round(bottom,1), data_shale])
+                sequence.append(["shale", round(d, 1), round(top, 1), round(bottom, 1), data_shale])
         #
         return sequence
     #
@@ -1528,13 +1527,13 @@ class SedimentaryBasin:
                 data_halite = data.create_simple_rocksalt()
                 top = self.actualThickness
                 bottom = top + d
-                sequence.append(["rock salt", round(d,1), round(top,1), round(bottom,1), data_halite])
+                sequence.append(["rock salt", round(d, 1), round(top, 1), round(bottom, 1), data_halite])
             else:
                 data = Evaporites("water", actualThickness=self.actualThickness)
                 data_halite = data.create_simple_rocksalt(amounts=sequence[-1][-1][8])
                 top = self.actualThickness + i*d
                 bottom = top + d
-                sequence.append(["rock salt", round(d,1), round(top,1), round(bottom,1), data_halite])
+                sequence.append(["rock salt", round(d, 1), round(top, 1), round(bottom, 1), data_halite])
         #
         return sequence
     #
@@ -1559,13 +1558,13 @@ class SedimentaryBasin:
                 data_granite = data.create_simple_granite()
                 top = self.actualThickness
                 bottom = top + d
-                sequence.append(["granite", round(d,1), round(top,1), round(bottom,1), data_granite])
+                sequence.append(["granite", round(d, 1), round(top, 1), round(bottom, 1), data_granite])
             else:
                 data = Plutonic("water", actualThickness=self.actualThickness)
                 data_granite = data.create_simple_granite(amounts=sequence[-1][-1][8])
                 top = self.actualThickness + i*d
                 bottom = top + d
-                sequence.append(["granite", round(d,1), round(top,1), round(bottom,1), data_granite])
+                sequence.append(["granite", round(d, 1), round(top, 1), round(bottom, 1), data_granite])
         #
         return sequence
     #
@@ -1590,13 +1589,13 @@ class SedimentaryBasin:
                 data_basalt = data.create_simple_basalt()
                 top = self.actualThickness
                 bottom = top + d
-                sequence.append(["basalt", round(d,1), round(top,1), round(bottom,1), data_basalt])
+                sequence.append(["basalt", round(d, 1), round(top, 1), round(bottom, 1), data_basalt])
             else:
                 data = Volcanic("water", actualThickness=self.actualThickness)
                 data_basalt = data.create_simple_basalt(amounts=sequence[-1][-1][8])
                 top = self.actualThickness + i*d
                 bottom = top + d
-                sequence.append(["basalt", round(d,1), round(top,1), round(bottom,1), data_basalt])
+                sequence.append(["basalt", round(d, 1), round(top, 1), round(bottom, 1), data_basalt])
         #
         return sequence
     #

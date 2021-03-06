@@ -24,7 +24,7 @@ class Soil:
     def __init__(self):
         pass
     #
-    def create_simple_soil(self, w_C=None, amounts=None):
+    def create_simple_soil(self, w_C=None, amounts=None, grainsize_list=False):
         self.w_C = w_C
         self.amounts = amounts
         #
@@ -85,7 +85,16 @@ class Soil:
                 amounts = [w_qz, w_ilt, w_kln, w_org]
             else:
                 cond = False
-        data.append(composition)
+        #
+        grainsize = []
+        if w_qz > 0:
+            grainsize.append([rd.randint(2, 2000) for i in range(20)])
+        if w_ilt > 0:
+            grainsize.append(list(np.around([rd.uniform(1, 2) for i in range(10)], 2)))
+        if w_kln > 0:
+            grainsize.append(list(np.around([rd.uniform(1, 2) for i in range(10)], 2)))
+        if w_org > 0:
+            grainsize.append([rd.randint(2, 63) for i in range(20)])
         #
         rhoSolid = (w_qz*quartz[2] + w_ilt*illite[2] + w_kln*kaolinite[2] + w_org*organic[2])/1000
         X = [w_qz, w_ilt, w_kln, w_org]
@@ -118,6 +127,7 @@ class Soil:
         poisson_elastic = (3*K_bulk - 2*G_bulk)/(6*K_bulk + 2*G_bulk)
         poisson_mineralogical = w_qz*quartz[3][3] + w_ilt*illite[3][3] + w_kln*kaolinite[3][3] + w_org*organic[3][3]
         #
+        data.append(composition)
         data.append([round(rho, 3), round(rhoSolid, 3), round(water[2] / 1000, 6), round(air[2]/1000, 3)])
         data.append([round(K_bulk*10**(-6), 2), round(G_bulk*10**(-6), 2), round(E_bulk*10**(-6), 2), round(poisson_mineralogical, 3)])
         data.append([round(vP, 2), round(vS, 2), round(vP_solid, 2), round(water[4][0], 2), round(air[4][0], 2)])
@@ -126,10 +136,12 @@ class Soil:
         data.append([round(GR, 3), round(PE, 3)])
         data.append(concentrations)
         data.append(amounts)
+        if grainsize_list == True:
+            data.append(grainsize)
         #
         return data
     #
-    def create_simple_sand(self, w_C=None, amounts=None):
+    def create_simple_sand(self, w_C=None, amounts=None, grainsize_list=False):
         self.w_C = w_C
         self.amounts = amounts
         #
@@ -190,7 +202,16 @@ class Soil:
                 amounts = [w_qz, w_ilt, w_kln, w_org]
             else:
                 cond = False
-        data.append(composition)
+        #
+        grainsize = []
+        if w_qz > 0:
+            grainsize.append([rd.randint(2, 2000) for i in range(20)])
+        if w_ilt > 0:
+            grainsize.append(list(np.around([rd.uniform(1, 2) for i in range(10)], 2)))
+        if w_kln > 0:
+            grainsize.append(list(np.around([rd.uniform(1, 2) for i in range(10)], 2)))
+        if w_org > 0:
+            grainsize.append([rd.randint(2, 63) for i in range(20)])
         #
         rhoSolid = (w_qz*quartz[2] + w_ilt*illite[2] + w_kln*kaolinite[2] + w_org*organic[2])/1000
         X = [w_qz, w_ilt, w_kln, w_org]
@@ -223,6 +244,7 @@ class Soil:
         poisson_elastic = (3*K_bulk - 2*G_bulk)/(6*K_bulk + 2*G_bulk)
         poisson_mineralogical = w_qz*quartz[3][3] + w_ilt*illite[3][3] + w_kln*kaolinite[3][3] + w_org*organic[3][3]
         #
+        data.append(composition)
         data.append([round(rho, 3), round(rhoSolid, 3), round(water[2] / 1000, 6)])
         data.append([round(K_bulk*10**(-6), 2), round(G_bulk*10**(-6), 2), round(E_bulk*10**(-6), 2), round(poisson_mineralogical, 3)])
         data.append([round(vP, 2), round(vS, 2), round(vP_solid, 2), round(water[4][0], 2)])
@@ -231,6 +253,8 @@ class Soil:
         data.append([round(GR, 3), round(PE, 3)])
         data.append(concentrations)
         data.append(amounts)
+        if grainsize_list == True:
+            data.append(grainsize)
         #
         return data
 #
