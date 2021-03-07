@@ -6,7 +6,7 @@
 # Name:		geophysics.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		16.02.2020
+# Date:		07.03.2021
 
 #-----------------------------------------------
 
@@ -104,7 +104,7 @@ class Seismology:
     def __init__(self,):
         pass
     #
-    def calculate_impedance(self, velocity, density):
+    def calculate_impedance(self, velocity=None, density=None, data_all=None):
         """Returns an array that contains the impedance values of the previously generated rock units.
         **Arguments**:
             velocity: array, list of velocity values
@@ -112,7 +112,16 @@ class Seismology:
         **Outputs**:
             data: array of seismic impedance values
         """
-        data = velocity*density
+        if data_all == None and velocity != None and density != None:
+            data = velocity*density
+        else:
+            density = []
+            velocity = []
+            for i in range(len(data_all)):
+                for j in range(len(data_all[i])):
+                    density.append(data_all[i][j][4][1][0])
+                    velocity.append(data_all[i][j][4][3][0])
+            data = np.array(velocity)*np.array(density)
         #
         return data
     #
@@ -123,7 +132,7 @@ class Seismology:
         **Outputs**:
             data: array of reflection coefficient values
         """
-        data = []
+        data = [0]
         for i in range(1, len(impedance)):
             data.append((impedance[i]-impedance[i-1])/(impedance[i]+impedance[i-1]))
         #
@@ -153,6 +162,34 @@ class Seismology:
         data = (2*thickness)/(velocity)
         #
         return np.array(data)
+    #
+    def create_seismic_trace(self, reflection=None, data_all=None):
+        """Returns an array that contains the seismic trace based on the input data.
+        **Arguments**:
+            reflection: array, list of reflection coefficient values
+        **Outputs**:
+            data: array of seismic trace values
+        """
+        if data_all == None and reflection != None:
+            points = len(reflection)
+            width = points/100
+        else:
+            density = []
+            velocity = []
+            for i in range(len(data_all)):
+                for j in range(len(data_all[i])):
+                    density.append(data_all[i][j][4][1][0])
+                    velocity.append(data_all[i][j][4][3][0])
+            impedance = np.array(velocity)*np.array(density)
+            reflection = [0]
+            for i in range(1, len(impedance)):
+                reflection.append((impedance[i]-impedance[i-1])/(impedance[i]+impedance[i-1]))
+            points = len(reflection)
+            width = points/100
+        wavelet = signal.ricker(points, width)
+        data = signal.convolve(reflection, wavelet, mode="same")
+        #
+        return data
 #
 class Elasticity:
     #

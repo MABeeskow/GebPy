@@ -6,7 +6,7 @@
 # Name:		test_sequences.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		19.02.2021
+# Date:		07.03.2021
 
 # -----------------------------------------------
 
@@ -18,7 +18,7 @@ import  matplotlib as mpl
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 from matplotlib.ticker import NullFormatter
-from modules import sequences
+from modules import sequences, geophysics
 
 ## TESTING
 # Test soil generation within SedimentaryBasin class
@@ -104,7 +104,7 @@ print("")
 # Test sedimentary basin generation within SedimentaryBasin class
 max_thickness = 500
 data = sequences.SedimentaryBasin()
-data_sedbasin = data.create_sedimentary_basin(maximum_thickness=max_thickness, csv_stratigraphy=True, csv_lithology=True, excludeRocksalt=True, excludeLimestone=True)
+data_sedbasin = data.create_sedimentary_basin(maximum_thickness=max_thickness, n_units=20, csv_stratigraphy=True, csv_lithology=True, excludeRocksalt=True, excludeLimestone=True)
 rock = []
 top = []
 bottom = []
@@ -172,6 +172,8 @@ for i in range(len(data_sedbasin)):
         kmod.append(data_sedbasin[i][j][4][2][0])
         gmod.append(data_sedbasin[i][j][4][2][1])
     print(data_sedbasin[i])
+
+seismic_trace = geophysics.Seismology().create_seismic_trace(data_all=data_sedbasin)
 
 colors = [["soil", "peru"], ["sand", "moccasin"], ["sandstone", "tan"], ["limestone", "lightblue"], ["shale", "olivedrab"], ["rock salt", "violet"], ["granite", "darkorange"], ["basalt", "grey"]]
 units_sorted = []
@@ -398,12 +400,14 @@ ax3_2.grid(color="grey", linestyle="dashed")
 plt.gca().invert_yaxis()
 plt.rc('axes', axisbelow=True)
 # 4
-ax4.plot(pe, top, color="#00549F", linewidth=2)
-ax4.set_xlabel("PE [barns/electron]")
-ax4.set_xscale("log")
-ax4.get_xaxis().set_major_formatter(mpl.ticker.ScalarFormatter())
-ax4.get_xaxis().set_minor_formatter(mpl.ticker.ScalarFormatter())
-ax4.xaxis.set_minor_formatter(NullFormatter())
+ax4.plot(seismic_trace, top, color="#000000", linewidth=2)
+ax4.fill_betweenx(top, 0.0, seismic_trace, where=(seismic_trace>0.0), color="blue")
+ax4.fill_betweenx(top, 0.0, seismic_trace, where=(seismic_trace<0.0), color="red")
+ax4.set_xlabel("Seismic trace")
+#ax4.set_xscale("log")
+#ax4.get_xaxis().set_major_formatter(mpl.ticker.ScalarFormatter())
+#ax4.get_xaxis().set_minor_formatter(mpl.ticker.ScalarFormatter())
+#ax4.xaxis.set_minor_formatter(NullFormatter())
 ax4.set_ylim(0, max_thickness)
 ax4.set_yticks(np.arange(0, max_thickness+50, 50))
 ax4.grid(color="grey", linestyle="dashed", which="both")

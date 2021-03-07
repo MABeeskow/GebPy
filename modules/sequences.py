@@ -1322,16 +1322,18 @@ class SedimentaryBasin:
         self.parts = parts
         self.maximum_thickness = maximum_thickness
     #
-    def create_soil(self, grainsize=False):
+    def create_soil(self, thickness=None, grainsize=False):
         sequence = []
-        thicknessUnit = rd.randint(5, 10)
-        newThickness = self.actualThickness + thicknessUnit
+        if thickness == None:
+            thickness_max = rd.randint(5, 10)
+        else:
+            thickness_max = thickness
         #
         if self.parts == None:
             d = 1.0
-            self.parts = thicknessUnit
+            self.parts = thickness_max
         else:
-            d = float(thicknessUnit/self.parts)
+            d = float(thickness_max/self.parts)
         #
         for i in range(self.parts):
             if i == 0:
@@ -1349,16 +1351,18 @@ class SedimentaryBasin:
         #
         return sequence
     #
-    def create_sand(self, grainsize=False):
+    def create_sand(self, thickness=None, grainsize=False):
         sequence = []
-        thicknessUnit = rd.randint(5, 15)
-        newThickness = self.actualThickness + thicknessUnit
+        if thickness == None:
+            thickness_max = rd.randint(5, 15)
+        else:
+            thickness_max = thickness
         #
         if self.parts == None:
             d = 1.0
-            self.parts = thicknessUnit
+            self.parts = thickness_max
         else:
-            d = float(thicknessUnit/self.parts)
+            d = float(thickness_max/self.parts)
         #
         for i in range(self.parts):
             if i == 0:
@@ -1380,16 +1384,15 @@ class SedimentaryBasin:
         self.fluid = fluid
         sequence = []
         if thickness == None:
-            thickness_rock = rd.randint(5, 20)
+            thickness_max = rd.randint(5, 20)
         else:
-            thickness_rock = thickness
-        newThickness = self.actualThickness + thickness_rock
+            thickness_max = thickness
         #
         if self.parts == None:
             d = 1.0
-            self.parts = thickness_rock
+            self.parts = thickness_max
         else:
-            d = float(thickness_rock/self.parts)
+            d = float(thickness_max/self.parts)
         #
         for i in range(self.parts):
             if i == 0 and self.fluid == "water":
@@ -1431,17 +1434,19 @@ class SedimentaryBasin:
         #
         return sequence
     #
-    def create_limestone(self, fluid="water"):
+    def create_limestone(self, thickness=None, fluid="water"):
         self.fluid = fluid
         sequence = []
-        thicknessUnit = rd.randint(5, 20)
-        newThickness = self.actualThickness + thicknessUnit
+        if thickness == None:
+            thickness_max = rd.randint(5, 20)
+        else:
+            thickness_max = thickness
         #
         if self.parts == None:
             d = 1.0
-            self.parts = thicknessUnit
+            self.parts = thickness_max
         else:
-            d = float(thicknessUnit/self.parts)
+            d = float(thickness_max/self.parts)
         #
         for i in range(self.parts):
             if i == 0 and self.fluid == "water":
@@ -1483,16 +1488,18 @@ class SedimentaryBasin:
         #
         return sequence
     #
-    def create_shale(self):
+    def create_shale(self, thickness=None):
         sequence = []
-        thicknessUnit = rd.randint(5, 15)
-        newThickness = self.actualThickness + thicknessUnit
+        if thickness == None:
+            thickness_max = rd.randint(5, 20)
+        else:
+            thickness_max = thickness
         #
         if self.parts == None:
             d = 1.0
-            self.parts = thicknessUnit
+            self.parts = thickness_max
         else:
-            d = float(thicknessUnit/self.parts)
+            d = float(thickness_max/self.parts)
         #
         for i in range(self.parts):
             if i == 0:
@@ -1510,16 +1517,18 @@ class SedimentaryBasin:
         #
         return sequence
     #
-    def create_rocksalt(self):
+    def create_rocksalt(self, thickness=None):
         sequence = []
-        thicknessUnit = rd.randint(5, 20)
-        newThickness = self.actualThickness + thicknessUnit
+        if thickness == None:
+            thickness_max = rd.randint(10, 20)
+        else:
+            thickness_max = thickness
         #
         if self.parts == None:
             d = 1.0
-            self.parts = thicknessUnit
+            self.parts = thickness_max
         else:
-            d = float(thicknessUnit/self.parts)
+            d = float(thickness_max/self.parts)
         #
         for i in range(self.parts):
             if i == 0:
@@ -1538,19 +1547,17 @@ class SedimentaryBasin:
         return sequence
     #
     def create_granite(self, thickness=None):
-        self.thickness = thickness
         sequence = []
-        if self.thickness == None:
-            thicknessUnit = rd.randint(5, 20)
+        if thickness == None:
+            thickness_max = rd.randint(10, 20)
         else:
-            thicknessUnit = self.thickness
-        newThickness = self.actualThickness + thicknessUnit
+            thickness_max = thickness
         #
         if self.parts == None:
             d = 1.0
-            self.parts = thicknessUnit
+            self.parts = thickness_max
         else:
-            d = float(thicknessUnit/self.parts)
+            d = float(thickness_max/self.parts)
         #
         for i in range(self.parts):
             if i == 0:
@@ -1569,19 +1576,17 @@ class SedimentaryBasin:
         return sequence
     #
     def create_basalt(self, thickness=None):
-        self.thickness = thickness
         sequence = []
-        if self.thickness == None:
-            thicknessUnit = rd.randint(5, 20)
+        if thickness == None:
+            thickness_max = rd.randint(10, 20)
         else:
-            thicknessUnit = self.thickness
-        newThickness = self.actualThickness + thicknessUnit
+            thickness_max = thickness
         #
         if self.parts == None:
             d = 1.0
-            self.parts = thicknessUnit
+            self.parts = thickness_max
         else:
-            d = float(thicknessUnit/self.parts)
+            d = float(thickness_max/self.parts)
         #
         for i in range(self.parts):
             if i == 0:
@@ -1599,136 +1604,148 @@ class SedimentaryBasin:
         #
         return sequence
     #
-    def create_sedimentary_basin(self, maximum_thickness=150, csv_stratigraphy=False, csv_lithology=False, excludeRocksalt=False, excludeLimestone=False):
+    def create_sedimentary_basin(self, maximum_thickness=500, n_units = 15, csv_stratigraphy=False, csv_lithology=False, excludeRocksalt=False, excludeLimestone=False):
         self.maximum_thickness = maximum_thickness
         sequence = []
-        n_units = rd.randint(10, 30)
+        thickness_list = [0, rd.randint(5, 10), rd.randint(5, 15)]
+        depth_list = [thickness_list[1]]
+        #
+        for i in range(2, n_units):
+            if len(thickness_list) < n_units:
+                thickness_list.append(rd.randint(int(0.75*(maximum_thickness-sum(thickness_list))/(n_units-len(thickness_list)+1)), int(1.25*(maximum_thickness-sum(thickness_list))/(n_units-len(thickness_list)+1))))
+                depth_list.append(sum(thickness_list[:i+1]))
+            else:
+                thickness_list.append(maximum_thickness-sum(thickness_list))
+                depth_list.append(sum(thickness_list[:i+1]))
+        depth_list.append(sum(thickness_list))
+        del thickness_list[0]
         #
         condition = False
         while condition == False:
-            if len(sequence) == 0:
-                data = SedimentaryBasin(parts=self.parts)
-                data_soil = data.create_soil()
-                sequence.append(data_soil)
-                actual_depth = sequence[-1][-1][3]
-            elif len(sequence) == 1:
-                data = SedimentaryBasin(parts=self.parts, actualThickness=actual_depth)
-                data_sand = data.create_sand()
-                sequence.append(data_sand)
-                actual_depth = sequence[-1][-1][3]
-            elif actual_depth < 0.9*self.maximum_thickness and sequence[-1][-1][0] not in ["shale", "rock salt"] and sequence[-1][-1][-1][5] not in ["gas", "oil"]:
-                condition_2 = False
-                while condition_2 == False:
-                    magicnumber = rd.random()
-                    if magicnumber < 0.4:
-                        data = SedimentaryBasin(parts=self.parts, actualThickness=actual_depth)
-                        data_sandstone = data.create_sandstone()
-                        sequence.append(data_sandstone)
-                        actual_depth = sequence[-1][-1][3]
-                        condition_2 = True
-                    elif 0.4 <= magicnumber < 0.8:
-                        data = SedimentaryBasin(parts=self.parts, actualThickness=actual_depth)
-                        data_shale = data.create_shale()
-                        sequence.append(data_shale)
-                        actual_depth = sequence[-1][-1][3]
-                        condition_2 = True
-                    elif 0.8 <= magicnumber < 0.95 and excludeLimestone == False:
-                        data = SedimentaryBasin(parts=self.parts, actualThickness=actual_depth)
-                        data_limestone = data.create_limestone()
-                        sequence.append(data_limestone)
-                        actual_depth = sequence[-1][-1][3]
-                        condition_2 = True
-                    elif magicnumber >= 0.95 and excludeRocksalt == False:
-                        data = SedimentaryBasin(parts=self.parts, actualThickness=actual_depth)
-                        data_rocksalt = data.create_rocksalt()
-                        sequence.append(data_rocksalt)
-                        actual_depth = sequence[-1][-1][3]
-                        condition_2 = True
-                    elif magicnumber >= 0.95 and excludeRocksalt == True:
-                        condition_2 = False
-            elif actual_depth < 0.9*self.maximum_thickness and sequence[-1][-1][0] in ["shale", "rock salt"]:
-                condition_3 = False
-                while condition_3 == False:
-                    magicnumber = rd.random()
-                    if magicnumber < 0.1 and excludeLimestone == False:
-                        data = SedimentaryBasin(parts=self.parts, actualThickness=actual_depth)
-                        data_limestone = data.create_limestone(fluid="gas")
-                        sequence.append(data_limestone)
-                        actual_depth = sequence[-1][-1][3]
-                        condition_3 = True
-                    elif 0.1 <= magicnumber < 0.2 and excludeLimestone == False:
-                        data = SedimentaryBasin(parts=self.parts, actualThickness=actual_depth)
-                        data_limestone = data.create_limestone(fluid="oil")
-                        sequence.append(data_limestone)
-                        actual_depth = sequence[-1][-1][3]
-                        condition_3 = True
-                    elif 0.2 <= magicnumber < 0.3:
-                        data = SedimentaryBasin(parts=self.parts, actualThickness=actual_depth)
-                        data_sandstone = data.create_sandstone(fluid="gas")
-                        sequence.append(data_sandstone)
-                        actual_depth = sequence[-1][-1][3]
-                        condition_3 = True
-                    elif 0.3 <= magicnumber < 0.4:
-                        data = SedimentaryBasin(parts=self.parts, actualThickness=actual_depth)
-                        data_sandstone = data.create_sandstone(fluid="oil")
-                        sequence.append(data_sandstone)
-                        actual_depth = sequence[-1][-1][3]
-                        condition_3 = True
-                    elif 0.4 <= magicnumber < 0.6:
-                        data = SedimentaryBasin(parts=self.parts, actualThickness=actual_depth)
-                        data_sandstone = data.create_sandstone(fluid="water")
-                        sequence.append(data_sandstone)
-                        actual_depth = sequence[-1][-1][3]
-                        condition_3 = True
-                    elif 0.6 <= magicnumber < 0.8 and excludeLimestone == False:
-                        data = SedimentaryBasin(parts=self.parts, actualThickness=actual_depth)
-                        data_limestone = data.create_limestone(fluid="water")
-                        sequence.append(data_limestone)
-                        actual_depth = sequence[-1][-1][3]
-                        condition_3 = True
-                    elif magicnumber >= 0.8:
-                        data = SedimentaryBasin(parts=self.parts, actualThickness=actual_depth)
-                        data_shale = data.create_shale()
-                        sequence.append(data_shale)
-                        actual_depth = sequence[-1][-1][3]
-                        condition_3 = True
-                    elif excludeLimestone == True:
-                        condition_3 = False
-            elif actual_depth < 0.9*self.maximum_thickness and sequence[-1][-1][4][5] == "gas" and sequence[-1][-1][0] == "sandstone":
-                data = SedimentaryBasin(parts=self.parts, actualThickness=actual_depth)
-                data_sandstone = data.create_sandstone(fluid="oil")
-                sequence.append(data_sandstone)
-                actual_depth = sequence[-1][-1][3]
-            elif actual_depth < 0.9*self.maximum_thickness and sequence[-1][-1][4][5] == "oil" and sequence[-1][-1][0] == "sandstone":
-                data = SedimentaryBasin(parts=self.parts, actualThickness=actual_depth)
-                data_sandstone = data.create_sandstone(fluid="water")
-                sequence.append(data_sandstone)
-                actual_depth = sequence[-1][-1][3]
-            elif actual_depth < 0.9*self.maximum_thickness and sequence[-1][-1][4][5] == "gas" and sequence[-1][-1][0] == "limestone" and excludeLimestone == False:
-                data = SedimentaryBasin(parts=self.parts, actualThickness=actual_depth)
-                data_limestone = data.create_limestone(fluid="oil")
-                sequence.append(data_limestone)
-                actual_depth = sequence[-1][-1][3]
-            elif actual_depth < 0.9*self.maximum_thickness and sequence[-1][-1][4][5] == "oil" and sequence[-1][-1][0] == "limestone" and excludeLimestone == False:
-                data = SedimentaryBasin(parts=self.parts, actualThickness=actual_depth)
-                data_limestone = data.create_limestone(fluid="water")
-                sequence.append(data_limestone)
-                actual_depth = sequence[-1][-1][3]
-            elif actual_depth >= 0.9*self.maximum_thickness and actual_depth < maximum_thickness:
-                magicnumber = rd.randint(0, 1)
-                if magicnumber == 0:
+            for i in range(n_units):
+                if len(sequence) == 0:
+                    data = SedimentaryBasin(parts=self.parts)
+                    data_soil = data.create_soil(thickness=thickness_list[i])
+                    sequence.append(data_soil)
+                    actual_depth = depth_list[i]
+                elif len(sequence) == 1:
                     data = SedimentaryBasin(parts=self.parts, actualThickness=actual_depth)
-                    data_granite = data.create_granite(thickness=int(maximum_thickness-actual_depth))
-                    sequence.append(data_granite)
-                    actual_depth = sequence[-1][-1][3]
-                elif magicnumber == 1:
+                    data_sand = data.create_sand(thickness=thickness_list[i])
+                    sequence.append(data_sand)
+                    actual_depth = depth_list[i]
+                elif actual_depth < 0.85*self.maximum_thickness and sequence[-1][-1][0] not in ["shale", "rock salt"] and sequence[-1][-1][-1][5] not in ["gas", "oil"]:
+                    condition_2 = False
+                    while condition_2 == False:
+                        magicnumber = rd.random()
+                        if magicnumber < 0.4:
+                            data = SedimentaryBasin(parts=self.parts, actualThickness=actual_depth)
+                            data_sandstone = data.create_sandstone(thickness=thickness_list[i])
+                            sequence.append(data_sandstone)
+                            actual_depth = depth_list[i]
+                            condition_2 = True
+                        elif 0.4 <= magicnumber < 0.8:
+                            data = SedimentaryBasin(parts=self.parts, actualThickness=actual_depth)
+                            data_shale = data.create_shale(thickness=thickness_list[i])
+                            sequence.append(data_shale)
+                            actual_depth = depth_list[i]
+                            condition_2 = True
+                        elif 0.8 <= magicnumber < 0.95 and excludeLimestone == False:
+                            data = SedimentaryBasin(parts=self.parts, actualThickness=actual_depth)
+                            data_limestone = data.create_limestone(thickness=thickness_list[i])
+                            sequence.append(data_limestone)
+                            actual_depth = depth_list[i]
+                            condition_2 = True
+                        elif magicnumber >= 0.95 and excludeRocksalt == False:
+                            data = SedimentaryBasin(parts=self.parts, actualThickness=actual_depth)
+                            data_rocksalt = data.create_rocksalt(thickness=thickness_list[i])
+                            sequence.append(data_rocksalt)
+                            actual_depth = depth_list[i]
+                            condition_2 = True
+                        elif magicnumber >= 0.95 and excludeRocksalt == True:
+                            condition_2 = False
+                elif actual_depth < 0.85*self.maximum_thickness and sequence[-1][-1][0] in ["shale", "rock salt"]:
+                    condition_3 = False
+                    while condition_3 == False:
+                        magicnumber = rd.random()
+                        if magicnumber < 0.1 and excludeLimestone == False:
+                            data = SedimentaryBasin(parts=self.parts, actualThickness=actual_depth)
+                            data_limestone = data.create_limestone(thickness=thickness_list[i], fluid="gas")
+                            sequence.append(data_limestone)
+                            actual_depth = depth_list[i]
+                            condition_3 = True
+                        elif 0.1 <= magicnumber < 0.2 and excludeLimestone == False:
+                            data = SedimentaryBasin(parts=self.parts, actualThickness=actual_depth)
+                            data_limestone = data.create_limestone(thickness=thickness_list[i], fluid="oil")
+                            sequence.append(data_limestone)
+                            actual_depth = depth_list[i]
+                            condition_3 = True
+                        elif 0.2 <= magicnumber < 0.3:
+                            data = SedimentaryBasin(parts=self.parts, actualThickness=actual_depth)
+                            data_sandstone = data.create_sandstone(thickness=thickness_list[i], fluid="gas")
+                            sequence.append(data_sandstone)
+                            actual_depth = depth_list[i]
+                            condition_3 = True
+                        elif 0.3 <= magicnumber < 0.4:
+                            data = SedimentaryBasin(parts=self.parts, actualThickness=actual_depth)
+                            data_sandstone = data.create_sandstone(thickness=thickness_list[i], fluid="oil")
+                            sequence.append(data_sandstone)
+                            actual_depth = depth_list[i]
+                            condition_3 = True
+                        elif 0.4 <= magicnumber < 0.6:
+                            data = SedimentaryBasin(parts=self.parts, actualThickness=actual_depth)
+                            data_sandstone = data.create_sandstone(thickness=thickness_list[i], fluid="water")
+                            sequence.append(data_sandstone)
+                            actual_depth = depth_list[i]
+                            condition_3 = True
+                        elif 0.6 <= magicnumber < 0.8 and excludeLimestone == False:
+                            data = SedimentaryBasin(parts=self.parts, actualThickness=actual_depth)
+                            data_limestone = data.create_limestone(thickness=thickness_list[i], fluid="water")
+                            sequence.append(data_limestone)
+                            actual_depth = depth_list[i]
+                            condition_3 = True
+                        elif magicnumber >= 0.8:
+                            data = SedimentaryBasin(parts=self.parts, actualThickness=actual_depth)
+                            data_shale = data.create_shale(thickness=thickness_list[i])
+                            sequence.append(data_shale)
+                            actual_depth = depth_list[i]
+                            condition_3 = True
+                        elif excludeLimestone == True:
+                            condition_3 = False
+                elif actual_depth < 0.85*self.maximum_thickness and sequence[-1][-1][4][5] == "gas" and sequence[-1][-1][0] == "sandstone":
                     data = SedimentaryBasin(parts=self.parts, actualThickness=actual_depth)
-                    data_basalt = data.create_basalt(thickness=int(maximum_thickness-actual_depth))
-                    sequence.append(data_basalt)
-                    actual_depth = sequence[-1][-1][3]
-            elif actual_depth >= self.maximum_thickness:
-                condition = True
-            #print("Actual depth for", len(sequence), "units:", actual_depth, "m. -->", sequence[-1][-1][0], sequence[-1][-1][4][5])
+                    data_sandstone = data.create_sandstone(thickness=thickness_list[i], fluid="oil")
+                    sequence.append(data_sandstone)
+                    actual_depth = depth_list[i]
+                elif actual_depth < 0.85*self.maximum_thickness and sequence[-1][-1][4][5] == "oil" and sequence[-1][-1][0] == "sandstone":
+                    data = SedimentaryBasin(parts=self.parts, actualThickness=actual_depth)
+                    data_sandstone = data.create_sandstone(thickness=thickness_list[i], fluid="water")
+                    sequence.append(data_sandstone)
+                    actual_depth = depth_list[i]
+                elif actual_depth < 0.85*self.maximum_thickness and sequence[-1][-1][4][5] == "gas" and sequence[-1][-1][0] == "limestone" and excludeLimestone == False:
+                    data = SedimentaryBasin(parts=self.parts, actualThickness=actual_depth)
+                    data_limestone = data.create_limestone(thickness=thickness_list[i], fluid="oil")
+                    sequence.append(data_limestone)
+                    actual_depth = depth_list[i]
+                elif actual_depth < 0.85*self.maximum_thickness and sequence[-1][-1][4][5] == "oil" and sequence[-1][-1][0] == "limestone" and excludeLimestone == False:
+                    data = SedimentaryBasin(parts=self.parts, actualThickness=actual_depth)
+                    data_limestone = data.create_limestone(thickness=thickness_list[i], fluid="water")
+                    sequence.append(data_limestone)
+                    actual_depth = depth_list[i]
+                elif actual_depth >= 0.85*self.maximum_thickness and actual_depth < maximum_thickness:
+                    magicnumber = rd.randint(0, 1)
+                    if magicnumber == 0 or sequence[-1][-1][0] == "granite":
+                        data = SedimentaryBasin(parts=self.parts, actualThickness=actual_depth)
+                        data_granite = data.create_granite(thickness=thickness_list[i])
+                        sequence.append(data_granite)
+                        actual_depth = depth_list[i]
+                    elif magicnumber == 1 or sequence[-1][-1][0] == "basalt":
+                        data = SedimentaryBasin(parts=self.parts, actualThickness=actual_depth)
+                        data_basalt = data.create_basalt(thickness=thickness_list[i])
+                        sequence.append(data_basalt)
+                        actual_depth = depth_list[i]
+                elif actual_depth >= self.maximum_thickness:
+                    condition = True
+                #print("Actual depth for", len(sequence), "units:", actual_depth, "m. -->", sequence[-1][-1][0], sequence[-1][-1][4][5])
         #
         units_list = []
         for i in range(len(sequence)):
