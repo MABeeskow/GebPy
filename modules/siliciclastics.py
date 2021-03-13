@@ -515,7 +515,7 @@ class sandstone:
         #
         return sandstone
     
-    def create_simple_sandstone(self, w_Fe=None, amounts=None):
+    def create_simple_sandstone(self, w_Fe=None, amounts=None, porosity=None, pure=False):
         # [symbol, atomic number, atomic mass, oxidation states, melting point, boiling point, density, electronegativity]
         chemH = ["H", 1, 1.0078, 1, 13.99, 20.271, 0.084, 2.2]
         chemC = ["C", 6, 12.009, 4, 0.0, 3915, 3510, 2.55]
@@ -548,12 +548,10 @@ class sandstone:
         w_FeHem = chem_hematite[6][1]
         #
         # [molar mass, density, bulk modulus, vP]
-        chemWater = [18.0146, 997, 2.08, 1444]
+        air = fluids.Gas.air("")
         water = fluids.Water.water("")
         oil = fluids.Hydrocarbons.oil("")
         gas = fluids.Hydrocarbons.natural_gas("")
-        chemOil = [0.83 * chemC[2] + 0.11 * chemH[2] + 0.05 * chemS[2] + 0.005 * (chemO[2] + chemN[2]), 0.9, 1.35, 1225]
-        chemGas = [0.83 * chemC[2] + 0.11 * chemH[2] + 0.05 * chemS[2] + 0.005 * (chemO[2] + chemN[2]), 0.8, 0.081, 475]
         #
         data = []
         #
@@ -562,7 +560,7 @@ class sandstone:
         while cond == False:
             if self.w_Fe == None and self.amounts == None:
                 magicnumber = rd.randint(0, 6)
-                if magicnumber == 0:    # Qz-rich
+                if magicnumber == 0 or pure == True:    # Qz-rich
                     w_ore = round(0.0, 4)
                     w_Hem2 = rd.randint(0, 100)/100
                     w_Hem = round(w_ore*w_Hem2, 4)
@@ -877,23 +875,28 @@ class sandstone:
         G_list = [mineralogy[i][3][1] for i in range(len(mineralogy))]
         K_geo = elast.calc_geometric_mean(self, X, K_list)
         G_geo = elast.calc_geometric_mean(self, X, G_list)
-        K_solid = K_geo/2
-        G_solid = G_geo/2
+        #K_solid = K_geo/2
+        #G_solid = G_geo/2
+        K_solid = 0.5*K_geo/2
+        G_solid = 0.5*G_geo/2
         vP_solid = np.sqrt((K_solid*10**9+4/3*G_solid*10**9)/(rhoSolid*10**3))
         vS_solid = np.sqrt((G_solid*10**9)/(rhoSolid*10**3))
         E_solid = (9*K_solid*G_solid)/(3*K_solid+G_solid)
         nu_solid = (3*K_solid-2*G_solid)/(2*(3*K_solid+G_solid))
         #
-        if self.actualThickness <= 1000 and self.w_Fe == None:
-            phi = rd.uniform(0.25, 0.35)
-        elif self.actualThickness > 1000 and self.actualThickness <= 2000 and self.w_Fe == None:
-            phi = rd.uniform(0.20, 0.25)
-        elif self.actualThickness > 2000 and self.actualThickness <= 3000 and self.w_Fe == None:
-            phi = rd.uniform(0.15, 0.20)
-        elif self.actualThickness > 3000 and self.actualThickness <= 4000 and self.w_Fe == None:
-            phi = rd.uniform(0.10, 0.15)
-        elif self.actualThickness > 4000 or self.w_Fe != None:
-            phi = rd.uniform(0.05, 0.10)
+        if porosity == None:
+            if self.actualThickness <= 1000 and self.w_Fe == None:
+                phi = rd.uniform(0.25, 0.35)
+            elif self.actualThickness > 1000 and self.actualThickness <= 2000 and self.w_Fe == None:
+                phi = rd.uniform(0.20, 0.25)
+            elif self.actualThickness > 2000 and self.actualThickness <= 3000 and self.w_Fe == None:
+                phi = rd.uniform(0.15, 0.20)
+            elif self.actualThickness > 3000 and self.actualThickness <= 4000 and self.w_Fe == None:
+                phi = rd.uniform(0.10, 0.15)
+            elif self.actualThickness > 4000 or self.w_Fe != None:
+                phi = rd.uniform(0.05, 0.10)
+        else:
+            phi = porosity
         #
         if self.fluid == "water" or self.w_Fe != None:
             rho = (1 - phi) * rhoSolid + phi * water[2] / 1000
@@ -945,7 +948,7 @@ class sandstone:
             data.append(amounts)
         elif self.fluid == "gas":
             rho = (1 - phi) * rhoSolid + phi * gas[2] / 1000
-            vP = (1-phi)*vP_solid + phi*oil[4][0]
+            vP = (1-phi)*vP_solid + phi*gas[4][0]
             vS = (1 - phi) * vS_solid
             G_bulk = vS**2 * rho
             K_bulk = vP**2 * rho - 4/3*G_bulk
@@ -964,6 +967,30 @@ class sandstone:
             data.append([round(vP, 2), round(vS, 2), round(vP_solid, 2), round(gas[4][0], 2)])
             data.append([round(phi, 3), round(phiD, 3), round(phiN, 3)])
             data.append("gas")
+            data.append([round(GR, 3), round(PE, 3)])
+            data.append(concentrations)
+            data.append(amounts)
+        elif self.fluid == "air":
+            rho = (1 - phi) * rhoSolid + phi * air[2] / 1000
+            vP = (1-phi)*vP_solid + phi*air[4][0]
+            vS = (1 - phi) * vS_solid
+            G_bulk = vS**2 * rho
+            K_bulk = vP**2 * rho - 4/3*G_bulk
+            E_bulk = (9*K_bulk*G_bulk)/(3*K_bulk+G_bulk)
+            phiD = (rhoSolid - rho) / (rhoSolid - air[2] / 1000)
+            phiN = (2 * phi ** 2 - phiD ** 2) ** (0.5)
+            GR = w_Qz*chem_quartz[5][0] + w_Afs*chem_alkalifeldspar[5][0] + w_Pl*chem_plagioclase[5][0] + w_Cal*chem_calcite[5][0] + w_Chl*chem_chlorite[5][0] + w_Ms*chem_muscovite[5][0] + w_Hem*chem_hematite[5][0]
+            PE = w_Qz*chem_quartz[5][1] + w_Afs*chem_alkalifeldspar[5][1] + w_Pl*chem_plagioclase[5][1] + w_Cal*chem_calcite[5][1] + w_Chl*chem_chlorite[5][1] + w_Ms*chem_muscovite[5][1] + w_Hem*chem_hematite[5][1]
+            poisson_seismic = 0.5*(vP**2 - 2*vS**2)/(vP**2 - vS**2)
+            poisson_elastic = (3*K_bulk - 2*G_bulk)/(6*K_bulk + 2*G_bulk)
+            poisson_mineralogical = w_Qz*chem_quartz[3][3] + w_Afs*chem_alkalifeldspar[3][3] + w_Pl*chem_plagioclase[3][3] + w_Cal*chem_calcite[3][3] + w_Chl*chem_chlorite[3][3] + w_Ms*chem_muscovite[3][3] + w_Hem*chem_hematite[3][3]
+            #print("Poisson:", round(poisson_seismic,3), round(poisson_elastic,3), round(poisson_mineralogical,3))
+            #
+            data.append([round(rho, 3), round(rhoSolid, 3), round(gas[2] / 1000, 3)])
+            data.append([round(K_bulk*10**(-6), 2), round(G_bulk*10**(-6), 2), round(E_bulk*10**(-6), 2), round(poisson_mineralogical, 3)])
+            data.append([round(vP, 2), round(vS, 2), round(vP_solid, 2), round(gas[4][0], 2)])
+            data.append([round(phi, 3), round(phiD, 3), round(phiN, 3)])
+            data.append("air")
             data.append([round(GR, 3), round(PE, 3)])
             data.append(concentrations)
             data.append(amounts)

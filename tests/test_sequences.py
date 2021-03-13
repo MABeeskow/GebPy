@@ -6,7 +6,7 @@
 # Name:		test_sequences.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		07.03.2021
+# Date:		13.03.2021
 
 # -----------------------------------------------
 
@@ -21,86 +21,6 @@ from matplotlib.ticker import NullFormatter
 from modules import sequences, geophysics
 
 ## TESTING
-# Test soil generation within SedimentaryBasin class
-data = sequences.SedimentaryBasin()
-data_soil = data.create_soil(grainsize=True)
-for i in range(len(data_soil)):
-    print(data_soil[i])
-
-print("")
-# Test sand generation within SedimentaryBasin class
-data = sequences.SedimentaryBasin()
-data_sand = data.create_sand(grainsize=True)
-for i in range(len(data_sand)):
-    print(data_sand[i])
-
-print("")
-# Test sandstone generation within SedimentaryBasin class
-data = sequences.SedimentaryBasin()
-data_sandstone = data.create_sandstone()
-for i in range(len(data_sandstone)):
-    print(data_sandstone[i])
-
-print("")
-data = sequences.SedimentaryBasin()
-data_sandstone = data.create_sandstone(fluid="gas")
-for i in range(len(data_sandstone)):
-    print(data_sandstone[i])
-
-print("")
-data = sequences.SedimentaryBasin()
-data_sandstone = data.create_sandstone(fluid="oil")
-for i in range(len(data_sandstone)):
-    print(data_sandstone[i])
-
-print("")
-# Test limestone generation within SedimentaryBasin class
-data = sequences.SedimentaryBasin()
-data_limestone = data.create_limestone()
-for i in range(len(data_limestone)):
-    print(data_limestone[i])
-
-print("")
-data = sequences.SedimentaryBasin()
-data_limestone = data.create_limestone(fluid="gas")
-for i in range(len(data_limestone)):
-    print(data_limestone[i])
-
-print("")
-data = sequences.SedimentaryBasin()
-data_limestone = data.create_limestone(fluid="oil")
-for i in range(len(data_limestone)):
-    print(data_limestone[i])
-
-print("")
-# Test shale generation within SedimentaryBasin class
-data = sequences.SedimentaryBasin()
-data_shale = data.create_shale()
-for i in range(len(data_shale)):
-    print(data_shale[i])
-
-print("")
-# Test rock salt generation within SedimentaryBasin class
-data = sequences.SedimentaryBasin()
-data_rocksalt = data.create_rocksalt()
-for i in range(len(data_rocksalt)):
-    print(data_rocksalt[i])
-
-print("")
-# Test granite generation within SedimentaryBasin class
-data = sequences.SedimentaryBasin()
-data_granite = data.create_granite()
-for i in range(len(data_granite)):
-    print(data_granite[i])
-
-print("")
-# Test basalt generation within SedimentaryBasin class
-data = sequences.SedimentaryBasin()
-data_basalt = data.create_basalt()
-for i in range(len(data_basalt)):
-    print(data_basalt[i])
-
-print("")
 # Test sedimentary basin generation within SedimentaryBasin class
 max_thickness = 500
 data = sequences.SedimentaryBasin()

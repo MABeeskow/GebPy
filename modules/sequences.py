@@ -1380,7 +1380,7 @@ class SedimentaryBasin:
         #
         return sequence
     #
-    def create_sandstone(self, thickness=None, fluid="water"):
+    def create_sandstone(self, thickness=None, fluid="water", phi=None, Qz_rich=False):
         self.fluid = fluid
         sequence = []
         if thickness == None:
@@ -1397,37 +1397,49 @@ class SedimentaryBasin:
         for i in range(self.parts):
             if i == 0 and self.fluid == "water":
                 data = sandstone("water", actualThickness=self.actualThickness)
-                data_sandstone = data.create_simple_sandstone()
+                data_sandstone = data.create_simple_sandstone(porosity=phi, pure=Qz_rich)
                 top = self.actualThickness
                 bottom = top + d
                 sequence.append(["sandstone", round(d, 1), round(top, 1), round(bottom, 1), data_sandstone])
             elif i == 0 and self.fluid == "gas":
                 data = sandstone("gas", actualThickness=self.actualThickness)
-                data_sandstone = data.create_simple_sandstone()
+                data_sandstone = data.create_simple_sandstone(porosity=phi, pure=Qz_rich)
                 top = self.actualThickness
                 bottom = top + d
                 sequence.append(["sandstone", round(d, 1), round(top, 1), round(bottom, 1), data_sandstone])
             elif i == 0 and self.fluid == "oil":
                 data = sandstone("oil", actualThickness=self.actualThickness)
-                data_sandstone = data.create_simple_sandstone()
+                data_sandstone = data.create_simple_sandstone(porosity=phi, pure=Qz_rich)
+                top = self.actualThickness
+                bottom = top + d
+                sequence.append(["sandstone", round(d, 1), round(top, 1), round(bottom, 1), data_sandstone])
+            elif i == 0 and self.fluid == "air":
+                data = sandstone("air", actualThickness=self.actualThickness)
+                data_sandstone = data.create_simple_sandstone(porosity=phi, pure=Qz_rich)
                 top = self.actualThickness
                 bottom = top + d
                 sequence.append(["sandstone", round(d, 1), round(top, 1), round(bottom, 1), data_sandstone])
             elif i > 0 and self.fluid == "water":
                 data = sandstone("water", actualThickness=bottom)
-                data_sandstone = data.create_simple_sandstone(amounts=sequence[-1][-1][8])
+                data_sandstone = data.create_simple_sandstone(amounts=sequence[-1][-1][8], porosity=phi, pure=Qz_rich)
                 top = self.actualThickness + i*d
                 bottom = top + d
                 sequence.append(["sandstone", round(d, 1), round(top, 1), round(bottom, 1), data_sandstone])
             elif i > 0 and self.fluid == "gas":
                 data = sandstone("gas", actualThickness=bottom)
-                data_sandstone = data.create_simple_sandstone(amounts=sequence[-1][-1][8])
+                data_sandstone = data.create_simple_sandstone(amounts=sequence[-1][-1][8], porosity=phi, pure=Qz_rich)
                 top = self.actualThickness + i*d
                 bottom = top + d
                 sequence.append(["sandstone", round(d, 1), round(top, 1), round(bottom, 1), data_sandstone])
             elif i > 0 and self.fluid == "oil":
                 data = sandstone("oil", actualThickness=bottom)
-                data_sandstone = data.create_simple_sandstone(amounts=sequence[-1][-1][8])
+                data_sandstone = data.create_simple_sandstone(amounts=sequence[-1][-1][8], porosity=phi, pure=Qz_rich)
+                top = self.actualThickness + i*d
+                bottom = top + d
+                sequence.append(["sandstone", round(d, 1), round(top, 1), round(bottom, 1), data_sandstone])
+            elif i > 0 and self.fluid == "air":
+                data = sandstone("air", actualThickness=bottom)
+                data_sandstone = data.create_simple_sandstone(amounts=sequence[-1][-1][8], porosity=phi, pure=Qz_rich)
                 top = self.actualThickness + i*d
                 bottom = top + d
                 sequence.append(["sandstone", round(d, 1), round(top, 1), round(bottom, 1), data_sandstone])
@@ -1732,13 +1744,18 @@ class SedimentaryBasin:
                     sequence.append(data_limestone)
                     actual_depth = depth_list[i]
                 elif actual_depth >= 0.85*self.maximum_thickness and actual_depth < maximum_thickness:
-                    magicnumber = rd.randint(0, 1)
-                    if magicnumber == 0 or sequence[-1][-1][0] == "granite":
+                    if sequence[-1][-1][0] not in ["granite", "bassalt"]:
+                        magicnumber = rd.randint(0, 1)
+                    elif sequence[-1][-1][0] == "granite":
+                        magicnumber = 0
+                    elif sequence[-1][-1][0] == "basalt":
+                        magicnumber = 1
+                    if magicnumber == 0:
                         data = SedimentaryBasin(parts=self.parts, actualThickness=actual_depth)
                         data_granite = data.create_granite(thickness=thickness_list[i])
                         sequence.append(data_granite)
                         actual_depth = depth_list[i]
-                    elif magicnumber == 1 or sequence[-1][-1][0] == "basalt":
+                    elif magicnumber == 1:
                         data = SedimentaryBasin(parts=self.parts, actualThickness=actual_depth)
                         data_basalt = data.create_basalt(thickness=thickness_list[i])
                         sequence.append(data_basalt)
