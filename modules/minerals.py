@@ -106,6 +106,221 @@ class CrystalPhysics:
             return V
         #
 #
+#####################
+# ORGANIC COMPOUNDS #
+#####################
+#
+class Organics:
+    #
+    def __init__(self):
+        pass
+    #
+    def carbohydrates(self):
+        # CHEMISTRY
+        hydrogen = elements.H(self)
+        carbon = elements.C(self)
+        oxygen = elements.O(self)
+        #
+        data = []
+        #
+        name = "carbohydrates"
+        #
+        # Molar mass
+        w_H = 0.06
+        w_C = 0.44
+        w_O = 0.50
+        M = round(w_H*hydrogen[2] + w_C*carbon[2] + w_O*oxygen[2], 3)
+        composition = [w_H, w_C, w_O]
+        # Density
+        rho = 1586
+        # Bulk modulus
+        K = 10*10**9
+        # Shear modulus
+        G = 5*10**9
+        # Young's modulus
+        E = (9*K*G)/(3*K + G)
+        # Poisson's ratio
+        nu = (3*K - 2*G)/(2*(3*K + G))
+        # vP/vS
+        vPvS = ((K + 4/3*G)/G)**0.5
+        # P-wave velocity
+        vP = ((K + 4/3*G)/rho)**0.5
+        # S-wave velocity
+        vS = (G/rho)**0.5
+        # Gamma ray
+        GR = 0
+        # Photoelectricity
+        PE = round(((0.06*hydrogen[1] + 0.44*carbon[1] + 0.5*oxygen[1])/10)**3.6, 3)
+        #
+        data.append(name)
+        data.append(round(M, 2))
+        data.append(round(rho, 1))
+        data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 2), round(vPvS, 2)])
+        data.append([round(vP, 1), round(vS, 1)])
+        data.append([round(GR, 2), round(PE, 2)])
+        data.append(composition)
+        #
+        return data
+    #
+    def lignin(self):
+        # CHEMISTRY
+        hydrogen = elements.H(self)
+        carbon = elements.C(self)
+        nitrogen = elements.N(self)
+        oxygen = elements.O(self)
+        sulfur = elements.S(self)
+        #
+        data = []
+        #
+        name = "lignin"
+        #
+        # Molar mass
+        w_H = 0.06
+        w_C = 0.63
+        w_N = 0.003
+        w_O = 0.31
+        w_S = 0.001
+        M = round(w_H*hydrogen[2] + w_C*carbon[2] + w_N*nitrogen[2] + w_O*oxygen[2] + w_S*sulfur[2], 3)
+        composition = [w_H, w_C, w_N, w_O, w_S]
+        # Density
+        rho = 680
+        # Bulk modulus
+        K = 4*10**9
+        # Shear modulus
+        G = 2*10**9
+        # Young's modulus
+        E = (9*K*G)/(3*K + G)
+        # Poisson's ratio
+        nu = (3*K - 2*G)/(2*(3*K + G))
+        # vP/vS
+        vPvS = ((K + 4/3*G)/G)**0.5
+        # P-wave velocity
+        vP = ((K + 4/3*G)/rho)**0.5
+        # S-wave velocity
+        vS = (G/rho)**0.5
+        # Gamma ray
+        GR = 0
+        # Photoelectricity
+        PE = round(((0.06*hydrogen[1] + 0.63*carbon[1] + 0.003*nitrogen[1] + 0.31*oxygen[1] + 0.001*sulfur[1])/10)**3.6, 3)
+        #
+        data.append(name)
+        data.append(round(M, 2))
+        data.append(round(rho, 1))
+        data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 2), round(vPvS, 2)])
+        data.append([round(vP, 1), round(vS, 1)])
+        data.append([round(GR, 2), round(PE, 2)])
+        data.append(composition)
+        #
+        return data
+    #
+    def lipid(self):
+        # CHEMISTRY
+        hydrogen = elements.H(self)
+        carbon = elements.C(self)
+        oxygen = elements.O(self)
+        #
+        data = []
+        #
+        name = "lipid"
+        #
+        # Molar mass
+        w_H = 0.10
+        w_C = 0.80
+        w_O = 0.10
+        M = round(w_H*hydrogen[2] + w_C*carbon[2] + w_O*oxygen[2], 3)
+        composition = [w_H, w_C, w_O]
+        # Density
+        rho = 850
+        # Bulk modulus
+        K = 4*10**9
+        # Shear modulus
+        G = 2*10**9
+        # Young's modulus
+        E = (9*K*G)/(3*K + G)
+        # Poisson's ratio
+        nu = (3*K - 2*G)/(2*(3*K + G))
+        # vP/vS
+        vPvS = ((K + 4/3*G)/G)**0.5
+        # P-wave velocity
+        vP = ((K + 4/3*G)/rho)**0.5
+        # S-wave velocity
+        vS = (G/rho)**0.5
+        # Gamma ray
+        GR = 0
+        # Photoelectricity
+        PE = round(((0.10*hydrogen[1] + 0.80*carbon[1] + 0.10*oxygen[1])/10)**3.6, 3)
+        #
+        data.append(name)
+        data.append(round(M, 2))
+        data.append(round(rho, 1))
+        data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 2), round(vPvS, 2)])
+        data.append([round(vP, 1), round(vS, 1)])
+        data.append([round(GR, 2), round(PE, 2)])
+        data.append(composition)
+        #
+        return data
+    #
+    def organic_matter(self):
+        # CHEMISTRY
+        carbohydrates = Organics.carbohydrates("")
+        lignin = Organics.lignin("")
+        lipid = Organics.lipid("")
+        hydrogen = elements.H(self)
+        carbon = elements.C(self)
+        nitrogen = elements.N(self)
+        oxygen = elements.O(self)
+        sulfur = elements.S(self)
+        #
+        data = []
+        #
+        name = "Org"
+        #
+        # Molar
+        condition = False
+        while condition == False:
+            w_ch = round(rd.uniform(0.4, 0.6), 4)
+            w_lg = round(rd.uniform(0.2, float(1-w_ch)), 4)
+            w_lp = round(1 - w_ch - w_lg, 4)
+            if w_ch+w_lg+w_lp == 1.0:
+                condition = True
+        M = round(w_ch*carbohydrates[1] + w_lg*lignin[1] + w_lp*lipid[1], 3)
+        w_H = round((w_ch*carbohydrates[6][0]*hydrogen[2] + w_lg*lignin[6][0]*hydrogen[2] + w_lp*lipid[6][0]*hydrogen[2])/M, 4)
+        w_C = round((w_ch*carbohydrates[6][1]*carbon[2] + w_lg*lignin[6][1]*carbon[2] + w_lp*lipid[6][1]*carbon[2])/M, 4)
+        w_N = round((w_lg*lignin[6][2]*nitrogen[2])/M, 4)
+        w_O = round((w_ch*carbohydrates[6][2]*oxygen[2] + w_lg*lignin[6][3]*oxygen[2] + w_lp*lipid[6][2]*oxygen[2])/M, 4)
+        w_S = round(1-w_H-w_C-w_N-w_O, 4)
+        composition = [w_H, w_C, w_N, w_O, w_S]
+        # Density
+        rho = w_ch*carbohydrates[2] + w_lg*lignin[2] + w_lp*lipid[2]
+        # Bulk modulus
+        K = (w_ch*carbohydrates[3][0] + w_lg*lignin[3][0] + w_lp*lipid[3][0])*10**9
+        # Shear modulus
+        G = (w_ch*carbohydrates[3][1] + w_lg*lignin[3][1] + w_lp*lipid[3][1])*10**9
+        # Young's modulus
+        E = (9*K*G)/(3*K + G)
+        # Poisson's ratio
+        nu = (3*K - 2*G)/(2*(3*K + G))
+        # vP/vS
+        vPvS = ((K + 4/3*G)/G)**0.5
+        # P-wave velocity
+        vP = ((K + 4/3*G)/rho)**0.5
+        # S-wave velocity
+        vS = (G/rho)**0.5
+        # Gamma ray
+        GR = 0
+        # Photoelectricity
+        PE = round(w_ch*carbohydrates[5][1] + w_lg*lignin[5][1] + w_lp*lipid[5][1], 3)
+        #
+        data.append(name)
+        data.append(round(M, 2))
+        data.append(round(rho, 1))
+        data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 2), round(vPvS, 2)])
+        data.append([round(vP, 1), round(vS, 1)])
+        data.append([round(GR, 2), round(PE, 2)])
+        data.append(composition)
+        #
+        return data
+#
 ############
 # MINERALS #
 ############

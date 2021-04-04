@@ -191,6 +191,55 @@ class Seismology:
         #
         return data
 #
+class Mixing:
+    #
+    def __init__(self,):
+        pass
+    #
+    def mean_arithmetic(self, weight, value):
+        """Returns the arithmetic mean of a property considering a mixture
+        **Arguments**:
+            weight: array of weights
+            value: array of property values
+        **Outputs**:
+            result: bulk property with respect to the arithmetic mean
+        """
+        result = np.sum(weight*value)
+        return result
+    #
+    def mean_harmonic(self, weight, value):
+        """Returns the harmonic mean of a property considering a mixture
+        **Arguments**:
+            weight: array of weights
+            value: array of property values
+        **Outputs**:
+            result: bulk property with respect to the harmonic mean
+        """
+        result = (np.sum(weight/value))**(-1)
+        return result
+    #
+    def mean_geometric(self, weight, value):
+        """Returns the geometric mean of a property considering a mixture
+        **Arguments**:
+            weight: array of weights
+            value: array of property values
+        **Outputs**:
+            result: bulk property with respect to the geometric mean
+        """
+        result = np.prod(value**weight)
+        return result
+    #
+    def mean_squarerootmean(self, weight, value):
+        """Returns the square-root mean of a property considering a mixture
+        **Arguments**:
+            weight: array of weights
+            value: array of property values
+        **Outputs**:
+            result: bulk property with respect to the square-root mean
+        """
+        result = (np.sum(weight*np.sqrt(value)))**2
+        return result
+#
 class Elasticity:
     #
     def __init__(self,):

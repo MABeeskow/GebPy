@@ -1002,214 +1002,243 @@ class shale:
     def __init__(self):
         pass
     #
-    def createShale(self):
-        # [molar mass, density, bulk modulus, shear modulus, vP, vS, GR]
-        chemChlorite = minerals.phyllosilicates.chamosite("")
-        chemIllite = minerals.phyllosilicates.illite("")
-        chemDolomite = minerals.carbonates.dolomite("")
-        chem_calcite = minerals.carbonates.calcite("")
-        chem_quartz = minerals.oxides.quartz("")
-        chemOrthoclase = minerals.tectosilicates.orthoclase("")
-        chemKaolinite = minerals.phyllosilicates.kaolinite("")
-        chemAlkalifeldspar = minerals.feldspars.alkalifeldspar(self, "Alkalifeldspar")
-        chemPlagioclase = minerals.feldspars.plagioclase(self, "Plagioclase")
+    # def createShale(self):
+    #     # [molar mass, density, bulk modulus, shear modulus, vP, vS, GR]
+    #     chemChlorite = minerals.phyllosilicates.chamosite("")
+    #     chemIllite = minerals.phyllosilicates.illite("")
+    #     chemDolomite = minerals.carbonates.dolomite("")
+    #     chem_calcite = minerals.carbonates.calcite("")
+    #     chem_quartz = minerals.oxides.quartz("")
+    #     chemOrthoclase = minerals.tectosilicates.orthoclase("")
+    #     chemKaolinite = minerals.phyllosilicates.kaolinite("")
+    #     chemAlkalifeldspar = minerals.feldspars.alkalifeldspar(self, "Alkalifeldspar")
+    #     chemPlagioclase = minerals.feldspars.plagioclase(self, "Plagioclase")
+    #     #
+    #     # [molar mass, density, bulk modulus, vP]
+    #     chemWater = [18.0146, 997, 2.08, 1444]
+    #     chemOil = [11.8313, 0.9, 1.35, 1225]
+    #     chemGas = [11.8313, 0.8, 0.081, 475]
+    #     #
+    #     shale = []
+    #     #
+    #     cond = False
+    #     composition = []
+    #     while cond == False:
+    #         magicnumber = rd.randint(0, 5)
+    #         if magicnumber == 0:    # Silica-rich Shale
+    #             xQzFsp = rd.randint(60,90)/100                 # Quartz + Feldspar
+    #             xQuartz2 = rd.randint(50,100)/100
+    #             xFsp = 1 - xQuartz2
+    #             xAlkalifeldspar3 = rd.randint(0,100)/100
+    #             xPlagioclase3 = 1 - xAlkalifeldspar3
+    #             xAlkalifeldspar2 = xFsp*xAlkalifeldspar3
+    #             xPlagioclase2 = xFsp*xPlagioclase3
+    #             xQuartz = xQzFsp*xQuartz2
+    #             xAlkalifeldspar = xQzFsp*xAlkalifeldspar2
+    #             xPlagioclase = xQzFsp*xPlagioclase2
+    #             xClay = rd.randint(10,30)/100                   # Clay
+    #             xChlorite2 = rd.randint(10,30)/100
+    #             xKaolinite2 = rd.randint(40,60)/100
+    #             xIllite2 = 1 - xChlorite2 - xKaolinite2
+    #             xChlorite = xClay*xChlorite2
+    #             xKaolinite = xClay*xKaolinite2
+    #             xIllite = xClay*xIllite2
+    #             xCarbonates = rd.randint(0,10)/100              # Carbonates
+    #             xCalcite2 = rd.randint(0,100)/100
+    #             xDolomite2 = rd.randint(0,100)/100
+    #             xCalcite = xCarbonates*xCalcite2
+    #             xDolomite = xCarbonates*xDolomite2
+    #         elif magicnumber >= 2:    # Argillaceous Shale
+    #             xQzFsp = rd.randint(20,30)/100                 # Quartz + Feldspar
+    #             xQuartz2 = rd.randint(50,100)/100
+    #             xFsp = 1 - xQuartz2
+    #             xAlkalifeldspar3 = rd.randint(0,100)/100
+    #             xPlagioclase3 = 1 - xAlkalifeldspar3
+    #             xAlkalifeldspar2 = xFsp*xAlkalifeldspar3
+    #             xPlagioclase2 = xFsp*xPlagioclase3
+    #             xQuartz = xQzFsp*xQuartz2
+    #             xAlkalifeldspar = xQzFsp*xAlkalifeldspar2
+    #             xPlagioclase = xQzFsp*xPlagioclase2
+    #             xClay = rd.randint(60,80)/100                   # Clay
+    #             xChlorite2 = rd.randint(10,30)/100
+    #             xKaolinite2 = rd.randint(40,60)/100
+    #             xIllite2 = 1 - xChlorite2 - xKaolinite2
+    #             xChlorite = xClay*xChlorite2
+    #             xKaolinite = xClay*xKaolinite2
+    #             xIllite = xClay*xIllite2
+    #             xCarbonates = rd.randint(0,10)/100              # Carbonates
+    #             xCalcite2 = rd.randint(0,100)/100
+    #             xDolomite2 = rd.randint(0,100)/100
+    #             xCalcite = xCarbonates*xCalcite2
+    #             xDolomite = xCarbonates*xDolomite2
+    #         elif magicnumber == 1:    # Calcic Shale
+    #             xQzFsp = rd.randint(10,30)/100                 # Quartz + Feldspar
+    #             xQuartz2 = rd.randint(50,100)/100
+    #             xFsp = 1 - xQuartz2
+    #             xAlkalifeldspar3 = rd.randint(0,100)/100
+    #             xPlagioclase3 = 1 - xAlkalifeldspar3
+    #             xAlkalifeldspar2 = xFsp*xAlkalifeldspar3
+    #             xPlagioclase2 = xFsp*xPlagioclase3
+    #             xQuartz = xQzFsp*xQuartz2
+    #             xAlkalifeldspar = xQzFsp*xAlkalifeldspar2
+    #             xPlagioclase = xQzFsp*xPlagioclase2
+    #             xClay = rd.randint(20,30)/100                   # Clay
+    #             xChlorite2 = rd.randint(10,30)/100
+    #             xKaolinite2 = rd.randint(40,60)/100
+    #             xIllite2 = 1 - xChlorite2 - xKaolinite2
+    #             xChlorite = xClay*xChlorite2
+    #             xKaolinite = xClay*xKaolinite2
+    #             xIllite = xClay*xIllite2
+    #             xCarbonates = rd.randint(40,60)/100              # Carbonates
+    #             xCalcite2 = rd.randint(0,100)/100
+    #             xDolomite2 = rd.randint(0,100)/100
+    #             xCalcite = xCarbonates*xCalcite2
+    #             xDolomite = xCarbonates*xDolomite2
+    #         sumMin = round(xQuartz,2) + round(xKaolinite,2) + round(xChlorite,2) + round(xIllite,2) + round(xCalcite,2) + round(xDolomite,2) + round(xAlkalifeldspar,2) + round(xPlagioclase,2)
+    #         if sumMin == 1:
+    #             cond = True
+    #             composition.extend((["Qz", round(xQuartz,2), round(chem_quartz[1],2)], ["Kln", round(xKaolinite,2), round(chemKaolinite[1],2)], ["Chl", round(xChlorite,2), round(chemChlorite[1],2)], ["Ilt", round(xIllite,2), round(chemChlorite[1],2)], ["Cal", round(xCalcite,2), round(chem_calcite[1],2)], ["Dol", round(xDolomite,2), round(chemDolomite[1],2)], ["Kfs", round(xAlkalifeldspar,2), round(chemAlkalifeldspar[1][0],2), round(chemAlkalifeldspar[1][1],2)], ["Pl", round(xPlagioclase,2), round(chemPlagioclase[1][0],2), round(chemPlagioclase[1][1],2)]))
+    #         else:
+    #             cond = False
+    #     xQuartz = composition[0][1]
+    #     xKaolinite = composition[1][1]
+    #     xChlorite = composition[2][1]
+    #     xIllite = composition[3][1]
+    #     xCalcite = composition[4][1]
+    #     xDolomite = composition[5][1]
+    #     xAlkalifeldspar = composition[6][1]
+    #     xPlagioclase = composition[7][1]
+    #     shale.append(composition)
+    #     mineralogy = [chem_quartz, chemKaolinite, chemChlorite, chemIllite, chem_calcite, chemDolomite, chemAlkalifeldspar, chemPlagioclase]
+    #     #
+    #     rhoSolid = 0.85*(xQuartz*chem_quartz[2] + xKaolinite *chemKaolinite[2] + xChlorite*chemChlorite[2] + xIllite*chemIllite[2] + xCalcite*chem_calcite[2] + xDolomite*chemDolomite[2] + xAlkalifeldspar*chemAlkalifeldspar[2] + xPlagioclase*chemPlagioclase[2]) / 1000
+    #     X = [xQuartz, xKaolinite, xChlorite, xIllite, xCalcite, xDolomite, xAlkalifeldspar, xPlagioclase]
+    #     K_list = [mineralogy[i][3][0] for i in range(len(mineralogy))]
+    #     G_list = [mineralogy[i][3][1] for i in range(len(mineralogy))]
+    #     K_geo = elast.calc_geometric_mean(self, X, K_list)
+    #     G_geo = elast.calc_geometric_mean(self, X, G_list)
+    #     K_solid = K_geo
+    #     G_solid = G_geo
+    #     vP_solid = np.sqrt((K_solid*10**9+4/3*G_solid*10**9)/(rhoSolid*10**3))
+    #     vS_solid = np.sqrt((G_solid*10**9)/(rhoSolid*10**3))
+    #     E_solid = (9*K_solid*G_solid)/(3*K_solid+G_solid)
+    #     nu_solid = (3*K_solid-2*G_solid)/(2*(3*K_solid+G_solid))
+    #     #
+    #     magicnumber = randint(0, 2)
+    #     if magicnumber == 0:
+    #         phi = randint(0, 10) / 100
+    #         rho = (1 - phi) * rhoSolid + phi * chemWater[1] / 1000
+    #         vP = ((1 - phi) * vP_solid + phi * chemWater[3])/3
+    #         vS = ((1 - phi) * vS_solid)/3
+    #         G_bulk = vS**2 * rho
+    #         K_bulk = vP**2 * rho - 4/3*G_bulk
+    #         E_bulk = (9*K_bulk*G_bulk)/(3*K_bulk+G_bulk)
+    #         phiD = (rhoSolid - rho) / (rhoSolid - chemWater[1] / 1000)
+    #         phiN = (2 * phi ** 2 - phiD ** 2) ** (0.5)
+    #         GR = 3*(xQuartz*chem_quartz[5][0] + xKaolinite*chemKaolinite[5][0] + xChlorite*chemChlorite[5][0] + xIllite*chemIllite[5][0] + xCalcite*chem_calcite[5][0] + xDolomite*chemDolomite[5][0] + xAlkalifeldspar*chemAlkalifeldspar[5][0] + xPlagioclase*chemPlagioclase[5][0])
+    #         PE = xQuartz*chem_quartz[5][1] + xKaolinite*chemKaolinite[5][1] + xChlorite*chemChlorite[5][1] + xIllite*chemIllite[5][1] + xCalcite*chem_calcite[5][1] + xDolomite*chemDolomite[5][1] + xAlkalifeldspar*chemAlkalifeldspar[5][1] + xPlagioclase*chemPlagioclase[5][1]
+    #         poisson_seismic = 0.5*(vP**2 - 2*vS**2)/(vP**2 - vS**2)
+    #         poisson_elastic = (3*K_bulk - 2*G_bulk)/(6*K_bulk + 2*G_bulk)
+    #         poisson_mineralogical = xQuartz*chem_quartz[3][3] + xKaolinite*chemKaolinite[3][3] + xChlorite*chemChlorite[3][3] + xIllite*chemIllite[3][3] + xCalcite*chem_calcite[3][3] + xDolomite*chemDolomite[3][3] + xAlkalifeldspar*chemAlkalifeldspar[3][3] + xPlagioclase*chemPlagioclase[3][3]
+    #         #print("Poisson:", round(poisson_seismic,3), round(poisson_elastic,3), round(poisson_mineralogical,3))
+    #         #
+    #         shale.append([round(rho, 3), round(rhoSolid, 3), round(chemWater[1] / 1000, 6)])
+    #         shale.append([round(K_bulk*10**(-6), 2), round(G_bulk*10**(-6), 2), round(E_bulk*10**(-6), 2), round(poisson_mineralogical, 3)])
+    #         shale.append([round(vP, 2), round(vS, 2), round(vP_solid, 2), round(chemWater[3], 2)])
+    #         shale.append([round(phi, 3), round(phiD, 3), round(phiN, 3)])
+    #         shale.append("water")
+    #         shale.append([GR, PE])
+    #     elif magicnumber == 1:
+    #         phi = randint(0, 10) / 100
+    #         rho = (1 - phi) * rhoSolid + phi * chemOil[1] / 1000
+    #         vP = ((1 - phi) * vP_solid + phi * chemOil[3])/3
+    #         vS = ((1 - phi) * vS_solid)/3
+    #         G_bulk = vS**2 * rho
+    #         K_bulk = vP**2 * rho - 4/3*G_bulk
+    #         E_bulk = (9*K_bulk*G_bulk)/(3*K_bulk+G_bulk)
+    #         phiD = (rhoSolid - rho) / (rhoSolid - chemOil[1] / 1000)
+    #         phiN = (2 * phi ** 2 - phiD ** 2) ** (0.5)
+    #         GR = 3*(xQuartz*chem_quartz[5][0] + xKaolinite*chemKaolinite[5][0] + xChlorite*chemChlorite[5][0] + xIllite*chemIllite[5][0] + xCalcite*chem_calcite[5][0] + xDolomite*chemDolomite[5][0] + xAlkalifeldspar*chemAlkalifeldspar[5][0] + xPlagioclase*chemPlagioclase[5][0])
+    #         PE = xQuartz*chem_quartz[5][1] + xKaolinite*chemKaolinite[5][1] + xChlorite*chemChlorite[5][1] + xIllite*chemIllite[5][1] + xCalcite*chem_calcite[5][1] + xDolomite*chemDolomite[5][1] + xAlkalifeldspar*chemAlkalifeldspar[5][1] + xPlagioclase*chemPlagioclase[5][1]
+    #         poisson_seismic = 0.5*(vP**2 - 2*vS**2)/(vP**2 - vS**2)
+    #         poisson_elastic = (3*K_bulk - 2*G_bulk)/(6*K_bulk + 2*G_bulk)
+    #         poisson_mineralogical = xQuartz*chem_quartz[3][3] + xKaolinite*chemKaolinite[3][3] + xChlorite*chemChlorite[3][3] + xIllite*chemIllite[3][3] + xCalcite*chem_calcite[3][3] + xDolomite*chemDolomite[3][3] + xAlkalifeldspar*chemAlkalifeldspar[3][3] + xPlagioclase*chemPlagioclase[3][3]
+    #         #print("Poisson:", round(poisson_seismic,3), round(poisson_elastic,3), round(poisson_mineralogical,3))
+    #         #
+    #         shale.append([round(rho, 3), round(rhoSolid, 3), round(chemOil[1] / 1000, 6)])
+    #         shale.append([round(K_bulk*10**(-6), 2), round(G_bulk*10**(-6), 2), round(E_bulk*10**(-6), 2), round(poisson_mineralogical, 3)])
+    #         shale.append([round(vP, 2), round(vS, 2), round(vP_solid, 2), round(chemOil[3], 2)])
+    #         shale.append([round(phi, 3), round(phiD, 3), round(phiN, 3)])
+    #         shale.append("oil")
+    #         shale.append([GR, PE])
+    #     elif magicnumber == 2:
+    #         phi = randint(0, 10) / 100
+    #         rho = (1 - phi) * rhoSolid + phi * chemGas[1] / 1000
+    #         vP = ((1 - phi) * vP_solid + phi * chemGas[3])/3
+    #         vS = ((1 - phi) * vS_solid)/3
+    #         G_bulk = vS**2 * rho
+    #         K_bulk = vP**2 * rho - 4/3*G_bulk
+    #         E_bulk = (9*K_bulk*G_bulk)/(3*K_bulk+G_bulk)
+    #         phiD = (rhoSolid - rho) / (rhoSolid - chemGas[1] / 1000)
+    #         phiN = (2 * phi ** 2 - phiD ** 2) ** (0.5)
+    #         GR = 3*(xQuartz*chem_quartz[5][0] + xKaolinite*chemKaolinite[5][0] + xChlorite*chemChlorite[5][0] + xIllite*chemIllite[5][0] + xCalcite*chem_calcite[5][0] + xDolomite*chemDolomite[5][0] + xAlkalifeldspar*chemAlkalifeldspar[5][0] + xPlagioclase*chemPlagioclase[5][0])
+    #         PE = xQuartz*chem_quartz[5][1] + xKaolinite*chemKaolinite[5][1] + xChlorite*chemChlorite[5][1] + xIllite*chemIllite[5][1] + xCalcite*chem_calcite[5][1] + xDolomite*chemDolomite[5][1] + xAlkalifeldspar*chemAlkalifeldspar[5][1] + xPlagioclase*chemPlagioclase[5][1]
+    #         poisson_seismic = 0.5*(vP**2 - 2*vS**2)/(vP**2 - vS**2)
+    #         poisson_elastic = (3*K_bulk - 2*G_bulk)/(6*K_bulk + 2*G_bulk)
+    #         poisson_mineralogical = xQuartz*chem_quartz[3][3] + xKaolinite*chemKaolinite[3][3] + xChlorite*chemChlorite[3][3] + xIllite*chemIllite[3][3] + xCalcite*chem_calcite[3][3] + xDolomite*chemDolomite[3][3] + xAlkalifeldspar*chemAlkalifeldspar[3][3] + xPlagioclase*chemPlagioclase[3][3]
+    #         #print("Poisson:", round(poisson_seismic,3), round(poisson_elastic,3), round(poisson_mineralogical,3))
+    #         #
+    #         shale.append([round(rho, 3), round(rhoSolid, 3), round(chemGas[1] / 1000, 6)])
+    #         shale.append([round(K_bulk*10**(-6), 2), round(G_bulk*10**(-6), 2), round(E_bulk*10**(-6), 2), round(poisson_mineralogical, 3)])
+    #         shale.append([round(vP, 2), round(vS, 2), round(vP_solid, 2), round(chemGas[3], 2)])
+    #         shale.append([round(phi, 3), round(phiD, 3), round(phiN, 3)])
+    #         shale.append("gas")
+    #         shale.append([GR, PE])
+    #     #
+    #     #  shale = [[mineralogical compositon], [densities], [elastic properties], [seismic velocities], [porosities], fluid name, GR]
+    #     #
+    #     return shale
+    #
+    def create_shale(self, w_C=None, w_F=None, w_Na=None, w_Mg=None, w_S=None, w_K=None, w_Ca=None, w_Fe=None, amounts=None):
+        # Minerals + Fluids
+        org = minerals.Organics.organic_matter("")
+        qz = minerals.oxides.quartz("")
+        cal = minerals.carbonates.calcite("")
+        ilt = minerals.phyllosilicates.illite("")
+        kln = minerals.phyllosilicates.kaolinite("")
+        mnt = minerals.phyllosilicates.montmorillonite("")
+        water = fluids.Water.water("")
         #
-        # [molar mass, density, bulk modulus, vP]
-        chemWater = [18.0146, 997, 2.08, 1444]
-        chemOil = [11.8313, 0.9, 1.35, 1225]
-        chemGas = [11.8313, 0.8, 0.081, 475]
+        mineralogy = [org, qz, cal, ilt, kln, mnt]
         #
-        shale = []
+        w_CCal = cal[6][0]
+        w_COrg = org[6][1]
+        w_NaMnt = mnt[6][2]
+        w_MgIlt = ilt[6][2]
+        w_MgMnt = mnt[6][3]
+        w_KIlt = ilt[6][5]
+        w_CaCal = cal[6][2]
+        w_CaMnt = mnt[6][6]
+        w_FeIlt = ilt[6][6]
         #
-        cond = False
+        data = []
+        #
+        condition = False
         composition = []
-        while cond == False:
-            magicnumber = rd.randint(0, 5)
-            if magicnumber == 0:    # Silica-rich Shale
-                xQzFsp = rd.randint(60,90)/100                 # Quartz + Feldspar
-                xQuartz2 = rd.randint(50,100)/100
-                xFsp = 1 - xQuartz2
-                xAlkalifeldspar3 = rd.randint(0,100)/100
-                xPlagioclase3 = 1 - xAlkalifeldspar3
-                xAlkalifeldspar2 = xFsp*xAlkalifeldspar3
-                xPlagioclase2 = xFsp*xPlagioclase3
-                xQuartz = xQzFsp*xQuartz2
-                xAlkalifeldspar = xQzFsp*xAlkalifeldspar2
-                xPlagioclase = xQzFsp*xPlagioclase2
-                xClay = rd.randint(10,30)/100                   # Clay
-                xChlorite2 = rd.randint(10,30)/100
-                xKaolinite2 = rd.randint(40,60)/100
-                xIllite2 = 1 - xChlorite2 - xKaolinite2
-                xChlorite = xClay*xChlorite2
-                xKaolinite = xClay*xKaolinite2
-                xIllite = xClay*xIllite2
-                xCarbonates = rd.randint(0,10)/100              # Carbonates
-                xCalcite2 = rd.randint(0,100)/100
-                xDolomite2 = rd.randint(0,100)/100
-                xCalcite = xCarbonates*xCalcite2
-                xDolomite = xCarbonates*xDolomite2
-            elif magicnumber >= 2:    # Argillaceous Shale
-                xQzFsp = rd.randint(20,30)/100                 # Quartz + Feldspar
-                xQuartz2 = rd.randint(50,100)/100
-                xFsp = 1 - xQuartz2
-                xAlkalifeldspar3 = rd.randint(0,100)/100
-                xPlagioclase3 = 1 - xAlkalifeldspar3
-                xAlkalifeldspar2 = xFsp*xAlkalifeldspar3
-                xPlagioclase2 = xFsp*xPlagioclase3
-                xQuartz = xQzFsp*xQuartz2
-                xAlkalifeldspar = xQzFsp*xAlkalifeldspar2
-                xPlagioclase = xQzFsp*xPlagioclase2
-                xClay = rd.randint(60,80)/100                   # Clay
-                xChlorite2 = rd.randint(10,30)/100
-                xKaolinite2 = rd.randint(40,60)/100
-                xIllite2 = 1 - xChlorite2 - xKaolinite2
-                xChlorite = xClay*xChlorite2
-                xKaolinite = xClay*xKaolinite2
-                xIllite = xClay*xIllite2
-                xCarbonates = rd.randint(0,10)/100              # Carbonates
-                xCalcite2 = rd.randint(0,100)/100
-                xDolomite2 = rd.randint(0,100)/100
-                xCalcite = xCarbonates*xCalcite2
-                xDolomite = xCarbonates*xDolomite2
-            elif magicnumber == 1:    # Calcic Shale
-                xQzFsp = rd.randint(10,30)/100                 # Quartz + Feldspar
-                xQuartz2 = rd.randint(50,100)/100
-                xFsp = 1 - xQuartz2
-                xAlkalifeldspar3 = rd.randint(0,100)/100
-                xPlagioclase3 = 1 - xAlkalifeldspar3
-                xAlkalifeldspar2 = xFsp*xAlkalifeldspar3
-                xPlagioclase2 = xFsp*xPlagioclase3
-                xQuartz = xQzFsp*xQuartz2
-                xAlkalifeldspar = xQzFsp*xAlkalifeldspar2
-                xPlagioclase = xQzFsp*xPlagioclase2
-                xClay = rd.randint(20,30)/100                   # Clay
-                xChlorite2 = rd.randint(10,30)/100
-                xKaolinite2 = rd.randint(40,60)/100
-                xIllite2 = 1 - xChlorite2 - xKaolinite2
-                xChlorite = xClay*xChlorite2
-                xKaolinite = xClay*xKaolinite2
-                xIllite = xClay*xIllite2
-                xCarbonates = rd.randint(40,60)/100              # Carbonates
-                xCalcite2 = rd.randint(0,100)/100
-                xDolomite2 = rd.randint(0,100)/100
-                xCalcite = xCarbonates*xCalcite2
-                xDolomite = xCarbonates*xDolomite2
-            sumMin = round(xQuartz,2) + round(xKaolinite,2) + round(xChlorite,2) + round(xIllite,2) + round(xCalcite,2) + round(xDolomite,2) + round(xAlkalifeldspar,2) + round(xPlagioclase,2)
-            if sumMin == 1:
-                cond = True
-                composition.extend((["Qz", round(xQuartz,2), round(chem_quartz[1],2)], ["Kln", round(xKaolinite,2), round(chemKaolinite[1],2)], ["Chl", round(xChlorite,2), round(chemChlorite[1],2)], ["Ilt", round(xIllite,2), round(chemChlorite[1],2)], ["Cal", round(xCalcite,2), round(chem_calcite[1],2)], ["Dol", round(xDolomite,2), round(chemDolomite[1],2)], ["Kfs", round(xAlkalifeldspar,2), round(chemAlkalifeldspar[1][0],2), round(chemAlkalifeldspar[1][1],2)], ["Pl", round(xPlagioclase,2), round(chemPlagioclase[1][0],2), round(chemPlagioclase[1][1],2)]))
-            else:
-                cond = False
-        xQuartz = composition[0][1]
-        xKaolinite = composition[1][1]
-        xChlorite = composition[2][1]
-        xIllite = composition[3][1]
-        xCalcite = composition[4][1]
-        xDolomite = composition[5][1]
-        xAlkalifeldspar = composition[6][1]
-        xPlagioclase = composition[7][1]
-        shale.append(composition)
-        mineralogy = [chem_quartz, chemKaolinite, chemChlorite, chemIllite, chem_calcite, chemDolomite, chemAlkalifeldspar, chemPlagioclase]
-        #
-        rhoSolid = 0.85*(xQuartz*chem_quartz[2] + xKaolinite *chemKaolinite[2] + xChlorite*chemChlorite[2] + xIllite*chemIllite[2] + xCalcite*chem_calcite[2] + xDolomite*chemDolomite[2] + xAlkalifeldspar*chemAlkalifeldspar[2] + xPlagioclase*chemPlagioclase[2]) / 1000
-        X = [xQuartz, xKaolinite, xChlorite, xIllite, xCalcite, xDolomite, xAlkalifeldspar, xPlagioclase]
-        K_list = [mineralogy[i][3][0] for i in range(len(mineralogy))]
-        G_list = [mineralogy[i][3][1] for i in range(len(mineralogy))]
-        K_geo = elast.calc_geometric_mean(self, X, K_list)
-        G_geo = elast.calc_geometric_mean(self, X, G_list)
-        K_solid = K_geo
-        G_solid = G_geo
-        vP_solid = np.sqrt((K_solid*10**9+4/3*G_solid*10**9)/(rhoSolid*10**3))
-        vS_solid = np.sqrt((G_solid*10**9)/(rhoSolid*10**3))
-        E_solid = (9*K_solid*G_solid)/(3*K_solid+G_solid)
-        nu_solid = (3*K_solid-2*G_solid)/(2*(3*K_solid+G_solid))
-        #
-        magicnumber = randint(0, 2)
-        if magicnumber == 0:
-            phi = randint(0, 10) / 100
-            rho = (1 - phi) * rhoSolid + phi * chemWater[1] / 1000
-            vP = ((1 - phi) * vP_solid + phi * chemWater[3])/3
-            vS = ((1 - phi) * vS_solid)/3
-            G_bulk = vS**2 * rho
-            K_bulk = vP**2 * rho - 4/3*G_bulk
-            E_bulk = (9*K_bulk*G_bulk)/(3*K_bulk+G_bulk)
-            phiD = (rhoSolid - rho) / (rhoSolid - chemWater[1] / 1000)
-            phiN = (2 * phi ** 2 - phiD ** 2) ** (0.5)
-            GR = 3*(xQuartz*chem_quartz[5][0] + xKaolinite*chemKaolinite[5][0] + xChlorite*chemChlorite[5][0] + xIllite*chemIllite[5][0] + xCalcite*chem_calcite[5][0] + xDolomite*chemDolomite[5][0] + xAlkalifeldspar*chemAlkalifeldspar[5][0] + xPlagioclase*chemPlagioclase[5][0])
-            PE = xQuartz*chem_quartz[5][1] + xKaolinite*chemKaolinite[5][1] + xChlorite*chemChlorite[5][1] + xIllite*chemIllite[5][1] + xCalcite*chem_calcite[5][1] + xDolomite*chemDolomite[5][1] + xAlkalifeldspar*chemAlkalifeldspar[5][1] + xPlagioclase*chemPlagioclase[5][1]
-            poisson_seismic = 0.5*(vP**2 - 2*vS**2)/(vP**2 - vS**2)
-            poisson_elastic = (3*K_bulk - 2*G_bulk)/(6*K_bulk + 2*G_bulk)
-            poisson_mineralogical = xQuartz*chem_quartz[3][3] + xKaolinite*chemKaolinite[3][3] + xChlorite*chemChlorite[3][3] + xIllite*chemIllite[3][3] + xCalcite*chem_calcite[3][3] + xDolomite*chemDolomite[3][3] + xAlkalifeldspar*chemAlkalifeldspar[3][3] + xPlagioclase*chemPlagioclase[3][3]
-            #print("Poisson:", round(poisson_seismic,3), round(poisson_elastic,3), round(poisson_mineralogical,3))
-            #
-            shale.append([round(rho, 3), round(rhoSolid, 3), round(chemWater[1] / 1000, 6)])
-            shale.append([round(K_bulk*10**(-6), 2), round(G_bulk*10**(-6), 2), round(E_bulk*10**(-6), 2), round(poisson_mineralogical, 3)])
-            shale.append([round(vP, 2), round(vS, 2), round(vP_solid, 2), round(chemWater[3], 2)])
-            shale.append([round(phi, 3), round(phiD, 3), round(phiN, 3)])
-            shale.append("water")
-            shale.append([GR, PE])
-        elif magicnumber == 1:
-            phi = randint(0, 10) / 100
-            rho = (1 - phi) * rhoSolid + phi * chemOil[1] / 1000
-            vP = ((1 - phi) * vP_solid + phi * chemOil[3])/3
-            vS = ((1 - phi) * vS_solid)/3
-            G_bulk = vS**2 * rho
-            K_bulk = vP**2 * rho - 4/3*G_bulk
-            E_bulk = (9*K_bulk*G_bulk)/(3*K_bulk+G_bulk)
-            phiD = (rhoSolid - rho) / (rhoSolid - chemOil[1] / 1000)
-            phiN = (2 * phi ** 2 - phiD ** 2) ** (0.5)
-            GR = 3*(xQuartz*chem_quartz[5][0] + xKaolinite*chemKaolinite[5][0] + xChlorite*chemChlorite[5][0] + xIllite*chemIllite[5][0] + xCalcite*chem_calcite[5][0] + xDolomite*chemDolomite[5][0] + xAlkalifeldspar*chemAlkalifeldspar[5][0] + xPlagioclase*chemPlagioclase[5][0])
-            PE = xQuartz*chem_quartz[5][1] + xKaolinite*chemKaolinite[5][1] + xChlorite*chemChlorite[5][1] + xIllite*chemIllite[5][1] + xCalcite*chem_calcite[5][1] + xDolomite*chemDolomite[5][1] + xAlkalifeldspar*chemAlkalifeldspar[5][1] + xPlagioclase*chemPlagioclase[5][1]
-            poisson_seismic = 0.5*(vP**2 - 2*vS**2)/(vP**2 - vS**2)
-            poisson_elastic = (3*K_bulk - 2*G_bulk)/(6*K_bulk + 2*G_bulk)
-            poisson_mineralogical = xQuartz*chem_quartz[3][3] + xKaolinite*chemKaolinite[3][3] + xChlorite*chemChlorite[3][3] + xIllite*chemIllite[3][3] + xCalcite*chem_calcite[3][3] + xDolomite*chemDolomite[3][3] + xAlkalifeldspar*chemAlkalifeldspar[3][3] + xPlagioclase*chemPlagioclase[3][3]
-            #print("Poisson:", round(poisson_seismic,3), round(poisson_elastic,3), round(poisson_mineralogical,3))
-            #
-            shale.append([round(rho, 3), round(rhoSolid, 3), round(chemOil[1] / 1000, 6)])
-            shale.append([round(K_bulk*10**(-6), 2), round(G_bulk*10**(-6), 2), round(E_bulk*10**(-6), 2), round(poisson_mineralogical, 3)])
-            shale.append([round(vP, 2), round(vS, 2), round(vP_solid, 2), round(chemOil[3], 2)])
-            shale.append([round(phi, 3), round(phiD, 3), round(phiN, 3)])
-            shale.append("oil")
-            shale.append([GR, PE])
-        elif magicnumber == 2:
-            phi = randint(0, 10) / 100
-            rho = (1 - phi) * rhoSolid + phi * chemGas[1] / 1000
-            vP = ((1 - phi) * vP_solid + phi * chemGas[3])/3
-            vS = ((1 - phi) * vS_solid)/3
-            G_bulk = vS**2 * rho
-            K_bulk = vP**2 * rho - 4/3*G_bulk
-            E_bulk = (9*K_bulk*G_bulk)/(3*K_bulk+G_bulk)
-            phiD = (rhoSolid - rho) / (rhoSolid - chemGas[1] / 1000)
-            phiN = (2 * phi ** 2 - phiD ** 2) ** (0.5)
-            GR = 3*(xQuartz*chem_quartz[5][0] + xKaolinite*chemKaolinite[5][0] + xChlorite*chemChlorite[5][0] + xIllite*chemIllite[5][0] + xCalcite*chem_calcite[5][0] + xDolomite*chemDolomite[5][0] + xAlkalifeldspar*chemAlkalifeldspar[5][0] + xPlagioclase*chemPlagioclase[5][0])
-            PE = xQuartz*chem_quartz[5][1] + xKaolinite*chemKaolinite[5][1] + xChlorite*chemChlorite[5][1] + xIllite*chemIllite[5][1] + xCalcite*chem_calcite[5][1] + xDolomite*chemDolomite[5][1] + xAlkalifeldspar*chemAlkalifeldspar[5][1] + xPlagioclase*chemPlagioclase[5][1]
-            poisson_seismic = 0.5*(vP**2 - 2*vS**2)/(vP**2 - vS**2)
-            poisson_elastic = (3*K_bulk - 2*G_bulk)/(6*K_bulk + 2*G_bulk)
-            poisson_mineralogical = xQuartz*chem_quartz[3][3] + xKaolinite*chemKaolinite[3][3] + xChlorite*chemChlorite[3][3] + xIllite*chemIllite[3][3] + xCalcite*chem_calcite[3][3] + xDolomite*chemDolomite[3][3] + xAlkalifeldspar*chemAlkalifeldspar[3][3] + xPlagioclase*chemPlagioclase[3][3]
-            #print("Poisson:", round(poisson_seismic,3), round(poisson_elastic,3), round(poisson_mineralogical,3))
-            #
-            shale.append([round(rho, 3), round(rhoSolid, 3), round(chemGas[1] / 1000, 6)])
-            shale.append([round(K_bulk*10**(-6), 2), round(G_bulk*10**(-6), 2), round(E_bulk*10**(-6), 2), round(poisson_mineralogical, 3)])
-            shale.append([round(vP, 2), round(vS, 2), round(vP_solid, 2), round(chemGas[3], 2)])
-            shale.append([round(phi, 3), round(phiD, 3), round(phiN, 3)])
-            shale.append("gas")
-            shale.append([GR, PE])
-        #
-        #  shale = [[mineralogical compositon], [densities], [elastic properties], [seismic velocities], [porosities], fluid name, GR]
-        #
-        return shale
+        while condition == False:
+            if w_C == None and w_F == None and w_Na == None and w_Mg == None and w_S == None and w_K == None and w_Ca == None and w_Fe == None and amounts == None:
+                w_clay = round(rd.uniform(0.4, 0.6), 4)
+                w_ilt2 = rd.uniform(0.5, 1.0)
+                w_kln2 = rd.uniform(0.5, float(1.0-w_ilt2))
+                w_mnt2 = 1-w_ilt2-w_kln2
+                w_ilt = round(w_clay*w_ilt2, 4)
+                w_kln = round(w_clay*w_kln2, 4)
+                w_mnt = round(w_clay*w_mnt2, 4)
+                w_qz = round(rd.uniform(0.2, float(1.0-w_clay)), 4)
+                w_cal = round(rd.uniform(0.15, float(1.0-w_clay-w_qz)), 4)
+                w_org = round(1-w_clay-w_qz-w_cal, 4)
     #
     def create_simple_shale(self, w_C=None, w_F=None, w_Na=None, w_Mg=None, w_S=None, w_K=None, w_Ca=None, w_Fe=None, amounts=None):
-        # [symbol, atomic number, atomic mass, oxidation states, melting point, boiling point, density, electronegativity]
-        chemH = ["H", 1, 1.0078, 1, 13.99, 20.271, 0.084, 2.2]
-        chemC = ["C", 6, 12.009, 4, 0.0, 3915, 3510, 2.55]
-        chemN = ["N", 7, 14.006, -3, 63.15, 77.355, 1.170, 3.04]
-        chemO = ["O", 8, 15.999, -2, 54.3, 90.188, 1.33, 3.44]
-        chemMg = ["Mg", 12, 24.304, 2, 923, 1363, 1740, 1.31]
-        chemS = ["S", 16, 32.059, 6, 368.4, 717.8, 2060, 2.58]
-        chemAr = ["Ar", 18, 39.948, 0.0, 83.81, 87.302, 1.66, 0.0]
-        chemCa = ["Ca", 20, 40.078, 2, 1115, 1757, 1540, 1.0]
-        chemFe = ["Fe", 26, 55.845, 3, 1811, 3134, 7870, 1.83]
         #
         self.w_C = w_C
         self.w_F = w_F

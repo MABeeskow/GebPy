@@ -6,7 +6,7 @@
 # Name:		test_sequences.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		13.03.2021
+# Date:		03.04.2021
 
 # -----------------------------------------------
 
