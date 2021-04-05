@@ -1751,22 +1751,93 @@ class phyllosilicates:
     def __init__(self):
         pass
     #
-    def illite(self):   # (K,H3,O)(Al,Mg,Fe)2(Si,Al)4O10[(OH)2,(H2O)]
-        # [symbol, atomic number, atomic mass, molar volume, density, bulk modulus, shear modulus, young's modulus, vP, vS]
-        potassium = elements.K(self)
+    # def illite(self):   # (K,H3O)(Al,Mg,Fe)2(Si,Al)4O10[(OH)2,(H2O)]
+    #     # [symbol, atomic number, atomic mass, molar volume, density, bulk modulus, shear modulus, young's modulus, vP, vS]
+    #     potassium = elements.K(self)
+    #     hydrogen = elements.H(self)
+    #     oxygen = elements.O(self)
+    #     aluminium = elements.Al(self)
+    #     magnesium = elements.Mg(self)
+    #     iron = elements.Fe(self)
+    #     silicon = elements.Si(self)
+    #     #
+    #     data = []
+    #     #
+    #     mineral = "Ilt"
+    #     #
+    #     # Molar mass
+    #     M = round(0.8*potassium[2]+0.2*(3*hydrogen[2]+oxygen[2])+1.3*aluminium[2]+0.3*magnesium[2]+0.1*iron[2]+3.5*silicon[2]+10*oxygen[2]+2*(oxygen[2]+hydrogen[2])+2*hydrogen[2]+oxygen[2], 3)
+    #     # Density
+    #     dataV = CrystalPhysics([[5.18, 8.98, 10.32], [101.83], "monoclinic"])
+    #     V = dataV.calculate_volume()
+    #     dataRho = CrystalPhysics([M, 2, V])
+    #     rho = dataRho.calculate_bulk_density()
+    #     # Bulk modulus
+    #     K = (35.72 + (62.21-35.72)/(2.706-2.546)*(rho/1000-2.546))*10**9
+    #     # Shear modulus
+    #     G = (17.80 + (25.70-17.80)/(2.706-2.546)*(rho/1000-2.546))*10**9
+    #     # Young's modulus
+    #     E = (9*K*G)/(3*K + G)
+    #     # Poisson's ratio
+    #     nu = (3*K - 2*G)/(2*(3*K + G))
+    #     # vP/vS
+    #     vPvS = ((K + 4/3*G)/G)**0.5
+    #     # P-wave velocity
+    #     vP = ((K + 4/3*G)/rho)**0.5
+    #     # S-wave velocity
+    #     vS = (G/rho)**0.5
+    #     # Gamma ray
+    #     GR = potassium[2]/M*100*16
+    #     # Photoelectricity
+    #     element = [potassium, hydrogen, oxygen, aluminium, magnesium, iron, silicon]
+    #     w_K = round(0.8*potassium[2]/M, 4)
+    #     w_H = round((0.2*3+2+2)*hydrogen[2]/M, 4)
+    #     w_O = round((0.2+10+2+1)*oxygen[2]/M, 4)
+    #     w_Al = round(1.3*aluminium[2]/M, 4)
+    #     w_Mg = round(0.3*magnesium[2]/M, 4)
+    #     w_Fe = round(0.1*iron[2]/M, 4)
+    #     w_Si = round(3.5*silicon[2]/M, 4)
+    #     weights = [w_K, w_H, w_O, w_Al, w_Mg, w_Fe, w_Si]
+    #     composition = [w_H, w_O, w_Mg, w_Al, w_Si, w_K, w_Fe]
+    #     amounts = [0.8, 0.2*3+2+2, 0.2+10+2, 1.3, 0.3, 0.1, 3.5]
+    #     data_rho_e = CrystalPhysics([element, amounts, rho])
+    #     rho_e = data_rho_e.calculate_electron_density()
+    #     PE = bg.calculate_pe(self, x_list=weights, elements_list=element)
+    #     U = PE*rho_e*10**(-3)
+    #     # Electrical resistivity
+    #     p = 52.5
+    #     #
+    #     data.append(mineral)
+    #     data.append(round(M, 2))
+    #     data.append(round(rho, 1))
+    #     data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 2), round(vPvS, 2)])
+    #     data.append([round(vP, 1), round(vS, 1)])
+    #     data.append([round(GR, 2), round(PE, 2), round(U, 2), p])
+    #     data.append(composition)
+    #     #
+    #     return data
+    #
+    def illite(self): # (K,H3O) (Al,Mg,Fe)2 (Si,Al)4 O10 [(OH)2,(H2O)]
+        # CHEMISTRY
         hydrogen = elements.H(self)
         oxygen = elements.O(self)
-        aluminium = elements.Al(self)
         magnesium = elements.Mg(self)
-        iron = elements.Fe(self)
+        aluminium = elements.Al(self)
         silicon = elements.Si(self)
+        potassium = elements.K(self)
+        iron = elements.Fe(self)
         #
         data = []
         #
         mineral = "Ilt"
         #
         # Molar mass
-        M = round(0.6*potassium[2]+0.4*(3*hydrogen[2]+oxygen[2])+1.3*aluminium[2]+0.3*magnesium[2]+0.1*iron[2]+3.5*silicon[2]+10*oxygen[2]+2*(oxygen[2]+hydrogen[2])+2*hydrogen[2]+oxygen[2], 3)
+        a = round(rd.uniform(0.8, 0.9), 4)
+        b = round(rd.uniform(0.6, 0.7), 4)
+        b2 = round(rd.uniform(0.0, float(1-b)), 4)
+        c = round(rd.uniform(0.8, 1.0), 4)
+        d = round(rd.uniform(0.0, 1.0), 4)
+        M = round(a*potassium[2] + (1-a)*(3*hydrogen[2] + oxygen[2]) + 2*(b*aluminium[2] + b2*magnesium[2] + (1-b-b2)*iron[2]) + 4*(c*silicon[2] + (1-c)*aluminium[2]) + 10*oxygen[2] + d*(2*(oxygen[2]+hydrogen[2]) + (2*hydrogen[2]+oxygen[2])), 3)
         # Density
         dataV = CrystalPhysics([[5.18, 8.98, 10.32], [101.83], "monoclinic"])
         V = dataV.calculate_volume()
@@ -1789,20 +1860,18 @@ class phyllosilicates:
         # Gamma ray
         GR = potassium[2]/M*100*16
         # Photoelectricity
-        element = [potassium, hydrogen, oxygen, aluminium, magnesium, iron, silicon]
-        w_K = round(0.6*potassium[2]/M, 4)
-        w_H = round((0.4*3+2+2)*hydrogen[2]/M, 4)
-        w_O = round((0.4+10+2+1)*oxygen[2]/M, 4)
-        w_Al = round(1.3*aluminium[2]/M, 4)
-        w_Mg = round(0.3*magnesium[2]/M, 4)
-        w_Fe = round(0.1*iron[2]/M, 4)
-        w_Si = round(3.5*silicon[2]/M, 4)
-        weights = [w_K, w_H, w_O, w_Al, w_Mg, w_Fe, w_Si]
+        element = [hydrogen, oxygen, magnesium, aluminium, silicon, potassium, iron]
+        w_H = round(((1-a)*3*hydrogen[2] + d*2*hydrogen[2] + d*2*hydrogen[2])/M, 4)
+        w_O = round(((1-a)*oxygen[2] + 10*oxygen[2] + d*2*oxygen[2] + d*oxygen[2])/M, 4)
+        w_Mg = round(2*b2*magnesium[2]/M, 4)
+        w_Al = round((2*b*aluminium[2] + 4*(1-c)*aluminium[2])/M, 4)
+        w_Si = round(4*c*silicon[2]/M, 4)
+        w_K = round(a*potassium[2]/M, 4)
+        w_Fe = round(2*(1-b-b2)*iron[2]/M, 4)
         composition = [w_H, w_O, w_Mg, w_Al, w_Si, w_K, w_Fe]
-        amounts = [0.6, 0.4*3+2+2, 0.4+10+2, 1.3, 0.3, 0.1, 3.5]
-        data_rho_e = CrystalPhysics([element, amounts, rho])
+        data_rho_e = CrystalPhysics([element, composition, rho])
         rho_e = data_rho_e.calculate_electron_density()
-        PE = bg.calculate_pe(self, x_list=weights, elements_list=element)
+        PE = bg.calculate_pe(self, x_list=composition, elements_list=element)
         U = PE*rho_e*10**(-3)
         # Electrical resistivity
         p = 52.5

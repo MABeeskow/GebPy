@@ -36,3 +36,8 @@ data = minerals.Organics.organic_matter("")
 print("Organic matter:\n", data)
 
 print("")
+## TESTING PHYLLOSILICATES
+print("TEST - PHYLLOSILICATES")
+# Test Illite
+data = minerals.phyllosilicates.illite("")
+print("Illite:\n", data)
