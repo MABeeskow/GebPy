@@ -1751,72 +1751,6 @@ class phyllosilicates:
     def __init__(self):
         pass
     #
-    # def illite(self):   # (K,H3O)(Al,Mg,Fe)2(Si,Al)4O10[(OH)2,(H2O)]
-    #     # [symbol, atomic number, atomic mass, molar volume, density, bulk modulus, shear modulus, young's modulus, vP, vS]
-    #     potassium = elements.K(self)
-    #     hydrogen = elements.H(self)
-    #     oxygen = elements.O(self)
-    #     aluminium = elements.Al(self)
-    #     magnesium = elements.Mg(self)
-    #     iron = elements.Fe(self)
-    #     silicon = elements.Si(self)
-    #     #
-    #     data = []
-    #     #
-    #     mineral = "Ilt"
-    #     #
-    #     # Molar mass
-    #     M = round(0.8*potassium[2]+0.2*(3*hydrogen[2]+oxygen[2])+1.3*aluminium[2]+0.3*magnesium[2]+0.1*iron[2]+3.5*silicon[2]+10*oxygen[2]+2*(oxygen[2]+hydrogen[2])+2*hydrogen[2]+oxygen[2], 3)
-    #     # Density
-    #     dataV = CrystalPhysics([[5.18, 8.98, 10.32], [101.83], "monoclinic"])
-    #     V = dataV.calculate_volume()
-    #     dataRho = CrystalPhysics([M, 2, V])
-    #     rho = dataRho.calculate_bulk_density()
-    #     # Bulk modulus
-    #     K = (35.72 + (62.21-35.72)/(2.706-2.546)*(rho/1000-2.546))*10**9
-    #     # Shear modulus
-    #     G = (17.80 + (25.70-17.80)/(2.706-2.546)*(rho/1000-2.546))*10**9
-    #     # Young's modulus
-    #     E = (9*K*G)/(3*K + G)
-    #     # Poisson's ratio
-    #     nu = (3*K - 2*G)/(2*(3*K + G))
-    #     # vP/vS
-    #     vPvS = ((K + 4/3*G)/G)**0.5
-    #     # P-wave velocity
-    #     vP = ((K + 4/3*G)/rho)**0.5
-    #     # S-wave velocity
-    #     vS = (G/rho)**0.5
-    #     # Gamma ray
-    #     GR = potassium[2]/M*100*16
-    #     # Photoelectricity
-    #     element = [potassium, hydrogen, oxygen, aluminium, magnesium, iron, silicon]
-    #     w_K = round(0.8*potassium[2]/M, 4)
-    #     w_H = round((0.2*3+2+2)*hydrogen[2]/M, 4)
-    #     w_O = round((0.2+10+2+1)*oxygen[2]/M, 4)
-    #     w_Al = round(1.3*aluminium[2]/M, 4)
-    #     w_Mg = round(0.3*magnesium[2]/M, 4)
-    #     w_Fe = round(0.1*iron[2]/M, 4)
-    #     w_Si = round(3.5*silicon[2]/M, 4)
-    #     weights = [w_K, w_H, w_O, w_Al, w_Mg, w_Fe, w_Si]
-    #     composition = [w_H, w_O, w_Mg, w_Al, w_Si, w_K, w_Fe]
-    #     amounts = [0.8, 0.2*3+2+2, 0.2+10+2, 1.3, 0.3, 0.1, 3.5]
-    #     data_rho_e = CrystalPhysics([element, amounts, rho])
-    #     rho_e = data_rho_e.calculate_electron_density()
-    #     PE = bg.calculate_pe(self, x_list=weights, elements_list=element)
-    #     U = PE*rho_e*10**(-3)
-    #     # Electrical resistivity
-    #     p = 52.5
-    #     #
-    #     data.append(mineral)
-    #     data.append(round(M, 2))
-    #     data.append(round(rho, 1))
-    #     data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 2), round(vPvS, 2)])
-    #     data.append([round(vP, 1), round(vS, 1)])
-    #     data.append([round(GR, 2), round(PE, 2), round(U, 2), p])
-    #     data.append(composition)
-    #     #
-    #     return data
-    #
     def illite(self): # (K,H3O) (Al,Mg,Fe)2 (Si,Al)4 O10 [(OH)2,(H2O)]
         # CHEMISTRY
         hydrogen = elements.H(self)
@@ -1885,65 +1819,6 @@ class phyllosilicates:
         data.append(composition)
         #
         return data
-    #
-    # def chamosite(self):   # (Fe,Mg)5Al[(OH,O)8|AlSi3O10]
-    #     # [symbol, atomic number, atomic mass, molar volume, density, bulk modulus, shear modulus, young's modulus, vP, vS]
-    #     iron = elements.Fe(self)
-    #     magnesium = elements.Mg(self)
-    #     oxygen = elements.O(self)
-    #     aluminium = elements.Al(self)
-    #     hydrogen = elements.H(self)
-    #     silicon = elements.Si(self)
-    #     #
-    #     data = []
-    #     #
-    #     mineral = "Chl"
-    #     #
-    #     # Molar mass
-    #     M = round(3*iron[2]+1.5*magnesium[2]+aluminium[2]+0.5*iron[2]+3*silicon[2]+aluminium[2]+12*oxygen[2]+6*(oxygen[2]+hydrogen[2]), 3)
-    #     # Density
-    #     dataV = CrystalPhysics([[5.373, 9.306, 14.222], [97.88], "monoclinic"])
-    #     V = dataV.calculate_volume()
-    #     dataRho = CrystalPhysics([M, 2, V])
-    #     rho = dataRho.calculate_bulk_density()
-    #     # Bulk modulus
-    #     K = 165.02*10**9
-    #     # Shear modulus
-    #     G = 52.10*10**9
-    #     # Young's modulus
-    #     E = (9*K*G)/(3*K + G)
-    #     # Poisson's ratio
-    #     nu = (3*K - 2*G)/(2*(3*K + G))
-    #     # vP/vS
-    #     vPvS = ((K + 4/3*G)/G)**0.5
-    #     # P-wave velocity
-    #     vP = ((K + 4/3*G)/rho)**0.5
-    #     # S-wave velocity
-    #     vS = (G/rho)**0.5
-    #     # Gamma ray
-    #     GR = 0
-    #     # Photoelectricity
-    #     element = [iron, magnesium, oxygen, aluminium, hydrogen, silicon]
-    #     w_Fe = round((3+0.5)*iron[2]/M, 4)
-    #     w_Mg = round(1.5*magnesium[2]/M, 4)
-    #     w_O = round((12+6)*oxygen[2]/M, 4)
-    #     w_Al = round((1+1)*aluminium[2]/M, 4)
-    #     w_H = round(6*hydrogen[2]/M, 4)
-    #     w_Si = round(3*silicon[2]/M, 4)
-    #     weights = [w_Fe, w_Mg, w_O, w_Al, w_H, w_Si]
-    #     composition = [w_H, w_O, w_Mg, w_Al, w_Si, w_Fe]
-    #     PE = bg.calculate_pe(self, x_list=weights, elements_list=element)
-    #     U = PE*rho*10**(-3)
-    #     #
-    #     data.append(mineral)
-    #     data.append(round(M, 2))
-    #     data.append(round(rho, 1))
-    #     data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 2), round(vPvS, 2)])
-    #     data.append([round(vP, 1), round(vS, 1)])
-    #     data.append([round(GR, 2), round(PE, 2), round(U, 2)])
-    #     data.append(composition)
-    #     #
-    #     return data
     #
     def chamosite(self):   # (Fe,Mg)5Al(Si3Al)O10(OH,O)8
         # [symbol, atomic number, atomic mass, molar volume, density, bulk modulus, shear modulus, young's modulus, vP, vS]

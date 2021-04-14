@@ -91,12 +91,12 @@ data_shale = data.create_shale(thickness=10)
 for i in range(len(data_shale)):
     print(data_shale[i])
 
-print("")
+#print("")
 # Test shale generation within SedimentaryBasin class
-data = sequences.SedimentaryBasin()
-data_shale = data.create_shale_complex(thickness=10)
-for i in range(len(data_shale)):
-    print(data_shale[i])
+#data = sequences.SedimentaryBasin()
+#data_shale = data.create_shale_complex(thickness=10)
+#for i in range(len(data_shale)):
+#    print(data_shale[i])
 
 print("")
 # Test rock salt generation within SedimentaryBasin class

@@ -15,6 +15,6 @@ GebPy is a one-man project and can still contain some technical bugs or some wro
 
 Actually, GebPy can only be installed by cloning this repository. An alternative solution will be found in the near future. 
 
-### 💻 Working with GebPY
+### 💻 Working with GebPy
 
 After the installation of GebPy, you can find some Jupyter notebooks within the folder "notebooks" that could be helpful as an introduction for the work with GebPy. A more detailed documentation is already in progress. 
