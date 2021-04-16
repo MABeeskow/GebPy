@@ -1837,3 +1837,360 @@ class buntsandstein:
         data.append([round(GR,2), round(PE,2)])
         #
         return data
+#
+class NAGRA:
+    #
+    def __init__(self):
+        pass
+    #
+    def create_benken_rocks(self, w_carb=None, w_clay=None, w_qzfsp=None, amounts=None):
+        # Parameters
+        self.w_carb = w_carb
+        self.w_clay = w_clay
+        self.w_qzfsp = w_qzfsp
+        self.amounts = amounts
+        #
+        # Minerals + Fluids
+        org = minerals.Organics.organic_matter("")
+        sul = minerals.natives.sulfur("")
+        qz = minerals.oxides.quartz("")
+        kfs = minerals.feldspars.alkalifeldspar(self, "Alkalifeldspar")
+        pl = minerals.feldspars.plagioclase(self, "Plagioclase")
+        cal = minerals.carbonates.calcite("")
+        dol = minerals.carbonates.dolomite("")
+        sd = minerals.carbonates.siderite("")
+        mgs = minerals.carbonates.magnesite("")
+        anh = minerals.sulfates.anhydrite("")
+        gyp = minerals.sulfates.gypsum("")
+        py = minerals.sulfides.pyrite("")
+        ilt = minerals.phyllosilicates.illite("")
+        mnt = minerals.phyllosilicates.montmorillonite("")
+        kln = minerals.phyllosilicates.kaolinite("")
+        chl = minerals.phyllosilicates.chamosite("")
+        vrm = minerals.phyllosilicates.vermiculite("")
+        water = fluids.Water.water("")
+        #
+        mineralogy = [org, sul, qz, kfs, pl, cal, dol, sd, mgs, anh, gyp, py, ilt, mnt, kln, chl, vrm]
+        #
+        w_CCal = cal[6][0]
+        w_COrg = org[6][1]
+        w_NaMnt = mnt[6][2]
+        w_MgIlt = ilt[6][2]
+        w_MgMnt = mnt[6][3]
+        w_KIlt = ilt[6][5]
+        w_CaCal = cal[6][2]
+        w_CaMnt = mnt[6][6]
+        w_FeIlt = ilt[6][6]
+        #
+        data = []
+        #
+        condition = False
+        while condition == False:
+            if self.w_carb == None and self.w_clay == None and self.w_qzfsp == None and self.amounts == None:
+                #print("Default")
+                # CARBONATES
+                w_carb = round(rd.uniform(0.7, 1.0), 4)
+                w_cal2 = rd.uniform(0.5, 1.0)
+                w_dol2 = rd.uniform(0.0, float(1.0-w_cal2))
+                w_sd2 = rd.uniform(0.0, float(1.0-w_cal2-w_dol2))
+                w_mgs2 = 1-w_cal2-w_dol2-w_sd2
+                w_cal = round(w_carb*w_cal2, 4)
+                w_dol = round(w_carb*w_dol2, 4)
+                w_sd = round(w_carb*w_sd2, 4)
+                w_mgs = round(w_carb*w_mgs2, 4)
+                # CLAYS
+                w_clay = round(rd.uniform(0.0, float(1.0-w_carb)), 4)
+                w_ilt2 = rd.uniform(0.5, 1.0)
+                w_mnt2 = rd.uniform(0.0, float(1.0-w_ilt2))
+                w_kln2 = rd.uniform(0.0, float(1.0-w_ilt2-w_mnt2))
+                w_chl2 = rd.uniform(0.0, float(1.0-w_ilt2-w_mnt2-w_kln2))
+                w_vrm2 = 1-w_ilt2-w_mnt2-w_kln2-w_chl2
+                w_ilt = round(w_clay*w_ilt2, 4)
+                w_mnt = round(w_clay*w_mnt2, 4)
+                w_kln = round(w_clay*w_kln2, 4)
+                w_chl = round(w_clay*w_chl2, 4)
+                w_vrm = round(w_clay*w_vrm2, 4)
+                # QUARZ + FELDSPARS
+                w_qzfsp = round(rd.uniform(0.0, float(1.0-w_carb-w_clay)), 4)
+                w_qz2 = rd.uniform(0.25, 0.75)
+                w_kfs2 = rd.uniform(0.0, float(1.0-w_qz2))
+                w_pl2 = 1-w_qz2-w_kfs2
+                w_qz = round(w_qzfsp*w_qz2, 4)
+                w_kfs = round(w_qzfsp*w_kfs2, 4)
+                w_pl = round(w_qzfsp*w_pl2, 4)
+                # RESIDUALS
+                w_res = round(rd.uniform(0.0, float(1.0-w_carb-w_clay-w_qzfsp)), 4)
+                w_org2 = rd.uniform(0.25, 0.75)
+                w_sul2 = rd.uniform(0.0, 0.02)
+                w_anh2 = rd.uniform(0.0, float(1.0-w_org2-w_sul2))
+                w_gyp2 = rd.uniform(0.0, float(1.0-w_org2-w_sul2-w_anh2))
+                w_py2 = 1-w_org2-w_sul2-w_anh2-w_gyp2
+                w_org = round(w_res*w_org2, 4)
+                w_sul = round(w_res*w_sul2, 4)
+                w_anh = round(w_res*w_anh2, 4)
+                w_gyp = round(w_res*w_gyp, 4)
+                w_py = round(w_res*w_py2, 4)
+            elif self.w_carb != None:
+                #print("w_carb != None")
+                # CARBONATES
+                w_carb = round(rd.uniform(0.7, 1.0), 4)
+                w_cal2 = rd.uniform(0.5, 1.0)
+                w_dol2 = rd.uniform(0.0, float(1.0-w_cal2))
+                w_sd2 = rd.uniform(0.0, float(1.0-w_cal2-w_dol2))
+                w_mgs2 = 1-w_cal2-w_dol2-w_sd2
+                w_cal = round(w_carb*w_cal2, 4)
+                w_dol = round(w_carb*w_dol2, 4)
+                w_sd = round(w_carb*w_sd2, 4)
+                w_mgs = round(w_carb*w_mgs2, 4)
+                # CLAYS
+                w_clay = round(rd.uniform(0.0, float(1.0-w_carb)), 4)
+                w_ilt2 = rd.uniform(0.5, 1.0)
+                w_mnt2 = rd.uniform(0.0, float(1.0-w_ilt2))
+                w_kln2 = rd.uniform(0.0, float(1.0-w_ilt2-w_mnt2))
+                w_chl2 = rd.uniform(0.0, float(1.0-w_ilt2-w_mnt2-w_kln2))
+                w_vrm2 = 1-w_ilt2-w_mnt2-w_kln2-w_chl2
+                w_ilt = round(w_clay*w_ilt2, 4)
+                w_mnt = round(w_clay*w_mnt2, 4)
+                w_kln = round(w_clay*w_kln2, 4)
+                w_chl = round(w_clay*w_chl2, 4)
+                w_vrm = round(w_clay*w_vrm2, 4)
+                # QUARZ + FELDSPARS
+                w_qzfsp = round(rd.uniform(0.0, float(1.0-w_carb-w_clay)), 4)
+                w_qz2 = rd.uniform(0.25, 0.75)
+                w_kfs2 = rd.uniform(0.0, float(1.0-w_qz2))
+                w_pl2 = 1-w_qz2-w_kfs2
+                w_qz = round(w_qzfsp*w_qz2, 4)
+                w_kfs = round(w_qzfsp*w_kfs2, 4)
+                w_pl = round(w_qzfsp*w_pl2, 4)
+                # RESIDUALS
+                w_res = round(rd.uniform(0.0, float(1.0-w_carb-w_clay-w_qzfsp)), 4)
+                w_org2 = rd.uniform(0.25, 0.75)
+                w_sul2 = rd.uniform(0.0, 0.02)
+                w_anh2 = rd.uniform(0.0, float(1.0-w_org2-w_sul2))
+                w_gyp2 = rd.uniform(0.0, float(1.0-w_org2-w_sul2-w_anh2))
+                w_py2 = 1-w_org2-w_sul2-w_anh2-w_gyp2
+                w_org = round(w_res*w_org2, 4)
+                w_sul = round(w_res*w_sul2, 4)
+                w_anh = round(w_res*w_anh2, 4)
+                w_gyp = round(w_res*w_gyp2, 4)
+                w_py = round(w_res*w_py2, 4)
+            elif self.w_clay != None:
+                #print("w_clay != None")
+                # CARBONATES
+                w_carb = round(rd.uniform(0.7, 1.0), 4)
+                w_cal2 = rd.uniform(0.5, 1.0)
+                w_dol2 = rd.uniform(0.0, float(1.0-w_cal2))
+                w_sd2 = rd.uniform(0.0, float(1.0-w_cal2-w_dol2))
+                w_mgs2 = 1-w_cal2-w_dol2-w_sd2
+                w_cal = round(w_carb*w_cal2, 4)
+                w_dol = round(w_carb*w_dol2, 4)
+                w_sd = round(w_carb*w_sd2, 4)
+                w_mgs = round(w_carb*w_mgs2, 4)
+                # CLAYS
+                w_clay = round(rd.uniform(0.0, float(1.0-w_carb)), 4)
+                w_ilt2 = rd.uniform(0.5, 1.0)
+                w_mnt2 = rd.uniform(0.0, float(1.0-w_ilt2))
+                w_kln2 = rd.uniform(0.0, float(1.0-w_ilt2-w_mnt2))
+                w_chl2 = rd.uniform(0.0, float(1.0-w_ilt2-w_mnt2-w_kln2))
+                w_vrm2 = 1-w_ilt2-w_mnt2-w_kln2-w_chl2
+                w_ilt = round(w_clay*w_ilt2, 4)
+                w_mnt = round(w_clay*w_mnt2, 4)
+                w_kln = round(w_clay*w_kln2, 4)
+                w_chl = round(w_clay*w_chl2, 4)
+                w_vrm = round(w_clay*w_vrm2, 4)
+                # QUARZ + FELDSPARS
+                w_qzfsp = round(rd.uniform(0.0, float(1.0-w_carb-w_clay)), 4)
+                w_qz2 = rd.uniform(0.25, 0.75)
+                w_kfs2 = rd.uniform(0.0, float(1.0-w_qz2))
+                w_pl2 = 1-w_qz2-w_kfs2
+                w_qz = round(w_qzfsp*w_qz2, 4)
+                w_kfs = round(w_qzfsp*w_kfs2, 4)
+                w_pl = round(w_qzfsp*w_pl2, 4)
+                # RESIDUALS
+                w_res = round(rd.uniform(0.0, float(1.0-w_carb-w_clay-w_qzfsp)), 4)
+                w_org2 = rd.uniform(0.25, 0.75)
+                w_sul2 = rd.uniform(0.0, 0.02)
+                w_anh2 = rd.uniform(0.0, float(1.0-w_org2-w_sul2))
+                w_gyp2 = rd.uniform(0.0, float(1.0-w_org2-w_sul2-w_anh2))
+                w_py2 = 1-w_org2-w_sul2-w_anh2-w_gyp2
+                w_org = round(w_res*w_org2, 4)
+                w_sul = round(w_res*w_sul2, 4)
+                w_anh = round(w_res*w_anh2, 4)
+                w_gyp = round(w_res*w_gyp2, 4)
+                w_py = round(w_res*w_py2, 4)
+            elif self.w_qzfsp != None:
+                #print("w_qzfsp != None")
+                # CARBONATES
+                w_carb = round(rd.uniform(0.7, 1.0), 4)
+                w_cal2 = rd.uniform(0.5, 1.0)
+                w_dol2 = rd.uniform(0.0, float(1.0-w_cal2))
+                w_sd2 = rd.uniform(0.0, float(1.0-w_cal2-w_dol2))
+                w_mgs2 = 1-w_cal2-w_dol2-w_sd2
+                w_cal = round(w_carb*w_cal2, 4)
+                w_dol = round(w_carb*w_dol2, 4)
+                w_sd = round(w_carb*w_sd2, 4)
+                w_mgs = round(w_carb*w_mgs2, 4)
+                # CLAYS
+                w_clay = round(rd.uniform(0.0, float(1.0-w_carb)), 4)
+                w_ilt2 = rd.uniform(0.5, 1.0)
+                w_mnt2 = rd.uniform(0.0, float(1.0-w_ilt2))
+                w_kln2 = rd.uniform(0.0, float(1.0-w_ilt2-w_mnt2))
+                w_chl2 = rd.uniform(0.0, float(1.0-w_ilt2-w_mnt2-w_kln2))
+                w_vrm2 = 1-w_ilt2-w_mnt2-w_kln2-w_chl2
+                w_ilt = round(w_clay*w_ilt2, 4)
+                w_mnt = round(w_clay*w_mnt2, 4)
+                w_kln = round(w_clay*w_kln2, 4)
+                w_chl = round(w_clay*w_chl2, 4)
+                w_vrm = round(w_clay*w_vrm2, 4)
+                # QUARZ + FELDSPARS
+                w_qzfsp = round(rd.uniform(0.0, float(1.0-w_carb-w_clay)), 4)
+                w_qz2 = rd.uniform(0.25, 0.75)
+                w_kfs2 = rd.uniform(0.0, float(1.0-w_qz2))
+                w_pl2 = 1-w_qz2-w_kfs2
+                w_qz = round(w_qzfsp*w_qz2, 4)
+                w_kfs = round(w_qzfsp*w_kfs2, 4)
+                w_pl = round(w_qzfsp*w_pl2, 4)
+                # RESIDUALS
+                w_res = round(rd.uniform(0.0, float(1.0-w_carb-w_clay-w_qzfsp)), 4)
+                w_org2 = rd.uniform(0.25, 0.75)
+                w_sul2 = rd.uniform(0.0, 0.02)
+                w_anh2 = rd.uniform(0.0, float(1.0-w_org2-w_sul2))
+                w_gyp2 = rd.uniform(0.0, float(1.0-w_org2-w_sul2-w_anh2))
+                w_py2 = 1-w_org2-w_sul2-w_anh2-w_gyp2
+                w_org = round(w_res*w_org2, 4)
+                w_sul = round(w_res*w_sul2, 4)
+                w_anh = round(w_res*w_anh2, 4)
+                w_gyp = round(w_res*w_gyp2, 4)
+                w_py = round(w_res*w_py2, 4)
+            elif self.w_carb != None and self.w_clay != None and self.w_qzfsp != None:
+                #print("(w_carb,w_clay,w_qzfsp) != None")
+                # CARBONATES
+                w_carb = round(rd.uniform(0.7, 1.0), 4)
+                w_cal2 = rd.uniform(0.5, 1.0)
+                w_dol2 = rd.uniform(0.0, float(1.0-w_cal2))
+                w_sd2 = rd.uniform(0.0, float(1.0-w_cal2-w_dol2))
+                w_mgs2 = 1-w_cal2-w_dol2-w_sd2
+                w_cal = round(w_carb*w_cal2, 4)
+                w_dol = round(w_carb*w_dol2, 4)
+                w_sd = round(w_carb*w_sd2, 4)
+                w_mgs = round(w_carb*w_mgs2, 4)
+                # CLAYS
+                w_clay = round(rd.uniform(0.0, float(1.0-w_carb)), 4)
+                w_ilt2 = rd.uniform(0.5, 1.0)
+                w_mnt2 = rd.uniform(0.0, float(1.0-w_ilt2))
+                w_kln2 = rd.uniform(0.0, float(1.0-w_ilt2-w_mnt2))
+                w_chl2 = rd.uniform(0.0, float(1.0-w_ilt2-w_mnt2-w_kln2))
+                w_vrm2 = 1-w_ilt2-w_mnt2-w_kln2-w_chl2
+                w_ilt = round(w_clay*w_ilt2, 4)
+                w_mnt = round(w_clay*w_mnt2, 4)
+                w_kln = round(w_clay*w_kln2, 4)
+                w_chl = round(w_clay*w_chl2, 4)
+                w_vrm = round(w_clay*w_vrm2, 4)
+                # QUARZ + FELDSPARS
+                w_qzfsp = round(rd.uniform(0.0, float(1.0-w_carb-w_clay)), 4)
+                w_qz2 = rd.uniform(0.25, 0.75)
+                w_kfs2 = rd.uniform(0.0, float(1.0-w_qz2))
+                w_pl2 = 1-w_qz2-w_kfs2
+                w_qz = round(w_qzfsp*w_qz2, 4)
+                w_kfs = round(w_qzfsp*w_kfs2, 4)
+                w_pl = round(w_qzfsp*w_pl2, 4)
+                # RESIDUALS
+                w_res = round(rd.uniform(0.0, float(1.0-w_carb-w_clay-w_qzfsp)), 4)
+                w_org2 = rd.uniform(0.25, 0.75)
+                w_sul2 = rd.uniform(0.0, 0.02)
+                w_anh2 = rd.uniform(0.0, float(1.0-w_org2-w_sul2))
+                w_gyp2 = rd.uniform(0.0, float(1.0-w_org2-w_sul2-w_anh2))
+                w_py2 = 1-w_org2-w_sul2-w_anh2-w_gyp2
+                w_org = round(w_res*w_org2, 4)
+                w_sul = round(w_res*w_sul2, 4)
+                w_anh = round(w_res*w_anh2, 4)
+                w_gyp = round(w_res*w_gyp2, 4)
+                w_py = round(w_res*w_py2, 4)
+            elif type(self.amounts) is list:
+                #print("Amount")
+                w_org = round(abs(np.random.normal(self.amounts[0], 0.025)), 4)
+                w_qz = round(abs(np.random.normal(self.amounts[1], 0.025)), 4)
+                w_cal = round(abs(np.random.normal(self.amounts[2], 0.025)), 4)
+                w_ilt = round(abs(np.random.normal(self.amounts[3], 0.025)), 4)
+                w_kln = round(abs(np.random.normal(self.amounts[4], 0.025)), 4)
+                w_mnt = round(1-w_org-w_qz-w_cal-w_ilt-w_kln, 4)
+            # [org, sul, qz, kfs, pl, cal, dol, sd, mgs, anh, gyp, py, ilt, mnt, kln, chl, vrm]
+            #print("Minerals:", "Org", w_org, "Qz", w_qz, "Cal", w_cal, "Ilt", w_ilt, "Kln", w_kln, "Mnt", w_mnt, "Clay:", round(w_ilt+w_kln+w_mnt, 4) ,"Sum:", round(w_org + w_qz + w_cal + w_ilt + w_kln + w_mnt, 4))
+            if w_org >= 0.0 and w_sul >= 0.0 and w_qz >= 0.0 and w_kfs >= 0.0 and w_pl >= 0.0 and w_cal >= 0.0 and w_dol >= 0.0 and w_sd >= 0.0 and w_mgs >= 0.0 and w_anh >= 0.0 and w_gyp >= 0.0 and w_py >= 0.0 and w_ilt >= 0.0 and w_mnt >= 0.0 and w_kln >= 0.0 and w_chl >= 0.0 and w_vrm >= 0.0:
+                sum_min = round(w_org + w_sul + w_qz + w_kfs + w_pl + w_cal + w_dol + w_sd + w_mgs + w_anh + w_gyp + w_py + w_ilt + w_mnt + w_kln + w_chl + w_vrm, 4)
+                if sum_min == 1:
+                    #
+                    w_H = round(1, 4)
+                    w_C = round(0, 4)
+                    w_N = round(0, 4)
+                    w_O = round(0, 4)
+                    w_Na = round(0, 4)
+                    w_Mg = round(0, 4)
+                    w_Al = round(0, 4)
+                    w_Si = round(0, 4)
+                    w_S = round(0, 4)
+                    w_K = round(0, 4)
+                    w_Ca = round(0, 4)
+                    w_Fe = round(0, 4)
+                    sum_conc = round(w_H + w_C + w_N + w_O + w_Na + w_Mg + w_Al + w_Si + w_S + w_K + w_Ca + w_Fe, 4)
+                    #
+                    GR = w_org*org[5][0] + w_qz*qz[5][0] + w_cal*cal[5][0] + w_ilt*ilt[5][0] + w_kln*kln[5][0] + w_mnt*mnt[5][0]
+                    #print("sum conc:", sum_conc, "GR", GR)
+                    #
+                    if sum_conc == 1 and GR <= 300:
+                        concentrations = [abs(w_H), abs(w_C), abs(w_N), abs(w_O), abs(w_Na), abs(w_Mg), abs(w_Al), abs(w_Si), abs(w_S), abs(w_K), abs(w_Ca), abs(w_Fe)]
+                        amounts = [abs(w_org), abs(w_sul), abs(w_qz), abs(w_kfs), abs(w_pl), abs(w_cal), abs(w_dol), abs(w_sd), abs(w_mgs), abs(w_anh), abs(w_gyp), abs(w_py), abs(w_ilt), abs(w_mnt), abs(w_kln), abs(w_chl), abs(w_vrm)]
+                        rhoSolid = (w_org*org[2] + w_qz*qz[2] + w_cal*cal[2] + w_ilt*ilt[2] + w_kln*kln[2] + w_mnt*mnt[2])/1000
+                        condition_2 = False
+                        i = 0
+                        while condition_2 == False and i < 10:
+                            i += 1
+                            phi = rd.uniform(0.0, 0.1)
+                            rho = (1 - phi)*rhoSolid + phi*water[2]/1000
+                            if rho > 2.0:
+                                composition = ["Org", "Sul", "Qz", "Kfs", "Pl", "Cal", "Dol", "Sd", "Mgs", "Anh", "Gyp", "Py", "Ilt", "Mnt", "Kln", "Chl", "Vrm"]
+                                condition_2 = True
+                                condition = True
+                            else:
+                                condition_2 = False
+                    else:
+                        condition = False
+            else:
+                condition = False
+        #
+        X = amounts
+        K_list = [mineralogy[i][3][0] for i in range(len(mineralogy))]
+        G_list = [mineralogy[i][3][1] for i in range(len(mineralogy))]
+        K_geo = elast.calc_geometric_mean(self, X, K_list)
+        G_geo = elast.calc_geometric_mean(self, X, G_list)
+        K_solid = K_geo/6
+        G_solid = G_geo/6
+        vP_solid = np.sqrt((K_solid*10**9+4/3*G_solid*10**9)/(rhoSolid*10**3))
+        vS_solid = np.sqrt((G_solid*10**9)/(rhoSolid*10**3))
+        E_solid = (9*K_solid*G_solid)/(3*K_solid+G_solid)
+        nu_solid = (3*K_solid-2*G_solid)/(2*(3*K_solid+G_solid))
+        #
+        vP = (1-phi)*vP_solid + phi*water[4][0]
+        vS = (1 - phi) * vS_solid
+        G_bulk = vS**2 * rho
+        K_bulk = vP**2 * rho - 4/3*G_bulk
+        E_bulk = (9*K_bulk*G_bulk)/(3*K_bulk+G_bulk)
+        phiD = (rhoSolid - rho) / (rhoSolid - water[2] / 1000)
+        phiN = (2 * phi ** 2 - phiD ** 2) ** (0.5)
+        #GR = w_org*org[5][0] + w_qz*qz[5][0] + w_cal*cal[5][0] + w_ilt*ilt[5][0] + w_kln*kln[5][0] + w_mnt*mnt[5][0]
+        PE = w_org*org[5][1] + w_qz*qz[5][1] + w_cal*cal[5][1]  + w_ilt*ilt[5][1] + w_kln*kln[5][1] + w_mnt*mnt[5][1]
+        #poisson_seismic = 0.5*(vP**2 - 2*vS**2)/(vP**2 - vS**2)
+        #poisson_elastic = (3*K_bulk - 2*G_bulk)/(6*K_bulk + 2*G_bulk)
+        poisson_mineralogical = w_org*org[3][3] + w_qz*qz[3][3] + w_cal*cal[3][3] + w_ilt*ilt[3][3] + w_kln*kln[3][3] + w_mnt*mnt[3][3]
+        #
+        data.append(composition)
+        data.append([round(rho, 3), round(rhoSolid, 3), round(water[2] / 1000, 6)])
+        data.append([round(K_bulk*10**(-6), 2), round(G_bulk*10**(-6), 2), round(E_bulk*10**(-6), 2), round(poisson_mineralogical, 3)])
+        data.append([round(vP, 2), round(vS, 2), round(vP_solid, 2), round(water[4][0], 2)])
+        data.append([round(phi, 3), round(phiD, 3), round(phiN, 3)])
+        data.append("water")
+        data.append([round(GR, 3), round(PE, 3)])
+        data.append(concentrations)
+        data.append(amounts)
+        #
+        return data

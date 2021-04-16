@@ -377,6 +377,52 @@ class natives:
         #
         return data
     #
+    def sulfur(self):   # S
+        # CHEMISTRY
+        sulfur = elements.S(self)
+        #
+        data = []
+        #
+        name = "S"
+        #
+        # Molar mass
+        w_S = 1.0
+        M = round(8*w_S*sulfur[2], 3)
+        composition = [w_S]
+        # Density
+        dataV = CrystalPhysics([[10.45, 12.845, 24.46], [], "orthorhombic"])
+        V = dataV.calculate_volume()
+        dataRho = CrystalPhysics([M, 16, V])
+        rho = dataRho.calculate_bulk_density()
+        # Bulk modulus
+        K = 16.87*10**9
+        # Shear modulus
+        G = 9.14*10**9
+        # Young's modulus
+        E = (9*K*G)/(3*K + G)
+        # Poisson's ratio
+        nu = (3*K - 2*G)/(2*(3*K + G))
+        # vP/vS
+        vPvS = ((K + 4/3*G)/G)**0.5
+        # P-wave velocity
+        vP = ((K + 4/3*G)/rho)**0.5
+        # S-wave velocity
+        vS = (G/rho)**0.5
+        # Gamma ray
+        GR = 0
+        # Photoelectricity
+        PE = round(((sulfur[1])/10)**3.6, 3)
+        #
+        data.append(name)
+        data.append(round(M, 2))
+        data.append(round(rho, 1))
+        data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 2), round(vPvS, 2)])
+        data.append([round(vP, 1), round(vS, 1)])
+        data.append([round(GR, 2), round(PE, 2)])
+        data.append(composition)
+        #
+        return data
+    #
     def arsenic(self):   # As
         # [symbol, atomic number, atomic mass, molar volume, density, bulk modulus, shear modulus, young's modulus, vP, vS]
         arsenic = elements.As(self)
@@ -505,6 +551,7 @@ class natives:
         data.append([round(GR, 2), round(PE, 2)])
         #
         return data
+
 #
 class oxides:
     #
@@ -1872,6 +1919,71 @@ class phyllosilicates:
         U = PE*rho*10**(-3)
         # Electrical resistivity
         p = None
+        #
+        data.append(mineral)
+        data.append(round(M, 2))
+        data.append(round(rho, 1))
+        data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 2), round(vPvS, 2)])
+        data.append([round(vP, 1), round(vS, 1)])
+        data.append([round(GR, 2), round(PE, 2), round(U, 2), p])
+        data.append(composition)
+        #
+        return data
+    #
+    def vermiculite(self): # (Mg,Fe,Al)3 (Al,Si)4 O10 (OH)2 * 4(H2O)
+        # CHEMISTRY
+        hydrogen = elements.H(self)
+        oxygen = elements.O(self)
+        magnesium = elements.Mg(self)
+        aluminium = elements.Al(self)
+        silicon = elements.Si(self)
+        iron = elements.Fe(self)
+        #
+        data = []
+        #
+        mineral = "Vrm"
+        #
+        # Molar mass
+        a = round(rd.uniform(0.55, 0.65), 4)
+        a2 = round(rd.uniform(0.25, float(1-a)), 4)
+        b = round(rd.uniform(0.7, 0.8), 4)
+        M = round(3*(a*magnesium[2] + a2*iron[2] + (1-a-a2)*aluminium[2]) + 4*(b*aluminium[2] + (1-b)*silicon[2]) + 10*oxygen[2] + 2*(oxygen[2] + hydrogen[2]) + 4*(2*hydrogen[2]+oxygen[2]), 3)
+        # Density
+        dataV = CrystalPhysics([[5.26, 9.23, 14.97], [96.82], "monoclinic"])
+        V = dataV.calculate_volume()
+        dataRho = CrystalPhysics([M, 2, V])
+        rho = dataRho.calculate_bulk_density()
+        # Bulk modulus
+        K = 175*10**9
+        # Shear modulus
+        G = 90*10**9
+        # Young's modulus
+        E = (9*K*G)/(3*K + G)
+        # Poisson's ratio
+        nu = (3*K - 2*G)/(2*(3*K + G))
+        # vP/vS
+        vPvS = ((K + 4/3*G)/G)**0.5
+        # P-wave velocity
+        vP = ((K + 4/3*G)/rho)**0.5
+        # S-wave velocity
+        vS = (G/rho)**0.5
+        # Gamma ray
+        GR = 0
+        # Photoelectricity
+        element = [hydrogen, oxygen, magnesium, aluminium, silicon, iron]
+        w_H = round((2*hydrogen[2] + 4*2*hydrogen[2])/M, 4)
+        w_O = round((10*oxygen[2] + 2*oxygen[2] + 4*oxygen[2])/M, 4)
+        w_Mg = round(3*a*magnesium[2]/M, 4)
+        w_Al = round((3*(1-a-a2)*aluminium[2] + 4*(b*aluminium[2]))/M, 4)
+        w_Si = round((4*(1-b)*silicon[2])/M, 4)
+        w_Fe = round(3*a2*iron[2]/M, 4)
+        composition = [w_H, w_O, w_Mg, w_Al, w_Si, w_Fe]
+        data_rho_e = CrystalPhysics([element, composition, rho])
+        rho_e = data_rho_e.calculate_electron_density()
+        PE = bg.calculate_pe(self, x_list=composition, elements_list=element)
+        U = PE*rho_e*10**(-3)
+        # Electrical resistivity
+        p = 0
         #
         data.append(mineral)
         data.append(round(M, 2))

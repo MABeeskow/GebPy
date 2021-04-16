@@ -20,6 +20,13 @@ import matplotlib.patches as mpatches
 from matplotlib.ticker import NullFormatter
 from modules import sequences, geophysics, minerals
 
+## TESTING NATIVES
+print("TEST - NATIVES")
+# Test Carbohydrates
+data = minerals.natives.sulfur("")
+print("Sulfur:\n", data)
+
+print("")
 ## TESTING ORGANICS
 print("TEST - ORGANICS")
 # Test Carbohydrates
@@ -41,3 +48,6 @@ print("TEST - PHYLLOSILICATES")
 # Test Illite
 data = minerals.phyllosilicates.illite("")
 print("Illite:\n", data)
+# Test Vermiculite
+data = minerals.phyllosilicates.vermiculite("")
+print("Vermiculite:\n", data)

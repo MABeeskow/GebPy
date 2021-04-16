@@ -18,7 +18,7 @@ import  matplotlib as mpl
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 from matplotlib.ticker import NullFormatter
-from modules import sequences, geophysics
+from modules import sequences, geophysics, siliciclastics
 
 ## TESTING
 # Test soil generation within SedimentaryBasin class
@@ -118,3 +118,10 @@ data = sequences.SedimentaryBasin()
 data_basalt = data.create_basalt(thickness=10)
 for i in range(len(data_basalt)):
     print(data_basalt[i])
+
+print("")
+# Test rock generation based on the NAGRA Benken dataset
+for i in range(10):
+    data = siliciclastics.NAGRA()
+    data_benken = data.create_benken_rocks("")
+    print(data_benken)
