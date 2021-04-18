@@ -1569,6 +1569,7 @@ class carbonates:
         x_C = round(carbon[2]/M, 4)
         x_O = round(3*oxygen[2]/M, 4)
         weights = [x_Mg, x_C, x_O]
+        composition = [x_C, x_O, x_Mg]
         amounts = [1, 1, 3]
         data_rho_e = CrystalPhysics([element, amounts, rho])
         rho_e = data_rho_e.calculate_electron_density()
@@ -1581,6 +1582,7 @@ class carbonates:
         data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 2), round(vPvS, 2)])
         data.append([round(vP, 1), round(vS, 1)])
         data.append([round(GR, 2), round(PE, 2), round(U, 2)])
+        data.append(composition)
         #
         return data
     #

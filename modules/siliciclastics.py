@@ -1889,7 +1889,7 @@ class NAGRA:
             if self.w_carb == None and self.w_clay == None and self.w_qzfsp == None and self.amounts == None:
                 #print("Default")
                 # CARBONATES
-                w_carb = round(rd.uniform(0.7, 1.0), 4)
+                w_carb = round(rd.uniform(0.5, 1.0), 4)
                 w_cal2 = rd.uniform(0.5, 1.0)
                 w_dol2 = rd.uniform(0.0, float(1.0-w_cal2))
                 w_sd2 = rd.uniform(0.0, float(1.0-w_cal2-w_dol2))
@@ -1928,7 +1928,7 @@ class NAGRA:
                 w_org = round(w_res*w_org2, 4)
                 w_sul = round(w_res*w_sul2, 4)
                 w_anh = round(w_res*w_anh2, 4)
-                w_gyp = round(w_res*w_gyp, 4)
+                w_gyp = round(w_res*w_gyp2, 4)
                 w_py = round(w_res*w_py2, 4)
             elif self.w_carb != None:
                 #print("w_carb != None")
@@ -2108,44 +2108,53 @@ class NAGRA:
                 w_py = round(w_res*w_py2, 4)
             elif type(self.amounts) is list:
                 #print("Amount")
-                w_org = round(abs(np.random.normal(self.amounts[0], 0.025)), 4)
-                w_qz = round(abs(np.random.normal(self.amounts[1], 0.025)), 4)
-                w_cal = round(abs(np.random.normal(self.amounts[2], 0.025)), 4)
-                w_ilt = round(abs(np.random.normal(self.amounts[3], 0.025)), 4)
-                w_kln = round(abs(np.random.normal(self.amounts[4], 0.025)), 4)
-                w_mnt = round(1-w_org-w_qz-w_cal-w_ilt-w_kln, 4)
+                w_org = round(abs(np.random.normal(self.amounts[0], 0.0125)), 4)
+                w_sul = round(abs(np.random.normal(self.amounts[1], 0.0125)), 4)
+                w_qz = round(abs(np.random.normal(self.amounts[2], 0.0125)), 4)
+                w_kfs = round(abs(np.random.normal(self.amounts[3], 0.0125)), 4)
+                w_pl = round(abs(np.random.normal(self.amounts[4], 0.0125)), 4)
+                w_cal = round(abs(np.random.normal(self.amounts[5], 0.0125)), 4)
+                w_dol = round(abs(np.random.normal(self.amounts[6], 0.0125)), 4)
+                w_sd = round(abs(np.random.normal(self.amounts[7], 0.0125)), 4)
+                w_mgs = round(abs(np.random.normal(self.amounts[8], 0.0125)), 4)
+                w_anh = round(abs(np.random.normal(self.amounts[9], 0.0125)), 4)
+                w_gyp = round(abs(np.random.normal(self.amounts[10], 0.0125)), 4)
+                w_py = round(abs(np.random.normal(self.amounts[11], 0.0125)), 4)
+                w_ilt = round(abs(np.random.normal(self.amounts[12], 0.0125)), 4)
+                w_mnt = round(abs(np.random.normal(self.amounts[13], 0.0125)), 4)
+                w_kln = round(abs(np.random.normal(self.amounts[14], 0.0125)), 4)
+                w_chl = round(abs(np.random.normal(self.amounts[15], 0.0125)), 4)
+                w_vrm = round(1-w_org-w_sul-w_qz-w_kfs-w_pl-w_cal-w_dol-w_sd-w_mgs-w_anh-w_gyp-w_py-w_ilt-w_mnt-w_kln-w_chl, 4)
+                sum_min = round(w_org + w_sul + w_qz + w_kfs + w_pl + w_cal + w_dol + w_sd + w_mgs + w_anh + w_gyp + w_py + w_ilt + w_mnt + w_kln + w_chl + w_vrm, 4)
             # [org, sul, qz, kfs, pl, cal, dol, sd, mgs, anh, gyp, py, ilt, mnt, kln, chl, vrm]
             #print("Minerals:", "Org", w_org, "Qz", w_qz, "Cal", w_cal, "Ilt", w_ilt, "Kln", w_kln, "Mnt", w_mnt, "Clay:", round(w_ilt+w_kln+w_mnt, 4) ,"Sum:", round(w_org + w_qz + w_cal + w_ilt + w_kln + w_mnt, 4))
             if w_org >= 0.0 and w_sul >= 0.0 and w_qz >= 0.0 and w_kfs >= 0.0 and w_pl >= 0.0 and w_cal >= 0.0 and w_dol >= 0.0 and w_sd >= 0.0 and w_mgs >= 0.0 and w_anh >= 0.0 and w_gyp >= 0.0 and w_py >= 0.0 and w_ilt >= 0.0 and w_mnt >= 0.0 and w_kln >= 0.0 and w_chl >= 0.0 and w_vrm >= 0.0:
                 sum_min = round(w_org + w_sul + w_qz + w_kfs + w_pl + w_cal + w_dol + w_sd + w_mgs + w_anh + w_gyp + w_py + w_ilt + w_mnt + w_kln + w_chl + w_vrm, 4)
                 if sum_min == 1:
                     #
-                    w_H = round(1, 4)
-                    w_C = round(0, 4)
-                    w_N = round(0, 4)
-                    w_O = round(0, 4)
-                    w_Na = round(0, 4)
-                    w_Mg = round(0, 4)
-                    w_Al = round(0, 4)
-                    w_Si = round(0, 4)
-                    w_S = round(0, 4)
-                    w_K = round(0, 4)
-                    w_Ca = round(0, 4)
-                    w_Fe = round(0, 4)
+                    w_H = round(w_org*org[6][0] + w_gyp*gyp[6][0] + w_ilt*ilt[6][0] + w_mnt*mnt[6][0] + w_kln*kln[6][0] + w_chl*chl[6][0] + w_vrm*vrm[6][0], 4)
+                    w_C = round(w_org*org[6][1] + w_cal*cal[6][0] + w_dol*dol[6][0] + w_sd*sd[6][0] + w_mgs*mgs[6][0], 4)
+                    w_N = round(w_org*org[6][2], 4)
+                    w_O = round(w_org*org[6][3] + w_qz*qz[6][0] + w_kfs*kfs[6][0] + w_pl*pl[6][0] + w_cal*cal[6][1] + w_dol*dol[6][1] + w_sd*sd[6][1] + w_mgs*mgs[6][1] + w_anh*anh[6][0] + w_gyp*gyp[6][1] + w_ilt*ilt[6][1] + w_mnt*mnt[6][1] + w_kln*kln[6][1] + w_chl*chl[6][1] + w_vrm*vrm[6][1], 4)
+                    w_Na = round(w_kfs*kfs[6][1] + w_pl*pl[6][1] + w_mnt*mnt[6][2], 4)
+                    w_Mg = round(w_dol*dol[6][2] + w_mgs*mgs[6][2] + w_ilt*ilt[6][2] + w_mnt*mnt[6][3] + w_chl*chl[6][2] + w_vrm*vrm[6][2], 4)
+                    w_Al = round(w_kfs*kfs[6][2] + w_pl*pl[6][2] + w_ilt*ilt[6][3] + w_mnt*mnt[6][4] + w_kln*kln[6][2] + w_chl*chl[6][3] + w_vrm*vrm[6][3], 4)
+                    w_Si = round(w_qz*qz[6][1] + w_kfs*kfs[6][3] + w_pl*pl[6][3] + w_ilt*ilt[6][4] + w_mnt*mnt[6][5] + w_kln*kln[6][3] + w_chl*chl[6][4] + w_vrm*vrm[6][4], 4)
+                    w_S = round(w_org*org[6][4] + w_sul*sul[6][0] + w_anh*anh[6][1] + w_gyp*gyp[6][2] + w_py*py[6][0], 4)
+                    w_K = round(w_kfs*kfs[6][4] + w_ilt*ilt[6][5], 4)
+                    w_Ca = round(w_pl*pl[6][4] + w_cal*cal[6][2] + w_dol*dol[6][3] + w_anh*anh[6][2] + w_gyp*gyp[6][3] + w_mnt*mnt[6][6], 4)
+                    w_Fe = round(w_sd*sd[6][2] + w_py*py[6][1] + w_ilt*ilt[6][6] + w_chl*chl[6][5] + w_vrm*vrm[6][5], 4)
                     sum_conc = round(w_H + w_C + w_N + w_O + w_Na + w_Mg + w_Al + w_Si + w_S + w_K + w_Ca + w_Fe, 4)
                     #
-                    GR = w_org*org[5][0] + w_qz*qz[5][0] + w_cal*cal[5][0] + w_ilt*ilt[5][0] + w_kln*kln[5][0] + w_mnt*mnt[5][0]
-                    #print("sum conc:", sum_conc, "GR", GR)
-                    #
-                    if sum_conc == 1 and GR <= 300:
+                    if sum_conc == 1:
                         concentrations = [abs(w_H), abs(w_C), abs(w_N), abs(w_O), abs(w_Na), abs(w_Mg), abs(w_Al), abs(w_Si), abs(w_S), abs(w_K), abs(w_Ca), abs(w_Fe)]
                         amounts = [abs(w_org), abs(w_sul), abs(w_qz), abs(w_kfs), abs(w_pl), abs(w_cal), abs(w_dol), abs(w_sd), abs(w_mgs), abs(w_anh), abs(w_gyp), abs(w_py), abs(w_ilt), abs(w_mnt), abs(w_kln), abs(w_chl), abs(w_vrm)]
-                        rhoSolid = (w_org*org[2] + w_qz*qz[2] + w_cal*cal[2] + w_ilt*ilt[2] + w_kln*kln[2] + w_mnt*mnt[2])/1000
+                        rhoSolid = (w_org*org[2] + w_sul*sul[2] + w_qz*qz[2] + w_kfs*kfs[2] + w_pl*pl[2] + w_cal*cal[2] + w_dol*dol[2] + w_sd*sd[2] + w_mgs*mgs[2] + w_anh*anh[2] + w_gyp*gyp[2] + w_py*py[2] + w_ilt*ilt[2] + w_mnt*mnt[2] + w_kln*kln[2] + w_chl*chl[2] + w_vrm*vrm[2])/1000
                         condition_2 = False
                         i = 0
                         while condition_2 == False and i < 10:
                             i += 1
-                            phi = rd.uniform(0.0, 0.1)
+                            phi = rd.uniform(0.0, 0.15)
                             rho = (1 - phi)*rhoSolid + phi*water[2]/1000
                             if rho > 2.0:
                                 composition = ["Org", "Sul", "Qz", "Kfs", "Pl", "Cal", "Dol", "Sd", "Mgs", "Anh", "Gyp", "Py", "Ilt", "Mnt", "Kln", "Chl", "Vrm"]
@@ -2177,8 +2186,8 @@ class NAGRA:
         E_bulk = (9*K_bulk*G_bulk)/(3*K_bulk+G_bulk)
         phiD = (rhoSolid - rho) / (rhoSolid - water[2] / 1000)
         phiN = (2 * phi ** 2 - phiD ** 2) ** (0.5)
-        #GR = w_org*org[5][0] + w_qz*qz[5][0] + w_cal*cal[5][0] + w_ilt*ilt[5][0] + w_kln*kln[5][0] + w_mnt*mnt[5][0]
-        PE = w_org*org[5][1] + w_qz*qz[5][1] + w_cal*cal[5][1]  + w_ilt*ilt[5][1] + w_kln*kln[5][1] + w_mnt*mnt[5][1]
+        GR = w_org*org[5][0] + w_sul*sul[5][0] + w_qz*qz[5][0] + w_kfs*kfs[5][0] + w_pl*pl[5][0] + w_cal*cal[5][0] + w_dol*dol[5][0] + w_sd*sd[5][0] + w_mgs*mgs[5][0] + w_anh*anh[5][0] + w_gyp*gyp[5][0] + w_py*py[5][0] + w_ilt*ilt[5][0] + w_mnt*mnt[5][0] + w_kln*kln[5][0] + w_chl*chl[5][0] + w_vrm*vrm[5][0]
+        PE = w_org*org[5][1] + w_sul*sul[5][1] + w_qz*qz[5][1] + w_kfs*kfs[5][1] + w_pl*pl[5][1] + w_cal*cal[5][1] + w_dol*dol[5][1] + w_sd*sd[5][1] + w_mgs*mgs[5][1] + w_anh*anh[5][1] + w_gyp*gyp[5][1] + w_py*py[5][1] + w_ilt*ilt[5][1] + w_mnt*mnt[5][1] + w_kln*kln[5][1] + w_chl*chl[5][1] + w_vrm*vrm[5][1]
         #poisson_seismic = 0.5*(vP**2 - 2*vS**2)/(vP**2 - vS**2)
         #poisson_elastic = (3*K_bulk - 2*G_bulk)/(6*K_bulk + 2*G_bulk)
         poisson_mineralogical = w_org*org[3][3] + w_qz*qz[3][3] + w_cal*cal[3][3] + w_ilt*ilt[3][3] + w_kln*kln[3][3] + w_mnt*mnt[3][3]
