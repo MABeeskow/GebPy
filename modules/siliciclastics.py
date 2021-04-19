@@ -1889,7 +1889,7 @@ class NAGRA:
             if self.w_carb == None and self.w_clay == None and self.w_qzfsp == None and self.amounts == None:
                 #print("Default")
                 # CARBONATES
-                w_carb = round(rd.uniform(0.5, 1.0), 4)
+                w_carb = round(rd.uniform(0.0, 1.0), 4)
                 w_cal2 = rd.uniform(0.5, 1.0)
                 w_dol2 = rd.uniform(0.0, float(1.0-w_cal2))
                 w_sd2 = rd.uniform(0.0, float(1.0-w_cal2-w_dol2))
@@ -1912,7 +1912,7 @@ class NAGRA:
                 w_vrm = round(w_clay*w_vrm2, 4)
                 # QUARZ + FELDSPARS
                 w_qzfsp = round(rd.uniform(0.0, float(1.0-w_carb-w_clay)), 4)
-                w_qz2 = rd.uniform(0.25, 0.75)
+                w_qz2 = rd.uniform(0.25, 1.0)
                 w_kfs2 = rd.uniform(0.0, float(1.0-w_qz2))
                 w_pl2 = 1-w_qz2-w_kfs2
                 w_qz = round(w_qzfsp*w_qz2, 4)
