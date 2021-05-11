@@ -6,7 +6,7 @@
 # Name:		test_minerals.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		04.04.2021
+# Date:		12.05.2021
 
 # -----------------------------------------------
 
@@ -51,3 +51,16 @@ print("Illite:\n", data)
 # Test Vermiculite
 data = minerals.phyllosilicates.vermiculite("")
 print("Vermiculite:\n", data)
+# Test Clays
+data = minerals.phyllosilicates.clay("")
+print("Clays (Ilt,Mnt,Kln):\n", data)
+
+print("")
+## TESTING INOSILICATES
+print("TEST - INOSILICATES")
+# Test Calcium Amphiboles
+data = minerals.inosilicates.amphibole_ca("")
+print("Calcium Amphiboles (Tr,Act):\n", data)
+# Test Pyroxenes
+data = minerals.inosilicates.pyroxene("")
+print("Pyroxene (En,Aug):\n", data)

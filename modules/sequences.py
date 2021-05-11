@@ -1889,3 +1889,68 @@ class SedimentaryBasin:
                         file_basalt.write(str(sequence[i][j][0]) + "," + str(sequence[i][j][1]) + "," + str(sequence[i][j][2]) + "," + str(sequence[i][j][3]) + "," + str(sequence[i][j][4][1][0]) + "," + str(sequence[i][j][4][1][1]) + "," + str(sequence[i][j][4][1][2]) + "," + str(sequence[i][j][4][3][0]) + "," + str(sequence[i][j][4][3][1]) + "," + str(sequence[i][j][4][6][0]) + "," + str(sequence[i][j][4][6][1]) + "," + str(sequence[i][j][4][4][0]) + "," + str(sequence[i][j][4][2][0]) + "," + str(sequence[i][j][4][2][1]) + "," + str(sequence[i][j][4][2][2]) + "," + str(sequence[i][j][4][2][3]) + "," + str(sequence[i][j][4][5]) + "," + str(sequence[i][j][4][8][0]) + "," + str(sequence[i][j][4][8][1]) + "," + str(sequence[i][j][4][8][2]) + "," + str(sequence[i][j][4][8][3]) + "," + str(sequence[i][j][4][8][4]) + "," + str(sequence[i][j][4][8][5]) + "," + str(sequence[i][j][4][8][6]) + "," + str(sequence[i][j][4][8][7]) + "\n")
         #
         return sequence
+#
+class Plutonite:
+    #
+    def __init__(self, actualThickness=0, parts=None, maximum_thickness=None):
+        self.actualThickness = actualThickness
+        self.parts = parts
+        self.maximum_thickness = maximum_thickness
+    #
+    def create_gabbro(self, thickness=None):
+        sequence = []
+        if thickness == None:
+            thickness_max = rd.randint(10, 20)
+        else:
+            thickness_max = thickness
+        #
+        if self.parts == None:
+            d = 1.0
+            self.parts = thickness_max
+        else:
+            d = float(thickness_max/self.parts)
+        #
+        for i in range(self.parts):
+            if i == 0:
+                data = Plutonic("water", actualThickness=self.actualThickness)
+                data_rock = data.create_simple_gabbro()
+                top = self.actualThickness
+                bottom = top + d
+                sequence.append(["gabbro", round(d, 1), round(top, 1), round(bottom, 1), data_rock])
+            else:
+                data = Plutonic("water", actualThickness=self.actualThickness)
+                data_rock = data.create_simple_gabbro(amounts=sequence[-1][-1][8])
+                top = self.actualThickness + i*d
+                bottom = top + d
+                sequence.append(["gabbro", round(d, 1), round(top, 1), round(bottom, 1), data_rock])
+        #
+        return sequence
+    #
+    def create_granite(self, thickness=None):
+        sequence = []
+        if thickness == None:
+            thickness_max = rd.randint(10, 20)
+        else:
+            thickness_max = thickness
+        #
+        if self.parts == None:
+            d = 1.0
+            self.parts = thickness_max
+        else:
+            d = float(thickness_max/self.parts)
+        #
+        for i in range(self.parts):
+            if i == 0:
+                data = Plutonic("water", actualThickness=self.actualThickness)
+                data_rock = data.create_simple_granite()
+                top = self.actualThickness
+                bottom = top + d
+                sequence.append(["granite", round(d, 1), round(top, 1), round(bottom, 1), data_rock])
+            else:
+                data = Plutonic("water", actualThickness=self.actualThickness)
+                data_rock = data.create_simple_granite(amounts=sequence[-1][-1][8])
+                top = self.actualThickness + i*d
+                bottom = top + d
+                sequence.append(["granite", round(d, 1), round(top, 1), round(bottom, 1), data_rock])
+        #
+        return sequence

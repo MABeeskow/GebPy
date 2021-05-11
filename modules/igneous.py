@@ -695,6 +695,7 @@ class Plutonic:
         self.amounts = amounts
         #
         # [chemical formula, molar mass, density, bulk modulus, shear modulus, vP, vS]
+        olivine = minerals.nesosilicates.olivine(self, "olivine")
         quartz = minerals.oxides.quartz("")
         alkalifeldspar = minerals.feldspars.alkalifeldspar(self, "K")
         plagioclase = minerals.feldspars.plagioclase(self, "Na")
@@ -725,7 +726,7 @@ class Plutonic:
                 w_act = round(abs(w_acc*w_amph*rd.uniform(0, 1)), 4)
                 w_tr = round(abs(w_acc*w_amph*rd.uniform(0, (1-w_act))), 4)
                 w_mica = round(w_acc*(1-w_pyr-w_amph), 4)
-                w_bt = round(abs(w_acc*w_mica*rd.uniform(0.5, 1)), 4)
+                w_bt = round(abs(w_acc*w_mica*rd.uniform(0.75, 1)), 4)
                 w_ms = round(abs(w_acc*w_mica*rd.uniform(0, (1-w_bt))), 4)
             elif self.w_Mg != None:
                 w_acc = round(abs(rd.uniform(0.0, 0.05)), 4)
@@ -765,7 +766,7 @@ class Plutonic:
                 w_tr = round(abs(w_acc*w_amph*rd.uniform(0, (1-w_act))), 4)
                 w_pl = round((self.w_Ca - w_act*actinolite[6][4] - w_tr*tremolite[6][4] - w_aug*augite[6][3])/(plagioclase[6][4]), 4)
                 w_mica = round(w_acc*(1-w_amph-w_pyr), 4)
-                w_bt = round(abs(w_acc*w_mica*rd.uniform(0, 1)), 4)
+                w_bt = round(abs(w_acc*w_mica*rd.uniform(0.75, 1)), 4)
                 w_ms = round(abs(w_acc*(w_mica-w_bt)), 4)
                 #
                 w_qz = round(abs(rd.uniform(0.0, 0.2)), 4)
@@ -813,7 +814,8 @@ class Plutonic:
             #print("Amount:", sumMin, "C:", sumConc)
             #
             if sumMin == 1 and sumConc == 1:
-                composition.extend((["Qz", w_qz, round(quartz[1], 2)], ["Kfs", w_kfs, round(alkalifeldspar[1][0], 2), round(alkalifeldspar[1][1], 2)], ["Pl", w_pl, round(plagioclase[1][0], 2), round(plagioclase[1][1], 2)], ["Bt", w_bt, round(biotite[1][0], 2), round(biotite[1][1], 2), round(biotite[1][2], 2)], ["Ms", w_ms, round(muscovite[1], 2)], ["Act", w_act, round(actinolite[1][0], 2), round(actinolite[1][1], 2)], ["Tr", w_tr, round(tremolite[1], 2)], ["Aug", w_aug, round(augite[1][0], 2), round(augite[1][1], 2), round(augite[1][2], 2), round(augite[1][3], 2)]))
+                #composition.extend((["Qz", w_qz, round(quartz[1], 2)], ["Kfs", w_kfs, round(alkalifeldspar[1][0], 2), round(alkalifeldspar[1][1], 2)], ["Pl", w_pl, round(plagioclase[1][0], 2), round(plagioclase[1][1], 2)], ["Bt", w_bt, round(biotite[1][0], 2), round(biotite[1][1], 2), round(biotite[1][2], 2)], ["Ms", w_ms, round(muscovite[1], 2)], ["Act", w_act, round(actinolite[1][0], 2), round(actinolite[1][1], 2)], ["Tr", w_tr, round(tremolite[1], 2)], ["Aug", w_aug, round(augite[1][0], 2), round(augite[1][1], 2), round(augite[1][2], 2), round(augite[1][3], 2)]))
+                composition.extend((["Qz", "Kfs", "Pl", "Bt", "Ms", "Act", "Tr", "Aug"]))
                 concentrations = [w_H, w_O, w_F, w_Na, w_Mg, w_Al, w_Si, w_K, w_Ca, w_Fe]
                 amounts = [w_qz, w_kfs, w_pl, w_bt, w_ms, w_act, w_tr, w_aug]
                 phi_V = geochemistry.Fractions.calculate_volume_fraction(self, mineralogy=mineralogy, w=amounts)

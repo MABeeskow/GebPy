@@ -106,6 +106,7 @@ for i in range(len(data_rocksalt)):
     print(data_rocksalt[i])
 
 print("")
+print(":: IGNEOUS ROCKS ::")
 # Test granite generation within SedimentaryBasin class
 data = sequences.SedimentaryBasin()
 data_granite = data.create_granite(thickness=10)
@@ -120,6 +121,15 @@ for i in range(len(data_basalt)):
     print(data_basalt[i])
 
 print("")
+print(":: IGNEOUS ROCKS (PLUTONITE) ::")
+# Test gabbro generation within SedimentaryBasin class
+data = sequences.Plutonite()
+data_rock = data.create_gabbro(thickness=10)
+for i in range(len(data_rock)):
+    print(data_rock[i])
+
+print("")
+print(":: NAGRA Benken ::")
 # Test rock generation based on the NAGRA Benken dataset
 for i in range(10):
     data = siliciclastics.NAGRA()

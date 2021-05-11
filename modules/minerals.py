@@ -2419,6 +2419,73 @@ class phyllosilicates:
         data.append(composition)
         #
         return data
+    #
+    def clay(self):  # Ilt + Mnt + Kln
+        # Elements
+        hydrogen = elements.H(self)
+        oxygen = elements.O(self)
+        sodium = elements.Na(self)
+        magnesium = elements.Mg(self)
+        aluminium = elements.Al(self)
+        silicon = elements.Si(self)
+        potassium = elements.K(self)
+        calcium = elements.Ca(self)
+        iron = elements.Fe(self)
+        # Minerals
+        ilt = phyllosilicates.illite("")
+        mnt = phyllosilicates.montmorillonite("")
+        kln = phyllosilicates.kaolinite("")
+        #
+        data = []
+        #
+        mineral = "Clay"
+        #
+        # Molar mass
+        x = rd.uniform(0.0, 1.0)
+        y = rd.uniform(0.0, float(1-x))
+        M = x*ilt[1] + y*mnt[1][0] + (1-x-y)*kln[1]
+        # Density
+        rho = x*ilt[2] + y*mnt[2] + (1-x-y)*kln[2]
+        # Bulk modulus
+        K = (x*ilt[3][0] + y*mnt[3][0] + (1-x-y)*kln[3][0])*10**9
+        # Shear modulus
+        G = (x*ilt[3][1] + y*mnt[3][1] + (1-x-y)*kln[3][1])*10**9
+        # Young's modulus
+        E = (9*K*G)/(3*K + G)
+        # Poisson's ratio
+        nu = (3*K - 2*G)/(2*(3*K + G))
+        # vP/vS
+        vPvS = ((K + 4/3*G)/G)**0.5
+        # P-wave velocity
+        vP = ((K + 4/3*G)/rho)**0.5
+        # S-wave velocity
+        vS = (G/rho)**0.5
+        # Gamma ray
+        GR = x*ilt[5][0] + y*mnt[5][0] + (1-x-y)*kln[5][0]
+        # Photoelectricity
+        element = [hydrogen, oxygen, sodium, magnesium, aluminium, silicon, potassium, calcium, iron]
+        w_H = round(x*ilt[6][0] + y*mnt[6][0] + (1-x-y)*kln[6][0], 4)
+        w_O = round(x*ilt[6][1] + y*mnt[6][1] + (1-x-y)*kln[6][1], 4)
+        w_Na = round(y*mnt[6][2], 4)
+        w_Mg = round(x*ilt[6][2] + y*mnt[6][3], 4)
+        w_Al = round(x*ilt[6][3] + y*mnt[6][4] + (1-x-y)*kln[6][2], 4)
+        w_Si = round(x*ilt[6][4] + y*mnt[6][5] + (1-x-y)*kln[6][3], 4)
+        w_K = round(x*ilt[6][5], 4)
+        w_Ca = round(y*mnt[6][6], 4)
+        w_Fe = round(x*ilt[6][6], 4)
+        composition = [w_H, w_O, w_Na, w_Mg, w_Al, w_Si, w_K, w_Ca, w_Fe]
+        PE = bg.calculate_pe(self, x_list=composition, elements_list=element)
+        U = PE*rho*10**(-3)
+        #
+        data.append(mineral)
+        data.append(round(M, 2))
+        data.append(round(rho, 1))
+        data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 2), round(vPvS, 2)])
+        data.append([round(vP, 1), round(vS, 1)])
+        data.append([round(GR, 2), round(PE, 2), round(U, 2)])
+        data.append(composition)
+        #
+        return data
 #
 #################
 # BIOTITE GROUP #
@@ -3537,6 +3604,7 @@ class inosilicates:
         w_Si = round(2*silicon[2]/M, 4)
         w_O = round(6*oxygen[2]/M, 4)
         weights = [w_Mg, w_Si, w_O]
+        composition = [w_O, w_Mg, w_Si]
         PE = bg.calculate_pe(self, x_list=weights, elements_list=element)
         U = PE*rho*10**(-3)
         #
@@ -3546,6 +3614,7 @@ class inosilicates:
         data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 2), round(vPvS, 2)])
         data.append([round(vP, 1), round(vS, 1)])
         data.append([round(GR, 2), round(PE, 2), round(U, 2)])
+        data.append(composition)
         #
         return data
     #
@@ -3989,6 +4058,122 @@ class inosilicates:
         data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 2), round(vPvS, 2)])
         data.append([round(vP, 1), round(vS, 1)])
         data.append([round(GR, 2), round(PE, 2), round(U, 2)])
+        #
+        return data
+    #
+    def amphibole_ca(self):  # Tr + Act
+        # Elements
+        hydrogen = elements.H(self)
+        oxygen = elements.O(self)
+        magnesium = elements.Mg(self)
+        silicon = elements.Si(self)
+        calcium = elements.Ca(self)
+        iron = elements.Fe(self)
+        # Minerals
+        tr = inosilicates.tremolite("")
+        act = inosilicates.actinolite("")
+        #
+        data = []
+        #
+        mineral = "Amph"
+        #
+        # Molar mass
+        x = rd.uniform(0.1, 0.4)
+        M = x*tr[1] + (1-x)*act[1][0]
+        # Density
+        rho = x*tr[2] + (1-x)*act[2]
+        # Bulk modulus
+        K = (x*tr[3][0] + (1-x)*act[3][0])*10**9
+        # Shear modulus
+        G = (x*tr[3][1] + (1-x)*act[3][1])*10**9
+        # Young's modulus
+        E = (9*K*G)/(3*K + G)
+        # Poisson's ratio
+        nu = (3*K - 2*G)/(2*(3*K + G))
+        # vP/vS
+        vPvS = ((K + 4/3*G)/G)**0.5
+        # P-wave velocity
+        vP = ((K + 4/3*G)/rho)**0.5
+        # S-wave velocity
+        vS = (G/rho)**0.5
+        # Gamma ray
+        GR = x*tr[5][0] + (1-x)*act[5][0]
+        # Photoelectricity
+        element = [hydrogen, oxygen, magnesium, silicon, calcium, iron]
+        w_H = round(x*tr[6][0] + (1-x)*act[6][0], 4)
+        w_O = round(x*tr[6][1] + (1-x)*act[6][1], 4)
+        w_Mg = round(x*tr[6][2] + (1-x)*act[6][2], 4)
+        w_Si = round(x*tr[6][3] + (1-x)*act[6][3], 4)
+        w_Ca = round(x*tr[6][4] + (1-x)*act[6][4], 4)
+        w_Fe = round((1-x)*act[6][5], 4)
+        composition = [w_H, w_O, w_Mg, w_Si, w_Ca, w_Fe]
+        PE = bg.calculate_pe(self, x_list=composition, elements_list=element)
+        U = PE*rho*10**(-3)
+        #
+        data.append(mineral)
+        data.append(round(M, 2))
+        data.append(round(rho, 1))
+        data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 2), round(vPvS, 2)])
+        data.append([round(vP, 1), round(vS, 1)])
+        data.append([round(GR, 2), round(PE, 2), round(U, 2)])
+        data.append(composition)
+        #
+        return data
+    #
+    def pyroxene(self):  # Ens + Aug
+        # Elements
+        oxygen = elements.O(self)
+        magnesium = elements.Mg(self)
+        silicon = elements.Si(self)
+        calcium = elements.Ca(self)
+        iron = elements.Fe(self)
+        # Minerals
+        en = inosilicates.enstatite("")
+        aug = inosilicates.augite("")
+        #
+        data = []
+        #
+        mineral = "Pyx"
+        #
+        # Molar mass
+        x = rd.uniform(0.0, 0.3)
+        M = x*en[1] + (1-x)*aug[1][0]
+        # Density
+        rho = x*en[2] + (1-x)*aug[2]
+        # Bulk modulus
+        K = (x*en[3][0] + (1-x)*aug[3][0])*10**9
+        # Shear modulus
+        G = (x*en[3][1] + (1-x)*aug[3][1])*10**9
+        # Young's modulus
+        E = (9*K*G)/(3*K + G)
+        # Poisson's ratio
+        nu = (3*K - 2*G)/(2*(3*K + G))
+        # vP/vS
+        vPvS = ((K + 4/3*G)/G)**0.5
+        # P-wave velocity
+        vP = ((K + 4/3*G)/rho)**0.5
+        # S-wave velocity
+        vS = (G/rho)**0.5
+        # Gamma ray
+        GR = x*en[5][0] + (1-x)*aug[5][0]
+        # Photoelectricity
+        element = [oxygen, magnesium, silicon, calcium, iron]
+        w_O = round(x*en[6][0] + (1-x)*aug[6][0], 4)
+        w_Mg = round(x*en[6][1] + (1-x)*aug[6][1], 4)
+        w_Si = round(x*en[6][2] + (1-x)*aug[6][2], 4)
+        w_Ca = round((1-x)*aug[6][3], 4)
+        w_Fe = round((1-x)*aug[6][4], 4)
+        composition = [w_O, w_Mg, w_Si, w_Ca, w_Fe]
+        PE = bg.calculate_pe(self, x_list=composition, elements_list=element)
+        U = PE*rho*10**(-3)
+        #
+        data.append(mineral)
+        data.append(round(M, 2))
+        data.append(round(rho, 1))
+        data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 2), round(vPvS, 2)])
+        data.append([round(vP, 1), round(vS, 1)])
+        data.append([round(GR, 2), round(PE, 2), round(U, 2)])
+        data.append(composition)
         #
         return data
     #
