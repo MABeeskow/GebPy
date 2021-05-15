@@ -58,6 +58,15 @@ print("Clays (Ilt,Mnt,Kln):\n", data)
 print("")
 ## TESTING INOSILICATES
 print("TEST - INOSILICATES")
+# Test Riebeckite
+data = minerals.inosilicates.riebeckite("")
+print("Riebeckite:\n", data)
+# Test Arfvedsonite
+data = minerals.inosilicates.arfvedsonite("")
+print("Arfvedsonite:\n", data)
+# Test Sodium Amphiboles
+data = minerals.inosilicates.amphibole_na("")
+print("Sodium Amphiboles (Rbk,Arf):\n", data)
 # Test Calcium Amphiboles
 data = minerals.inosilicates.amphibole_ca("")
 print("Calcium Amphiboles (Tr,Act):\n", data)

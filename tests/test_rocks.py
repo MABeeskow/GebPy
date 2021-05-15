@@ -122,9 +122,21 @@ for i in range(len(data_basalt)):
 
 print("")
 print(":: IGNEOUS ROCKS (PLUTONITE) ::")
-# Test gabbro generation within SedimentaryBasin class
+# Test granite generation within Plutonite class
+data = sequences.Plutonite()
+data_rock = data.create_granite(thickness=10)
+for i in range(len(data_rock)):
+    print(data_rock[i])
+print("")
+# Test gabbro generation within Plutonite class
 data = sequences.Plutonite()
 data_rock = data.create_gabbro(thickness=10)
+for i in range(len(data_rock)):
+    print(data_rock[i])
+print("")
+# Test felsic rock generation within Plutonite class
+data = sequences.Plutonite()
+data_rock = data.create_felsic(thickness=10)
 for i in range(len(data_rock)):
     print(data_rock[i])
 
