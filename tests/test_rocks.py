@@ -145,18 +145,3 @@ data = sequences.Plutonite()
 data_rock = data.create_intermediate(thickness=10)
 for i in range(len(data_rock)):
     print(data_rock[i])
-
-print("")
-print(":: NAGRA Benken ::")
-# Test rock generation based on the NAGRA Benken dataset
-for i in range(10):
-    data = siliciclastics.NAGRA()
-    data_benken = data.create_benken_rocks("")
-    print(data_benken)
-
-print("")
-# Test rock generation based on the NAGRA Benken dataset within SedimentaryBasin class
-data = sequences.SedimentaryBasin()
-data_benken = data.create_benken(thickness=10)
-for i in range(len(data_benken)):
-    print(data_benken[i])

@@ -17,7 +17,7 @@ from numpy import round
 import random as rd
 from random import randint
 from modules.carbonates import limestone, dolomite
-from modules.siliciclastics import sandstone, shale, ore, Soil, NAGRA
+from modules.siliciclastics import sandstone, shale, ore, Soil
 from modules.igneous import plutonic, volcanic, Plutonic, Volcanic
 from modules.evaporites import evaporites, Evaporites
 from modules import minerals
@@ -1642,35 +1642,6 @@ class SedimentaryBasin:
                 top = self.actualThickness + i*d
                 bottom = top + d
                 sequence.append(["basalt", round(d, 1), round(top, 1), round(bottom, 1), data_basalt])
-        #
-        return sequence
-    #
-    def create_benken(self, thickness=None):
-        sequence = []
-        if thickness == None:
-            thickness_max = rd.randint(5, 20)
-        else:
-            thickness_max = thickness
-        #
-        if self.parts == None:
-            d = 1.0
-            self.parts = thickness_max
-        else:
-            d = float(thickness_max/self.parts)
-        #
-        for i in range(self.parts):
-            if i == 0:
-                data = NAGRA()
-                data_benken = data.create_benken_rocks()
-                top = self.actualThickness
-                bottom = top + d
-                sequence.append(["BEN", round(d, 1), round(top, 1), round(bottom, 1), data_benken])
-            else:
-                data = NAGRA()
-                data_benken = data.create_benken_rocks(amounts=sequence[-1][-1][8])
-                top = self.actualThickness + i*d
-                bottom = top + d
-                sequence.append(["BEN", round(d, 1), round(top, 1), round(bottom, 1), data_benken])
         #
         return sequence
     #
