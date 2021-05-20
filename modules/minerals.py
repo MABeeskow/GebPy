@@ -2996,7 +2996,7 @@ class nesosilicates:
     def __init__(self):
         pass
     #
-    def olivine(self, keyword):  # (Mg,Fe,Mn)2SiO4
+    def olivine(self, keyword="olivine"):  # (Mg,Fe,Mn)2SiO4
         # [symbol, atomic number, atomic mass, molar volume, density, bulk modulus, shear modulus, young's modulus, vP, vS]
         magnesium = elements.Mg(self)
         iron = elements.Fe(self)
@@ -3010,23 +3010,42 @@ class nesosilicates:
             x_Mg = round(rd.uniform(0.5, 1), 2)
             x_Fe = round(rd.uniform(0, float(1-x_Mg)), 2)
             x_Mn = round(1-x_Mg-x_Fe, 2)
+            mineral = "Ol"
         elif self.keyword == "Mg":
             x_Mg = round(rd.uniform(0.68, 1), 2)
             x_Fe = round(rd.uniform(0, float(1 - x_Mg)), 2)
             x_Mn = round(1-x_Mg-x_Fe, 2)
+            mineral = "Ol"
         elif self.keyword == "Fe":
             x_Fe = round(rd.uniform(0.68, 1), 2)
             x_Mg = round(rd.uniform(0, float(1 - x_Fe)), 2)
             x_Mn = round(1-x_Mg-x_Fe, 2)
+            mineral = "Ol"
         elif self.keyword == "Mn":
             x_Mn = round(rd.uniform(0.68, 1), 2)
             x_Mg = round(rd.uniform(0, float(1 - x_Mn)), 2)
             x_Fe = round(1-x_Mn-x_Mg, 2)
+            mineral = "Ol"
+        elif self.keyword == "None":
+            x = round(rd.uniform(0, 1), 2)
+            if 0 <= x < 0.5:
+                x_Mg = round(rd.uniform(0.5, 1), 2)
+                x_Fe = round(rd.uniform(0, float(1 - x_Mg)), 2)
+                x_Mn = round(1-x_Mg-x_Fe, 2)
+                mineral = "Fo"
+            elif 0.5 <= x < 0.8:
+                x_Fe = round(rd.uniform(0.5, 1), 2)
+                x_Mg = round(rd.uniform(0, float(1 - x_Fe)), 2)
+                x_Mn = round(1-x_Mg-x_Fe, 2)
+                mineral = "Fa"
+            elif 0.8 <= x <= 1.0:
+                x_Mn = round(rd.uniform(0.5, 1), 2)
+                x_Mg = round(rd.uniform(0, float(1 - x_Mn)), 2)
+                x_Fe = round(1-x_Mn-x_Mg, 2)
+                mineral = "Tep"
         #
         # data = [ mineral, molar mass, density, [K, G, E, nu, vP/vS], [vP, vS], [GR, PE]]
         data = []
-        #
-        mineral = "Ol"
         #
         # Molar mass
         M = round(2*(x_Mg*magnesium[2]+x_Fe*iron[2]+x_Mn*manganese[2]) + silicon[2] + 4*oxygen[2], 3)
@@ -3060,7 +3079,7 @@ class nesosilicates:
         # Young's modulus
         E = (9*K*G)/(3*K + G)
         # Poisson's ratio
-        nu = (3*K - 2*G)/(2*(3*K + G))
+        nu = (3*K - 2*G)/(6*K + 2*G)
         # vP/vS
         vPvS = ((K + 4/3*G)/G)**0.5
         # P-wave velocity
@@ -3088,7 +3107,7 @@ class nesosilicates:
         data.append(mineral)
         data.append([round(M, 2), x_Mg, x_Fe, x_Mn])
         data.append(round(rho, 1))
-        data.append([round(K * 10 ** (-9), 2), round(G * 10 ** (-9), 2), round(E * 10 ** (-9), 2), round(nu, 2), round(vPvS, 2)])
+        data.append([round(K * 10 ** (-9), 2), round(G * 10 ** (-9), 2), round(E * 10 ** (-9), 2), round(nu, 4), round(vPvS, 2)])
         data.append([round(vP, 1), round(vS, 1)])
         data.append([round(GR, 2), round(PE, 2), round(U, 2)])
         data.append(weights)
@@ -3943,6 +3962,7 @@ class inosilicates:
         w_Si = round(2*silicon[2]/M, 4)
         w_O = round(6*oxygen[2]/M, 4)
         weights = [w_Ca, w_Mg, w_Si, w_O]
+        composition = [w_O, w_Mg, w_Si, w_Ca]
         PE = bg.calculate_pe(self, x_list=weights, elements_list=element)
         U = PE*rho*10**(-3)
         #
@@ -3952,6 +3972,7 @@ class inosilicates:
         data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 2), round(vPvS, 2)])
         data.append([round(vP, 1), round(vS, 1)])
         data.append([round(GR, 2), round(PE, 2), round(U, 2)])
+        data.append(composition)
         #
         return data
     #
@@ -4336,6 +4357,63 @@ class inosilicates:
         w_Si = round(x*en[6][2] + (1-x)*aug[6][2], 4)
         w_Ca = round((1-x)*aug[6][3], 4)
         w_Fe = round((1-x)*aug[6][4], 4)
+        composition = [w_O, w_Mg, w_Si, w_Ca, w_Fe]
+        PE = bg.calculate_pe(self, x_list=composition, elements_list=element)
+        U = PE*rho*10**(-3)
+        #
+        data.append(mineral)
+        data.append(round(M, 2))
+        data.append(round(rho, 1))
+        data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 2), round(vPvS, 2)])
+        data.append([round(vP, 1), round(vS, 1)])
+        data.append([round(GR, 2), round(PE, 2), round(U, 2)])
+        data.append(composition)
+        #
+        return data
+    #
+    def pyroxene_ca(self):  # Aug + Di
+        # Elements
+        oxygen = elements.O(self)
+        magnesium = elements.Mg(self)
+        silicon = elements.Si(self)
+        calcium = elements.Ca(self)
+        iron = elements.Fe(self)
+        # Minerals
+        augite = inosilicates.augite("")
+        diopside = inosilicates.diopside("")
+        #
+        data = []
+        #
+        mineral = "Pyx"
+        #
+        # Molar mass
+        x = rd.uniform(0.5, 1.0)
+        M = x*augite[1][0] + (1-x)*diopside[1]
+        # Density
+        rho = x*augite[2] + (1-x)*diopside[2]
+        # Bulk modulus
+        K = (x*augite[3][0] + (1-x)*diopside[3][0])*10**9
+        # Shear modulus
+        G = (x*augite[3][1] + (1-x)*diopside[3][1])*10**9
+        # Young's modulus
+        E = (9*K*G)/(3*K + G)
+        # Poisson's ratio
+        nu = (3*K - 2*G)/(2*(3*K + G))
+        # vP/vS
+        vPvS = ((K + 4/3*G)/G)**0.5
+        # P-wave velocity
+        vP = ((K + 4/3*G)/rho)**0.5
+        # S-wave velocity
+        vS = (G/rho)**0.5
+        # Gamma ray
+        GR = x*augite[5][0] + (1-x)*diopside[5][0]
+        # Photoelectricity
+        element = [oxygen, magnesium, silicon, calcium, iron]
+        w_O = round(x*augite[6][0] + (1-x)*diopside[6][0], 4)
+        w_Mg = round(x*augite[6][1] + (1-x)*diopside[6][1], 4)
+        w_Si = round(x*augite[6][2] + (1-x)*diopside[6][2], 4)
+        w_Ca = round(x*augite[6][3] + (1-x)*diopside[6][3], 4)
+        w_Fe = round(x*augite[6][4], 4)
         composition = [w_O, w_Mg, w_Si, w_Ca, w_Fe]
         PE = bg.calculate_pe(self, x_list=composition, elements_list=element)
         U = PE*rho*10**(-3)

@@ -139,6 +139,12 @@ data = sequences.Plutonite()
 data_rock = data.create_felsic(thickness=10)
 for i in range(len(data_rock)):
     print(data_rock[i])
+print("")
+# Test intermediate rock generation within Plutonite class
+data = sequences.Plutonite()
+data_rock = data.create_intermediate(thickness=10)
+for i in range(len(data_rock)):
+    print(data_rock[i])
 
 print("")
 print(":: NAGRA Benken ::")

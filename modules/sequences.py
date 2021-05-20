@@ -1983,3 +1983,32 @@ class Plutonite:
                 sequence.append(["felsic rock", round(d, 1), round(top, 1), round(bottom, 1), data_rock])
         #
         return sequence
+    #
+    def create_intermediate(self, thickness=None):
+        sequence = []
+        if thickness == None:
+            thickness_max = rd.randint(10, 20)
+        else:
+            thickness_max = thickness
+        #
+        if self.parts == None:
+            d = 1.0
+            self.parts = thickness_max
+        else:
+            d = float(thickness_max/self.parts)
+        #
+        for i in range(self.parts):
+            if i == 0:
+                data = Plutonic("water", actualThickness=self.actualThickness)
+                data_rock = data.create_intermediate()
+                top = self.actualThickness
+                bottom = top + d
+                sequence.append(["intermediate rock", round(d, 1), round(top, 1), round(bottom, 1), data_rock])
+            else:
+                data = Plutonic("water", actualThickness=self.actualThickness)
+                data_rock = data.create_intermediate(amounts=sequence[-1][-1][8])
+                top = self.actualThickness + i*d
+                bottom = top + d
+                sequence.append(["intermediate rock", round(d, 1), round(top, 1), round(bottom, 1), data_rock])
+        #
+        return sequence
