@@ -1645,7 +1645,10 @@ class SedimentaryBasin:
         #
         return sequence
     #
-    def create_benken(self, thickness=None):
+    def create_benken(self, w_carb=None, w_clay=None, w_qzfsp=None, thickness=None):
+        self.w_carb = w_carb
+        self.w_clay = w_clay
+        self.w_qzfsp = w_qzfsp
         sequence = []
         if thickness == None:
             thickness_max = rd.randint(5, 20)
@@ -1661,7 +1664,7 @@ class SedimentaryBasin:
         for i in range(self.parts):
             if i == 0:
                 data = NAGRA()
-                data_benken = data.create_benken_rocks()
+                data_benken = data.create_benken_rocks(w_carb=self.w_carb, w_clay=self.w_clay, w_qzfsp=self.w_qzfsp)
                 top = self.actualThickness
                 bottom = top + d
                 sequence.append(["BEN", round(d, 1), round(top, 1), round(bottom, 1), data_benken])

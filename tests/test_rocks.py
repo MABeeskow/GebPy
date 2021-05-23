@@ -151,7 +151,7 @@ print(":: NAGRA Benken ::")
 # Test rock generation based on the NAGRA Benken dataset
 for i in range(10):
     data = siliciclastics.NAGRA()
-    data_benken = data.create_benken_rocks("")
+    data_benken = data.create_benken_rocks()
     print(data_benken)
 
 print("")

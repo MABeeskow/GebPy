@@ -1888,38 +1888,56 @@ class NAGRA:
         while condition == False:
             if self.w_carb == None and self.w_clay == None and self.w_qzfsp == None and self.amounts == None:
                 #print("Default")
-                # CARBONATES
-                w_carb = round(rd.uniform(0.0, 1.0), 4)
-                w_cal2 = rd.uniform(0.5, 1.0)
-                w_dol2 = rd.uniform(0.0, float(1.0-w_cal2))
-                w_sd2 = rd.uniform(0.0, float(1.0-w_cal2-w_dol2))
-                w_mgs2 = 1-w_cal2-w_dol2-w_sd2
-                w_cal = round(w_carb*w_cal2, 4)
-                w_dol = round(w_carb*w_dol2, 4)
-                w_sd = round(w_carb*w_sd2, 4)
-                w_mgs = round(w_carb*w_mgs2, 4)
-                # CLAYS
-                w_clay = round(rd.uniform(0.0, float(1.0-w_carb)), 4)
-                w_ilt2 = rd.uniform(0.5, 1.0)
-                w_mnt2 = rd.uniform(0.0, float(1.0-w_ilt2))
-                w_kln2 = rd.uniform(0.0, float(1.0-w_ilt2-w_mnt2))
-                w_chl2 = rd.uniform(0.0, float(1.0-w_ilt2-w_mnt2-w_kln2))
-                w_vrm2 = 1-w_ilt2-w_mnt2-w_kln2-w_chl2
-                w_ilt = round(w_clay*w_ilt2, 4)
-                w_mnt = round(w_clay*w_mnt2, 4)
-                w_kln = round(w_clay*w_kln2, 4)
-                w_chl = round(w_clay*w_chl2, 4)
-                w_vrm = round(w_clay*w_vrm2, 4)
-                # QUARZ + FELDSPARS
-                w_qzfsp = round(rd.uniform(0.0, float(1.0-w_carb-w_clay)), 4)
-                w_qz2 = rd.uniform(0.25, 1.0)
-                w_kfs2 = rd.uniform(0.0, float(1.0-w_qz2))
-                w_pl2 = 1-w_qz2-w_kfs2
-                w_qz = round(w_qzfsp*w_qz2, 4)
-                w_kfs = round(w_qzfsp*w_kfs2, 4)
-                w_pl = round(w_qzfsp*w_pl2, 4)
+                condition_main = False
+                while condition_main == False:
+                    magicnumber = rd.uniform(0, 1)
+                    if 0 <= magicnumber < 0.4:
+                        w_carb = round(rd.uniform(0.5, 0.9), 4)
+                        w_qzfsp = round(rd.uniform(0.0, float(1.0-w_carb)), 4)
+                        w_clay = round(rd.uniform(0.0, float(1.0-w_carb-w_qzfsp)), 4)
+                    elif 0.4 <= magicnumber < 0.7:
+                        w_qzfsp = round(rd.uniform(0.5, 0.9), 4)
+                        w_clay = round(rd.uniform(0.0, float(1.0-w_qzfsp)), 4)
+                        w_carb = round(rd.uniform(0.0, float(1.0-w_qzfsp-w_clay)), 4)
+                    elif 0.7 <= magicnumber <= 1.0:
+                        w_clay = round(rd.uniform(0.5, 0.9), 4)
+                        w_qzfsp = round(rd.uniform(0.0, float(1.0-w_clay)), 4)
+                        w_carb = round(rd.uniform(0.0, float(1.0-w_clay-w_qzfsp)), 4)
+                    # CARBONATES
+                    #w_carb = round(rd.uniform(0.0, 1.0), 4)
+                    w_cal2 = rd.uniform(0.5, 1.0)
+                    w_dol2 = rd.uniform(0.0, float(1.0-w_cal2))
+                    w_sd2 = rd.uniform(0.0, float(1.0-w_cal2-w_dol2))
+                    w_mgs2 = 1-w_cal2-w_dol2-w_sd2
+                    w_cal = round(w_carb*w_cal2, 4)
+                    w_dol = round(w_carb*w_dol2, 4)
+                    w_sd = round(w_carb*w_sd2, 4)
+                    w_mgs = round(w_carb*w_mgs2, 4)
+                    # CLAYS
+                    #w_clay = round(rd.uniform(0.0, float(1.0-w_carb)), 4)
+                    w_ilt2 = rd.uniform(0.5, 1.0)
+                    w_mnt2 = rd.uniform(0.0, float(1.0-w_ilt2))
+                    w_kln2 = rd.uniform(0.0, float(1.0-w_ilt2-w_mnt2))
+                    w_chl2 = rd.uniform(0.0, float(1.0-w_ilt2-w_mnt2-w_kln2))
+                    w_vrm2 = 1-w_ilt2-w_mnt2-w_kln2-w_chl2
+                    w_ilt = round(w_clay*w_ilt2, 4)
+                    w_mnt = round(w_clay*w_mnt2, 4)
+                    w_kln = round(w_clay*w_kln2, 4)
+                    w_chl = round(w_clay*w_chl2, 4)
+                    w_vrm = round(w_clay*w_vrm2, 4)
+                    # QUARZ + FELDSPARS
+                    #w_qzfsp = round(rd.uniform(0.8*float(1.0-w_carb-w_clay), float(1.0-w_carb-w_clay)), 4)
+                    w_qz2 = rd.uniform(0.25, 1.0)
+                    w_kfs2 = rd.uniform(0.0, float(1.0-w_qz2))
+                    w_pl2 = 1-w_qz2-w_kfs2
+                    w_qz = round(w_qzfsp*w_qz2, 4)
+                    w_kfs = round(w_qzfsp*w_kfs2, 4)
+                    w_pl = round(w_qzfsp*w_pl2, 4)
+                    w_main = w_carb + w_clay + w_qzfsp
+                    if w_main > 0.95:
+                        condition_main = True
                 # RESIDUALS
-                w_res = round(rd.uniform(0.0, float(1.0-w_carb-w_clay-w_qzfsp)), 4)
+                w_res = round(1.0-w_carb-w_clay-w_qzfsp, 4)
                 w_org2 = rd.uniform(0.25, 0.75)
                 w_sul2 = rd.uniform(0.0, 0.02)
                 w_anh2 = rd.uniform(0.0, float(1.0-w_org2-w_sul2))
@@ -1933,7 +1951,7 @@ class NAGRA:
             elif self.w_carb != None:
                 #print("w_carb != None")
                 # CARBONATES
-                w_carb = round(rd.uniform(0.7, 1.0), 4)
+                w_carb = self.w_carb
                 w_cal2 = rd.uniform(0.5, 1.0)
                 w_dol2 = rd.uniform(0.0, float(1.0-w_cal2))
                 w_sd2 = rd.uniform(0.0, float(1.0-w_cal2-w_dol2))
@@ -1976,18 +1994,8 @@ class NAGRA:
                 w_py = round(w_res*w_py2, 4)
             elif self.w_clay != None:
                 #print("w_clay != None")
-                # CARBONATES
-                w_carb = round(rd.uniform(0.7, 1.0), 4)
-                w_cal2 = rd.uniform(0.5, 1.0)
-                w_dol2 = rd.uniform(0.0, float(1.0-w_cal2))
-                w_sd2 = rd.uniform(0.0, float(1.0-w_cal2-w_dol2))
-                w_mgs2 = 1-w_cal2-w_dol2-w_sd2
-                w_cal = round(w_carb*w_cal2, 4)
-                w_dol = round(w_carb*w_dol2, 4)
-                w_sd = round(w_carb*w_sd2, 4)
-                w_mgs = round(w_carb*w_mgs2, 4)
                 # CLAYS
-                w_clay = round(rd.uniform(0.0, float(1.0-w_carb)), 4)
+                w_clay = self.w_clay
                 w_ilt2 = rd.uniform(0.5, 1.0)
                 w_mnt2 = rd.uniform(0.0, float(1.0-w_ilt2))
                 w_kln2 = rd.uniform(0.0, float(1.0-w_ilt2-w_mnt2))
@@ -1999,13 +2007,23 @@ class NAGRA:
                 w_chl = round(w_clay*w_chl2, 4)
                 w_vrm = round(w_clay*w_vrm2, 4)
                 # QUARZ + FELDSPARS
-                w_qzfsp = round(rd.uniform(0.0, float(1.0-w_carb-w_clay)), 4)
+                w_qzfsp = round(rd.uniform(0.0, float(1.0-w_clay)), 4)
                 w_qz2 = rd.uniform(0.25, 0.75)
                 w_kfs2 = rd.uniform(0.0, float(1.0-w_qz2))
                 w_pl2 = 1-w_qz2-w_kfs2
                 w_qz = round(w_qzfsp*w_qz2, 4)
                 w_kfs = round(w_qzfsp*w_kfs2, 4)
                 w_pl = round(w_qzfsp*w_pl2, 4)
+                # CARBONATES
+                w_carb = round(rd.uniform(0.0, float(1.0-w_clay-w_qzfsp)), 4)
+                w_cal2 = rd.uniform(0.5, 1.0)
+                w_dol2 = rd.uniform(0.0, float(1.0-w_cal2))
+                w_sd2 = rd.uniform(0.0, float(1.0-w_cal2-w_dol2))
+                w_mgs2 = 1-w_cal2-w_dol2-w_sd2
+                w_cal = round(w_carb*w_cal2, 4)
+                w_dol = round(w_carb*w_dol2, 4)
+                w_sd = round(w_carb*w_sd2, 4)
+                w_mgs = round(w_carb*w_mgs2, 4)
                 # RESIDUALS
                 w_res = round(rd.uniform(0.0, float(1.0-w_carb-w_clay-w_qzfsp)), 4)
                 w_org2 = rd.uniform(0.25, 0.75)
@@ -2019,19 +2037,17 @@ class NAGRA:
                 w_gyp = round(w_res*w_gyp2, 4)
                 w_py = round(w_res*w_py2, 4)
             elif self.w_qzfsp != None:
-                #print("w_qzfsp != None")
-                # CARBONATES
-                w_carb = round(rd.uniform(0.7, 1.0), 4)
-                w_cal2 = rd.uniform(0.5, 1.0)
-                w_dol2 = rd.uniform(0.0, float(1.0-w_cal2))
-                w_sd2 = rd.uniform(0.0, float(1.0-w_cal2-w_dol2))
-                w_mgs2 = 1-w_cal2-w_dol2-w_sd2
-                w_cal = round(w_carb*w_cal2, 4)
-                w_dol = round(w_carb*w_dol2, 4)
-                w_sd = round(w_carb*w_sd2, 4)
-                w_mgs = round(w_carb*w_mgs2, 4)
+                #print("w_qzfsp != None", self.w_qzfsp)
+                # QUARZ + FELDSPARS
+                w_qzfsp = self.w_qzfsp
+                w_qz2 = rd.uniform(0.25, 0.5)
+                w_kfs2 = rd.uniform(0.0, float(1.0-w_qz2))
+                w_pl2 = 1-w_qz2-w_kfs2
+                w_qz = round(w_qzfsp*w_qz2, 4)
+                w_kfs = round(w_qzfsp*w_kfs2, 4)
+                w_pl = round(w_qzfsp*w_pl2, 4)
                 # CLAYS
-                w_clay = round(rd.uniform(0.0, float(1.0-w_carb)), 4)
+                w_clay = round(rd.uniform(0.0, float(1.0-w_qzfsp)), 4)
                 w_ilt2 = rd.uniform(0.5, 1.0)
                 w_mnt2 = rd.uniform(0.0, float(1.0-w_ilt2))
                 w_kln2 = rd.uniform(0.0, float(1.0-w_ilt2-w_mnt2))
@@ -2042,14 +2058,16 @@ class NAGRA:
                 w_kln = round(w_clay*w_kln2, 4)
                 w_chl = round(w_clay*w_chl2, 4)
                 w_vrm = round(w_clay*w_vrm2, 4)
-                # QUARZ + FELDSPARS
-                w_qzfsp = round(rd.uniform(0.0, float(1.0-w_carb-w_clay)), 4)
-                w_qz2 = rd.uniform(0.25, 0.75)
-                w_kfs2 = rd.uniform(0.0, float(1.0-w_qz2))
-                w_pl2 = 1-w_qz2-w_kfs2
-                w_qz = round(w_qzfsp*w_qz2, 4)
-                w_kfs = round(w_qzfsp*w_kfs2, 4)
-                w_pl = round(w_qzfsp*w_pl2, 4)
+                # CARBONATES
+                w_carb = round(rd.uniform(0.0, float(1.0-w_qzfsp-w_clay)), 4)
+                w_cal2 = rd.uniform(0.5, 1.0)
+                w_dol2 = rd.uniform(0.0, float(1.0-w_cal2))
+                w_sd2 = rd.uniform(0.0, float(1.0-w_cal2-w_dol2))
+                w_mgs2 = 1-w_cal2-w_dol2-w_sd2
+                w_cal = round(w_carb*w_cal2, 4)
+                w_dol = round(w_carb*w_dol2, 4)
+                w_sd = round(w_carb*w_sd2, 4)
+                w_mgs = round(w_carb*w_mgs2, 4)
                 # RESIDUALS
                 w_res = round(rd.uniform(0.0, float(1.0-w_carb-w_clay-w_qzfsp)), 4)
                 w_org2 = rd.uniform(0.25, 0.75)
@@ -2065,7 +2083,7 @@ class NAGRA:
             elif self.w_carb != None and self.w_clay != None and self.w_qzfsp != None:
                 #print("(w_carb,w_clay,w_qzfsp) != None")
                 # CARBONATES
-                w_carb = round(rd.uniform(0.7, 1.0), 4)
+                w_carb = self.w_carb
                 w_cal2 = rd.uniform(0.5, 1.0)
                 w_dol2 = rd.uniform(0.0, float(1.0-w_cal2))
                 w_sd2 = rd.uniform(0.0, float(1.0-w_cal2-w_dol2))
@@ -2075,7 +2093,7 @@ class NAGRA:
                 w_sd = round(w_carb*w_sd2, 4)
                 w_mgs = round(w_carb*w_mgs2, 4)
                 # CLAYS
-                w_clay = round(rd.uniform(0.0, float(1.0-w_carb)), 4)
+                w_clay = self.w_clay
                 w_ilt2 = rd.uniform(0.5, 1.0)
                 w_mnt2 = rd.uniform(0.0, float(1.0-w_ilt2))
                 w_kln2 = rd.uniform(0.0, float(1.0-w_ilt2-w_mnt2))
@@ -2087,7 +2105,7 @@ class NAGRA:
                 w_chl = round(w_clay*w_chl2, 4)
                 w_vrm = round(w_clay*w_vrm2, 4)
                 # QUARZ + FELDSPARS
-                w_qzfsp = round(rd.uniform(0.0, float(1.0-w_carb-w_clay)), 4)
+                w_qzfsp = self.w_qzfsp
                 w_qz2 = rd.uniform(0.25, 0.75)
                 w_kfs2 = rd.uniform(0.0, float(1.0-w_qz2))
                 w_pl2 = 1-w_qz2-w_kfs2
@@ -2108,24 +2126,31 @@ class NAGRA:
                 w_py = round(w_res*w_py2, 4)
             elif type(self.amounts) is list:
                 #print("Amount")
-                w_org = round(abs(np.random.normal(self.amounts[0], 0.0125)), 4)
-                w_sul = round(abs(np.random.normal(self.amounts[1], 0.0125)), 4)
-                w_qz = round(abs(np.random.normal(self.amounts[2], 0.0125)), 4)
-                w_kfs = round(abs(np.random.normal(self.amounts[3], 0.0125)), 4)
-                w_pl = round(abs(np.random.normal(self.amounts[4], 0.0125)), 4)
-                w_cal = round(abs(np.random.normal(self.amounts[5], 0.0125)), 4)
-                w_dol = round(abs(np.random.normal(self.amounts[6], 0.0125)), 4)
-                w_sd = round(abs(np.random.normal(self.amounts[7], 0.0125)), 4)
-                w_mgs = round(abs(np.random.normal(self.amounts[8], 0.0125)), 4)
-                w_anh = round(abs(np.random.normal(self.amounts[9], 0.0125)), 4)
-                w_gyp = round(abs(np.random.normal(self.amounts[10], 0.0125)), 4)
-                w_py = round(abs(np.random.normal(self.amounts[11], 0.0125)), 4)
-                w_ilt = round(abs(np.random.normal(self.amounts[12], 0.0125)), 4)
-                w_mnt = round(abs(np.random.normal(self.amounts[13], 0.0125)), 4)
-                w_kln = round(abs(np.random.normal(self.amounts[14], 0.0125)), 4)
-                w_chl = round(abs(np.random.normal(self.amounts[15], 0.0125)), 4)
-                w_vrm = round(1-w_org-w_sul-w_qz-w_kfs-w_pl-w_cal-w_dol-w_sd-w_mgs-w_anh-w_gyp-w_py-w_ilt-w_mnt-w_kln-w_chl, 4)
-                sum_min = round(w_org + w_sul + w_qz + w_kfs + w_pl + w_cal + w_dol + w_sd + w_mgs + w_anh + w_gyp + w_py + w_ilt + w_mnt + w_kln + w_chl + w_vrm, 4)
+                condition_main = False
+                while condition_main == False:
+                    w_org = round(abs(np.random.normal(self.amounts[0], 0.00125)), 4)
+                    w_sul = round(abs(np.random.normal(self.amounts[1], 0.00125)), 4)
+                    w_qz = round(abs(np.random.normal(self.amounts[2], 0.025)), 4)
+                    w_kfs = round(abs(np.random.normal(self.amounts[3], 0.025)), 4)
+                    w_pl = round(abs(np.random.normal(self.amounts[4], 0.025)), 4)
+                    w_cal = round(abs(np.random.normal(self.amounts[5], 0.025)), 4)
+                    w_dol = round(abs(np.random.normal(self.amounts[6], 0.025)), 4)
+                    w_sd = round(abs(np.random.normal(self.amounts[7], 0.025)), 4)
+                    w_mgs = round(abs(np.random.normal(self.amounts[8], 0.025)), 4)
+                    w_anh = round(abs(np.random.normal(self.amounts[9], 0.00125)), 4)
+                    w_gyp = round(abs(np.random.normal(self.amounts[10], 0.00125)), 4)
+                    w_py = round(abs(np.random.normal(self.amounts[11], 0.00125)), 4)
+                    w_ilt = round(abs(np.random.normal(self.amounts[12], 0.025)), 4)
+                    w_mnt = round(abs(np.random.normal(self.amounts[13], 0.025)), 4)
+                    w_kln = round(abs(np.random.normal(self.amounts[14], 0.025)), 4)
+                    w_chl = round(abs(np.random.normal(self.amounts[15], 0.025)), 4)
+                    w_vrm = round(1-w_org-w_sul-w_qz-w_kfs-w_pl-w_cal-w_dol-w_sd-w_mgs-w_anh-w_gyp-w_py-w_ilt-w_mnt-w_kln-w_chl, 4)
+                    w_carb = w_cal + w_dol + w_sd + w_mgs
+                    w_qzfsp = w_qz + w_kfs + w_pl
+                    w_clay = w_ilt + w_mnt + w_kln + w_chl + w_vrm
+                    w_res = w_org + w_sul + w_anh + w_gyp + w_py
+                    if w_carb + w_qzfsp + w_clay > 0.95:
+                        condition_main = True
             # [org, sul, qz, kfs, pl, cal, dol, sd, mgs, anh, gyp, py, ilt, mnt, kln, chl, vrm]
             #print("Minerals:", "Org", w_org, "Qz", w_qz, "Cal", w_cal, "Ilt", w_ilt, "Kln", w_kln, "Mnt", w_mnt, "Clay:", round(w_ilt+w_kln+w_mnt, 4) ,"Sum:", round(w_org + w_qz + w_cal + w_ilt + w_kln + w_mnt, 4))
             if w_org >= 0.0 and w_sul >= 0.0 and w_qz >= 0.0 and w_kfs >= 0.0 and w_pl >= 0.0 and w_cal >= 0.0 and w_dol >= 0.0 and w_sd >= 0.0 and w_mgs >= 0.0 and w_anh >= 0.0 and w_gyp >= 0.0 and w_py >= 0.0 and w_ilt >= 0.0 and w_mnt >= 0.0 and w_kln >= 0.0 and w_chl >= 0.0 and w_vrm >= 0.0:
