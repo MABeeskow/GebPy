@@ -3026,6 +3026,21 @@ class nesosilicates:
             x_Mg = round(rd.uniform(0, float(1 - x_Mn)), 2)
             x_Fe = round(1-x_Mn-x_Mg, 2)
             mineral = "Ol"
+        elif self.keyword in ["Fo", "Forsterite", "forsterite"]:
+            x_Mg = 1.0
+            x_Fe = 0.0
+            x_Mn = 0.0
+            mineral = "Fo"
+        elif self.keyword in ["Fa", "Fayalite", "fayalite"]:
+            x_Mg = 0.0
+            x_Fe = 1.0
+            x_Mn = 0.0
+            mineral = "Fa"
+        elif self.keyword in ["Tep", "Tephroite", "tephroite"]:
+            x_Mg = 0.0
+            x_Fe = 0.0
+            x_Mn = 1.0
+            mineral = "Tep"
         elif self.keyword == "None":
             x = round(rd.uniform(0, 1), 2)
             if 0 <= x < 0.5:
@@ -3051,17 +3066,17 @@ class nesosilicates:
         M = round(2*(x_Mg*magnesium[2]+x_Fe*iron[2]+x_Mn*manganese[2]) + silicon[2] + 4*oxygen[2], 3)
         # Density
         M_Fo = round(2*magnesium[2] + silicon[2] + 4*oxygen[2], 3)
-        dataV_Fo = CrystalPhysics([[4.8, 10.35, 6.06], [], "orthorhombic"])
+        dataV_Fo = CrystalPhysics([[4.754, 10.1971, 5.9806], [], "orthorhombic"])   # source: https://www.mindat.org/min-1584.html
         V_Fo = dataV_Fo.calculate_volume()
         dataRho_Fo = CrystalPhysics([M_Fo, 4, V_Fo])
         rho_Fo = dataRho_Fo.calculate_bulk_density()
         M_Fa = round(2*iron[2] + silicon[2] + 4*oxygen[2], 3)
-        dataV_Fa = CrystalPhysics([[4.82, 10.48, 6.09], [], "orthorhombic"])
+        dataV_Fa = CrystalPhysics([[4.79, 10.39, 6.06], [], "orthorhombic"])    # source: https://www.mindat.org/min-1458.html
         V_Fa = dataV_Fa.calculate_volume()
         dataRho_Fa = CrystalPhysics([M_Fa, 4, V_Fa])
         rho_Fa = dataRho_Fa.calculate_bulk_density()
         M_Tep = round(2*manganese[2] + silicon[2] + 4*oxygen[2], 3)
-        dataV_Tep = CrystalPhysics([[4.9, 10.6, 6.26], [], "orthorhombic"])
+        dataV_Tep = CrystalPhysics([[4.88, 10.61, 6.24], [], "orthorhombic"])   # source: https://www.mindat.org/min-3913.html
         V_Tep = dataV_Tep.calculate_volume()
         dataRho_Tep = CrystalPhysics([M_Tep, 4, V_Tep])
         rho_Tep = dataRho_Tep.calculate_bulk_density()
