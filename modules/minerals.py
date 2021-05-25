@@ -551,7 +551,6 @@ class natives:
         data.append([round(GR, 2), round(PE, 2)])
         #
         return data
-
 #
 class oxides:
     #
@@ -632,7 +631,7 @@ class oxides:
         data_rho_e = CrystalPhysics([element, amounts, rho])
         rho_e = data_rho_e.calculate_electron_density()
         # Bulk modulus
-        K = 38*10**9
+        K = 29*10**9
         # Shear modulus
         G = 44*10**9
         # Young's modulus

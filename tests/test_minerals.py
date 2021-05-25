@@ -6,7 +6,7 @@
 # Name:		test_minerals.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		28.05.2021
+# Date:		25.05.2021
 
 # -----------------------------------------------
 
