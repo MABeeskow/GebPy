@@ -6,7 +6,7 @@
 # Name:		test_minerals.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		12.05.2021
+# Date:		28.05.2021
 
 # -----------------------------------------------
 
@@ -94,5 +94,20 @@ class TESTING_MINERALS:
         data = minerals.nesosilicates.olivine(self, keyword="None")
         print("Olivine:\n", data)
 
+        print("")
+        ## TESTING OXIDES
+        print("TEST - OXIDES")
+        # Test Quartz
+        data = minerals.oxides.quartz("")
+        print("Quartz:\n", data)
+        # Test Quartz (with Al traces)
+        data = minerals.oxides.quartz(self, tr_Al=True)
+        print("Quartz:\n", data)
+        # Test Quartz (with Ti traces)
+        data = minerals.oxides.quartz(self, tr_Ti=True)
+        print("Quartz:\n", data)
+        # Test Quartz (with Li traces)
+        data = minerals.oxides.quartz(self, tr_Li=True)
+        print("Quartz:\n", data)
 # RUN
 TESTING_MINERALS()

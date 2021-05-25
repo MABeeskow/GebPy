@@ -124,7 +124,12 @@ class elements:
         chemCa = ["Ca", 20, 40.078, 2.620 * 10 ** (-5), 1550, 17, 7.4, 20, 4163, 2185, 3.4 * 10 ** (-8)]
         #
         return chemCa
-
+    #
+    def Ti(self):  # Ti
+        # [symbol, atomic number, atomic mass, molar volume, density, bulk modulus, shear modulus, young's modulus, vP, vS]
+        data = ["Ti", 22, 47.867, 10.64*10**(-6), 4507, 110, 44, 116, 6117, 3125]
+        #
+        return data
     #
     def Cr(self):  # Cr
         # [symbol, atomic number, atomic mass, molar volume, density, bulk modulus, shear modulus, young's modulus, vP, vS]

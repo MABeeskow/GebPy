@@ -6,7 +6,7 @@
 # Name:		minerals.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		26.02.2020
+# Date:		28.05.2021
 
 # -----------------------------------------------
 
@@ -558,23 +558,72 @@ class oxides:
     def __init__(self):
         pass
     #
-    def quartz(self):   # SiO2
-        # [symbol, atomic number, atomic mass, molar volume, density, bulk modulus, shear modulus, young's modulus, vP, vS]
-        silicon = elements.Si(self)
+    def quartz(self, traces=None, tr_Al=False, tr_Ti=False, tr_Li=False):   # SiO2
+        # Major elements
         oxygen = elements.O(self)
-        element = [silicon, oxygen]
+        silicon = elements.Si(self)
+        # Minor elements
+        aluminium = elements.Al(self)
+        titanium = elements.Ti(self)
+        lithium = elements.Li(self)
         #
         data = []
         #
         mineral = "Qz"
         #
         # Molar mass
-        M = round(silicon[2] + 2*oxygen[2], 3)
-        w_Si = round(silicon[2]/M, 4)
-        w_O = round(2*oxygen[2]/M, 4)
-        weights = [w_Si, w_O]
-        composition = [w_O, w_Si]
-        amounts = [1, 2]
+        if traces == None and tr_Al == False and tr_Ti == False and tr_Li == False:
+            M = round(silicon[2] + 2*oxygen[2], 3)
+            w_Si = round(silicon[2]/M, 4)
+            w_O = round(2*oxygen[2]/M, 4)
+            element = [oxygen, silicon]
+            composition = [w_O, w_Si]
+            amounts = [1, 2]
+        elif tr_Al == True:
+            condition = False
+            while condition == False:
+                x = rd.uniform(0., 0.001)
+                M = round((1-x)*silicon[2] + x*aluminium[2] + 2*oxygen[2], 3)
+                w_O = round(2*oxygen[2]/M, 6)
+                w_Al = round(x*aluminium[2]/M, 6)
+                w_Si = round((1-x)*silicon[2]/M, 6)
+                if 1*10**(-6) <= w_Al <= 500*10**(-6):
+                    element = [oxygen, aluminium, silicon]
+                    composition = [w_O, w_Al, w_Si]
+                    amounts = [x, 1-x, 2]
+                    condition = True
+                else:
+                    continue
+        elif tr_Ti == True:
+            condition = False
+            while condition == False:
+                x = rd.uniform(0., 0.001)
+                M = round((1-x)*silicon[2] + x*titanium[2] + 2*oxygen[2], 3)
+                w_O = round(2*oxygen[2]/M, 6)
+                w_Ti = round(x*titanium[2]/M, 6)
+                w_Si = round((1-x)*silicon[2]/M, 6)
+                if 1*10**(-6) <= w_Ti <= 500*10**(-6):
+                    element = [oxygen, titanium, silicon]
+                    composition = [w_O, w_Ti, w_Si]
+                    amounts = [x, 1-x, 2]
+                    condition = True
+                else:
+                    continue
+        elif tr_Li == True:
+            condition = False
+            while condition == False:
+                x = rd.uniform(0., 0.001)
+                M = round((1-x)*silicon[2] + x*lithium[2] + 2*oxygen[2], 3)
+                w_O = round(2*oxygen[2]/M, 6)
+                w_Li = round(x*lithium[2]/M, 6)
+                w_Si = round((1-x)*silicon[2]/M, 6)
+                if 1*10**(-6) <= w_Li <= 500*10**(-6):
+                    element = [oxygen, lithium, silicon]
+                    composition = [w_O, w_Li, w_Si]
+                    amounts = [x, 1-x, 2]
+                    condition = True
+                else:
+                    continue
         # Density
         dataV = CrystalPhysics([[4.9135, 5.4050], [], "trigonal"])
         V = dataV.calculate_volume()
@@ -583,7 +632,7 @@ class oxides:
         data_rho_e = CrystalPhysics([element, amounts, rho])
         rho_e = data_rho_e.calculate_electron_density()
         # Bulk modulus
-        K = 29*10**9
+        K = 38*10**9
         # Shear modulus
         G = 44*10**9
         # Young's modulus
@@ -599,7 +648,7 @@ class oxides:
         # Gamma ray
         GR = 0
         # Photoelectricity
-        PE = bg.calculate_pe(self, x_list=weights, elements_list=element)
+        PE = bg.calculate_pe(self, x_list=composition, elements_list=element)
         U = PE*rho_e*10**(-3)
         # Electrical resistivity
         p = 2*10**14
