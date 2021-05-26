@@ -47,8 +47,10 @@ class CrystalPhysics:
     #
     def calculate_electron_density(self):
         # properties = [ elements, amounts, bulk density ]
-        Z = [self.properties[1][i]*self.properties[0][i][1] for i in range(len(self.properties[0]))][0]/np.sum(self.properties[1])
-        A = [self.properties[1][i]*self.properties[0][i][2] for i in range(len(self.properties[0]))][0]/np.sum(self.properties[1])
+        Z = [self.properties[1][i]*self.properties[0][i][1]
+             for i in range(len(self.properties[0]))][0]/np.sum(self.properties[1])
+        A = [self.properties[1][i]*self.properties[0][i][2]
+             for i in range(len(self.properties[0]))][0]/np.sum(self.properties[1])
         rho_b = self.properties[2]
         #
         rho_e = 2*Z/A * rho_b

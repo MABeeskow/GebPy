@@ -14,19 +14,22 @@
 import numpy as np
 import random as rd
 from modules.elements import elements
+from modules.chemistry import PeriodicSystem
+from modules.minerals import CrystalPhysics
+from modules.geophysics import BoreholeGeophysics as bg
 
 # OXIDES
 class Quartz(): # SiO2
     """ Class that generates geophysical and geochemical data of quartz"""
     #
-    def __init__(self, traces_list=None, traces=False):
+    def __init__(self, traces_list=None, traces=None):
         self.traces = traces
         self.traces_list = traces_list
     #
     def create_quartz(self):
         # Major elements
-        oxygen = elements.O(self)
-        silicon = elements.Si(self)
+        oxygen = PeriodicSystem(name="O").get_data()
+        silicon = PeriodicSystem(name="Si").get_data()
         # Minor elements
         aluminium = elements.Al(self)
         titanium = elements.Ti(self)
@@ -37,7 +40,7 @@ class Quartz(): # SiO2
         mineral = "Qz"
         #
         # Molar mass
-        if self.traces == False and self.traces_list == None:
+        if self.traces == None and self.traces_list == None:
             M = round(silicon[2] + 2*oxygen[2], 3)
             w_Si = round(silicon[2]/M, 4)
             w_O = round(2*oxygen[2]/M, 4)
@@ -61,36 +64,6 @@ class Quartz(): # SiO2
                         condition = True
                     else:
                         continue
-        elif tr_Ti == True:
-            condition = False
-            while condition == False:
-                x = rd.uniform(0., 0.001)
-                M = round((1-x)*silicon[2] + x*titanium[2] + 2*oxygen[2], 3)
-                w_O = round(2*oxygen[2]/M, 6)
-                w_Ti = round(x*titanium[2]/M, 6)
-                w_Si = round((1-x)*silicon[2]/M, 6)
-                if 1*10**(-6) <= w_Ti <= 500*10**(-6):
-                    element = [oxygen, titanium, silicon]
-                    composition = [w_O, w_Ti, w_Si]
-                    amounts = [x, 1-x, 2]
-                    condition = True
-                else:
-                    continue
-        elif tr_Li == True:
-            condition = False
-            while condition == False:
-                x = rd.uniform(0., 0.001)
-                M = round((1-x)*silicon[2] + x*lithium[2] + 2*oxygen[2], 3)
-                w_O = round(2*oxygen[2]/M, 6)
-                w_Li = round(x*lithium[2]/M, 6)
-                w_Si = round((1-x)*silicon[2]/M, 6)
-                if 1*10**(-6) <= w_Li <= 500*10**(-6):
-                    element = [oxygen, lithium, silicon]
-                    composition = [w_O, w_Li, w_Si]
-                    amounts = [x, 1-x, 2]
-                    condition = True
-                else:
-                    continue
         # Density
         dataV = CrystalPhysics([[4.9135, 5.4050], [], "trigonal"])
         V = dataV.calculate_volume()
@@ -123,8 +96,8 @@ class Quartz(): # SiO2
         data.append(mineral)
         data.append(round(M, 2))
         data.append(round(rho, 1))
-        data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 2), round(vPvS, 2)])
-        data.append([round(vP, 1), round(vS, 1)])
+        data.append([round(K*10**(-9), 1), round(G*10**(-9), 1), round(E*10**(-9), 1), round(nu, 4)])
+        data.append([round(vP, 1), round(vS, 1), round(vPvS, 2)])
         data.append([round(GR, 2), round(PE, 2), round(U, 2), p])
         data.append(composition)
         #

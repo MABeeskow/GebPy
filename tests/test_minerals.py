@@ -18,7 +18,7 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 from matplotlib.ticker import NullFormatter
-from modules import sequences, geophysics, minerals
+from modules import sequences, geophysics, minerals, oxides
 
 class TESTING_MINERALS:
     #
@@ -108,6 +108,11 @@ class TESTING_MINERALS:
         print("Quartz:\n", data)
         # Test Quartz (with Li traces)
         data = minerals.oxides.quartz(self, tr_Li=True)
+        print("Quartz:\n", data)
+        ## TESTING OXIDES
+        print("TEST - OXIDES (from oxides.py)")
+        # Test Quartz
+        data = oxides.Quartz().create_quartz()
         print("Quartz:\n", data)
 # RUN
 TESTING_MINERALS()
