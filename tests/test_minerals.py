@@ -114,5 +114,8 @@ class TESTING_MINERALS:
         # Test Quartz
         data = oxides.Quartz().create_quartz()
         print("Quartz:\n", data)
+        # Test Quartz (incl. trace elements)
+        data = oxides.Quartz(traces_list=["Al", "Ti", "Li"]).create_quartz()
+        print("Quartz (incl. trace elements):\n", data)
 # RUN
 TESTING_MINERALS()

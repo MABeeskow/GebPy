@@ -6,7 +6,7 @@
 # Name:		chemistry.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		25.05.2021
+# Date:		27.05.2021
 
 # -----------------------------------------------
 
@@ -719,6 +719,162 @@ class PeriodicSystem():
             thermal_cond = 13
             data = ["La", 57, mass_molar, density, bulk_mod, shear_mod, young_mod, v_p, v_s, resistivity,
                     thermal_cond]
+        elif self.name in ["Ce", "Cerium", "cerium"] or self.atomicnumber == 58:
+            mass_molar = 140.12
+            density = 6770
+            bulk_mod = 22
+            shear_mod = 14
+            young_mod = round((9*bulk_mod*shear_mod)/(3*bulk_mod + shear_mod), 1)
+            v_p = round(np.sqrt((bulk_mod*10**9 + 4/3*shear_mod*10**9)/(density)), 2)
+            v_s = round(np.sqrt((shear_mod*10**9)/(density)), 2)
+            resistivity = round(74*10**(-8), 9)
+            thermal_cond = 11
+            data = ["Ce", 58, mass_molar, density, bulk_mod, shear_mod, young_mod, v_p, v_s, resistivity,
+                    thermal_cond]
+        elif self.name in ["Pr", "Prasaeodymium", "prasaeodymium"] or self.atomicnumber == 59:
+            mass_molar = 140.91
+            density = 6480
+            bulk_mod = 29
+            shear_mod = 15
+            young_mod = round((9*bulk_mod*shear_mod)/(3*bulk_mod + shear_mod), 1)
+            v_p = round(np.sqrt((bulk_mod*10**9 + 4/3*shear_mod*10**9)/(density)), 2)
+            v_s = round(np.sqrt((shear_mod*10**9)/(density)), 2)
+            resistivity = round(70*10**(-8), 9)
+            thermal_cond = 13
+            data = ["Pr", 59, mass_molar, density, bulk_mod, shear_mod, young_mod, v_p, v_s, resistivity,
+                    thermal_cond]
+        elif self.name in ["Nd", "Neodymium", "neodymium"] or self.atomicnumber == 60:
+            mass_molar = 144.24
+            density = 7000
+            bulk_mod = 32
+            shear_mod = 16
+            young_mod = round((9*bulk_mod*shear_mod)/(3*bulk_mod + shear_mod), 1)
+            v_p = round(np.sqrt((bulk_mod*10**9 + 4/3*shear_mod*10**9)/(density)), 2)
+            v_s = round(np.sqrt((shear_mod*10**9)/(density)), 2)
+            resistivity = round(64.3*10**(-8), 9)
+            thermal_cond = 17
+            data = ["Nd", 60, mass_molar, density, bulk_mod, shear_mod, young_mod, v_p, v_s, resistivity,
+                    thermal_cond]
+        elif self.name in ["Pm", "Promethium", "promethium"] or self.atomicnumber == 61:
+            mass_molar = 145
+            density = 7220
+            bulk_mod = 33
+            shear_mod = 18
+            young_mod = round((9*bulk_mod*shear_mod)/(3*bulk_mod + shear_mod), 1)
+            v_p = round(np.sqrt((bulk_mod*10**9 + 4/3*shear_mod*10**9)/(density)), 2)
+            v_s = round(np.sqrt((shear_mod*10**9)/(density)), 2)
+            resistivity = round(75*10**(-8), 9)
+            thermal_cond = 15
+            data = ["Pm", 61, mass_molar, density, bulk_mod, shear_mod, young_mod, v_p, v_s, resistivity,
+                    thermal_cond]
+        elif self.name in ["Sm", "Samarium", "samarium"] or self.atomicnumber == 62:
+            mass_molar = 150.36
+            density = 7540
+            bulk_mod = 38
+            shear_mod = 20
+            young_mod = round((9*bulk_mod*shear_mod)/(3*bulk_mod + shear_mod), 1)
+            v_p = round(np.sqrt((bulk_mod*10**9 + 4/3*shear_mod*10**9)/(density)), 2)
+            v_s = round(np.sqrt((shear_mod*10**9)/(density)), 2)
+            resistivity = round(94*10**(-8), 9)
+            thermal_cond = 13
+            data = ["Sm", 62, mass_molar, density, bulk_mod, shear_mod, young_mod, v_p, v_s, resistivity,
+                    thermal_cond]
+        elif self.name in ["Eu", "Europium", "europium"] or self.atomicnumber == 63:
+            mass_molar = 151.96
+            density = 5250
+            bulk_mod = 8.3
+            shear_mod = 7.9
+            young_mod = round((9*bulk_mod*shear_mod)/(3*bulk_mod + shear_mod), 1)
+            v_p = round(np.sqrt((bulk_mod*10**9 + 4/3*shear_mod*10**9)/(density)), 2)
+            v_s = round(np.sqrt((shear_mod*10**9)/(density)), 2)
+            resistivity = round(90*10**(-8), 9)
+            thermal_cond = 14
+            data = ["Eu", 63, mass_molar, density, bulk_mod, shear_mod, young_mod, v_p, v_s, resistivity,
+                    thermal_cond]
+        elif self.name in ["Gd", "Gadolinium", "gadolinium"] or self.atomicnumber == 64:
+            mass_molar = 157.25
+            density = 7890
+            bulk_mod = 38
+            shear_mod = 22
+            young_mod = round((9*bulk_mod*shear_mod)/(3*bulk_mod + shear_mod), 1)
+            v_p = round(np.sqrt((bulk_mod*10**9 + 4/3*shear_mod*10**9)/(density)), 2)
+            v_s = round(np.sqrt((shear_mod*10**9)/(density)), 2)
+            resistivity = round(131*10**(-8), 9)
+            thermal_cond = 11
+            data = ["Gd", 64, mass_molar, density, bulk_mod, shear_mod, young_mod, v_p, v_s, resistivity,
+                    thermal_cond]
+        elif self.name in ["Tb", "Terbium", "terbium"] or self.atomicnumber == 65:
+            mass_molar = 158.93
+            density = 8250
+            bulk_mod = 38.7
+            shear_mod = 22
+            young_mod = round((9*bulk_mod*shear_mod)/(3*bulk_mod + shear_mod), 1)
+            v_p = round(np.sqrt((bulk_mod*10**9 + 4/3*shear_mod*10**9)/(density)), 2)
+            v_s = round(np.sqrt((shear_mod*10**9)/(density)), 2)
+            resistivity = round(115*10**(-8), 9)
+            thermal_cond = 11
+            data = ["Tb", 65, mass_molar, density, bulk_mod, shear_mod, young_mod, v_p, v_s, resistivity,
+                    thermal_cond]
+        elif self.name in ["Dy", "Dysprosium", "dysprosium"] or self.atomicnumber == 66:
+            mass_molar = 162.50
+            density = 8560
+            bulk_mod = 41
+            shear_mod = 25
+            young_mod = round((9*bulk_mod*shear_mod)/(3*bulk_mod + shear_mod), 1)
+            v_p = round(np.sqrt((bulk_mod*10**9 + 4/3*shear_mod*10**9)/(density)), 2)
+            v_s = round(np.sqrt((shear_mod*10**9)/(density)), 2)
+            resistivity = round(92.6*10**(-8), 9)
+            thermal_cond = 11
+            data = ["Dy", 66, mass_molar, density, bulk_mod, shear_mod, young_mod, v_p, v_s, resistivity,
+                    thermal_cond]
+        elif self.name in ["Ho", "Holmium", "holmium"] or self.atomicnumber == 67:
+            mass_molar = 164.93
+            density = 8780
+            bulk_mod = 40
+            shear_mod = 26
+            young_mod = round((9*bulk_mod*shear_mod)/(3*bulk_mod + shear_mod), 1)
+            v_p = round(np.sqrt((bulk_mod*10**9 + 4/3*shear_mod*10**9)/(density)), 2)
+            v_s = round(np.sqrt((shear_mod*10**9)/(density)), 2)
+            resistivity = round(81.4*10**(-8), 9)
+            thermal_cond = 16
+            data = ["Ho", 67, mass_molar, density, bulk_mod, shear_mod, young_mod, v_p, v_s, resistivity,
+                    thermal_cond]
+        elif self.name in ["Er", "Erbium", "erbium"] or self.atomicnumber == 68:
+            mass_molar = 167.26
+            density = 9050
+            bulk_mod = 44
+            shear_mod = 28
+            young_mod = round((9*bulk_mod*shear_mod)/(3*bulk_mod + shear_mod), 1)
+            v_p = round(np.sqrt((bulk_mod*10**9 + 4/3*shear_mod*10**9)/(density)), 2)
+            v_s = round(np.sqrt((shear_mod*10**9)/(density)), 2)
+            resistivity = round(86*10**(-8), 9)
+            thermal_cond = 15
+            data = ["Er", 68, mass_molar, density, bulk_mod, shear_mod, young_mod, v_p, v_s, resistivity,
+                    thermal_cond]
+        elif self.name in ["Tm", "Thulium", "thulium"] or self.atomicnumber == 69:
+            mass_molar = 168.93
+            density = 9320
+            bulk_mod = 45
+            shear_mod = 31
+            young_mod = round((9*bulk_mod*shear_mod)/(3*bulk_mod + shear_mod), 1)
+            v_p = round(np.sqrt((bulk_mod*10**9 + 4/3*shear_mod*10**9)/(density)), 2)
+            v_s = round(np.sqrt((shear_mod*10**9)/(density)), 2)
+            resistivity = round(67.6*10**(-8), 9)
+            thermal_cond = 17
+            data = ["Tm", 69, mass_molar, density, bulk_mod, shear_mod, young_mod, v_p, v_s, resistivity,
+                    thermal_cond]
+        elif self.name in ["Yb", "Ytterbium", "ytterbium"] or self.atomicnumber == 70:
+            mass_molar = 173.05
+            density = 6970
+            bulk_mod = 31
+            shear_mod = 9.9
+            young_mod = round((9*bulk_mod*shear_mod)/(3*bulk_mod + shear_mod), 1)
+            v_p = round(np.sqrt((bulk_mod*10**9 + 4/3*shear_mod*10**9)/(density)), 2)
+            v_s = round(np.sqrt((shear_mod*10**9)/(density)), 2)
+            resistivity = round(25*10**(-8), 9)
+            thermal_cond = 34.9
+            data = ["Yb", 70, mass_molar, density, bulk_mod, shear_mod, young_mod, v_p, v_s, resistivity,
+                    thermal_cond]
         elif self.name in ["Lu", "Lutetium", "lutetium"] or self.atomicnumber == 71:
             mass_molar = 174.97
             density = 9840
@@ -876,6 +1032,102 @@ class PeriodicSystem():
             thermal_cond = 8
             data = ["Bi", 83, mass_molar, density, bulk_mod, shear_mod, young_mod, v_p, v_s, resistivity,
                     thermal_cond]
+        elif self.name in ["Po", "Polonium", "polonium"] or self.atomicnumber == 84:
+            mass_molar = 209
+            density = 9200
+            bulk_mod = None
+            shear_mod = None
+            young_mod = None
+            v_p = None
+            v_s = None
+            resistivity = round(40*10**(-8), 9)
+            thermal_cond = 20
+            data = ["Po", 84, mass_molar, density, bulk_mod, shear_mod, young_mod, v_p, v_s, resistivity,
+                    thermal_cond]
+        elif self.name in ["At", "Astatine", "astatine"] or self.atomicnumber == 85:
+            mass_molar = 210
+            density = 6400
+            bulk_mod = None
+            shear_mod = None
+            young_mod = None
+            v_p = None
+            v_s = None
+            resistivity = None
+            thermal_cond = 1.7
+            data = ["At", 85, mass_molar, density, bulk_mod, shear_mod, young_mod, v_p, v_s, resistivity,
+                    thermal_cond]
+        elif self.name in ["Rn", "Radon", "radon"] or self.atomicnumber == 86:
+            mass_molar = 222
+            density = 9.23
+            bulk_mod = None
+            shear_mod = None
+            young_mod = None
+            v_p = None
+            v_s = None
+            resistivity = None
+            thermal_cond = 0.00361
+            data = ["Rn", 86, mass_molar, density, bulk_mod, shear_mod, young_mod, v_p, v_s, resistivity,
+                    thermal_cond]
+        elif self.name in ["Fr", "Francium", "francium"] or self.atomicnumber == 87:
+            mass_molar = 223
+            density = 348
+            bulk_mod = None
+            shear_mod = None
+            young_mod = None
+            v_p = None
+            v_s = None
+            resistivity = None
+            thermal_cond = 15
+            data = ["Fr", 87, mass_molar, density, bulk_mod, shear_mod, young_mod, v_p, v_s, resistivity,
+                    thermal_cond]
+        elif self.name in ["Ra", "Radium", "radium"] or self.atomicnumber == 88:
+            mass_molar = 226
+            density = 5500
+            bulk_mod = None
+            shear_mod = None
+            young_mod = None
+            v_p = None
+            v_s = None
+            resistivity = round(100*10**(-8), 9)
+            thermal_cond = 19
+            data = ["Ra", 88, mass_molar, density, bulk_mod, shear_mod, young_mod, v_p, v_s, resistivity,
+                    thermal_cond]
+        elif self.name in ["Ac", "Actinium", "actinium"] or self.atomicnumber == 89:
+            mass_molar = 227
+            density = 10070
+            bulk_mod = None
+            shear_mod = None
+            young_mod = None
+            v_p = None
+            v_s = None
+            resistivity = None
+            thermal_cond = 12
+            data = ["Ac", 89, mass_molar, density, bulk_mod, shear_mod, young_mod, v_p, v_s, resistivity,
+                    thermal_cond]
+        elif self.name in ["Th", "Thorium", "thorium"] or self.atomicnumber == 90:
+            mass_molar = 232.04
+            density = 11720
+            bulk_mod = 54
+            shear_mod = 31
+            young_mod = round((9*bulk_mod*shear_mod)/(3*bulk_mod + shear_mod), 1)
+            v_p = round(np.sqrt((bulk_mod*10**9 + 4/3*shear_mod*10**9)/(density)), 2)
+            v_s = round(np.sqrt((shear_mod*10**9)/(density)), 2)
+            resistivity = round(15*10**(-8), 9)
+            thermal_cond = 54
+            data = ["Th", 90, mass_molar, density, bulk_mod, shear_mod, young_mod, v_p, v_s, resistivity,
+                    thermal_cond]
+        elif self.name in ["Pa", "Protactinium", "protactinium"] or self.atomicnumber == 91:
+            mass_molar = 231.04
+            density = 15370
+            bulk_mod = None
+            shear_mod = None
+            young_mod = None
+            v_p = None
+            v_s = None
+            resistivity = round(18*10**(-8), 9)
+            thermal_cond = 47
+            data = ["Pa", 91, mass_molar, density, bulk_mod, shear_mod, young_mod, v_p, v_s, resistivity,
+                    thermal_cond]
         elif self.name in ["U", "Uranium", "uranium"] or self.atomicnumber == 92:
             mass_molar = 238.03
             density = 18970
@@ -887,6 +1139,78 @@ class PeriodicSystem():
             resistivity = round(28*10**(-8), 9)
             thermal_cond = 27.6
             data = ["U", 92, mass_molar, density, bulk_mod, shear_mod, young_mod, v_p, v_s, resistivity,
+                    thermal_cond]
+        elif self.name in ["Np", "Neptunium", "neptunium"] or self.atomicnumber == 93:
+            mass_molar = 237
+            density = 20480
+            bulk_mod = None
+            shear_mod = None
+            young_mod = None
+            v_p = None
+            v_s = None
+            resistivity = round(120*10**(-8), 9)
+            thermal_cond = 6
+            data = ["Np", 93, mass_molar, density, bulk_mod, shear_mod, young_mod, v_p, v_s, resistivity,
+                    thermal_cond]
+        elif self.name in ["Pu", "Plutonium", "plutonium"] or self.atomicnumber == 94:
+            mass_molar = 244
+            density = 19740
+            shear_mod = 43
+            young_mod = 96
+            bulk_mod = round((young_mod*shear_mod)/(3*(3*shear_mod-young_mod)), 1)
+            v_p = round(np.sqrt((bulk_mod*10**9 + 4/3*shear_mod*10**9)/(density)), 2)
+            v_s = round(np.sqrt((shear_mod*10**9)/(density)), 2)
+            resistivity = round(150*10**(-8), 9)
+            thermal_cond = 6
+            data = ["Pu", 94, mass_molar, density, bulk_mod, shear_mod, young_mod, v_p, v_s, resistivity,
+                    thermal_cond]
+        elif self.name in ["Am", "Americium", "americium"] or self.atomicnumber == 95:
+            mass_molar = 243
+            density = 13670
+            bulk_mod = None
+            shear_mod = None
+            young_mod = None
+            v_p = None
+            v_s = None
+            resistivity = None
+            thermal_cond = 10
+            data = ["Am", 95, mass_molar, density, bulk_mod, shear_mod, young_mod, v_p, v_s, resistivity,
+                    thermal_cond]
+        elif self.name in ["Cm", "Curium", "curium"] or self.atomicnumber == 96:
+            mass_molar = 247
+            density = 13510
+            bulk_mod = None
+            shear_mod = None
+            young_mod = None
+            v_p = None
+            v_s = None
+            resistivity = None
+            thermal_cond = 10
+            data = ["Cm", 96, mass_molar, density, bulk_mod, shear_mod, young_mod, v_p, v_s, resistivity,
+                    thermal_cond]
+        elif self.name in ["Bk", "Berkelium", "berkelium"] or self.atomicnumber == 97:
+            mass_molar = 247
+            density = 13250
+            bulk_mod = None
+            shear_mod = None
+            young_mod = None
+            v_p = None
+            v_s = None
+            resistivity = None
+            thermal_cond = 10
+            data = ["Bk", 97, mass_molar, density, bulk_mod, shear_mod, young_mod, v_p, v_s, resistivity,
+                    thermal_cond]
+        elif self.name in ["Cf", "Californium", "californium"] or self.atomicnumber == 98:
+            mass_molar = 251
+            density = 15100
+            bulk_mod = None
+            shear_mod = None
+            young_mod = None
+            v_p = None
+            v_s = None
+            resistivity = None
+            thermal_cond = 10
+            data = ["Cf", 98, mass_molar, density, bulk_mod, shear_mod, young_mod, v_p, v_s, resistivity,
                     thermal_cond]
         #
         return data

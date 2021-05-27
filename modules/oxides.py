@@ -22,8 +22,7 @@ from modules.geophysics import BoreholeGeophysics as bg
 class Quartz(): # SiO2
     """ Class that generates geophysical and geochemical data of quartz"""
     #
-    def __init__(self, traces_list=None, traces=None):
-        self.traces = traces
+    def __init__(self, traces_list=[]):
         self.traces_list = traces_list
     #
     def create_quartz(self):
@@ -40,30 +39,25 @@ class Quartz(): # SiO2
         mineral = "Qz"
         #
         # Molar mass
-        if self.traces == None and self.traces_list == None:
-            M = round(silicon[2] + 2*oxygen[2], 3)
-            w_Si = round(silicon[2]/M, 4)
-            w_O = round(2*oxygen[2]/M, 4)
-            element = [oxygen, silicon]
-            composition = [w_O, w_Si]
-            amounts = [1, 2]
-        elif self.traces_list != None:
-            x_list = []
-            for i in range(len(self.traces_list)):
-                condition = False
-                while condition == False:
-                    x = rd.uniform(0., 0.001)
-                    M = round((1-x)*silicon[2] + x*aluminium[2] + 2*oxygen[2], 3)
-                    w_O = round(2*oxygen[2]/M, 6)
-                    w_Al = round(x*aluminium[2]/M, 6)
-                    w_Si = round((1-x)*silicon[2]/M, 6)
-                    if 1*10**(-6) <= w_Al <= 500*10**(-6):
-                        element = [oxygen, aluminium, silicon]
-                        composition = [w_O, w_Al, w_Si]
-                        amounts = [x, 1-x, 2]
-                        condition = True
-                    else:
-                        continue
+        majors = [oxygen, silicon]
+        weights = []
+        traces = [PeriodicSystem(name=i).get_data() for i in self.traces_list]
+        x_traces = [round(rd.uniform(0., 0.001), 6) for i in range(len(self.traces_list))]
+        M = 0
+        for i in range(len(self.traces_list)):
+            M += x_traces[i]*PeriodicSystem(name=self.traces_list[i]).get_data()[2]
+            weights.append([traces[i][0], int(traces[i][1]), float(x_traces[i])])
+            #weights.append([int(traces[i][1]), x_traces[i]])
+        x_majors = [2.0, (1-np.sum(x_traces))]
+        for i in range(len(majors)):
+            M += x_majors[i]*majors[i][2]
+            weights.append([majors[i][0], majors[i][1], x_majors[i]])
+            #weights.append([majors[i][1], x_majors[i]])
+        weights = np.array(weights, dtype=object)
+        weights = weights[weights[:, 1].argsort()]
+        element = [PeriodicSystem(name=weights[i][0]).get_data() for i in range(len(weights))]
+        amounts = weights[:, 2]
+        weights = weights.tolist()
         # Density
         dataV = CrystalPhysics([[4.9135, 5.4050], [], "trigonal"])
         V = dataV.calculate_volume()
@@ -88,17 +82,17 @@ class Quartz(): # SiO2
         # Gamma ray
         GR = 0
         # Photoelectricity
-        PE = bg.calculate_pe(self, x_list=composition, elements_list=element)
+        PE = bg.calculate_pe(self, x_list=amounts, elements_list=element)
         U = PE*rho_e*10**(-3)
         # Electrical resistivity
         p = 2*10**14
         #
         data.append(mineral)
-        data.append(round(M, 2))
-        data.append(round(rho, 1))
-        data.append([round(K*10**(-9), 1), round(G*10**(-9), 1), round(E*10**(-9), 1), round(nu, 4)])
-        data.append([round(vP, 1), round(vS, 1), round(vPvS, 2)])
+        data.append(round(M, 3))
+        data.append(round(rho, 2))
+        data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 4)])
+        data.append([round(vP, 2), round(vS, 2), round(vPvS, 2)])
         data.append([round(GR, 2), round(PE, 2), round(U, 2), p])
-        data.append(composition)
+        data.append(weights)
         #
         return data

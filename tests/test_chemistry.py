@@ -6,7 +6,7 @@
 # Name:		test_chemistry.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		26.05.2021
+# Date:		27.05.2021
 
 # -----------------------------------------------
 
@@ -29,6 +29,9 @@ class TestingChemistry():
             print(chemistry.PeriodicSystem(name=self.name).get_data())
 
 # RUN
+print("TESTING - THE PERIODIC SYSTEM OF ELEMENTS")
 numbers_list = range(1, 99)
 TestingChemistry(numbers_list=numbers_list)
+print("")
+print("TESTING - LOADING OXYGEN DATA")
 TestingChemistry(name="O")
