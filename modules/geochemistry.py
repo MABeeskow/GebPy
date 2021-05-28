@@ -6,17 +6,45 @@
 # Name:		geochemistry.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		16.02.2020
+# Date:		28.05.2021
 
 #-----------------------------------------------
 
 ## MODULES
 import numpy as np
 from numpy import round
+import scipy.constants as const
+import matplotlib.pyplot as plt
 from random import *
 import random as rd
 from modules import minerals
 from modules.elements import elements
+from modules.chemistry import PeriodicSystem
+
+class MassSpectrometry():
+    #
+    def __init__(self, data):
+        """
+        :param data: List/Array of a mineralogical dataset, e.g. quartz
+        """
+        self.data = data
+        MassSpectrometry.show_plot(self)
+    #
+    def show_plot(self):
+        u = const.physical_constants["atomic mass constant"][0]
+        na = const.physical_constants["Avogadro constant"][0]
+        print(u)
+        atoms = self.data[-1]
+        print(elements)
+        results = []
+        for i in range(len(atoms)):
+            results.append([atoms[i][0], (PeriodicSystem(name=atoms[i][0]).get_data()[2]*u)/(atoms[i][1]), atoms[i][2]*na])
+        print(results)
+        results = np.array(results, dtype=object)
+        print(results[:, 1])
+        fig, ax = plt.subplots(dpi=100)
+        ax.scatter(x=results[:, 1], y=results[:, 2])
+        plt.show()
 
 class dataanalysis:
     #
