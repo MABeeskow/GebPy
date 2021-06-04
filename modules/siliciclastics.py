@@ -15,8 +15,7 @@ import numpy as np
 from numpy import round
 from random import *
 import random as rd
-from modules import minerals
-from modules import fluids
+from modules import minerals, oxides, fluids
 from modules.geophysics import Elasticity as elast
 
 class Soil:
@@ -1745,3 +1744,25 @@ class ore:
         #  ore_Fe = [[mineralogical compositon], [densities], [elastic properties], [seismic velocities], [porosities], fluid name, [GR,PE]]
         #
         return ore_Fe
+
+class Sandstone():
+    """ Class that generates geophysical and geochemical data of magnetite"""
+    #
+    def __init__(self, traces_list=[], impurity="pure"):
+        self.traces_list = traces_list
+        self.impurity = impurity
+        if len(self.traces_list) > 0:
+            self.impurity = "impure"
+        if self.impurity == "random":
+            minors = ["Mg", "Zn", "Mn", "Ni", "Cr", "Ti", "V", "Al"]
+            n = rd.randint(1, len(minors))
+            while len(self.traces_list) < n:
+                selection = rd.choice(minors)
+                if selection not in self.traces_list:
+                    self.traces_list.append(selection)
+                else:
+                    continue
+    #
+    def create_sandstone(self):
+        # Major elements
+        quartz = oxides.Quartz(impurity="random").create_quartz()

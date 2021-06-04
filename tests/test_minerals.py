@@ -6,7 +6,7 @@
 # Name:		test_minerals.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		25.05.2021
+# Date:		04.06.2021
 
 # -----------------------------------------------
 
@@ -115,7 +115,13 @@ class TESTING_MINERALS:
         data = oxides.Quartz().create_quartz()
         print("Quartz:\n", data)
         # Test Quartz (incl. trace elements)
-        data = oxides.Quartz(traces_list=["Al", "Ti", "Li"]).create_quartz()
+        data = oxides.Quartz(impurity="random").create_quartz()
         print("Quartz (incl. trace elements):\n", data)
+        # Test Uraninite (incl. trace elements)
+        data = oxides.Uraninite(impurity="random").create_uraninite()
+        print("Uraninite (incl. trace elements):\n", data)
+        # Test Magnetite (incl. trace elements)
+        data = oxides.Magnetite(impurity="random").create_magnetite()
+        print("Magnetite (incl. trace elements):\n", data)
 # RUN
 TESTING_MINERALS()

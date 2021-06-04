@@ -17,7 +17,6 @@ from random import *
 from modules import minerals
 from modules.elements import elements
 from scipy import signal
-import pywt
 import matplotlib.pyplot as plt
 
 class geophysics:
