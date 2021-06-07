@@ -13,21 +13,26 @@
 ## MODULES
 from modules import geochemistry
 from modules.chemistry import PeriodicSystem
-from modules.oxides import Quartz
+from modules.oxides import Oxides
 
 class TestingGeochemistry():
 
     def __init__(self, name, traces):
         self.name = name
         self.traces = traces
-        TestingGeochemistry.test_mass_spectrometry(self)
+        #TestingGeochemistry.test_mass_spectrometry(self)
+        TestingGeochemistry.test_molar_mass_calculation(self)
 
     def test_mass_spectrometry(self):
         if self.name in ["Qz", "Quartz", "quartz"]:
-            mineral = Quartz(traces_list=self.traces).create_quartz()
+            mineral = Oxides(traces_list=self.traces).create_quartz()
         else:
             print("No mineral found!")
         geochemistry.MassSpectrometry(data=mineral)
+
+    def test_molar_mass_calculation(self):
+        ratios = geochemistry.MineralChemistry(mineral=self.name, traces=self.traces).calculate_molar_mass_compounds()
+        print("Ratios:", ratios)
 
 # TESTING
 TestingGeochemistry(name="Quartz", traces=["Al", "Ti"])

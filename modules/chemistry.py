@@ -1214,3 +1214,20 @@ class PeriodicSystem():
                     thermal_cond]
         #
         return data
+#
+class DataProcessing():
+    #
+    def __init__(self, majors, minors):
+        self.majors = majors
+        self.minors = minors
+    #
+    def make_dataset(self):
+        dataset = []
+        for i in self.majors:
+            dataset.append(PeriodicSystem(name=i).get_data())
+        for i in self.minors:
+            dataset.append(PeriodicSystem(name=i).get_data())
+        dataset = np.array(dataset, dtype=object)
+        dataset = dataset[dataset[:, 1].argsort()]
+        #
+        return dataset

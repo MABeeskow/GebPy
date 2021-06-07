@@ -954,3 +954,68 @@ class Fractions:
             phi.append(self.w[i]/(self.mineralogy[i][2]*V0))
         #
         return phi
+#
+class MineralChemistry():
+    #
+    def __init__(self, mineral=None, traces=None, w_traces=None, molar_mass_pure=None, majors=None):
+        self.mineral = mineral
+        self.traces = traces
+        self.w_traces = w_traces    # [ [Atom name, amount] ]
+        self.molar_mass_pure = molar_mass_pure
+        self.majors = majors
+        self.compounds = [["H", ["H2O", 2, 1, "O"]], ["Li", ["Li2O", 2, 1, "O"]], ["Na", ["Na2O", 2, 1, "O"]],
+                          ["Mg", ["MgO", 1, 1, "O"]], ["Al", ["Al2O3", 2, 3, "O"]], ["Si", ["SiO2", 1, 2, "O"]],
+                          ["Ti", ["TiO2", 1, 2, "O"]], ["Fe", ["Fe2O3", 2, 3, "O"]], ["Ge", ["GeO2", 1, 2, "O"]]]
+    #
+    def calculate_molar_mass_compounds(self):
+        molar_mass_compounds = []
+        for item in self.compounds:
+            for element in self.traces:
+                if element in item:
+                    molar_mass_trace_compound = item[1][1]*PeriodicSystem(name=item[0]).get_data()[2] + item[1][2]*\
+                                                PeriodicSystem(name=item[1][-1]).get_data()[2]
+                    molar_mass_compounds.append([item[0], item[1], molar_mass_trace_compound])
+        return molar_mass_compounds
+    #
+    def calculate_molar_mass(self):
+        molar_mass = 0
+        molar_masses = []
+        if len(self.w_traces) > 0:
+            molar_mass_tracer = MineralChemistry(traces=self.w_traces[:, 0]).calculate_molar_mass_compounds()
+            for i in range(len(self.w_traces)):
+                molar_mass += self.w_traces[i][2]*molar_mass_tracer[i][2]
+                molar_masses.append(round(self.w_traces[i][2]*molar_mass_tracer[i][2], 6))
+            molar_masses.append(round((1-np.sum(self.w_traces[:, 2]))*self.molar_mass_pure, 6))
+            molar_mass += (1-np.sum(self.w_traces[:, 2]))*self.molar_mass_pure
+        else:
+            molar_mass += self.molar_mass_pure
+            for i in range(len(self.majors)):
+                molar_masses.append(round(self.majors[i][2]*self.majors[i][3], 6))
+        #
+        amounts_helper = []
+        helper_sum = 0
+        amounts = []
+        if len(self.w_traces) > 0:
+            for i in range(len(self.w_traces)):
+                helper_sum += self.w_traces[i][2]*molar_mass
+                amounts_helper.append([self.w_traces[i][0], helper_sum])
+                amounts.append([self.w_traces[i][0], self.w_traces[i][1], round(self.w_traces[i][2], 6)])
+            for i in range(len(self.majors)):
+                if self.majors[i][0] != "O":
+                    helper_sum += (1-np.sum(self.w_traces[:, 2]))*self.majors[i][3]
+                    amounts_helper.append([self.majors[i][0], helper_sum])
+                    amounts.append([self.majors[i][0], self.majors[i][1], round((1-np.sum(self.w_traces[:, 2]))*
+                                                             self.majors[i][3]/molar_mass, 6)])
+                else:
+                    pass
+            amounts_helper.append(["O", molar_mass-helper_sum])
+            amounts.append(["O", 8, round(amounts_helper[-1][1]/molar_mass, 6)])
+        else:
+            for i in range(len(self.majors)):
+                amounts.append([self.majors[i][0], self.majors[i][1], round((self.majors[i][2]*
+                                                          self.majors[i][3])/self.molar_mass_pure, 6)])
+        amounts = np.array(amounts, dtype=object)
+        amounts = amounts[amounts[:, 1].argsort()]
+        amounts = amounts.tolist()
+        #
+        return molar_mass, amounts

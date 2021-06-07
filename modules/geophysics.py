@@ -6,7 +6,7 @@
 # Name:		geophysics.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		07.03.2021
+# Date:		05.06.2021
 
 #-----------------------------------------------
 
@@ -292,3 +292,41 @@ class BoreholeGeophysics:
         contributions = [x_list[i]*(elements_list[i][1]/10)**3.6 for i in range(len(x_list))]
         pe = np.sum(contributions)
         return pe
+    #
+class WellLog:
+    #
+    def __init__(self, amounts=None, elements=None):
+        self.amounts = amounts
+        self.elements = elements
+    #
+    def calculate_gr(self):
+        gr = 0
+        for i in range(len(self.elements)):
+            if self.elements[i][0] == "K":
+                gr += Conversions(amount=self.amounts[i]).convert_to_percent()*16
+            elif self.elements[i][0] == "Th":
+                gr += Conversions(amount=self.amounts[i]).convert_to_ppm()*4
+            elif self.elements[i][0] == "U":
+                gr += Conversions(amount=self.amounts[i]).convert_to_ppm()*8
+            else:
+                gr += 0
+        return gr
+    #
+    def calculate_pe(self):
+        pe = 0
+        for i in range(len(self.elements)):
+            pe += self.amounts[i][2]*(self.elements[i][1]/10)**3.6
+        return pe
+
+class Conversions:
+    #
+    def __init__(self, amount):
+        self.amount = amount
+    #
+    def convert_to_percent(self):
+        result = self.amount*10**2
+        return result
+    #
+    def convert_to_ppm(self):
+        result = self.amount*10**6
+        return result
