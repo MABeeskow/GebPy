@@ -295,19 +295,20 @@ class BoreholeGeophysics:
     #
 class WellLog:
     #
-    def __init__(self, amounts=None, elements=None):
+    def __init__(self, amounts=None, elements=None, rho_b=None):
         self.amounts = amounts
         self.elements = elements
+        self.rho_b = rho_b
     #
     def calculate_gr(self):
         gr = 0
         for i in range(len(self.elements)):
             if self.elements[i][0] == "K":
-                gr += Conversions(amount=self.amounts[i]).convert_to_percent()*16
+                gr += Conversions(amount=self.amounts[i][2]).convert_to_percent()*16
             elif self.elements[i][0] == "Th":
-                gr += Conversions(amount=self.amounts[i]).convert_to_ppm()*4
+                gr += Conversions(amount=self.amounts[i][2]).convert_to_ppm()*4
             elif self.elements[i][0] == "U":
-                gr += Conversions(amount=self.amounts[i]).convert_to_ppm()*8
+                gr += Conversions(amount=self.amounts[i][2]).convert_to_ppm()*8
             else:
                 gr += 0
         return gr
@@ -317,6 +318,12 @@ class WellLog:
         for i in range(len(self.elements)):
             pe += self.amounts[i][2]*(self.elements[i][1]/10)**3.6
         return pe
+    #
+    def calculate_electron_density(self):
+        rho_e = 0
+        for i in range(len(self.elements)):
+            rho_e += self.amounts[i][2]*(2*self.elements[i][1]/self.elements[i][2])*self.rho_b
+        return rho_e
 
 class Conversions:
     #
