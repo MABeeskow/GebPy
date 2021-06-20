@@ -6,7 +6,7 @@
 # Name:		test_minerals.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		04.06.2021
+# Date:		21.06.2021
 
 # -----------------------------------------------
 
@@ -18,7 +18,7 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 from matplotlib.ticker import NullFormatter
-from modules import sequences, geophysics, minerals, oxides
+from modules import sequences, geophysics, minerals, oxides, sulfides
 
 class TESTING_MINERALS:
     #
@@ -124,5 +124,84 @@ class TESTING_MINERALS:
         # Test Boehmite (incl. trace elements)
         data = oxides.Oxides(impurity="pure").create_boehmite()
         print("Boehmite (incl. trace elements):\n", data)
+        # Test Diaspore (incl. trace elements)
+        data = oxides.Oxides(impurity="pure").create_diaspore()
+        print("Diaspore (incl. trace elements):\n", data)
+        # Test Gibbsite (incl. trace elements)
+        data = oxides.Oxides(impurity="pure").create_gibbsite()
+        print("Gibbsite (incl. trace elements):\n", data)
+        # Test Cuprite (incl. trace elements)
+        data = oxides.Oxides(impurity="pure").create_cuprite()
+        print("Cuprite (incl. trace elements):\n", data)
+        # Test Goethite (incl. trace elements)
+        data = oxides.Oxides(impurity="pure").create_goethite()
+        print("Goethite (incl. trace elements):\n", data)
+        # Test Ilmenite (incl. trace elements)
+        data = oxides.Oxides(impurity="pure").create_ilmenite()
+        print("Ilmenite (incl. trace elements):\n", data)
+        # Test Rutile (incl. trace elements)
+        data = oxides.Oxides(impurity="pure").create_rutile()
+        print("Rutile (incl. trace elements):\n", data)
+        # Test Brookite (incl. trace elements)
+        data = oxides.Oxides(impurity="pure").create_brookite()
+        print("Brookite (incl. trace elements):\n", data)
+        # Test Anatase (incl. trace elements)
+        data = oxides.Oxides(impurity="pure").create_anatase()
+        print("Anatase (incl. trace elements):\n", data)
+        # Test Manganite (incl. trace elements)
+        data = oxides.Oxides(impurity="pure").create_manganite()
+        print("Manganite (incl. trace elements):\n", data)
+        # Test Groutite (incl. trace elements)
+        data = oxides.Oxides(impurity="pure").create_groutite()
+        print("Groutite (incl. trace elements):\n", data)
+        # Test Pyrophanite (incl. trace elements)
+        data = oxides.Oxides(impurity="pure").create_pyrophanite()
+        print("Pyrophanite (incl. trace elements):\n", data)
+        # Test Geikielite (incl. trace elements)
+        data = oxides.Oxides(impurity="pure").create_geikielite()
+        print("Geikielite (incl. trace elements):\n", data)
+        # Test Eskolaite (incl. trace elements)
+        data = oxides.Oxides(impurity="pure").create_eskolaite()
+        print("Eskolaite (incl. trace elements):\n", data)
+        # Test Karelianite (incl. trace elements)
+        data = oxides.Oxides(impurity="pure").create_karelianite()
+        print("Karelianite (incl. trace elements):\n", data)
+        # Test Claudetite (incl. trace elements)
+        data = oxides.Oxides(impurity="pure").create_claudetite()
+        print("Claudetite (incl. trace elements):\n", data)
+        # Test Arsenolite (incl. trace elements)
+        data = oxides.Oxides(impurity="pure").create_arsenolite()
+        print("Arsenolite (incl. trace elements):\n", data)
+        # Test Senarmontite (incl. trace elements)
+        data = oxides.Oxides(impurity="pure").create_senarmontite()
+        print("Senarmontite (incl. trace elements):\n", data)
+        # Test Valentinite (incl. trace elements)
+        data = oxides.Oxides(impurity="pure").create_valentinite()
+        print("Valentinite (incl. trace elements):\n", data)
+        # Test Bismite (incl. trace elements)
+        data = oxides.Oxides(impurity="pure").create_bismite()
+        print("Bismite (incl. trace elements):\n", data)
+        # Test Sphaerobismite (incl. trace elements)
+        data = oxides.Oxides(impurity="pure").create_sphaerobismite()
+        print("Sphaerobismite (incl. trace elements):\n", data)
+        # Test Cassiterite (incl. trace elements)
+        data = oxides.Oxides(impurity="pure").create_cassiterite()
+        print("Cassiterite (incl. trace elements):\n", data)
+        # Test Pyrolusite (incl. trace elements)
+        data = oxides.Oxides(impurity="pure").create_pyrolusite()
+        print("Pyrolusite (incl. trace elements):\n", data)
+        # Test Brucite (incl. trace elements)
+        data = oxides.Oxides(impurity="pure").create_brucite()
+        print("Brucite (incl. trace elements):\n", data)
+        # Test Ulvöspinel (incl. trace elements)
+        data = oxides.Oxides(impurity="pure").create_ulvospinel()
+        print("Ulvöspinel (incl. trace elements):\n", data)
+
+        print("")
+        ## TESTING SULFIDES
+        print("TEST - SULFIDES (from sulfides.py)")
+        # Test Cinnabar (incl. trace elements)
+        data = sulfides.Sulfides(impurity="pure").create_cinnabar()
+        print("Cinnabar:\n", data)
 # RUN
 TESTING_MINERALS()
