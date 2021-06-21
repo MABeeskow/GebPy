@@ -212,6 +212,7 @@ class Oxides():
         molar_mass_pure = 3*iron[2] + 4*oxygen[2]
         molar_mass, amounts = MineralChemistry(w_traces=traces_data, molar_mass_pure=molar_mass_pure,
                                       majors=majors_data).calculate_molar_mass()
+        amounts_oxides = [["FeO", round((iron[2]+oxygen[2])/molar_mass, 6)], ["Fe2O3", round((2*iron[2]+3*oxygen[2])/molar_mass, 6)]]
         element = [PeriodicSystem(name=amounts[i][0]).get_data() for i in range(len(amounts))]
         # Density
         dataV = CrystalPhysics([[8.396], [], "cubic"])
@@ -248,6 +249,7 @@ class Oxides():
         data.append([round(vP, 1), round(vS, 1)])
         data.append([round(gamma_ray, 2), round(pe, 2), round(U, 2), p])
         data.append(amounts)
+        data.append(amounts_oxides)
         #
         return data
     #
