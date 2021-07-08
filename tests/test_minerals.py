@@ -18,7 +18,7 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 from matplotlib.ticker import NullFormatter
-from modules import sequences, geophysics, minerals, oxides, sulfides
+from modules import sequences, geophysics, minerals, oxides, sulfides, sulfates
 
 class TESTING_MINERALS:
     #
@@ -236,5 +236,54 @@ class TESTING_MINERALS:
         # Test Alabandite (incl. trace elements)
         data = sulfides.Sulfides(impurity="pure").create_alabandite()
         print("Alabandite:\n", data)
+        # Test Berthierite (incl. trace elements)
+        data = sulfides.Sulfides(impurity="pure").create_berthierite()
+        print("Berthierite:\n", data)
+        # Test Pyrrhotite (incl. trace elements)
+        data = sulfides.Sulfides(impurity="pure").create_pyrrhotite()
+        print("Pyrrhotite:\n", data)
+        # Test Cobaltite (incl. trace elements)
+        data = sulfides.Sulfides(impurity="pure").create_cobaltite()
+        print("Cobaltite:\n", data)
+        # Test Carrollite (incl. trace elements)
+        data = sulfides.Sulfides(impurity="pure").create_carrollite()
+        print("Carrollite:\n", data)
+        # Test Chalcocite (incl. trace elements)
+        data = sulfides.Sulfides(impurity="pure").create_chalcocite()
+        print("Chalcocite:\n", data)
+        # Test Digenite (incl. trace elements)
+        data = sulfides.Sulfides(impurity="pure").create_digenite()
+        print("Digenite:\n", data)
+        # Test Tenanntite (incl. trace elements)
+        data = sulfides.Sulfides(impurity="pure").create_tennantite()
+        print("Tenanntite:\n", data)
+        # Test Tetrahedrite (incl. trace elements)
+        data = sulfides.Sulfides(impurity="pure").create_tetrahedrite()
+        print("Tetrahedrite:\n", data)
+        # Test Tenanntite-Group (incl. trace elements)
+        data = sulfides.Sulfides(impurity="pure").create_tennantite_group()
+        print("Tenanntite-Group:\n", data)
+        # Test Tetrahedrite-Group (incl. trace elements)
+        data = sulfides.Sulfides(impurity="pure").create_tetrahedrite_group()
+        print("Tetrahedrite-Group:\n", data)
+        # Test Fahlore (incl. trace elements)
+        data = sulfides.Sulfides(impurity="pure").create_fahlore()
+        print("Fahlore:\n", data)
+
+        print("")
+        ## TESTING SULFATES
+        print("TEST - SULFATES (from sulfates.py)")
+        # Test Anhydrite (incl. trace elements)
+        data = sulfates.Sulfates(impurity="pure").create_anhydrite()
+        print("Anhydrite:\n", data)
+        # Test Gpysum (incl. trace elements)
+        data = sulfates.Sulfates(impurity="pure").create_gypsum()
+        print("Gpysum:\n", data)
+        # Test Scheelite (incl. trace elements)
+        data = sulfates.Sulfates(impurity="pure").create_scheelite()
+        print("Scheelite:\n", data)
+        # Test Barite (incl. trace elements)
+        data = sulfates.Sulfates(impurity="pure").create_barite()
+        print("Barite:\n", data)
 # RUN
 TESTING_MINERALS()

@@ -290,7 +290,7 @@ class BoreholeGeophysics:
     #
     def calculate_pe(self, x_list, elements_list):
         contributions = [x_list[i]*(elements_list[i][1]/10)**3.6 for i in range(len(x_list))]
-        pe = np.sum(contributions)
+        pe = 0.9115*np.sum(contributions)
         return pe
     #
 class WellLog:
