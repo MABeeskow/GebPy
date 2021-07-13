@@ -6,7 +6,7 @@
 # Name:		test_minerals.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		21.06.2021
+# Date:		10.07.2021
 
 # -----------------------------------------------
 
@@ -285,5 +285,8 @@ class TESTING_MINERALS:
         # Test Barite (incl. trace elements)
         data = sulfates.Sulfates(impurity="pure").create_barite()
         print("Barite:\n", data)
+        # Test Celestine (incl. trace elements)
+        data = sulfates.Sulfates(impurity="pure").create_celestine()
+        print("Celestine:\n", data)
 # RUN
 TESTING_MINERALS()
