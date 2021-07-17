@@ -3,15 +3,16 @@
 
 #-----------------------------------------------
 
-# Name:		2d_geology.py
+# Name:		subsurface_2d.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		17.02.2021
+# Date:		17.07.2021
 
 #-----------------------------------------------
 
 ## MODULES
 import numpy as np
+import scipy.interpolate as interp
 from numpy import round
 import random as rd
 from random import randint
@@ -45,3 +46,44 @@ class structural_geology:
     #    data_boreholes = []
     #    data = sequences.SedimentaryBasin()
     #    data_sedbasin = data.create_sedimentary_basin(maximum_thickness=max_thickness)
+
+class Surface:
+    #
+    def __init__(self, coordinates):
+        self.coordinates = coordinates
+    #
+    def create_linear_surface(self):
+        # y = a*x + b
+        x1 = self.coordinates[0][0]
+        y1 = self.coordinates[0][1]
+        x2 = self.coordinates[1][0]
+        y2 = self.coordinates[1][1]
+        #
+        b = (x1*y2 - x2*y1)/(x1 - x2)
+        a = (y1 - b)/x1
+        #
+        return a, b
+    #
+    def create_quadratic_surface(self):
+        # y = a*x**2 + b*x + c
+        x1 = self.coordinates[0][0]
+        y1 = self.coordinates[0][1]
+        x2 = self.coordinates[1][0]
+        y2 = self.coordinates[1][1]
+        x3 = self.coordinates[2][0]
+        y3 = self.coordinates[2][1]
+        #
+        a = ((x2 - x3)*(y1 - y3) - (x1 - x3)*(y2 - y3))/((x2 - x3)*(x1**2 - x3**2) - (x1 - x3)*(x2**2 - x3**2))
+        b = (y1 - y3 - a*(x1**2 - x3**2))/(x1 - x3)
+        c = y3 - a*x3**2 - b*x3
+        #
+        return a, b, c
+    #
+    def create_interpolated_surface(self):
+        self.coordinates = np.array(self.coordinates)
+        x = self.coordinates[:, 0]
+        y = self.coordinates[:, 1]
+        #
+        f = interp.CubicSpline(x, y)
+        #
+        return f

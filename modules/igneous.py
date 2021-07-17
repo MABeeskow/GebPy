@@ -15,7 +15,7 @@ import numpy as np
 from numpy import round
 from random import *
 import random as rd
-from modules import minerals, geochemistry
+from modules import minerals, geochemistry, oxides
 from modules import fluids
 from modules.geophysics import Elasticity as elast
 
@@ -451,6 +451,7 @@ class Plutonic:
         #
         # [chemical formula, molar mass, density, bulk modulus, shear modulus, vP, vS]
         quartz = minerals.oxides.quartz("")
+        quartz = oxides.Oxides(impurity="pure").create_quartz()
         alkalifeldspar = minerals.feldspars.alkalifeldspar(self, "K")
         plagioclase = minerals.feldspars.plagioclase(self, "Na")
         biotite = minerals.Biotites.biotite_group(self, "Biotite")
@@ -555,12 +556,12 @@ class Plutonic:
                 sumMin = 0
             #
             w_H = round(w_bt*biotite[6][0] + w_ms*muscovite[6][0] + w_act*actinolite[6][0] + w_tr*tremolite[6][0], 4)
-            w_O = round(w_qz*quartz[6][0] + w_kfs*alkalifeldspar[6][0] + w_pl*plagioclase[6][0] + w_bt*biotite[6][1] + w_ms*muscovite[6][1] + w_act*actinolite[6][1] + w_tr*tremolite[6][1] + w_aug*augite[6][0], 4)
+            w_O = round(w_qz*quartz[6][0][2] + w_kfs*alkalifeldspar[6][0] + w_pl*plagioclase[6][0] + w_bt*biotite[6][1] + w_ms*muscovite[6][1] + w_act*actinolite[6][1] + w_tr*tremolite[6][1] + w_aug*augite[6][0], 4)
             w_F = round(w_bt*biotite[6][2] + w_ms*muscovite[6][2], 4)
             w_Na = round(w_kfs*alkalifeldspar[6][1] + w_pl*plagioclase[6][1], 4)
             w_Mg = round(w_bt*biotite[6][3] + w_act*actinolite[6][2] + w_tr*tremolite[6][2] + w_aug*augite[6][1], 4)
             w_Al = round(w_kfs*alkalifeldspar[6][2] + w_pl*plagioclase[6][2] + w_bt*biotite[6][4] + w_ms*muscovite[6][3], 4)
-            w_Si = round(w_qz*quartz[6][1] + w_kfs*alkalifeldspar[6][3] + w_pl*plagioclase[6][3] + w_bt*biotite[6][5] + w_ms*muscovite[6][4] + w_act*actinolite[6][3] + w_tr*tremolite[6][3] + w_aug*augite[6][2], 4)
+            w_Si = round(w_qz*quartz[6][1][2] + w_kfs*alkalifeldspar[6][3] + w_pl*plagioclase[6][3] + w_bt*biotite[6][5] + w_ms*muscovite[6][4] + w_act*actinolite[6][3] + w_tr*tremolite[6][3] + w_aug*augite[6][2], 4)
             w_K = round(w_kfs*alkalifeldspar[6][4] + w_bt*biotite[6][6] + w_ms*muscovite[6][5], 4)
             w_Ca = round(w_pl*plagioclase[6][4] + w_act*actinolite[6][4] + w_tr*tremolite[6][4] + w_aug*augite[6][3], 4)
             w_Fe = round(w_bt*biotite[6][7] + w_act*actinolite[6][5] + w_aug*augite[6][4], 4)
