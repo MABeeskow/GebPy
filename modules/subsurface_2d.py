@@ -87,3 +87,23 @@ class Surface:
         f = interp.CubicSpline(x, y)
         #
         return f
+
+class Units:
+    #
+    def __init__(self, x_values):
+        self.x_values = x_values
+    #
+    def create_units(self, f_surface):
+        n_units = len(self.x_values)
+        self.y_values = f_surface(self.x_values)
+        print("x:", self.x_values)
+        print("y:", self.y_values)
+        f_surface1 = f_surface.derivative(nu=1)
+        derivatives = f_surface1(self.x_values)
+        print("Derivatives", derivatives)
+        a_pos = max(derivatives)
+        a_neg = min(derivatives)
+        if abs(a_pos) >= abs(a_neg):
+            print("Steepest point:", a_pos)
+        else:
+            print("Steepest point:", a_neg)
