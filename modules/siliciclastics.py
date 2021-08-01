@@ -996,6 +996,210 @@ class sandstone:
         #
         return data
     #
+    def create_feldspathic_sandstone(self, amounts=None, porosity=None, pure=False):
+        self.amounts = amounts
+        #
+        # [chemical formula, molar mass, density, bulk modulus, shear modulus, vP, vS]
+        chem_quartz = minerals.oxides.quartz("")
+        chem_alkalifeldspar = minerals.feldspars.alkalifeldspar(self, "Alkalifeldspar")
+        chem_plagioclase = minerals.feldspars.plagioclase(self, "Plagioclase")
+        #
+        w_OQz = chem_quartz[6][0]
+        w_SiQz = chem_quartz[6][1]
+        w_OAfs = chem_alkalifeldspar[6][0]
+        w_NaAfs = chem_alkalifeldspar[6][1]
+        #
+        # [molar mass, density, bulk modulus, vP]
+        air = fluids.Gas.air("")
+        water = fluids.Water.water("")
+        oil = fluids.Hydrocarbons.oil("")
+        gas = fluids.Hydrocarbons.natural_gas("")
+        #
+        data = []
+        #
+        cond = False
+        composition = []
+        while cond == False:
+            if self.amounts == None:
+                magicnumber = rd.randint(0, 2)
+                if magicnumber == 0 or pure == True:    # Qz-rich
+                    w_Qz = round(rd.uniform(0.5, 1.0), 4)
+                    w_Fsp = round(rd.uniform(0, 1-w_Qz), 4)
+                    w_Afs2 = rd.uniform(0, 1)
+                    w_Pl2 = 1 - w_Afs2
+                    w_Afs = round(w_Fsp*w_Afs2, 4)
+                    w_Pl = round(w_Fsp*w_Pl2, 4)
+                elif magicnumber == 1:    # Afs-rich
+                    w_Fsp = round(rd.uniform(0.25, 0.5), 4)
+                    w_Afs2 = rd.uniform(0.5, 1)
+                    w_Pl2 = 1 - w_Afs2
+                    w_Afs = round(w_Fsp*w_Afs2, 4)
+                    w_Pl = round(w_Fsp*w_Pl2, 4)
+                    w_Qz = round(1-w_Fsp, 4)
+                elif magicnumber == 2:    # Pl-rich
+                    w_Fsp = round(rd.uniform(0.25, 0.5), 4)
+                    w_Pl2 = rd.uniform(0.5, 1)
+                    w_Afs2 = 1 - w_Pl2
+                    w_Afs = round(w_Fsp*w_Afs2, 4)
+                    w_Pl = round(w_Fsp*w_Pl2, 4)
+                    w_Qz = round(1-w_Fsp, 4)
+            elif type(self.amounts) is list:
+                w_Qz = round(abs(np.random.normal(self.amounts[0], 0.025)), 4)
+                w_Afs = round(abs(np.random.normal(self.amounts[1], 0.025)), 4)
+                w_Pl = round(1-w_Qz-w_Afs, 4)
+            #
+            if w_Qz >= 0.0 and w_Afs >= 0.0 and w_Pl >= 0.0:
+                sumMin = round(w_Qz + w_Afs + w_Pl, 4)
+            else:
+                sumMin = 0
+            #
+            w_O = round(w_Qz*chem_quartz[6][0] + w_Afs*chem_alkalifeldspar[6][0] + w_Pl*chem_plagioclase[6][0], 4)
+            w_Na = round(w_Afs*chem_alkalifeldspar[6][1] + w_Pl*chem_plagioclase[6][1], 4)
+            w_Al = round(w_Afs*chem_alkalifeldspar[6][2] + w_Pl*chem_plagioclase[6][2], 4)
+            w_Si = round(w_Qz*chem_quartz[6][1] + w_Afs*chem_alkalifeldspar[6][3] + w_Pl*chem_plagioclase[6][3], 4)
+            w_K = round(w_Afs*chem_alkalifeldspar[6][4], 4)
+            w_Ca = round(w_Pl*chem_plagioclase[6][4], 4)
+            sumConc = w_O + w_Na + w_Al + w_Si + w_K + w_Ca
+            #
+            if sumMin == 1 and sumConc == 1:
+                cond = True
+                composition.extend((["Qz", "Kfs", "Pl"]))
+                concentrations = [w_O, w_Na, w_Al, w_Si, w_K, w_Ca]
+                amounts = [w_Qz, w_Afs, w_Pl]
+            else:
+                cond = False
+        element_list = ["O", "Na", "Al", "Si", "K", "Ca"]
+        mineral_list = ["Qz", "Kfs", "Pl"]
+        data.append([element_list, mineral_list])
+        #
+        mineralogy = [chem_quartz, chem_alkalifeldspar, chem_plagioclase]
+        #
+        rhoSolid = (w_Qz*chem_quartz[2] + w_Afs*chem_alkalifeldspar[2] + w_Pl*chem_plagioclase[2]) / 1000
+        X = [w_Qz, w_Afs, w_Pl]
+        K_list = [mineralogy[i][3][0] for i in range(len(mineralogy))]
+        G_list = [mineralogy[i][3][1] for i in range(len(mineralogy))]
+        K_geo = elast.calc_geometric_mean(self, X, K_list)
+        G_geo = elast.calc_geometric_mean(self, X, G_list)
+        K_solid = 0.5*K_geo/2
+        G_solid = 0.5*G_geo/2
+        vP_solid = np.sqrt((K_solid*10**9+4/3*G_solid*10**9)/(rhoSolid*10**3))
+        vS_solid = np.sqrt((G_solid*10**9)/(rhoSolid*10**3))
+        E_solid = (9*K_solid*G_solid)/(3*K_solid+G_solid)
+        nu_solid = (3*K_solid-2*G_solid)/(2*(3*K_solid+G_solid))
+        #
+        if porosity == None:
+            if self.actualThickness <= 1000:
+                phi = rd.uniform(0.25, 0.35)
+            elif self.actualThickness > 1000 and self.actualThickness <= 2000:
+                phi = rd.uniform(0.20, 0.25)
+            elif self.actualThickness > 2000 and self.actualThickness <= 3000:
+                phi = rd.uniform(0.15, 0.20)
+            elif self.actualThickness > 3000 and self.actualThickness <= 4000:
+                phi = rd.uniform(0.10, 0.15)
+            elif self.actualThickness > 4000:
+                phi = rd.uniform(0.05, 0.10)
+        else:
+            phi = porosity
+        #
+        if self.fluid == "water":
+            w_fluid = round((phi)/(1-phi)*(w_Qz/chem_quartz[2] + w_Afs/chem_alkalifeldspar[2] + w_Pl/chem_plagioclase[2])*water[2], 4)
+            rho = (1 - phi) * rhoSolid + phi * water[2] / 1000
+            vP = (1-phi)*vP_solid + phi*water[4][0]
+            vS = (1 - phi) * vS_solid
+            G_bulk = vS**2 * rho
+            K_bulk = vP**2 * rho - 4/3*G_bulk
+            E_bulk = (9*K_bulk*G_bulk)/(3*K_bulk+G_bulk)
+            phiD = (rhoSolid - rho) / (rhoSolid - water[2] / 1000)
+            phiN = (2 * phi ** 2 - phiD ** 2) ** (0.5)
+            GR = w_Qz*chem_quartz[5][0] + w_Afs*chem_alkalifeldspar[5][0] + w_Pl*chem_plagioclase[5][0]
+            PE = w_Qz*chem_quartz[5][1] + w_Afs*chem_alkalifeldspar[5][1] + w_Pl*chem_plagioclase[5][1]
+            poisson_seismic = 0.5*(vP**2 - 2*vS**2)/(vP**2 - vS**2)
+            poisson_elastic = (3*K_bulk - 2*G_bulk)/(6*K_bulk + 2*G_bulk)
+            poisson_mineralogical = w_Qz*chem_quartz[3][3] + w_Afs*chem_alkalifeldspar[3][3] + w_Pl*chem_plagioclase[3][3]
+            #
+            data.append([round(rho, 3), round(rhoSolid, 3), round(water[2] / 1000, 3)])
+            data.append([round(K_bulk*10**(-6), 2), round(G_bulk*10**(-6), 2), round(E_bulk*10**(-6), 2), round(poisson_mineralogical, 3)])
+            data.append([round(vP, 2), round(vS, 2), round(vP_solid, 2), round(water[4][0], 2)])
+            data.append([round(phi, 3), round(phiD, 3), round(phiN, 3)])
+            data.append(["water", w_fluid])
+            data.append([round(GR, 3), round(PE, 3)])
+            data.append(concentrations)
+            data.append(amounts)
+        elif self.fluid == "oil":
+            w_fluid = round((phi)/(1-phi)*(w_Qz/chem_quartz[2] + w_Afs/chem_alkalifeldspar[2] + w_Pl/chem_plagioclase[2])*oil[2], 4)
+            rho = (1 - phi) * rhoSolid + phi * oil[2] / 1000
+            vP = (1-phi)*vP_solid + phi*oil[4][0]
+            vS = (1 - phi) * vS_solid
+            G_bulk = vS**2 * rho
+            K_bulk = vP**2 * rho - 4/3*G_bulk
+            E_bulk = (9*K_bulk*G_bulk)/(3*K_bulk+G_bulk)
+            phiD = (rhoSolid - rho) / (rhoSolid - oil[2] / 1000)
+            phiN = (2 * phi ** 2 - phiD ** 2) ** (0.5)
+            GR = w_Qz*chem_quartz[5][0] + w_Afs*chem_alkalifeldspar[5][0] + w_Pl*chem_plagioclase[5][0]
+            PE = w_Qz*chem_quartz[5][1] + w_Afs*chem_alkalifeldspar[5][1] + w_Pl*chem_plagioclase[5][1]
+            poisson_seismic = 0.5*(vP**2 - 2*vS**2)/(vP**2 - vS**2)
+            poisson_elastic = (3*K_bulk - 2*G_bulk)/(6*K_bulk + 2*G_bulk)
+            poisson_mineralogical = w_Qz*chem_quartz[3][3] + w_Afs*chem_alkalifeldspar[3][3] + w_Pl*chem_plagioclase[3][3]
+            #
+            data.append([round(rho, 3), round(rhoSolid, 3), round(oil[2] / 1000, 3)])
+            data.append([round(K_bulk*10**(-6), 2), round(G_bulk*10**(-6), 2), round(E_bulk*10**(-6), 2), round(poisson_mineralogical, 3)])
+            data.append([round(vP, 2), round(vS, 2), round(vP_solid, 2), round(oil[4][0], 2)])
+            data.append([round(phi, 3), round(phiD, 3), round(phiN, 3)])
+            data.append(["oil", w_fluid])
+            data.append([round(GR, 3), round(PE, 3)])
+            data.append(concentrations)
+            data.append(amounts)
+        elif self.fluid == "gas":
+            w_fluid = round((phi)/(1-phi)*(w_Qz/chem_quartz[2] + w_Afs/chem_alkalifeldspar[2] + w_Pl/chem_plagioclase[2])*gas[2], 4)
+            rho = (1 - phi) * rhoSolid + phi * gas[2] / 1000
+            vP = (1-phi)*vP_solid + phi*gas[4][0]
+            vS = (1 - phi) * vS_solid
+            G_bulk = vS**2 * rho
+            K_bulk = vP**2 * rho - 4/3*G_bulk
+            E_bulk = (9*K_bulk*G_bulk)/(3*K_bulk+G_bulk)
+            phiD = (rhoSolid - rho) / (rhoSolid - gas[2] / 1000)
+            phiN = (2 * phi ** 2 - phiD ** 2) ** (0.5)
+            GR = w_Qz*chem_quartz[5][0] + w_Afs*chem_alkalifeldspar[5][0] + w_Pl*chem_plagioclase[5][0]
+            PE = w_Qz*chem_quartz[5][1] + w_Afs*chem_alkalifeldspar[5][1] + w_Pl*chem_plagioclase[5][1]
+            poisson_seismic = 0.5*(vP**2 - 2*vS**2)/(vP**2 - vS**2)
+            poisson_elastic = (3*K_bulk - 2*G_bulk)/(6*K_bulk + 2*G_bulk)
+            poisson_mineralogical = w_Qz*chem_quartz[3][3] + w_Afs*chem_alkalifeldspar[3][3] + w_Pl*chem_plagioclase[3][3]
+            #
+            data.append([round(rho, 3), round(rhoSolid, 3), round(gas[2] / 1000, 3)])
+            data.append([round(K_bulk*10**(-6), 2), round(G_bulk*10**(-6), 2), round(E_bulk*10**(-6), 2), round(poisson_mineralogical, 3)])
+            data.append([round(vP, 2), round(vS, 2), round(vP_solid, 2), round(gas[4][0], 2)])
+            data.append([round(phi, 3), round(phiD, 3), round(phiN, 3)])
+            data.append(["gas", w_fluid])
+            data.append([round(GR, 3), round(PE, 3)])
+            data.append(concentrations)
+            data.append(amounts)
+        elif self.fluid == "air":
+            w_fluid = round((phi)/(1-phi)*(w_Qz/chem_quartz[2] + w_Afs/chem_alkalifeldspar[2] + w_Pl/chem_plagioclase[2])*air[2], 4)
+            rho = (1 - phi) * rhoSolid + phi * air[2] / 1000
+            vP = (1-phi)*vP_solid + phi*air[4][0]
+            vS = (1 - phi) * vS_solid
+            G_bulk = vS**2 * rho
+            K_bulk = vP**2 * rho - 4/3*G_bulk
+            E_bulk = (9*K_bulk*G_bulk)/(3*K_bulk+G_bulk)
+            phiD = (rhoSolid - rho) / (rhoSolid - air[2] / 1000)
+            phiN = (2 * phi ** 2 - phiD ** 2) ** (0.5)
+            GR = w_Qz*chem_quartz[5][0] + w_Afs*chem_alkalifeldspar[5][0] + w_Pl*chem_plagioclase[5][0]
+            PE = w_Qz*chem_quartz[5][1] + w_Afs*chem_alkalifeldspar[5][1] + w_Pl*chem_plagioclase[5][1]
+            poisson_seismic = 0.5*(vP**2 - 2*vS**2)/(vP**2 - vS**2)
+            poisson_elastic = (3*K_bulk - 2*G_bulk)/(6*K_bulk + 2*G_bulk)
+            poisson_mineralogical = w_Qz*chem_quartz[3][3] + w_Afs*chem_alkalifeldspar[3][3] + w_Pl*chem_plagioclase[3][3]
+            #
+            data.append([round(rho, 3), round(rhoSolid, 3), round(gas[2] / 1000, 3)])
+            data.append([round(K_bulk*10**(-6), 2), round(G_bulk*10**(-6), 2), round(E_bulk*10**(-6), 2), round(poisson_mineralogical, 3)])
+            data.append([round(vP, 2), round(vS, 2), round(vP_solid, 2), round(gas[4][0], 2)])
+            data.append([round(phi, 3), round(phiD, 3), round(phiN, 3)])
+            data.append(["air", w_fluid])
+            data.append([round(GR, 3), round(PE, 3)])
+            data.append(concentrations)
+            data.append(amounts)
+        #
+        return data
+    #
 class shale:
     #
     def __init__(self):

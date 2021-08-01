@@ -1380,7 +1380,7 @@ class SedimentaryBasin:
         #
         return sequence
     #
-    def create_sandstone(self, thickness=None, fluid="water", phi=None, Qz_rich=False):
+    def create_sandstone(self, thickness=None, fluid="water", phi=None, Qz_rich=False, keyword=None):
         self.fluid = fluid
         sequence = []
         if thickness == None:
@@ -1397,49 +1397,73 @@ class SedimentaryBasin:
         for i in range(self.parts):
             if i == 0 and self.fluid == "water":
                 data = sandstone("water", actualThickness=self.actualThickness)
-                data_sandstone = data.create_simple_sandstone(porosity=phi, pure=Qz_rich)
+                if keyword == None:
+                    data_sandstone = data.create_simple_sandstone(porosity=phi, pure=Qz_rich)
+                else:
+                    data_sandstone = data.create_feldspathic_sandstone(porosity=phi)
                 top = self.actualThickness
                 bottom = top + d
                 sequence.append(["sandstone", round(d, 1), round(top, 1), round(bottom, 1), data_sandstone])
             elif i == 0 and self.fluid == "gas":
                 data = sandstone("gas", actualThickness=self.actualThickness)
-                data_sandstone = data.create_simple_sandstone(porosity=phi, pure=Qz_rich)
+                if keyword == None:
+                    data_sandstone = data.create_simple_sandstone(porosity=phi, pure=Qz_rich)
+                else:
+                    data_sandstone = data.create_feldspathic_sandstone(porosity=phi)
                 top = self.actualThickness
                 bottom = top + d
                 sequence.append(["sandstone", round(d, 1), round(top, 1), round(bottom, 1), data_sandstone])
             elif i == 0 and self.fluid == "oil":
                 data = sandstone("oil", actualThickness=self.actualThickness)
-                data_sandstone = data.create_simple_sandstone(porosity=phi, pure=Qz_rich)
+                if keyword == None:
+                    data_sandstone = data.create_simple_sandstone(porosity=phi, pure=Qz_rich)
+                else:
+                    data_sandstone = data.create_feldspathic_sandstone(porosity=phi)
                 top = self.actualThickness
                 bottom = top + d
                 sequence.append(["sandstone", round(d, 1), round(top, 1), round(bottom, 1), data_sandstone])
             elif i == 0 and self.fluid == "air":
                 data = sandstone("air", actualThickness=self.actualThickness)
-                data_sandstone = data.create_simple_sandstone(porosity=phi, pure=Qz_rich)
+                if keyword == None:
+                    data_sandstone = data.create_simple_sandstone(porosity=phi, pure=Qz_rich)
+                else:
+                    data_sandstone = data.create_feldspathic_sandstone(porosity=phi)
                 top = self.actualThickness
                 bottom = top + d
                 sequence.append(["sandstone", round(d, 1), round(top, 1), round(bottom, 1), data_sandstone])
             elif i > 0 and self.fluid == "water":
                 data = sandstone("water", actualThickness=bottom)
-                data_sandstone = data.create_simple_sandstone(amounts=sequence[-1][-1][8], porosity=phi, pure=Qz_rich)
+                if keyword == None:
+                    data_sandstone = data.create_simple_sandstone(amounts=sequence[-1][-1][8], porosity=phi, pure=Qz_rich)
+                else:
+                    data_sandstone = data.create_feldspathic_sandstone(amounts=sequence[-1][-1][8], porosity=phi)
                 top = self.actualThickness + i*d
                 bottom = top + d
                 sequence.append(["sandstone", round(d, 1), round(top, 1), round(bottom, 1), data_sandstone])
             elif i > 0 and self.fluid == "gas":
                 data = sandstone("gas", actualThickness=bottom)
-                data_sandstone = data.create_simple_sandstone(amounts=sequence[-1][-1][8], porosity=phi, pure=Qz_rich)
+                if keyword == None:
+                    data_sandstone = data.create_simple_sandstone(amounts=sequence[-1][-1][8], porosity=phi, pure=Qz_rich)
+                else:
+                    data_sandstone = data.create_feldspathic_sandstone(amounts=sequence[-1][-1][8], porosity=phi)
                 top = self.actualThickness + i*d
                 bottom = top + d
                 sequence.append(["sandstone", round(d, 1), round(top, 1), round(bottom, 1), data_sandstone])
             elif i > 0 and self.fluid == "oil":
                 data = sandstone("oil", actualThickness=bottom)
-                data_sandstone = data.create_simple_sandstone(amounts=sequence[-1][-1][8], porosity=phi, pure=Qz_rich)
+                if keyword == None:
+                    data_sandstone = data.create_simple_sandstone(amounts=sequence[-1][-1][8], porosity=phi, pure=Qz_rich)
+                else:
+                    data_sandstone = data.create_feldspathic_sandstone(amounts=sequence[-1][-1][8], porosity=phi)
                 top = self.actualThickness + i*d
                 bottom = top + d
                 sequence.append(["sandstone", round(d, 1), round(top, 1), round(bottom, 1), data_sandstone])
             elif i > 0 and self.fluid == "air":
                 data = sandstone("air", actualThickness=bottom)
-                data_sandstone = data.create_simple_sandstone(amounts=sequence[-1][-1][8], porosity=phi, pure=Qz_rich)
+                if keyword == None:
+                    data_sandstone = data.create_simple_sandstone(amounts=sequence[-1][-1][8], porosity=phi, pure=Qz_rich)
+                else:
+                    data_sandstone = data.create_feldspathic_sandstone(amounts=sequence[-1][-1][8], porosity=phi)
                 top = self.actualThickness + i*d
                 bottom = top + d
                 sequence.append(["sandstone", round(d, 1), round(top, 1), round(bottom, 1), data_sandstone])

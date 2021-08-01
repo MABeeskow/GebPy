@@ -66,6 +66,14 @@ for i in range(len(data_sandstone)):
     print(data_sandstone[i])
 
 print("")
+print("Feldspathic Sandstone Generation:")
+# Test feldspathic sandstone generation within SedimentaryBasin class
+data = sequences.SedimentaryBasin()
+data_sandstone = data.create_sandstone(thickness=10, keyword="feldspathic")
+for i in range(len(data_sandstone)):
+    print(data_sandstone[i])
+
+print("")
 # Test limestone generation within SedimentaryBasin class
 data = sequences.SedimentaryBasin()
 data_limestone = data.create_limestone(thickness=10)
