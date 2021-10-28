@@ -184,11 +184,11 @@ class Plutonic:
                 w_pl = round(abs(45.95*x**3 - 0.2*x**2 + 24.45*x + 13.4 - (-23.27*x**3 + 54.32*x**2 + 0.37*x))/100, 4)
                 w_ms = round(1-w_qz-w_kfs-w_pl-w_bt-w_amph, 4)
             elif type(self.amounts) is list:
-                w_qz = round(abs(np.random.normal(self.amounts[0], 0.0125)), 4)
-                w_kfs = round(abs(np.random.normal(self.amounts[1], 0.0125)), 4)
-                w_pl = round(abs(np.random.normal(self.amounts[2], 0.0125)), 4)
-                w_bt = round(abs(np.random.normal(self.amounts[3], 0.0125)), 4)
-                w_ms = round(abs(np.random.normal(self.amounts[4], 0.00125)), 4)
+                w_qz = round(abs(np.random.normal(self.amounts[0], 0.0025)), 4)
+                w_kfs = round(abs(np.random.normal(self.amounts[1], 0.0025)), 4)
+                w_pl = round(abs(np.random.normal(self.amounts[2], 0.0025)), 4)
+                w_bt = round(abs(np.random.normal(self.amounts[3], 0.0025)), 4)
+                w_ms = round(abs(np.random.normal(self.amounts[4], 0.00025)), 4)
                 w_amph = round(1-w_qz-w_kfs-w_pl-w_bt-w_ms, 4)
             #
             #print(w_qz, w_kfs, w_pl, w_bt, w_ms, w_amph)
@@ -350,11 +350,11 @@ class Plutonic:
                 w_kfs = round(abs(17.97*x**3 - 32.67*x**2 + 26.71*x + 91 - 3*x - (121.55*x**5 - 358.74*x**4 + 402.63*x**3 - 224.97*x**2 + 77.15*x + 81.5))/100, 4)
                 w_pl = round(1-w_bt-w_pyx-w_amph-w_qz-w_kfs, 4)
             elif type(self.amounts) is list:
-                w_qz = round(abs(np.random.normal(self.amounts[0], 0.00125)), 4)
-                w_kfs = round(abs(np.random.normal(self.amounts[1], 0.0125)), 4)
-                w_pl = round(abs(np.random.normal(self.amounts[2], 0.0125)), 4)
-                w_bt = round(abs(np.random.normal(self.amounts[3], 0.00125)), 4)
-                w_amph = round(abs(np.random.normal(self.amounts[4], 0.0125)), 4)
+                w_qz = round(abs(np.random.normal(self.amounts[0], 0.00025)), 4)
+                w_kfs = round(abs(np.random.normal(self.amounts[1], 0.0025)), 4)
+                w_pl = round(abs(np.random.normal(self.amounts[2], 0.0025)), 4)
+                w_bt = round(abs(np.random.normal(self.amounts[3], 0.0025)), 4)
+                w_amph = round(abs(np.random.normal(self.amounts[4], 0.0025)), 4)
                 w_pyx = round(1-w_qz-w_kfs-w_pl-w_bt-w_amph, 4)
             #
             #print(w_qz, w_kfs, w_pl, w_bt, w_amph, w_pyx)

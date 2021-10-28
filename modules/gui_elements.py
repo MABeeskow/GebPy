@@ -1,0 +1,66 @@
+#!/usr/bin/env python
+# -*-coding: utf-8 -*-
+# ----------------------
+# gui_elements.py
+# Maximilian Beeskow
+# 04.10.2021
+# ----------------------
+#
+## MODULES
+import tkinter as tk
+#
+## CLASSES
+class SimpleElements:
+    #
+    def __init__(self, parent, row_id, column_id, fg, bg, n_rows=1, n_columns=1):
+        self.parent = parent
+        self.row_id = row_id
+        self.column_id = column_id
+        self.n_rows = n_rows
+        self.n_columns = n_columns
+        self.fg = fg
+        self.bg = bg
+    #
+    def create_label(self, text, relief=tk.GROOVE):
+        lbl = tk.Label(self.parent, text=text, relief=relief, bg=self.bg, fg=self.fg)
+        lbl.grid(row=self.row_id, column=self.column_id, rowspan=self.n_rows, columnspan=self.n_columns, sticky="nesw")
+    #
+    def create_option_menu(self, var_opt, var_opt_set, opt_list, command=None):
+        var_opt.set(var_opt_set)
+        if command == None:
+            opt_menu = tk.OptionMenu(self.parent, var_opt, *opt_list)
+        else:
+            opt_menu = tk.OptionMenu(self.parent, var_opt, *opt_list, command=command)
+        opt_menu.grid(row=self.row_id, column=self.column_id, rowspan=self.n_rows, columnspan=self.n_columns,
+                      sticky="nesw")
+        opt_menu.config(bg=self.bg)
+        #
+        return opt_menu
+    #
+    def create_entry(self, var_entr, var_entr_set, command=None):
+        var_entr.set(var_entr_set)
+        entry = tk.Entry(self.parent, textvariable=var_entr)
+        entry.grid(row=self.row_id, column=self.column_id, rowspan=self.n_rows, columnspan=self.n_columns,
+                   sticky="nesw")
+        if command != None:
+            entry.bind("<Return>", command)
+    #
+    def create_radiobutton(self, var_rb, var_rb_set, value_rb, color_bg, relief=tk.FLAT, command=None, text=""):
+        var_rb.set(var_rb_set)
+        if command == None:
+            rb = tk.Radiobutton(self.parent, text=text, variable=var_rb, value=value_rb, bg=color_bg,
+                                activebackground=color_bg, relief=relief)
+        else:
+            rb = tk.Radiobutton(self.parent, text=text, variable=var_rb, value=value_rb, bg=color_bg,
+                                activebackground=color_bg, relief=relief, command=command)
+        rb.grid(row=self.row_id, column=self.column_id, rowspan=self.n_rows, columnspan=self.n_columns, sticky="nesw")
+    #
+    def create_button(self, text, command=None):
+        if command == None:
+            btn = tk.Button(self.parent, text=text, fg=self.fg, bg=self.bg)
+        else:
+            btn = tk.Button(self.parent, text=text, fg=self.fg, bg=self.bg, command=command)
+        btn.grid(row=self.row_id, column=self.column_id, rowspan=self.n_rows, columnspan=self.n_columns, sticky="nesw")
+        #
+        return btn
+    #

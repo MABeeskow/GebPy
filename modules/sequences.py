@@ -154,6 +154,16 @@ class DataProcessing:
                         data.append(self.dataset[i][j][4][1][1])
                     elif keyword == "fluid":
                         data.append(self.dataset[i][j][4][1][2])
+        elif type == "random":
+            for i in range(len(self.dataset)):
+                if keyword == "all":
+                    data.append(self.dataset[i][1])
+                elif keyword == "bulk":
+                    data.append(self.dataset[i][1][0])
+                elif keyword == "solid":
+                    data.append(self.dataset[i][1][1])
+                elif keyword == "fluid":
+                    data.append(self.dataset[i][1][2])
         else:
             for i in range(len(self.dataset)):
                 if keyword == "all":
@@ -188,6 +198,18 @@ class DataProcessing:
                         data.append(self.dataset[i][j][4][2][2])
                     elif keyword == "poisson" or keyword == "mu":
                         data.append(self.dataset[i][j][4][2][3])
+        elif type == "random":
+            for i in range(len(self.dataset)):
+                if keyword == "all":
+                    data.append(self.dataset[i][2])
+                elif keyword == "bulk" or keyword == "K":
+                    data.append(self.dataset[i][2][0])
+                elif keyword == "shear" or keyword == "G":
+                    data.append(self.dataset[i][2][1])
+                elif keyword == "young" or keyword == "E":
+                    data.append(self.dataset[i][2][2])
+                elif keyword == "poisson" or keyword == "mu":
+                    data.append(self.dataset[i][2][3])
         else:
             for i in range(len(self.dataset)):
                 if keyword == "all":
@@ -220,6 +242,14 @@ class DataProcessing:
                         data.append(self.dataset[i][j][4][3][0])
                     elif keyword in ["s-wave", "shear", "vS"]:
                         data.append(self.dataset[i][j][4][3][1])
+        elif type == "random":
+            for i in range(len(self.dataset)):
+                if keyword == "all":
+                    data.append(self.dataset[i][3])
+                elif keyword in ["p-wave", "compressional", "vP"]:
+                    data.append(self.dataset[i][3][0])
+                elif keyword in ["s-wave", "shear", "vS"]:
+                    data.append(self.dataset[i][3][1])
         else:
             for i in range(len(self.dataset)):
                 if keyword == "all":
@@ -243,6 +273,9 @@ class DataProcessing:
             for i in range(len(self.dataset)):
                 for j in range(len(self.dataset[i])):
                     data.append(self.dataset[i][j][4][4][0])
+        elif type == "random":
+            for i in range(len(self.dataset)):
+                data.append(self.dataset[i][4][0])
         else:
             for i in range(len(self.dataset)):
                 data.append(self.dataset[i][4][4][0])
@@ -276,6 +309,9 @@ class DataProcessing:
             for i in range(len(self.dataset)):
                 for j in range(len(self.dataset[i])):
                     data.append(self.dataset[i][j][4][6][0])
+        elif type == "random":
+            for i in range(len(self.dataset)):
+                data.append(self.dataset[i][6][0])
         else:
             for i in range(len(self.dataset)):
                 data.append(self.dataset[i][4][6][0])
@@ -294,6 +330,9 @@ class DataProcessing:
             for i in range(len(self.dataset)):
                 for j in range(len(self.dataset[i])):
                     data.append(self.dataset[i][j][4][6][1])
+        elif type == "random":
+            for i in range(len(self.dataset)):
+                data.append(self.dataset[i][6][1])
         else:
             for i in range(len(self.dataset)):
                 data.append(self.dataset[i][4][6][1])
