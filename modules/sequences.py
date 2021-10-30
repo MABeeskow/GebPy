@@ -134,6 +134,18 @@ class DataProcessing:
         #
         return data
     #
+    def extract_molar_mass(self):
+        """Returns a list that contains the molar mass of the previously generated minerals.
+        **Arguments**:
+        **Outputs**:
+            data: list of molar masses
+        """
+        data = []
+        for i in range(len(self.dataset)):
+            data.append(self.dataset[i][1])
+        #
+        return np.array(data)
+    #
     def extract_densities(self, type="sequence", keyword="bulk"):
         """Returns a list that contains the densities of the previously generated rock units.
         **Arguments**:
@@ -164,6 +176,9 @@ class DataProcessing:
                     data.append(self.dataset[i][1][1])
                 elif keyword == "fluid":
                     data.append(self.dataset[i][1][2])
+        elif type == "mineral":
+            for i in range(len(self.dataset)):
+                data.append(self.dataset[i][2])
         else:
             for i in range(len(self.dataset)):
                 if keyword == "all":
@@ -210,6 +225,18 @@ class DataProcessing:
                     data.append(self.dataset[i][2][2])
                 elif keyword == "poisson" or keyword == "mu":
                     data.append(self.dataset[i][2][3])
+        elif type == "mineral":
+            for i in range(len(self.dataset)):
+                if keyword == "all":
+                    data.append(self.dataset[i][3])
+                elif keyword == "bulk" or keyword == "K":
+                    data.append(self.dataset[i][3][0])
+                elif keyword == "shear" or keyword == "G":
+                    data.append(self.dataset[i][3][1])
+                elif keyword == "young" or keyword == "E":
+                    data.append(self.dataset[i][3][2])
+                elif keyword == "poisson" or keyword == "mu":
+                    data.append(self.dataset[i][3][3])
         else:
             for i in range(len(self.dataset)):
                 if keyword == "all":
@@ -250,6 +277,16 @@ class DataProcessing:
                     data.append(self.dataset[i][3][0])
                 elif keyword in ["s-wave", "shear", "vS"]:
                     data.append(self.dataset[i][3][1])
+        elif type == "mineral":
+            for i in range(len(self.dataset)):
+                if keyword == "all":
+                    data.append(self.dataset[i][4])
+                elif keyword in ["p-wave", "compressional", "vP"]:
+                    data.append(self.dataset[i][4][0])
+                elif keyword in ["s-wave", "shear", "vS"]:
+                    data.append(self.dataset[i][4][1])
+                elif keyword in ["vPvS"]:
+                    data.append(self.dataset[i][4][2])
         else:
             for i in range(len(self.dataset)):
                 if keyword == "all":
@@ -312,6 +349,9 @@ class DataProcessing:
         elif type == "random":
             for i in range(len(self.dataset)):
                 data.append(self.dataset[i][6][0])
+        elif type == "mineral":
+            for i in range(len(self.dataset)):
+                data.append(self.dataset[i][5][0])
         else:
             for i in range(len(self.dataset)):
                 data.append(self.dataset[i][4][6][0])
@@ -333,6 +373,9 @@ class DataProcessing:
         elif type == "random":
             for i in range(len(self.dataset)):
                 data.append(self.dataset[i][6][1])
+        elif type == "mineral":
+            for i in range(len(self.dataset)):
+                data.append(self.dataset[i][5][2])
         else:
             for i in range(len(self.dataset)):
                 data.append(self.dataset[i][4][6][1])

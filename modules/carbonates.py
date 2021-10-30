@@ -1225,7 +1225,7 @@ class dolomite:
                     w_py = round(1-w_carb-w_qz-w_fsp-w_clay, 4)
                 elif magicnumber == 1:    # Ank-rich
                     w_carb = round(rd.randint(90, 100)/100, 4)
-                    w_dol2 = rd.randint(60, 90)/100
+                    w_dol2 = rd.randint(60, 80)/100
                     w_ank2 = rd.randint(10, int((1-w_dol2)*100))/100
                     w_sd2 = rd.randint(0, int((1-w_dol2-w_ank2)*100))/100
                     w_cal2 = 1-w_dol2-w_ank2-w_sd2
@@ -1245,7 +1245,7 @@ class dolomite:
                     w_py = round(1-w_carb-w_qz-w_fsp-w_clay, 4)
                 elif magicnumber == 2:    # Sd-rich
                     w_carb = round(rd.randint(90, 100)/100, 4)
-                    w_dol2 = rd.uniform(0.6, 0.9)
+                    w_dol2 = rd.uniform(0.6, 0.8)
                     w_sd2 = rd.uniform(0.1, (1-w_dol2))
                     w_ank2 = rd.randint(0, int((1-w_dol2-w_sd2)*100))/100
                     w_cal2 = 1-w_dol2-w_ank2-w_sd2
