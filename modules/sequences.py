@@ -382,7 +382,7 @@ class DataProcessing:
         #
         return np.array(data)
     #
-    def extract_element_amounts(self, type="sequence"):
+    def extract_element_amounts(self, type="sequence", pos=None, element=None):
         """Returns a list that contains the amounts of the elements within the previously generated rock units.
         **Arguments**:
             type: sequence, rock
@@ -394,6 +394,14 @@ class DataProcessing:
             for i in range(len(self.dataset)):
                 for j in range(len(self.dataset[i])):
                     data.append(self.dataset[i][j][4][7])
+        elif type == "mineral":
+            for i in range(len(self.dataset)):
+                if pos != None:
+                    data.append(self.dataset[i][6][pos])
+                if element != None:
+                    for item in self.dataset[i][6]:
+                        if element in item:
+                            data.append(item[2])
         else:
             for i in range(len(self.dataset)):
                 data.append(self.dataset[i][4][7])

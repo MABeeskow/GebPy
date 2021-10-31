@@ -280,6 +280,7 @@ class Minerals:
             self.color_mineral = "grey"
             #
             data_all.append(data)
+        print(data_all[0])
         #
         self.rho_b = DP(dataset=data_all).extract_densities(type="mineral", keyword="bulk")
         self.molar_mass = DP(dataset=data_all).extract_molar_mass()
@@ -294,8 +295,10 @@ class Minerals:
         if self.mineral == "Alkalifeldspar":
             self.molar_mass = self.molar_mass[:,0]
             self.vPvS = self.vP/self.vS
+            self.w_element = DP(dataset=data_all).extract_element_amounts(type="mineral", pos=4)
         else:
             self.vPvS = DP(dataset=data_all).extract_seismic_velocities(type="mineral", keyword="vPvS")
+            self.w_element = DP(dataset=data_all).extract_element_amounts(type="mineral", element="Si")
         #
         self.create_plot(parent=self.parent_mineral, data=self.rho_b/1000, row_id=0, column_id=2, n_rows=10,
                          n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)", color=self.color_mineral)
@@ -342,6 +345,7 @@ class Minerals:
         #
         self.ax.scatter(data_x, data_y, color=color, edgecolor="black")
         self.ax.grid(True)
+        self.ax.set_xticks(np.around(np.linspace(0, max(data_x), 5), 2))
         self.ax.set_axisbelow(True)
         self.ax.set_xlabel(xlabel, fontsize="small")
         self.ax.set_ylabel(ylabel, labelpad=0.5, fontsize="small")
@@ -388,8 +392,10 @@ class Minerals:
         if self.mineral == "Alkalifeldspar":
             self.molar_mass = self.molar_mass[:,0]
             self.vPvS = self.vP/self.vS
+            self.w_element = DP(dataset=data_all).extract_element_amounts(type="mineral", pos=4)
         else:
             self.vPvS = DP(dataset=data_all).extract_seismic_velocities(type="mineral", keyword="vPvS")
+            self.w_element = DP(dataset=data_all).extract_element_amounts(type="mineral", element="Si")
         #
         self.create_plot(parent=self.parent_mineral, data=self.rho_b/1000, row_id=0, column_id=2, n_rows=10,
                          n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)", color=self.color_mineral)
@@ -459,33 +465,45 @@ class Minerals:
             except AttributeError:
                 pass
             #
-            self.create_scatter_plot(parent=self.parent_mineral, data_x=self.rho_b/1000, data_y=self.vP/1000, row_id=0,
-                                     column_id=2, n_rows=10, n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)",
+            if self.mineral == "Quartz":
+                element = "Si"
+            elif self.mineral == "Alkalifeldspar":
+                element = "K"
+            self.create_scatter_plot(parent=self.parent_mineral, data_x=self.w_element, data_y=self.vP/1000, row_id=0,
+                                     column_id=2, n_rows=10, n_columns=3,
+                                     xlabel=str(element)+" amount $w_{"+str(element)+"}$ (1)",
                                      ylabel="Seismic velocity $v_P$ (km/s)", color=self.color_mineral)
-            self.create_scatter_plot(parent=self.parent_mineral, data_x=self.rho_b/1000, data_y=self.vS/1000, row_id=0,
-                                     column_id=5, n_rows=10, n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)",
+            self.create_scatter_plot(parent=self.parent_mineral, data_x=self.w_element, data_y=self.vS/1000, row_id=0,
+                                     column_id=5, n_rows=10, n_columns=3,
+                                     xlabel=str(element)+" amount $w_{"+str(element)+"}$ (1)",
                                      ylabel="Seismic velocity $v_S$ (km/s)", color=self.color_mineral)
-            self.create_scatter_plot(parent=self.parent_mineral, data_x=self.rho_b/1000, data_y=self.vP/self.vS, row_id=0,
-                                     column_id=8, n_rows=10, n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)",
+            self.create_scatter_plot(parent=self.parent_mineral, data_x=self.w_element, data_y=self.vP/self.vS,
+                                     row_id=0, column_id=8, n_rows=10, n_columns=3,
+                                     xlabel=str(element)+" amount $w_{"+str(element)+"}$ (1)",
                                      ylabel="Velocity ratio $v_P/v_S$ (1)", color=self.color_mineral)
-            self.create_scatter_plot(parent=self.parent_mineral, data_x=self.rho_b/1000, data_y=self.bulk_mod, row_id=10,
-                                     column_id=2, n_rows=10, n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)",
+            self.create_scatter_plot(parent=self.parent_mineral, data_x=self.w_element, data_y=self.bulk_mod, row_id=10,
+                                     column_id=2, n_rows=10, n_columns=3,
+                                     xlabel=str(element)+" amount $w_{"+str(element)+"}$ (1)",
                                      ylabel="Bulk modulus $K$ (GPa)", color=self.color_mineral)
-            self.create_scatter_plot(parent=self.parent_mineral, data_x=self.rho_b/1000, data_y=self.shear_mod, row_id=10,
-                                     column_id=5, n_rows=10, n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)",
+            self.create_scatter_plot(parent=self.parent_mineral, data_x=self.w_element, data_y=self.shear_mod,
+                                     row_id=10, column_id=5, n_rows=10, n_columns=3,
+                                     xlabel=str(element)+" amount $w_{"+str(element)+"}$ (1)",
                                      ylabel="Shear modulus $G$ (GPa)", color=self.color_mineral)
-            self.create_scatter_plot(parent=self.parent_mineral, data_x=self.rho_b/1000, data_y=self.poisson, row_id=10,
-                                     column_id=8, n_rows=10, n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)",
+            self.create_scatter_plot(parent=self.parent_mineral, data_x=self.w_element, data_y=self.poisson, row_id=10,
+                                     column_id=8, n_rows=10, n_columns=3,
+                                     xlabel=str(element)+" amount $w_{"+str(element)+"}$ (1)",
                                      ylabel="Poisson's ratio $\\mu$ (1)", color=self.color_mineral)
-            self.create_scatter_plot(parent=self.parent_mineral, data_x=self.rho_b/1000, data_y=self.molar_mass, row_id=20,
-                                     column_id=2, n_rows=5, n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)",
+            self.create_scatter_plot(parent=self.parent_mineral, data_x=self.w_element, data_y=self.molar_mass,
+                                     row_id=20, column_id=2, n_rows=5, n_columns=3,
+                                     xlabel=str(element)+" amount $w_{"+str(element)+"}$ (1)",
                                      ylabel="Molar mass $M$ (g/mol)", color=self.color_mineral)
-            self.create_scatter_plot(parent=self.parent_mineral, data_x=self.rho_b/1000, data_y=self.gamma_ray, row_id=20,
-                                     column_id=5, n_rows=5, n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)",
+            self.create_scatter_plot(parent=self.parent_mineral, data_x=self.w_element, data_y=self.gamma_ray,
+                                     row_id=20, column_id=5, n_rows=5, n_columns=3,
+                                     xlabel=str(element)+" amount $w_{"+str(element)+"}$ (1)",
                                      ylabel="Gamma ray GR (API)", color=self.color_mineral)
-            self.create_scatter_plot(parent=self.parent_mineral, data_x=self.rho_b/1000, data_y=self.photoelectricity,
+            self.create_scatter_plot(parent=self.parent_mineral, data_x=self.w_element, data_y=self.photoelectricity,
                                      row_id=20, column_id=8, n_rows=5, n_columns=3,
-                                     xlabel="Densitiy $\\varrho$ (g/ccm)",
+                                     xlabel=str(element)+" amount $w_{"+str(element)+"}$ (1)",
                                      ylabel="Photoelectricity PE (barns/electron)", color=self.color_mineral)
     #
 #
