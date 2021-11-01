@@ -14,6 +14,7 @@
 import tkinter as tk
 from modules.gui_elements import SimpleElements as SE
 from modules.oxides import Oxides
+from modules.silicates import Tectosilicates
 from modules.minerals import feldspars
 from modules.siliciclastics import sandstone, shale
 from modules.carbonates import limestone, dolomite
@@ -32,7 +33,7 @@ class GebPyGUI(tk.Frame):
         tk.Frame.__init__(self, parent)
         #
         ## CONSTANTS
-        self.color_bg = "white"
+        self.color_bg = "#E9ECED"
         self.color_fg = "black"
         #
         self.parent = parent
@@ -61,44 +62,60 @@ class GebPyGUI(tk.Frame):
             self.parent.grid_columnconfigure(i, minsize=100)
         self.parent.grid_columnconfigure(11, minsize=15)
         #
+        menu_frame = tk.Frame(self.parent, bg="#264653", borderwidth=0, highlightthickness=0)
+        menu_frame.grid(row=0, column=0, rowspan=26, sticky="nesw")
+        menu_frame2 = tk.Frame(self.parent, bg="#7C9097", borderwidth=0, highlightthickness=0)
+        menu_frame2.grid(row=0, column=1, rowspan=26, sticky="nesw")
+        #
+        ## Logo
+        gebpy_logo = tk.PhotoImage(file="../documents/readme_images/GebPy_Logo.png")
+        gebpy_logo = gebpy_logo.subsample(6, 6)
+        img = tk.Label(self.parent, image=gebpy_logo, bg="#264653")
+        img.image = gebpy_logo
+        img.grid(row=0, column=0, rowspan=2, columnspan=1, sticky="nesw")
+        #
         ## Radiobuttons
-        SE(parent=self.parent, row_id=2, column_id=0, bg=self.color_bg, fg=self.color_fg).create_radiobutton(
-            var_rb=self.var_rb_mode, var_rb_set=var_rb_mode_start, value_rb=0, text="Minerals", color_bg=self.color_bg,
+        SE(parent=self.parent, row_id=2, column_id=0, bg=self.color_bg, fg="white").create_radiobutton(
+            var_rb=self.var_rb_mode, var_rb_set=var_rb_mode_start, value_rb=0, text="Minerals", color_bg="#264653",
             command=lambda var_rb_mode=self.var_rb_mode: self.change_radiobutton_mode(var_rb_mode))
-        SE(parent=self.parent, row_id=5, column_id=0, bg=self.color_bg, fg=self.color_fg).create_radiobutton(
-            var_rb=self.var_rb_mode, var_rb_set=var_rb_mode_start, value_rb=1, text="Rocks", color_bg=self.color_bg,
+        SE(parent=self.parent, row_id=5, column_id=0, bg=self.color_bg, fg="white").create_radiobutton(
+            var_rb=self.var_rb_mode, var_rb_set=var_rb_mode_start, value_rb=1, text="Rocks", color_bg="#264653",
             command=lambda var_rb_mode=self.var_rb_mode: self.change_radiobutton_mode(var_rb_mode))
-        SE(parent=self.parent, row_id=8, column_id=0, bg=self.color_bg, fg=self.color_fg).create_radiobutton(
-            var_rb=self.var_rb_mode, var_rb_set=var_rb_mode_start, value_rb=2, text="Sequences", color_bg=self.color_bg,
+        SE(parent=self.parent, row_id=8, column_id=0, bg=self.color_bg, fg="white").create_radiobutton(
+            var_rb=self.var_rb_mode, var_rb_set=var_rb_mode_start, value_rb=2, text="Sequences", color_bg="#264653",
             command=lambda var_rb_mode=self.var_rb_mode: self.change_radiobutton_mode(var_rb_mode))
         #
         ## Option Menu
         var_opt_0_0 = tk.StringVar()
         opt_list_0_0 = ["Oxides", "Sulfides", "Carbonates", "Halogenes", "Tectosilicates"]
-        self.opt_mingroup = SE(parent=self.parent, row_id=3, column_id=0, bg=self.color_bg, fg=self.color_fg).create_option_menu(
+        self.opt_mingroup = SE(parent=self.parent, row_id=3, column_id=0, bg="#264653", fg=self.color_fg).create_option_menu(
             var_opt=var_opt_0_0, var_opt_set="Select Mineral Group", opt_list=opt_list_0_0,
             command=lambda var_opt=var_opt_0_0: self.select_opt(var_opt))
         var_opt_1_0 = tk.StringVar()
         opt_list_1_0 = ["Siliciclastic Rocks", "Carbonate Rocks", "Igneous Rocks", "Metamorphic Rocks",
                         "Evaporite Rocks"]
-        self.opt_rocktype = SE(parent=self.parent, row_id=6, column_id=0, bg=self.color_bg, fg=self.color_fg).create_option_menu(
+        self.opt_rocktype = SE(parent=self.parent, row_id=6, column_id=0, bg="#264653", fg=self.color_fg).create_option_menu(
             var_opt=var_opt_1_0, var_opt_set="Select Rock Type", opt_list=opt_list_1_0,
             command=lambda var_opt=var_opt_1_0: self.select_opt(var_opt))
         var_opt_2_0 = tk.StringVar()
         opt_list_2_0 = ["Zechstein", "Buntsandstein"]
-        self.opt_realseq = SE(parent=self.parent, row_id=9, column_id=0, bg=self.color_bg, fg=self.color_fg).create_option_menu(
+        self.opt_realseq = SE(parent=self.parent, row_id=9, column_id=0, bg="#264653", fg=self.color_fg).create_option_menu(
             var_opt=var_opt_2_0, var_opt_set="Select Real Sequences", opt_list=opt_list_2_0,
             command=lambda var_opt=var_opt_2_0: self.select_opt(var_opt))
-        self.btn_randseq = SE(parent=self.parent, row_id=10, column_id=0, bg=self.color_bg, fg=self.color_fg).create_button(
-            text="Create Random Sequence")
-        self.btn_custseq = SE(parent=self.parent, row_id=11, column_id=0, bg=self.color_bg, fg=self.color_fg).create_button(
-            text="Create Custom Sequence")
+        #
+        ## Button
+        self.btn_randseq = SE(parent=self.parent, row_id=10, column_id=0, bg="#264653",
+                              fg=self.color_fg).create_button(text="Create Random Sequence")
+        self.btn_custseq = SE(parent=self.parent, row_id=11, column_id=0, bg="#264653",
+                              fg=self.color_fg).create_button(text="Create Custom Sequence")
     #
     def select_opt(self, var_opt):
         # Minerals
         if var_opt == "Quartz":
             Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg, mineral=var_opt)
         elif var_opt == "Alkalifeldspar":
+            Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg, mineral=var_opt)
+        elif var_opt == "Plagioclase":
             Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg, mineral=var_opt)
         # Rocks
         elif var_opt == "Sandstone":
@@ -148,7 +165,7 @@ class GebPyGUI(tk.Frame):
                 pass
             var_opt_0_1 = tk.StringVar()
             opt_list_0_1 = ["Quartz", "Magnetite", "Hematite"]
-            self.opt_oxide = SE(parent=self.parent, row_id=4, column_id=0, bg=self.color_bg, fg=self.color_fg).create_option_menu(
+            self.opt_oxide = SE(parent=self.parent, row_id=4, column_id=0, bg="#264653", fg=self.color_fg).create_option_menu(
                 var_opt=var_opt_0_1, var_opt_set="Select Oxide", opt_list=opt_list_0_1,
                 command=lambda var_opt=var_opt_0_1: self.select_opt(var_opt))
         elif var_opt == "Sulfides":
@@ -160,7 +177,7 @@ class GebPyGUI(tk.Frame):
                 pass
             var_opt_0_2 = tk.StringVar()
             opt_list_0_2 = ["Pyrite", "Chalcopyrite", "Galena"]
-            self.opt_sulfide = SE(parent=self.parent, row_id=4, column_id=0, bg=self.color_bg, fg=self.color_fg).create_option_menu(
+            self.opt_sulfide = SE(parent=self.parent, row_id=4, column_id=0, bg="#264653", fg=self.color_fg).create_option_menu(
                 var_opt=var_opt_0_2, var_opt_set="Select Sulfide", opt_list=opt_list_0_2,
                 command=lambda var_opt=var_opt_0_2: self.select_opt(var_opt))
         elif var_opt == "Carbonates":
@@ -172,7 +189,7 @@ class GebPyGUI(tk.Frame):
                 pass
             var_opt_0_3 = tk.StringVar()
             opt_list_0_3 = ["Calcite", "Dolomite", "Magnesite"]
-            self.opt_carb = SE(parent=self.parent, row_id=4, column_id=0, bg=self.color_bg, fg=self.color_fg).create_option_menu(
+            self.opt_carb = SE(parent=self.parent, row_id=4, column_id=0, bg="#264653", fg=self.color_fg).create_option_menu(
                 var_opt=var_opt_0_3, var_opt_set="Select Carbonate", opt_list=opt_list_0_3,
                 command=lambda var_opt=var_opt_0_3: self.select_opt(var_opt))
         elif var_opt == "Halogenes":
@@ -184,7 +201,7 @@ class GebPyGUI(tk.Frame):
                 pass
             var_opt_0_4 = tk.StringVar()
             opt_list_0_4 = ["Halite", "Fluorite", "Sylvite"]
-            self.opt_halogene = SE(parent=self.parent, row_id=4, column_id=0, bg=self.color_bg, fg=self.color_fg).create_option_menu(
+            self.opt_halogene = SE(parent=self.parent, row_id=4, column_id=0, bg="#264653", fg=self.color_fg).create_option_menu(
                 var_opt=var_opt_0_4, var_opt_set="Select Halogene", opt_list=opt_list_0_4,
                 command=lambda var_opt=var_opt_0_4: self.select_opt(var_opt))
         elif var_opt == "Tectosilicates":
@@ -196,33 +213,33 @@ class GebPyGUI(tk.Frame):
             except:
                 pass
             var_opt_0_5 = tk.StringVar()
-            opt_list_0_5 = ["Alkalifeldspar"]
-            self.opt_afs = SE(parent=self.parent, row_id=4, column_id=0, bg=self.color_bg, fg=self.color_fg).create_option_menu(
+            opt_list_0_5 = ["Alkalifeldspar", "Plagioclase"]
+            self.opt_afs = SE(parent=self.parent, row_id=4, column_id=0, bg="#264653", fg=self.color_fg).create_option_menu(
                 var_opt=var_opt_0_5, var_opt_set="Select Tectosilicate", opt_list=opt_list_0_5,
                 command=lambda var_opt=var_opt_0_5: self.select_opt(var_opt))
         elif var_opt == "Siliciclastic Rocks":
             var_opt_1_1 = tk.StringVar()
             opt_list_1_1 = ["Sandstone", "Shale"]
-            self.opt_silic = SE(parent=self.parent, row_id=7, column_id=0, bg=self.color_bg, fg=self.color_fg).create_option_menu(
+            self.opt_silic = SE(parent=self.parent, row_id=7, column_id=0, bg="#264653", fg=self.color_fg).create_option_menu(
                 var_opt=var_opt_1_1, var_opt_set="Select Rock", opt_list=opt_list_1_1,
                 command=lambda var_opt=var_opt_1_1: self.select_opt(var_opt))
         elif var_opt == "Carbonate Rocks":
             var_opt_1_2 = tk.StringVar()
             opt_list_1_2 = ["Limestone", "Dolomite"]
-            self.opt_carb = SE(parent=self.parent, row_id=7, column_id=0, bg=self.color_bg, fg=self.color_fg).create_option_menu(
+            self.opt_carb = SE(parent=self.parent, row_id=7, column_id=0, bg="#264653", fg=self.color_fg).create_option_menu(
                 var_opt=var_opt_1_2, var_opt_set="Select Rock", opt_list=opt_list_1_2,
                 command=lambda var_opt=var_opt_1_2: self.select_opt(var_opt))
         elif var_opt == "Igneous Rocks":
             var_opt_1_3 = tk.StringVar()
             opt_list_1_3 = ["Felsic Rock", "Intermediate Rock", "Granite", "Gabbro", "Diorite", "Granodiorite",
                             "Monzonite", "Syenite", "Tonalite", "Quartzolite", "Qz-rich Granitoid"]
-            self.opt_ign = SE(parent=self.parent, row_id=7, column_id=0, bg=self.color_bg, fg=self.color_fg).create_option_menu(
+            self.opt_ign = SE(parent=self.parent, row_id=7, column_id=0, bg="#264653", fg=self.color_fg).create_option_menu(
                 var_opt=var_opt_1_3, var_opt_set="Select Rock", opt_list=opt_list_1_3,
                 command=lambda var_opt=var_opt_1_3: self.select_opt(var_opt))
         elif var_opt == "Evaporite Rocks":
             var_opt_1_4 = tk.StringVar()
             opt_list_1_4 = ["Halite", "Anhydrite"]
-            self.opt_ign = SE(parent=self.parent, row_id=7, column_id=0, bg=self.color_bg, fg=self.color_fg).create_option_menu(
+            self.opt_ign = SE(parent=self.parent, row_id=7, column_id=0, bg="#264653", fg=self.color_fg).create_option_menu(
                 var_opt=var_opt_1_4, var_opt_set="Select Rock", opt_list=opt_list_1_4,
                 command=lambda var_opt=var_opt_1_4: self.select_opt(var_opt))
     #
@@ -257,18 +274,18 @@ class Minerals:
         self.var_entr = tk.IntVar()
         var_entr_start = 100
         #
-        SE(parent=self.parent_mineral, row_id=13, column_id=0, bg=self.color_bg,
-           fg=color_fg).create_radiobutton(var_rb=self.var_rb, var_rb_set=var_rb_start, value_rb=0, text="Histogram",
-                                           color_bg=self.color_bg,
+        SE(parent=self.parent_mineral, row_id=15, column_id=0, bg=self.color_bg,
+           fg="white").create_radiobutton(var_rb=self.var_rb, var_rb_set=var_rb_start, value_rb=0, text="Histogram",
+                                           color_bg="#264653",
                                            command=lambda var_rb=self.var_rb: self.change_radiobutton(var_rb))
-        SE(parent=self.parent_mineral, row_id=14, column_id=0, bg=self.color_bg,
-           fg=color_fg).create_radiobutton(var_rb=self.var_rb, var_rb_set=var_rb_start, value_rb=1, text="Scatter",
-                                           color_bg=self.color_bg,
+        SE(parent=self.parent_mineral, row_id=16, column_id=0, bg=self.color_bg,
+           fg="white").create_radiobutton(var_rb=self.var_rb, var_rb_set=var_rb_start, value_rb=1, text="Scatter",
+                                           color_bg="#264653",
                                            command=lambda var_rb=self.var_rb: self.change_radiobutton(var_rb))
         #
-        SE(parent=self.parent_mineral, row_id=15, column_id=0, bg=self.color_bg,
-           fg=color_fg).create_label(text="Number of samples")
-        SE(parent=self.parent_mineral, row_id=16, column_id=0, bg=self.color_bg,
+        SE(parent=self.parent_mineral, row_id=13, column_id=0, bg="#264653",
+           fg="white").create_label(text="Number of samples", relief=tk.RAISED)
+        SE(parent=self.parent_mineral, row_id=14, column_id=0, bg=self.color_bg,
            fg=color_fg).create_entry(var_entr=self.var_entr, var_entr_set=var_entr_start, command=lambda event, var_entr=self.var_entr: self.enter_samples(var_entr, event))
         #
         data_all = []
@@ -276,11 +293,12 @@ class Minerals:
             if self.mineral == "Quartz":
                 data = Oxides(impurity="pure").create_quartz()
             elif self.mineral == "Alkalifeldspar":
-                data = feldspars.alkalifeldspar(self, keyword="None")
-            self.color_mineral = "grey"
+                data = Tectosilicates(impurity="pure").create_alkalifeldspar()
+            elif self.mineral == "Plagioclase":
+                data = Tectosilicates(impurity="pure").create_plagioclase()
+            self.color_mineral = "#7C9097"
             #
             data_all.append(data)
-        print(data_all[0])
         #
         self.rho_b = DP(dataset=data_all).extract_densities(type="mineral", keyword="bulk")
         self.molar_mass = DP(dataset=data_all).extract_molar_mass()
@@ -289,16 +307,16 @@ class Minerals:
         self.poisson = DP(dataset=data_all).extract_elastic_moduli(type="mineral", keyword="poisson")
         self.vP = DP(dataset=data_all).extract_seismic_velocities(type="mineral", keyword="vP")
         self.vS = DP(dataset=data_all).extract_seismic_velocities(type="mineral", keyword="vS")
+        self.vPvS = DP(dataset=data_all).extract_seismic_velocities(type="mineral", keyword="vPvS")
         self.gamma_ray = DP(dataset=data_all).extract_gamma_ray(type="mineral")
         self.photoelectricity = DP(dataset=data_all).extract_photoelectricity(type="mineral")
         #
-        if self.mineral == "Alkalifeldspar":
-            self.molar_mass = self.molar_mass[:,0]
-            self.vPvS = self.vP/self.vS
-            self.w_element = DP(dataset=data_all).extract_element_amounts(type="mineral", pos=4)
-        else:
-            self.vPvS = DP(dataset=data_all).extract_seismic_velocities(type="mineral", keyword="vPvS")
+        if self.mineral == "Quartz":
             self.w_element = DP(dataset=data_all).extract_element_amounts(type="mineral", element="Si")
+        elif self.mineral == "Alkalifeldspar":
+            self.w_element = DP(dataset=data_all).extract_element_amounts(type="mineral", element="K")
+        elif self.mineral == "Plagioclase":
+            self.w_element = DP(dataset=data_all).extract_element_amounts(type="mineral", element="Ca")
         #
         self.create_plot(parent=self.parent_mineral, data=self.rho_b/1000, row_id=0, column_id=2, n_rows=10,
                          n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)", color=self.color_mineral)
@@ -322,10 +340,10 @@ class Minerals:
     def create_plot(self, parent, data, row_id, column_id, n_rows, n_columns, xlabel, color):
         #
         self.canvas_histo = None
-        self.fig_histo = Figure(facecolor=self.color_bg)
+        self.fig_histo = Figure(facecolor="#E9ECED")
         self.ax_histo = self.fig_histo.add_subplot()
         #
-        self.ax_histo.axvline(x=np.mean(data), color="black", linestyle="dashed")
+        self.ax_histo.axvline(x=np.mean(data), color="#E76F51", linewidth=3, linestyle="dashed")
         self.ax_histo.hist(data, bins=15, color=color, edgecolor="black")
         self.ax_histo.grid(True)
         self.ax_histo.set_axisbelow(True)
@@ -374,8 +392,10 @@ class Minerals:
             if self.mineral == "Quartz":
                 data = Oxides(impurity="pure").create_quartz()
             elif self.mineral == "Alkalifeldspar":
-                data = feldspars.alkalifeldspar(self, keyword="None")
-            self.color_mineral = "grey"
+                data = Tectosilicates(impurity="pure").create_alkalifeldspar()
+            elif self.mineral == "Plagioclase":
+                data = Tectosilicates(impurity="pure").create_plagioclase()
+            self.color_mineral = "#7C9097"
             #
             data_all.append(data)
         #
@@ -386,16 +406,16 @@ class Minerals:
         self.poisson = DP(dataset=data_all).extract_elastic_moduli(type="mineral", keyword="poisson")
         self.vP = DP(dataset=data_all).extract_seismic_velocities(type="mineral", keyword="vP")
         self.vS = DP(dataset=data_all).extract_seismic_velocities(type="mineral", keyword="vS")
+        self.vPvS = DP(dataset=data_all).extract_seismic_velocities(type="mineral", keyword="vPvS")
         self.gamma_ray = DP(dataset=data_all).extract_gamma_ray(type="mineral")
         self.photoelectricity = DP(dataset=data_all).extract_photoelectricity(type="mineral")
         #
-        if self.mineral == "Alkalifeldspar":
-            self.molar_mass = self.molar_mass[:,0]
-            self.vPvS = self.vP/self.vS
-            self.w_element = DP(dataset=data_all).extract_element_amounts(type="mineral", pos=4)
-        else:
-            self.vPvS = DP(dataset=data_all).extract_seismic_velocities(type="mineral", keyword="vPvS")
+        if self.mineral == "Quartz":
             self.w_element = DP(dataset=data_all).extract_element_amounts(type="mineral", element="Si")
+        elif self.mineral == "Alkalifeldspar":
+            self.w_element = DP(dataset=data_all).extract_element_amounts(type="mineral", element="K")
+        elif self.mineral == "Plagioclase":
+            self.w_element = DP(dataset=data_all).extract_element_amounts(type="mineral", element="Ca")
         #
         self.create_plot(parent=self.parent_mineral, data=self.rho_b/1000, row_id=0, column_id=2, n_rows=10,
                          n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)", color=self.color_mineral)
@@ -469,6 +489,8 @@ class Minerals:
                 element = "Si"
             elif self.mineral == "Alkalifeldspar":
                 element = "K"
+            elif self.mineral == "Plagioclase":
+                element = "Ca"
             self.create_scatter_plot(parent=self.parent_mineral, data_x=self.w_element, data_y=self.vP/1000, row_id=0,
                                      column_id=2, n_rows=10, n_columns=3,
                                      xlabel=str(element)+" amount $w_{"+str(element)+"}$ (1)",
@@ -518,18 +540,18 @@ class Rocks:
         var_rb_start = 0
         self.rock = rock
         #
-        SE(parent=self.parent_sandstone, row_id=13, column_id=0, bg=self.color_bg,
-           fg=color_fg).create_radiobutton(var_rb=self.var_rb, var_rb_set=var_rb_start, value_rb=0, text="Histogram",
-                                           color_bg=self.color_bg,
+        SE(parent=self.parent_sandstone, row_id=15, column_id=0, bg="#264653",
+           fg="white").create_radiobutton(var_rb=self.var_rb, var_rb_set=var_rb_start, value_rb=0, text="Histogram",
+                                           color_bg="#264653",
                                            command=lambda var_rb=self.var_rb: self.change_radiobutton(var_rb))
-        SE(parent=self.parent_sandstone, row_id=14, column_id=0, bg=self.color_bg,
-           fg=color_fg).create_radiobutton(var_rb=self.var_rb, var_rb_set=var_rb_start, value_rb=1, text="Scatter",
-                                           color_bg=self.color_bg,
+        SE(parent=self.parent_sandstone, row_id=16, column_id=0, bg="#264653",
+           fg="white").create_radiobutton(var_rb=self.var_rb, var_rb_set=var_rb_start, value_rb=1, text="Scatter",
+                                           color_bg="#264653",
                                            command=lambda var_rb=self.var_rb: self.change_radiobutton(var_rb))
         #
-        SE(parent=self.parent_sandstone, row_id=15, column_id=0, bg=self.color_bg,
-           fg=color_fg).create_label(text="Number of samples")
-        SE(parent=self.parent_sandstone, row_id=16, column_id=0, bg=self.color_bg,
+        SE(parent=self.parent_sandstone, row_id=13, column_id=0, bg="#264653",
+           fg="white").create_label(text="Number of samples")
+        SE(parent=self.parent_sandstone, row_id=14, column_id=0, bg="#264653",
            fg=color_fg).create_entry(var_entr=self.var_entr, var_entr_set=var_entr_start, command=lambda event, var_entr=self.var_entr: self.enter_samples(var_entr, event))
         #
         data_all = []
@@ -621,7 +643,7 @@ class Rocks:
     def create_plot(self, parent, data, row_id, column_id, n_rows, n_columns, xlabel, color):
         #
         self.canvas_histo = None
-        self.fig_histo = Figure(facecolor=self.color_bg)
+        self.fig_histo = Figure(facecolor="#E9ECED")
         self.ax_histo = self.fig_histo.add_subplot()
         #
         self.ax_histo.axvline(x=np.mean(data), color="black", linestyle="dashed")
@@ -639,7 +661,7 @@ class Rocks:
     def create_scatter_plot(self, parent, data_x, data_y, row_id, column_id, n_rows, n_columns, xlabel, ylabel, color):
         #
         self.canvas = None
-        self.fig = Figure(facecolor=self.color_bg)
+        self.fig = Figure(facecolor="#E9ECED")
         self.ax = self.fig.add_subplot()
         #
         self.ax.scatter(data_x, data_y, color=color, edgecolor="black")

@@ -18,7 +18,7 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 from matplotlib.ticker import NullFormatter
-from modules import sequences, geophysics, minerals, oxides, sulfides, sulfates
+from modules import sequences, geophysics, minerals, oxides, sulfides, sulfates, silicates
 
 class TESTING_MINERALS:
     #
@@ -306,5 +306,26 @@ class TESTING_MINERALS:
         # Test Alunite (incl. trace elements)
         data = sulfates.Sulfates(impurity="pure").create_alunite()
         print("Alunite:\n", data)
+        print("")
+        ## TESTING SILICATES
+        print("TEST - TECTOSILICATES (from silicates.py)")
+        # Test Alkalifeldspar (incl. trace elements)
+        data = silicates.Tectosilicates(impurity="pure").create_alkalifeldspar()
+        print("Alkalifeldspar (no preference):\n", data)
+        data = silicates.Tectosilicates(impurity="pure").create_alkalifeldspar(enrichment="random")
+        print("Alkalifeldspar (no preference, but with correct labeling):\n", data)
+        data = silicates.Tectosilicates(impurity="pure").create_alkalifeldspar(enrichment="Na")
+        print("Alkalifeldspar (Na-enriched):\n", data)
+        data = silicates.Tectosilicates(impurity="pure").create_alkalifeldspar(enrichment="K")
+        print("Alkalifeldspar (K-enriched):\n", data)
+        # Test Plagioclase (incl. trace elements)
+        data = silicates.Tectosilicates(impurity="pure").create_plagioclase()
+        print("Plagioclase (no preference):\n", data)
+        data = silicates.Tectosilicates(impurity="pure").create_plagioclase(enrichment="random")
+        print("Plagioclase (no preference, but with correct labeling):\n", data)
+        data = silicates.Tectosilicates(impurity="pure").create_plagioclase(enrichment="Na")
+        print("Plagioclase (Na-enriched):\n", data)
+        data = silicates.Tectosilicates(impurity="pure").create_plagioclase(enrichment="Ca")
+        print("Plagioclase (Ca-enriched):\n", data)
 # RUN
 TESTING_MINERALS()

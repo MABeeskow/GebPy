@@ -31,6 +31,7 @@ class SimpleElements:
             opt_menu = tk.OptionMenu(self.parent, var_opt, *opt_list)
         else:
             opt_menu = tk.OptionMenu(self.parent, var_opt, *opt_list, command=command)
+        opt_menu.config(bg=self.bg)
         opt_menu.grid(row=self.row_id, column=self.column_id, rowspan=self.n_rows, columnspan=self.n_columns,
                       sticky="nesw")
         opt_menu.config(bg=self.bg)
@@ -39,7 +40,7 @@ class SimpleElements:
     #
     def create_entry(self, var_entr, var_entr_set, command=None):
         var_entr.set(var_entr_set)
-        entry = tk.Entry(self.parent, textvariable=var_entr)
+        entry = tk.Entry(self.parent, textvariable=var_entr, highlightthickness=0)
         entry.grid(row=self.row_id, column=self.column_id, rowspan=self.n_rows, columnspan=self.n_columns,
                    sticky="nesw")
         if command != None:
@@ -51,15 +52,16 @@ class SimpleElements:
             rb = tk.Radiobutton(self.parent, text=text, variable=var_rb, value=value_rb, bg=color_bg,
                                 activebackground=color_bg, relief=relief)
         else:
-            rb = tk.Radiobutton(self.parent, text=text, variable=var_rb, value=value_rb, bg=color_bg,
+            rb = tk.Radiobutton(self.parent, text=text, variable=var_rb, value=value_rb, bg=color_bg, fg=self.fg,
                                 activebackground=color_bg, relief=relief, command=command)
         rb.grid(row=self.row_id, column=self.column_id, rowspan=self.n_rows, columnspan=self.n_columns, sticky="nesw")
     #
     def create_button(self, text, command=None):
         if command == None:
-            btn = tk.Button(self.parent, text=text, fg=self.fg, bg=self.bg)
+            btn = tk.Button(self.parent, text=text, bg=self.bg, fg=self.fg, highlightbackground=self.bg)
         else:
-            btn = tk.Button(self.parent, text=text, fg=self.fg, bg=self.bg, command=command)
+            btn = tk.Button(self.parent, text=text, bg=self.bg, fg=self.fg, highlightbackground=self.bg,
+                            highlightthickness=0, command=command)
         btn.grid(row=self.row_id, column=self.column_id, rowspan=self.n_rows, columnspan=self.n_columns, sticky="nesw")
         #
         return btn
