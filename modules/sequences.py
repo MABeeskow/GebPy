@@ -146,7 +146,7 @@ class DataProcessing:
         #
         return np.array(data)
     #
-    def extract_densities(self, type="sequence", keyword="bulk"):
+    def extract_densities(self, type="sequence", keyword="bulk", dict=False):
         """Returns a list that contains the densities of the previously generated rock units.
         **Arguments**:
             type: sequence, rock
@@ -179,6 +179,12 @@ class DataProcessing:
         elif type == "mineral":
             for i in range(len(self.dataset)):
                 data.append(self.dataset[i][2])
+        elif type == "rock":
+            for i in range(len(self.dataset)):
+                if dict == False:
+                    data.append(self.dataset[i][2])
+                else:
+                    data.append(self.dataset[i]["rho"])
         else:
             for i in range(len(self.dataset)):
                 if keyword == "all":
@@ -192,7 +198,7 @@ class DataProcessing:
         #
         return np.array(data)
     #
-    def extract_elastic_moduli(self, type="sequence", keyword="bulk"):
+    def extract_elastic_moduli(self, type="sequence", keyword="bulk", dict=False):
         """Returns a list that contains the elastic moduli of the previously generated rock units.
         **Arguments**:
             type: sequence, rock
@@ -211,7 +217,7 @@ class DataProcessing:
                         data.append(self.dataset[i][j][4][2][1])
                     elif keyword == "young" or keyword == "E":
                         data.append(self.dataset[i][j][4][2][2])
-                    elif keyword == "poisson" or keyword == "mu":
+                    elif keyword == "poisson" or keyword == "nu":
                         data.append(self.dataset[i][j][4][2][3])
         elif type == "random":
             for i in range(len(self.dataset)):
@@ -223,7 +229,7 @@ class DataProcessing:
                     data.append(self.dataset[i][2][1])
                 elif keyword == "young" or keyword == "E":
                     data.append(self.dataset[i][2][2])
-                elif keyword == "poisson" or keyword == "mu":
+                elif keyword == "poisson" or keyword == "nu":
                     data.append(self.dataset[i][2][3])
         elif type == "mineral":
             for i in range(len(self.dataset)):
@@ -235,8 +241,23 @@ class DataProcessing:
                     data.append(self.dataset[i][3][1])
                 elif keyword == "young" or keyword == "E":
                     data.append(self.dataset[i][3][2])
-                elif keyword == "poisson" or keyword == "mu":
+                elif keyword == "poisson" or keyword == "nu":
                     data.append(self.dataset[i][3][3])
+        elif type == "rock":
+            for i in range(len(self.dataset)):
+                if dict == False:
+                    if keyword == "all":
+                        data.append(self.dataset[i][2])
+                    elif keyword == "bulk" or keyword == "K":
+                        data.append(self.dataset[i][2][0])
+                    elif keyword == "shear" or keyword == "G":
+                        data.append(self.dataset[i][2][1])
+                    elif keyword == "young" or keyword == "E":
+                        data.append(self.dataset[i][2][2])
+                    elif keyword == "poisson" or keyword == "nu":
+                        data.append(self.dataset[i][2][3])
+                else:
+                    data.append(self.dataset[i][keyword])
         else:
             for i in range(len(self.dataset)):
                 if keyword == "all":
@@ -247,12 +268,12 @@ class DataProcessing:
                     data.append(self.dataset[i][4][2][1])
                 elif keyword == "young" or keyword == "E":
                     data.append(self.dataset[i][4][2][2])
-                elif keyword == "poisson" or keyword == "mu":
+                elif keyword == "poisson" or keyword == "nu":
                     data.append(self.dataset[i][4][2][3])
         #
         return np.array(data)
     #
-    def extract_seismic_velocities(self, type="sequence", keyword="p-wave"):
+    def extract_seismic_velocities(self, type="sequence", keyword="p-wave", dict=False):
         """Returns a list that contains the seismic velocities of the previously generated rock units.
         **Arguments**:
             type: sequence, rock
@@ -287,6 +308,17 @@ class DataProcessing:
                     data.append(self.dataset[i][4][1])
                 elif keyword in ["vPvS"]:
                     data.append(self.dataset[i][4][2])
+        elif type == "rock":
+            for i in range(len(self.dataset)):
+                if dict == False:
+                    if keyword == "all":
+                        data.append(self.dataset[i][3])
+                    elif keyword in ["p-wave", "compressional", "vP"]:
+                        data.append(self.dataset[i][3][0])
+                    elif keyword in ["s-wave", "shear", "vS"]:
+                        data.append(self.dataset[i][3][1])
+                else:
+                    data.append(self.dataset[i][keyword])
         else:
             for i in range(len(self.dataset)):
                 if keyword == "all":
@@ -298,7 +330,7 @@ class DataProcessing:
         #
         return np.array(data)
     #
-    def extract_porosity(self, type="sequence"):
+    def extract_porosity(self, type="sequence", keyword="phi", dict=False):
         """Returns a list that contains the porosities of the previously generated rock units.
         **Arguments**:
             type: sequence, rock
@@ -313,6 +345,12 @@ class DataProcessing:
         elif type == "random":
             for i in range(len(self.dataset)):
                 data.append(self.dataset[i][4][0])
+        elif type == "rock":
+            for i in range(len(self.dataset)):
+                if dict == False:
+                    data.append(self.dataset[i][4][0])
+                else:
+                    data.append(self.dataset[i][keyword])
         else:
             for i in range(len(self.dataset)):
                 data.append(self.dataset[i][4][4][0])
@@ -334,7 +372,7 @@ class DataProcessing:
         #
         return data
     #
-    def extract_gamma_ray(self, type="sequence"):
+    def extract_gamma_ray(self, type="sequence", keyword="GR", dict=False):
         """Returns a list that contains the natural gamma ray values of the previously generated rock units.
         **Arguments**:
             type: sequence, rock
@@ -352,13 +390,19 @@ class DataProcessing:
         elif type == "mineral":
             for i in range(len(self.dataset)):
                 data.append(self.dataset[i][5][0])
+        elif type == "rock":
+            for i in range(len(self.dataset)):
+                if dict == False:
+                    data.append(self.dataset[i][6][0])
+                else:
+                    data.append(self.dataset[i][keyword])
         else:
             for i in range(len(self.dataset)):
                 data.append(self.dataset[i][4][6][0])
         #
         return np.array(data)
     #
-    def extract_photoelectricity(self, type="sequence"):
+    def extract_photoelectricity(self, type="sequence", keyword="PE", dict=False):
         """Returns a list that contains the photoelectricity values of the previously generated rock units.
         **Arguments**:
             type: sequence, rock
@@ -376,9 +420,28 @@ class DataProcessing:
         elif type == "mineral":
             for i in range(len(self.dataset)):
                 data.append(self.dataset[i][5][2])
+        elif type == "rock":
+            for i in range(len(self.dataset)):
+                if dict == False:
+                    data.append(self.dataset[i][6][1])
+                else:
+                    data.append(self.dataset[i][keyword])
         else:
             for i in range(len(self.dataset)):
                 data.append(self.dataset[i][4][6][1])
+        #
+        return np.array(data)
+    #
+    def extract_data(self, keyword="rho"):
+        """Returns a list that contains the photoelectricity values of the previously generated rock units.
+        **Arguments**:
+            type: keyword
+        **Outputs**:
+            data: list of photoelectricity values
+        """
+        data = []
+        for index, item in enumerate(self.dataset, start=0):
+            data.append(item[keyword])
         #
         return np.array(data)
     #
@@ -420,6 +483,9 @@ class DataProcessing:
             for i in range(len(self.dataset)):
                 for j in range(len(self.dataset[i])):
                     data.append(self.dataset[i][j][4][8])
+        elif type == "rock":
+            for i in range(len(self.dataset)):
+                data.append(self.dataset[i][0][1])
         else:
             for i in range(len(self.dataset)):
                 data.append(self.dataset[i][4][8])

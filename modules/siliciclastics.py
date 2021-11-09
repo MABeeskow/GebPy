@@ -514,7 +514,11 @@ class sandstone:
         #
         return sandstone
     
-    def create_simple_sandstone(self, w_Fe=None, amounts=None, porosity=None, pure=False):
+    def create_simple_sandstone(self, w_Fe=None, amounts=None, porosity=None, pure=False, dict=False):
+        #
+        results = {}
+        results["rock"] = "sandstone"
+        #
         # [symbol, atomic number, atomic mass, oxidation states, melting point, boiling point, density, electronegativity]
         chemH = ["H", 1, 1.0078, 1, 13.99, 20.271, 0.084, 2.2]
         chemC = ["C", 6, 12.009, 4, 0.0, 3915, 3510, 2.55]
@@ -863,8 +867,13 @@ class sandstone:
                 cond = False
         element_list = ["H", "C", "O", "F", "Na", "Mg", "Al", "Si", "K", "Ca", "Fe"]
         mineral_list = ["Qz", "Kfs", "Pl", "Cal", "Chl", "Ms", "Hem"]
-        #data.append(composition)
         data.append([element_list, mineral_list])
+        results["chemistry"] = {}
+        results["mineralogy"] = {}
+        for index, element in enumerate(element_list, start=0):
+            results["chemistry"][element] = concentrations[index]
+        for index, mineral in enumerate(mineral_list, start=0):
+            results["mineralogy"][mineral] = amounts[index]
         #
         mineralogy = [chem_quartz, chem_alkalifeldspar, chem_plagioclase, chem_calcite, chem_chlorite, chem_muscovite, chem_hematite]
         #
@@ -896,6 +905,8 @@ class sandstone:
                 phi = rd.uniform(0.05, 0.10)
         else:
             phi = porosity
+        results["phi"] = phi
+        results["fluid"] = self.fluid
         #
         if self.fluid == "water" or self.w_Fe != None:
             rho = (1 - phi) * rhoSolid + phi * water[2] / 1000
@@ -911,10 +922,22 @@ class sandstone:
             poisson_seismic = 0.5*(vP**2 - 2*vS**2)/(vP**2 - vS**2)
             poisson_elastic = (3*K_bulk - 2*G_bulk)/(6*K_bulk + 2*G_bulk)
             poisson_mineralogical = w_Qz*chem_quartz[3][3] + w_Afs*chem_alkalifeldspar[3][3] + w_Pl*chem_plagioclase[3][3] + w_Cal*chem_calcite[3][3] + w_Chl*chem_chlorite[3][3] + w_Ms*chem_muscovite[3][3] + w_Hem*chem_hematite[3][3]
-            #print("Poisson:", round(poisson_seismic,3), round(poisson_elastic,3), round(poisson_mineralogical,3))
+            # print("Poisson:", round(E_bulk*10**(-6), 3), round(poisson_seismic, 3), round(poisson_elastic, 3), round(poisson_mineralogical, 3))
+            #
+            results["rho"] = round(rho*1000, 4)
+            results["vP"] = round(vP, 4)
+            results["vS"] = round(vS, 4)
+            results["vP/vS"] = round(vP/vS, 4)
+            results["G"] = round(G_bulk*10**(-6), 4)
+            results["K"] = round(K_bulk*10**(-6), 4)
+            results["E"] = round(E_bulk*10**(-6), 4)
+            results["nu"] = round(poisson_mineralogical, 4)
+            results["GR"] = round(GR, 4)
+            results["PE"] = round(PE, 4)
             #
             data.append([round(rho, 3), round(rhoSolid, 3), round(water[2] / 1000, 3)])
-            data.append([round(K_bulk*10**(-6), 2), round(G_bulk*10**(-6), 2), round(E_bulk*10**(-6), 2), round(poisson_mineralogical, 3)])
+            data.append([round(K_bulk*10**(-6), 2), round(G_bulk*10**(-6), 2), round(E_bulk*10**(-6), 2),
+                         round(poisson_mineralogical, 3)])
             data.append([round(vP, 2), round(vS, 2), round(vP_solid, 2), round(water[4][0], 2)])
             data.append([round(phi, 3), round(phiD, 3), round(phiN, 3)])
             data.append("water")
@@ -936,6 +959,17 @@ class sandstone:
             poisson_elastic = (3*K_bulk - 2*G_bulk)/(6*K_bulk + 2*G_bulk)
             poisson_mineralogical = w_Qz*chem_quartz[3][3] + w_Afs*chem_alkalifeldspar[3][3] + w_Pl*chem_plagioclase[3][3] + w_Cal*chem_calcite[3][3] + w_Chl*chem_chlorite[3][3] + w_Ms*chem_muscovite[3][3] + w_Hem*chem_hematite[3][3]
             #print("Poisson:", round(poisson_seismic,3), round(poisson_elastic,3), round(poisson_mineralogical,3))
+            #
+            results["rho"] = round(rho*1000, 4)
+            results["vP"] = round(vP, 4)
+            results["vS"] = round(vS, 4)
+            results["vP/vS"] = round(vP/vS, 4)
+            results["G"] = round(G_bulk*10**(-6), 4)
+            results["K"] = round(K_bulk*10**(-6), 4)
+            results["E"] = round(E_bulk*10**(-6), 4)
+            results["nu"] = round(poisson_mineralogical, 4)
+            results["GR"] = round(GR, 4)
+            results["PE"] = round(PE, 4)
             #
             data.append([round(rho, 3), round(rhoSolid, 3), round(oil[2] / 1000, 3)])
             data.append([round(K_bulk*10**(-6), 2), round(G_bulk*10**(-6), 2), round(E_bulk*10**(-6), 2), round(poisson_mineralogical, 3)])
@@ -961,6 +995,17 @@ class sandstone:
             poisson_mineralogical = w_Qz*chem_quartz[3][3] + w_Afs*chem_alkalifeldspar[3][3] + w_Pl*chem_plagioclase[3][3] + w_Cal*chem_calcite[3][3] + w_Chl*chem_chlorite[3][3] + w_Ms*chem_muscovite[3][3] + w_Hem*chem_hematite[3][3]
             #print("Poisson:", round(poisson_seismic,3), round(poisson_elastic,3), round(poisson_mineralogical,3))
             #
+            results["rho"] = round(rho*1000, 4)
+            results["vP"] = round(vP, 4)
+            results["vS"] = round(vS, 4)
+            results["vP/vS"] = round(vP/vS, 4)
+            results["G"] = round(G_bulk*10**(-6), 4)
+            results["K"] = round(K_bulk*10**(-6), 4)
+            results["E"] = round(E_bulk*10**(-6), 4)
+            results["nu"] = round(poisson_mineralogical, 4)
+            results["GR"] = round(GR, 4)
+            results["PE"] = round(PE, 4)
+            #
             data.append([round(rho, 3), round(rhoSolid, 3), round(gas[2] / 1000, 3)])
             data.append([round(K_bulk*10**(-6), 2), round(G_bulk*10**(-6), 2), round(E_bulk*10**(-6), 2), round(poisson_mineralogical, 3)])
             data.append([round(vP, 2), round(vS, 2), round(vP_solid, 2), round(gas[4][0], 2)])
@@ -985,6 +1030,17 @@ class sandstone:
             poisson_mineralogical = w_Qz*chem_quartz[3][3] + w_Afs*chem_alkalifeldspar[3][3] + w_Pl*chem_plagioclase[3][3] + w_Cal*chem_calcite[3][3] + w_Chl*chem_chlorite[3][3] + w_Ms*chem_muscovite[3][3] + w_Hem*chem_hematite[3][3]
             #print("Poisson:", round(poisson_seismic,3), round(poisson_elastic,3), round(poisson_mineralogical,3))
             #
+            results["rho"] = round(rho*1000, 4)
+            results["vP"] = round(vP, 4)
+            results["vS"] = round(vS, 4)
+            results["vP/vS"] = round(vP/vS, 4)
+            results["K"] = round(K_bulk*10**(-6), 4)
+            results["G"] = round(G_bulk*10**(-6), 4)
+            results["E"] = round(E_bulk*10**(-6), 4)
+            results["nu"] = round(poisson_mineralogical, 4)
+            results["GR"] = round(GR, 4)
+            results["PE"] = round(PE, 4)
+            #
             data.append([round(rho, 3), round(rhoSolid, 3), round(gas[2] / 1000, 3)])
             data.append([round(K_bulk*10**(-6), 2), round(G_bulk*10**(-6), 2), round(E_bulk*10**(-6), 2), round(poisson_mineralogical, 3)])
             data.append([round(vP, 2), round(vS, 2), round(vP_solid, 2), round(gas[4][0], 2)])
@@ -994,7 +1050,10 @@ class sandstone:
             data.append(concentrations)
             data.append(amounts)
         #
-        return data
+        if dict == False:
+            return data
+        else:
+            return results
     #
     def create_feldspathic_sandstone(self, amounts=None, porosity=None, pure=False):
         self.amounts = amounts
