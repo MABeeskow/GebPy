@@ -605,12 +605,12 @@ class sandstone:
                     w_ore = round(0.0, 4)
                     w_Hem2 = rd.randint(0, 100)/100
                     w_Hem = round(w_ore*w_Hem2, 4)
-                    w_Fsp = round(rd.randint(25, int((1-w_ore)*75))/100, 4)
+                    w_Fsp = round(rd.randint(25, int((1-w_ore)*50))/100, 4)
                     w_Afs2 = rd.randint(75, 100)/100
                     w_Pl2 = 1 - w_Afs2
                     w_Afs = round(w_Fsp*w_Afs2, 4)
                     w_Pl = round(w_Fsp*w_Pl2, 4)
-                    w_Qz = round(rd.randint(25, int((1-w_ore-w_Fsp)*100))/100, 4)
+                    w_Qz = round(rd.randint(50, int((1-w_ore-w_Fsp)*100))/100, 4)
                     w_rf = round(1 - w_Qz - w_Fsp - w_ore, 4)
                     magicnumber2 = rd.randint(0, 2)
                     if magicnumber2 == 0:
@@ -643,12 +643,12 @@ class sandstone:
                     w_ore = round(0.0, 4)
                     w_Hem2 = rd.randint(0, 100)/100
                     w_Hem = round(w_ore*w_Hem2, 4)
-                    w_Fsp = round(rd.randint(25, int((1-w_ore)*75))/100, 4)
+                    w_Fsp = round(rd.randint(25, int((1-w_ore)*50))/100, 4)
                     w_Pl2 = rd.randint(75, 100)/100
                     w_Afs2 = 1 - w_Pl2
                     w_Pl = round(w_Fsp*w_Pl2, 4)
                     w_Afs = round(w_Fsp*w_Afs2, 4)
-                    w_Qz = round(rd.randint(25, int((1-w_ore-w_Fsp)*100))/100, 4)
+                    w_Qz = round(rd.randint(50, int((1-w_ore-w_Fsp)*100))/100, 4)
                     w_rf = round(1 - w_Qz - w_Fsp, 4)
                     magicnumber2 = rd.randint(0, 2)
                     if magicnumber2 == 0:
@@ -682,7 +682,7 @@ class sandstone:
                     w_Hem2 = rd.randint(0, 100)/100
                     w_Hem = round(w_ore*w_Hem2, 4)
                     w_rf = round(rd.randint(25, 50)/100, 4)
-                    w_Qz = round(rd.randint(25, int((1-w_rf)*100))/100, 4)
+                    w_Qz = round(rd.randint(50, int((1-w_rf)*100))/100, 4)
                     w_Fsp = round(1 - w_rf - w_Qz, 4)
                     w_Afs2 = rd.randint(0, 100)/100
                     w_Pl2 = 1 - w_Afs2
@@ -699,7 +699,7 @@ class sandstone:
                     w_Hem2 = rd.randint(0, 100)/100
                     w_Hem = round(w_ore*w_Hem2, 4)
                     w_rf = round(rd.randint(25, 50)/100, 4)
-                    w_Qz = round(rd.randint(25, int((1-w_rf)*100))/100, 4)
+                    w_Qz = round(rd.randint(50, int((1-w_rf)*100))/100, 4)
                     w_Fsp = round(1 - w_rf - w_Qz, 4)
                     w_Afs2 = rd.randint(0, 100)/100
                     w_Pl2 = 1 - w_Afs2
@@ -905,6 +905,7 @@ class sandstone:
                 phi = rd.uniform(0.05, 0.10)
         else:
             phi = porosity
+        phi = round(phi, 4)
         results["phi"] = phi
         results["fluid"] = self.fluid
         #
@@ -1261,8 +1262,8 @@ class sandstone:
     #
 class shale:
     #
-    def __init__(self):
-        pass
+    def __init__(self, fluid=None):
+        self.fluid = fluid
     #
     def create_shale(self, w_C=None, w_Na=None, w_Mg=None, w_K=None, w_Ca=None, w_Fe=None, amounts=None):
         # Parameters
@@ -1476,7 +1477,11 @@ class shale:
         #
         return data
     #
-    def create_simple_shale(self, w_C=None, w_F=None, w_Na=None, w_Mg=None, w_S=None, w_K=None, w_Ca=None, w_Fe=None, amounts=None):
+    def create_simple_shale(self, w_C=None, w_F=None, w_Na=None, w_Mg=None, w_S=None, w_K=None, w_Ca=None, w_Fe=None,
+                            amounts=None, porosity=None, dict=False):
+        #
+        results = {}
+        results["rock"] = "sandstone"
         #
         self.w_C = w_C
         self.w_F = w_F
@@ -1841,7 +1846,15 @@ class shale:
                 amounts = [w_org, w_qz, w_cal, w_Py, w_ilt, w_kln, w_mnt, w_bt, w_ms, w_urn]
             else:
                 cond = False
+        element_list = ["H", "C", "O", "F", "Na", "Mg", "Al", "Si", "S", "K", "Ca", "Fe", "U"]
+        mineral_list = ["Org", "Qz", "Cal", "Py", "Ilt", "Kln", "Mnt", "Bt", "Ms", "Urn"]
         data.append(composition)
+        results["chemistry"] = {}
+        results["mineralogy"] = {}
+        for index, element in enumerate(element_list, start=0):
+            results["chemistry"][element] = concentrations[index]
+        for index, mineral in enumerate(mineral_list, start=0):
+            results["mineralogy"][mineral] = amounts[index]
         #
         rhoSolid = (w_org*chem_org[2] + w_qz*chem_qz[2] + w_cal*chem_cal[2] + w_Py*chem_py[2] + w_ilt*chem_ilt[2] + w_kln*chem_kln[2] + w_mnt*chem_mnt[2] + w_bt*chem_bt[2] + w_ms*chem_ms[2] + w_urn*chem_urn[2]) / 1000
         X = [w_org, w_qz, w_cal, w_Py, w_ilt, w_kln, w_mnt, w_bt, w_ms, w_urn]
@@ -1856,7 +1869,14 @@ class shale:
         E_solid = (9*K_solid*G_solid)/(3*K_solid+G_solid)
         nu_solid = (3*K_solid-2*G_solid)/(2*(3*K_solid+G_solid))
         #
-        phi = randint(0, 5)/100
+        if porosity == None:
+            phi = rd.uniform(0.01, 0.05)
+        else:
+            phi = porosity
+        phi = round(phi, 4)
+        results["phi"] = phi
+        results["fluid"] = self.fluid
+        #
         rho = (1 - phi) * rhoSolid + phi * water[2] / 1000
         vP = (1-phi)*vP_solid + phi*water[4][0]
         vS = (1 - phi) * vS_solid
@@ -1871,6 +1891,17 @@ class shale:
         poisson_elastic = (3*K_bulk - 2*G_bulk)/(6*K_bulk + 2*G_bulk)
         poisson_mineralogical = w_org*chem_org[3][3] + w_qz*chem_qz[3][3] + w_cal*chem_cal[3][3] + w_Py*chem_py[3][3] + w_ilt*chem_ilt[3][3] + w_kln*chem_kln[3][3] + w_mnt*chem_mnt[3][3] + w_bt*chem_bt[3][3] + w_ms*chem_ms[3][3] + w_urn*chem_urn[3][3]
         #
+        results["rho"] = round(rho*1000, 4)
+        results["vP"] = round(vP, 4)
+        results["vS"] = round(vS, 4)
+        results["vP/vS"] = round(vP/vS, 4)
+        results["G"] = round(G_bulk*10**(-6), 4)
+        results["K"] = round(K_bulk*10**(-6), 4)
+        results["E"] = round(E_bulk*10**(-6), 4)
+        results["nu"] = round(poisson_mineralogical, 4)
+        results["GR"] = round(GR, 4)
+        results["PE"] = round(PE, 4)
+        #
         data.append([round(rho, 3), round(rhoSolid, 3), round(water[2] / 1000, 6)])
         data.append([round(K_bulk*10**(-6), 2), round(G_bulk*10**(-6), 2), round(E_bulk*10**(-6), 2), round(poisson_mineralogical, 3)])
         data.append([round(vP, 2), round(vS, 2), round(vP_solid, 2), round(water[4][0], 2)])
@@ -1880,7 +1911,10 @@ class shale:
         data.append(concentrations)
         data.append(amounts)
         #
-        return data
+        if dict == False:
+            return data
+        else:
+            return results
     #
 class ore:
     #
