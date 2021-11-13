@@ -772,7 +772,7 @@ class Rocks:
         elif self.rock in ["Limestone", "Dolomite"]:
             var_phi0_start = 0
             var_phi1_start = 50
-        elif self.rock == "Rock Salt":
+        elif self.rock in ["Rock Salt", "Anhydrite"]:
             var_phi0_start = 0
             var_phi1_start = 2.5
         else:
@@ -840,7 +840,7 @@ class Rocks:
             elif self.rock == "Rock Salt":
                 data = Evaporites(fluid="water", actualThickness=0).create_simple_rocksalt(dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
             elif self.rock == "Anhydrite":
-                data = Evaporites(fluid="water", actualThickness=0).create_simple_anhydrite()
+                data = Evaporites(fluid="water", actualThickness=0).create_simple_anhydrite(dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
             #
             data_all.append(data)
         #
@@ -1087,10 +1087,10 @@ class Rocks:
             elif self.rock == "Tonalite":
                 data = Plutonic(fluid="water", actualThickness=0).create_simple_tonalite()
             #
-            elif self.rock == "Halite":
+            elif self.rock == "Rock Salt":
                 data = Evaporites(fluid="water", actualThickness=0).create_simple_rocksalt(dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
             elif self.rock == "Anhydrite":
-                data = Evaporites(fluid="water", actualThickness=0).create_simple_anhydrite()
+                data = Evaporites(fluid="water", actualThickness=0).create_simple_anhydrite(dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
             #
             data_all.append(data)
         #
