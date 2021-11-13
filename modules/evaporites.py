@@ -6,7 +6,7 @@
 # Name:		evaporites.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		25.04.2020
+# Date:		13.11.2021
 
 #-----------------------------------------------
 
@@ -212,7 +212,10 @@ class Evaporites:
         self.fluid = fluid
         self.actualThickness = actualThickness
     #
-    def create_simple_rocksalt(self, w_Na=None, w_Cl=None, amounts=None):
+    def create_simple_rocksalt(self, w_Na=None, w_Cl=None, amounts=None, porosity=None, dict=None):
+        #
+        results = {}
+        results["rock"] = "Rock Salt"
         #
         self.w_Na = w_Na
         self.w_Cl = w_Cl
@@ -234,7 +237,7 @@ class Evaporites:
         composition = []
         while cond == False:
             if self.w_Na == None and self.w_Cl == None and self.amounts == None:
-                w_hl = round(abs(rd.uniform(0.9, 1)), 4)
+                w_hl = round(abs(rd.uniform(0.90, 1)), 4)
                 w_acc = round((1-w_hl), 4)
                 w_anh = round(abs(w_acc*rd.uniform(0, 1)), 4)
                 w_gp = round(abs(w_acc*rd.uniform(0, (1-w_anh))), 4)
@@ -273,20 +276,22 @@ class Evaporites:
             #print("Amount:", sumMin, "C:", sumConc)
             #
             if sumMin == 1 and sumConc == 1:
-                #composition.extend((["Hl", w_hl, round(halite[1], 2)], ["Anh", w_anh, round(anhydrite[1], 2)], ["Gp", w_gp, round(gypsum[1], 2)], ["Syl", w_syl, round(sylvite[1], 2)]))
+                cond = True
                 composition.extend((["Hl", "Anh", "Gp", "Syl"]))
                 concentrations = [w_H, w_O, w_Na, w_S, w_Cl, w_K, w_Ca]
                 amounts = [w_hl, w_anh, w_gp, w_syl]
-                phi_V = geochemistry.Fractions.calculate_volume_fraction(self, mineralogy=mineralogy, w=amounts)
-                #print(np.around(phi_V, 4))
-                if 0.95 <= phi_V[0] <= 1.0:
-                    cond = True
-                else:
-                    composition = []
-                    cond = False
             else:
                 cond = False
+        #
+        element_list = ["H", "O", "Na", "S", "Cl", "K", "Ca"]
+        mineral_list = ["Hl", "Anh", "Gp", "Syl"]
         data.append(composition)
+        results["chemistry"] = {}
+        results["mineralogy"] = {}
+        for index, element in enumerate(element_list, start=0):
+            results["chemistry"][element] = concentrations[index]
+        for index, mineral in enumerate(mineral_list, start=0):
+            results["mineralogy"][mineral] = amounts[index]
         #
         rhoSolid = (w_hl*halite[2] + w_anh*anhydrite[2] + w_gp*gypsum[2] + w_syl*sylvite[2]) / 1000
         X = [w_hl, w_anh, w_gp, w_syl]
@@ -301,16 +306,22 @@ class Evaporites:
         E_solid = (9*K_solid*G_solid)/(3*K_solid+G_solid)
         nu_solid = (3*K_solid-2*G_solid)/(2*(3*K_solid+G_solid))
         #
-        if self.actualThickness <= 1000:
-            phi = rd.uniform(0.0, 0.025)
-        elif self.actualThickness > 1000 and self.actualThickness <= 2000:
-            phi = rd.uniform(0.0, 0.025)
-        elif self.actualThickness > 2000 and self.actualThickness <= 3000:
-            phi = rd.uniform(0.0, 0.025)
-        elif self.actualThickness > 3000 and self.actualThickness <= 4000:
-            phi = rd.uniform(0.0, 0.025)
-        elif self.actualThickness > 4000:
-            phi = rd.uniform(0.0, 0.025)
+        if porosity == None:
+            if self.actualThickness <= 1000:
+                phi = rd.uniform(0.0, 0.025)
+            elif self.actualThickness > 1000 and self.actualThickness <= 2000:
+                phi = rd.uniform(0.0, 0.025)
+            elif self.actualThickness > 2000 and self.actualThickness <= 3000:
+                phi = rd.uniform(0.0, 0.025)
+            elif self.actualThickness > 3000 and self.actualThickness <= 4000:
+                phi = rd.uniform(0.0, 0.025)
+            elif self.actualThickness > 4000:
+                phi = rd.uniform(0.0, 0.025)
+        else:
+            phi = porosity
+        #
+        results["phi"] = phi
+        results["fluid"] = self.fluid
         #
         rho = (1 - phi) * rhoSolid + phi * water[2] / 1000
         vP = (1-phi)*vP_solid + phi*water[4][0]
@@ -326,6 +337,17 @@ class Evaporites:
         poisson_elastic = (3*K_bulk - 2*G_bulk)/(6*K_bulk + 2*G_bulk)
         poisson_mineralogical = w_hl*halite[3][3] + w_anh*anhydrite[3][3] + w_gp*gypsum[3][3] + w_syl*sylvite[3][3]
         #
+        results["rho"] = round(rho*1000, 4)
+        results["vP"] = round(vP, 4)
+        results["vS"] = round(vS, 4)
+        results["vP/vS"] = round(vP/vS, 4)
+        results["G"] = round(G_bulk*10**(-6), 4)
+        results["K"] = round(K_bulk*10**(-6), 4)
+        results["E"] = round(E_bulk*10**(-6), 4)
+        results["nu"] = round(poisson_mineralogical, 4)
+        results["GR"] = round(GR, 4)
+        results["PE"] = round(PE, 4)
+        #
         data.append([round(rho, 3), round(rhoSolid, 3), round(water[2] / 1000, 6)])
         data.append([round(K_bulk*10**(-6), 2), round(G_bulk*10**(-6), 2), round(E_bulk*10**(-6), 2), round(poisson_mineralogical, 3)])
         data.append([round(vP, 2), round(vS, 2), round(vP_solid, 2), round(water[4][0], 2)])
@@ -335,7 +357,10 @@ class Evaporites:
         data.append(concentrations)
         data.append(amounts)
         #
-        return data
+        if dict == False:
+            return data
+        else:
+            return results
     #
     def create_simple_anhydrite(self, w_Ca=None, amounts=None):
         #

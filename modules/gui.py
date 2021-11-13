@@ -209,7 +209,7 @@ class GebPyGUI(tk.Frame):
                   color_acc=[self.color_accent_03, self.color_accent_04], rock=var_opt, lbl_w=self.lbl_w,
                   entr_w=self.entr_w)
         #
-        elif var_opt == "Halite":
+        elif var_opt == "Rock Salt":
             Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                   color_acc=[self.color_accent_03, self.color_accent_04], rock=var_opt, lbl_w=self.lbl_w,
                   entr_w=self.entr_w)
@@ -308,7 +308,7 @@ class GebPyGUI(tk.Frame):
                 command=lambda var_opt=var_opt_1_3: self.select_opt(var_opt))
         elif var_opt == "Evaporite Rocks":
             var_opt_1_4 = tk.StringVar()
-            opt_list_1_4 = ["Halite", "Anhydrite"]
+            opt_list_1_4 = ["Rock Salt", "Anhydrite"]
             self.opt_ign = SE(parent=self.parent, row_id=16, column_id=0, n_rows=2, n_columns=2,
                               bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
                 var_opt=var_opt_1_4, var_opt_set="Select Rock", opt_list=opt_list_1_4,
@@ -765,10 +765,16 @@ class Rocks:
         #
         if self.rock == "Sandstone":
             var_phi0_start = 5
-            var_phi1_start = 35
+            var_phi1_start = 30
         elif self.rock == "Shale":
             var_phi0_start = 0
-            var_phi1_start = 5
+            var_phi1_start = 10
+        elif self.rock in ["Limestone", "Dolomite"]:
+            var_phi0_start = 0
+            var_phi1_start = 50
+        elif self.rock == "Rock Salt":
+            var_phi0_start = 0
+            var_phi1_start = 2.5
         else:
             var_phi0_start = 0
             var_phi1_start = 20
@@ -804,9 +810,9 @@ class Rocks:
             elif self.rock == "Shale":
                 data = shale(fluid="water").create_simple_shale(dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
             elif self.rock == "Limestone":
-                data = limestone(fluid="water", actualThickness=0).create_simple_limestone()
+                data = limestone(fluid="water", actualThickness=0).create_simple_limestone(dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
             elif self.rock == "Dolomite":
-                data = dolomite(fluid="water", actualThickness=0).create_simple_dolomite()
+                data = dolomite(fluid="water", actualThickness=0).create_simple_dolomite(dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
             #
             elif self.rock == "Felsic Rock":
                 data = Plutonic(fluid="water", actualThickness=0).create_felsic()
@@ -831,8 +837,8 @@ class Rocks:
             elif self.rock == "Tonalite":
                 data = Plutonic(fluid="water", actualThickness=0).create_simple_tonalite()
             #
-            elif self.rock == "Halite":
-                data = Evaporites(fluid="water", actualThickness=0).create_simple_rocksalt()
+            elif self.rock == "Rock Salt":
+                data = Evaporites(fluid="water", actualThickness=0).create_simple_rocksalt(dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
             elif self.rock == "Anhydrite":
                 data = Evaporites(fluid="water", actualThickness=0).create_simple_anhydrite()
             #
@@ -1054,9 +1060,9 @@ class Rocks:
             elif self.rock == "Shale":
                 data = shale().create_simple_shale()
             elif self.rock == "Limestone":
-                data = limestone(fluid="water", actualThickness=0).create_simple_limestone()
+                data = limestone(fluid="water", actualThickness=0).create_simple_limestone(dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
             elif self.rock == "Dolomite":
-                data = dolomite(fluid="water", actualThickness=0).create_simple_dolomite()
+                data = dolomite(fluid="water", actualThickness=0).create_simple_dolomite(dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
             #
             elif self.rock == "Felsic Rock":
                 data = Plutonic(fluid="water", actualThickness=0).create_felsic()
@@ -1082,7 +1088,7 @@ class Rocks:
                 data = Plutonic(fluid="water", actualThickness=0).create_simple_tonalite()
             #
             elif self.rock == "Halite":
-                data = Evaporites(fluid="water", actualThickness=0).create_simple_rocksalt()
+                data = Evaporites(fluid="water", actualThickness=0).create_simple_rocksalt(dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
             elif self.rock == "Anhydrite":
                 data = Evaporites(fluid="water", actualThickness=0).create_simple_anhydrite()
             #

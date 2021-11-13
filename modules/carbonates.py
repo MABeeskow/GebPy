@@ -6,7 +6,7 @@
 # Name:		carbonates.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		16.02.2020
+# Date:		13.11.2021
 
 #-----------------------------------------------
 
@@ -342,7 +342,10 @@ class limestone:
         #
         return limestone
     #
-    def create_simple_limestone(self, w_Na=None, w_Mg=None, w_K=None, w_Ca=None, w_Fe=None, amounts=None):
+    def create_simple_limestone(self, w_Na=None, w_Mg=None, w_K=None, w_Ca=None, w_Fe=None, amounts=None, porosity=None, dict=None):
+        #
+        results = {}
+        results["rock"] = "limestone"
         #
         self.w_Na = w_Na
         self.w_Mg = w_Mg
@@ -746,7 +749,16 @@ class limestone:
                 amounts = [w_cal, w_arg, w_dol, w_sd, w_qz, w_kfs, w_pl, w_mnt, w_kln, w_chl, w_py]
             else:
                 cond = False
+        #
+        element_list = ["H", "C", "O", "Na", "Mg", "Al", "Si", "S", "K", "Ca", "Fe"]
+        mineral_list = ["Cal", "Arg", "Dol", "Sd", "Qz", "Kfs", "Pl", "Mnt", "Kln", "Chl", "Py"]
         data.append(composition)
+        results["chemistry"] = {}
+        results["mineralogy"] = {}
+        for index, element in enumerate(element_list, start=0):
+            results["chemistry"][element] = concentrations[index]
+        for index, mineral in enumerate(mineral_list, start=0):
+            results["mineralogy"][mineral] = amounts[index]
         #
         rhoSolid = (w_cal*chem_cal[2] + w_arg*chem_arg[2] + w_dol*chem_dol[2] + w_sd*chem_sd[2] + w_qz*chem_qz[2] + w_kfs*chem_kfs[2] + w_pl*chem_pl[2] + w_mnt*chem_mnt[2] + w_kln*chem_kln[2] + w_chl*chem_chl[2] + w_py*chem_py[2]) / 1000
         X = [w_cal, w_arg, w_dol, w_sd, w_qz, w_kfs, w_pl, w_mnt, w_kln, w_chl, w_py]
@@ -761,16 +773,22 @@ class limestone:
         E_solid = (9*K_solid*G_solid)/(3*K_solid+G_solid)
         nu_solid = (3*K_solid-2*G_solid)/(2*(3*K_solid+G_solid))
         #
-        if self.actualThickness <= 1000:
-            phi = rd.randint(35, 40)/100
-        elif self.actualThickness > 1000 and self.actualThickness <= 2000:
-            phi = rd.randint(30, 35)/100
-        elif self.actualThickness > 2000 and self.actualThickness <= 3000:
-            phi = rd.randint(20, 30)/100
-        elif self.actualThickness > 3000 and self.actualThickness <= 4000:
-            phi = rd.randint(10, 20)/100
-        elif self.actualThickness > 4000:
-            phi = rd.randint(5, 10)/100
+        if porosity == None:
+            if self.actualThickness <= 1000:
+                phi = rd.randint(35, 40)/100
+            elif self.actualThickness > 1000 and self.actualThickness <= 2000:
+                phi = rd.randint(30, 35)/100
+            elif self.actualThickness > 2000 and self.actualThickness <= 3000:
+                phi = rd.randint(20, 30)/100
+            elif self.actualThickness > 3000 and self.actualThickness <= 4000:
+                phi = rd.randint(10, 20)/100
+            elif self.actualThickness > 4000:
+                phi = rd.randint(5, 10)/100
+        else:
+            phi = porosity
+        #
+        results["phi"] = phi
+        results["fluid"] = self.fluid
         #
         if self.fluid == "water":
             rho = (1 - phi) * rhoSolid + phi * water[2] / 1000
@@ -786,6 +804,17 @@ class limestone:
             poisson_seismic = 0.5*(vP**2 - 2*vS**2)/(vP**2 - vS**2)
             poisson_elastic = (3*K_bulk - 2*G_bulk)/(6*K_bulk + 2*G_bulk)
             poisson_mineralogical = w_cal*chem_cal[3][3] + w_arg*chem_arg[3][3] + w_dol*chem_dol[3][3] + w_sd*chem_sd[3][3] + w_qz*chem_qz[3][3] + w_kfs*chem_kfs[3][3] + w_pl*chem_pl[3][3] + w_mnt*chem_mnt[3][3] + w_kln*chem_kln[3][3] + w_chl*chem_chl[3][3] + w_py*chem_py[3][3]
+            #
+            results["rho"] = round(rho*1000, 4)
+            results["vP"] = round(vP, 4)
+            results["vS"] = round(vS, 4)
+            results["vP/vS"] = round(vP/vS, 4)
+            results["G"] = round(G_bulk*10**(-6), 4)
+            results["K"] = round(K_bulk*10**(-6), 4)
+            results["E"] = round(E_bulk*10**(-6), 4)
+            results["nu"] = round(poisson_mineralogical, 4)
+            results["GR"] = round(GR, 4)
+            results["PE"] = round(PE, 4)
             #
             data.append([round(rho, 3), round(rhoSolid, 3), round(water[2] / 1000, 6)])
             data.append([round(K_bulk*10**(-6), 2), round(G_bulk*10**(-6), 2), round(E_bulk*10**(-6), 2), round(poisson_mineralogical, 3)])
@@ -810,6 +839,17 @@ class limestone:
             poisson_elastic = (3*K_bulk - 2*G_bulk)/(6*K_bulk + 2*G_bulk)
             poisson_mineralogical = w_cal*chem_cal[3][3] + w_arg*chem_arg[3][3] + w_dol*chem_dol[3][3] + w_sd*chem_sd[3][3] + w_qz*chem_qz[3][3] + w_kfs*chem_kfs[3][3] + w_pl*chem_pl[3][3] + w_mnt*chem_mnt[3][3] + w_kln*chem_kln[3][3] + w_chl*chem_chl[3][3] + w_py*chem_py[3][3]
             #
+            results["rho"] = round(rho*1000, 4)
+            results["vP"] = round(vP, 4)
+            results["vS"] = round(vS, 4)
+            results["vP/vS"] = round(vP/vS, 4)
+            results["G"] = round(G_bulk*10**(-6), 4)
+            results["K"] = round(K_bulk*10**(-6), 4)
+            results["E"] = round(E_bulk*10**(-6), 4)
+            results["nu"] = round(poisson_mineralogical, 4)
+            results["GR"] = round(GR, 4)
+            results["PE"] = round(PE, 4)
+            #
             data.append([round(rho, 3), round(rhoSolid, 3), round(oil[2] / 1000, 6)])
             data.append([round(K_bulk*10**(-6), 2), round(G_bulk*10**(-6), 2), round(E_bulk*10**(-6), 2), round(poisson_mineralogical, 3)])
             data.append([round(vP, 2), round(vS, 2), round(vP_solid, 2), round(oil[4][0], 2)])
@@ -833,6 +873,17 @@ class limestone:
             poisson_elastic = (3*K_bulk - 2*G_bulk)/(6*K_bulk + 2*G_bulk)
             poisson_mineralogical = w_cal*chem_cal[3][3] + w_arg*chem_arg[3][3] + w_dol*chem_dol[3][3] + w_sd*chem_sd[3][3] + w_qz*chem_qz[3][3] + w_kfs*chem_kfs[3][3] + w_pl*chem_pl[3][3] + w_mnt*chem_mnt[3][3] + w_kln*chem_kln[3][3] + w_chl*chem_chl[3][3] + w_py*chem_py[3][3]
             #
+            results["rho"] = round(rho*1000, 4)
+            results["vP"] = round(vP, 4)
+            results["vS"] = round(vS, 4)
+            results["vP/vS"] = round(vP/vS, 4)
+            results["G"] = round(G_bulk*10**(-6), 4)
+            results["K"] = round(K_bulk*10**(-6), 4)
+            results["E"] = round(E_bulk*10**(-6), 4)
+            results["nu"] = round(poisson_mineralogical, 4)
+            results["GR"] = round(GR, 4)
+            results["PE"] = round(PE, 4)
+            #
             data.append([round(rho, 3), round(rhoSolid, 3), round(gas[2] / 1000, 6)])
             data.append([round(K_bulk*10**(-6), 2), round(G_bulk*10**(-6), 2), round(E_bulk*10**(-6), 2), round(poisson_mineralogical, 3)])
             data.append([round(vP, 2), round(vS, 2), round(vP_solid, 2), round(gas[4][0], 2)])
@@ -842,7 +893,10 @@ class limestone:
             data.append(concentrations)
             data.append(amounts)
         #
-        return data
+        if dict == False:
+            return data
+        else:
+            return results
     #
 class dolomite:
     #
@@ -1171,7 +1225,10 @@ class dolomite:
         #
         return dolomite
     #
-    def create_simple_dolomite(self, w_Mg=None, w_Ca=None, w_Fe=None, amounts=None):
+    def create_simple_dolomite(self, w_Mg=None, w_Ca=None, w_Fe=None, amounts=None, porosity=None, dict=None):
+        #
+        results = {}
+        results["rock"] = "dolomite"
         #
         self.w_Mg = w_Mg
         self.w_Ca = w_Ca
@@ -1457,7 +1514,16 @@ class dolomite:
                 amounts = [w_dol, w_ank, w_sd, w_cal, w_qz, w_kfs, w_pl, w_kln, w_py]
             else:
                 cond = False
+        #
+        element_list = ["H", "C", "O", "Na", "Mg", "Al", "Si", "S", "K", "Ca", "Fe"]
+        mineral_list = ["Dol", "Ank", "Sd", "Cal", "Qz", "Kfs", "Pl", "Kln", "Py"]
         data.append(composition)
+        results["chemistry"] = {}
+        results["mineralogy"] = {}
+        for index, element in enumerate(element_list, start=0):
+            results["chemistry"][element] = concentrations[index]
+        for index, mineral in enumerate(mineral_list, start=0):
+            results["mineralogy"][mineral] = amounts[index]
         #
         rhoSolid = (w_dol*chem_dol[2] + w_ank*chem_ank[2] + w_sd*chem_sd[2] + w_cal*chem_cal[2] + w_qz*chem_qz[2] + w_kfs*chem_kfs[2] + w_pl*chem_pl[2] + w_kln*chem_kln[2] + w_py*chem_py[2]) / 1000
         X = [w_dol, w_ank, w_sd, w_cal, w_qz, w_kfs, w_pl, w_kln, w_py]
@@ -1472,16 +1538,22 @@ class dolomite:
         E_solid = (9*K_solid*G_solid)/(3*K_solid+G_solid)
         nu_solid = (3*K_solid-2*G_solid)/(2*(3*K_solid+G_solid))
         #
-        if self.actualThickness <= 1000:
-            phi = rd.randint(25, 30)/100
-        elif self.actualThickness > 1000 and self.actualThickness <= 2000:
-            phi = rd.randint(20, 25)/100
-        elif self.actualThickness > 2000 and self.actualThickness <= 3000:
-            phi = rd.randint(15, 20)/100
-        elif self.actualThickness > 3000 and self.actualThickness <= 4000:
-            phi = rd.randint(10, 15)/100
-        elif self.actualThickness > 4000:
-            phi = rd.randint(5, 10)/100
+        if porosity == None:
+            if self.actualThickness <= 1000:
+                phi = rd.randint(25, 30)/100
+            elif self.actualThickness > 1000 and self.actualThickness <= 2000:
+                phi = rd.randint(20, 25)/100
+            elif self.actualThickness > 2000 and self.actualThickness <= 3000:
+                phi = rd.randint(15, 20)/100
+            elif self.actualThickness > 3000 and self.actualThickness <= 4000:
+                phi = rd.randint(10, 15)/100
+            elif self.actualThickness > 4000:
+                phi = rd.randint(5, 10)/100
+        else:
+            phi = porosity
+        #
+        results["phi"] = phi
+        results["fluid"] = self.fluid
         #
         rho = (1 - phi) * rhoSolid + phi * water[2] / 1000
         vP = (1-phi)*vP_solid + phi*water[4][0]
@@ -1497,6 +1569,17 @@ class dolomite:
         poisson_elastic = (3*K_bulk - 2*G_bulk)/(6*K_bulk + 2*G_bulk)
         poisson_mineralogical = w_dol*chem_dol[3][3] + w_ank*chem_ank[3][3] + w_sd*chem_sd[3][3] + w_cal*chem_cal[3][3] + w_qz*chem_qz[3][3] + w_kfs*chem_kfs[3][3] + w_pl*chem_pl[3][3] + w_kln*chem_kln[3][3] + w_py*chem_py[3][3]
         #
+        results["rho"] = round(rho*1000, 4)
+        results["vP"] = round(vP, 4)
+        results["vS"] = round(vS, 4)
+        results["vP/vS"] = round(vP/vS, 4)
+        results["G"] = round(G_bulk*10**(-6), 4)
+        results["K"] = round(K_bulk*10**(-6), 4)
+        results["E"] = round(E_bulk*10**(-6), 4)
+        results["nu"] = round(poisson_mineralogical, 4)
+        results["GR"] = round(GR, 4)
+        results["PE"] = round(PE, 4)
+        #
         data.append([round(rho, 3), round(rhoSolid, 3), round(water[2] / 1000, 6)])
         data.append([round(K_bulk*10**(-6), 2), round(G_bulk*10**(-6), 2), round(E_bulk*10**(-6), 2), round(poisson_mineralogical, 3)])
         data.append([round(vP, 2), round(vS, 2), round(vP_solid, 2), round(water[4][0], 2)])
@@ -1506,4 +1589,7 @@ class dolomite:
         data.append(concentrations)
         data.append(amounts)
         #
-        return data
+        if dict == False:
+            return data
+        else:
+            return results
