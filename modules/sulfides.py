@@ -6,7 +6,7 @@
 # Name:		sulfides.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		09.07.2021
+# Date:		14.11.2021
 
 # -----------------------------------------------
 
@@ -19,13 +19,14 @@ from modules.geophysics import BoreholeGeophysics as bg
 from modules.geophysics import WellLog as wg
 from modules.geochemistry import MineralChemistry
 
-# OXIDES
+# Sulfides
 class Sulfides():
     """ Class that generates geophysical and geochemical data of sulfide minerals"""
     #
-    def __init__(self, traces_list=[], impurity="pure"):
+    def __init__(self, traces_list=[], impurity="pure", dict=False):
         self.traces_list = traces_list
         self.impurity = impurity
+        self.dict = dict
     #
     def create_cinnabar(self):
         # Major elements
@@ -165,15 +166,44 @@ class Sulfides():
         # Electrical resistivity
         p = 3*10**(-1)
         #
-        data.append(mineral)
-        data.append(round(molar_mass, 3))
-        data.append(round(rho, 2))
-        data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 4)])
-        data.append([round(vP, 2), round(vS, 2), round(vPvS, 2)])
-        data.append([round(gamma_ray, 2), round(pe, 2), round(U, 2), p])
-        data.append(amounts)
-        #
-        return data
+        if self.dict == False:
+            data.append(mineral)
+            data.append(round(molar_mass, 3))
+            data.append(round(rho, 2))
+            data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 4)])
+            data.append([round(vP, 2), round(vS, 2), round(vPvS, 2)])
+            data.append([round(gamma_ray, 2), round(pe, 2), round(U, 2), p])
+            data.append(amounts)
+            #
+            return data
+        else:
+            #
+            results = {}
+            results["mineral"] = "Py"
+            results["M"] = molar_mass
+            element_list = np.array(amounts)[:, 0]
+            results["chemistry"] = {}
+            for index, element in enumerate(element_list, start=0):
+                results["chemistry"][element] = amounts[index][2]
+            results["rho"] = round(rho, 4)
+            results["rho_e"] = round(rho_e, 4)
+            results["V"] = round(V, 4)
+            results["vP"] = round(vP, 4)
+            results["vS"] = round(vS, 4)
+            results["vP/vS"] = round(vPvS, 4)
+            results["G"] = round(G*10**(-9), 4)
+            results["K"] = round(K*10**(-9), 4)
+            results["E"] = round(E*10**(-9), 4)
+            results["nu"] = round(nu, 4)
+            results["GR"] = round(gamma_ray, 4)
+            results["PE"] = round(pe, 4)
+            results["U"] = round(U, 4)
+            if p != None:
+                results["p"] = round(p, 4)
+            else:
+                results["p"] = p
+            #
+            return results
     #
     def create_bornite(self):
         # Major elements
@@ -315,15 +345,44 @@ class Sulfides():
         # Electrical resistivity
         p = None
         #
-        data.append(mineral)
-        data.append(round(molar_mass, 3))
-        data.append(round(rho, 2))
-        data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 4)])
-        data.append([round(vP, 2), round(vS, 2), round(vPvS, 2)])
-        data.append([round(gamma_ray, 2), round(pe, 2), round(U, 2), p])
-        data.append(amounts)
-        #
-        return data
+        if self.dict == False:
+            data.append(mineral)
+            data.append(round(molar_mass, 3))
+            data.append(round(rho, 2))
+            data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 4)])
+            data.append([round(vP, 2), round(vS, 2), round(vPvS, 2)])
+            data.append([round(gamma_ray, 2), round(pe, 2), round(U, 2), p])
+            data.append(amounts)
+            #
+            return data
+        else:
+            #
+            results = {}
+            results["mineral"] = "Gn"
+            results["M"] = molar_mass
+            element_list = np.array(amounts)[:, 0]
+            results["chemistry"] = {}
+            for index, element in enumerate(element_list, start=0):
+                results["chemistry"][element] = amounts[index][2]
+            results["rho"] = round(rho, 4)
+            results["rho_e"] = round(rho_e, 4)
+            results["V"] = round(V, 4)
+            results["vP"] = round(vP, 4)
+            results["vS"] = round(vS, 4)
+            results["vP/vS"] = round(vPvS, 4)
+            results["G"] = round(G*10**(-9), 4)
+            results["K"] = round(K*10**(-9), 4)
+            results["E"] = round(E*10**(-9), 4)
+            results["nu"] = round(nu, 4)
+            results["GR"] = round(gamma_ray, 4)
+            results["PE"] = round(pe, 4)
+            results["U"] = round(U, 4)
+            if p != None:
+                results["p"] = round(p, 4)
+            else:
+                results["p"] = p
+            #
+            return results
     #
     def create_chalcopyrite(self):
         # Major elements
@@ -391,15 +450,44 @@ class Sulfides():
         # Electrical resistivity
         p = None
         #
-        data.append(mineral)
-        data.append(round(molar_mass, 3))
-        data.append(round(rho, 2))
-        data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 4)])
-        data.append([round(vP, 2), round(vS, 2), round(vPvS, 2)])
-        data.append([round(gamma_ray, 2), round(pe, 2), round(U, 2), p])
-        data.append(amounts)
-        #
-        return data
+        if self.dict == False:
+            data.append(mineral)
+            data.append(round(molar_mass, 3))
+            data.append(round(rho, 2))
+            data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 4)])
+            data.append([round(vP, 2), round(vS, 2), round(vPvS, 2)])
+            data.append([round(gamma_ray, 2), round(pe, 2), round(U, 2), p])
+            data.append(amounts)
+            #
+            return data
+        else:
+            #
+            results = {}
+            results["mineral"] = "Ccp"
+            results["M"] = molar_mass
+            element_list = np.array(amounts)[:, 0]
+            results["chemistry"] = {}
+            for index, element in enumerate(element_list, start=0):
+                results["chemistry"][element] = amounts[index][2]
+            results["rho"] = round(rho, 4)
+            results["rho_e"] = round(rho_e, 4)
+            results["V"] = round(V, 4)
+            results["vP"] = round(vP, 4)
+            results["vS"] = round(vS, 4)
+            results["vP/vS"] = round(vPvS, 4)
+            results["G"] = round(G*10**(-9), 4)
+            results["K"] = round(K*10**(-9), 4)
+            results["E"] = round(E*10**(-9), 4)
+            results["nu"] = round(nu, 4)
+            results["GR"] = round(gamma_ray, 4)
+            results["PE"] = round(pe, 4)
+            results["U"] = round(U, 4)
+            if p != None:
+                results["p"] = round(p, 4)
+            else:
+                results["p"] = p
+            #
+            return results
     #
     def create_molybdenite(self):
         # Major elements

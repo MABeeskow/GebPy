@@ -212,7 +212,7 @@ class Evaporites:
         self.fluid = fluid
         self.actualThickness = actualThickness
     #
-    def create_simple_rocksalt(self, w_Na=None, w_Cl=None, amounts=None, porosity=None, dict=None):
+    def create_simple_rocksalt(self, w_Na=None, w_Cl=None, amounts=None, porosity=None, dict=False):
         #
         results = {}
         results["rock"] = "Rock Salt"
@@ -362,7 +362,7 @@ class Evaporites:
         else:
             return results
     #
-    def create_simple_anhydrite(self, w_Ca=None, amounts=None, porosity=None, dict=None):
+    def create_simple_anhydrite(self, w_Ca=None, amounts=None, porosity=None, dict=False):
         #
         results = {}
         results["rock"] = "Anhydrite"

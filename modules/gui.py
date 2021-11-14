@@ -14,6 +14,8 @@
 import tkinter as tk
 from modules.gui_elements import SimpleElements as SE
 from modules.oxides import Oxides
+from modules.sulfides import Sulfides
+from modules.carbonates import Carbonates
 from modules.silicates import Tectosilicates
 from modules.minerals import feldspars
 from modules.siliciclastics import sandstone, shale
@@ -138,6 +140,14 @@ class GebPyGUI(tk.Frame):
                      color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
                      entr_w=self.entr_w)
         elif var_opt in ["Magnetite", "Hematite"]:
+            Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
+                     color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
+                     entr_w=self.entr_w)
+        elif var_opt in ["Pyrite", "Chalcopyrite", "Galena"]:
+            Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
+                     color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
+                     entr_w=self.entr_w)
+        elif var_opt in ["Calcite", "Dolomite", "Magnesite"]:
             Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                      color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
                      entr_w=self.entr_w)
@@ -404,6 +414,24 @@ class Minerals:
             elif self.mineral == "Hematite":
                 self.var_dict = True
                 data = Oxides(impurity="pure").create_hematite(dict=self.var_dict)
+            elif self.mineral == "Pyrite":
+                self.var_dict = True
+                data = Sulfides(impurity="pure", dict=self.var_dict).create_pyrite()
+            elif self.mineral == "Chalcopyrite":
+                self.var_dict = True
+                data = Sulfides(impurity="pure", dict=self.var_dict).create_chalcopyrite()
+            elif self.mineral == "Galena":
+                self.var_dict = True
+                data = Sulfides(impurity="pure", dict=self.var_dict).create_galena()
+            elif self.mineral == "Calcite":
+                self.var_dict = True
+                data = Carbonates(impurity="pure", dict=self.var_dict).create_calcite()
+            elif self.mineral == "Dolomite":
+                self.var_dict = True
+                data = Carbonates(impurity="pure", dict=self.var_dict).create_dolomite()
+            elif self.mineral == "Magnesite":
+                self.var_dict = True
+                data = Carbonates(impurity="pure", dict=self.var_dict).create_magnesite()
             elif self.mineral == "Alkalifeldspar":
                 data = Tectosilicates(impurity="pure").create_alkalifeldspar()
             elif self.mineral == "Plagioclase":
@@ -453,9 +481,17 @@ class Minerals:
             for element in elements:
                 self.element_list[element] = []
                 for index, chem_dict in enumerate(self.chemistry, start=0):
-                    self.element_list[element].append(chem_dict[element])
-            if self.mineral in ["Magnetite", "Hematite"]:
+                    self.element_list[element].append(chem_dict[element]*100)
+            if self.mineral in ["Magnetite", "Hematite", "Pyrite"]:
                 self.w_element = self.element_list["Fe"]
+            elif self.mineral in ["Galena"]:
+                self.w_element = self.element_list["Pb"]
+            elif self.mineral in ["Chalcopyrite"]:
+                self.w_element = self.element_list["Cu"]
+            elif self.mineral in ["Calcite", "Dolomite"]:
+                self.w_element = self.element_list["Ca"]
+            elif self.mineral in ["Magnesite"]:
+                self.w_element = self.element_list["Mg"]
         #
         self.results = [self.molar_mass, self.rho_b, self.vP, self.vS, self.vPvS, self.bulk_mod, self.shear_mod,
                         self.poisson, self.gamma_ray, self.photoelectricity]
@@ -482,17 +518,30 @@ class Minerals:
             i += 1
         ## Entry Table
         for i in range(10+len(elements)):
-            entr_min = SE(parent=self.parent_mineral, row_id=4+2*i, column_id=4, n_rows=2, bg=self.color_bg,
-               fg=self.color_fg).create_entry(var_entr=self.entr_list_min[i], var_entr_set=round(np.min(self.results[i]), 3))
-            entr_max = SE(parent=self.parent_mineral, row_id=4+2*i, column_id=5, n_rows=2, bg=self.color_bg,
-               fg=self.color_fg).create_entry(var_entr=self.entr_list_max[i], var_entr_set=round(np.max(self.results[i]), 3))
-            entr_mean = SE(parent=self.parent_mineral, row_id=4+2*i, column_id=6, n_rows=2, bg=self.color_bg,
-               fg=self.color_fg).create_entry(var_entr=self.entr_list_mean[i],
-                                         var_entr_set=round(np.mean(self.results[i]), 3))
-            entr_std = SE(parent=self.parent_mineral, row_id=4+2*i, column_id=7, n_rows=2, bg=self.color_bg,
-               fg=self.color_fg).create_entry(var_entr=self.entr_list_std[i],
-                                         var_entr_set=round(np.std(self.results[i], ddof=1), 3))
-            if i >= 10:
+            if i < 10:
+                entr_min = SE(parent=self.parent_mineral, row_id=4+2*i, column_id=4, n_rows=2, bg=self.color_bg,
+                   fg=self.color_fg).create_entry(var_entr=self.entr_list_min[i], var_entr_set=round(np.min(self.results[i]), 3))
+                entr_max = SE(parent=self.parent_mineral, row_id=4+2*i, column_id=5, n_rows=2, bg=self.color_bg,
+                   fg=self.color_fg).create_entry(var_entr=self.entr_list_max[i], var_entr_set=round(np.max(self.results[i]), 3))
+                entr_mean = SE(parent=self.parent_mineral, row_id=4+2*i, column_id=6, n_rows=2, bg=self.color_bg,
+                   fg=self.color_fg).create_entry(var_entr=self.entr_list_mean[i],
+                                             var_entr_set=round(np.mean(self.results[i]), 3))
+                entr_std = SE(parent=self.parent_mineral, row_id=4+2*i, column_id=7, n_rows=2, bg=self.color_bg,
+                   fg=self.color_fg).create_entry(var_entr=self.entr_list_std[i],
+                                             var_entr_set=round(np.std(self.results[i], ddof=1), 3))
+            elif i >= 10:
+                entr_min = SE(parent=self.parent_mineral, row_id=4+2*i, column_id=4, n_rows=2, bg=self.color_bg,
+                              fg=self.color_fg).create_entry(var_entr=self.entr_list_min[i],
+                                                             var_entr_set=round(np.min(self.results[i]), 2))
+                entr_max = SE(parent=self.parent_mineral, row_id=4+2*i, column_id=5, n_rows=2, bg=self.color_bg,
+                              fg=self.color_fg).create_entry(var_entr=self.entr_list_max[i],
+                                                             var_entr_set=round(np.max(self.results[i]), 2))
+                entr_mean = SE(parent=self.parent_mineral, row_id=4+2*i, column_id=6, n_rows=2, bg=self.color_bg,
+                               fg=self.color_fg).create_entry(var_entr=self.entr_list_mean[i],
+                                                              var_entr_set=round(np.mean(self.results[i]), 2))
+                entr_std = SE(parent=self.parent_mineral, row_id=4+2*i, column_id=7, n_rows=2, bg=self.color_bg,
+                              fg=self.color_fg).create_entry(var_entr=self.entr_list_std[i],
+                                                             var_entr_set=round(np.std(self.results[i], ddof=1), 2))
                 self.entr_w.append(entr_min)
                 self.entr_w.append(entr_max)
                 self.entr_w.append(entr_mean)
@@ -577,6 +626,24 @@ class Minerals:
             elif self.mineral == "Hematite":
                 self.var_dict = True
                 data = Oxides(impurity="pure").create_hematite(dict=self.var_dict)
+            elif self.mineral == "Pyrite":
+                self.var_dict = True
+                data = Sulfides(impurity="pure", dict=self.var_dict).create_pyrite()
+            elif self.mineral == "Chalcopyrite":
+                self.var_dict = True
+                data = Sulfides(impurity="pure", dict=self.var_dict).create_chalcopyrite()
+            elif self.mineral == "Galena":
+                self.var_dict = True
+                data = Sulfides(impurity="pure", dict=self.var_dict).create_galena()
+            elif self.mineral == "Calcite":
+                self.var_dict = True
+                data = Carbonates(impurity="pure", dict=self.var_dict).create_calcite()
+            elif self.mineral == "Dolomite":
+                self.var_dict = True
+                data = Carbonates(impurity="pure", dict=self.var_dict).create_dolomite()
+            elif self.mineral == "Magnesite":
+                self.var_dict = True
+                data = Carbonates(impurity="pure", dict=self.var_dict).create_magnesite()
             elif self.mineral == "Alkalifeldspar":
                 data = Tectosilicates(impurity="pure").create_alkalifeldspar()
             elif self.mineral == "Plagioclase":
@@ -626,20 +693,17 @@ class Minerals:
             for element in elements:
                 self.element_list[element] = []
                 for index, chem_dict in enumerate(self.chemistry, start=0):
-                    self.element_list[element].append(chem_dict[element])
-            if self.mineral in ["Magnetite", "Hematite"]:
+                    self.element_list[element].append(chem_dict[element]*100)
+            if self.mineral in ["Magnetite", "Hematite", "Pyrite"]:
                 self.w_element = self.element_list["Fe"]
-        #
-        if self.mineral == "Quartz":
-            self.w_element = DP(dataset=data_all).extract_element_amounts(type="mineral", element="Si")
-        elif self.mineral == "Magnetite":
-            self.w_element = self.element_list["Fe"]
-        elif self.mineral == "Hematite":
-            self.w_element = self.element_list["Fe"]
-        elif self.mineral == "Alkalifeldspar":
-            self.w_element = DP(dataset=data_all).extract_element_amounts(type="mineral", element="K")
-        elif self.mineral == "Plagioclase":
-            self.w_element = DP(dataset=data_all).extract_element_amounts(type="mineral", element="Ca")
+            elif self.mineral in ["Galena"]:
+                self.w_element = self.element_list["Pb"]
+            elif self.mineral in ["Chalcopyrite"]:
+                self.w_element = self.element_list["Cu"]
+            elif self.mineral in ["Calcite", "Dolomite"]:
+                self.w_element = self.element_list["Ca"]
+            elif self.mineral in ["Magnesite"]:
+                self.w_element = self.element_list["Mg"]
         #
         self.results = [self.molar_mass, self.rho_b, self.vP, self.vS, self.vPvS, self.bulk_mod, self.shear_mod,
                         self.poisson, self.gamma_ray, self.photoelectricity]
@@ -666,16 +730,34 @@ class Minerals:
             i += 1
         ## Entry Table
         for i in range(10+len(elements)):
-            SE(parent=self.parent_mineral, row_id=4+2*i, column_id=4, n_rows=2, bg=self.color_bg,
-               fg=self.color_fg).create_entry(var_entr=self.entr_list_min[i], var_entr_set=round(np.min(self.results[i]), 3))
-            SE(parent=self.parent_mineral, row_id=4+2*i, column_id=5, n_rows=2, bg=self.color_bg,
-               fg=self.color_fg).create_entry(var_entr=self.entr_list_max[i], var_entr_set=round(np.max(self.results[i]), 3))
-            SE(parent=self.parent_mineral, row_id=4+2*i, column_id=6, n_rows=2, bg=self.color_bg,
-               fg=self.color_fg).create_entry(var_entr=self.entr_list_mean[i],
-                                         var_entr_set=round(np.mean(self.results[i]), 3))
-            SE(parent=self.parent_mineral, row_id=4+2*i, column_id=7, n_rows=2, bg=self.color_bg,
-               fg=self.color_fg).create_entry(var_entr=self.entr_list_std[i],
-                                         var_entr_set=round(np.std(self.results[i], ddof=1), 3))
+            if i < 10:
+                entr_min = SE(parent=self.parent_mineral, row_id=4+2*i, column_id=4, n_rows=2, bg=self.color_bg,
+                   fg=self.color_fg).create_entry(var_entr=self.entr_list_min[i], var_entr_set=round(np.min(self.results[i]), 3))
+                entr_max = SE(parent=self.parent_mineral, row_id=4+2*i, column_id=5, n_rows=2, bg=self.color_bg,
+                   fg=self.color_fg).create_entry(var_entr=self.entr_list_max[i], var_entr_set=round(np.max(self.results[i]), 3))
+                entr_mean = SE(parent=self.parent_mineral, row_id=4+2*i, column_id=6, n_rows=2, bg=self.color_bg,
+                   fg=self.color_fg).create_entry(var_entr=self.entr_list_mean[i],
+                                             var_entr_set=round(np.mean(self.results[i]), 3))
+                entr_std = SE(parent=self.parent_mineral, row_id=4+2*i, column_id=7, n_rows=2, bg=self.color_bg,
+                   fg=self.color_fg).create_entry(var_entr=self.entr_list_std[i],
+                                             var_entr_set=round(np.std(self.results[i], ddof=1), 3))
+            elif i >= 10:
+                entr_min = SE(parent=self.parent_mineral, row_id=4+2*i, column_id=4, n_rows=2, bg=self.color_bg,
+                              fg=self.color_fg).create_entry(var_entr=self.entr_list_min[i],
+                                                             var_entr_set=round(np.min(self.results[i]), 2))
+                entr_max = SE(parent=self.parent_mineral, row_id=4+2*i, column_id=5, n_rows=2, bg=self.color_bg,
+                              fg=self.color_fg).create_entry(var_entr=self.entr_list_max[i],
+                                                             var_entr_set=round(np.max(self.results[i]), 2))
+                entr_mean = SE(parent=self.parent_mineral, row_id=4+2*i, column_id=6, n_rows=2, bg=self.color_bg,
+                               fg=self.color_fg).create_entry(var_entr=self.entr_list_mean[i],
+                                                              var_entr_set=round(np.mean(self.results[i]), 2))
+                entr_std = SE(parent=self.parent_mineral, row_id=4+2*i, column_id=7, n_rows=2, bg=self.color_bg,
+                              fg=self.color_fg).create_entry(var_entr=self.entr_list_std[i],
+                                                             var_entr_set=round(np.std(self.results[i], ddof=1), 2))
+                self.entr_w.append(entr_min)
+                self.entr_w.append(entr_max)
+                self.entr_w.append(entr_mean)
+                self.entr_w.append(entr_std)
         #
         self.create_plot(parent=self.parent_mineral, data=self.rho_b/1000, row_id=2, column_id=9, n_rows=15,
                          n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)", color=self.color_mineral)
@@ -747,11 +829,17 @@ class Minerals:
             #
             if self.mineral == "Quartz":
                 element = "Si"
-            elif self.mineral in ["Magnetite", "Hematite"]:
+            elif self.mineral in ["Magnetite", "Hematite", "Pyrite"]:
                 element = "Fe"
+            elif self.mineral in ["Chalcopyrite"]:
+                element = "Cu"
+            elif self.mineral in ["Galena"]:
+                element = "Pb"
+            elif self.mineral in ["Magnesite"]:
+                element = "Mg"
             elif self.mineral == "Alkalifeldspar":
                 element = "K"
-            elif self.mineral == "Plagioclase":
+            elif self.mineral in ["Plagioclase", "Calcite", "Dolomite"]:
                 element = "Ca"
             self.create_scatter_plot(parent=self.parent_mineral, data_x=self.w_element, data_y=self.vP/1000, row_id=2,
                                      column_id=9, n_rows=15, n_columns=3,
