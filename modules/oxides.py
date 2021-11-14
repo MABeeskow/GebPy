@@ -6,7 +6,7 @@
 # Name:		oxides.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		04.06.2021
+# Date:		14.11.2021
 
 # -----------------------------------------------
 
@@ -176,7 +176,11 @@ class Oxides():
         #
         return data
     #
-    def create_magnetite(self): # Fe3O4
+    def create_magnetite(self, dict=False): # Fe3O4
+        #
+        results = {}
+        results["mineral"] = "Mag"
+        #
         # Major elements
         oxygen = PeriodicSystem(name="O").get_data()
         iron = PeriodicSystem(name="Fe").get_data()
@@ -212,14 +216,23 @@ class Oxides():
         molar_mass_pure = 3*iron[2] + 4*oxygen[2]
         molar_mass, amounts = MineralChemistry(w_traces=traces_data, molar_mass_pure=molar_mass_pure,
                                       majors=majors_data).calculate_molar_mass()
+        #
+        results["M"] = molar_mass
+        element_list = np.array(amounts)[:, 0]
+        results["chemistry"] = {}
+        for index, element in enumerate(element_list, start=0):
+            results["chemistry"][element] = amounts[index][2]
+        #
         amounts_oxides = [["FeO", round((iron[2]+oxygen[2])/molar_mass, 6)], ["Fe2O3", round((2*iron[2]+3*oxygen[2])/molar_mass, 6)]]
         element = [PeriodicSystem(name=amounts[i][0]).get_data() for i in range(len(amounts))]
+        #
         # Density
         dataV = CrystalPhysics([[8.396], [], "cubic"])
         V = dataV.calculate_volume()
         dataRho = CrystalPhysics([molar_mass, 8, V])
         rho = dataRho.calculate_bulk_density()
         rho_e = wg(amounts=amounts, elements=element, rho_b=rho).calculate_electron_density()
+        #
         # Bulk modulus
         K = 176*10**9
         # Shear modulus
@@ -242,6 +255,21 @@ class Oxides():
         # Electrical resistivity
         p = 2850
         #
+        results["rho"] = round(rho, 4)
+        results["rho_e"] = round(rho_e, 4)
+        results["V"] = round(V, 4)
+        results["vP"] = round(vP, 4)
+        results["vS"] = round(vS, 4)
+        results["vP/vS"] = round(vPvS, 4)
+        results["G"] = round(G*10**(-9), 4)
+        results["K"] = round(K*10**(-9), 4)
+        results["E"] = round(E*10**(-9), 4)
+        results["nu"] = round(nu, 4)
+        results["GR"] = round(gamma_ray, 4)
+        results["PE"] = round(pe, 4)
+        results["U"] = round(U, 4)
+        results["p"] = round(p, 4)
+        #
         data.append(mineral)
         data.append(round(molar_mass, 2))
         data.append(round(rho, 1))
@@ -251,9 +279,16 @@ class Oxides():
         data.append(amounts)
         data.append(amounts_oxides)
         #
-        return data
+        if dict == False:
+            return data
+        else:
+            return results
     #
-    def create_hematite(self):  # Fe2O3
+    def create_hematite(self, dict=False):  # Fe2O3
+        #
+        results = {}
+        results["mineral"] = "Hem"
+        #
         # Major elements
         oxygen = PeriodicSystem(name="O").get_data()
         iron = PeriodicSystem(name="Fe").get_data()
@@ -289,6 +324,13 @@ class Oxides():
         molar_mass_pure = 2*iron[2] + 3*oxygen[2]
         molar_mass, amounts = MineralChemistry(w_traces=traces_data, molar_mass_pure=molar_mass_pure,
                                       majors=majors_data).calculate_molar_mass()
+        #
+        results["M"] = molar_mass
+        element_list = np.array(amounts)[:, 0]
+        results["chemistry"] = {}
+        for index, element in enumerate(element_list, start=0):
+            results["chemistry"][element] = amounts[index][2]
+        #
         element = [PeriodicSystem(name=amounts[i][0]).get_data() for i in range(len(amounts))]
         # Density
         dataV = CrystalPhysics([[5.038, 13.772], [], "trigonal"])
@@ -318,6 +360,21 @@ class Oxides():
         # Electrical resistivity
         p = 5*10**6
         #
+        results["rho"] = round(rho, 4)
+        results["rho_e"] = round(rho_e, 4)
+        results["V"] = round(V, 4)
+        results["vP"] = round(vP, 4)
+        results["vS"] = round(vS, 4)
+        results["vP/vS"] = round(vPvS, 4)
+        results["G"] = round(G*10**(-9), 4)
+        results["K"] = round(K*10**(-9), 4)
+        results["E"] = round(E*10**(-9), 4)
+        results["nu"] = round(nu, 4)
+        results["GR"] = round(gamma_ray, 4)
+        results["PE"] = round(pe, 4)
+        results["U"] = round(U, 4)
+        results["p"] = round(p, 4)
+        #
         data.append(mineral)
         data.append(round(molar_mass, 2))
         data.append(round(rho, 1))
@@ -326,7 +383,10 @@ class Oxides():
         data.append([round(gamma_ray, 2), round(pe, 2), round(U, 2), p])
         data.append(amounts)
         #
-        return data
+        if dict == False:
+            return data
+        else:
+            return results
     #
     def create_corundum(self):   # Al2O3
         # Major elements

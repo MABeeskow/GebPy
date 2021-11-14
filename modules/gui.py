@@ -6,7 +6,7 @@
 # Name:		gui.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		01.11.2021
+# Date:		14.11.2021
 
 #-----------------------------------------------
 
@@ -87,11 +87,11 @@ class GebPyGUI(tk.Frame):
         #
         ## Labels
         SE(parent=self.parent, row_id=6, column_id=0, n_rows=2, n_columns=2, bg=self.color_accent_01,
-           fg=self.color_fg_dark).create_label(text="M i n e r a l o g y", relief=tk.RAISED)
+           fg=self.color_fg_dark).create_label(text="Minerals", relief=tk.RAISED)
         SE(parent=self.parent, row_id=12, column_id=0, n_rows=2, n_columns=2, bg=self.color_accent_01,
-           fg=self.color_fg_dark).create_label(text="P e t r o l o g y", relief=tk.RAISED)
+           fg=self.color_fg_dark).create_label(text="Rocks", relief=tk.RAISED)
         SE(parent=self.parent, row_id=18, column_id=0, n_rows=2, n_columns=2, bg=self.color_accent_01,
-           fg=self.color_fg_dark).create_label(text="S t r a t i g r a p h y", relief=tk.RAISED)
+           fg=self.color_fg_dark).create_label(text="Subsurface", relief=tk.RAISED)
         SE(parent=self.parent, row_id=0, column_id=3, n_rows=2, n_columns=5, bg=self.color_bg,
            fg=self.color_fg_dark).create_label(text="Statistics", relief=tk.RAISED)
         SE(parent=self.parent, row_id=2, column_id=3, n_rows=2, bg=self.color_bg,
@@ -134,6 +134,10 @@ class GebPyGUI(tk.Frame):
     def select_opt(self, var_opt):
         # Minerals
         if var_opt == "Quartz":
+            Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
+                     color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
+                     entr_w=self.entr_w)
+        elif var_opt in ["Magnetite", "Hematite"]:
             Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                      color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
                      entr_w=self.entr_w)
@@ -389,10 +393,17 @@ class Minerals:
                                            color_bg=self.color_acc_01,
                                            command=lambda var_rb=self.var_rb: self.change_radiobutton(var_rb))
         #
+        self.var_dict = False
         data_all = []
         for i in range(var_entr_start):
             if self.mineral == "Quartz":
                 data = Oxides(impurity="pure").create_quartz()
+            elif self.mineral == "Magnetite":
+                self.var_dict = True
+                data = Oxides(impurity="pure").create_magnetite(dict=self.var_dict)
+            elif self.mineral == "Hematite":
+                self.var_dict = True
+                data = Oxides(impurity="pure").create_hematite(dict=self.var_dict)
             elif self.mineral == "Alkalifeldspar":
                 data = Tectosilicates(impurity="pure").create_alkalifeldspar()
             elif self.mineral == "Plagioclase":
@@ -400,28 +411,51 @@ class Minerals:
             self.color_mineral = "#7C9097"
             #
             data_all.append(data)
-        elements = np.array(data_all[0][-1])[:, 0]
-        self.element_list = []
-        for element in elements:
-            self.element_list.append(DP(dataset=data_all).extract_element_amounts(type="mineral", element=element))
         #
-        self.rho_b = DP(dataset=data_all).extract_densities(type="mineral", keyword="bulk")
-        self.molar_mass = DP(dataset=data_all).extract_molar_mass()
-        self.bulk_mod = DP(dataset=data_all).extract_elastic_moduli(type="mineral", keyword="bulk")
-        self.shear_mod = DP(dataset=data_all).extract_elastic_moduli(type="mineral", keyword="shear")
-        self.poisson = DP(dataset=data_all).extract_elastic_moduli(type="mineral", keyword="poisson")
-        self.vP = DP(dataset=data_all).extract_seismic_velocities(type="mineral", keyword="vP")
-        self.vS = DP(dataset=data_all).extract_seismic_velocities(type="mineral", keyword="vS")
-        self.vPvS = DP(dataset=data_all).extract_seismic_velocities(type="mineral", keyword="vPvS")
-        self.gamma_ray = DP(dataset=data_all).extract_gamma_ray(type="mineral")
-        self.photoelectricity = DP(dataset=data_all).extract_photoelectricity(type="mineral")
-        #
-        if self.mineral == "Quartz":
-            self.w_element = DP(dataset=data_all).extract_element_amounts(type="mineral", element="Si")
-        elif self.mineral == "Alkalifeldspar":
-            self.w_element = DP(dataset=data_all).extract_element_amounts(type="mineral", element="K")
-        elif self.mineral == "Plagioclase":
-            self.w_element = DP(dataset=data_all).extract_element_amounts(type="mineral", element="Ca")
+        if self.var_dict == False:
+            elements = np.array(data_all[0][-1])[:, 0]
+            self.element_list = []
+            for element in elements:
+                self.element_list.append(DP(dataset=data_all).extract_element_amounts(type="mineral", element=element))
+            #
+            self.rho_b = DP(dataset=data_all).extract_densities(type="mineral", keyword="bulk")
+            self.molar_mass = DP(dataset=data_all).extract_molar_mass()
+            self.bulk_mod = DP(dataset=data_all).extract_elastic_moduli(type="mineral", keyword="bulk")
+            self.shear_mod = DP(dataset=data_all).extract_elastic_moduli(type="mineral", keyword="shear")
+            self.poisson = DP(dataset=data_all).extract_elastic_moduli(type="mineral", keyword="poisson")
+            self.vP = DP(dataset=data_all).extract_seismic_velocities(type="mineral", keyword="vP")
+            self.vS = DP(dataset=data_all).extract_seismic_velocities(type="mineral", keyword="vS")
+            self.vPvS = DP(dataset=data_all).extract_seismic_velocities(type="mineral", keyword="vPvS")
+            self.gamma_ray = DP(dataset=data_all).extract_gamma_ray(type="mineral")
+            self.photoelectricity = DP(dataset=data_all).extract_photoelectricity(type="mineral")
+            #
+            if self.mineral == "Quartz":
+                self.w_element = DP(dataset=data_all).extract_element_amounts(type="mineral", element="Si")
+            elif self.mineral == "Alkalifeldspar":
+                self.w_element = DP(dataset=data_all).extract_element_amounts(type="mineral", element="K")
+            elif self.mineral == "Plagioclase":
+                self.w_element = DP(dataset=data_all).extract_element_amounts(type="mineral", element="Ca")
+        else:
+            self.molar_mass = DP(dataset=data_all).extract_data(keyword="M")
+            self.rho_b = DP(dataset=data_all).extract_data(keyword="rho")
+            self.vP = DP(dataset=data_all).extract_data(keyword="vP")
+            self.vS = DP(dataset=data_all).extract_data(keyword="vS")
+            self.vPvS = DP(dataset=data_all).extract_data(keyword="vP/vS")
+            self.bulk_mod = DP(dataset=data_all).extract_data(keyword="K")
+            self.shear_mod = DP(dataset=data_all).extract_data(keyword="G")
+            self.youngs_mod = DP(dataset=data_all).extract_data(keyword="E")
+            self.poisson = DP(dataset=data_all).extract_data(keyword="nu")
+            self.gamma_ray = DP(dataset=data_all).extract_data(keyword="GR")
+            self.photoelectricity = DP(dataset=data_all).extract_data(keyword="PE")
+            self.chemistry = DP(dataset=data_all).extract_data(keyword="chemistry")
+            elements = np.array(list(data_all[0]["chemistry"].keys()))
+            self.element_list = {}
+            for element in elements:
+                self.element_list[element] = []
+                for index, chem_dict in enumerate(self.chemistry, start=0):
+                    self.element_list[element].append(chem_dict[element])
+            if self.mineral in ["Magnetite", "Hematite"]:
+                self.w_element = self.element_list["Fe"]
         #
         self.results = [self.molar_mass, self.rho_b, self.vP, self.vS, self.vPvS, self.bulk_mod, self.shear_mod,
                         self.poisson, self.gamma_ray, self.photoelectricity]
@@ -441,7 +475,10 @@ class Minerals:
             lbl_w = SE(parent=self.parent_mineral, row_id=24+i*2, column_id=3, n_rows=2, bg=self.color_bg,
                fg="black").create_label(text=str(element)+" amount\n (%)", relief=tk.RAISED)
             self.lbl_w.append(lbl_w)
-            self.results.append(self.element_list[i])
+            if self.var_dict == False:
+                self.results.append(self.element_list[i])
+            else:
+                self.results.append(self.element_list[element])
             i += 1
         ## Entry Table
         for i in range(10+len(elements)):
@@ -534,6 +571,12 @@ class Minerals:
         for i in range(var_entr.get()):
             if self.mineral == "Quartz":
                 data = Oxides(impurity="pure").create_quartz()
+            elif self.mineral == "Magnetite":
+                self.var_dict = True
+                data = Oxides(impurity="pure").create_magnetite(dict=self.var_dict)
+            elif self.mineral == "Hematite":
+                self.var_dict = True
+                data = Oxides(impurity="pure").create_hematite(dict=self.var_dict)
             elif self.mineral == "Alkalifeldspar":
                 data = Tectosilicates(impurity="pure").create_alkalifeldspar()
             elif self.mineral == "Plagioclase":
@@ -541,24 +584,58 @@ class Minerals:
             self.color_mineral = "#7C9097"
             #
             data_all.append(data)
-        elements = np.array(data_all[0][-1])[:, 0]
-        self.element_list = []
-        for element in elements:
-            self.element_list.append(DP(dataset=data_all).extract_element_amounts(type="mineral", element=element))
         #
-        self.rho_b = DP(dataset=data_all).extract_densities(type="mineral", keyword="bulk")
-        self.molar_mass = DP(dataset=data_all).extract_molar_mass()
-        self.bulk_mod = DP(dataset=data_all).extract_elastic_moduli(type="mineral", keyword="bulk")
-        self.shear_mod = DP(dataset=data_all).extract_elastic_moduli(type="mineral", keyword="shear")
-        self.poisson = DP(dataset=data_all).extract_elastic_moduli(type="mineral", keyword="poisson")
-        self.vP = DP(dataset=data_all).extract_seismic_velocities(type="mineral", keyword="vP")
-        self.vS = DP(dataset=data_all).extract_seismic_velocities(type="mineral", keyword="vS")
-        self.vPvS = DP(dataset=data_all).extract_seismic_velocities(type="mineral", keyword="vPvS")
-        self.gamma_ray = DP(dataset=data_all).extract_gamma_ray(type="mineral")
-        self.photoelectricity = DP(dataset=data_all).extract_photoelectricity(type="mineral")
+        if self.var_dict == False:
+            elements = np.array(data_all[0][-1])[:, 0]
+            self.element_list = []
+            for element in elements:
+                self.element_list.append(DP(dataset=data_all).extract_element_amounts(type="mineral", element=element))
+            #
+            self.rho_b = DP(dataset=data_all).extract_densities(type="mineral", keyword="bulk")
+            self.molar_mass = DP(dataset=data_all).extract_molar_mass()
+            self.bulk_mod = DP(dataset=data_all).extract_elastic_moduli(type="mineral", keyword="bulk")
+            self.shear_mod = DP(dataset=data_all).extract_elastic_moduli(type="mineral", keyword="shear")
+            self.poisson = DP(dataset=data_all).extract_elastic_moduli(type="mineral", keyword="poisson")
+            self.vP = DP(dataset=data_all).extract_seismic_velocities(type="mineral", keyword="vP")
+            self.vS = DP(dataset=data_all).extract_seismic_velocities(type="mineral", keyword="vS")
+            self.vPvS = DP(dataset=data_all).extract_seismic_velocities(type="mineral", keyword="vPvS")
+            self.gamma_ray = DP(dataset=data_all).extract_gamma_ray(type="mineral")
+            self.photoelectricity = DP(dataset=data_all).extract_photoelectricity(type="mineral")
+            #
+            if self.mineral == "Quartz":
+                self.w_element = DP(dataset=data_all).extract_element_amounts(type="mineral", element="Si")
+            elif self.mineral == "Alkalifeldspar":
+                self.w_element = DP(dataset=data_all).extract_element_amounts(type="mineral", element="K")
+            elif self.mineral == "Plagioclase":
+                self.w_element = DP(dataset=data_all).extract_element_amounts(type="mineral", element="Ca")
+        else:
+            self.molar_mass = DP(dataset=data_all).extract_data(keyword="M")
+            self.rho_b = DP(dataset=data_all).extract_data(keyword="rho")
+            self.vP = DP(dataset=data_all).extract_data(keyword="vP")
+            self.vS = DP(dataset=data_all).extract_data(keyword="vS")
+            self.vPvS = DP(dataset=data_all).extract_data(keyword="vP/vS")
+            self.bulk_mod = DP(dataset=data_all).extract_data(keyword="K")
+            self.shear_mod = DP(dataset=data_all).extract_data(keyword="G")
+            self.youngs_mod = DP(dataset=data_all).extract_data(keyword="E")
+            self.poisson = DP(dataset=data_all).extract_data(keyword="nu")
+            self.gamma_ray = DP(dataset=data_all).extract_data(keyword="GR")
+            self.photoelectricity = DP(dataset=data_all).extract_data(keyword="PE")
+            self.chemistry = DP(dataset=data_all).extract_data(keyword="chemistry")
+            elements = np.array(list(data_all[0]["chemistry"].keys()))
+            self.element_list = {}
+            for element in elements:
+                self.element_list[element] = []
+                for index, chem_dict in enumerate(self.chemistry, start=0):
+                    self.element_list[element].append(chem_dict[element])
+            if self.mineral in ["Magnetite", "Hematite"]:
+                self.w_element = self.element_list["Fe"]
         #
         if self.mineral == "Quartz":
             self.w_element = DP(dataset=data_all).extract_element_amounts(type="mineral", element="Si")
+        elif self.mineral == "Magnetite":
+            self.w_element = self.element_list["Fe"]
+        elif self.mineral == "Hematite":
+            self.w_element = self.element_list["Fe"]
         elif self.mineral == "Alkalifeldspar":
             self.w_element = DP(dataset=data_all).extract_element_amounts(type="mineral", element="K")
         elif self.mineral == "Plagioclase":
@@ -579,9 +656,13 @@ class Minerals:
         #
         i = 0
         for element in elements:
-            SE(parent=self.parent_mineral, row_id=24+i*2, column_id=2, n_rows=2, bg=self.color_bg,
+            lbl_w = SE(parent=self.parent_mineral, row_id=24+i*2, column_id=3, n_rows=2, bg=self.color_bg,
                fg="black").create_label(text=str(element)+" amount\n (%)", relief=tk.RAISED)
-            self.results.append(self.element_list[i])
+            self.lbl_w.append(lbl_w)
+            if self.var_dict == False:
+                self.results.append(self.element_list[i])
+            else:
+                self.results.append(self.element_list[element])
             i += 1
         ## Entry Table
         for i in range(10+len(elements)):
@@ -666,6 +747,8 @@ class Minerals:
             #
             if self.mineral == "Quartz":
                 element = "Si"
+            elif self.mineral in ["Magnetite", "Hematite"]:
+                element = "Fe"
             elif self.mineral == "Alkalifeldspar":
                 element = "K"
             elif self.mineral == "Plagioclase":
