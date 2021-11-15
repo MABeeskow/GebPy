@@ -243,7 +243,7 @@ class GebPyGUI(tk.Frame):
             opt_list_0_1 = ["Quartz", "Magnetite", "Hematite"]
             self.opt_oxide = SE(parent=self.parent, row_id=10, column_id=0, n_rows=2, n_columns=2,
                                 bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
-                var_opt=var_opt_0_1, var_opt_set="Select Oxide", opt_list=opt_list_0_1,
+                var_opt=var_opt_0_1, var_opt_set="Select Oxide", opt_list=opt_list_0_1, active_bg=self.color_accent_02,
                 command=lambda var_opt=var_opt_0_1: self.select_opt(var_opt))
         elif var_opt == "Sulfides":
             try:
@@ -943,7 +943,8 @@ class Rocks:
         elif self.rock in ["Limestone", "Dolomite"]:
             var_phi0_start = 0
             var_phi1_start = 50
-        elif self.rock in ["Rock Salt", "Anhydrite"]:
+        elif self.rock in ["Rock Salt", "Anhydrite", "Felsic Rock", "Intermediate Rock", "Granite", "Gabbro", "Syenite",
+                           "Diorite", "Granodiorite", "Tonalite", "Monzonite", "Quartzolite", "Qz-rich Granitoid"]:
             var_phi0_start = 0
             var_phi1_start = 2.5
         else:
@@ -975,38 +976,39 @@ class Rocks:
                                            command=lambda var_rb=self.var_rb: self.change_radiobutton(var_rb))
         #
         data_all = []
+        phi_value = rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)
         for i in range(var_entr_start):
             if self.rock == "Sandstone":
-                data = sandstone(fluid="water", actualThickness=0).create_simple_sandstone(dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
+                data = sandstone(fluid="water", actualThickness=0).create_simple_sandstone(dict=True, porosity=phi_value)
             elif self.rock == "Shale":
-                data = shale(fluid="water").create_simple_shale(dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
+                data = shale().create_simple_shale()
             elif self.rock == "Limestone":
-                data = limestone(fluid="water", actualThickness=0).create_simple_limestone(dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
+                data = limestone(fluid="water", actualThickness=0).create_simple_limestone(dict=True, porosity=phi_value)
             elif self.rock == "Dolomite":
-                data = dolomite(fluid="water", actualThickness=0).create_simple_dolomite(dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
+                data = dolomite(fluid="water", actualThickness=0).create_simple_dolomite(dict=True, porosity=phi_value)
             #
             elif self.rock == "Felsic Rock":
-                data = Plutonic(fluid="water", actualThickness=0).create_felsic()
+                data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=phi_value).create_felsic()
             elif self.rock == "Intermediate Rock":
-                data = Plutonic(fluid="water", actualThickness=0).create_intermediate()
+                data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=phi_value).create_intermediate()
             elif self.rock == "Granite":
-                data = Plutonic(fluid="water", actualThickness=0).create_simple_granite()
+                data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=phi_value).create_simple_granite()
             elif self.rock == "Gabbro":
-                data = Plutonic(fluid="water", actualThickness=0).create_simple_gabbro()
+                data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=phi_value).create_simple_gabbro()
             elif self.rock == "Diorite":
-                data = Plutonic(fluid="water", actualThickness=0).create_simple_diorite()
+                data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=phi_value).create_simple_diorite()
             elif self.rock == "Granodiorite":
-                data = Plutonic(fluid="water", actualThickness=0).create_simple_granodiorite()
+                data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=phi_value).create_simple_granodiorite()
             elif self.rock == "Monzonite":
-                data = Plutonic(fluid="water", actualThickness=0).create_simple_monzonite()
+                data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=phi_value).create_simple_monzonite()
             elif self.rock == "Quartzolite":
-                data = Plutonic(fluid="water", actualThickness=0).create_simple_quartzolite()
+                data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=phi_value).create_simple_quartzolite()
             elif self.rock == "Qz-rich Granitoid":
-                data = Plutonic(fluid="water", actualThickness=0).create_simple_quartzrich_granitoid()
+                data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=phi_value).create_simple_quartzrich_granitoid()
             elif self.rock == "Syenite":
-                data = Plutonic(fluid="water", actualThickness=0).create_simple_syenite()
+                data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=phi_value).create_simple_syenite()
             elif self.rock == "Tonalite":
-                data = Plutonic(fluid="water", actualThickness=0).create_simple_tonalite()
+                data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=phi_value).create_simple_tonalite()
             #
             elif self.rock == "Rock Salt":
                 data = Evaporites(fluid="water", actualThickness=0).create_simple_rocksalt(dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
@@ -1225,38 +1227,39 @@ class Rocks:
             self.lbl_w.append(lbl)
         #
         data_all = []
+        phi_value = rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)
         for i in range(var_entr.get()):
             if self.rock == "Sandstone":
-                data = sandstone(fluid="water", actualThickness=0).create_simple_sandstone(dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
+                data = sandstone(fluid="water", actualThickness=0).create_simple_sandstone(dict=True, porosity=phi_value)
             elif self.rock == "Shale":
                 data = shale().create_simple_shale()
             elif self.rock == "Limestone":
-                data = limestone(fluid="water", actualThickness=0).create_simple_limestone(dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
+                data = limestone(fluid="water", actualThickness=0).create_simple_limestone(dict=True, porosity=phi_value)
             elif self.rock == "Dolomite":
-                data = dolomite(fluid="water", actualThickness=0).create_simple_dolomite(dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
+                data = dolomite(fluid="water", actualThickness=0).create_simple_dolomite(dict=True, porosity=phi_value)
             #
             elif self.rock == "Felsic Rock":
-                data = Plutonic(fluid="water", actualThickness=0).create_felsic()
+                data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=phi_value).create_felsic()
             elif self.rock == "Intermediate Rock":
-                data = Plutonic(fluid="water", actualThickness=0).create_intermediate()
+                data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=phi_value).create_intermediate()
             elif self.rock == "Granite":
-                data = Plutonic(fluid="water", actualThickness=0).create_simple_granite()
+                data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=phi_value).create_simple_granite()
             elif self.rock == "Gabbro":
-                data = Plutonic(fluid="water", actualThickness=0).create_simple_gabbro()
+                data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=phi_value).create_simple_gabbro()
             elif self.rock == "Diorite":
-                data = Plutonic(fluid="water", actualThickness=0).create_simple_diorite()
+                data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=phi_value).create_simple_diorite()
             elif self.rock == "Granodiorite":
-                data = Plutonic(fluid="water", actualThickness=0).create_simple_granodiorite()
+                data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=phi_value).create_simple_granodiorite()
             elif self.rock == "Monzonite":
-                data = Plutonic(fluid="water", actualThickness=0).create_simple_monzonite()
+                data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=phi_value).create_simple_monzonite()
             elif self.rock == "Quartzolite":
-                data = Plutonic(fluid="water", actualThickness=0).create_simple_quartzolite()
+                data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=phi_value).create_simple_quartzolite()
             elif self.rock == "Qz-rich Granitoid":
-                data = Plutonic(fluid="water", actualThickness=0).create_simple_quartzrich_granitoid()
+                data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=phi_value).create_simple_quartzrich_granitoid()
             elif self.rock == "Syenite":
-                data = Plutonic(fluid="water", actualThickness=0).create_simple_syenite()
+                data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=phi_value).create_simple_syenite()
             elif self.rock == "Tonalite":
-                data = Plutonic(fluid="water", actualThickness=0).create_simple_tonalite()
+                data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=phi_value).create_simple_tonalite()
             #
             elif self.rock == "Rock Salt":
                 data = Evaporites(fluid="water", actualThickness=0).create_simple_rocksalt(dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))

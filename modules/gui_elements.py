@@ -30,7 +30,7 @@ class SimpleElements:
         #
         return lbl
     #
-    def create_option_menu(self, var_opt, var_opt_set, opt_list, command=None):
+    def create_option_menu(self, var_opt, var_opt_set, opt_list, active_bg="#F9DED7", command=None):
         var_opt.set(var_opt_set)
         if command == None:
             opt_menu = tk.OptionMenu(self.parent, var_opt, *opt_list)
@@ -39,8 +39,8 @@ class SimpleElements:
         opt_menu.config(bg=self.bg)
         opt_menu.grid(row=self.row_id, column=self.column_id, rowspan=self.n_rows, columnspan=self.n_columns,
                       sticky="nesw")
-        opt_menu.config(bg=self.bg, activebackground="#F9DED7", highlightthickness=0)
-        opt_menu["menu"].config(bg=self.bg, activebackground="#F9DED7")
+        opt_menu.config(bg=self.bg, activebackground=active_bg, highlightthickness=0)
+        opt_menu["menu"].config(bg=self.bg, activebackground=active_bg)
         #
         return opt_menu
     #

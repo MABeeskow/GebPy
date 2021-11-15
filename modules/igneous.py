@@ -111,9 +111,11 @@ class plutonic:
     #
 class Plutonic:
     #
-    def __init__(self, fluid, actualThickness):
+    def __init__(self, fluid, actualThickness, dict=False, porosity=None):
         self.fluid = fluid
         self.actualThickness = actualThickness
+        self.dict = dict
+        self.porosity = porosity
     #
     def create_felsic(self, w_Na=None, w_Mg=None, w_K=None, w_Ca=None, w_Fe = None, amounts=None):
         #
@@ -198,7 +200,7 @@ class Plutonic:
                 sumMin = 0
             #
             w_H = round(w_bt*biotite[6][0] + w_ms*muscovite[6][0] + w_amph*amphibole[6][0], 4)
-            w_O = round(w_qz*quartz[6][0] + w_kfs*alkalifeldspar[6][0] + w_pl*plagioclase[6][0] + w_bt*biotite[6][1] + w_ms*muscovite[6][1] + w_amph*amphibole[6][1], 4)
+            #w_O = round(w_qz*quartz[6][0] + w_kfs*alkalifeldspar[6][0] + w_pl*plagioclase[6][0] + w_bt*biotite[6][1] + w_ms*muscovite[6][1] + w_amph*amphibole[6][1], 4)
             w_F = round(w_bt*biotite[6][2] + w_ms*muscovite[6][2], 4)
             w_Na = round(w_kfs*alkalifeldspar[6][1] + w_pl*plagioclase[6][1] + w_amph*amphibole[6][2], 4)
             w_Mg = round(w_bt*biotite[6][3], 4)
@@ -207,6 +209,7 @@ class Plutonic:
             w_K = round(w_kfs*alkalifeldspar[6][4] + w_bt*biotite[6][6] + w_ms*muscovite[6][5], 4)
             w_Ca = round(w_pl*plagioclase[6][4], 4)
             w_Fe = round(w_bt*biotite[6][7] + w_amph*amphibole[6][4], 4)
+            w_O = round(1 - w_H - w_F - w_Na - w_Mg - w_Al - w_Si - w_K - w_Ca - w_Fe, 4)
             sumConc = round(w_H + w_O + w_F + w_Na + w_Mg + w_Al + w_Si + w_K + w_Ca + w_Fe, 4)
             #print("Amount:", sumMin, "C:", sumConc)
             #
@@ -240,16 +243,19 @@ class Plutonic:
         E_solid = (9*K_solid*G_solid)/(3*K_solid+G_solid)
         nu_solid = (3*K_solid-2*G_solid)/(2*(3*K_solid+G_solid))
         #
-        if self.actualThickness <= 1000:
-            phi = rd.uniform(0.0, 0.025)
-        elif self.actualThickness > 1000 and self.actualThickness <= 2000:
-            phi = rd.uniform(0.0, 0.025)
-        elif self.actualThickness > 2000 and self.actualThickness <= 3000:
-            phi = rd.uniform(0.0, 0.025)
-        elif self.actualThickness > 3000 and self.actualThickness <= 4000:
-            phi = rd.uniform(0.0, 0.025)
-        elif self.actualThickness > 4000:
-            phi = rd.uniform(0.0, 0.025)
+        if self.porosity == None:
+            if self.actualThickness <= 1000:
+                phi = rd.uniform(0.0, 0.025)
+            elif self.actualThickness > 1000 and self.actualThickness <= 2000:
+                phi = rd.uniform(0.0, 0.025)
+            elif self.actualThickness > 2000 and self.actualThickness <= 3000:
+                phi = rd.uniform(0.0, 0.025)
+            elif self.actualThickness > 3000 and self.actualThickness <= 4000:
+                phi = rd.uniform(0.0, 0.025)
+            elif self.actualThickness > 4000:
+                phi = rd.uniform(0.0, 0.025)
+        else:
+            phi = self.porosity
         #
         rho = (1 - phi) * rhoSolid + phi * water[2] / 1000
         vP = (1-phi)*vP_solid + phi*water[4][0]
@@ -265,16 +271,46 @@ class Plutonic:
         poisson_elastic = (3*K_bulk - 2*G_bulk)/(6*K_bulk + 2*G_bulk)
         poisson_mineralogical = w_qz*quartz[3][3] + w_kfs*alkalifeldspar[3][3] + w_pl*plagioclase[3][3] + w_bt*biotite[3][3] + w_ms*muscovite[3][3] + w_amph*amphibole[3][3]
         #
-        data.append([round(rho, 3), round(rhoSolid, 3), round(water[2] / 1000, 6)])
-        data.append([round(K_bulk*10**(-6), 2), round(G_bulk*10**(-6), 2), round(E_bulk*10**(-6), 2), round(poisson_mineralogical, 3)])
-        data.append([round(vP, 2), round(vS, 2), round(vP_solid, 2), round(water[4][0], 2)])
-        data.append([round(phi, 3), round(phiD, 3), round(phiN, 3)])
-        data.append("water")
-        data.append([round(GR, 3), round(PE, 3)])
-        data.append(concentrations)
-        data.append(amounts)
-        #
-        return data
+        if self.dict == False:
+            data.append([round(rho, 3), round(rhoSolid, 3), round(water[2] / 1000, 6)])
+            data.append([round(K_bulk*10**(-6), 2), round(G_bulk*10**(-6), 2), round(E_bulk*10**(-6), 2), round(poisson_mineralogical, 3)])
+            data.append([round(vP, 2), round(vS, 2), round(vP_solid, 2), round(water[4][0], 2)])
+            data.append([round(phi, 3), round(phiD, 3), round(phiN, 3)])
+            data.append("water")
+            data.append([round(GR, 3), round(PE, 3)])
+            data.append(concentrations)
+            data.append(amounts)
+            #
+            return data
+        else:
+            results = {}
+            results["rock"] = "Felsic Rock"
+            #
+            element_list = ["H", "O", "F", "Na", "Mg", "Al", "Si", "K", "Ca", "Fe"]
+            mineral_list = ["Qz", "Kfs", "Pl", "Bt", "Ms", "Amph"]
+            data.append(composition)
+            results["chemistry"] = {}
+            results["mineralogy"] = {}
+            for index, element in enumerate(element_list, start=0):
+                results["chemistry"][element] = concentrations[index]
+            for index, mineral in enumerate(mineral_list, start=0):
+                results["mineralogy"][mineral] = amounts[index]
+            #
+            results["phi"] = phi
+            results["fluid"] = self.fluid
+            #
+            results["rho"] = round(rho*1000, 4)
+            results["vP"] = round(vP, 4)
+            results["vS"] = round(vS, 4)
+            results["vP/vS"] = round(vP/vS, 4)
+            results["G"] = round(G_bulk*10**(-6), 4)
+            results["K"] = round(K_bulk*10**(-6), 4)
+            results["E"] = round(E_bulk*10**(-6), 4)
+            results["nu"] = round(poisson_mineralogical, 4)
+            results["GR"] = round(GR, 4)
+            results["PE"] = round(PE, 4)
+            #
+            return results
     #
     def create_intermediate(self, w_Na=None, w_Mg=None, w_K=None, w_Ca=None, w_Fe = None, amounts=None):
         #
@@ -364,7 +400,7 @@ class Plutonic:
                 sumMin = 0
             #
             w_H = round(w_bt*biotite[6][0] + w_amph*amphibole[6][0], 4)
-            w_O = round(w_qz*quartz[6][0] + w_kfs*alkalifeldspar[6][0] + w_pl*plagioclase[6][0] + w_bt*biotite[6][1] + w_amph*amphibole[6][1] + w_pyx*pyroxene[6][1], 4)
+            #w_O = round(w_qz*quartz[6][0] + w_kfs*alkalifeldspar[6][0] + w_pl*plagioclase[6][0] + w_bt*biotite[6][1] + w_amph*amphibole[6][1] + w_pyx*pyroxene[6][1], 4)
             w_F = round(w_bt*biotite[6][2], 4)
             w_Na = round(w_kfs*alkalifeldspar[6][1] + w_pl*plagioclase[6][1], 4)
             w_Mg = round(w_bt*biotite[6][3] + w_amph*amphibole[6][2] + w_pyx*pyroxene[6][1], 4)
@@ -373,6 +409,7 @@ class Plutonic:
             w_K = round(w_kfs*alkalifeldspar[6][4] + w_bt*biotite[6][6], 4)
             w_Ca = round(w_pl*plagioclase[6][4] + w_amph*amphibole[6][4] + w_pyx*pyroxene[6][3], 4)
             w_Fe = round(w_bt*biotite[6][7] + w_amph*amphibole[6][5] + w_pyx*pyroxene[6][4], 4)
+            w_O = round(1 - w_H - w_F - w_Na - w_Mg - w_Al - w_Si - w_K - w_Ca - w_Fe, 4)
             sumConc = round(w_H + w_O + w_F + w_Na + w_Mg + w_Al + w_Si + w_K + w_Ca + w_Fe, 4)
             #print("Amount:", sumMin, "C:", sumConc)
             #
@@ -405,16 +442,19 @@ class Plutonic:
         E_solid = (9*K_solid*G_solid)/(3*K_solid+G_solid)
         nu_solid = (3*K_solid-2*G_solid)/(2*(3*K_solid+G_solid))
         #
-        if self.actualThickness <= 1000:
-            phi = rd.uniform(0.0, 0.025)
-        elif self.actualThickness > 1000 and self.actualThickness <= 2000:
-            phi = rd.uniform(0.0, 0.025)
-        elif self.actualThickness > 2000 and self.actualThickness <= 3000:
-            phi = rd.uniform(0.0, 0.025)
-        elif self.actualThickness > 3000 and self.actualThickness <= 4000:
-            phi = rd.uniform(0.0, 0.025)
-        elif self.actualThickness > 4000:
-            phi = rd.uniform(0.0, 0.025)
+        if self.porosity == None:
+            if self.actualThickness <= 1000:
+                phi = rd.uniform(0.0, 0.025)
+            elif self.actualThickness > 1000 and self.actualThickness <= 2000:
+                phi = rd.uniform(0.0, 0.025)
+            elif self.actualThickness > 2000 and self.actualThickness <= 3000:
+                phi = rd.uniform(0.0, 0.025)
+            elif self.actualThickness > 3000 and self.actualThickness <= 4000:
+                phi = rd.uniform(0.0, 0.025)
+            elif self.actualThickness > 4000:
+                phi = rd.uniform(0.0, 0.025)
+        else:
+            phi = self.porosity
         #
         rho = (1 - phi) * rhoSolid + phi * water[2] / 1000
         vP = (1-phi)*vP_solid + phi*water[4][0]
@@ -430,16 +470,46 @@ class Plutonic:
         poisson_elastic = (3*K_bulk - 2*G_bulk)/(6*K_bulk + 2*G_bulk)
         poisson_mineralogical = w_qz*quartz[3][3] + w_kfs*alkalifeldspar[3][3] + w_pl*plagioclase[3][3] + w_bt*biotite[3][3] + w_amph*amphibole[3][3] + w_pyx*pyroxene[3][3]
         #
-        data.append([round(rho, 3), round(rhoSolid, 3), round(water[2] / 1000, 6)])
-        data.append([round(K_bulk*10**(-6), 2), round(G_bulk*10**(-6), 2), round(E_bulk*10**(-6), 2), round(poisson_mineralogical, 3)])
-        data.append([round(vP, 2), round(vS, 2), round(vP_solid, 2), round(water[4][0], 2)])
-        data.append([round(phi, 3), round(phiD, 3), round(phiN, 3)])
-        data.append("water")
-        data.append([round(GR, 3), round(PE, 3)])
-        data.append(concentrations)
-        data.append(amounts)
-        #
-        return data
+        if self.dict == False:
+            data.append([round(rho, 3), round(rhoSolid, 3), round(water[2] / 1000, 6)])
+            data.append([round(K_bulk*10**(-6), 2), round(G_bulk*10**(-6), 2), round(E_bulk*10**(-6), 2), round(poisson_mineralogical, 3)])
+            data.append([round(vP, 2), round(vS, 2), round(vP_solid, 2), round(water[4][0], 2)])
+            data.append([round(phi, 3), round(phiD, 3), round(phiN, 3)])
+            data.append("water")
+            data.append([round(GR, 3), round(PE, 3)])
+            data.append(concentrations)
+            data.append(amounts)
+            #
+            return data
+        else:
+            results = {}
+            results["rock"] = "Intermediate Rock"
+            #
+            element_list = ["H", "O", "F", "Na", "Mg", "Al", "Si", "K", "Ca", "Fe"]
+            mineral_list = ["Qz", "Kfs", "Pl", "Bt", "Ms", "Amph"]
+            data.append(composition)
+            results["chemistry"] = {}
+            results["mineralogy"] = {}
+            for index, element in enumerate(element_list, start=0):
+                results["chemistry"][element] = concentrations[index]
+            for index, mineral in enumerate(mineral_list, start=0):
+                results["mineralogy"][mineral] = amounts[index]
+            #
+            results["phi"] = phi
+            results["fluid"] = self.fluid
+            #
+            results["rho"] = round(rho*1000, 4)
+            results["vP"] = round(vP, 4)
+            results["vS"] = round(vS, 4)
+            results["vP/vS"] = round(vP/vS, 4)
+            results["G"] = round(G_bulk*10**(-6), 4)
+            results["K"] = round(K_bulk*10**(-6), 4)
+            results["E"] = round(E_bulk*10**(-6), 4)
+            results["nu"] = round(poisson_mineralogical, 4)
+            results["GR"] = round(GR, 4)
+            results["PE"] = round(PE, 4)
+            #
+            return results
     #
     def create_simple_granite(self, w_Mg=None, w_K=None, w_Ca=None, w_Fe=None, amounts=None):
         #
@@ -556,7 +626,7 @@ class Plutonic:
                 sumMin = 0
             #
             w_H = round(w_bt*biotite[6][0] + w_ms*muscovite[6][0] + w_act*actinolite[6][0] + w_tr*tremolite[6][0], 4)
-            w_O = round(w_qz*quartz[6][0][2] + w_kfs*alkalifeldspar[6][0] + w_pl*plagioclase[6][0] + w_bt*biotite[6][1] + w_ms*muscovite[6][1] + w_act*actinolite[6][1] + w_tr*tremolite[6][1] + w_aug*augite[6][0], 4)
+            #w_O = round(w_qz*quartz[6][0][2] + w_kfs*alkalifeldspar[6][0] + w_pl*plagioclase[6][0] + w_bt*biotite[6][1] + w_ms*muscovite[6][1] + w_act*actinolite[6][1] + w_tr*tremolite[6][1] + w_aug*augite[6][0], 4)
             w_F = round(w_bt*biotite[6][2] + w_ms*muscovite[6][2], 4)
             w_Na = round(w_kfs*alkalifeldspar[6][1] + w_pl*plagioclase[6][1], 4)
             w_Mg = round(w_bt*biotite[6][3] + w_act*actinolite[6][2] + w_tr*tremolite[6][2] + w_aug*augite[6][1], 4)
@@ -565,6 +635,7 @@ class Plutonic:
             w_K = round(w_kfs*alkalifeldspar[6][4] + w_bt*biotite[6][6] + w_ms*muscovite[6][5], 4)
             w_Ca = round(w_pl*plagioclase[6][4] + w_act*actinolite[6][4] + w_tr*tremolite[6][4] + w_aug*augite[6][3], 4)
             w_Fe = round(w_bt*biotite[6][7] + w_act*actinolite[6][5] + w_aug*augite[6][4], 4)
+            w_O = round(1 - w_H - w_F - w_Na - w_Mg - w_Al - w_Si - w_K - w_Ca - w_Fe, 4)
             sumConc = round(w_H + w_O + w_F + w_Na + w_Mg + w_Al + w_Si + w_K + w_Ca + w_Fe, 4)
             #print("Amount:", sumMin, "C:", sumConc)
             #
@@ -597,16 +668,19 @@ class Plutonic:
         E_solid = (9*K_solid*G_solid)/(3*K_solid+G_solid)
         nu_solid = (3*K_solid-2*G_solid)/(2*(3*K_solid+G_solid))
         #
-        if self.actualThickness <= 1000:
-            phi = rd.uniform(0.0, 0.025)
-        elif self.actualThickness > 1000 and self.actualThickness <= 2000:
-            phi = rd.uniform(0.0, 0.025)
-        elif self.actualThickness > 2000 and self.actualThickness <= 3000:
-            phi = rd.uniform(0.0, 0.025)
-        elif self.actualThickness > 3000 and self.actualThickness <= 4000:
-            phi = rd.uniform(0.0, 0.025)
-        elif self.actualThickness > 4000:
-            phi = rd.uniform(0.0, 0.025)
+        if self.porosity == None:
+            if self.actualThickness <= 1000:
+                phi = rd.uniform(0.0, 0.025)
+            elif self.actualThickness > 1000 and self.actualThickness <= 2000:
+                phi = rd.uniform(0.0, 0.025)
+            elif self.actualThickness > 2000 and self.actualThickness <= 3000:
+                phi = rd.uniform(0.0, 0.025)
+            elif self.actualThickness > 3000 and self.actualThickness <= 4000:
+                phi = rd.uniform(0.0, 0.025)
+            elif self.actualThickness > 4000:
+                phi = rd.uniform(0.0, 0.025)
+        else:
+            phi = self.porosity
         #
         rho = (1 - phi) * rhoSolid + phi * water[2] / 1000
         vP = (1-phi)*vP_solid + phi*water[4][0]
@@ -622,16 +696,46 @@ class Plutonic:
         poisson_elastic = (3*K_bulk - 2*G_bulk)/(6*K_bulk + 2*G_bulk)
         poisson_mineralogical = w_qz*quartz[3][3] + w_kfs*alkalifeldspar[3][3] + w_pl*plagioclase[3][3] + w_bt*biotite[3][3] + w_ms*muscovite[3][3] + w_act*actinolite[3][3] + w_tr*tremolite[3][3] + w_aug*augite[3][3]
         #
-        data.append([round(rho, 3), round(rhoSolid, 3), round(water[2] / 1000, 6)])
-        data.append([round(K_bulk*10**(-6), 2), round(G_bulk*10**(-6), 2), round(E_bulk*10**(-6), 2), round(poisson_mineralogical, 3)])
-        data.append([round(vP, 2), round(vS, 2), round(vP_solid, 2), round(water[4][0], 2)])
-        data.append([round(phi, 3), round(phiD, 3), round(phiN, 3)])
-        data.append("water")
-        data.append([round(GR, 3), round(PE, 3)])
-        data.append(concentrations)
-        data.append(amounts)
-        #
-        return data
+        if self.dict == False:
+            data.append([round(rho, 3), round(rhoSolid, 3), round(water[2] / 1000, 6)])
+            data.append([round(K_bulk*10**(-6), 2), round(G_bulk*10**(-6), 2), round(E_bulk*10**(-6), 2), round(poisson_mineralogical, 3)])
+            data.append([round(vP, 2), round(vS, 2), round(vP_solid, 2), round(water[4][0], 2)])
+            data.append([round(phi, 3), round(phiD, 3), round(phiN, 3)])
+            data.append("water")
+            data.append([round(GR, 3), round(PE, 3)])
+            data.append(concentrations)
+            data.append(amounts)
+            #
+            return data
+        else:
+            results = {}
+            results["rock"] = "Granite"
+            #
+            element_list = ["H", "O", "F", "Na", "Mg", "Al", "Si", "K", "Ca", "Fe"]
+            mineral_list = ["Qz", "Kfs", "Pl", "Bt", "Ms", "Act", "Tr", "Aug"]
+            data.append(composition)
+            results["chemistry"] = {}
+            results["mineralogy"] = {}
+            for index, element in enumerate(element_list, start=0):
+                results["chemistry"][element] = concentrations[index]
+            for index, mineral in enumerate(mineral_list, start=0):
+                results["mineralogy"][mineral] = amounts[index]
+            #
+            results["phi"] = phi
+            results["fluid"] = self.fluid
+            #
+            results["rho"] = round(rho*1000, 4)
+            results["vP"] = round(vP, 4)
+            results["vS"] = round(vS, 4)
+            results["vP/vS"] = round(vP/vS, 4)
+            results["G"] = round(G_bulk*10**(-6), 4)
+            results["K"] = round(K_bulk*10**(-6), 4)
+            results["E"] = round(E_bulk*10**(-6), 4)
+            results["nu"] = round(poisson_mineralogical, 4)
+            results["GR"] = round(GR, 4)
+            results["PE"] = round(PE, 4)
+            #
+            return results
         #
     def create_simple_syenite(self, w_Mg=None, w_K=None, w_Ca=None, w_Fe=None, amounts=None):
         #
@@ -747,7 +851,7 @@ class Plutonic:
                 sumMin = 0
             #
             w_H = round(w_bt*biotite[6][0] + w_ms*muscovite[6][0] + w_act*actinolite[6][0] + w_tr*tremolite[6][0], 4)
-            w_O = round(w_qz*quartz[6][0] + w_kfs*alkalifeldspar[6][0] + w_pl*plagioclase[6][0] + w_bt*biotite[6][1] + w_ms*muscovite[6][1] + w_act*actinolite[6][1] + w_tr*tremolite[6][1] + w_aug*augite[6][0], 4)
+            #w_O = round(w_qz*quartz[6][0] + w_kfs*alkalifeldspar[6][0] + w_pl*plagioclase[6][0] + w_bt*biotite[6][1] + w_ms*muscovite[6][1] + w_act*actinolite[6][1] + w_tr*tremolite[6][1] + w_aug*augite[6][0], 4)
             w_F = round(w_bt*biotite[6][2] + w_ms*muscovite[6][2], 4)
             w_Na = round(w_kfs*alkalifeldspar[6][1] + w_pl*plagioclase[6][1], 4)
             w_Mg = round(w_bt*biotite[6][3] + w_act*actinolite[6][2] + w_tr*tremolite[6][2] + w_aug*augite[6][1], 4)
@@ -756,6 +860,7 @@ class Plutonic:
             w_K = round(w_kfs*alkalifeldspar[6][4] + w_bt*biotite[6][6] + w_ms*muscovite[6][5], 4)
             w_Ca = round(w_pl*plagioclase[6][4] + w_act*actinolite[6][4] + w_tr*tremolite[6][4] + w_aug*augite[6][3], 4)
             w_Fe = round(w_bt*biotite[6][7] + w_act*actinolite[6][5] + w_aug*augite[6][4], 4)
+            w_O = round(1 - w_H - w_F - w_Na - w_Mg - w_Al - w_Si - w_K - w_Ca - w_Fe, 4)
             sumConc = round(w_H + w_O + w_F + w_Na + w_Mg + w_Al + w_Si + w_K + w_Ca + w_Fe, 4)
             #print("Amount:", sumMin, "C:", sumConc)
             #
@@ -787,16 +892,19 @@ class Plutonic:
         E_solid = (9*K_solid*G_solid)/(3*K_solid+G_solid)
         nu_solid = (3*K_solid-2*G_solid)/(2*(3*K_solid+G_solid))
         #
-        if self.actualThickness <= 1000:
-            phi = rd.uniform(0.0, 0.025)
-        elif self.actualThickness > 1000 and self.actualThickness <= 2000:
-            phi = rd.uniform(0.0, 0.025)
-        elif self.actualThickness > 2000 and self.actualThickness <= 3000:
-            phi = rd.uniform(0.0, 0.025)
-        elif self.actualThickness > 3000 and self.actualThickness <= 4000:
-            phi = rd.uniform(0.0, 0.025)
-        elif self.actualThickness > 4000:
-            phi = rd.uniform(0.0, 0.025)
+        if self.porosity == None:
+            if self.actualThickness <= 1000:
+                phi = rd.uniform(0.0, 0.025)
+            elif self.actualThickness > 1000 and self.actualThickness <= 2000:
+                phi = rd.uniform(0.0, 0.025)
+            elif self.actualThickness > 2000 and self.actualThickness <= 3000:
+                phi = rd.uniform(0.0, 0.025)
+            elif self.actualThickness > 3000 and self.actualThickness <= 4000:
+                phi = rd.uniform(0.0, 0.025)
+            elif self.actualThickness > 4000:
+                phi = rd.uniform(0.0, 0.025)
+        else:
+            phi = self.porosity
         #
         rho = (1 - phi) * rhoSolid + phi * water[2] / 1000
         vP = (1-phi)*vP_solid + phi*water[4][0]
@@ -812,16 +920,46 @@ class Plutonic:
         poisson_elastic = (3*K_bulk - 2*G_bulk)/(6*K_bulk + 2*G_bulk)
         poisson_mineralogical = w_qz*quartz[3][3] + w_kfs*alkalifeldspar[3][3] + w_pl*plagioclase[3][3] + w_bt*biotite[3][3] + w_ms*muscovite[3][3] + w_act*actinolite[3][3] + w_tr*tremolite[3][3] + w_aug*augite[3][3]
         #
-        data.append([round(rho, 3), round(rhoSolid, 3), round(water[2] / 1000, 6)])
-        data.append([round(K_bulk*10**(-6), 2), round(G_bulk*10**(-6), 2), round(E_bulk*10**(-6), 2), round(poisson_mineralogical, 3)])
-        data.append([round(vP, 2), round(vS, 2), round(vP_solid, 2), round(water[4][0], 2)])
-        data.append([round(phi, 3), round(phiD, 3), round(phiN, 3)])
-        data.append("water")
-        data.append([round(GR, 3), round(PE, 3)])
-        data.append(concentrations)
-        data.append(amounts)
-        #
-        return data
+        if self.dict == False:
+            data.append([round(rho, 3), round(rhoSolid, 3), round(water[2] / 1000, 6)])
+            data.append([round(K_bulk*10**(-6), 2), round(G_bulk*10**(-6), 2), round(E_bulk*10**(-6), 2), round(poisson_mineralogical, 3)])
+            data.append([round(vP, 2), round(vS, 2), round(vP_solid, 2), round(water[4][0], 2)])
+            data.append([round(phi, 3), round(phiD, 3), round(phiN, 3)])
+            data.append("water")
+            data.append([round(GR, 3), round(PE, 3)])
+            data.append(concentrations)
+            data.append(amounts)
+            #
+            return data
+        else:
+            results = {}
+            results["rock"] = "Syenite"
+            #
+            element_list = ["H", "O", "F", "Na", "Mg", "Al", "Si", "K", "Ca", "Fe"]
+            mineral_list = ["Qz", "Kfs", "Pl", "Bt", "Ms", "Act", "Tr", "Aug"]
+            data.append(composition)
+            results["chemistry"] = {}
+            results["mineralogy"] = {}
+            for index, element in enumerate(element_list, start=0):
+                results["chemistry"][element] = concentrations[index]
+            for index, mineral in enumerate(mineral_list, start=0):
+                results["mineralogy"][mineral] = amounts[index]
+            #
+            results["phi"] = phi
+            results["fluid"] = self.fluid
+            #
+            results["rho"] = round(rho*1000, 4)
+            results["vP"] = round(vP, 4)
+            results["vS"] = round(vS, 4)
+            results["vP/vS"] = round(vP/vS, 4)
+            results["G"] = round(G_bulk*10**(-6), 4)
+            results["K"] = round(K_bulk*10**(-6), 4)
+            results["E"] = round(E_bulk*10**(-6), 4)
+            results["nu"] = round(poisson_mineralogical, 4)
+            results["GR"] = round(GR, 4)
+            results["PE"] = round(PE, 4)
+            #
+            return results
     #
     def create_simple_monzonite(self, w_Mg=None, w_K=None, w_Ca=None, w_Fe=None, amounts=None):
         #
@@ -937,7 +1075,7 @@ class Plutonic:
                 sumMin = 0
             #
             w_H = round(w_bt*biotite[6][0] + w_ms*muscovite[6][0] + w_act*actinolite[6][0] + w_tr*tremolite[6][0], 4)
-            w_O = round(w_qz*quartz[6][0] + w_kfs*alkalifeldspar[6][0] + w_pl*plagioclase[6][0] + w_bt*biotite[6][1] + w_ms*muscovite[6][1] + w_act*actinolite[6][1] + w_tr*tremolite[6][1] + w_aug*augite[6][0], 4)
+            #w_O = round(w_qz*quartz[6][0] + w_kfs*alkalifeldspar[6][0] + w_pl*plagioclase[6][0] + w_bt*biotite[6][1] + w_ms*muscovite[6][1] + w_act*actinolite[6][1] + w_tr*tremolite[6][1] + w_aug*augite[6][0], 4)
             w_F = round(w_bt*biotite[6][2] + w_ms*muscovite[6][2], 4)
             w_Na = round(w_kfs*alkalifeldspar[6][1] + w_pl*plagioclase[6][1], 4)
             w_Mg = round(w_bt*biotite[6][3] + w_act*actinolite[6][2] + w_tr*tremolite[6][2] + w_aug*augite[6][1], 4)
@@ -946,6 +1084,7 @@ class Plutonic:
             w_K = round(w_kfs*alkalifeldspar[6][4] + w_bt*biotite[6][6] + w_ms*muscovite[6][5], 4)
             w_Ca = round(w_pl*plagioclase[6][4] + w_act*actinolite[6][4] + w_tr*tremolite[6][4] + w_aug*augite[6][3], 4)
             w_Fe = round(w_bt*biotite[6][7] + w_act*actinolite[6][5] + w_aug*augite[6][4], 4)
+            w_O = round(1 - w_H - w_F - w_Na - w_Mg - w_Al - w_Si - w_K - w_Ca - w_Fe, 4)
             sumConc = round(w_H + w_O + w_F + w_Na + w_Mg + w_Al + w_Si + w_K + w_Ca + w_Fe, 4)
             #print("Amount:", sumMin, "C:", sumConc)
             #
@@ -977,16 +1116,19 @@ class Plutonic:
         E_solid = (9*K_solid*G_solid)/(3*K_solid+G_solid)
         nu_solid = (3*K_solid-2*G_solid)/(2*(3*K_solid+G_solid))
         #
-        if self.actualThickness <= 1000:
-            phi = rd.uniform(0.0, 0.025)
-        elif self.actualThickness > 1000 and self.actualThickness <= 2000:
-            phi = rd.uniform(0.0, 0.025)
-        elif self.actualThickness > 2000 and self.actualThickness <= 3000:
-            phi = rd.uniform(0.0, 0.025)
-        elif self.actualThickness > 3000 and self.actualThickness <= 4000:
-            phi = rd.uniform(0.0, 0.025)
-        elif self.actualThickness > 4000:
-            phi = rd.uniform(0.0, 0.025)
+        if self.porosity == None:
+            if self.actualThickness <= 1000:
+                phi = rd.uniform(0.0, 0.025)
+            elif self.actualThickness > 1000 and self.actualThickness <= 2000:
+                phi = rd.uniform(0.0, 0.025)
+            elif self.actualThickness > 2000 and self.actualThickness <= 3000:
+                phi = rd.uniform(0.0, 0.025)
+            elif self.actualThickness > 3000 and self.actualThickness <= 4000:
+                phi = rd.uniform(0.0, 0.025)
+            elif self.actualThickness > 4000:
+                phi = rd.uniform(0.0, 0.025)
+        else:
+            phi = self.porosity
         #
         rho = (1 - phi) * rhoSolid + phi * water[2] / 1000
         vP = (1-phi)*vP_solid + phi*water[4][0]
@@ -1002,16 +1144,46 @@ class Plutonic:
         poisson_elastic = (3*K_bulk - 2*G_bulk)/(6*K_bulk + 2*G_bulk)
         poisson_mineralogical = w_qz*quartz[3][3] + w_kfs*alkalifeldspar[3][3] + w_pl*plagioclase[3][3] + w_bt*biotite[3][3] + w_ms*muscovite[3][3] + w_act*actinolite[3][3] + w_tr*tremolite[3][3] + w_aug*augite[3][3]
         #
-        data.append([round(rho, 3), round(rhoSolid, 3), round(water[2] / 1000, 6)])
-        data.append([round(K_bulk*10**(-6), 2), round(G_bulk*10**(-6), 2), round(E_bulk*10**(-6), 2), round(poisson_mineralogical, 3)])
-        data.append([round(vP, 2), round(vS, 2), round(vP_solid, 2), round(water[4][0], 2)])
-        data.append([round(phi, 3), round(phiD, 3), round(phiN, 3)])
-        data.append("water")
-        data.append([round(GR, 3), round(PE, 3)])
-        data.append(concentrations)
-        data.append(amounts)
-        #
-        return data
+        if self.dict == False:
+            data.append([round(rho, 3), round(rhoSolid, 3), round(water[2] / 1000, 6)])
+            data.append([round(K_bulk*10**(-6), 2), round(G_bulk*10**(-6), 2), round(E_bulk*10**(-6), 2), round(poisson_mineralogical, 3)])
+            data.append([round(vP, 2), round(vS, 2), round(vP_solid, 2), round(water[4][0], 2)])
+            data.append([round(phi, 3), round(phiD, 3), round(phiN, 3)])
+            data.append("water")
+            data.append([round(GR, 3), round(PE, 3)])
+            data.append(concentrations)
+            data.append(amounts)
+            #
+            return data
+        else:
+            results = {}
+            results["rock"] = "Monzonite"
+            #
+            element_list = ["H", "O", "F", "Na", "Mg", "Al", "Si", "K", "Ca", "Fe"]
+            mineral_list = ["Qz", "Kfs", "Pl", "Bt", "Ms", "Act", "Tr", "Aug"]
+            data.append(composition)
+            results["chemistry"] = {}
+            results["mineralogy"] = {}
+            for index, element in enumerate(element_list, start=0):
+                results["chemistry"][element] = concentrations[index]
+            for index, mineral in enumerate(mineral_list, start=0):
+                results["mineralogy"][mineral] = amounts[index]
+            #
+            results["phi"] = phi
+            results["fluid"] = self.fluid
+            #
+            results["rho"] = round(rho*1000, 4)
+            results["vP"] = round(vP, 4)
+            results["vS"] = round(vS, 4)
+            results["vP/vS"] = round(vP/vS, 4)
+            results["G"] = round(G_bulk*10**(-6), 4)
+            results["K"] = round(K_bulk*10**(-6), 4)
+            results["E"] = round(E_bulk*10**(-6), 4)
+            results["nu"] = round(poisson_mineralogical, 4)
+            results["GR"] = round(GR, 4)
+            results["PE"] = round(PE, 4)
+            #
+            return results
     #
     def create_simple_gabbro(self, w_Mg=None, w_K=None, w_Ca=None, w_Fe=None, amounts=None):
         #
@@ -1129,7 +1301,7 @@ class Plutonic:
                 sumMin = 0
             #
             w_H = round(w_bt*biotite[6][0] + w_ms*muscovite[6][0] + w_act*actinolite[6][0] + w_tr*tremolite[6][0], 4)
-            w_O = round(w_qz*quartz[6][0] + w_kfs*alkalifeldspar[6][0] + w_pl*plagioclase[6][0] + w_bt*biotite[6][1] + w_ms*muscovite[6][1] + w_act*actinolite[6][1] + w_tr*tremolite[6][1] + w_aug*augite[6][0], 4)
+            #w_O = round(w_qz*quartz[6][0] + w_kfs*alkalifeldspar[6][0] + w_pl*plagioclase[6][0] + w_bt*biotite[6][1] + w_ms*muscovite[6][1] + w_act*actinolite[6][1] + w_tr*tremolite[6][1] + w_aug*augite[6][0], 4)
             w_F = round(w_bt*biotite[6][2] + w_ms*muscovite[6][2], 4)
             w_Na = round(w_kfs*alkalifeldspar[6][1] + w_pl*plagioclase[6][1], 4)
             w_Mg = round(w_bt*biotite[6][3] + w_act*actinolite[6][2] + w_tr*tremolite[6][2] + w_aug*augite[6][1], 4)
@@ -1138,11 +1310,11 @@ class Plutonic:
             w_K = round(w_kfs*alkalifeldspar[6][4] + w_bt*biotite[6][6] + w_ms*muscovite[6][5], 4)
             w_Ca = round(w_pl*plagioclase[6][4] + w_act*actinolite[6][4] + w_tr*tremolite[6][4] + w_aug*augite[6][3], 4)
             w_Fe = round(w_bt*biotite[6][7] + w_act*actinolite[6][5] + w_aug*augite[6][4], 4)
+            w_O = round(1 - w_H - w_F - w_Na - w_Mg - w_Al - w_Si - w_K - w_Ca - w_Fe, 4)
             sumConc = round(w_H + w_O + w_F + w_Na + w_Mg + w_Al + w_Si + w_K + w_Ca + w_Fe, 4)
             #print("Amount:", sumMin, "C:", sumConc)
             #
             if sumMin == 1 and sumConc == 1:
-                #composition.extend((["Qz", w_qz, round(quartz[1], 2)], ["Kfs", w_kfs, round(alkalifeldspar[1][0], 2), round(alkalifeldspar[1][1], 2)], ["Pl", w_pl, round(plagioclase[1][0], 2), round(plagioclase[1][1], 2)], ["Bt", w_bt, round(biotite[1][0], 2), round(biotite[1][1], 2), round(biotite[1][2], 2)], ["Ms", w_ms, round(muscovite[1], 2)], ["Act", w_act, round(actinolite[1][0], 2), round(actinolite[1][1], 2)], ["Tr", w_tr, round(tremolite[1], 2)], ["Aug", w_aug, round(augite[1][0], 2), round(augite[1][1], 2), round(augite[1][2], 2), round(augite[1][3], 2)]))
                 composition.extend((["Qz", "Kfs", "Pl", "Bt", "Ms", "Act", "Tr", "Aug"]))
                 concentrations = [w_H, w_O, w_F, w_Na, w_Mg, w_Al, w_Si, w_K, w_Ca, w_Fe]
                 amounts = [w_qz, w_kfs, w_pl, w_bt, w_ms, w_act, w_tr, w_aug]
@@ -1170,16 +1342,19 @@ class Plutonic:
         E_solid = (9*K_solid*G_solid)/(3*K_solid+G_solid)
         nu_solid = (3*K_solid-2*G_solid)/(2*(3*K_solid+G_solid))
         #
-        if self.actualThickness <= 1000:
-            phi = rd.uniform(0.0, 0.025)
-        elif self.actualThickness > 1000 and self.actualThickness <= 2000:
-            phi = rd.uniform(0.0, 0.025)
-        elif self.actualThickness > 2000 and self.actualThickness <= 3000:
-            phi = rd.uniform(0.0, 0.025)
-        elif self.actualThickness > 3000 and self.actualThickness <= 4000:
-            phi = rd.uniform(0.0, 0.025)
-        elif self.actualThickness > 4000:
-            phi = rd.uniform(0.0, 0.025)
+        if self.porosity == None:
+            if self.actualThickness <= 1000:
+                phi = rd.uniform(0.0, 0.025)
+            elif self.actualThickness > 1000 and self.actualThickness <= 2000:
+                phi = rd.uniform(0.0, 0.025)
+            elif self.actualThickness > 2000 and self.actualThickness <= 3000:
+                phi = rd.uniform(0.0, 0.025)
+            elif self.actualThickness > 3000 and self.actualThickness <= 4000:
+                phi = rd.uniform(0.0, 0.025)
+            elif self.actualThickness > 4000:
+                phi = rd.uniform(0.0, 0.025)
+        else:
+            phi = self.porosity
         #
         rho = (1 - phi) * rhoSolid + phi * water[2] / 1000
         vP = (1-phi)*vP_solid + phi*water[4][0]
@@ -1195,16 +1370,46 @@ class Plutonic:
         poisson_elastic = (3*K_bulk - 2*G_bulk)/(6*K_bulk + 2*G_bulk)
         poisson_mineralogical = w_qz*quartz[3][3] + w_kfs*alkalifeldspar[3][3] + w_pl*plagioclase[3][3] + w_bt*biotite[3][3] + w_ms*muscovite[3][3] + w_act*actinolite[3][3] + w_tr*tremolite[3][3] + w_aug*augite[3][3]
         #
-        data.append([round(rho, 3), round(rhoSolid, 3), round(water[2] / 1000, 6)])
-        data.append([round(K_bulk*10**(-6), 2), round(G_bulk*10**(-6), 2), round(E_bulk*10**(-6), 2), round(poisson_mineralogical, 3)])
-        data.append([round(vP, 2), round(vS, 2), round(vP_solid, 2), round(water[4][0], 2)])
-        data.append([round(phi, 3), round(phiD, 3), round(phiN, 3)])
-        data.append("water")
-        data.append([round(GR, 3), round(PE, 3)])
-        data.append(concentrations)
-        data.append(amounts)
-        #
-        return data
+        if self.dict == False:
+            data.append([round(rho, 3), round(rhoSolid, 3), round(water[2] / 1000, 6)])
+            data.append([round(K_bulk*10**(-6), 2), round(G_bulk*10**(-6), 2), round(E_bulk*10**(-6), 2), round(poisson_mineralogical, 3)])
+            data.append([round(vP, 2), round(vS, 2), round(vP_solid, 2), round(water[4][0], 2)])
+            data.append([round(phi, 3), round(phiD, 3), round(phiN, 3)])
+            data.append("water")
+            data.append([round(GR, 3), round(PE, 3)])
+            data.append(concentrations)
+            data.append(amounts)
+            #
+            return data
+        else:
+            results = {}
+            results["rock"] = "Gabbro"
+            #
+            element_list = ["H", "O", "F", "Na", "Mg", "Al", "Si", "K", "Ca", "Fe"]
+            mineral_list = ["Qz", "Kfs", "Pl", "Bt", "Ms", "Act", "Tr", "Aug"]
+            data.append(composition)
+            results["chemistry"] = {}
+            results["mineralogy"] = {}
+            for index, element in enumerate(element_list, start=0):
+                results["chemistry"][element] = concentrations[index]
+            for index, mineral in enumerate(mineral_list, start=0):
+                results["mineralogy"][mineral] = amounts[index]
+            #
+            results["phi"] = phi
+            results["fluid"] = self.fluid
+            #
+            results["rho"] = round(rho*1000, 4)
+            results["vP"] = round(vP, 4)
+            results["vS"] = round(vS, 4)
+            results["vP/vS"] = round(vP/vS, 4)
+            results["G"] = round(G_bulk*10**(-6), 4)
+            results["K"] = round(K_bulk*10**(-6), 4)
+            results["E"] = round(E_bulk*10**(-6), 4)
+            results["nu"] = round(poisson_mineralogical, 4)
+            results["GR"] = round(GR, 4)
+            results["PE"] = round(PE, 4)
+            #
+            return results
     #
     def create_simple_diorite(self, w_Mg=None, w_K=None, w_Ca=None, w_Fe=None, amounts=None):
         #
@@ -1320,7 +1525,7 @@ class Plutonic:
                 sumMin = 0
             #
             w_H = round(w_bt*biotite[6][0] + w_ms*muscovite[6][0] + w_act*actinolite[6][0] + w_tr*tremolite[6][0], 4)
-            w_O = round(w_qz*quartz[6][0] + w_kfs*alkalifeldspar[6][0] + w_pl*plagioclase[6][0] + w_bt*biotite[6][1] + w_ms*muscovite[6][1] + w_act*actinolite[6][1] + w_tr*tremolite[6][1] + w_aug*augite[6][0], 4)
+            #w_O = round(w_qz*quartz[6][0] + w_kfs*alkalifeldspar[6][0] + w_pl*plagioclase[6][0] + w_bt*biotite[6][1] + w_ms*muscovite[6][1] + w_act*actinolite[6][1] + w_tr*tremolite[6][1] + w_aug*augite[6][0], 4)
             w_F = round(w_bt*biotite[6][2] + w_ms*muscovite[6][2], 4)
             w_Na = round(w_kfs*alkalifeldspar[6][1] + w_pl*plagioclase[6][1], 4)
             w_Mg = round(w_bt*biotite[6][3] + w_act*actinolite[6][2] + w_tr*tremolite[6][2] + w_aug*augite[6][1], 4)
@@ -1329,11 +1534,13 @@ class Plutonic:
             w_K = round(w_kfs*alkalifeldspar[6][4] + w_bt*biotite[6][6] + w_ms*muscovite[6][5], 4)
             w_Ca = round(w_pl*plagioclase[6][4] + w_act*actinolite[6][4] + w_tr*tremolite[6][4] + w_aug*augite[6][3], 4)
             w_Fe = round(w_bt*biotite[6][7] + w_act*actinolite[6][5] + w_aug*augite[6][4], 4)
+            w_O = round(1 - w_H - w_F - w_Na - w_Mg - w_Al - w_Si - w_K - w_Ca - w_Fe, 4)
             sumConc = round(w_H + w_O + w_F + w_Na + w_Mg + w_Al + w_Si + w_K + w_Ca + w_Fe, 4)
             #print("Amount:", sumMin, "C:", sumConc)
             #
             if sumMin == 1 and sumConc == 1:
-                composition.extend((["Qz", w_qz, round(quartz[1], 2)], ["Kfs", w_kfs, round(alkalifeldspar[1][0], 2), round(alkalifeldspar[1][1], 2)], ["Pl", w_pl, round(plagioclase[1][0], 2), round(plagioclase[1][1], 2)], ["Bt", w_bt, round(biotite[1][0], 2), round(biotite[1][1], 2), round(biotite[1][2], 2)], ["Ms", w_ms, round(muscovite[1], 2)], ["Act", w_act, round(actinolite[1][0], 2), round(actinolite[1][1], 2)], ["Tr", w_tr, round(tremolite[1], 2)], ["Aug", w_aug, round(augite[1][0], 2), round(augite[1][1], 2), round(augite[1][2], 2), round(augite[1][3], 2)]))
+                #composition.extend((["Qz", w_qz, round(quartz[1], 2)], ["Kfs", w_kfs, round(alkalifeldspar[1][0], 2), round(alkalifeldspar[1][1], 2)], ["Pl", w_pl, round(plagioclase[1][0], 2), round(plagioclase[1][1], 2)], ["Bt", w_bt, round(biotite[1][0], 2), round(biotite[1][1], 2), round(biotite[1][2], 2)], ["Ms", w_ms, round(muscovite[1], 2)], ["Act", w_act, round(actinolite[1][0], 2), round(actinolite[1][1], 2)], ["Tr", w_tr, round(tremolite[1], 2)], ["Aug", w_aug, round(augite[1][0], 2), round(augite[1][1], 2), round(augite[1][2], 2), round(augite[1][3], 2)]))
+                composition.extend((["Qz", "Kfs", "Pl", "Bt", "Ms", "Act", "Tr", "Aug"]))
                 concentrations = [w_H, w_O, w_F, w_Na, w_Mg, w_Al, w_Si, w_K, w_Ca, w_Fe]
                 amounts = [w_qz, w_kfs, w_pl, w_bt, w_ms, w_act, w_tr, w_aug]
                 phi_V = geochemistry.Fractions.calculate_volume_fraction(self, mineralogy=mineralogy, w=amounts)
@@ -1360,16 +1567,19 @@ class Plutonic:
         E_solid = (9*K_solid*G_solid)/(3*K_solid+G_solid)
         nu_solid = (3*K_solid-2*G_solid)/(2*(3*K_solid+G_solid))
         #
-        if self.actualThickness <= 1000:
-            phi = rd.uniform(0.0, 0.025)
-        elif self.actualThickness > 1000 and self.actualThickness <= 2000:
-            phi = rd.uniform(0.0, 0.025)
-        elif self.actualThickness > 2000 and self.actualThickness <= 3000:
-            phi = rd.uniform(0.0, 0.025)
-        elif self.actualThickness > 3000 and self.actualThickness <= 4000:
-            phi = rd.uniform(0.0, 0.025)
-        elif self.actualThickness > 4000:
-            phi = rd.uniform(0.0, 0.025)
+        if self.porosity == None:
+            if self.actualThickness <= 1000:
+                phi = rd.uniform(0.0, 0.025)
+            elif self.actualThickness > 1000 and self.actualThickness <= 2000:
+                phi = rd.uniform(0.0, 0.025)
+            elif self.actualThickness > 2000 and self.actualThickness <= 3000:
+                phi = rd.uniform(0.0, 0.025)
+            elif self.actualThickness > 3000 and self.actualThickness <= 4000:
+                phi = rd.uniform(0.0, 0.025)
+            elif self.actualThickness > 4000:
+                phi = rd.uniform(0.0, 0.025)
+        else:
+            phi = self.porosity
         #
         rho = (1 - phi) * rhoSolid + phi * water[2] / 1000
         vP = (1-phi)*vP_solid + phi*water[4][0]
@@ -1385,16 +1595,46 @@ class Plutonic:
         poisson_elastic = (3*K_bulk - 2*G_bulk)/(6*K_bulk + 2*G_bulk)
         poisson_mineralogical = w_qz*quartz[3][3] + w_kfs*alkalifeldspar[3][3] + w_pl*plagioclase[3][3] + w_bt*biotite[3][3] + w_ms*muscovite[3][3] + w_act*actinolite[3][3] + w_tr*tremolite[3][3] + w_aug*augite[3][3]
         #
-        data.append([round(rho, 3), round(rhoSolid, 3), round(water[2] / 1000, 6)])
-        data.append([round(K_bulk*10**(-6), 2), round(G_bulk*10**(-6), 2), round(E_bulk*10**(-6), 2), round(poisson_mineralogical, 3)])
-        data.append([round(vP, 2), round(vS, 2), round(vP_solid, 2), round(water[4][0], 2)])
-        data.append([round(phi, 3), round(phiD, 3), round(phiN, 3)])
-        data.append("water")
-        data.append([round(GR, 3), round(PE, 3)])
-        data.append(concentrations)
-        data.append(amounts)
-        #
-        return data
+        if self.dict == False:
+            data.append([round(rho, 3), round(rhoSolid, 3), round(water[2] / 1000, 6)])
+            data.append([round(K_bulk*10**(-6), 2), round(G_bulk*10**(-6), 2), round(E_bulk*10**(-6), 2), round(poisson_mineralogical, 3)])
+            data.append([round(vP, 2), round(vS, 2), round(vP_solid, 2), round(water[4][0], 2)])
+            data.append([round(phi, 3), round(phiD, 3), round(phiN, 3)])
+            data.append("water")
+            data.append([round(GR, 3), round(PE, 3)])
+            data.append(concentrations)
+            data.append(amounts)
+            #
+            return data
+        else:
+            results = {}
+            results["rock"] = "Diorite"
+            #
+            element_list = ["H", "O", "F", "Na", "Mg", "Al", "Si", "K", "Ca", "Fe"]
+            mineral_list = ["Qz", "Kfs", "Pl", "Bt", "Ms", "Act", "Tr", "Aug"]
+            data.append(composition)
+            results["chemistry"] = {}
+            results["mineralogy"] = {}
+            for index, element in enumerate(element_list, start=0):
+                results["chemistry"][element] = concentrations[index]
+            for index, mineral in enumerate(mineral_list, start=0):
+                results["mineralogy"][mineral] = amounts[index]
+            #
+            results["phi"] = phi
+            results["fluid"] = self.fluid
+            #
+            results["rho"] = round(rho*1000, 4)
+            results["vP"] = round(vP, 4)
+            results["vS"] = round(vS, 4)
+            results["vP/vS"] = round(vP/vS, 4)
+            results["G"] = round(G_bulk*10**(-6), 4)
+            results["K"] = round(K_bulk*10**(-6), 4)
+            results["E"] = round(E_bulk*10**(-6), 4)
+            results["nu"] = round(poisson_mineralogical, 4)
+            results["GR"] = round(GR, 4)
+            results["PE"] = round(PE, 4)
+            #
+            return results
     #
     def create_simple_granodiorite(self, w_Mg=None, w_K=None, w_Ca=None, w_Fe=None, amounts=None):
         #
@@ -1510,7 +1750,7 @@ class Plutonic:
                 sumMin = 0
             #
             w_H = round(w_bt*biotite[6][0] + w_ms*muscovite[6][0] + w_act*actinolite[6][0] + w_tr*tremolite[6][0], 4)
-            w_O = round(w_qz*quartz[6][0] + w_kfs*alkalifeldspar[6][0] + w_pl*plagioclase[6][0] + w_bt*biotite[6][1] + w_ms*muscovite[6][1] + w_act*actinolite[6][1] + w_tr*tremolite[6][1] + w_aug*augite[6][0], 4)
+            #w_O = round(w_qz*quartz[6][0] + w_kfs*alkalifeldspar[6][0] + w_pl*plagioclase[6][0] + w_bt*biotite[6][1] + w_ms*muscovite[6][1] + w_act*actinolite[6][1] + w_tr*tremolite[6][1] + w_aug*augite[6][0], 4)
             w_F = round(w_bt*biotite[6][2] + w_ms*muscovite[6][2], 4)
             w_Na = round(w_kfs*alkalifeldspar[6][1] + w_pl*plagioclase[6][1], 4)
             w_Mg = round(w_bt*biotite[6][3] + w_act*actinolite[6][2] + w_tr*tremolite[6][2] + w_aug*augite[6][1], 4)
@@ -1519,11 +1759,13 @@ class Plutonic:
             w_K = round(w_kfs*alkalifeldspar[6][4] + w_bt*biotite[6][6] + w_ms*muscovite[6][5], 4)
             w_Ca = round(w_pl*plagioclase[6][4] + w_act*actinolite[6][4] + w_tr*tremolite[6][4] + w_aug*augite[6][3], 4)
             w_Fe = round(w_bt*biotite[6][7] + w_act*actinolite[6][5] + w_aug*augite[6][4], 4)
+            w_O = round(1 - w_H - w_F - w_Na - w_Mg - w_Al - w_Si - w_K - w_Ca - w_Fe, 4)
             sumConc = round(w_H + w_O + w_F + w_Na + w_Mg + w_Al + w_Si + w_K + w_Ca + w_Fe, 4)
             #print("Amount:", sumMin, "C:", sumConc)
             #
             if sumMin == 1 and sumConc == 1:
-                composition.extend((["Qz", w_qz, round(quartz[1], 2)], ["Kfs", w_kfs, round(alkalifeldspar[1][0], 2), round(alkalifeldspar[1][1], 2)], ["Pl", w_pl, round(plagioclase[1][0], 2), round(plagioclase[1][1], 2)], ["Bt", w_bt, round(biotite[1][0], 2), round(biotite[1][1], 2), round(biotite[1][2], 2)], ["Ms", w_ms, round(muscovite[1], 2)], ["Act", w_act, round(actinolite[1][0], 2), round(actinolite[1][1], 2)], ["Tr", w_tr, round(tremolite[1], 2)], ["Aug", w_aug, round(augite[1][0], 2), round(augite[1][1], 2), round(augite[1][2], 2), round(augite[1][3], 2)]))
+                #composition.extend((["Qz", w_qz, round(quartz[1], 2)], ["Kfs", w_kfs, round(alkalifeldspar[1][0], 2), round(alkalifeldspar[1][1], 2)], ["Pl", w_pl, round(plagioclase[1][0], 2), round(plagioclase[1][1], 2)], ["Bt", w_bt, round(biotite[1][0], 2), round(biotite[1][1], 2), round(biotite[1][2], 2)], ["Ms", w_ms, round(muscovite[1], 2)], ["Act", w_act, round(actinolite[1][0], 2), round(actinolite[1][1], 2)], ["Tr", w_tr, round(tremolite[1], 2)], ["Aug", w_aug, round(augite[1][0], 2), round(augite[1][1], 2), round(augite[1][2], 2), round(augite[1][3], 2)]))
+                composition.extend((["Qz", "Kfs", "Pl", "Bt", "Ms", "Act", "Tr", "Aug"]))
                 concentrations = [w_H, w_O, w_F, w_Na, w_Mg, w_Al, w_Si, w_K, w_Ca, w_Fe]
                 amounts = [w_qz, w_kfs, w_pl, w_bt, w_ms, w_act, w_tr, w_aug]
                 phi_V = geochemistry.Fractions.calculate_volume_fraction(self, mineralogy=mineralogy, w=amounts)
@@ -1550,16 +1792,19 @@ class Plutonic:
         E_solid = (9*K_solid*G_solid)/(3*K_solid+G_solid)
         nu_solid = (3*K_solid-2*G_solid)/(2*(3*K_solid+G_solid))
         #
-        if self.actualThickness <= 1000:
-            phi = rd.uniform(0.0, 0.025)
-        elif self.actualThickness > 1000 and self.actualThickness <= 2000:
-            phi = rd.uniform(0.0, 0.025)
-        elif self.actualThickness > 2000 and self.actualThickness <= 3000:
-            phi = rd.uniform(0.0, 0.025)
-        elif self.actualThickness > 3000 and self.actualThickness <= 4000:
-            phi = rd.uniform(0.0, 0.025)
-        elif self.actualThickness > 4000:
-            phi = rd.uniform(0.0, 0.025)
+        if self.porosity == None:
+            if self.actualThickness <= 1000:
+                phi = rd.uniform(0.0, 0.025)
+            elif self.actualThickness > 1000 and self.actualThickness <= 2000:
+                phi = rd.uniform(0.0, 0.025)
+            elif self.actualThickness > 2000 and self.actualThickness <= 3000:
+                phi = rd.uniform(0.0, 0.025)
+            elif self.actualThickness > 3000 and self.actualThickness <= 4000:
+                phi = rd.uniform(0.0, 0.025)
+            elif self.actualThickness > 4000:
+                phi = rd.uniform(0.0, 0.025)
+        else:
+            phi = self.porosity
         #
         rho = (1 - phi) * rhoSolid + phi * water[2] / 1000
         vP = (1-phi)*vP_solid + phi*water[4][0]
@@ -1575,16 +1820,46 @@ class Plutonic:
         poisson_elastic = (3*K_bulk - 2*G_bulk)/(6*K_bulk + 2*G_bulk)
         poisson_mineralogical = w_qz*quartz[3][3] + w_kfs*alkalifeldspar[3][3] + w_pl*plagioclase[3][3] + w_bt*biotite[3][3] + w_ms*muscovite[3][3] + w_act*actinolite[3][3] + w_tr*tremolite[3][3] + w_aug*augite[3][3]
         #
-        data.append([round(rho, 3), round(rhoSolid, 3), round(water[2] / 1000, 6)])
-        data.append([round(K_bulk*10**(-6), 2), round(G_bulk*10**(-6), 2), round(E_bulk*10**(-6), 2), round(poisson_mineralogical, 3)])
-        data.append([round(vP, 2), round(vS, 2), round(vP_solid, 2), round(water[4][0], 2)])
-        data.append([round(phi, 3), round(phiD, 3), round(phiN, 3)])
-        data.append("water")
-        data.append([round(GR, 3), round(PE, 3)])
-        data.append(concentrations)
-        data.append(amounts)
-        #
-        return data
+        if self.dict == False:
+            data.append([round(rho, 3), round(rhoSolid, 3), round(water[2] / 1000, 6)])
+            data.append([round(K_bulk*10**(-6), 2), round(G_bulk*10**(-6), 2), round(E_bulk*10**(-6), 2), round(poisson_mineralogical, 3)])
+            data.append([round(vP, 2), round(vS, 2), round(vP_solid, 2), round(water[4][0], 2)])
+            data.append([round(phi, 3), round(phiD, 3), round(phiN, 3)])
+            data.append("water")
+            data.append([round(GR, 3), round(PE, 3)])
+            data.append(concentrations)
+            data.append(amounts)
+            #
+            return data
+        else:
+            results = {}
+            results["rock"] = "Granodiorite"
+            #
+            element_list = ["H", "O", "F", "Na", "Mg", "Al", "Si", "K", "Ca", "Fe"]
+            mineral_list = ["Qz", "Kfs", "Pl", "Bt", "Ms", "Act", "Tr", "Aug"]
+            data.append(composition)
+            results["chemistry"] = {}
+            results["mineralogy"] = {}
+            for index, element in enumerate(element_list, start=0):
+                results["chemistry"][element] = concentrations[index]
+            for index, mineral in enumerate(mineral_list, start=0):
+                results["mineralogy"][mineral] = amounts[index]
+            #
+            results["phi"] = phi
+            results["fluid"] = self.fluid
+            #
+            results["rho"] = round(rho*1000, 4)
+            results["vP"] = round(vP, 4)
+            results["vS"] = round(vS, 4)
+            results["vP/vS"] = round(vP/vS, 4)
+            results["G"] = round(G_bulk*10**(-6), 4)
+            results["K"] = round(K_bulk*10**(-6), 4)
+            results["E"] = round(E_bulk*10**(-6), 4)
+            results["nu"] = round(poisson_mineralogical, 4)
+            results["GR"] = round(GR, 4)
+            results["PE"] = round(PE, 4)
+            #
+            return results
     #
     def create_simple_tonalite(self, w_Mg=None, w_K=None, w_Ca=None, w_Fe=None, amounts=None):
         #
@@ -1700,7 +1975,7 @@ class Plutonic:
                 sumMin = 0
             #
             w_H = round(w_bt*biotite[6][0] + w_ms*muscovite[6][0] + w_act*actinolite[6][0] + w_tr*tremolite[6][0], 4)
-            w_O = round(w_qz*quartz[6][0] + w_kfs*alkalifeldspar[6][0] + w_pl*plagioclase[6][0] + w_bt*biotite[6][1] + w_ms*muscovite[6][1] + w_act*actinolite[6][1] + w_tr*tremolite[6][1] + w_aug*augite[6][0], 4)
+            #w_O = round(w_qz*quartz[6][0] + w_kfs*alkalifeldspar[6][0] + w_pl*plagioclase[6][0] + w_bt*biotite[6][1] + w_ms*muscovite[6][1] + w_act*actinolite[6][1] + w_tr*tremolite[6][1] + w_aug*augite[6][0], 4)
             w_F = round(w_bt*biotite[6][2] + w_ms*muscovite[6][2], 4)
             w_Na = round(w_kfs*alkalifeldspar[6][1] + w_pl*plagioclase[6][1], 4)
             w_Mg = round(w_bt*biotite[6][3] + w_act*actinolite[6][2] + w_tr*tremolite[6][2] + w_aug*augite[6][1], 4)
@@ -1709,11 +1984,13 @@ class Plutonic:
             w_K = round(w_kfs*alkalifeldspar[6][4] + w_bt*biotite[6][6] + w_ms*muscovite[6][5], 4)
             w_Ca = round(w_pl*plagioclase[6][4] + w_act*actinolite[6][4] + w_tr*tremolite[6][4] + w_aug*augite[6][3], 4)
             w_Fe = round(w_bt*biotite[6][7] + w_act*actinolite[6][5] + w_aug*augite[6][4], 4)
+            w_O = round(1 - w_H - w_F - w_Na - w_Mg - w_Al - w_Si - w_K - w_Ca - w_Fe, 4)
             sumConc = round(w_H + w_O + w_F + w_Na + w_Mg + w_Al + w_Si + w_K + w_Ca + w_Fe, 4)
             #print("Amount:", sumMin, "C:", sumConc)
             #
             if sumMin == 1 and sumConc == 1:
-                composition.extend((["Qz", w_qz, round(quartz[1], 2)], ["Kfs", w_kfs, round(alkalifeldspar[1][0], 2), round(alkalifeldspar[1][1], 2)], ["Pl", w_pl, round(plagioclase[1][0], 2), round(plagioclase[1][1], 2)], ["Bt", w_bt, round(biotite[1][0], 2), round(biotite[1][1], 2), round(biotite[1][2], 2)], ["Ms", w_ms, round(muscovite[1], 2)], ["Act", w_act, round(actinolite[1][0], 2), round(actinolite[1][1], 2)], ["Tr", w_tr, round(tremolite[1], 2)], ["Aug", w_aug, round(augite[1][0], 2), round(augite[1][1], 2), round(augite[1][2], 2), round(augite[1][3], 2)]))
+                #composition.extend((["Qz", w_qz, round(quartz[1], 2)], ["Kfs", w_kfs, round(alkalifeldspar[1][0], 2), round(alkalifeldspar[1][1], 2)], ["Pl", w_pl, round(plagioclase[1][0], 2), round(plagioclase[1][1], 2)], ["Bt", w_bt, round(biotite[1][0], 2), round(biotite[1][1], 2), round(biotite[1][2], 2)], ["Ms", w_ms, round(muscovite[1], 2)], ["Act", w_act, round(actinolite[1][0], 2), round(actinolite[1][1], 2)], ["Tr", w_tr, round(tremolite[1], 2)], ["Aug", w_aug, round(augite[1][0], 2), round(augite[1][1], 2), round(augite[1][2], 2), round(augite[1][3], 2)]))
+                composition.extend((["Qz", "Kfs", "Pl", "Bt", "Ms", "Act", "Tr", "Aug"]))
                 concentrations = [w_H, w_O, w_F, w_Na, w_Mg, w_Al, w_Si, w_K, w_Ca, w_Fe]
                 amounts = [w_qz, w_kfs, w_pl, w_bt, w_ms, w_act, w_tr, w_aug]
                 phi_V = geochemistry.Fractions.calculate_volume_fraction(self, mineralogy=mineralogy, w=amounts)
@@ -1740,16 +2017,19 @@ class Plutonic:
         E_solid = (9*K_solid*G_solid)/(3*K_solid+G_solid)
         nu_solid = (3*K_solid-2*G_solid)/(2*(3*K_solid+G_solid))
         #
-        if self.actualThickness <= 1000:
-            phi = rd.uniform(0.0, 0.025)
-        elif self.actualThickness > 1000 and self.actualThickness <= 2000:
-            phi = rd.uniform(0.0, 0.025)
-        elif self.actualThickness > 2000 and self.actualThickness <= 3000:
-            phi = rd.uniform(0.0, 0.025)
-        elif self.actualThickness > 3000 and self.actualThickness <= 4000:
-            phi = rd.uniform(0.0, 0.025)
-        elif self.actualThickness > 4000:
-            phi = rd.uniform(0.0, 0.025)
+        if self.porosity == None:
+            if self.actualThickness <= 1000:
+                phi = rd.uniform(0.0, 0.025)
+            elif self.actualThickness > 1000 and self.actualThickness <= 2000:
+                phi = rd.uniform(0.0, 0.025)
+            elif self.actualThickness > 2000 and self.actualThickness <= 3000:
+                phi = rd.uniform(0.0, 0.025)
+            elif self.actualThickness > 3000 and self.actualThickness <= 4000:
+                phi = rd.uniform(0.0, 0.025)
+            elif self.actualThickness > 4000:
+                phi = rd.uniform(0.0, 0.025)
+        else:
+            phi = self.porosity
         #
         rho = (1 - phi) * rhoSolid + phi * water[2] / 1000
         vP = (1-phi)*vP_solid + phi*water[4][0]
@@ -1765,16 +2045,46 @@ class Plutonic:
         poisson_elastic = (3*K_bulk - 2*G_bulk)/(6*K_bulk + 2*G_bulk)
         poisson_mineralogical = w_qz*quartz[3][3] + w_kfs*alkalifeldspar[3][3] + w_pl*plagioclase[3][3] + w_bt*biotite[3][3] + w_ms*muscovite[3][3] + w_act*actinolite[3][3] + w_tr*tremolite[3][3] + w_aug*augite[3][3]
         #
-        data.append([round(rho, 3), round(rhoSolid, 3), round(water[2] / 1000, 6)])
-        data.append([round(K_bulk*10**(-6), 2), round(G_bulk*10**(-6), 2), round(E_bulk*10**(-6), 2), round(poisson_mineralogical, 3)])
-        data.append([round(vP, 2), round(vS, 2), round(vP_solid, 2), round(water[4][0], 2)])
-        data.append([round(phi, 3), round(phiD, 3), round(phiN, 3)])
-        data.append("water")
-        data.append([round(GR, 3), round(PE, 3)])
-        data.append(concentrations)
-        data.append(amounts)
-        #
-        return data
+        if self.dict == False:
+            data.append([round(rho, 3), round(rhoSolid, 3), round(water[2] / 1000, 6)])
+            data.append([round(K_bulk*10**(-6), 2), round(G_bulk*10**(-6), 2), round(E_bulk*10**(-6), 2), round(poisson_mineralogical, 3)])
+            data.append([round(vP, 2), round(vS, 2), round(vP_solid, 2), round(water[4][0], 2)])
+            data.append([round(phi, 3), round(phiD, 3), round(phiN, 3)])
+            data.append("water")
+            data.append([round(GR, 3), round(PE, 3)])
+            data.append(concentrations)
+            data.append(amounts)
+            #
+            return data
+        else:
+            results = {}
+            results["rock"] = "Tonalite"
+            #
+            element_list = ["H", "O", "F", "Na", "Mg", "Al", "Si", "K", "Ca", "Fe"]
+            mineral_list = ["Qz", "Kfs", "Pl", "Bt", "Ms", "Act", "Tr", "Aug"]
+            data.append(composition)
+            results["chemistry"] = {}
+            results["mineralogy"] = {}
+            for index, element in enumerate(element_list, start=0):
+                results["chemistry"][element] = concentrations[index]
+            for index, mineral in enumerate(mineral_list, start=0):
+                results["mineralogy"][mineral] = amounts[index]
+            #
+            results["phi"] = phi
+            results["fluid"] = self.fluid
+            #
+            results["rho"] = round(rho*1000, 4)
+            results["vP"] = round(vP, 4)
+            results["vS"] = round(vS, 4)
+            results["vP/vS"] = round(vP/vS, 4)
+            results["G"] = round(G_bulk*10**(-6), 4)
+            results["K"] = round(K_bulk*10**(-6), 4)
+            results["E"] = round(E_bulk*10**(-6), 4)
+            results["nu"] = round(poisson_mineralogical, 4)
+            results["GR"] = round(GR, 4)
+            results["PE"] = round(PE, 4)
+            #
+            return results
     #
     def create_simple_quartzrich_granitoid(self, w_Na=None, w_K=None, w_Ca=None, amounts=None):
         #
@@ -1801,14 +2111,14 @@ class Plutonic:
         composition = []
         while cond == False:
             if self.w_Na == None and self.w_K == None and self.w_Ca == None and self.amounts == None:
-                w_qz = round(abs(rd.uniform(0.6, 0.9)), 4)
-                w_kfs = round(abs(rd.uniform(0.0, 0.4)), 4)
-                w_pl = round(abs(rd.uniform(0.0, 0.4)), 4)
-                w_fsp = w_kfs + w_pl
+                w_qz = round(rd.uniform(0.6, 0.9), 4)
+                w_fsp = round(rd.uniform(0, (1-w_qz)), 4)
+                w_kfs = round(w_fsp*rd.uniform(0.0, 0.4), 4)
+                w_pl = round(w_fsp-w_kfs, 4)
                 w_acc = round((1-w_qz-w_fsp), 4)
-                w_ms = round(abs(w_acc*rd.uniform(0.25, 1)), 4)
-                w_trm = round(abs(w_acc*rd.uniform(0, (1-w_ms))), 4)
-                w_tpz = round(abs(w_acc*(1-w_ms-w_trm)), 4)
+                w_ms = round(w_acc*rd.uniform(0.25, 1), 4)
+                w_trm = round(w_acc*rd.uniform(0, (1-w_ms)), 4)
+                w_tpz = round(1-w_qz-w_fsp-w_ms-w_trm, 4)
             elif self.w_Na != None:
                 w_qz = round(abs(rd.uniform(0.6, 0.9)), 4)
                 w_kfs = round(abs(rd.uniform(0.0, 0.4)), 4)
@@ -1850,7 +2160,7 @@ class Plutonic:
             #
             w_H = round(w_ms*muscovite[6][0] + w_trm*schorl[6][0] + w_tpz*topaz[6][0], 4)
             w_B = round(w_trm*schorl[6][1], 4)
-            w_O = round(w_qz*quartz[6][0] + w_kfs*alkalifeldspar[6][0] + w_pl*plagioclase[6][0] + w_ms*muscovite[6][1] + w_trm*schorl[6][2] + w_tpz*topaz[6][1], 4)
+            #w_O = round(w_qz*quartz[6][0] + w_kfs*alkalifeldspar[6][0] + w_pl*plagioclase[6][0] + w_ms*muscovite[6][1] + w_trm*schorl[6][2] + w_tpz*topaz[6][1], 4)
             w_F = round(w_ms*muscovite[6][2] + w_tpz*topaz[6][2], 4)
             w_Na = round(w_kfs*alkalifeldspar[6][1] + w_pl*plagioclase[6][1] + w_trm*schorl[6][3], 4)
             w_Al = round(w_kfs*alkalifeldspar[6][2] + w_pl*plagioclase[6][2] + w_ms*muscovite[6][3] + w_trm*schorl[6][4] + w_tpz*topaz[6][3], 4)
@@ -1858,11 +2168,13 @@ class Plutonic:
             w_K = round(w_kfs*alkalifeldspar[6][4] + w_ms*muscovite[6][5], 4)
             w_Ca = round(w_pl*plagioclase[6][4], 4)
             w_Fe = round(w_trm*schorl[6][6], 4)
+            w_O = round(1 - w_H - w_B - w_Fe - w_Na - w_Al - w_Si - w_K - w_Ca - w_Fe, 4)
             sumConc = round(w_H + w_B + w_O + w_F + w_Na + w_Al + w_Si + w_K + w_Ca + w_Fe, 4)
             #print("Amount:", sumMin, "C:", sumConc)
             #
             if sumMin == 1 and sumConc == 1:
-                composition.extend((["Qz", w_qz, round(quartz[1], 2)], ["Kfs", w_kfs, round(alkalifeldspar[1][0], 2), round(alkalifeldspar[1][1], 2)], ["Pl", w_pl, round(plagioclase[1][0], 2), round(plagioclase[1][1], 2)], ["Ms", w_ms, round(muscovite[1], 2)], ["Trm", w_trm, round(schorl[1], 2)], ["Tpz", w_tpz, round(topaz[1][0], 2), round(topaz[1][1], 2)]))
+                #composition.extend((["Qz", w_qz, round(quartz[1], 2)], ["Kfs", w_kfs, round(alkalifeldspar[1][0], 2), round(alkalifeldspar[1][1], 2)], ["Pl", w_pl, round(plagioclase[1][0], 2), round(plagioclase[1][1], 2)], ["Ms", w_ms, round(muscovite[1], 2)], ["Trm", w_trm, round(schorl[1], 2)], ["Tpz", w_tpz, round(topaz[1][0], 2), round(topaz[1][1], 2)]))
+                composition.extend((["Qz", "Kfs", "Pl", "Ms", "Trm", "Tpz"]))
                 concentrations = [w_H, w_B, w_O, w_F, w_Na, w_Al, w_Si, w_K, w_Ca, w_Fe]
                 amounts = [w_qz, w_kfs, w_pl, w_ms, w_trm, w_tpz]
                 phi_V = geochemistry.Fractions.calculate_volume_fraction(self, mineralogy=mineralogy, w=amounts)
@@ -1889,16 +2201,19 @@ class Plutonic:
         E_solid = (9*K_solid*G_solid)/(3*K_solid+G_solid)
         nu_solid = (3*K_solid-2*G_solid)/(2*(3*K_solid+G_solid))
         #
-        if self.actualThickness <= 1000:
-            phi = rd.uniform(0.0, 0.025)
-        elif self.actualThickness > 1000 and self.actualThickness <= 2000:
-            phi = rd.uniform(0.0, 0.025)
-        elif self.actualThickness > 2000 and self.actualThickness <= 3000:
-            phi = rd.uniform(0.0, 0.025)
-        elif self.actualThickness > 3000 and self.actualThickness <= 4000:
-            phi = rd.uniform(0.0, 0.025)
-        elif self.actualThickness > 4000:
-            phi = rd.uniform(0.0, 0.025)
+        if self.porosity == None:
+            if self.actualThickness <= 1000:
+                phi = rd.uniform(0.0, 0.025)
+            elif self.actualThickness > 1000 and self.actualThickness <= 2000:
+                phi = rd.uniform(0.0, 0.025)
+            elif self.actualThickness > 2000 and self.actualThickness <= 3000:
+                phi = rd.uniform(0.0, 0.025)
+            elif self.actualThickness > 3000 and self.actualThickness <= 4000:
+                phi = rd.uniform(0.0, 0.025)
+            elif self.actualThickness > 4000:
+                phi = rd.uniform(0.0, 0.025)
+        else:
+            phi = self.porosity
         #
         rho = (1 - phi) * rhoSolid + phi * water[2] / 1000
         vP = (1-phi)*vP_solid + phi*water[4][0]
@@ -1914,16 +2229,46 @@ class Plutonic:
         poisson_elastic = (3*K_bulk - 2*G_bulk)/(6*K_bulk + 2*G_bulk)
         poisson_mineralogical = w_qz*quartz[3][3] + w_kfs*alkalifeldspar[3][3] + w_pl*plagioclase[3][3] + w_ms*muscovite[3][3] + w_trm*schorl[3][3] + w_tpz*topaz[3][3]
         #
-        data.append([round(rho, 3), round(rhoSolid, 3), round(water[2] / 1000, 6)])
-        data.append([round(K_bulk*10**(-6), 2), round(G_bulk*10**(-6), 2), round(E_bulk*10**(-6), 2), round(poisson_mineralogical, 3)])
-        data.append([round(vP, 2), round(vS, 2), round(vP_solid, 2), round(water[4][0], 2)])
-        data.append([round(phi, 3), round(phiD, 3), round(phiN, 3)])
-        data.append("water")
-        data.append([round(GR, 3), round(PE, 3)])
-        data.append(concentrations)
-        data.append(amounts)
-        #
-        return data
+        if self.dict == False:
+            data.append([round(rho, 3), round(rhoSolid, 3), round(water[2] / 1000, 6)])
+            data.append([round(K_bulk*10**(-6), 2), round(G_bulk*10**(-6), 2), round(E_bulk*10**(-6), 2), round(poisson_mineralogical, 3)])
+            data.append([round(vP, 2), round(vS, 2), round(vP_solid, 2), round(water[4][0], 2)])
+            data.append([round(phi, 3), round(phiD, 3), round(phiN, 3)])
+            data.append("water")
+            data.append([round(GR, 3), round(PE, 3)])
+            data.append(concentrations)
+            data.append(amounts)
+            #
+            return data
+        else:
+            results = {}
+            results["rock"] = "Qz-rich Granitoid"
+            #
+            element_list = ["H", "B", "O", "F", "Na", "Al", "Si", "K", "Ca", "Fe"]
+            mineral_list = ["Qz", "Kfs", "Pl", "Ms", "Trm", "Tpz"]
+            data.append(composition)
+            results["chemistry"] = {}
+            results["mineralogy"] = {}
+            for index, element in enumerate(element_list, start=0):
+                results["chemistry"][element] = concentrations[index]
+            for index, mineral in enumerate(mineral_list, start=0):
+                results["mineralogy"][mineral] = amounts[index]
+            #
+            results["phi"] = phi
+            results["fluid"] = self.fluid
+            #
+            results["rho"] = round(rho*1000, 4)
+            results["vP"] = round(vP, 4)
+            results["vS"] = round(vS, 4)
+            results["vP/vS"] = round(vP/vS, 4)
+            results["G"] = round(G_bulk*10**(-6), 4)
+            results["K"] = round(K_bulk*10**(-6), 4)
+            results["E"] = round(E_bulk*10**(-6), 4)
+            results["nu"] = round(poisson_mineralogical, 4)
+            results["GR"] = round(GR, 4)
+            results["PE"] = round(PE, 4)
+            #
+            return results
     #
     def create_simple_quartzolite(self, w_Na=None, w_K=None, w_Ca=None, amounts=None):
         #
@@ -1950,14 +2295,14 @@ class Plutonic:
         composition = []
         while cond == False:
             if self.w_Na == None and self.w_K == None and self.w_Ca == None and self.amounts == None:
-                w_qz = round(abs(rd.uniform(0.9, 1)), 4)
-                w_kfs = round(abs(rd.uniform(0.0, 0.1)), 4)
-                w_pl = round(abs(rd.uniform(0.0, 0.1)), 4)
-                w_fsp = w_kfs + w_pl
+                w_qz = round(rd.uniform(0.9, 1), 4)
+                w_fsp = round(rd.uniform(0, (1-w_qz)), 4)
+                w_kfs = round(w_fsp*rd.uniform(0.0, 0.1), 4)
+                w_pl = round(w_fsp-w_kfs, 4)
                 w_acc = round((1-w_qz-w_fsp), 4)
-                w_ms = round(abs(w_acc*rd.uniform(0.25, 1)), 4)
-                w_trm = round(abs(w_acc*rd.uniform(0, (1-w_ms))), 4)
-                w_tpz = round(abs(w_acc*(1-w_ms-w_trm)), 4)
+                w_ms = round(w_acc*rd.uniform(0.25, 1), 4)
+                w_trm = round(w_acc*rd.uniform(0, (1-w_ms)), 4)
+                w_tpz = round(1-w_qz-w_fsp-w_ms-w_trm, 4)
             elif self.w_Na != None:
                 w_qz = round(abs(rd.uniform(0.9, 1)), 4)
                 w_kfs = round(abs(rd.uniform(0.0, 0.1)), 4)
@@ -1999,7 +2344,7 @@ class Plutonic:
             #
             w_H = round(w_ms*muscovite[6][0] + w_trm*schorl[6][0] + w_tpz*topaz[6][0], 4)
             w_B = round(w_trm*schorl[6][1], 4)
-            w_O = round(w_qz*quartz[6][0] + w_kfs*alkalifeldspar[6][0] + w_pl*plagioclase[6][0] + w_ms*muscovite[6][1] + w_trm*schorl[6][2] + w_tpz*topaz[6][1], 4)
+            #w_O = round(w_qz*quartz[6][0] + w_kfs*alkalifeldspar[6][0] + w_pl*plagioclase[6][0] + w_ms*muscovite[6][1] + w_trm*schorl[6][2] + w_tpz*topaz[6][1], 4)
             w_F = round(w_ms*muscovite[6][2] + w_tpz*topaz[6][2], 4)
             w_Na = round(w_kfs*alkalifeldspar[6][1] + w_pl*plagioclase[6][1] + w_trm*schorl[6][3], 4)
             w_Al = round(w_kfs*alkalifeldspar[6][2] + w_pl*plagioclase[6][2] + w_ms*muscovite[6][3] + w_trm*schorl[6][4] + w_tpz*topaz[6][3], 4)
@@ -2007,11 +2352,13 @@ class Plutonic:
             w_K = round(w_kfs*alkalifeldspar[6][4] + w_ms*muscovite[6][5], 4)
             w_Ca = round(w_pl*plagioclase[6][4], 4)
             w_Fe = round(w_trm*schorl[6][6], 4)
+            w_O = round(1 - w_H - w_B - w_F - w_Na - w_Al - w_Si - w_K - w_Ca - w_Fe, 4)
             sumConc = round(w_H + w_B + w_O + w_F + w_Na + w_Al + w_Si + w_K + w_Ca + w_Fe, 4)
             #print("Amount:", sumMin, "C:", sumConc)
             #
             if sumMin == 1 and sumConc == 1:
-                composition.extend((["Qz", w_qz, round(quartz[1], 2)], ["Kfs", w_kfs, round(alkalifeldspar[1][0], 2), round(alkalifeldspar[1][1], 2)], ["Pl", w_pl, round(plagioclase[1][0], 2), round(plagioclase[1][1], 2)], ["Ms", w_ms, round(muscovite[1], 2)], ["Trm", w_trm, round(schorl[1], 2)], ["Tpz", w_tpz, round(topaz[1][0], 2), round(topaz[1][1], 2)]))
+                #composition.extend((["Qz", w_qz, round(quartz[1], 2)], ["Kfs", w_kfs, round(alkalifeldspar[1][0], 2), round(alkalifeldspar[1][1], 2)], ["Pl", w_pl, round(plagioclase[1][0], 2), round(plagioclase[1][1], 2)], ["Ms", w_ms, round(muscovite[1], 2)], ["Trm", w_trm, round(schorl[1], 2)], ["Tpz", w_tpz, round(topaz[1][0], 2), round(topaz[1][1], 2)]))
+                composition.extend((["Qz", "Kfs", "Pl", "Ms", "Trm", "Tpz"]))
                 concentrations = [w_H, w_B, w_O, w_F, w_Na, w_Al, w_Si, w_K, w_Ca, w_Fe]
                 amounts = [w_qz, w_kfs, w_pl, w_ms, w_trm, w_tpz]
                 phi_V = geochemistry.Fractions.calculate_volume_fraction(self, mineralogy=mineralogy, w=amounts)
@@ -2038,16 +2385,19 @@ class Plutonic:
         E_solid = (9*K_solid*G_solid)/(3*K_solid+G_solid)
         nu_solid = (3*K_solid-2*G_solid)/(2*(3*K_solid+G_solid))
         #
-        if self.actualThickness <= 1000:
-            phi = rd.uniform(0.0, 0.025)
-        elif self.actualThickness > 1000 and self.actualThickness <= 2000:
-            phi = rd.uniform(0.0, 0.025)
-        elif self.actualThickness > 2000 and self.actualThickness <= 3000:
-            phi = rd.uniform(0.0, 0.025)
-        elif self.actualThickness > 3000 and self.actualThickness <= 4000:
-            phi = rd.uniform(0.0, 0.025)
-        elif self.actualThickness > 4000:
-            phi = rd.uniform(0.0, 0.025)
+        if self.porosity == None:
+            if self.actualThickness <= 1000:
+                phi = rd.uniform(0.0, 0.025)
+            elif self.actualThickness > 1000 and self.actualThickness <= 2000:
+                phi = rd.uniform(0.0, 0.025)
+            elif self.actualThickness > 2000 and self.actualThickness <= 3000:
+                phi = rd.uniform(0.0, 0.025)
+            elif self.actualThickness > 3000 and self.actualThickness <= 4000:
+                phi = rd.uniform(0.0, 0.025)
+            elif self.actualThickness > 4000:
+                phi = rd.uniform(0.0, 0.025)
+        else:
+            phi = self.porosity
         #
         rho = (1 - phi) * rhoSolid + phi * water[2] / 1000
         vP = (1-phi)*vP_solid + phi*water[4][0]
@@ -2063,16 +2413,46 @@ class Plutonic:
         poisson_elastic = (3*K_bulk - 2*G_bulk)/(6*K_bulk + 2*G_bulk)
         poisson_mineralogical = w_qz*quartz[3][3] + w_kfs*alkalifeldspar[3][3] + w_pl*plagioclase[3][3] + w_ms*muscovite[3][3] + w_trm*schorl[3][3] + w_tpz*topaz[3][3]
         #
-        data.append([round(rho, 3), round(rhoSolid, 3), round(water[2] / 1000, 6)])
-        data.append([round(K_bulk*10**(-6), 2), round(G_bulk*10**(-6), 2), round(E_bulk*10**(-6), 2), round(poisson_mineralogical, 3)])
-        data.append([round(vP, 2), round(vS, 2), round(vP_solid, 2), round(water[4][0], 2)])
-        data.append([round(phi, 3), round(phiD, 3), round(phiN, 3)])
-        data.append("water")
-        data.append([round(GR, 3), round(PE, 3)])
-        data.append(concentrations)
-        data.append(amounts)
-        #
-        return data
+        if self.dict == False:
+            data.append([round(rho, 3), round(rhoSolid, 3), round(water[2] / 1000, 6)])
+            data.append([round(K_bulk*10**(-6), 2), round(G_bulk*10**(-6), 2), round(E_bulk*10**(-6), 2), round(poisson_mineralogical, 3)])
+            data.append([round(vP, 2), round(vS, 2), round(vP_solid, 2), round(water[4][0], 2)])
+            data.append([round(phi, 3), round(phiD, 3), round(phiN, 3)])
+            data.append("water")
+            data.append([round(GR, 3), round(PE, 3)])
+            data.append(concentrations)
+            data.append(amounts)
+            #
+            return data
+        else:
+            results = {}
+            results["rock"] = "Quartzolite"
+            #
+            element_list = ["H", "B", "O", "F", "Na", "Al", "Si", "K", "Ca", "Fe"]
+            mineral_list = ["Qz", "Kfs", "Pl", "Ms", "Trm", "Tpz"]
+            data.append(composition)
+            results["chemistry"] = {}
+            results["mineralogy"] = {}
+            for index, element in enumerate(element_list, start=0):
+                results["chemistry"][element] = concentrations[index]
+            for index, mineral in enumerate(mineral_list, start=0):
+                results["mineralogy"][mineral] = amounts[index]
+            #
+            results["phi"] = phi
+            results["fluid"] = self.fluid
+            #
+            results["rho"] = round(rho*1000, 4)
+            results["vP"] = round(vP, 4)
+            results["vS"] = round(vS, 4)
+            results["vP/vS"] = round(vP/vS, 4)
+            results["G"] = round(G_bulk*10**(-6), 4)
+            results["K"] = round(K_bulk*10**(-6), 4)
+            results["E"] = round(E_bulk*10**(-6), 4)
+            results["nu"] = round(poisson_mineralogical, 4)
+            results["GR"] = round(GR, 4)
+            results["PE"] = round(PE, 4)
+            #
+            return results
 #
 class Volcanic:
     #
