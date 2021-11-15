@@ -63,6 +63,8 @@ class SimpleElements:
             rb = tk.Radiobutton(self.parent, text=text, variable=var_rb, value=value_rb, bg=color_bg, fg=self.fg,
                                 activebackground=color_bg, highlightthickness=0, relief=relief, command=command)
         rb.grid(row=self.row_id, column=self.column_id, rowspan=self.n_rows, columnspan=self.n_columns, sticky="nesw")
+        #
+        return  rb
     #
     def create_button(self, text, command=None):
         if command == None:

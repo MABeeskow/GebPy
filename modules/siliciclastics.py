@@ -846,7 +846,7 @@ class sandstone:
             #
             w_H = round(chem_muscovite[6][0]*w_Ms + chem_chlorite[6][0]*w_Chl, 4)
             w_C = round(chem_calcite[6][0]*w_Cal, 4)
-            w_O = round(chem_quartz[6][0]*w_Qz + chem_alkalifeldspar[6][0]*w_Afs + chem_plagioclase[6][0]*w_Pl + chem_calcite[6][1]*w_Cal + chem_chlorite[6][1]*w_Chl + chem_muscovite[6][1]*w_Ms + chem_hematite[6][0]*w_Hem, 4)
+            #w_O = round(chem_quartz[6][0]*w_Qz + chem_alkalifeldspar[6][0]*w_Afs + chem_plagioclase[6][0]*w_Pl + chem_calcite[6][1]*w_Cal + chem_chlorite[6][1]*w_Chl + chem_muscovite[6][1]*w_Ms + chem_hematite[6][0]*w_Hem, 4)
             w_F = round(chem_muscovite[6][2]*w_Ms, 4)
             w_Na = round(chem_alkalifeldspar[6][1]*w_Afs + chem_plagioclase[6][1]*w_Pl, 4)
             w_Mg = round(chem_chlorite[6][2]*w_Chl, 4)
@@ -855,6 +855,7 @@ class sandstone:
             w_K = round(chem_alkalifeldspar[6][4]*w_Afs + chem_muscovite[6][5]*w_Ms, 4)
             w_Ca = round(chem_plagioclase[6][4]*w_Pl + chem_calcite[6][2]*w_Cal, 4)
             w_Fe_calc = round(chem_chlorite[6][5]*w_Chl + chem_hematite[6][1]*w_Hem, 4)
+            w_O = round(1 - w_H - w_C - w_F - w_Na - w_Mg - w_Al - w_Si - w_K - w_Ca - w_Fe_calc, 4)
             sumConc = w_H + w_C + w_O + w_F + w_Na + w_Mg + w_Al + w_Si + w_K + w_Ca + w_Fe_calc
             #
             if sumMin == 1 and sumConc == 1:
@@ -1113,12 +1114,13 @@ class sandstone:
             else:
                 sumMin = 0
             #
-            w_O = round(w_Qz*chem_quartz[6][0] + w_Afs*chem_alkalifeldspar[6][0] + w_Pl*chem_plagioclase[6][0], 4)
+            #w_O = round(w_Qz*chem_quartz[6][0] + w_Afs*chem_alkalifeldspar[6][0] + w_Pl*chem_plagioclase[6][0], 4)
             w_Na = round(w_Afs*chem_alkalifeldspar[6][1] + w_Pl*chem_plagioclase[6][1], 4)
             w_Al = round(w_Afs*chem_alkalifeldspar[6][2] + w_Pl*chem_plagioclase[6][2], 4)
             w_Si = round(w_Qz*chem_quartz[6][1] + w_Afs*chem_alkalifeldspar[6][3] + w_Pl*chem_plagioclase[6][3], 4)
             w_K = round(w_Afs*chem_alkalifeldspar[6][4], 4)
             w_Ca = round(w_Pl*chem_plagioclase[6][4], 4)
+            w_O = round(1 - w_Na - w_Al - w_Si - w_K - w_Ca, 4)
             sumConc = w_O + w_Na + w_Al + w_Si + w_K + w_Ca
             #
             if sumMin == 1 and sumConc == 1:
@@ -1481,7 +1483,7 @@ class shale:
                             amounts=None, porosity=None, dict=False):
         #
         results = {}
-        results["rock"] = "sandstone"
+        results["rock"] = "shale"
         #
         self.w_C = w_C
         self.w_F = w_F
@@ -1823,7 +1825,7 @@ class shale:
             #
             w_H = round(chem_ilt[6][0]*w_ilt + chem_kln[6][0]*w_kln + chem_mnt[6][0]*w_mnt + chem_bt[6][0]*w_bt + chem_ms[6][0]*w_ms, 4)
             w_C = round(chem_org[6][0]*w_org + chem_cal[6][0]*w_cal, 4)
-            w_O = round(chem_qz[6][0]*w_qz + chem_cal[6][1]*w_cal + chem_ilt[6][1]*w_ilt + chem_kln[6][1]*w_kln + chem_mnt[6][1]*w_mnt + chem_bt[6][1]*w_bt + chem_ms[6][1]*w_ms + chem_urn[6][0]*w_urn, 4)
+            #w_O = round(chem_qz[6][0]*w_qz + chem_cal[6][1]*w_cal + chem_ilt[6][1]*w_ilt + chem_kln[6][1]*w_kln + chem_mnt[6][1]*w_mnt + chem_bt[6][1]*w_bt + chem_ms[6][1]*w_ms + chem_urn[6][0]*w_urn, 4)
             w_F = round(chem_bt[6][2]*w_bt + chem_ms[6][2]*w_ms, 4)
             w_Na = round(chem_mnt[6][2]*w_mnt, 4)
             w_Mg = round(chem_ilt[6][2]*w_ilt + chem_mnt[6][3]*w_mnt + chem_bt[6][3]*w_bt, 4)
@@ -1834,6 +1836,7 @@ class shale:
             w_Ca = round(chem_cal[6][2]*w_cal + chem_mnt[6][6]*w_mnt, 4)
             w_Fe = round(chem_py[6][1]*w_Py + chem_ilt[6][6]*w_ilt + chem_bt[6][7]*w_bt, 4)
             w_U = round(chem_urn[6][1]*w_urn, 6)
+            w_O = round(1 - w_H - w_C - w_F - w_Na - w_Mg - w_Al - w_Si - w_S - w_K - w_Ca - w_Fe - w_U, 4)
             sumConc = round(w_H + w_C + w_O + w_F + w_Na + w_Mg + w_Al + w_Si + w_S + w_K + w_Ca + w_Fe + w_U, 4)
             #
             GR = w_org*chem_org[5][0] + w_qz*chem_qz[5][0] + w_cal*chem_cal[5][0] + w_Py*chem_py[5][0] + w_ilt*chem_ilt[5][0] + w_kln*chem_kln[5][0] + w_mnt*chem_mnt[5][0] + w_bt*chem_bt[5][0] + w_ms*chem_ms[5][0] + w_urn*chem_urn[5][0]

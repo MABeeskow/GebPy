@@ -6,7 +6,7 @@
 # Name:		gui.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		14.11.2021
+# Date:		15.11.2021
 
 #-----------------------------------------------
 
@@ -16,6 +16,7 @@ from modules.gui_elements import SimpleElements as SE
 from modules.oxides import Oxides
 from modules.sulfides import Sulfides
 from modules.carbonates import Carbonates
+from modules.halogenes import Halogenes
 from modules.silicates import Tectosilicates
 from modules.minerals import feldspars
 from modules.siliciclastics import sandstone, shale
@@ -136,9 +137,9 @@ class GebPyGUI(tk.Frame):
     def select_opt(self, var_opt):
         # Minerals
         if var_opt == "Quartz":
-            Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
+            self.lbl_w, self.entr_w = Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                      color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
-                     entr_w=self.entr_w)
+                     entr_w=self.entr_w)()
         elif var_opt in ["Magnetite", "Hematite"]:
             Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                      color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
@@ -147,7 +148,7 @@ class GebPyGUI(tk.Frame):
             Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                      color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
                      entr_w=self.entr_w)
-        elif var_opt in ["Calcite", "Dolomite", "Magnesite"]:
+        elif var_opt in ["Calcite", "Dolomite", "Magnesite", "Halite", "Fluorite", "Sylvite"]:
             Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                      color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
                      entr_w=self.entr_w)
@@ -161,9 +162,9 @@ class GebPyGUI(tk.Frame):
                      entr_w=self.entr_w)
         # Rocks
         elif var_opt == "Sandstone":
-            Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
+            self.lbl_w, self.entr_w = Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                   color_acc=[self.color_accent_03, self.color_accent_04], rock=var_opt, lbl_w=self.lbl_w,
-                  entr_w=self.entr_w)
+                  entr_w=self.entr_w)()
         elif var_opt == "Shale":
             Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                   color_acc=[self.color_accent_03, self.color_accent_04], rock=var_opt, lbl_w=self.lbl_w,
@@ -173,7 +174,7 @@ class GebPyGUI(tk.Frame):
             Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                   color_acc=[self.color_accent_03, self.color_accent_04], rock=var_opt, lbl_w=self.lbl_w,
                   entr_w=self.entr_w)
-        elif var_opt == "Dolomite":
+        elif var_opt == "Dolomite Rock":
             Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                   color_acc=[self.color_accent_03, self.color_accent_04], rock=var_opt, lbl_w=self.lbl_w,
                   entr_w=self.entr_w)
@@ -307,7 +308,7 @@ class GebPyGUI(tk.Frame):
                 command=lambda var_opt=var_opt_1_1: self.select_opt(var_opt))
         elif var_opt == "Carbonate Rocks":
             var_opt_1_2 = tk.StringVar()
-            opt_list_1_2 = ["Limestone", "Dolomite"]
+            opt_list_1_2 = ["Limestone", "Dolomite Rock"]
             self.opt_carb = SE(parent=self.parent, row_id=16, column_id=0, n_rows=2, n_columns=2,
                                bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
                 var_opt=var_opt_1_2, var_opt_set="Select Rock", opt_list=opt_list_1_2,
@@ -364,44 +365,51 @@ class Minerals:
         self.entr_w = entr_w
         #
         ## Labels
-        SE(parent=self.parent_mineral, row_id=4, column_id=3, n_rows=2, bg=self.color_bg,
+        lbl_01 = SE(parent=self.parent_mineral, row_id=4, column_id=3, n_rows=2, bg=self.color_bg,
            fg="black").create_label(text="Molar mass\n (g/mol)", relief=tk.RAISED)
-        SE(parent=self.parent_mineral, row_id=6, column_id=3, n_rows=2, bg=self.color_bg,
+        lbl_02 = SE(parent=self.parent_mineral, row_id=6, column_id=3, n_rows=2, bg=self.color_bg,
            fg="black").create_label(text="Density\n (g/ccm)", relief=tk.RAISED)
-        SE(parent=self.parent_mineral, row_id=8, column_id=3, n_rows=2, bg=self.color_bg,
+        lbl_03 = SE(parent=self.parent_mineral, row_id=8, column_id=3, n_rows=2, bg=self.color_bg,
            fg="black").create_label(text="P-wave velocity\n (km/s)", relief=tk.RAISED)
-        SE(parent=self.parent_mineral, row_id=10, column_id=3, n_rows=2, bg=self.color_bg,
+        lbl_04 = SE(parent=self.parent_mineral, row_id=10, column_id=3, n_rows=2, bg=self.color_bg,
            fg="black").create_label(text="S-wave velocity\n (km/s)", relief=tk.RAISED)
-        SE(parent=self.parent_mineral, row_id=12, column_id=3, n_rows=2, bg=self.color_bg,
+        lbl_05 = SE(parent=self.parent_mineral, row_id=12, column_id=3, n_rows=2, bg=self.color_bg,
            fg="black").create_label(text="Velocity ratio\n (1)", relief=tk.RAISED)
-        SE(parent=self.parent_mineral, row_id=14, column_id=3, n_rows=2, bg=self.color_bg,
+        lbl_06 = SE(parent=self.parent_mineral, row_id=14, column_id=3, n_rows=2, bg=self.color_bg,
            fg="black").create_label(text="Bulk modulus\n (GPa)", relief=tk.RAISED)
-        SE(parent=self.parent_mineral, row_id=16, column_id=3, n_rows=2, bg=self.color_bg,
+        lbl_07 = SE(parent=self.parent_mineral, row_id=16, column_id=3, n_rows=2, bg=self.color_bg,
            fg="black").create_label(text="Shear modulus\n (GPa)", relief=tk.RAISED)
-        SE(parent=self.parent_mineral, row_id=18, column_id=3, n_rows=2, bg=self.color_bg,
+        lbl_08 = SE(parent=self.parent_mineral, row_id=18, column_id=3, n_rows=2, bg=self.color_bg,
            fg="black").create_label(text="Poisson's ratio\n (1)", relief=tk.RAISED)
-        SE(parent=self.parent_mineral, row_id=20, column_id=3, n_rows=2, bg=self.color_bg,
+        lbl_09 = SE(parent=self.parent_mineral, row_id=20, column_id=3, n_rows=2, bg=self.color_bg,
            fg="black").create_label(text="Gamma ray\n (API)", relief=tk.RAISED)
-        SE(parent=self.parent_mineral, row_id=22, column_id=3, n_rows=2, bg=self.color_bg,
+        lbl_10 = SE(parent=self.parent_mineral, row_id=22, column_id=3, n_rows=2, bg=self.color_bg,
            fg="black").create_label(text="Photoelectricity\n (barns/electron)", relief=tk.RAISED)
         #
-        SE(parent=self.parent_mineral, row_id=28, column_id=0, n_rows=2, bg=self.color_acc_01,
+        lbl_11 = SE(parent=self.parent_mineral, row_id=28, column_id=0, bg=self.color_acc_01,
            fg="black").create_label(text="Number of samples", relief=tk.RAISED)
         #
+        lbl_12 = SE(parent=self.parent_mineral, row_id=24, column_id=3, n_columns=5, bg=self.color_bg,
+                 fg="black").create_label(text="Chemical composition (weight amounts %)", relief=tk.RAISED)
+        #
+        self.lbl_w.extend([lbl_01, lbl_02, lbl_03, lbl_04, lbl_05, lbl_06, lbl_07, lbl_08, lbl_09, lbl_10, lbl_11, lbl_12])
+        #
         ## Entry
-        SE(parent=self.parent_mineral, row_id=30, column_id=0, n_rows=2, n_columns=2, bg=self.color_acc_02,
+        entr_01 = SE(parent=self.parent_mineral, row_id=28, column_id=1, bg=self.color_acc_02,
            fg=color_fg).create_entry(var_entr=self.var_entr, var_entr_set=var_entr_start,
                                      command=lambda event, var_entr=self.var_entr: self.enter_samples(var_entr, event))
+        self.entr_w.append(entr_01)
         #
         ## Radiobuttons
-        SE(parent=self.parent_mineral, row_id=32, column_id=0, n_rows=2, n_columns=2, bg=self.color_acc_01,
+        rb_01 = SE(parent=self.parent_mineral, row_id=29, column_id=0, n_rows=1, n_columns=2, bg=self.color_acc_01,
            fg="black").create_radiobutton(var_rb=self.var_rb, var_rb_set=var_rb_start, value_rb=0, text="Histogram",
                                            color_bg=self.color_acc_01,
                                            command=lambda var_rb=self.var_rb: self.change_radiobutton(var_rb))
-        SE(parent=self.parent_mineral, row_id=34, column_id=0, n_rows=2, n_columns=2, bg=self.color_acc_01,
+        rb_02 = SE(parent=self.parent_mineral, row_id=30, column_id=0, n_rows=1, n_columns=2, bg=self.color_acc_01,
            fg="black").create_radiobutton(var_rb=self.var_rb, var_rb_set=var_rb_start, value_rb=1, text="Scatter plot",
                                            color_bg=self.color_acc_01,
                                            command=lambda var_rb=self.var_rb: self.change_radiobutton(var_rb))
+        self.lbl_w.extend([rb_01, rb_02])
         #
         self.var_dict = False
         data_all = []
@@ -432,6 +440,15 @@ class Minerals:
             elif self.mineral == "Magnesite":
                 self.var_dict = True
                 data = Carbonates(impurity="pure", dict=self.var_dict).create_magnesite()
+            elif self.mineral == "Halite":
+                self.var_dict = True
+                data = Halogenes(impurity="pure", dict=self.var_dict).create_halite()
+            elif self.mineral == "Fluorite":
+                self.var_dict = True
+                data = Halogenes(impurity="pure", dict=self.var_dict).create_fluorite()
+            elif self.mineral == "Sylvite":
+                self.var_dict = True
+                data = Halogenes(impurity="pure", dict=self.var_dict).create_sylvite()
             elif self.mineral == "Alkalifeldspar":
                 data = Tectosilicates(impurity="pure").create_alkalifeldspar()
             elif self.mineral == "Plagioclase":
@@ -488,10 +505,14 @@ class Minerals:
                 self.w_element = self.element_list["Pb"]
             elif self.mineral in ["Chalcopyrite"]:
                 self.w_element = self.element_list["Cu"]
-            elif self.mineral in ["Calcite", "Dolomite"]:
+            elif self.mineral in ["Calcite", "Dolomite", "Fluorite"]:
                 self.w_element = self.element_list["Ca"]
             elif self.mineral in ["Magnesite"]:
                 self.w_element = self.element_list["Mg"]
+            elif self.mineral in ["Halite"]:
+                self.w_element = self.element_list["Na"]
+            elif self.mineral in ["Sylvite"]:
+                self.w_element = self.element_list["K"]
         #
         self.results = [self.molar_mass, self.rho_b, self.vP, self.vS, self.vPvS, self.bulk_mod, self.shear_mod,
                         self.poisson, self.gamma_ray, self.photoelectricity]
@@ -508,8 +529,8 @@ class Minerals:
         #
         i = 0
         for element in elements:
-            lbl_w = SE(parent=self.parent_mineral, row_id=24+i*2, column_id=3, n_rows=2, bg=self.color_bg,
-               fg="black").create_label(text=str(element)+" amount\n (%)", relief=tk.RAISED)
+            lbl_w = SE(parent=self.parent_mineral, row_id=25+i, column_id=3, bg=self.color_bg,
+               fg="black").create_label(text=str(element), relief=tk.RAISED)
             self.lbl_w.append(lbl_w)
             if self.var_dict == False:
                 self.results.append(self.element_list[i])
@@ -530,16 +551,16 @@ class Minerals:
                    fg=self.color_fg).create_entry(var_entr=self.entr_list_std[i],
                                              var_entr_set=round(np.std(self.results[i], ddof=1), 3))
             elif i >= 10:
-                entr_min = SE(parent=self.parent_mineral, row_id=4+2*i, column_id=4, n_rows=2, bg=self.color_bg,
+                entr_min = SE(parent=self.parent_mineral, row_id=15+i, column_id=4, n_rows=1, bg=self.color_bg,
                               fg=self.color_fg).create_entry(var_entr=self.entr_list_min[i],
                                                              var_entr_set=round(np.min(self.results[i]), 2))
-                entr_max = SE(parent=self.parent_mineral, row_id=4+2*i, column_id=5, n_rows=2, bg=self.color_bg,
+                entr_max = SE(parent=self.parent_mineral, row_id=15+i, column_id=5, n_rows=1, bg=self.color_bg,
                               fg=self.color_fg).create_entry(var_entr=self.entr_list_max[i],
                                                              var_entr_set=round(np.max(self.results[i]), 2))
-                entr_mean = SE(parent=self.parent_mineral, row_id=4+2*i, column_id=6, n_rows=2, bg=self.color_bg,
+                entr_mean = SE(parent=self.parent_mineral, row_id=15+i, column_id=6, n_rows=1, bg=self.color_bg,
                                fg=self.color_fg).create_entry(var_entr=self.entr_list_mean[i],
                                                               var_entr_set=round(np.mean(self.results[i]), 2))
-                entr_std = SE(parent=self.parent_mineral, row_id=4+2*i, column_id=7, n_rows=2, bg=self.color_bg,
+                entr_std = SE(parent=self.parent_mineral, row_id=15+i, column_id=7, n_rows=1, bg=self.color_bg,
                               fg=self.color_fg).create_entry(var_entr=self.entr_list_std[i],
                                                              var_entr_set=round(np.std(self.results[i], ddof=1), 2))
                 self.entr_w.append(entr_min)
@@ -644,6 +665,15 @@ class Minerals:
             elif self.mineral == "Magnesite":
                 self.var_dict = True
                 data = Carbonates(impurity="pure", dict=self.var_dict).create_magnesite()
+            elif self.mineral == "Halite":
+                self.var_dict = True
+                data = Halogenes(impurity="pure", dict=self.var_dict).create_halite()
+            elif self.mineral == "Fluorite":
+                self.var_dict = True
+                data = Halogenes(impurity="pure", dict=self.var_dict).create_fluorite()
+            elif self.mineral == "Sylvite":
+                self.var_dict = True
+                data = Halogenes(impurity="pure", dict=self.var_dict).create_sylvite()
             elif self.mineral == "Alkalifeldspar":
                 data = Tectosilicates(impurity="pure").create_alkalifeldspar()
             elif self.mineral == "Plagioclase":
@@ -700,10 +730,14 @@ class Minerals:
                 self.w_element = self.element_list["Pb"]
             elif self.mineral in ["Chalcopyrite"]:
                 self.w_element = self.element_list["Cu"]
-            elif self.mineral in ["Calcite", "Dolomite"]:
+            elif self.mineral in ["Calcite", "Dolomite", "Fluorite"]:
                 self.w_element = self.element_list["Ca"]
             elif self.mineral in ["Magnesite"]:
                 self.w_element = self.element_list["Mg"]
+            elif self.mineral in ["Halite"]:
+                self.w_element = self.element_list["Na"]
+            elif self.mineral in ["Sylvite"]:
+                self.w_element = self.element_list["K"]
         #
         self.results = [self.molar_mass, self.rho_b, self.vP, self.vS, self.vPvS, self.bulk_mod, self.shear_mod,
                         self.poisson, self.gamma_ray, self.photoelectricity]
@@ -720,8 +754,8 @@ class Minerals:
         #
         i = 0
         for element in elements:
-            lbl_w = SE(parent=self.parent_mineral, row_id=24+i*2, column_id=3, n_rows=2, bg=self.color_bg,
-               fg="black").create_label(text=str(element)+" amount\n (%)", relief=tk.RAISED)
+            lbl_w = SE(parent=self.parent_mineral, row_id=25+i, column_id=3, bg=self.color_bg,
+               fg="black").create_label(text=str(element), relief=tk.RAISED)
             self.lbl_w.append(lbl_w)
             if self.var_dict == False:
                 self.results.append(self.element_list[i])
@@ -742,16 +776,16 @@ class Minerals:
                    fg=self.color_fg).create_entry(var_entr=self.entr_list_std[i],
                                              var_entr_set=round(np.std(self.results[i], ddof=1), 3))
             elif i >= 10:
-                entr_min = SE(parent=self.parent_mineral, row_id=4+2*i, column_id=4, n_rows=2, bg=self.color_bg,
+                entr_min = SE(parent=self.parent_mineral, row_id=15+i, column_id=4, n_rows=1, bg=self.color_bg,
                               fg=self.color_fg).create_entry(var_entr=self.entr_list_min[i],
                                                              var_entr_set=round(np.min(self.results[i]), 2))
-                entr_max = SE(parent=self.parent_mineral, row_id=4+2*i, column_id=5, n_rows=2, bg=self.color_bg,
+                entr_max = SE(parent=self.parent_mineral, row_id=15+i, column_id=5, n_rows=1, bg=self.color_bg,
                               fg=self.color_fg).create_entry(var_entr=self.entr_list_max[i],
                                                              var_entr_set=round(np.max(self.results[i]), 2))
-                entr_mean = SE(parent=self.parent_mineral, row_id=4+2*i, column_id=6, n_rows=2, bg=self.color_bg,
+                entr_mean = SE(parent=self.parent_mineral, row_id=15+i, column_id=6, n_rows=1, bg=self.color_bg,
                                fg=self.color_fg).create_entry(var_entr=self.entr_list_mean[i],
                                                               var_entr_set=round(np.mean(self.results[i]), 2))
-                entr_std = SE(parent=self.parent_mineral, row_id=4+2*i, column_id=7, n_rows=2, bg=self.color_bg,
+                entr_std = SE(parent=self.parent_mineral, row_id=15+i, column_id=7, n_rows=1, bg=self.color_bg,
                               fg=self.color_fg).create_entry(var_entr=self.entr_list_std[i],
                                                              var_entr_set=round(np.std(self.results[i], ddof=1), 2))
                 self.entr_w.append(entr_min)
@@ -837,9 +871,11 @@ class Minerals:
                 element = "Pb"
             elif self.mineral in ["Magnesite"]:
                 element = "Mg"
-            elif self.mineral == "Alkalifeldspar":
+            elif self.mineral in ["Halite"]:
+                element = "Na"
+            elif self.mineral in ["Alkalifeldspar", "Sylvite"]:
                 element = "K"
-            elif self.mineral in ["Plagioclase", "Calcite", "Dolomite"]:
+            elif self.mineral in ["Plagioclase", "Calcite", "Dolomite", "Fluorite"]:
                 element = "Ca"
             self.create_scatter_plot(parent=self.parent_mineral, data_x=self.w_element, data_y=self.vP/1000, row_id=2,
                                      column_id=9, n_rows=15, n_columns=3,
@@ -878,6 +914,8 @@ class Minerals:
                                      xlabel=str(element)+" amount $w_{"+str(element)+"}$ (1)",
                                      ylabel="Photoelectricity PE (barns/electron)", color=self.color_mineral)
     #
+    def __call__(self):
+        return self.lbl_w, self.entr_w
 #
 class Rocks:
     #
@@ -911,28 +949,32 @@ class Rocks:
         self.rock = rock
         self.lbl_w = lbl_w
         self.entr_w = entr_w
+        self.lbl_chem = []
+        self.entr_chem = []
         #
         ## Labels
-        SE(parent=self.parent_rock, row_id=4, column_id=3, n_rows=2, bg=self.color_bg,
+        lbl_01 = SE(parent=self.parent_rock, row_id=4, column_id=3, n_rows=2, bg=self.color_bg,
            fg="black").create_label(text="Density\n (g/ccm)", relief=tk.RAISED)
-        SE(parent=self.parent_rock, row_id=6, column_id=3, n_rows=2, bg=self.color_bg,
+        lbl_02 = SE(parent=self.parent_rock, row_id=6, column_id=3, n_rows=2, bg=self.color_bg,
            fg="black").create_label(text="P-wave velocity\n (km/s)", relief=tk.RAISED)
-        SE(parent=self.parent_rock, row_id=8, column_id=3, n_rows=2, bg=self.color_bg,
+        lbl_03 = SE(parent=self.parent_rock, row_id=8, column_id=3, n_rows=2, bg=self.color_bg,
            fg="black").create_label(text="S-wave velocity\n (km/s)", relief=tk.RAISED)
-        SE(parent=self.parent_rock, row_id=10, column_id=3, n_rows=2, bg=self.color_bg,
+        lbl_04 = SE(parent=self.parent_rock, row_id=10, column_id=3, n_rows=2, bg=self.color_bg,
            fg="black").create_label(text="Velocity ratio\n (1)", relief=tk.RAISED)
-        SE(parent=self.parent_rock, row_id=12, column_id=3, n_rows=2, bg=self.color_bg,
+        lbl_05 = SE(parent=self.parent_rock, row_id=12, column_id=3, n_rows=2, bg=self.color_bg,
            fg="black").create_label(text="Bulk modulus\n (GPa)", relief=tk.RAISED)
-        SE(parent=self.parent_rock, row_id=14, column_id=3, n_rows=2, bg=self.color_bg,
+        lbl_06 = SE(parent=self.parent_rock, row_id=14, column_id=3, n_rows=2, bg=self.color_bg,
            fg="black").create_label(text="Shear modulus\n (GPa)", relief=tk.RAISED)
-        SE(parent=self.parent_rock, row_id=16, column_id=3, n_rows=2, bg=self.color_bg,
+        lbl_07 = SE(parent=self.parent_rock, row_id=16, column_id=3, n_rows=2, bg=self.color_bg,
            fg="black").create_label(text="Poisson's ratio\n (1)", relief=tk.RAISED)
-        SE(parent=self.parent_rock, row_id=18, column_id=3, n_rows=2, bg=self.color_bg,
+        lbl_08 = SE(parent=self.parent_rock, row_id=18, column_id=3, n_rows=2, bg=self.color_bg,
            fg="black").create_label(text="Porosity\n (%)", relief=tk.RAISED)
-        SE(parent=self.parent_rock, row_id=20, column_id=3, n_rows=2, bg=self.color_bg,
+        lbl_09 = SE(parent=self.parent_rock, row_id=20, column_id=3, n_rows=2, bg=self.color_bg,
            fg="black").create_label(text="Gamma ray\n (API)", relief=tk.RAISED)
-        SE(parent=self.parent_rock, row_id=22, column_id=3, n_rows=2, bg=self.color_bg,
+        lbl_10 = SE(parent=self.parent_rock, row_id=22, column_id=3, n_rows=2, bg=self.color_bg,
            fg="black").create_label(text="Photoelectricity\n (barns/electron)", relief=tk.RAISED)
+        #
+        self.lbl_w.extend([lbl_01, lbl_02, lbl_03, lbl_04, lbl_05, lbl_06, lbl_07, lbl_08, lbl_09, lbl_10])
         #
         if self.rock == "Sandstone":
             var_phi0_start = 5
@@ -940,7 +982,7 @@ class Rocks:
         elif self.rock == "Shale":
             var_phi0_start = 0
             var_phi1_start = 10
-        elif self.rock in ["Limestone", "Dolomite"]:
+        elif self.rock in ["Limestone", "Dolomite Rock"]:
             var_phi0_start = 0
             var_phi1_start = 50
         elif self.rock in ["Rock Salt", "Anhydrite", "Felsic Rock", "Intermediate Rock", "Granite", "Gabbro", "Syenite",
@@ -951,64 +993,67 @@ class Rocks:
             var_phi0_start = 0
             var_phi1_start = 20
         #
-        SE(parent=self.parent_rock, row_id=28, column_id=0, n_rows=1, n_columns=1, bg=self.color_acc_01,
+        lbl_11 = SE(parent=self.parent_rock, row_id=28, column_id=0, n_rows=1, n_columns=1, bg=self.color_acc_01,
            fg="black").create_label(text="Number of samples", relief=tk.RAISED)
         SE(parent=self.parent_rock, row_id=28, column_id=1, n_rows=1, n_columns=1, bg=self.color_acc_02,
            fg=color_fg).create_entry(var_entr=self.var_entr, var_entr_set=var_entr_start,
                                      command=lambda event, var_entr=self.var_entr: self.enter_samples(var_entr, event))
-        SE(parent=self.parent_rock, row_id=29, column_id=0, n_rows=1, n_columns=1, bg=self.color_acc_01,
+        lbl_12 = SE(parent=self.parent_rock, row_id=29, column_id=0, n_rows=1, n_columns=1, bg=self.color_acc_01,
            fg="black").create_label(text="Minimum Porosity (%)", relief=tk.RAISED)
-        SE(parent=self.parent_rock, row_id=29, column_id=1, n_rows=1, n_columns=1, bg=self.color_acc_02,
+        entr_01 = SE(parent=self.parent_rock, row_id=29, column_id=1, n_rows=1, n_columns=1, bg=self.color_acc_02,
            fg=color_fg).create_entry(var_entr=self.var_phi0, var_entr_set=var_phi0_start,
                                      command=lambda event, var_entr=self.var_entr: self.enter_samples(var_entr, event))
-        SE(parent=self.parent_rock, row_id=30, column_id=0, n_rows=1, n_columns=1, bg=self.color_acc_01,
+        lbl_13 = SE(parent=self.parent_rock, row_id=30, column_id=0, n_rows=1, n_columns=1, bg=self.color_acc_01,
            fg="black").create_label(text="Maximum Porosity (%)", relief=tk.RAISED)
-        SE(parent=self.parent_rock, row_id=30, column_id=1, n_rows=1, n_columns=1, bg=self.color_acc_02,
+        entr_02 = SE(parent=self.parent_rock, row_id=30, column_id=1, n_rows=1, n_columns=1, bg=self.color_acc_02,
            fg=color_fg).create_entry(var_entr=self.var_phi1, var_entr_set=var_phi1_start,
                                      command=lambda event, var_entr=self.var_entr: self.enter_samples(var_entr, event))
-        SE(parent=self.parent_rock, row_id=31, column_id=0, n_rows=1, n_columns=2, bg=self.color_acc_01,
+        rb_01 = SE(parent=self.parent_rock, row_id=31, column_id=0, n_rows=1, n_columns=2, bg=self.color_acc_01,
            fg="black").create_radiobutton(var_rb=self.var_rb, var_rb_set=var_rb_start, value_rb=0, text="Histogram",
                                            color_bg=self.color_acc_01,
                                            command=lambda var_rb=self.var_rb: self.change_radiobutton(var_rb))
-        SE(parent=self.parent_rock, row_id=32, column_id=0, n_rows=1, n_columns=2, bg=self.color_acc_01,
+        rb_02 = SE(parent=self.parent_rock, row_id=32, column_id=0, n_rows=1, n_columns=2, bg=self.color_acc_01,
            fg="black").create_radiobutton(var_rb=self.var_rb, var_rb_set=var_rb_start, value_rb=1, text="Scatter",
                                            color_bg=self.color_acc_01,
                                            command=lambda var_rb=self.var_rb: self.change_radiobutton(var_rb))
         #
+        self.lbl_w.extend([lbl_11, lbl_12, lbl_13])
+        self.lbl_w.extend([rb_01, rb_02])
+        self.entr_w.extend([entr_01, entr_02])
+        #
         data_all = []
-        phi_value = rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)
         for i in range(var_entr_start):
             if self.rock == "Sandstone":
-                data = sandstone(fluid="water", actualThickness=0).create_simple_sandstone(dict=True, porosity=phi_value)
+                data = sandstone(fluid="water", actualThickness=0).create_simple_sandstone(dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
             elif self.rock == "Shale":
-                data = shale().create_simple_shale()
+                data = shale(fluid="water").create_simple_shale(dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
             elif self.rock == "Limestone":
-                data = limestone(fluid="water", actualThickness=0).create_simple_limestone(dict=True, porosity=phi_value)
-            elif self.rock == "Dolomite":
-                data = dolomite(fluid="water", actualThickness=0).create_simple_dolomite(dict=True, porosity=phi_value)
+                data = limestone(fluid="water", actualThickness=0).create_simple_limestone(dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
+            elif self.rock == "Dolomite Rock":
+                data = dolomite(fluid="water", actualThickness=0).create_simple_dolomite(dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
             #
             elif self.rock == "Felsic Rock":
-                data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=phi_value).create_felsic()
+                data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_felsic()
             elif self.rock == "Intermediate Rock":
-                data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=phi_value).create_intermediate()
+                data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_intermediate()
             elif self.rock == "Granite":
-                data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=phi_value).create_simple_granite()
+                data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_simple_granite()
             elif self.rock == "Gabbro":
-                data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=phi_value).create_simple_gabbro()
+                data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_simple_gabbro()
             elif self.rock == "Diorite":
-                data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=phi_value).create_simple_diorite()
+                data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_simple_diorite()
             elif self.rock == "Granodiorite":
-                data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=phi_value).create_simple_granodiorite()
+                data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_simple_granodiorite()
             elif self.rock == "Monzonite":
-                data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=phi_value).create_simple_monzonite()
+                data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_simple_monzonite()
             elif self.rock == "Quartzolite":
-                data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=phi_value).create_simple_quartzolite()
+                data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_simple_quartzolite()
             elif self.rock == "Qz-rich Granitoid":
-                data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=phi_value).create_simple_quartzrich_granitoid()
+                data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_simple_quartzrich_granitoid()
             elif self.rock == "Syenite":
-                data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=phi_value).create_simple_syenite()
+                data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_simple_syenite()
             elif self.rock == "Tonalite":
-                data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=phi_value).create_simple_tonalite()
+                data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_simple_tonalite()
             #
             elif self.rock == "Rock Salt":
                 data = Evaporites(fluid="water", actualThickness=0).create_simple_rocksalt(dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
@@ -1111,19 +1156,23 @@ class Rocks:
             self.entr_w.append(entr_max)
             self.entr_w.append(entr_mean)
             self.entr_w.append(entr_std)
+            self.entr_chem.extend([entr_min, entr_max, entr_mean, entr_std])
         #
-        SE(parent=self.parent_rock, row_id=33, column_id=0, n_rows=1, n_columns=2, bg=self.color_acc_01,
+        rb_03 = SE(parent=self.parent_rock, row_id=33, column_id=0, n_rows=1, n_columns=2, bg=self.color_acc_01,
            fg="black").create_radiobutton(var_rb=self.var_rb_geochem, var_rb_set=var_rb_geochem_start, value_rb=2,
                                           text="Elements", color_bg=self.color_acc_01,
                                           command=lambda var_rb=self.var_rb_geochem: self.change_radiobutton(var_rb))
-        SE(parent=self.parent_rock, row_id=34, column_id=0, n_rows=1, n_columns=2, bg=self.color_acc_01,
+        rb_04 = SE(parent=self.parent_rock, row_id=34, column_id=0, n_rows=1, n_columns=2, bg=self.color_acc_01,
            fg="black").create_radiobutton(var_rb=self.var_rb_geochem, var_rb_set=var_rb_geochem_start, value_rb=3,
                                           text="Minerals", color_bg=self.color_acc_01,
                                           command=lambda var_rb=self.var_rb_geochem: self.change_radiobutton(var_rb))
         #
+        self.lbl_w.extend([rb_03, rb_04])
+        #
         lbl = SE(parent=self.parent_rock, row_id=24, column_id=3, n_columns=5, bg=self.color_bg,
                  fg="black").create_label(text="Chemical composition (weight amounts %)", relief=tk.RAISED)
         self.lbl_w.append(lbl)
+        self.lbl_chem.append(lbl)
         for index, element in enumerate(self.list_elements, start=0):
             if element not in ["U"]:
                 lbl = SE(parent=self.parent_rock, row_id=25+index, column_id=3, bg=self.color_bg,
@@ -1132,6 +1181,7 @@ class Rocks:
                 lbl = SE(parent=self.parent_rock, row_id=25+index, column_id=3, bg=self.color_bg,
                          fg="black").create_label(text=str(element)+" (ppm)", relief=tk.RAISED)
             self.lbl_w.append(lbl)
+            self.lbl_chem.append(lbl)
         #
         self.color_rock = "#7C9097"
         #
@@ -1204,12 +1254,12 @@ class Rocks:
             pass
         #
         try:
-            for lbl in self.lbl_w:
+            for lbl in self.lbl_chem:
                 lbl.grid_forget()
-            for entr in self.entr_w:
+            for entr in self.entr_chem:
                 entr.grid_forget()
-            self.lbl_w.clear()
-            self.entr_w.clear()
+            self.lbl_chem.clear()
+            self.entr_chem.clear()
         except:
             pass
         #
@@ -1217,6 +1267,7 @@ class Rocks:
         lbl = SE(parent=self.parent_rock, row_id=24, column_id=3, n_columns=5, bg=self.color_bg,
                fg="black").create_label(text="Chemical composition (weight amounts %)", relief=tk.RAISED)
         self.lbl_w.append(lbl)
+        self.lbl_chem.append(lbl)
         for index, element in enumerate(self.list_elements, start=0):
             if element not in ["U"]:
                 lbl = SE(parent=self.parent_rock, row_id=25+index, column_id=3, bg=self.color_bg,
@@ -1225,41 +1276,41 @@ class Rocks:
                 lbl = SE(parent=self.parent_rock, row_id=25+index, column_id=3, bg=self.color_bg,
                          fg="black").create_label(text=str(element)+" (ppm)", relief=tk.RAISED)
             self.lbl_w.append(lbl)
+            self.lbl_chem.append(lbl)
         #
         data_all = []
-        phi_value = rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)
         for i in range(var_entr.get()):
             if self.rock == "Sandstone":
-                data = sandstone(fluid="water", actualThickness=0).create_simple_sandstone(dict=True, porosity=phi_value)
+                data = sandstone(fluid="water", actualThickness=0).create_simple_sandstone(dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
             elif self.rock == "Shale":
-                data = shale().create_simple_shale()
+                data = shale(fluid="water").create_simple_shale(dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
             elif self.rock == "Limestone":
-                data = limestone(fluid="water", actualThickness=0).create_simple_limestone(dict=True, porosity=phi_value)
-            elif self.rock == "Dolomite":
-                data = dolomite(fluid="water", actualThickness=0).create_simple_dolomite(dict=True, porosity=phi_value)
+                data = limestone(fluid="water", actualThickness=0).create_simple_limestone(dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
+            elif self.rock == "Dolomite Rock":
+                data = dolomite(fluid="water", actualThickness=0).create_simple_dolomite(dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
             #
             elif self.rock == "Felsic Rock":
-                data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=phi_value).create_felsic()
+                data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_felsic()
             elif self.rock == "Intermediate Rock":
-                data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=phi_value).create_intermediate()
+                data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_intermediate()
             elif self.rock == "Granite":
-                data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=phi_value).create_simple_granite()
+                data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_simple_granite()
             elif self.rock == "Gabbro":
-                data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=phi_value).create_simple_gabbro()
+                data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_simple_gabbro()
             elif self.rock == "Diorite":
-                data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=phi_value).create_simple_diorite()
+                data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_simple_diorite()
             elif self.rock == "Granodiorite":
-                data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=phi_value).create_simple_granodiorite()
+                data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_simple_granodiorite()
             elif self.rock == "Monzonite":
-                data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=phi_value).create_simple_monzonite()
+                data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_simple_monzonite()
             elif self.rock == "Quartzolite":
-                data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=phi_value).create_simple_quartzolite()
+                data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_simple_quartzolite()
             elif self.rock == "Qz-rich Granitoid":
-                data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=phi_value).create_simple_quartzrich_granitoid()
+                data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_simple_quartzrich_granitoid()
             elif self.rock == "Syenite":
-                data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=phi_value).create_simple_syenite()
+                data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_simple_syenite()
             elif self.rock == "Tonalite":
-                data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=phi_value).create_simple_tonalite()
+                data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_simple_tonalite()
             #
             elif self.rock == "Rock Salt":
                 data = Evaporites(fluid="water", actualThickness=0).create_simple_rocksalt(dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
@@ -1362,6 +1413,7 @@ class Rocks:
             self.entr_w.append(entr_max)
             self.entr_w.append(entr_mean)
             self.entr_w.append(entr_std)
+            self.entr_chem.extend([entr_min, entr_max, entr_mean, entr_std])
         #
         self.color_rock = "#7C9097"
         #
@@ -1464,18 +1516,19 @@ class Rocks:
         elif var_rb.get() == 2:
             #
             try:
-                for lbl in self.lbl_w:
+                for lbl in self.lbl_chem:
                     lbl.grid_forget()
-                for entr in self.entr_w:
+                for entr in self.entr_chem:
                     entr.grid_forget()
-                self.lbl_w.clear()
-                self.entr_w.clear()
+                self.lbl_chem.clear()
+                self.entr_chem.clear()
             except:
                 pass
             #
             lbl = SE(parent=self.parent_rock, row_id=24, column_id=3, n_columns=5, bg=self.color_bg,
                    fg="black").create_label(text="Chemical composition (weight amounts %)", relief=tk.RAISED)
             self.lbl_w.append(lbl)
+            self.lbl_chem.append(lbl)
             for index, element in enumerate(self.list_elements, start=0):
                 if element not in ["U"]:
                     lbl = SE(parent=self.parent_rock, row_id=25+index, column_id=3, bg=self.color_bg,
@@ -1484,6 +1537,7 @@ class Rocks:
                     lbl = SE(parent=self.parent_rock, row_id=25+index, column_id=3, bg=self.color_bg,
                              fg="black").create_label(text=str(element)+" (ppm)", relief=tk.RAISED)
                 self.lbl_w.append(lbl)
+                self.lbl_chem.append(lbl)
             #
             for index, element in enumerate(self.list_elements, start=10):
                 if element not in ["U"]:
@@ -1518,22 +1572,24 @@ class Rocks:
                 self.entr_w.append(entr_max)
                 self.entr_w.append(entr_mean)
                 self.entr_w.append(entr_std)
+                self.entr_chem.extend([entr_min, entr_max, entr_mean, entr_std])
         #
         elif var_rb.get() == 3:
             #
             try:
-                for lbl in self.lbl_w:
+                for lbl in self.lbl_chem:
                     lbl.grid_forget()
-                for entr in self.entr_w:
+                for entr in self.entr_chem:
                     entr.grid_forget()
-                self.lbl_w.clear()
-                self.entr_w.clear()
+                self.lbl_chem.clear()
+                self.entr_chem.clear()
             except:
                 pass
             #
             lbl = SE(parent=self.parent_rock, row_id=24, column_id=3, n_columns=5, bg=self.color_bg,
                    fg="black").create_label(text="Mineralogical composition (weight amounts %)", relief=tk.RAISED)
             self.lbl_w.append(lbl)
+            self.lbl_chem.append(lbl)
             for index, mineral in enumerate(self.list_minerals, start=0):
                 if mineral not in ["Urn"]:
                     lbl = SE(parent=self.parent_rock, row_id=25+index, column_id=3, bg=self.color_bg,
@@ -1542,6 +1598,7 @@ class Rocks:
                     lbl = SE(parent=self.parent_rock, row_id=25+index, column_id=3, bg=self.color_bg,
                              fg="black").create_label(text=str(mineral)+" (ppm)", relief=tk.RAISED)
                 self.lbl_w.append(lbl)
+                self.lbl_chem.append(lbl)
             #
             for index, mineral in enumerate(self.list_minerals, start=10):
                 if mineral not in ["Urn"]:
@@ -1576,7 +1633,10 @@ class Rocks:
                 self.entr_w.append(entr_max)
                 self.entr_w.append(entr_mean)
                 self.entr_w.append(entr_std)
-            #
+                self.entr_chem.extend([entr_min, entr_max, entr_mean, entr_std])
+    #
+    def __call__(self):
+        return self.lbl_w, self.entr_w
     #
 if __name__ == "__main__":
     root = tk.Tk()

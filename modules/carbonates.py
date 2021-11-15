@@ -388,7 +388,7 @@ class limestone:
             if self.w_Na == None and self.w_Mg == None and self.w_K == None and self.w_Ca == None and self.w_Fe == None and self.amounts == None:
                 magicnumber = rd.randint(0, 6)
                 if magicnumber == 0:    # Cal-rich
-                    w_carb = round(rd.uniform(0.8, 0.9), 4)
+                    w_carb = round(rd.uniform(0.9, 1.0), 4)
                     w_cal2 = rd.uniform(0.85, 0.95)
                     w_arg2 = rd.randint(0, int((1-w_cal2)*100))/100
                     w_dol2 = rd.randint(0, int((1-w_cal2-w_arg2)*100))/100
@@ -733,7 +733,7 @@ class limestone:
             #
             w_H = round(chem_mnt[6][0]*w_mnt + chem_kln[6][0]*w_kln + chem_chl[6][0]*w_chl, 4)
             w_C = round(chem_cal[6][0]*w_cal + chem_arg[6][0]*w_arg + chem_dol[6][0]*w_dol + chem_sd[6][0]*w_sd, 4)
-            w_O = round(chem_cal[6][1]*w_cal + chem_arg[6][1]*w_arg + chem_dol[6][1]*w_dol + chem_sd[6][1]*w_sd + chem_qz[6][1]*w_qz + chem_kfs[6][0]*w_kfs + chem_pl[6][0]*w_pl + chem_mnt[6][1]*w_mnt + chem_kln[6][1]*w_kln + chem_chl[6][1]*w_chl, 4)
+            #w_O = round(chem_cal[6][1]*w_cal + chem_arg[6][1]*w_arg + chem_dol[6][1]*w_dol + chem_sd[6][1]*w_sd + chem_qz[6][1]*w_qz + chem_kfs[6][0]*w_kfs + chem_pl[6][0]*w_pl + chem_mnt[6][1]*w_mnt + chem_kln[6][1]*w_kln + chem_chl[6][1]*w_chl, 4)
             w_Na = round(chem_kfs[6][1]*w_kfs + chem_pl[6][1]*w_pl + chem_mnt[6][2]*w_mnt, 4)
             w_Mg = round(chem_dol[6][2]*w_dol + chem_mnt[6][3]*w_mnt + chem_chl[6][4]*w_chl, 4)
             w_Al = round(chem_kfs[6][2]*w_kfs + chem_pl[6][2]*w_pl + chem_mnt[6][4]*w_mnt + chem_kln[6][2]*w_kln + chem_chl[6][2]*w_chl, 4)
@@ -742,6 +742,7 @@ class limestone:
             w_K = round(chem_kfs[6][4]*w_kfs, 4)
             w_Ca = round(chem_cal[6][2]*w_cal + chem_arg[6][2]*w_arg + chem_dol[6][3]*w_dol + chem_pl[6][4]*w_pl + chem_mnt[6][6]*w_mnt, 4)
             w_Fe = round(chem_sd[6][2]*w_sd + chem_py[6][1]*w_py + chem_chl[6][5]*w_chl, 4)
+            w_O = round(1 - w_H - w_C - w_Na - w_Mg - w_Al - w_Si - w_S - w_K - w_Ca - w_Fe, 4)
             sumConc = round(w_H + w_C + w_O + w_Na + w_Mg + w_Al + w_Si + w_S + w_K + w_Ca + w_Fe, 4)
             #print("Amount:", sumMin, "C:", sumConc)
             #
@@ -1232,7 +1233,7 @@ class dolomite:
     def create_simple_dolomite(self, w_Mg=None, w_Ca=None, w_Fe=None, amounts=None, porosity=None, dict=None):
         #
         results = {}
-        results["rock"] = "dolomite"
+        results["rock"] = "dolomite rock"
         #
         self.w_Mg = w_Mg
         self.w_Ca = w_Ca
@@ -1498,7 +1499,7 @@ class dolomite:
             #
             w_H = round(w_kln*chem_kln[6][0], 4)
             w_C = round(w_dol*chem_dol[6][0] + w_ank*chem_ank[6][0] + w_sd*chem_sd[6][0] + w_cal*chem_cal[6][0], 4)
-            w_O = round(w_dol*chem_dol[6][1] + w_ank*chem_ank[6][1] + w_sd*chem_sd[6][1] + w_cal*chem_cal[6][1] + w_qz*chem_qz[6][0] + w_kfs*chem_kfs[6][0] + w_pl*chem_pl[6][0] + w_kln*chem_kln[6][1], 4)
+            #w_O = round(w_dol*chem_dol[6][1] + w_ank*chem_ank[6][1] + w_sd*chem_sd[6][1] + w_cal*chem_cal[6][1] + w_qz*chem_qz[6][0] + w_kfs*chem_kfs[6][0] + w_pl*chem_pl[6][0] + w_kln*chem_kln[6][1], 4)
             w_Na = round(w_kfs*chem_kfs[6][1] + w_pl*chem_pl[6][1], 4)
             w_Mg = round(w_dol*chem_dol[6][2], 4)
             w_Al = round(w_kfs*chem_kfs[6][2] + w_pl*chem_pl[6][2] + w_kln*chem_kln[6][2], 4)
@@ -1507,6 +1508,7 @@ class dolomite:
             w_K = round(w_kfs*chem_kfs[6][4], 4)
             w_Ca = round(w_dol*chem_dol[6][3] + w_ank*chem_ank[6][3] + w_cal*chem_cal[6][2] + w_pl*chem_pl[6][4], 4)
             w_Fe = round(w_ank*chem_ank[6][5] + w_sd*chem_sd[6][2] + w_py*chem_py[6][1], 4)
+            w_O = round(1 - w_H - w_C - w_Na - w_Mg - w_Al - w_Si - w_S - w_K - w_Ca - w_Fe, 4)
             sumConc = round(w_H + w_C + w_O + w_Na + w_Mg + w_Al + w_Si + w_S + w_K + w_Ca + w_Fe, 4)
             #print("Amount:", sumMin, "C:", sumConc)
             #
