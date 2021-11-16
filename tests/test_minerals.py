@@ -19,6 +19,7 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 from matplotlib.ticker import NullFormatter
 from modules import sequences, geophysics, minerals, oxides, sulfides, sulfates, silicates
+from modules.pyllosilicates import Pyllosilicates
 
 class TESTING_MINERALS:
     #
@@ -327,5 +328,18 @@ class TESTING_MINERALS:
         print("Plagioclase (Na-enriched):\n", data)
         data = silicates.Tectosilicates(impurity="pure").create_plagioclase(enrichment="Ca")
         print("Plagioclase (Ca-enriched):\n", data)
+        #
+        print("")
+        ## TESTING PHYLLOSILICATES
+        print("TEST - PHYLLOSILICATES (from silicates.py)")
+        # Test Illite (incl. trace elements)
+        data = Pyllosilicates(dict=True).create_illite()
+        print("Illite (no preference):\n", data)
+        # Test Kaolinite (incl. trace elements)
+        data = Pyllosilicates(dict=True).create_kaolinite()
+        print("Kaolinite (no preference):\n", data)
+        # Test Montmorillonite (incl. trace elements)
+        data = Pyllosilicates(dict=True).create_montmorillonite()
+        print("Montmorillonite (no preference):\n", data)
 # RUN
 TESTING_MINERALS()

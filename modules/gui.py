@@ -18,9 +18,11 @@ from modules.sulfides import Sulfides
 from modules.carbonates import Carbonates
 from modules.halogenes import Halogenes
 from modules.silicates import Tectosilicates
+from modules.pyllosilicates import Pyllosilicates
 from modules.minerals import feldspars
 from modules.siliciclastics import sandstone, shale
 from modules.carbonates import limestone, dolomite
+from modules.ore import Ores
 from modules.igneous import Plutonic
 from modules.evaporites import Evaporites
 from modules.sequences import DataProcessing as DP
@@ -112,13 +114,13 @@ class GebPyGUI(tk.Frame):
         #
         ## Option Menu
         var_opt_0_0 = tk.StringVar()
-        opt_list_0_0 = ["Oxides", "Sulfides", "Carbonates", "Halogenes", "Tectosilicates"]
+        opt_list_0_0 = ["Oxides", "Sulfides", "Carbonates", "Halogenes", "Tectosilicates", "Phyllosilicates"]
         self.opt_mingroup = SE(parent=self.parent, row_id=8, column_id=0, n_rows=2, n_columns=2, bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
             var_opt=var_opt_0_0, var_opt_set="Select Mineral Group", opt_list=opt_list_0_0,
             command=lambda var_opt=var_opt_0_0: self.select_opt(var_opt))
         var_opt_1_0 = tk.StringVar()
         opt_list_1_0 = ["Siliciclastic Rocks", "Carbonate Rocks", "Igneous Rocks", "Metamorphic Rocks",
-                        "Evaporite Rocks"]
+                        "Evaporite Rocks", "Ore Rocks"]
         self.opt_rocktype = SE(parent=self.parent, row_id=14, column_id=0, n_rows=2, n_columns=2, bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
             var_opt=var_opt_1_0, var_opt_set="Select Rock Type", opt_list=opt_list_1_0,
             command=lambda var_opt=var_opt_1_0: self.select_opt(var_opt))
@@ -148,7 +150,7 @@ class GebPyGUI(tk.Frame):
             Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                      color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
                      entr_w=self.entr_w)
-        elif var_opt in ["Calcite", "Dolomite", "Magnesite", "Halite", "Fluorite", "Sylvite"]:
+        elif var_opt in ["Calcite", "Dolomite", "Magnesite", "Halite", "Fluorite", "Sylvite", "Illite"]:
             Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                      color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
                      entr_w=self.entr_w)
@@ -232,12 +234,18 @@ class GebPyGUI(tk.Frame):
             Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                   color_acc=[self.color_accent_03, self.color_accent_04], rock=var_opt, lbl_w=self.lbl_w,
                   entr_w=self.entr_w)
+        elif var_opt in ["Kupferschiefer"]:
+            Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
+                  color_acc=[self.color_accent_03, self.color_accent_04], rock=var_opt, lbl_w=self.lbl_w,
+                  entr_w=self.entr_w)
         #
         elif var_opt == "Oxides":
             try:
                 self.opt_sulfide.grid_remove()
                 self.opt_carb.grid_remove()
                 self.opt_halogene.grid_remove()
+                self.opt_clays.grid_remove()
+                self.opt_afs.grid_remove()
             except:
                 pass
             var_opt_0_1 = tk.StringVar()
@@ -251,6 +259,8 @@ class GebPyGUI(tk.Frame):
                 self.opt_oxide.grid_remove()
                 self.opt_carb.grid_remove()
                 self.opt_halogene.grid_remove()
+                self.opt_clays.grid_remove()
+                self.opt_afs.grid_remove()
             except:
                 pass
             var_opt_0_2 = tk.StringVar()
@@ -264,6 +274,8 @@ class GebPyGUI(tk.Frame):
                 self.opt_oxide.grid_remove()
                 self.opt_sulfide.grid_remove()
                 self.opt_halogene.grid_remove()
+                self.opt_clays.grid_remove()
+                self.opt_afs.grid_remove()
             except:
                 pass
             var_opt_0_3 = tk.StringVar()
@@ -277,6 +289,8 @@ class GebPyGUI(tk.Frame):
                 self.opt_oxide.grid_remove()
                 self.opt_sulfide.grid_remove()
                 self.opt_carb.grid_remove()
+                self.opt_clays.grid_remove()
+                self.opt_afs.grid_remove()
             except:
                 pass
             var_opt_0_4 = tk.StringVar()
@@ -291,6 +305,7 @@ class GebPyGUI(tk.Frame):
                 self.opt_sulfide.grid_remove()
                 self.opt_carb.grid_remove()
                 self.opt_halogene.grid_remove()
+                self.opt_clays.grid_remove()
             except:
                 pass
             var_opt_0_5 = tk.StringVar()
@@ -299,6 +314,21 @@ class GebPyGUI(tk.Frame):
                               bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
                 var_opt=var_opt_0_5, var_opt_set="Select Tectosilicate", opt_list=opt_list_0_5,
                 command=lambda var_opt=var_opt_0_5: self.select_opt(var_opt))
+        elif var_opt == "Phyllosilicates":
+            try:
+                self.opt_oxide.grid_remove()
+                self.opt_sulfide.grid_remove()
+                self.opt_carb.grid_remove()
+                self.opt_halogene.grid_remove()
+                self.opt_afs.grid_remove()
+            except:
+                pass
+            var_opt_0_6 = tk.StringVar()
+            opt_list_0_6 = ["Illite"]
+            self.opt_clays = SE(parent=self.parent, row_id=10, column_id=0, n_rows=2, n_columns=2,
+                              bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
+                var_opt=var_opt_0_6, var_opt_set="Select Pyllosilicates", opt_list=opt_list_0_6,
+                command=lambda var_opt=var_opt_0_6: self.select_opt(var_opt))
         elif var_opt == "Siliciclastic Rocks":
             var_opt_1_1 = tk.StringVar()
             opt_list_1_1 = ["Sandstone", "Shale"]
@@ -328,6 +358,13 @@ class GebPyGUI(tk.Frame):
                               bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
                 var_opt=var_opt_1_4, var_opt_set="Select Rock", opt_list=opt_list_1_4,
                 command=lambda var_opt=var_opt_1_4: self.select_opt(var_opt))
+        elif var_opt == "Ore Rocks":
+            var_opt_1_5 = tk.StringVar()
+            opt_list_1_5 = ["Kupferschiefer"]
+            self.opt_ign = SE(parent=self.parent, row_id=16, column_id=0, n_rows=2, n_columns=2,
+                              bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
+                var_opt=var_opt_1_5, var_opt_set="Select Rock", opt_list=opt_list_1_5,
+                command=lambda var_opt=var_opt_1_5: self.select_opt(var_opt))
     #
     def change_radiobutton_mode(self, var_rb_mode):
         if var_rb_mode.get() == 0:
@@ -449,6 +486,9 @@ class Minerals:
             elif self.mineral == "Sylvite":
                 self.var_dict = True
                 data = Halogenes(impurity="pure", dict=self.var_dict).create_sylvite()
+            elif self.mineral == "Illite":
+                self.var_dict = True
+                data = Pyllosilicates(impurity="pure", dict=self.var_dict).create_illite()
             elif self.mineral == "Alkalifeldspar":
                 data = Tectosilicates(impurity="pure").create_alkalifeldspar()
             elif self.mineral == "Plagioclase":
@@ -513,6 +553,8 @@ class Minerals:
                 self.w_element = self.element_list["Na"]
             elif self.mineral in ["Sylvite"]:
                 self.w_element = self.element_list["K"]
+            elif self.mineral in ["Illite"]:
+                self.w_element = self.element_list["Al"]
         #
         self.results = [self.molar_mass, self.rho_b, self.vP, self.vS, self.vPvS, self.bulk_mod, self.shear_mod,
                         self.poisson, self.gamma_ray, self.photoelectricity]
@@ -674,6 +716,9 @@ class Minerals:
             elif self.mineral == "Sylvite":
                 self.var_dict = True
                 data = Halogenes(impurity="pure", dict=self.var_dict).create_sylvite()
+            elif self.mineral == "Illite":
+                self.var_dict = True
+                data = Pyllosilicates(impurity="pure", dict=self.var_dict).create_illite()
             elif self.mineral == "Alkalifeldspar":
                 data = Tectosilicates(impurity="pure").create_alkalifeldspar()
             elif self.mineral == "Plagioclase":
@@ -738,6 +783,8 @@ class Minerals:
                 self.w_element = self.element_list["Na"]
             elif self.mineral in ["Sylvite"]:
                 self.w_element = self.element_list["K"]
+            elif self.mineral in ["Illite"]:
+                self.w_element = self.element_list["Al"]
         #
         self.results = [self.molar_mass, self.rho_b, self.vP, self.vS, self.vPvS, self.bulk_mod, self.shear_mod,
                         self.poisson, self.gamma_ray, self.photoelectricity]
@@ -873,6 +920,8 @@ class Minerals:
                 element = "Mg"
             elif self.mineral in ["Halite"]:
                 element = "Na"
+            elif self.mineral in ["Illite"]:
+                element = "Al"
             elif self.mineral in ["Alkalifeldspar", "Sylvite"]:
                 element = "K"
             elif self.mineral in ["Plagioclase", "Calcite", "Dolomite", "Fluorite"]:
@@ -979,7 +1028,7 @@ class Rocks:
         if self.rock == "Sandstone":
             var_phi0_start = 5
             var_phi1_start = 30
-        elif self.rock == "Shale":
+        elif self.rock in ["Shale", "Kupferschiefer"]:
             var_phi0_start = 0
             var_phi1_start = 10
         elif self.rock in ["Limestone", "Dolomite Rock"]:
@@ -1059,6 +1108,8 @@ class Rocks:
                 data = Evaporites(fluid="water", actualThickness=0).create_simple_rocksalt(dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
             elif self.rock == "Anhydrite":
                 data = Evaporites(fluid="water", actualThickness=0).create_simple_anhydrite(dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
+            elif self.rock == "Kupferschiefer":
+                data = Ores(fluid="water", actualThickness=0, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100), data_type=True).create_kupferschiefer()
             #
             data_all.append(data)
         #
@@ -1316,6 +1367,8 @@ class Rocks:
                 data = Evaporites(fluid="water", actualThickness=0).create_simple_rocksalt(dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
             elif self.rock == "Anhydrite":
                 data = Evaporites(fluid="water", actualThickness=0).create_simple_anhydrite(dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
+            elif self.rock == "Kupferschiefer":
+                data = Ores(fluid="water", actualThickness=0, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100), data_type=True).create_kupferschiefer()
             #
             data_all.append(data)
         #

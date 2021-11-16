@@ -23,9 +23,10 @@ from modules.geochemistry import MineralChemistry
 class Oxides():
     """ Class that generates geophysical and geochemical data of oxide minerals"""
     #
-    def __init__(self, traces_list=[], impurity="pure"):
+    def __init__(self, traces_list=[], impurity="pure", data_type=False):
         self.traces_list = traces_list
         self.impurity = impurity
+        self.data_type = data_type
     #
     def create_quartz(self):
         # Major elements
@@ -55,7 +56,6 @@ class Oxides():
             traces_data = np.array(traces_data, dtype=object)
             traces_data = traces_data[traces_data[:, 1].argsort()]
         #
-        data = []
         mineral = "Qz"
         #
         # Molar mass
@@ -91,15 +91,45 @@ class Oxides():
         # Electrical resistivity
         p = 2*10**14
         #
-        data.append(mineral)
-        data.append(round(molar_mass, 3))
-        data.append(round(rho, 2))
-        data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 4)])
-        data.append([round(vP, 2), round(vS, 2), round(vPvS, 2)])
-        data.append([round(gamma_ray, 2), round(pe, 2), round(U, 2), p])
-        data.append(amounts)
-        #
-        return data
+        if self.data_type == False:
+            data = []
+            data.append(mineral)
+            data.append(round(molar_mass, 3))
+            data.append(round(rho, 2))
+            data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 4)])
+            data.append([round(vP, 2), round(vS, 2), round(vPvS, 2)])
+            data.append([round(gamma_ray, 2), round(pe, 2), round(U, 2), p])
+            data.append(amounts)
+            #
+            return data
+        else:
+            #
+            results = {}
+            results["mineral"] = mineral
+            results["M"] = molar_mass
+            element_list = np.array(amounts)[:, 0]
+            results["chemistry"] = {}
+            for index, element in enumerate(element_list, start=0):
+                results["chemistry"][element] = amounts[index][2]
+            results["rho"] = round(rho, 4)
+            results["rho_e"] = round(rho_e, 4)
+            results["V"] = round(V, 4)
+            results["vP"] = round(vP, 4)
+            results["vS"] = round(vS, 4)
+            results["vP/vS"] = round(vPvS, 4)
+            results["G"] = round(G*10**(-9), 4)
+            results["K"] = round(K*10**(-9), 4)
+            results["E"] = round(E*10**(-9), 4)
+            results["nu"] = round(nu, 4)
+            results["GR"] = round(gamma_ray, 4)
+            results["PE"] = round(pe, 4)
+            results["U"] = round(U, 4)
+            if p != None:
+                results["p"] = round(p, 4)
+            else:
+                results["p"] = p
+            #
+            return results
     #
     def create_uraninite(self):
         # Major elements
