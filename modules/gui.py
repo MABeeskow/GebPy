@@ -1154,6 +1154,14 @@ class Rocks:
         self.results = [self.rho, self.vP, self.vS, self.vPvS, self.bulk_mod, self.shear_mod, self.poisson, self.phi,
                         self.gamma_ray, self.photoelectricity]
         #
+        self.var_opt_chem = tk.StringVar()
+        opt_list_chem = ["No Selection"]
+        opt_list_chem.extend(self.list_elements)
+        opt_list_chem.extend(self.list_minerals)
+        self.opt_chem = SE(parent=self.parent_rock, row_id=35, column_id=0, n_rows=1, n_columns=2, bg=self.color_acc_01,
+                           fg="black").create_option_menu(var_opt=self.var_opt_chem, var_opt_set="Select Element/Mineral",
+                                                          opt_list=opt_list_chem, active_bg=self.color_acc_02)
+        #
         self.entr_list_min = []
         self.entr_list_max = []
         self.entr_list_mean = []
@@ -1166,14 +1174,24 @@ class Rocks:
         #
         ## Entry Table
         for i in range(10):
-            entr_min = SE(parent=self.parent_rock, row_id=4+2*i, column_id=4, n_rows=2, bg=self.color_bg,
-               fg=self.color_fg).create_entry(var_entr=self.entr_list_min[i], var_entr_set=round(np.min(self.results[i]), 3))
-            entr_max = SE(parent=self.parent_rock, row_id=4+2*i, column_id=5, n_rows=2, bg=self.color_bg,
-               fg=self.color_fg).create_entry(var_entr=self.entr_list_max[i], var_entr_set=round(np.max(self.results[i]), 3))
-            entr_mean = SE(parent=self.parent_rock, row_id=4+2*i, column_id=6, n_rows=2, bg=self.color_bg,
-               fg=self.color_fg).create_entry(var_entr=self.entr_list_mean[i], var_entr_set=round(np.mean(self.results[i]), 3))
-            entr_std = SE(parent=self.parent_rock, row_id=4+2*i, column_id=7, n_rows=2, bg=self.color_bg,
-               fg=self.color_fg).create_entry(var_entr=self.entr_list_std[i], var_entr_set=round(np.std(self.results[i], ddof=1), 3))
+            if i == 7:
+                entr_min = SE(parent=self.parent_rock, row_id=4+2*i, column_id=4, n_rows=2, bg=self.color_bg,
+                              fg=self.color_fg).create_entry(var_entr=self.entr_list_min[i], var_entr_set=round(np.min(self.results[i]*100), 3))
+                entr_max = SE(parent=self.parent_rock, row_id=4+2*i, column_id=5, n_rows=2, bg=self.color_bg,
+                              fg=self.color_fg).create_entry(var_entr=self.entr_list_max[i], var_entr_set=round(np.max(self.results[i]*100), 3))
+                entr_mean = SE(parent=self.parent_rock, row_id=4+2*i, column_id=6, n_rows=2, bg=self.color_bg,
+                               fg=self.color_fg).create_entry(var_entr=self.entr_list_mean[i], var_entr_set=round(np.mean(self.results[i]*100), 3))
+                entr_std = SE(parent=self.parent_rock, row_id=4+2*i, column_id=7, n_rows=2, bg=self.color_bg,
+                              fg=self.color_fg).create_entry(var_entr=self.entr_list_std[i], var_entr_set=round(np.std(self.results[i]*100, ddof=1), 3))
+            else:
+                entr_min = SE(parent=self.parent_rock, row_id=4+2*i, column_id=4, n_rows=2, bg=self.color_bg,
+                              fg=self.color_fg).create_entry(var_entr=self.entr_list_min[i], var_entr_set=round(np.min(self.results[i]), 3))
+                entr_max = SE(parent=self.parent_rock, row_id=4+2*i, column_id=5, n_rows=2, bg=self.color_bg,
+                              fg=self.color_fg).create_entry(var_entr=self.entr_list_max[i], var_entr_set=round(np.max(self.results[i]), 3))
+                entr_mean = SE(parent=self.parent_rock, row_id=4+2*i, column_id=6, n_rows=2, bg=self.color_bg,
+                               fg=self.color_fg).create_entry(var_entr=self.entr_list_mean[i], var_entr_set=round(np.mean(self.results[i]), 3))
+                entr_std = SE(parent=self.parent_rock, row_id=4+2*i, column_id=7, n_rows=2, bg=self.color_bg,
+                              fg=self.color_fg).create_entry(var_entr=self.entr_list_std[i], var_entr_set=round(np.std(self.results[i], ddof=1), 3))
         for index, element in enumerate(self.list_elements, start=10):
             if element not in ["U"]:
                 entr_min = SE(parent=self.parent_rock, row_id=15+index, column_id=4, bg=self.color_bg,
@@ -1262,7 +1280,14 @@ class Rocks:
         self.ax_histo = self.fig_histo.add_subplot()
         #
         self.ax_histo.axvline(x=np.mean(data), color="#E76F51", linewidth=3, linestyle="dashed")
-        self.ax_histo.hist(data, bins=15, color=color, edgecolor="black")
+        if self.var_opt_chem.get() in ["No Selection", "Select Element/Mineral"]:
+            self.ax_histo.hist(data, bins=15, color=color, edgecolor="black")
+        else:
+            if self.var_opt_chem.get() in self.list_elements:
+                n, bins, patches = self.ax_histo.hist(data, bins=15, color=color, edgecolor="black")
+                for i, p in enumerate(patches):
+                    cm = plt.cm.get_cmap("viridis")
+                    plt.setp(p, 'facecolor', cm(i/25))
         self.ax_histo.grid(True)
         self.ax_histo.set_axisbelow(True)
         self.ax_histo.set_xlabel(xlabel, fontsize="small")
@@ -1279,9 +1304,18 @@ class Rocks:
         self.fig = Figure(facecolor="#E9ECED")
         self.ax = self.fig.add_subplot()
         #
-        self.ax.scatter(data_x, data_y, color=color, edgecolor="black", alpha=0.5)
+        if self.var_opt_chem.get() in ["No Selection", "Select Element/Mineral"]:
+            self.ax.scatter(data_x/1000, data_y, color=color, edgecolor="black", alpha=0.5)
+        else:
+            if self.var_opt_chem.get() in self.list_elements:
+                plot = self.ax.scatter(data_x/1000, data_y, c=self.elements[self.var_opt_chem.get()], cmap="viridis", edgecolor="black", alpha=1)
+            elif self.var_opt_chem.get() in self.list_minerals:
+                plot = self.ax.scatter(data_x/1000, data_y, c=self.minerals[self.var_opt_chem.get()], cmap="viridis", edgecolor="black", alpha=1)
+            cbar = self.fig.colorbar(plot)
+            cbar.set_label(self.var_opt_chem.get()+" (%)", rotation=90)
         self.ax.grid(True)
         self.ax.set_axisbelow(True)
+        self.ax.set_xlim(0.9*min(data_x/1000), 1.1*max(data_x/1000))
         self.ax.set_xlabel(xlabel, fontsize="small")
         self.ax.set_ylabel(ylabel, labelpad=0.5, fontsize="small")
         self.fig.subplots_adjust(bottom=0.15, left=0.22)
@@ -1425,14 +1459,24 @@ class Rocks:
         #
         ## Entry Table
         for i in range(10):
-            entr_min = SE(parent=self.parent_rock, row_id=4+2*i, column_id=4, n_rows=2, bg=self.color_bg,
-               fg=self.color_fg).create_entry(var_entr=self.entr_list_min[i], var_entr_set=round(np.min(self.results[i]), 3))
-            entr_max = SE(parent=self.parent_rock, row_id=4+2*i, column_id=5, n_rows=2, bg=self.color_bg,
-               fg=self.color_fg).create_entry(var_entr=self.entr_list_max[i], var_entr_set=round(np.max(self.results[i]), 3))
-            entr_mean = SE(parent=self.parent_rock, row_id=4+2*i, column_id=6, n_rows=2, bg=self.color_bg,
-               fg=self.color_fg).create_entry(var_entr=self.entr_list_mean[i], var_entr_set=round(np.mean(self.results[i]), 3))
-            entr_std = SE(parent=self.parent_rock, row_id=4+2*i, column_id=7, n_rows=2, bg=self.color_bg,
-               fg=self.color_fg).create_entry(var_entr=self.entr_list_std[i], var_entr_set=round(np.std(self.results[i], ddof=1), 3))
+            if i == 7:
+                entr_min = SE(parent=self.parent_rock, row_id=4+2*i, column_id=4, n_rows=2, bg=self.color_bg,
+                              fg=self.color_fg).create_entry(var_entr=self.entr_list_min[i], var_entr_set=round(np.min(self.results[i]*100), 3))
+                entr_max = SE(parent=self.parent_rock, row_id=4+2*i, column_id=5, n_rows=2, bg=self.color_bg,
+                              fg=self.color_fg).create_entry(var_entr=self.entr_list_max[i], var_entr_set=round(np.max(self.results[i]*100), 3))
+                entr_mean = SE(parent=self.parent_rock, row_id=4+2*i, column_id=6, n_rows=2, bg=self.color_bg,
+                               fg=self.color_fg).create_entry(var_entr=self.entr_list_mean[i], var_entr_set=round(np.mean(self.results[i]*100), 3))
+                entr_std = SE(parent=self.parent_rock, row_id=4+2*i, column_id=7, n_rows=2, bg=self.color_bg,
+                              fg=self.color_fg).create_entry(var_entr=self.entr_list_std[i], var_entr_set=round(np.std(self.results[i]*100, ddof=1), 3))
+            else:
+                entr_min = SE(parent=self.parent_rock, row_id=4+2*i, column_id=4, n_rows=2, bg=self.color_bg,
+                              fg=self.color_fg).create_entry(var_entr=self.entr_list_min[i], var_entr_set=round(np.min(self.results[i]), 3))
+                entr_max = SE(parent=self.parent_rock, row_id=4+2*i, column_id=5, n_rows=2, bg=self.color_bg,
+                              fg=self.color_fg).create_entry(var_entr=self.entr_list_max[i], var_entr_set=round(np.max(self.results[i]), 3))
+                entr_mean = SE(parent=self.parent_rock, row_id=4+2*i, column_id=6, n_rows=2, bg=self.color_bg,
+                               fg=self.color_fg).create_entry(var_entr=self.entr_list_mean[i], var_entr_set=round(np.mean(self.results[i]), 3))
+                entr_std = SE(parent=self.parent_rock, row_id=4+2*i, column_id=7, n_rows=2, bg=self.color_bg,
+                              fg=self.color_fg).create_entry(var_entr=self.entr_list_std[i], var_entr_set=round(np.std(self.results[i], ddof=1), 3))
         for index, element in enumerate(self.list_elements, start=10):
             if element not in ["U"]:
                 entr_min = SE(parent=self.parent_rock, row_id=15+index, column_id=4, bg=self.color_bg,
@@ -1687,6 +1731,9 @@ class Rocks:
                 self.entr_w.append(entr_mean)
                 self.entr_w.append(entr_std)
                 self.entr_chem.extend([entr_min, entr_max, entr_mean, entr_std])
+    #
+    def select_opt(self, var_opt):
+        print(var_opt.get())
     #
     def __call__(self):
         return self.lbl_w, self.entr_w

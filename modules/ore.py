@@ -51,12 +51,13 @@ class Ores:
         sphalerite = Sulfides(impurity="pure", dict=True).create_sphalerite()
         chalcocite = Sulfides(impurity="pure", dict=True).create_chalcocite()
         covellite = Sulfides(impurity="pure", dict=True).create_covellite()
+        digenite = Sulfides(impurity="pure", dict=True).create_digenite()
         illite = Pyllosilicates(impurity="pure", dict=True).create_illite()
         kaolinite = Pyllosilicates(impurity="pure", dict=True).create_kaolinite()
         montmorillonite = Pyllosilicates(impurity="pure", dict=True).create_montmorillonite()
         #
         mineralogy = [illite, kaolinite, montmorillonite, quartz, calcite, chalcopyrite, bornite, chalcocite, covellite,
-                      galena, sphalerite, pyrite]
+                      digenite, galena, sphalerite, pyrite]
         #
         water = fluids.Water.water("")
         #
@@ -74,12 +75,13 @@ class Ores:
                 w_kln = round(w_clay*rd.uniform(0, (1-w_ilt)), 4)
                 w_mnt = round(w_clay-w_ilt-w_kln, 4)
                 #
-                magicnumber = rd.randint(1, 6)
+                magicnumber = rd.randint(1, 7)
                 if magicnumber == 1:
                     w_cv = round(w_ore*rd.uniform(0.5, 1), 4)
                     w_bn = round(w_ore*rd.uniform(0, (1-w_cv)), 4)
                     w_cc = round(w_ore*rd.uniform(0, (1-w_cv-w_bn)), 4)
-                    w_ccp = round(w_ore-w_cv-w_bn-w_cc, 4)
+                    w_ccp = round(w_ore*rd.uniform(0, (1-w_cv-w_bn-w_cc)), 4)
+                    w_dg = round(w_ore-w_cv-w_bn-w_cc-w_ccp, 4)
                     #
                     w_gn = 0.0
                     w_py = 0.0
@@ -87,12 +89,14 @@ class Ores:
                 elif magicnumber == 2:
                     w_bn = round(w_ore*rd.uniform(0.5, 1), 4)
                     w_ccp = round(w_ore*rd.uniform(0, (1-w_bn)), 4)
-                    w_sp = round(w_ore-w_bn-w_ccp, 4)
+                    w_sp = round(w_ore*rd.uniform(0, (1-w_bn-w_ccp)), 4)
+                    w_dg = round(w_ore-w_bn-w_ccp-w_sp, 4)
                     #
                     w_cv = 0.0
                     w_cc = 0.0
                     w_gn = 0.0
                     w_py = 0.0
+                    w_dg = 0.0
                 elif magicnumber == 3:
                     w_cc = round(w_ore*rd.uniform(0.5, 1), 4)
                     w_gn = round(w_ore*rd.uniform(0, (1-w_cc)), 4)
@@ -102,15 +106,17 @@ class Ores:
                     w_bn = 0.0
                     w_ccp = 0.0
                     w_py = 0.0
+                    w_dg = 0.0
                 elif magicnumber == 4:
                     w_gn = round(w_ore*rd.uniform(0.5, 1), 4)
-                    w_ccp = round(w_ore*rd.uniform(0, (1-w_gn)), 4)
+                    w_ccp = round(w_ore*rd.uniform(0.05, (1-w_gn)), 4)
                     w_py = round(w_ore*rd.uniform(0, (1-w_gn-w_ccp)), 4)
                     w_sp = round(w_ore-w_gn-w_ccp-w_py, 4)
                     #
                     w_cv = 0.0
                     w_bn = 0.0
                     w_cc = 0.0
+                    w_dg = 0.0
                 elif magicnumber == 5:
                     w_py = round(w_ore*rd.uniform(0.5, 1), 4)
                     w_gn = round(w_ore*rd.uniform(0, (1-w_py)), 4)
@@ -120,18 +126,30 @@ class Ores:
                     w_cv = 0.0
                     w_bn = 0.0
                     w_cc = 0.0
+                    w_dg = 0.0
                 elif magicnumber == 6:
                     w_sp = round(w_ore*rd.uniform(0.5, 1), 4)
-                    w_ccp = round(w_ore*rd.uniform(0, (1-w_sp)), 4)
+                    w_ccp = round(w_ore*rd.uniform(0.05, (1-w_sp)), 4)
                     w_gn = round(w_ore*rd.uniform(0, (1-w_sp-w_ccp)), 4)
                     w_py = round(w_ore-w_sp-w_ccp-w_gn, 4)
                     #
                     w_cv = 0.0
                     w_bn = 0.0
                     w_cc = 0.0
+                    w_dg = 0.0
+                elif magicnumber == 7:
+                    w_dg = round(w_ore*rd.uniform(0.5, 1), 4)
+                    w_cv = round(w_ore*rd.uniform(0, (1-w_dg)), 4)
+                    w_bn = round(w_ore*rd.uniform(0, (1-w_dg-w_cv)), 4)
+                    w_cc = round(w_ore*rd.uniform(0, (1-w_dg-w_cv-w_bn)), 4)
+                    w_ccp = round(w_ore-w_dg-w_cv-w_bn-w_cc, 4)
+                    #
+                    w_gn = 0.0
+                    w_py = 0.0
+                    w_sp = 0.0
                 #
                 w_qz = round(w_misc*rd.uniform(0, 1), 4)
-                w_cal = 1 - w_clay - w_ore - w_qz
+                w_cal = round(1 - w_clay - w_ore - w_qz, 4)
             elif self.w_Cu != None:
                 w_clay = round(rd.uniform(0.33, 0.67), 4)
                 w_ore = round(rd.uniform(0.33, (1-w_clay)), 4)
@@ -147,7 +165,8 @@ class Ores:
                 w_ccp = round(w_ore*rd.uniform(0, (1-w_cv-w_bn-w_cc)), 4)
                 w_gn = round(w_ore*rd.uniform(0, (1-w_cv-w_bn-w_cc-w_ccp)), 4)
                 w_py = round(w_ore*rd.uniform(0, (1-w_cv-w_bn-w_cc-w_ccp-w_gn)), 4)
-                w_sp = round(w_ore-w_cv-w_bn-w_cc-w_ccp-w_gn-w_py, 4)
+                w_dg = round(w_ore*rd.uniform(0, (1-w_cv-w_bn-w_cc-w_ccp-w_gn-w_py)), 4)
+                w_sp = round(w_ore-w_cv-w_bn-w_cc-w_ccp-w_gn-w_py-w_dg, 4)
                 #
                 w_qz = round(w_misc*rd.uniform(0, 1), 4)
                 w_cal = 1 - w_clay - w_ore - w_qz
@@ -158,8 +177,9 @@ class Ores:
                 w_syl = round(1-w_hl-w_anh-w_gp, 4)
             #
             if w_ilt >= 0.0 and w_kln >= 0.0 and w_mnt >= 0.0 and w_cv >= 0.0 and w_bn >= 0.0 and w_cc >= 0.0 \
-                    and w_ccp >= 0.0 and w_gn >= 0.0 and w_py >= 0.0 and w_sp >= 0.0 and w_qz >= 0.0 and w_cal >= 0.0:
-                sumMin = round(w_ilt + w_kln + w_mnt + w_cv + w_bn + w_cc + w_ccp + w_gn + w_py + w_sp + w_qz + w_cal, 4)
+                    and w_ccp >= 0.0 and w_gn >= 0.0 and w_py >= 0.0 and w_dg >= 0.0 and w_sp >= 0.0 and w_qz >= 0.0 \
+                    and w_cal >= 0.0:
+                sumMin = round(w_ilt + w_kln + w_mnt + w_cv + w_bn + w_cc + w_ccp + w_gn + w_py + w_dg + w_sp + w_qz + w_cal, 4)
             else:
                 sumMin = 0
             #
@@ -169,11 +189,11 @@ class Ores:
             w_Mg = round(w_ilt*illite["chemistry"]["Mg"] + w_mnt*montmorillonite["chemistry"]["Mg"], 4)
             w_Al = round(w_ilt*illite["chemistry"]["Al"] + w_kln*kaolinite["chemistry"]["Al"] + w_mnt*montmorillonite["chemistry"]["Al"], 4)
             w_Si = round(w_ilt*illite["chemistry"]["Si"] + w_kln*kaolinite["chemistry"]["Si"] + w_mnt*montmorillonite["chemistry"]["Si"] + w_qz*quartz["chemistry"]["Si"], 4)
-            w_S = round(w_cv*covellite["chemistry"]["S"] + w_bn*bornite["chemistry"]["S"] + w_cc*chalcocite["chemistry"]["S"] + w_ccp*chalcopyrite["chemistry"]["S"] + w_gn*galena["chemistry"]["S"] + w_py*pyrite["chemistry"]["S"] + w_sp*sphalerite["chemistry"]["S"], 4)
+            w_S = round(w_cv*covellite["chemistry"]["S"] + w_bn*bornite["chemistry"]["S"] + w_cc*chalcocite["chemistry"]["S"] + w_ccp*chalcopyrite["chemistry"]["S"] + w_gn*galena["chemistry"]["S"] + w_py*pyrite["chemistry"]["S"] + w_sp*sphalerite["chemistry"]["S"] + w_dg*digenite["chemistry"]["S"], 4)
             w_K = round(w_ilt*illite["chemistry"]["K"], 4)
             w_Ca = round(w_mnt*montmorillonite["chemistry"]["Ca"] + w_cal*calcite["chemistry"]["Ca"], 4)
             w_Fe = round(w_ilt*illite["chemistry"]["Fe"] + w_bn*bornite["chemistry"]["Fe"] + w_ccp*chalcopyrite["chemistry"]["Fe"] + w_py*pyrite["chemistry"]["Fe"], 4)
-            w_Cu = round(w_cv*covellite["chemistry"]["Cu"] + w_bn*bornite["chemistry"]["Cu"] + w_cc*chalcocite["chemistry"]["Cu"] + w_ccp*chalcopyrite["chemistry"]["Cu"], 4)
+            w_Cu = round(w_cv*covellite["chemistry"]["Cu"] + w_bn*bornite["chemistry"]["Cu"] + w_cc*chalcocite["chemistry"]["Cu"] + w_ccp*chalcopyrite["chemistry"]["Cu"] + w_dg*digenite["chemistry"]["Cu"], 4)
             w_Zn = round(w_sp*sphalerite["chemistry"]["Zn"], 4)
             w_Pb = round(w_gn*galena["chemistry"]["Pb"], 4)
             w_O = round(1 - w_H - w_C - w_Na - w_Mg - w_Al - w_Si - w_S - w_K - w_Ca - w_Fe - w_Cu - w_Zn - w_Pb, 4)
@@ -182,14 +202,14 @@ class Ores:
             #
             if sumMin == 1 and sumConc == 1:
                 cond = True
-                composition.extend((["Ilt", "Kln", "Mnt", "Qz", "Cal", "Ccp", "Bn", "Cc", "Cv", "Gn", "Sp", "Py"]))
+                composition.extend((["Ilt", "Kln", "Mnt", "Qz", "Cal", "Ccp", "Bn", "Cc", "Cv", "Dg", "Gn", "Sp", "Py"]))
                 concentrations = [w_H, w_C, w_O, w_Na, w_Mg, w_Al, w_Si, w_S, w_K, w_Ca, w_Fe, w_Cu, w_Zn, w_Pb]
-                amounts = [w_ilt, w_kln, w_mnt, w_qz, w_cal, w_ccp, w_bn, w_cc, w_cv, w_gn, w_sp, w_py]
+                amounts = [w_ilt, w_kln, w_mnt, w_qz, w_cal, w_ccp, w_bn, w_cc, w_cv, w_dg, w_gn, w_sp, w_py]
             else:
                 cond = False
         #
         element_list = ["H", "C", "O", "Na", "Mg", "Al", "Si", "S", "K", "Ca", "Fe", "Cu", "Zn", "Pb"]
-        mineral_list = ["Ilt", "Kln", "Mnt", "Qz", "Cal", "Ccp", "Bn", "Cc", "Cv", "Gn", "Sp", "Py"]
+        mineral_list = ["Ilt", "Kln", "Mnt", "Qz", "Cal", "Ccp", "Bn", "Cc", "Cv", "Dg", "Gn", "Sp", "Py"]
         data.append(composition)
         results["chemistry"] = {}
         results["mineralogy"] = {}
@@ -200,8 +220,9 @@ class Ores:
         #
         rhoSolid = (w_ilt*illite["rho"] + w_kln*kaolinite["rho"] + w_mnt*montmorillonite["rho"] + w_qz*quartz["rho"]
                     + w_cal*calcite["rho"] + w_ccp*chalcopyrite["rho"] + w_bn*bornite["rho"] + w_cc*chalcocite["rho"]
-                    + w_cv*covellite["rho"] + w_gn*galena["rho"] + w_sp*sphalerite["rho"] + w_py*pyrite["rho"]) / 1000
-        X = [w_ilt, w_kln, w_mnt, w_qz, w_cal, w_ccp, w_bn, w_cc, w_cv, w_gn, w_sp, w_py]
+                    + w_cv*covellite["rho"] + w_dg*digenite["rho"] + w_gn*galena["rho"] + w_sp*sphalerite["rho"]
+                    + w_py*pyrite["rho"]) / 1000
+        X = [w_ilt, w_kln, w_mnt, w_qz, w_cal, w_ccp, w_bn, w_cc, w_cv, w_dg, w_gn, w_sp, w_py]
         K_list = [mineralogy[i]["K"] for i in range(len(mineralogy))]
         G_list = [mineralogy[i]["G"] for i in range(len(mineralogy))]
         K_geo = elast.calc_geometric_mean(self, X, K_list)
@@ -238,15 +259,15 @@ class Ores:
         phiN = (2 * phi ** 2 - phiD ** 2) ** (0.5)
         GR = w_ilt*illite["GR"] + w_kln*kaolinite["GR"] + w_mnt*montmorillonite["GR"] + w_qz*quartz["GR"] \
              + w_cal*calcite["GR"] + w_ccp*chalcopyrite["GR"] + w_bn*bornite["GR"] + w_cc*chalcocite["GR"] \
-             + w_cv*covellite["GR"] + w_gn*galena["GR"] + w_sp*sphalerite["GR"] + w_py*pyrite["GR"]
+             + w_cv*covellite["GR"] + w_dg*digenite["GR"] + w_gn*galena["GR"] + w_sp*sphalerite["GR"] + w_py*pyrite["GR"]
         PE = w_ilt*illite["PE"] + w_kln*kaolinite["PE"] + w_mnt*montmorillonite["PE"] + w_qz*quartz["PE"] \
              + w_cal*calcite["PE"] + w_ccp*chalcopyrite["PE"] + w_bn*bornite["PE"] + w_cc*chalcocite["PE"] \
-             + w_cv*covellite["PE"] + w_gn*galena["PE"] + w_sp*sphalerite["PE"] + w_py*pyrite["PE"]
+             + w_cv*covellite["PE"] + w_dg*digenite["PE"] + w_gn*galena["PE"] + w_sp*sphalerite["PE"] + w_py*pyrite["PE"]
         poisson_seismic = 0.5*(vP**2 - 2*vS**2)/(vP**2 - vS**2)
         poisson_elastic = (3*K_bulk - 2*G_bulk)/(6*K_bulk + 2*G_bulk)
         poisson_mineralogical = w_ilt*illite["nu"] + w_kln*kaolinite["nu"] + w_mnt*montmorillonite["nu"] + w_qz*quartz["nu"] \
                                 + w_cal*calcite["nu"] + w_ccp*chalcopyrite["nu"] + w_bn*bornite["nu"] + w_cc*chalcocite["nu"] \
-                                + w_cv*covellite["nu"] + w_gn*galena["nu"] + w_sp*sphalerite["nu"] + w_py*pyrite["nu"]
+                                + w_cv*covellite["nu"] + w_dg*digenite["nu"] + w_gn*galena["nu"] + w_sp*sphalerite["nu"] + w_py*pyrite["nu"]
         #
         if self.data_type == False:
             #
