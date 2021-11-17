@@ -28,6 +28,7 @@ from modules.evaporites import Evaporites
 from modules.sequences import DataProcessing as DP
 import numpy as np
 import random as rd
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
@@ -1160,7 +1161,8 @@ class Rocks:
         opt_list_chem.extend(self.list_minerals)
         self.opt_chem = SE(parent=self.parent_rock, row_id=35, column_id=0, n_rows=1, n_columns=2, bg=self.color_acc_01,
                            fg="black").create_option_menu(var_opt=self.var_opt_chem, var_opt_set="Select Element/Mineral",
-                                                          opt_list=opt_list_chem, active_bg=self.color_acc_02)
+                                                          opt_list=opt_list_chem, active_bg=self.color_acc_02,
+                                                          command=lambda var_opt=self.var_opt_chem: self.select_opt(var_opt))
         #
         self.entr_list_min = []
         self.entr_list_max = []
@@ -1280,14 +1282,20 @@ class Rocks:
         self.ax_histo = self.fig_histo.add_subplot()
         #
         self.ax_histo.axvline(x=np.mean(data), color="#E76F51", linewidth=3, linestyle="dashed")
-        if self.var_opt_chem.get() in ["No Selection", "Select Element/Mineral"]:
-            self.ax_histo.hist(data, bins=15, color=color, edgecolor="black")
-        else:
-            if self.var_opt_chem.get() in self.list_elements:
-                n, bins, patches = self.ax_histo.hist(data, bins=15, color=color, edgecolor="black")
-                for i, p in enumerate(patches):
-                    cm = plt.cm.get_cmap("viridis")
-                    plt.setp(p, 'facecolor', cm(i/25))
+        self.ax_histo.hist(data, bins=15, color=color, edgecolor="black")
+        # if self.var_opt_chem.get() in ["No Selection", "Select Element/Mineral"]:
+        #     self.ax_histo.hist(data, bins=15, color=color, edgecolor="black")
+        # else:
+        #     if self.var_opt_chem.get() in self.list_elements:
+        #         n, bins, patches = self.ax_histo.hist(data, bins=15, color=color, edgecolor="black")
+        #         for i, p in enumerate(patches):
+        #             cm = plt.cm.get_cmap("viridis")
+        #             plt.setp(p, 'facecolor', cm(i/25))
+        #     elif self.var_opt_chem.get() in self.list_minerals:
+        #         n, bins, patches = self.ax_histo.hist(data, bins=15, color=color, edgecolor="black")
+        #         for i, p in enumerate(patches):
+        #             cm = plt.cm.get_cmap("viridis")
+        #             plt.setp(p, 'facecolor', cm(i/25))
         self.ax_histo.grid(True)
         self.ax_histo.set_axisbelow(True)
         self.ax_histo.set_xlabel(xlabel, fontsize="small")
@@ -1308,9 +1316,11 @@ class Rocks:
             self.ax.scatter(data_x/1000, data_y, color=color, edgecolor="black", alpha=0.5)
         else:
             if self.var_opt_chem.get() in self.list_elements:
-                plot = self.ax.scatter(data_x/1000, data_y, c=self.elements[self.var_opt_chem.get()], cmap="viridis", edgecolor="black", alpha=1)
+                plot = self.ax.scatter(data_x/1000, data_y, c=self.elements[self.var_opt_chem.get()], cmap="viridis",
+                                       edgecolor="black", alpha=1)
             elif self.var_opt_chem.get() in self.list_minerals:
-                plot = self.ax.scatter(data_x/1000, data_y, c=self.minerals[self.var_opt_chem.get()], cmap="viridis", edgecolor="black", alpha=1)
+                plot = self.ax.scatter(data_x/1000, data_y, c=self.minerals[self.var_opt_chem.get()], cmap="viridis",
+                                       edgecolor="black", alpha=1)
             cbar = self.fig.colorbar(plot)
             cbar.set_label(self.var_opt_chem.get()+" (%)", rotation=90)
         self.ax.grid(True)
@@ -1733,7 +1743,49 @@ class Rocks:
                 self.entr_chem.extend([entr_min, entr_max, entr_mean, entr_std])
     #
     def select_opt(self, var_opt):
-        print(var_opt.get())
+        try:
+            self.fig_histo.clf()
+            self.ax_histo.cla()
+            self.canvas_histo.get_tk_widget().pack_forget()
+        except AttributeError:
+            pass
+
+        try:
+            if self.canvas_histo:
+                self.canvas_histo.destroy()
+        except AttributeError:
+            pass
+        #
+        self.var_rb.set(1)
+        #
+        self.create_scatter_plot(parent=self.parent_rock, data_x=self.rho, data_y=self.vP, row_id=2,
+                                 column_id=9, n_rows=15, n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)",
+                                 ylabel="Seismic velocity $v_P$ (m/s)", color=self.color_rock)
+        self.create_scatter_plot(parent=self.parent_rock, data_x=self.rho, data_y=self.vS, row_id=2,
+                                 column_id=12, n_rows=15, n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)",
+                                 ylabel="Seismic velocity $v_S$ (m/s)", color=self.color_rock)
+        self.create_scatter_plot(parent=self.parent_rock, data_x=self.rho, data_y=self.vP/self.vS, row_id=2,
+                                 column_id=15, n_rows=15, n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)",
+                                 ylabel="Velocity ratio $v_P/v_S$ (1)", color=self.color_rock)
+        self.create_scatter_plot(parent=self.parent_rock, data_x=self.rho, data_y=self.bulk_mod, row_id=17,
+                                 column_id=9, n_rows=15, n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)",
+                                 ylabel="Bulk modulus $K$ (GPa)", color=self.color_rock)
+        self.create_scatter_plot(parent=self.parent_rock, data_x=self.rho, data_y=self.shear_mod, row_id=17,
+                                 column_id=12, n_rows=15, n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)",
+                                 ylabel="Shear modulus $G$ (GPa)", color=self.color_rock)
+        self.create_scatter_plot(parent=self.parent_rock, data_x=self.rho, data_y=self.poisson, row_id=17,
+                                 column_id=15, n_rows=15, n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)",
+                                 ylabel="Poisson's ratio $\\mu$ (1)", color=self.color_rock)
+        self.create_scatter_plot(parent=self.parent_rock, data_x=self.rho, data_y=self.phi*100, row_id=32,
+                                 column_id=9, n_rows=15, n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)",
+                                 ylabel="Porosity $\\phi$ (%)", color=self.color_rock)
+        self.create_scatter_plot(parent=self.parent_rock, data_x=self.rho, data_y=self.gamma_ray, row_id=32,
+                                 column_id=12, n_rows=15, n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)",
+                                 ylabel="Gamma ray GR (API)", color=self.color_rock)
+        self.create_scatter_plot(parent=self.parent_rock, data_x=self.rho, data_y=self.photoelectricity,
+                                 row_id=32, column_id=15, n_rows=15, n_columns=3,
+                                 xlabel="Densitiy $\\varrho$ (g/ccm)",
+                                 ylabel="Photoelectricity PE (barns/electron)", color=self.color_rock)
     #
     def __call__(self):
         return self.lbl_w, self.entr_w
