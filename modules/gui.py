@@ -1843,43 +1843,108 @@ class Subsurface:
             # for item in data:
             #     print(item)
         #
+        ## Labels
+        lbl_01 = SE(parent=self.parent_subsurface, row_id=4, column_id=3, n_rows=2, bg=self.color_bg,
+           fg="black").create_label(text="Density\n (g/ccm)", relief=tk.RAISED)
+        lbl_02 = SE(parent=self.parent_subsurface, row_id=6, column_id=3, n_rows=2, bg=self.color_bg,
+           fg="black").create_label(text="P-wave velocity\n (km/s)", relief=tk.RAISED)
+        lbl_03 = SE(parent=self.parent_subsurface, row_id=8, column_id=3, n_rows=2, bg=self.color_bg,
+           fg="black").create_label(text="S-wave velocity\n (km/s)", relief=tk.RAISED)
+        lbl_04 = SE(parent=self.parent_subsurface, row_id=10, column_id=3, n_rows=2, bg=self.color_bg,
+           fg="black").create_label(text="Velocity ratio\n (1)", relief=tk.RAISED)
+        lbl_05 = SE(parent=self.parent_subsurface, row_id=12, column_id=3, n_rows=2, bg=self.color_bg,
+           fg="black").create_label(text="Bulk modulus\n (GPa)", relief=tk.RAISED)
+        lbl_06 = SE(parent=self.parent_subsurface, row_id=14, column_id=3, n_rows=2, bg=self.color_bg,
+           fg="black").create_label(text="Shear modulus\n (GPa)", relief=tk.RAISED)
+        lbl_07 = SE(parent=self.parent_subsurface, row_id=16, column_id=3, n_rows=2, bg=self.color_bg,
+           fg="black").create_label(text="Poisson's ratio\n (1)", relief=tk.RAISED)
+        lbl_08 = SE(parent=self.parent_subsurface, row_id=18, column_id=3, n_rows=2, bg=self.color_bg,
+           fg="black").create_label(text="Porosity\n (%)", relief=tk.RAISED)
+        lbl_09 = SE(parent=self.parent_subsurface, row_id=20, column_id=3, n_rows=2, bg=self.color_bg,
+           fg="black").create_label(text="Gamma ray\n (API)", relief=tk.RAISED)
+        lbl_10 = SE(parent=self.parent_subsurface, row_id=22, column_id=3, n_rows=2, bg=self.color_bg,
+           fg="black").create_label(text="Photoelectricity\n (barns/electron)", relief=tk.RAISED)
+        #
+        self.lbl_w.extend([lbl_01, lbl_02, lbl_03, lbl_04, lbl_05, lbl_06, lbl_07, lbl_08, lbl_09, lbl_10])
+        #
     def create_random_sequences(self, thickness, style):
         #
+        self.var_rb_stat = tk.IntVar()
+        var_rb_stat_start = 0
+        self.var_rb_geochem = tk.IntVar()
+        var_rb_geochem_start = 3
+        self.var_rb_lith = tk.IntVar()
+        var_rb_lith_start = 5
+        self.current_rb_lith = tk.IntVar()
+        #
         results_subsurface = {}
+        self.results_sorted = {}
+        properties = ["thickness", "rock", "rho", "vP", "vS", "phi", "K", "G", "GR", "PE", "Top", "Bottom"]
+        for prop in properties:
+            self.results_sorted[prop] = []
         #
         if style == "siliciclastic":
-            rocks = ["sandstone", "shale"]
-            basement = ["granite", "gabbro", "diorite"]
+            rocks = ["Sandstone", "Shale"]
+            basement = ["Granite", "Gabbro", "Diorite"]
             list_rocks = []
+            self.list_rocks_short = []
             #
             n_units = rd.randint(10, 20)
             for i in range(n_units):
                 if len(list_rocks) < n_units - 1:
                     magicnumber = rd.randint(0, len(rocks)-1)
                     list_rocks.append(rocks[magicnumber])
+                    if rocks[magicnumber] not in self.list_rocks_short:
+                        self.list_rocks_short.append(rocks[magicnumber])
                 else:
                     magicnumber = rd.randint(0, len(basement)-1)
                     list_rocks.append(basement[magicnumber])
+                    if basement[magicnumber] not in self.list_rocks_short:
+                        self.list_rocks_short.append(basement[magicnumber])
             list_thickness = self.split_thickness(thickness=thickness, n_units=n_units)
             #
             for index, rock in enumerate(list_rocks, start=0):
                 results_subsurface[index] = {}
-                if rock == "sandstone":
+                if rock == "Sandstone":
                     if index == 0:
                         thickness_unit = self.split_thickness(thickness=list_thickness[index], n_units=10)
                         for i, d in enumerate(thickness_unit, start=0):
                             if i == 0:
                                 results_subsurface[index][i] = sandstone(fluid="water", actualThickness=0).create_simple_sandstone(dict_output=True, porosity=rd.uniform(0.05, 0.3))
                                 results_subsurface[index][i]["thickness"] = d
+                                self.results_sorted["Top"].append(0)
+                                self.results_sorted["thickness"].append(d)
+                                self.results_sorted["Bottom"].append(d)
+                                self.results_sorted["rock"].append(results_subsurface[index][i]["rock"])
+                                self.results_sorted["rho"].append(results_subsurface[index][i]["rho"])
+                                self.results_sorted["vP"].append(results_subsurface[index][i]["vP"])
+                                self.results_sorted["vS"].append(results_subsurface[index][i]["vS"])
+                                self.results_sorted["phi"].append(results_subsurface[index][i]["phi"])
+                                self.results_sorted["K"].append(results_subsurface[index][i]["K"])
+                                self.results_sorted["G"].append(results_subsurface[index][i]["G"])
+                                self.results_sorted["GR"].append(results_subsurface[index][i]["GR"])
+                                self.results_sorted["PE"].append(results_subsurface[index][i]["PE"])
                             else:
                                 results_subsurface[index][i] = sandstone(fluid="water", actualThickness=0).create_simple_sandstone(dict_output=True, porosity=rd.uniform(0.05, 0.3),
                                                                                                                                    amounts=results_subsurface[index][i-1]["mineralogy"])
                                 results_subsurface[index][i]["thickness"] = d
+                                self.results_sorted["Top"].append(self.results_sorted["Bottom"][-1])
+                                self.results_sorted["thickness"].append(d)
+                                self.results_sorted["Bottom"].append(int(self.results_sorted["Bottom"][-1] + d))
+                                self.results_sorted["rock"].append(results_subsurface[index][i]["rock"])
+                                self.results_sorted["rho"].append(results_subsurface[index][i]["rho"])
+                                self.results_sorted["vP"].append(results_subsurface[index][i]["vP"])
+                                self.results_sorted["vS"].append(results_subsurface[index][i]["vS"])
+                                self.results_sorted["phi"].append(results_subsurface[index][i]["phi"])
+                                self.results_sorted["K"].append(results_subsurface[index][i]["K"])
+                                self.results_sorted["G"].append(results_subsurface[index][i]["G"])
+                                self.results_sorted["GR"].append(results_subsurface[index][i]["GR"])
+                                self.results_sorted["PE"].append(results_subsurface[index][i]["PE"])
                     else:
                         thickness_unit = self.split_thickness(thickness=list_thickness[index], n_units=10)
                         for i, d in enumerate(thickness_unit, start=0):
                             if i == 0:
-                                if list_rocks[index-1] == "shale":
+                                if list_rocks[index-1] == "Shale":
                                     magicnumber = rd.randint(0, 2)
                                     if magicnumber == 0:
                                         results_subsurface[index][i] = sandstone(fluid="gas", actualThickness=0).create_simple_sandstone(dict_output=True, porosity=rd.uniform(0.05, 0.3))
@@ -1887,16 +1952,28 @@ class Subsurface:
                                         results_subsurface[index][i] = sandstone(fluid="oil", actualThickness=0).create_simple_sandstone(dict_output=True, porosity=rd.uniform(0.05, 0.3))
                                     elif magicnumber == 2:
                                         results_subsurface[index][i] = sandstone(fluid="water", actualThickness=0).create_simple_sandstone(dict_output=True, porosity=rd.uniform(0.05, 0.3))
-                                elif list_rocks[index-1] == "sandstone" and results_subsurface[index-1][i]["fluid"] == "gas":
+                                elif list_rocks[index-1] == "Sandstone" and results_subsurface[index-1][i]["fluid"] == "gas":
                                     results_subsurface[index][i] = sandstone(fluid="oil", actualThickness=0).create_simple_sandstone(dict_output=True, porosity=rd.uniform(0.05, 0.3))
-                                elif list_rocks[index-1] == "sandstone" and results_subsurface[index-1][i]["fluid"] == "oil":
+                                elif list_rocks[index-1] == "Sandstone" and results_subsurface[index-1][i]["fluid"] == "oil":
                                     results_subsurface[index][i] = sandstone(fluid="water", actualThickness=0).create_simple_sandstone(dict_output=True, porosity=rd.uniform(0.05, 0.3))
                                 else:
                                     results_subsurface[index][i] = sandstone(fluid="water", actualThickness=0).create_simple_sandstone(dict_output=True, porosity=rd.uniform(0.05, 0.3))
                                 #
                                 results_subsurface[index][i]["thickness"] = d
+                                self.results_sorted["Top"].append(self.results_sorted["Bottom"][-1])
+                                self.results_sorted["thickness"].append(d)
+                                self.results_sorted["Bottom"].append(int(self.results_sorted["Bottom"][-1] + d))
+                                self.results_sorted["rock"].append(results_subsurface[index][i]["rock"])
+                                self.results_sorted["rho"].append(results_subsurface[index][i]["rho"])
+                                self.results_sorted["vP"].append(results_subsurface[index][i]["vP"])
+                                self.results_sorted["vS"].append(results_subsurface[index][i]["vS"])
+                                self.results_sorted["phi"].append(results_subsurface[index][i]["phi"])
+                                self.results_sorted["K"].append(results_subsurface[index][i]["K"])
+                                self.results_sorted["G"].append(results_subsurface[index][i]["G"])
+                                self.results_sorted["GR"].append(results_subsurface[index][i]["GR"])
+                                self.results_sorted["PE"].append(results_subsurface[index][i]["PE"])
                             else:
-                                if list_rocks[index-1] == "shale":
+                                if list_rocks[index-1] == "Shale":
                                     magicnumber = rd.randint(0, 2)
                                     if magicnumber == 0:
                                         results_subsurface[index][i] = sandstone(fluid="gas", actualThickness=0).create_simple_sandstone(dict_output=True, porosity=rd.uniform(0.05, 0.3),
@@ -1907,10 +1984,10 @@ class Subsurface:
                                     if magicnumber == 2:
                                         results_subsurface[index][i] = sandstone(fluid="water", actualThickness=0).create_simple_sandstone(dict_output=True, porosity=rd.uniform(0.05, 0.3),
                                                                                                                                            amounts=results_subsurface[index][i-1]["mineralogy"])
-                                elif list_rocks[index-1] == "sandstone" and results_subsurface[index-1][i]["fluid"] == "gas":
+                                elif list_rocks[index-1] == "Sandstone" and results_subsurface[index-1][i]["fluid"] == "gas":
                                     results_subsurface[index][i] = sandstone(fluid="oil", actualThickness=0).create_simple_sandstone(dict_output=True, porosity=rd.uniform(0.05, 0.3),
                                                                                                                                      amounts=results_subsurface[index][i-1]["mineralogy"])
-                                elif list_rocks[index-1] == "sandstone" and results_subsurface[index-1][i]["fluid"] == "oil":
+                                elif list_rocks[index-1] == "Sandstone" and results_subsurface[index-1][i]["fluid"] == "oil":
                                     results_subsurface[index][i] = sandstone(fluid="water", actualThickness=0).create_simple_sandstone(dict_output=True, porosity=rd.uniform(0.05, 0.3),
                                                                                                                                        amounts=results_subsurface[index][i-1]["mineralogy"])
                                 else:
@@ -1918,49 +1995,918 @@ class Subsurface:
                                                                                                                                        amounts=results_subsurface[index][i-1]["mineralogy"])
                                 #
                                 results_subsurface[index][i]["thickness"] = d
+                                self.results_sorted["Top"].append(self.results_sorted["Bottom"][-1])
+                                self.results_sorted["thickness"].append(d)
+                                self.results_sorted["Bottom"].append(int(self.results_sorted["Bottom"][-1] + d))
+                                self.results_sorted["rock"].append(results_subsurface[index][i]["rock"])
+                                self.results_sorted["rho"].append(results_subsurface[index][i]["rho"])
+                                self.results_sorted["vP"].append(results_subsurface[index][i]["vP"])
+                                self.results_sorted["vS"].append(results_subsurface[index][i]["vS"])
+                                self.results_sorted["phi"].append(results_subsurface[index][i]["phi"])
+                                self.results_sorted["K"].append(results_subsurface[index][i]["K"])
+                                self.results_sorted["G"].append(results_subsurface[index][i]["G"])
+                                self.results_sorted["GR"].append(results_subsurface[index][i]["GR"])
+                                self.results_sorted["PE"].append(results_subsurface[index][i]["PE"])
                 #
-                elif rock == "shale":
-                    thickness_unit = self.split_thickness(thickness=list_thickness[index], n_units=10)
-                    for i, d in enumerate(thickness_unit, start=0):
-                        if i == 0:
-                            results_subsurface[index][i] = shale(fluid="water").create_simple_shale(dict_output=True, porosity=rd.uniform(0, 0.1))
-                        else:
-                            results_subsurface[index][i] = shale(fluid="water").create_simple_shale(dict_output=True, porosity=rd.uniform(0, 0.1), amounts=results_subsurface[index][i-1]["mineralogy"])
+                elif rock == "Shale":
+                    if index == 0:
+                        thickness_unit = self.split_thickness(thickness=list_thickness[index], n_units=10)
+                        for i, d in enumerate(thickness_unit, start=0):
+                            if i == 0:
+                                results_subsurface[index][i] = shale(fluid="water").create_simple_shale(dict_output=True, porosity=rd.uniform(0, 0.1))
+                                self.results_sorted["Top"].append(0)
+                                self.results_sorted["thickness"].append(d)
+                                self.results_sorted["Bottom"].append(d)
+                                self.results_sorted["rock"].append(results_subsurface[index][i]["rock"])
+                                self.results_sorted["rho"].append(results_subsurface[index][i]["rho"])
+                                self.results_sorted["vP"].append(results_subsurface[index][i]["vP"])
+                                self.results_sorted["vS"].append(results_subsurface[index][i]["vS"])
+                                self.results_sorted["phi"].append(results_subsurface[index][i]["phi"])
+                                self.results_sorted["K"].append(results_subsurface[index][i]["K"])
+                                self.results_sorted["G"].append(results_subsurface[index][i]["G"])
+                                self.results_sorted["GR"].append(results_subsurface[index][i]["GR"])
+                                self.results_sorted["PE"].append(results_subsurface[index][i]["PE"])
+                            else:
+                                results_subsurface[index][i] = shale(fluid="water").create_simple_shale(dict_output=True, porosity=rd.uniform(0, 0.1), amounts=results_subsurface[index][i-1]["mineralogy"])
+                                self.results_sorted["Top"].append(self.results_sorted["Bottom"][-1])
+                                self.results_sorted["thickness"].append(d)
+                                self.results_sorted["Bottom"].append(int(self.results_sorted["Bottom"][-1] + d))
+                                self.results_sorted["rock"].append(results_subsurface[index][i]["rock"])
+                                self.results_sorted["rho"].append(results_subsurface[index][i]["rho"])
+                                self.results_sorted["vP"].append(results_subsurface[index][i]["vP"])
+                                self.results_sorted["vS"].append(results_subsurface[index][i]["vS"])
+                                self.results_sorted["phi"].append(results_subsurface[index][i]["phi"])
+                                self.results_sorted["K"].append(results_subsurface[index][i]["K"])
+                                self.results_sorted["G"].append(results_subsurface[index][i]["G"])
+                                self.results_sorted["GR"].append(results_subsurface[index][i]["GR"])
+                                self.results_sorted["PE"].append(results_subsurface[index][i]["PE"])
+                    else:
+                        thickness_unit = self.split_thickness(thickness=list_thickness[index], n_units=10)
+                        for i, d in enumerate(thickness_unit, start=0):
+                            if i == 0:
+                                results_subsurface[index][i] = shale(fluid="water").create_simple_shale(dict_output=True, porosity=rd.uniform(0, 0.1))
+                            else:
+                                results_subsurface[index][i] = shale(fluid="water").create_simple_shale(dict_output=True, porosity=rd.uniform(0, 0.1), amounts=results_subsurface[index][i-1]["mineralogy"])
+                            #
+                            self.results_sorted["Top"].append(self.results_sorted["Bottom"][-1])
+                            self.results_sorted["thickness"].append(d)
+                            self.results_sorted["Bottom"].append(int(self.results_sorted["Bottom"][-1] + d))
+                            self.results_sorted["rock"].append(results_subsurface[index][i]["rock"])
+                            self.results_sorted["rho"].append(results_subsurface[index][i]["rho"])
+                            self.results_sorted["vP"].append(results_subsurface[index][i]["vP"])
+                            self.results_sorted["vS"].append(results_subsurface[index][i]["vS"])
+                            self.results_sorted["phi"].append(results_subsurface[index][i]["phi"])
+                            self.results_sorted["K"].append(results_subsurface[index][i]["K"])
+                            self.results_sorted["G"].append(results_subsurface[index][i]["G"])
+                            self.results_sorted["GR"].append(results_subsurface[index][i]["GR"])
+                            self.results_sorted["PE"].append(results_subsurface[index][i]["PE"])
                 #
-                elif rock == "granite":
+                elif rock == "Granite":
                     thickness_unit = self.split_thickness(thickness=list_thickness[index], n_units=10)
                     for i, d in enumerate(thickness_unit, start=0):
                         if i == 0:
                             results_subsurface[index][i] = Plutonic(fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(0, 0.05)).create_simple_granite()
                         else:
                             results_subsurface[index][i] = Plutonic(fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(0, 0.05)).create_simple_granite(amounts=results_subsurface[index][i-1]["mineralogy"])
-                elif rock == "gabbro":
+                        #
+                        self.results_sorted["Top"].append(self.results_sorted["Bottom"][-1])
+                        self.results_sorted["thickness"].append(d)
+                        self.results_sorted["Bottom"].append(int(self.results_sorted["Bottom"][-1] + d))
+                        self.results_sorted["rock"].append(results_subsurface[index][i]["rock"])
+                        self.results_sorted["rho"].append(results_subsurface[index][i]["rho"])
+                        self.results_sorted["vP"].append(results_subsurface[index][i]["vP"])
+                        self.results_sorted["vS"].append(results_subsurface[index][i]["vS"])
+                        self.results_sorted["phi"].append(results_subsurface[index][i]["phi"])
+                        self.results_sorted["K"].append(results_subsurface[index][i]["K"])
+                        self.results_sorted["G"].append(results_subsurface[index][i]["G"])
+                        self.results_sorted["GR"].append(results_subsurface[index][i]["GR"])
+                        self.results_sorted["PE"].append(results_subsurface[index][i]["PE"])
+                #
+                elif rock == "Gabbro":
                     thickness_unit = self.split_thickness(thickness=list_thickness[index], n_units=10)
                     for i, d in enumerate(thickness_unit, start=0):
                         if i == 0:
                             results_subsurface[index][i] = Plutonic(fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(0, 0.05)).create_simple_gabbro()
                         else:
                             results_subsurface[index][i] = Plutonic(fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(0, 0.05)).create_simple_gabbro(amounts=results_subsurface[index][i-1]["mineralogy"])
-                elif rock == "diorite":
+                        #
+                        self.results_sorted["Top"].append(self.results_sorted["Bottom"][-1])
+                        self.results_sorted["thickness"].append(d)
+                        self.results_sorted["Bottom"].append(int(self.results_sorted["Bottom"][-1] + d))
+                        self.results_sorted["rock"].append(results_subsurface[index][i]["rock"])
+                        self.results_sorted["rho"].append(results_subsurface[index][i]["rho"])
+                        self.results_sorted["vP"].append(results_subsurface[index][i]["vP"])
+                        self.results_sorted["vS"].append(results_subsurface[index][i]["vS"])
+                        self.results_sorted["phi"].append(results_subsurface[index][i]["phi"])
+                        self.results_sorted["K"].append(results_subsurface[index][i]["K"])
+                        self.results_sorted["G"].append(results_subsurface[index][i]["G"])
+                        self.results_sorted["GR"].append(results_subsurface[index][i]["GR"])
+                        self.results_sorted["PE"].append(results_subsurface[index][i]["PE"])
+                #
+                elif rock == "Diorite":
                     thickness_unit = self.split_thickness(thickness=list_thickness[index], n_units=10)
                     for i, d in enumerate(thickness_unit, start=0):
                         if i == 0:
                             results_subsurface[index][i] = Plutonic(fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(0, 0.05)).create_simple_diorite()
                         else:
                             results_subsurface[index][i] = Plutonic(fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(0, 0.05)).create_simple_diorite(amounts=results_subsurface[index][i-1]["mineralogy"])
+                        #
+                        self.results_sorted["Top"].append(self.results_sorted["Bottom"][-1])
+                        self.results_sorted["thickness"].append(d)
+                        self.results_sorted["Bottom"].append(int(self.results_sorted["Bottom"][-1] + d))
+                        self.results_sorted["rock"].append(results_subsurface[index][i]["rock"])
+                        self.results_sorted["rho"].append(results_subsurface[index][i]["rho"])
+                        self.results_sorted["vP"].append(results_subsurface[index][i]["vP"])
+                        self.results_sorted["vS"].append(results_subsurface[index][i]["vS"])
+                        self.results_sorted["phi"].append(results_subsurface[index][i]["phi"])
+                        self.results_sorted["K"].append(results_subsurface[index][i]["K"])
+                        self.results_sorted["G"].append(results_subsurface[index][i]["G"])
+                        self.results_sorted["GR"].append(results_subsurface[index][i]["GR"])
+                        self.results_sorted["PE"].append(results_subsurface[index][i]["PE"])
                 #
                 results_subsurface[index][i]["thickness"] = list_thickness[index]
         #
-        print("Summary:")
+        rb_01 = SE(parent=self.parent_subsurface, row_id=28, column_id=0, n_rows=1, n_columns=2, bg=self.color_acc_01,
+           fg="black").create_radiobutton(var_rb=self.var_rb_stat, var_rb_set=var_rb_stat_start, value_rb=0,
+                                          text="Well Log Plot", color_bg=self.color_acc_01,
+                                          command=lambda var_rb=self.var_rb_stat: self.change_radiobutton(var_rb))
+        rb_02 = SE(parent=self.parent_subsurface, row_id=29, column_id=0, n_rows=1, n_columns=2, bg=self.color_acc_01,
+           fg="black").create_radiobutton(var_rb=self.var_rb_stat, var_rb_set=var_rb_stat_start, value_rb=1,
+                                          text="Histogram Plot", color_bg=self.color_acc_01,
+                                          command=lambda var_rb=self.var_rb_stat: self.change_radiobutton(var_rb))
+        rb_03 = SE(parent=self.parent_subsurface, row_id=30, column_id=0, n_rows=1, n_columns=2, bg=self.color_acc_01,
+           fg="black").create_radiobutton(var_rb=self.var_rb_stat, var_rb_set=var_rb_stat_start, value_rb=2,
+                                          text="Scatter Plot", color_bg=self.color_acc_01,
+                                          command=lambda var_rb=self.var_rb_stat: self.change_radiobutton(var_rb))
+        rb_04 = SE(parent=self.parent_subsurface, row_id=32, column_id=0, n_rows=1, n_columns=2, bg=self.color_acc_01,
+           fg="black").create_radiobutton(var_rb=self.var_rb_geochem, var_rb_set=var_rb_geochem_start, value_rb=3,
+                                          text="Elements", color_bg=self.color_acc_01,
+                                          command=lambda var_rb=self.var_rb_geochem: self.change_radiobutton(var_rb))
+        rb_05 = SE(parent=self.parent_subsurface, row_id=33, column_id=0, n_rows=1, n_columns=2, bg=self.color_acc_01,
+           fg="black").create_radiobutton(var_rb=self.var_rb_geochem, var_rb_set=var_rb_geochem_start, value_rb=4,
+                                          text="Minerals", color_bg=self.color_acc_01,
+                                          command=lambda var_rb=self.var_rb_geochem: self.change_radiobutton(var_rb))
+        self.lbl_w.extend([rb_01, rb_02, rb_03, rb_04, rb_05])
+        for index, rock in enumerate(self.list_rocks_short, start=0):
+            rb = SE(parent=self.parent_subsurface, row_id=35+index, column_id=0, n_rows=1, n_columns=2, bg=self.color_acc_01,
+                    fg="black").create_radiobutton(var_rb=self.var_rb_lith, var_rb_set=var_rb_lith_start, value_rb=var_rb_lith_start+index,
+                                                   text=rock, color_bg=self.color_acc_01,
+                                                   command=lambda var_rb=self.var_rb_lith: self.change_radiobutton(var_rb))
+            self.lbl_w.append(rb)
+        #
+        data_all = {}
+        for rock in self.list_rocks_short:
+            data_all[rock] = []
         for item in results_subsurface.values():
             for item_part in item.values():
-                print(item_part["rock"], item_part["rho"])
-
+                data_all[item_part["rock"]].append(item_part)
+        #
+        #self.extract_data(data=data_all)
+        #
+        if "Sandstone" in self.list_rocks_short:
+            self.rho_sst = DP(dataset=data_all["Sandstone"]).extract_data(keyword="rho")
+            self.vP_sst = DP(dataset=data_all["Sandstone"]).extract_data(keyword="vP")
+            self.vS_sst = DP(dataset=data_all["Sandstone"]).extract_data(keyword="vS")
+            self.vPvS_sst = DP(dataset=data_all["Sandstone"]).extract_data(keyword="vP/vS")
+            self.bulk_mod_sst = DP(dataset=data_all["Sandstone"]).extract_data(keyword="K")
+            self.shear_mod_sst = DP(dataset=data_all["Sandstone"]).extract_data(keyword="G")
+            self.youngs_mod_sst = DP(dataset=data_all["Sandstone"]).extract_data(keyword="E")
+            self.poisson_sst = DP(dataset=data_all["Sandstone"]).extract_data(keyword="nu")
+            self.phi_sst = DP(dataset=data_all["Sandstone"]).extract_data(keyword="phi")
+            self.gamma_ray_sst = DP(dataset=data_all["Sandstone"]).extract_data(keyword="GR")
+            self.photoelectricity_sst = DP(dataset=data_all["Sandstone"]).extract_data(keyword="PE")
+            self.chemistry_sst = DP(dataset=data_all["Sandstone"]).extract_data(keyword="chemistry")
+            self.mineralogy_sst = DP(dataset=data_all["Sandstone"]).extract_data(keyword="mineralogy")
+            #
+            self.list_elements_sst = list(self.chemistry_sst[0].keys())
+            self.list_minerals_sst = list(self.mineralogy_sst[0].keys())
+            self.elements_sst = {}
+            self.minerals_sst = {}
+            for element in self.list_elements_sst:
+                self.elements_sst[element] = []
+                for chemistry_data in self.chemistry_sst:
+                    self.elements_sst[element].append(abs(chemistry_data[element]*100))
+            for mineral in self.list_minerals_sst:
+                self.minerals_sst[mineral] = []
+                for mineralogy_data in self.mineralogy_sst:
+                    self.minerals_sst[mineral].append(abs(mineralogy_data[mineral]*100))
+            #
+            self.results_sst = [self.rho_sst, self.vP_sst, self.vS_sst, self.vPvS_sst, self.bulk_mod_sst, self.shear_mod_sst,
+                            self.poisson_sst, self.phi_sst, self.gamma_ray_sst, self.photoelectricity_sst]
+        #
+        if "Shale" in self.list_rocks_short:
+            self.rho_sh = DP(dataset=data_all["Shale"]).extract_data(keyword="rho")
+            self.vP_sh = DP(dataset=data_all["Shale"]).extract_data(keyword="vP")
+            self.vS_sh = DP(dataset=data_all["Shale"]).extract_data(keyword="vS")
+            self.vPvS_sh = DP(dataset=data_all["Shale"]).extract_data(keyword="vP/vS")
+            self.bulk_mod_sh = DP(dataset=data_all["Shale"]).extract_data(keyword="K")
+            self.shear_mod_sh = DP(dataset=data_all["Shale"]).extract_data(keyword="G")
+            self.youngs_mod_sh = DP(dataset=data_all["Shale"]).extract_data(keyword="E")
+            self.poisson_sh = DP(dataset=data_all["Shale"]).extract_data(keyword="nu")
+            self.phi_sh = DP(dataset=data_all["Shale"]).extract_data(keyword="phi")
+            self.gamma_ray_sh = DP(dataset=data_all["Shale"]).extract_data(keyword="GR")
+            self.photoelectricity_sh = DP(dataset=data_all["Shale"]).extract_data(keyword="PE")
+            self.chemistry_sh = DP(dataset=data_all["Shale"]).extract_data(keyword="chemistry")
+            self.mineralogy_sh = DP(dataset=data_all["Shale"]).extract_data(keyword="mineralogy")
+            #
+            self.list_elements_sh = list(self.chemistry_sh[0].keys())
+            self.list_minerals_sh = list(self.mineralogy_sh[0].keys())
+            self.elements_sh = {}
+            self.minerals_sh = {}
+            for element in self.list_elements_sh:
+                self.elements_sh[element] = []
+                for chemistry_data in self.chemistry_sh:
+                    self.elements_sh[element].append(abs(chemistry_data[element]*100))
+            for mineral in self.list_minerals_sh:
+                self.minerals_sh[mineral] = []
+                for mineralogy_data in self.mineralogy_sh:
+                    self.minerals_sh[mineral].append(abs(mineralogy_data[mineral]*100))
+            #
+            self.results_sh = [self.rho_sh, self.vP_sh, self.vS_sh, self.vPvS_sh, self.bulk_mod_sh, self.shear_mod_sh,
+                            self.poisson_sh, self.phi_sh, self.gamma_ray_sh, self.photoelectricity_sh]
+        #
+        if "Granite" in self.list_rocks_short:
+            self.rho_granite = DP(dataset=data_all["Granite"]).extract_data(keyword="rho")
+            self.vP_granite = DP(dataset=data_all["Granite"]).extract_data(keyword="vP")
+            self.vS_granite = DP(dataset=data_all["Granite"]).extract_data(keyword="vS")
+            self.vPvS_granite = DP(dataset=data_all["Granite"]).extract_data(keyword="vP/vS")
+            self.bulk_mod_granite = DP(dataset=data_all["Granite"]).extract_data(keyword="K")
+            self.shear_mod_granite = DP(dataset=data_all["Granite"]).extract_data(keyword="G")
+            self.youngs_mod_granite = DP(dataset=data_all["Granite"]).extract_data(keyword="E")
+            self.poisson_granite = DP(dataset=data_all["Granite"]).extract_data(keyword="nu")
+            self.phi_granite = DP(dataset=data_all["Granite"]).extract_data(keyword="phi")
+            self.gamma_ray_granite = DP(dataset=data_all["Granite"]).extract_data(keyword="GR")
+            self.photoelectricity_granite = DP(dataset=data_all["Granite"]).extract_data(keyword="PE")
+            self.chemistry_granite = DP(dataset=data_all["Granite"]).extract_data(keyword="chemistry")
+            self.mineralogy_granite = DP(dataset=data_all["Granite"]).extract_data(keyword="mineralogy")
+            #
+            self.list_elements_granite = list(self.chemistry_granite[0].keys())
+            self.list_minerals_granite = list(self.mineralogy_granite[0].keys())
+            self.elements_granite = {}
+            self.minerals_granite = {}
+            for element in self.list_elements_granite:
+                self.elements_granite[element] = []
+                for chemistry_data in self.chemistry_granite:
+                    self.elements_granite[element].append(abs(chemistry_data[element]*100))
+            for mineral in self.list_minerals_granite:
+                self.minerals_granite[mineral] = []
+                for mineralogy_data in self.mineralogy_granite:
+                    self.minerals_granite[mineral].append(abs(mineralogy_data[mineral]*100))
+            #
+            self.results_granite = [self.rho_granite, self.vP_granite, self.vS_granite, self.vPvS_granite, self.bulk_mod_granite, self.shear_mod_granite,
+                            self.poisson_granite, self.phi_granite, self.gamma_ray_granite, self.photoelectricity_granite]
+            #
+        elif "Gabbro" in self.list_rocks_short:
+            self.rho_gabbro = DP(dataset=data_all["Gabbro"]).extract_data(keyword="rho")
+            self.vP_gabbro = DP(dataset=data_all["Gabbro"]).extract_data(keyword="vP")
+            self.vS_gabbro = DP(dataset=data_all["Gabbro"]).extract_data(keyword="vS")
+            self.vPvS_gabbro = DP(dataset=data_all["Gabbro"]).extract_data(keyword="vP/vS")
+            self.bulk_mod_gabbro = DP(dataset=data_all["Gabbro"]).extract_data(keyword="K")
+            self.shear_mod_gabbro = DP(dataset=data_all["Gabbro"]).extract_data(keyword="G")
+            self.youngs_mod_gabbro = DP(dataset=data_all["Gabbro"]).extract_data(keyword="E")
+            self.poisson_gabbro = DP(dataset=data_all["Gabbro"]).extract_data(keyword="nu")
+            self.phi_gabbro = DP(dataset=data_all["Gabbro"]).extract_data(keyword="phi")
+            self.gamma_ray_gabbro = DP(dataset=data_all["Gabbro"]).extract_data(keyword="GR")
+            self.photoelectricity_gabbro = DP(dataset=data_all["Gabbro"]).extract_data(keyword="PE")
+            self.chemistry_gabbro = DP(dataset=data_all["Gabbro"]).extract_data(keyword="chemistry")
+            self.mineralogy_gabbro = DP(dataset=data_all["Gabbro"]).extract_data(keyword="mineralogy")
+            #
+            self.list_elements_gabbro = list(self.chemistry_gabbro[0].keys())
+            self.list_minerals_gabbro = list(self.mineralogy_gabbro[0].keys())
+            self.elements_gabbro = {}
+            self.minerals_gabbro = {}
+            for element in self.list_elements_gabbro:
+                self.elements_gabbro[element] = []
+                for chemistry_data in self.chemistry_gabbro:
+                    self.elements_gabbro[element].append(abs(chemistry_data[element]*100))
+            for mineral in self.list_minerals_gabbro:
+                self.minerals_gabbro[mineral] = []
+                for mineralogy_data in self.mineralogy_gabbro:
+                    self.minerals_gabbro[mineral].append(abs(mineralogy_data[mineral]*100))
+            #
+            self.results_gabbro = [self.rho_gabbro, self.vP_gabbro, self.vS_gabbro, self.vPvS_gabbro, self.bulk_mod_gabbro, self.shear_mod_gabbro,
+                            self.poisson_gabbro, self.phi_gabbro, self.gamma_ray_gabbro, self.photoelectricity_gabbro]
+            #
+        elif "Diorite" in self.list_rocks_short:
+            self.rho_diorite = DP(dataset=data_all["Diorite"]).extract_data(keyword="rho")
+            self.vP_diorite = DP(dataset=data_all["Diorite"]).extract_data(keyword="vP")
+            self.vS_diorite = DP(dataset=data_all["Diorite"]).extract_data(keyword="vS")
+            self.vPvS_diorite = DP(dataset=data_all["Diorite"]).extract_data(keyword="vP/vS")
+            self.bulk_mod_diorite = DP(dataset=data_all["Diorite"]).extract_data(keyword="K")
+            self.shear_mod_diorite = DP(dataset=data_all["Diorite"]).extract_data(keyword="G")
+            self.youngs_mod_diorite = DP(dataset=data_all["Diorite"]).extract_data(keyword="E")
+            self.poisson_diorite = DP(dataset=data_all["Diorite"]).extract_data(keyword="nu")
+            self.phi_diorite = DP(dataset=data_all["Diorite"]).extract_data(keyword="phi")
+            self.gamma_ray_diorite = DP(dataset=data_all["Diorite"]).extract_data(keyword="GR")
+            self.photoelectricity_diorite = DP(dataset=data_all["Diorite"]).extract_data(keyword="PE")
+            self.chemistry_diorite = DP(dataset=data_all["Diorite"]).extract_data(keyword="chemistry")
+            self.mineralogy_diorite = DP(dataset=data_all["Diorite"]).extract_data(keyword="mineralogy")
+            #
+            self.list_elements_diorite = list(self.chemistry_diorite[0].keys())
+            self.list_minerals_diorite = list(self.mineralogy_diorite[0].keys())
+            self.elements_diorite = {}
+            self.minerals_diorite = {}
+            for element in self.list_elements_diorite:
+                self.elements_diorite[element] = []
+                for chemistry_data in self.chemistry_diorite:
+                    self.elements_diorite[element].append(abs(chemistry_data[element]*100))
+            for mineral in self.list_minerals_diorite:
+                self.minerals_diorite[mineral] = []
+                for mineralogy_data in self.mineralogy_diorite:
+                    self.minerals_diorite[mineral].append(abs(mineralogy_data[mineral]*100))
+            #
+            self.results_diorite = [self.rho_diorite, self.vP_diorite, self.vS_diorite, self.vPvS_diorite, self.bulk_mod_diorite, self.shear_mod_diorite,
+                            self.poisson_diorite, self.phi_diorite, self.gamma_ray_diorite, self.photoelectricity_diorite]
+        #
+        self.entr_list_min = []
+        self.entr_list_max = []
+        self.entr_list_mean = []
+        self.entr_list_std = []
+        #
+        if "Sandstone" in self.list_rocks_short[0]:
+            self.var_rb_lith.set(var_rb_lith_start)
+            self.current_rb_lith.set(var_rb_lith_start)
+            self.list_elements_0 = self.list_elements_sst
+            self.list_minerals_0 = self.list_minerals_sst
+            self.results_0 = self.results_sst
+            self.elements_0 = self.elements_sst
+            self.minerals_0 = self.minerals_sst
+        elif "Shale" in self.list_rocks_short[0]:
+            self.var_rb_lith.set(var_rb_lith_start)
+            self.current_rb_lith.set(var_rb_lith_start)
+            self.list_elements_0 = self.list_elements_sh
+            self.list_minerals_0 = self.list_minerals_sh
+            self.results_0 = self.results_sh
+            self.elements_0 = self.elements_sh
+            self.minerals_0 = self.minerals_sh
+        #
+        n_elements = 0
+        if len(self.list_elements_sst) > n_elements:
+            n_elements = len(self.list_elements_sst)
+        if len(self.list_elements_sh) > n_elements:
+            n_elements = len(self.list_elements_sh)
+        try:
+            if len(self.list_elements_granite) > n_elements:
+                n_elements = len(self.list_elements_granite)
+        except:
+            pass
+        try:
+            if len(self.list_elements_gabbro) > n_elements:
+                n_elements = len(self.list_elements_gabbro)
+        except:
+            pass
+        try:
+            if len(self.list_elements_diorite) > n_elements:
+                n_elements = len(self.list_elements_diorite)
+        except:
+            pass
+        #
+        for i in range(10+n_elements):
+            self.entr_list_min.append(tk.IntVar())
+            self.entr_list_max.append(tk.IntVar())
+            self.entr_list_mean.append(tk.IntVar())
+            self.entr_list_std.append(tk.IntVar())
+        #
+        ## Entry Table
+        for i in range(10):
+            if i == 7:
+                entr_min = SE(parent=self.parent_subsurface, row_id=4+2*i, column_id=4, n_rows=2, bg=self.color_bg,
+                              fg=self.color_fg).create_entry(var_entr=self.entr_list_min[i], var_entr_set=round(np.min(self.results_0[i]*100), 3))
+                entr_max = SE(parent=self.parent_subsurface, row_id=4+2*i, column_id=5, n_rows=2, bg=self.color_bg,
+                              fg=self.color_fg).create_entry(var_entr=self.entr_list_max[i], var_entr_set=round(np.max(self.results_0[i]*100), 3))
+                entr_mean = SE(parent=self.parent_subsurface, row_id=4+2*i, column_id=6, n_rows=2, bg=self.color_bg,
+                               fg=self.color_fg).create_entry(var_entr=self.entr_list_mean[i], var_entr_set=round(np.mean(self.results_0[i]*100), 3))
+                entr_std = SE(parent=self.parent_subsurface, row_id=4+2*i, column_id=7, n_rows=2, bg=self.color_bg,
+                              fg=self.color_fg).create_entry(var_entr=self.entr_list_std[i], var_entr_set=round(np.std(self.results_0[i]*100, ddof=1), 3))
+            else:
+                entr_min = SE(parent=self.parent_subsurface, row_id=4+2*i, column_id=4, n_rows=2, bg=self.color_bg,
+                              fg=self.color_fg).create_entry(var_entr=self.entr_list_min[i], var_entr_set=round(np.min(self.results_0[i]), 3))
+                entr_max = SE(parent=self.parent_subsurface, row_id=4+2*i, column_id=5, n_rows=2, bg=self.color_bg,
+                              fg=self.color_fg).create_entry(var_entr=self.entr_list_max[i], var_entr_set=round(np.max(self.results_0[i]), 3))
+                entr_mean = SE(parent=self.parent_subsurface, row_id=4+2*i, column_id=6, n_rows=2, bg=self.color_bg,
+                               fg=self.color_fg).create_entry(var_entr=self.entr_list_mean[i], var_entr_set=round(np.mean(self.results_0[i]), 3))
+                entr_std = SE(parent=self.parent_subsurface, row_id=4+2*i, column_id=7, n_rows=2, bg=self.color_bg,
+                              fg=self.color_fg).create_entry(var_entr=self.entr_list_std[i], var_entr_set=round(np.std(self.results_0[i], ddof=1), 3))
+            #
+            self.entr_w.append(entr_min)
+            self.entr_w.append(entr_max)
+            self.entr_w.append(entr_mean)
+            self.entr_w.append(entr_std)
+        #
+        lbl = SE(parent=self.parent_subsurface, row_id=24, column_id=3, n_columns=5, bg=self.color_bg,
+               fg="black").create_label(text="Chemical composition (weight amounts %)", relief=tk.RAISED)
+        self.lbl_w.append(lbl)
+        self.lbl_chem.append(lbl)
+        for index, element in enumerate(self.list_elements_0, start=0):
+            if element not in ["U"]:
+                lbl = SE(parent=self.parent_subsurface, row_id=25+index, column_id=3, bg=self.color_bg,
+                         fg="black").create_label(text=str(element), relief=tk.RAISED)
+            else:
+                lbl = SE(parent=self.parent_subsurface, row_id=25+index, column_id=3, bg=self.color_bg,
+                         fg="black").create_label(text=str(element)+" (ppm)", relief=tk.RAISED)
+            self.lbl_w.append(lbl)
+            self.lbl_chem.append(lbl)
+        #
+        for index, element in enumerate(self.list_elements_0, start=10):
+            if element not in ["U"]:
+                entr_min = SE(parent=self.parent_subsurface, row_id=15+index, column_id=4, bg=self.color_bg,
+                              fg=self.color_fg).create_entry(var_entr=self.entr_list_min[index],
+                                                             var_entr_set=round(np.min(self.elements_0[element]), 3))
+                entr_max = SE(parent=self.parent_subsurface, row_id=15+index, column_id=5, bg=self.color_bg,
+                              fg=self.color_fg).create_entry(var_entr=self.entr_list_max[index],
+                                                             var_entr_set=round(np.max(self.elements_0[element]), 3))
+                entr_mean = SE(parent=self.parent_subsurface, row_id=15+index, column_id=6, bg=self.color_bg,
+                               fg=self.color_fg).create_entry(var_entr=self.entr_list_mean[index],
+                                                              var_entr_set=round(np.mean(self.elements_0[element]), 3))
+                entr_std = SE(parent=self.parent_subsurface, row_id=15+index, column_id=7, bg=self.color_bg,
+                              fg=self.color_fg).create_entry(var_entr=self.entr_list_std[index],
+                                                             var_entr_set=round(np.std(self.elements_0[element], ddof=1), 3))
+            else:
+                ppm_amounts = np.array(self.elements_0[element])*10000
+                entr_min = SE(parent=self.parent_subsurface, row_id=15+index, column_id=4, bg=self.color_bg,
+                              fg=self.color_fg).create_entry(var_entr=self.entr_list_min[index],
+                                                             var_entr_set=round(np.min(ppm_amounts), 3))
+                entr_max = SE(parent=self.parent_subsurface, row_id=15+index, column_id=5, bg=self.color_bg,
+                              fg=self.color_fg).create_entry(var_entr=self.entr_list_max[index],
+                                                             var_entr_set=round(np.max(ppm_amounts), 3))
+                entr_mean = SE(parent=self.parent_subsurface, row_id=15+index, column_id=6, bg=self.color_bg,
+                               fg=self.color_fg).create_entry(var_entr=self.entr_list_mean[index],
+                                                              var_entr_set=round(np.mean(ppm_amounts), 3))
+                entr_std = SE(parent=self.parent_subsurface, row_id=15+index, column_id=7, bg=self.color_bg,
+                              fg=self.color_fg).create_entry(var_entr=self.entr_list_std[index],
+                                                             var_entr_set=round(np.std(ppm_amounts, ddof=1), 3))
+            #
+            self.entr_w.append(entr_min)
+            self.entr_w.append(entr_max)
+            self.entr_w.append(entr_mean)
+            self.entr_w.append(entr_std)
+            self.entr_chem.extend([entr_min, entr_max, entr_mean, entr_std])
+        #
+    def change_radiobutton(self, var_rb):
+        if var_rb.get() == 0:   # Well Log Plot
+            print(var_rb.get())
+        elif var_rb.get() == 1: # Histogram Plot
+            print(var_rb.get())
+        elif var_rb.get() == 2: # Scatter Plot
+            print(var_rb.get())
+        elif var_rb.get() == 3: # Elements
+            #
+            try:
+                for lbl in self.lbl_chem:
+                    lbl.grid_forget()
+                for entr in self.entr_chem:
+                    entr.grid_forget()
+                self.lbl_chem.clear()
+                self.entr_chem.clear()
+            except:
+                pass
+            #
+            if "Sandstone" == self.list_rocks_short[0] or self.list_rocks_short[self.var_rb_lith.get() - 5] == "Sandstone":
+                self.list_elements_0 = self.list_elements_sst
+                self.elements_0 = self.elements_sst
+            elif "Shale" == self.list_rocks_short[0] or self.list_rocks_short[self.var_rb_lith.get() - 5] == "Shale":
+                self.list_elements_0 = self.list_elements_sh
+                self.elements_0 = self.elements_sh
+            #
+            lbl = SE(parent=self.parent_subsurface, row_id=24, column_id=3, n_columns=5, bg=self.color_bg,
+                   fg="black").create_label(text="Chemical composition (weight amounts %)", relief=tk.RAISED)
+            self.lbl_w.append(lbl)
+            self.lbl_chem.append(lbl)
+            for index, element in enumerate(self.list_elements_0, start=0):
+                if element not in ["U"]:
+                    lbl = SE(parent=self.parent_subsurface, row_id=25+index, column_id=3, bg=self.color_bg,
+                             fg="black").create_label(text=str(element), relief=tk.RAISED)
+                else:
+                    lbl = SE(parent=self.parent_subsurface, row_id=25+index, column_id=3, bg=self.color_bg,
+                             fg="black").create_label(text=str(element)+" (ppm)", relief=tk.RAISED)
+                self.lbl_w.append(lbl)
+                self.lbl_chem.append(lbl)
+            #
+            for index, element in enumerate(self.list_elements_0, start=10):
+                if element not in ["U"]:
+                    entr_min = SE(parent=self.parent_subsurface, row_id=15+index, column_id=4, bg=self.color_bg,
+                                  fg=self.color_fg).create_entry(var_entr=self.entr_list_min[index],
+                                                                 var_entr_set=round(np.min(self.elements_0[element]), 3))
+                    entr_max = SE(parent=self.parent_subsurface, row_id=15+index, column_id=5, bg=self.color_bg,
+                                  fg=self.color_fg).create_entry(var_entr=self.entr_list_max[index],
+                                                                 var_entr_set=round(np.max(self.elements_0[element]), 3))
+                    entr_mean = SE(parent=self.parent_subsurface, row_id=15+index, column_id=6, bg=self.color_bg,
+                                   fg=self.color_fg).create_entry(var_entr=self.entr_list_mean[index],
+                                                                  var_entr_set=round(np.mean(self.elements_0[element]), 3))
+                    entr_std = SE(parent=self.parent_subsurface, row_id=15+index, column_id=7, bg=self.color_bg,
+                                  fg=self.color_fg).create_entry(var_entr=self.entr_list_std[index],
+                                                                 var_entr_set=round(np.std(self.elements_0[element], ddof=1), 3))
+                else:
+                    ppm_amounts = np.array(self.elements_0[element])*10000
+                    entr_min = SE(parent=self.parent_subsurface, row_id=15+index, column_id=4, bg=self.color_bg,
+                                  fg=self.color_fg).create_entry(var_entr=self.entr_list_min[index],
+                                                                 var_entr_set=round(np.min(ppm_amounts), 3))
+                    entr_max = SE(parent=self.parent_subsurface, row_id=15+index, column_id=5, bg=self.color_bg,
+                                  fg=self.color_fg).create_entry(var_entr=self.entr_list_max[index],
+                                                                 var_entr_set=round(np.max(ppm_amounts), 3))
+                    entr_mean = SE(parent=self.parent_subsurface, row_id=15+index, column_id=6, bg=self.color_bg,
+                                   fg=self.color_fg).create_entry(var_entr=self.entr_list_mean[index],
+                                                                  var_entr_set=round(np.mean(ppm_amounts), 3))
+                    entr_std = SE(parent=self.parent_subsurface, row_id=15+index, column_id=7, bg=self.color_bg,
+                                  fg=self.color_fg).create_entry(var_entr=self.entr_list_std[index],
+                                                                 var_entr_set=round(np.std(ppm_amounts, ddof=1), 3))
+                #
+                self.entr_w.append(entr_min)
+                self.entr_w.append(entr_max)
+                self.entr_w.append(entr_mean)
+                self.entr_w.append(entr_std)
+                self.entr_chem.extend([entr_min, entr_max, entr_mean, entr_std])
+        #
+        elif var_rb.get() == 4: # Minerals
+            #
+            try:
+                for lbl in self.lbl_chem:
+                    lbl.grid_forget()
+                for entr in self.entr_chem:
+                    entr.grid_forget()
+                self.lbl_chem.clear()
+                self.entr_chem.clear()
+            except:
+                pass
+            #
+            lbl = SE(parent=self.parent_subsurface, row_id=24, column_id=3, n_columns=5, bg=self.color_bg,
+                   fg="black").create_label(text="Mineralogical composition (weight amounts %)", relief=tk.RAISED)
+            self.lbl_w.append(lbl)
+            self.lbl_chem.append(lbl)
+            for index, mineral in enumerate(self.list_minerals_0, start=0):
+                if mineral not in ["Urn"]:
+                    lbl = SE(parent=self.parent_subsurface, row_id=25+index, column_id=3, bg=self.color_bg,
+                             fg="black").create_label(text=str(mineral), relief=tk.RAISED)
+                else:
+                    lbl = SE(parent=self.parent_subsurface, row_id=25+index, column_id=3, bg=self.color_bg,
+                             fg="black").create_label(text=str(mineral)+" (ppm)", relief=tk.RAISED)
+                self.lbl_w.append(lbl)
+                self.lbl_chem.append(lbl)
+            #
+            for index, mineral in enumerate(self.list_minerals_0, start=10):
+                if mineral not in ["Urn"]:
+                    entr_min = SE(parent=self.parent_subsurface, row_id=15+index, column_id=4, bg=self.color_bg,
+                                  fg=self.color_fg).create_entry(var_entr=self.entr_list_min[index],
+                                                                 var_entr_set=round(np.min(self.minerals_0[mineral]), 3))
+                    entr_max = SE(parent=self.parent_subsurface, row_id=15+index, column_id=5, bg=self.color_bg,
+                                  fg=self.color_fg).create_entry(var_entr=self.entr_list_max[index],
+                                                                 var_entr_set=round(np.max(self.minerals_0[mineral]), 3))
+                    entr_mean = SE(parent=self.parent_subsurface, row_id=15+index, column_id=6, bg=self.color_bg,
+                                   fg=self.color_fg).create_entry(var_entr=self.entr_list_mean[index],
+                                                                  var_entr_set=round(np.mean(self.minerals_0[mineral]), 3))
+                    entr_std = SE(parent=self.parent_subsurface, row_id=15+index, column_id=7, bg=self.color_bg,
+                                  fg=self.color_fg).create_entry(var_entr=self.entr_list_std[index],
+                                                                 var_entr_set=round(np.std(self.minerals_0[mineral], ddof=1), 3))
+                else:
+                    ppm_amounts = np.array(self.minerals_0[mineral])*10000
+                    entr_min = SE(parent=self.parent_subsurface, row_id=15+index, column_id=4, bg=self.color_bg,
+                                  fg=self.color_fg).create_entry(var_entr=self.entr_list_min[index],
+                                                                 var_entr_set=round(np.min(ppm_amounts), 3))
+                    entr_max = SE(parent=self.parent_subsurface, row_id=15+index, column_id=5, bg=self.color_bg,
+                                  fg=self.color_fg).create_entry(var_entr=self.entr_list_max[index],
+                                                                 var_entr_set=round(np.max(ppm_amounts), 3))
+                    entr_mean = SE(parent=self.parent_subsurface, row_id=15+index, column_id=6, bg=self.color_bg,
+                                   fg=self.color_fg).create_entry(var_entr=self.entr_list_mean[index],
+                                                                  var_entr_set=round(np.mean(ppm_amounts), 3))
+                    entr_std = SE(parent=self.parent_subsurface, row_id=15+index, column_id=7, bg=self.color_bg,
+                                  fg=self.color_fg).create_entry(var_entr=self.entr_list_std[index],
+                                                                 var_entr_set=round(np.std(ppm_amounts, ddof=1), 3))
+                #
+                self.entr_w.append(entr_min)
+                self.entr_w.append(entr_max)
+                self.entr_w.append(entr_mean)
+                self.entr_w.append(entr_std)
+                self.entr_chem.extend([entr_min, entr_max, entr_mean, entr_std])
+                #
+        elif var_rb.get() == 5:
+            if self.current_rb_lith.get() == var_rb.get():
+                pass
+            else:
+                #
+                try:
+                    for lbl in self.lbl_chem:
+                        lbl.grid_forget()
+                    for entr in self.entr_w:
+                        entr.grid_forget()
+                    self.lbl_chem.clear()
+                    self.entr_w.clear()
+                except:
+                    pass
+                #
+                self.current_rb_lith.set(var_rb.get())
+                if self.list_rocks_short[0] == "Sandstone":
+                    self.list_elements_0 = self.list_elements_sst
+                    self.list_minerals_0 = self.list_minerals_sst
+                    self.results_0 = self.results_sst
+                    self.elements_0 = self.elements_sst
+                    self.minerals_0 = self.minerals_sst
+                elif self.list_rocks_short[0] == "Shale":
+                    self.list_elements_0 = self.list_elements_sh
+                    self.list_minerals_0 = self.list_minerals_sh
+                    self.results_0 = self.results_sh
+                    self.elements_0 = self.elements_sh
+                    self.minerals_0 = self.minerals_sh
+                #
+                ## Entry Table
+                for i in range(10):
+                    if i == 7:
+                        entr_min = SE(parent=self.parent_subsurface, row_id=4+2*i, column_id=4, n_rows=2, bg=self.color_bg,
+                                      fg=self.color_fg).create_entry(var_entr=self.entr_list_min[i], var_entr_set=round(np.min(self.results_0[i]*100), 3))
+                        entr_max = SE(parent=self.parent_subsurface, row_id=4+2*i, column_id=5, n_rows=2, bg=self.color_bg,
+                                      fg=self.color_fg).create_entry(var_entr=self.entr_list_max[i], var_entr_set=round(np.max(self.results_0[i]*100), 3))
+                        entr_mean = SE(parent=self.parent_subsurface, row_id=4+2*i, column_id=6, n_rows=2, bg=self.color_bg,
+                                       fg=self.color_fg).create_entry(var_entr=self.entr_list_mean[i], var_entr_set=round(np.mean(self.results_0[i]*100), 3))
+                        entr_std = SE(parent=self.parent_subsurface, row_id=4+2*i, column_id=7, n_rows=2, bg=self.color_bg,
+                                      fg=self.color_fg).create_entry(var_entr=self.entr_list_std[i], var_entr_set=round(np.std(self.results_0[i]*100, ddof=1), 3))
+                    else:
+                        entr_min = SE(parent=self.parent_subsurface, row_id=4+2*i, column_id=4, n_rows=2, bg=self.color_bg,
+                                      fg=self.color_fg).create_entry(var_entr=self.entr_list_min[i], var_entr_set=round(np.min(self.results_0[i]), 3))
+                        entr_max = SE(parent=self.parent_subsurface, row_id=4+2*i, column_id=5, n_rows=2, bg=self.color_bg,
+                                      fg=self.color_fg).create_entry(var_entr=self.entr_list_max[i], var_entr_set=round(np.max(self.results_0[i]), 3))
+                        entr_mean = SE(parent=self.parent_subsurface, row_id=4+2*i, column_id=6, n_rows=2, bg=self.color_bg,
+                                       fg=self.color_fg).create_entry(var_entr=self.entr_list_mean[i], var_entr_set=round(np.mean(self.results_0[i]), 3))
+                        entr_std = SE(parent=self.parent_subsurface, row_id=4+2*i, column_id=7, n_rows=2, bg=self.color_bg,
+                                      fg=self.color_fg).create_entry(var_entr=self.entr_list_std[i], var_entr_set=round(np.std(self.results_0[i], ddof=1), 3))
+                    #
+                    self.entr_w.append(entr_min)
+                    self.entr_w.append(entr_max)
+                    self.entr_w.append(entr_mean)
+                    self.entr_w.append(entr_std)
+                #
+                self.var_rb_geochem.set(3)
+                lbl = SE(parent=self.parent_subsurface, row_id=24, column_id=3, n_columns=5, bg=self.color_bg,
+                       fg="black").create_label(text="Chemical composition (weight amounts %)", relief=tk.RAISED)
+                self.lbl_w.append(lbl)
+                self.lbl_chem.append(lbl)
+                for index, element in enumerate(self.list_elements_0, start=0):
+                    if element not in ["U"]:
+                        lbl = SE(parent=self.parent_subsurface, row_id=25+index, column_id=3, bg=self.color_bg,
+                                 fg="black").create_label(text=str(element), relief=tk.RAISED)
+                    else:
+                        lbl = SE(parent=self.parent_subsurface, row_id=25+index, column_id=3, bg=self.color_bg,
+                                 fg="black").create_label(text=str(element)+" (ppm)", relief=tk.RAISED)
+                    self.lbl_w.append(lbl)
+                    self.lbl_chem.append(lbl)
+                #
+                for index, element in enumerate(self.list_elements_0, start=10):
+                    if element not in ["U"]:
+                        entr_min = SE(parent=self.parent_subsurface, row_id=15+index, column_id=4, bg=self.color_bg,
+                                      fg=self.color_fg).create_entry(var_entr=self.entr_list_min[index],
+                                                                     var_entr_set=round(np.min(self.elements_0[element]), 3))
+                        entr_max = SE(parent=self.parent_subsurface, row_id=15+index, column_id=5, bg=self.color_bg,
+                                      fg=self.color_fg).create_entry(var_entr=self.entr_list_max[index],
+                                                                     var_entr_set=round(np.max(self.elements_0[element]), 3))
+                        entr_mean = SE(parent=self.parent_subsurface, row_id=15+index, column_id=6, bg=self.color_bg,
+                                       fg=self.color_fg).create_entry(var_entr=self.entr_list_mean[index],
+                                                                      var_entr_set=round(np.mean(self.elements_0[element]), 3))
+                        entr_std = SE(parent=self.parent_subsurface, row_id=15+index, column_id=7, bg=self.color_bg,
+                                      fg=self.color_fg).create_entry(var_entr=self.entr_list_std[index],
+                                                                     var_entr_set=round(np.std(self.elements_0[element], ddof=1), 3))
+                    else:
+                        ppm_amounts = np.array(self.elements_0[element])*10000
+                        entr_min = SE(parent=self.parent_subsurface, row_id=15+index, column_id=4, bg=self.color_bg,
+                                      fg=self.color_fg).create_entry(var_entr=self.entr_list_min[index],
+                                                                     var_entr_set=round(np.min(ppm_amounts), 3))
+                        entr_max = SE(parent=self.parent_subsurface, row_id=15+index, column_id=5, bg=self.color_bg,
+                                      fg=self.color_fg).create_entry(var_entr=self.entr_list_max[index],
+                                                                     var_entr_set=round(np.max(ppm_amounts), 3))
+                        entr_mean = SE(parent=self.parent_subsurface, row_id=15+index, column_id=6, bg=self.color_bg,
+                                       fg=self.color_fg).create_entry(var_entr=self.entr_list_mean[index],
+                                                                      var_entr_set=round(np.mean(ppm_amounts), 3))
+                        entr_std = SE(parent=self.parent_subsurface, row_id=15+index, column_id=7, bg=self.color_bg,
+                                      fg=self.color_fg).create_entry(var_entr=self.entr_list_std[index],
+                                                                     var_entr_set=round(np.std(ppm_amounts, ddof=1), 3))
+                    #
+                    self.entr_w.append(entr_min)
+                    self.entr_w.append(entr_max)
+                    self.entr_w.append(entr_mean)
+                    self.entr_w.append(entr_std)
+                    self.entr_chem.extend([entr_min, entr_max, entr_mean, entr_std])
+                    #
+        elif var_rb.get() == 6:
+            if self.current_rb_lith.get() == var_rb.get():
+                pass
+            else:
+                #
+                try:
+                    for lbl in self.lbl_chem:
+                        lbl.grid_forget()
+                    for entr in self.entr_w:
+                        entr.grid_forget()
+                    self.lbl_chem.clear()
+                    self.entr_w.clear()
+                except:
+                    pass
+                #
+                self.current_rb_lith.set(var_rb.get())
+                if self.list_rocks_short[1] == "Sandstone":
+                    self.list_elements_0 = self.list_elements_sst
+                    self.list_minerals_0 = self.list_minerals_sst
+                    self.results_0 = self.results_sst
+                    self.elements_0 = self.elements_sst
+                    self.minerals_0 = self.minerals_sst
+                elif self.list_rocks_short[1] == "Shale":
+                    self.list_elements_0 = self.list_elements_sh
+                    self.list_minerals_0 = self.list_minerals_sh
+                    self.results_0 = self.results_sh
+                    self.elements_0 = self.elements_sh
+                    self.minerals_0 = self.minerals_sh
+                #
+                ## Entry Table
+                for i in range(10):
+                    if i == 7:
+                        entr_min = SE(parent=self.parent_subsurface, row_id=4+2*i, column_id=4, n_rows=2, bg=self.color_bg,
+                                      fg=self.color_fg).create_entry(var_entr=self.entr_list_min[i], var_entr_set=round(np.min(self.results_0[i]*100), 3))
+                        entr_max = SE(parent=self.parent_subsurface, row_id=4+2*i, column_id=5, n_rows=2, bg=self.color_bg,
+                                      fg=self.color_fg).create_entry(var_entr=self.entr_list_max[i], var_entr_set=round(np.max(self.results_0[i]*100), 3))
+                        entr_mean = SE(parent=self.parent_subsurface, row_id=4+2*i, column_id=6, n_rows=2, bg=self.color_bg,
+                                       fg=self.color_fg).create_entry(var_entr=self.entr_list_mean[i], var_entr_set=round(np.mean(self.results_0[i]*100), 3))
+                        entr_std = SE(parent=self.parent_subsurface, row_id=4+2*i, column_id=7, n_rows=2, bg=self.color_bg,
+                                      fg=self.color_fg).create_entry(var_entr=self.entr_list_std[i], var_entr_set=round(np.std(self.results_0[i]*100, ddof=1), 3))
+                    else:
+                        entr_min = SE(parent=self.parent_subsurface, row_id=4+2*i, column_id=4, n_rows=2, bg=self.color_bg,
+                                      fg=self.color_fg).create_entry(var_entr=self.entr_list_min[i], var_entr_set=round(np.min(self.results_0[i]), 3))
+                        entr_max = SE(parent=self.parent_subsurface, row_id=4+2*i, column_id=5, n_rows=2, bg=self.color_bg,
+                                      fg=self.color_fg).create_entry(var_entr=self.entr_list_max[i], var_entr_set=round(np.max(self.results_0[i]), 3))
+                        entr_mean = SE(parent=self.parent_subsurface, row_id=4+2*i, column_id=6, n_rows=2, bg=self.color_bg,
+                                       fg=self.color_fg).create_entry(var_entr=self.entr_list_mean[i], var_entr_set=round(np.mean(self.results_0[i]), 3))
+                        entr_std = SE(parent=self.parent_subsurface, row_id=4+2*i, column_id=7, n_rows=2, bg=self.color_bg,
+                                      fg=self.color_fg).create_entry(var_entr=self.entr_list_std[i], var_entr_set=round(np.std(self.results_0[i], ddof=1), 3))
+                    #
+                    self.entr_w.append(entr_min)
+                    self.entr_w.append(entr_max)
+                    self.entr_w.append(entr_mean)
+                    self.entr_w.append(entr_std)
+                #
+                self.var_rb_geochem.set(3)
+                lbl = SE(parent=self.parent_subsurface, row_id=24, column_id=3, n_columns=5, bg=self.color_bg,
+                       fg="black").create_label(text="Chemical composition (weight amounts %)", relief=tk.RAISED)
+                self.lbl_w.append(lbl)
+                self.lbl_chem.append(lbl)
+                for index, element in enumerate(self.list_elements_0, start=0):
+                    if element not in ["U"]:
+                        lbl = SE(parent=self.parent_subsurface, row_id=25+index, column_id=3, bg=self.color_bg,
+                                 fg="black").create_label(text=str(element), relief=tk.RAISED)
+                    else:
+                        lbl = SE(parent=self.parent_subsurface, row_id=25+index, column_id=3, bg=self.color_bg,
+                                 fg="black").create_label(text=str(element)+" (ppm)", relief=tk.RAISED)
+                    self.lbl_w.append(lbl)
+                    self.lbl_chem.append(lbl)
+                #
+                for index, element in enumerate(self.list_elements_0, start=10):
+                    if element not in ["U"]:
+                        entr_min = SE(parent=self.parent_subsurface, row_id=15+index, column_id=4, bg=self.color_bg,
+                                      fg=self.color_fg).create_entry(var_entr=self.entr_list_min[index],
+                                                                     var_entr_set=round(np.min(self.elements_0[element]), 3))
+                        entr_max = SE(parent=self.parent_subsurface, row_id=15+index, column_id=5, bg=self.color_bg,
+                                      fg=self.color_fg).create_entry(var_entr=self.entr_list_max[index],
+                                                                     var_entr_set=round(np.max(self.elements_0[element]), 3))
+                        entr_mean = SE(parent=self.parent_subsurface, row_id=15+index, column_id=6, bg=self.color_bg,
+                                       fg=self.color_fg).create_entry(var_entr=self.entr_list_mean[index],
+                                                                      var_entr_set=round(np.mean(self.elements_0[element]), 3))
+                        entr_std = SE(parent=self.parent_subsurface, row_id=15+index, column_id=7, bg=self.color_bg,
+                                      fg=self.color_fg).create_entry(var_entr=self.entr_list_std[index],
+                                                                     var_entr_set=round(np.std(self.elements_0[element], ddof=1), 3))
+                    else:
+                        ppm_amounts = np.array(self.elements_0[element])*10000
+                        entr_min = SE(parent=self.parent_subsurface, row_id=15+index, column_id=4, bg=self.color_bg,
+                                      fg=self.color_fg).create_entry(var_entr=self.entr_list_min[index],
+                                                                     var_entr_set=round(np.min(ppm_amounts), 3))
+                        entr_max = SE(parent=self.parent_subsurface, row_id=15+index, column_id=5, bg=self.color_bg,
+                                      fg=self.color_fg).create_entry(var_entr=self.entr_list_max[index],
+                                                                     var_entr_set=round(np.max(ppm_amounts), 3))
+                        entr_mean = SE(parent=self.parent_subsurface, row_id=15+index, column_id=6, bg=self.color_bg,
+                                       fg=self.color_fg).create_entry(var_entr=self.entr_list_mean[index],
+                                                                      var_entr_set=round(np.mean(ppm_amounts), 3))
+                        entr_std = SE(parent=self.parent_subsurface, row_id=15+index, column_id=7, bg=self.color_bg,
+                                      fg=self.color_fg).create_entry(var_entr=self.entr_list_std[index],
+                                                                     var_entr_set=round(np.std(ppm_amounts, ddof=1), 3))
+                    #
+                    self.entr_w.append(entr_min)
+                    self.entr_w.append(entr_max)
+                    self.entr_w.append(entr_mean)
+                    self.entr_w.append(entr_std)
+                    self.entr_chem.extend([entr_min, entr_max, entr_mean, entr_std])
+                    #
+        elif var_rb.get() == 7:
+            if self.current_rb_lith.get() == var_rb.get():
+                pass
+            else:
+                #
+                try:
+                    for lbl in self.lbl_chem:
+                        lbl.grid_forget()
+                    for entr in self.entr_w:
+                        entr.grid_forget()
+                    self.lbl_chem.clear()
+                    self.entr_w.clear()
+                except:
+                    pass
+                #
+                self.current_rb_lith.set(var_rb.get())
+                if self.list_rocks_short[-1] == "Granite":
+                    self.list_elements_0 = self.list_elements_granite
+                    self.list_minerals_0 = self.list_minerals_granite
+                    self.results_0 = self.results_granite
+                    self.elements_0 = self.elements_granite
+                    self.minerals_0 = self.minerals_granite
+                elif self.list_rocks_short[-1] == "Gabbro":
+                    self.list_elements_0 = self.list_elements_gabbro
+                    self.list_minerals_0 = self.list_minerals_gabbro
+                    self.results_0 = self.results_gabbro
+                    self.elements_0 = self.elements_gabbro
+                    self.minerals_0 = self.minerals_gabbro
+                elif self.list_rocks_short[-1] == "Diorite":
+                    self.list_elements_0 = self.list_elements_diorite
+                    self.list_minerals_0 = self.list_minerals_diorite
+                    self.results_0 = self.results_diorite
+                    self.elements_0 = self.elements_diorite
+                    self.minerals_0 = self.minerals_diorite
+                #
+                ## Entry Table
+                for i in range(10):
+                    if i == 7:
+                        entr_min = SE(parent=self.parent_subsurface, row_id=4+2*i, column_id=4, n_rows=2, bg=self.color_bg,
+                                      fg=self.color_fg).create_entry(var_entr=self.entr_list_min[i], var_entr_set=round(np.min(self.results_0[i]*100), 3))
+                        entr_max = SE(parent=self.parent_subsurface, row_id=4+2*i, column_id=5, n_rows=2, bg=self.color_bg,
+                                      fg=self.color_fg).create_entry(var_entr=self.entr_list_max[i], var_entr_set=round(np.max(self.results_0[i]*100), 3))
+                        entr_mean = SE(parent=self.parent_subsurface, row_id=4+2*i, column_id=6, n_rows=2, bg=self.color_bg,
+                                       fg=self.color_fg).create_entry(var_entr=self.entr_list_mean[i], var_entr_set=round(np.mean(self.results_0[i]*100), 3))
+                        entr_std = SE(parent=self.parent_subsurface, row_id=4+2*i, column_id=7, n_rows=2, bg=self.color_bg,
+                                      fg=self.color_fg).create_entry(var_entr=self.entr_list_std[i], var_entr_set=round(np.std(self.results_0[i]*100, ddof=1), 3))
+                    else:
+                        entr_min = SE(parent=self.parent_subsurface, row_id=4+2*i, column_id=4, n_rows=2, bg=self.color_bg,
+                                      fg=self.color_fg).create_entry(var_entr=self.entr_list_min[i], var_entr_set=round(np.min(self.results_0[i]), 3))
+                        entr_max = SE(parent=self.parent_subsurface, row_id=4+2*i, column_id=5, n_rows=2, bg=self.color_bg,
+                                      fg=self.color_fg).create_entry(var_entr=self.entr_list_max[i], var_entr_set=round(np.max(self.results_0[i]), 3))
+                        entr_mean = SE(parent=self.parent_subsurface, row_id=4+2*i, column_id=6, n_rows=2, bg=self.color_bg,
+                                       fg=self.color_fg).create_entry(var_entr=self.entr_list_mean[i], var_entr_set=round(np.mean(self.results_0[i]), 3))
+                        entr_std = SE(parent=self.parent_subsurface, row_id=4+2*i, column_id=7, n_rows=2, bg=self.color_bg,
+                                      fg=self.color_fg).create_entry(var_entr=self.entr_list_std[i], var_entr_set=round(np.std(self.results_0[i], ddof=1), 3))
+                    #
+                    self.entr_w.append(entr_min)
+                    self.entr_w.append(entr_max)
+                    self.entr_w.append(entr_mean)
+                    self.entr_w.append(entr_std)
+                #
+                self.var_rb_geochem.set(3)
+                lbl = SE(parent=self.parent_subsurface, row_id=24, column_id=3, n_columns=5, bg=self.color_bg,
+                       fg="black").create_label(text="Chemical composition (weight amounts %)", relief=tk.RAISED)
+                self.lbl_w.append(lbl)
+                self.lbl_chem.append(lbl)
+                for index, element in enumerate(self.list_elements_0, start=0):
+                    if element not in ["U"]:
+                        lbl = SE(parent=self.parent_subsurface, row_id=25+index, column_id=3, bg=self.color_bg,
+                                 fg="black").create_label(text=str(element), relief=tk.RAISED)
+                    else:
+                        lbl = SE(parent=self.parent_subsurface, row_id=25+index, column_id=3, bg=self.color_bg,
+                                 fg="black").create_label(text=str(element)+" (ppm)", relief=tk.RAISED)
+                    self.lbl_w.append(lbl)
+                    self.lbl_chem.append(lbl)
+                #
+                for index, element in enumerate(self.list_elements_0, start=10):
+                    if element not in ["U"]:
+                        entr_min = SE(parent=self.parent_subsurface, row_id=15+index, column_id=4, bg=self.color_bg,
+                                      fg=self.color_fg).create_entry(var_entr=self.entr_list_min[index],
+                                                                     var_entr_set=round(np.min(self.elements_0[element]), 3))
+                        entr_max = SE(parent=self.parent_subsurface, row_id=15+index, column_id=5, bg=self.color_bg,
+                                      fg=self.color_fg).create_entry(var_entr=self.entr_list_max[index],
+                                                                     var_entr_set=round(np.max(self.elements_0[element]), 3))
+                        entr_mean = SE(parent=self.parent_subsurface, row_id=15+index, column_id=6, bg=self.color_bg,
+                                       fg=self.color_fg).create_entry(var_entr=self.entr_list_mean[index],
+                                                                      var_entr_set=round(np.mean(self.elements_0[element]), 3))
+                        entr_std = SE(parent=self.parent_subsurface, row_id=15+index, column_id=7, bg=self.color_bg,
+                                      fg=self.color_fg).create_entry(var_entr=self.entr_list_std[index],
+                                                                     var_entr_set=round(np.std(self.elements_0[element], ddof=1), 3))
+                    else:
+                        ppm_amounts = np.array(self.elements_0[element])*10000
+                        entr_min = SE(parent=self.parent_subsurface, row_id=15+index, column_id=4, bg=self.color_bg,
+                                      fg=self.color_fg).create_entry(var_entr=self.entr_list_min[index],
+                                                                     var_entr_set=round(np.min(ppm_amounts), 3))
+                        entr_max = SE(parent=self.parent_subsurface, row_id=15+index, column_id=5, bg=self.color_bg,
+                                      fg=self.color_fg).create_entry(var_entr=self.entr_list_max[index],
+                                                                     var_entr_set=round(np.max(ppm_amounts), 3))
+                        entr_mean = SE(parent=self.parent_subsurface, row_id=15+index, column_id=6, bg=self.color_bg,
+                                       fg=self.color_fg).create_entry(var_entr=self.entr_list_mean[index],
+                                                                      var_entr_set=round(np.mean(ppm_amounts), 3))
+                        entr_std = SE(parent=self.parent_subsurface, row_id=15+index, column_id=7, bg=self.color_bg,
+                                      fg=self.color_fg).create_entry(var_entr=self.entr_list_std[index],
+                                                                     var_entr_set=round(np.std(ppm_amounts, ddof=1), 3))
+                    #
+                    self.entr_w.append(entr_min)
+                    self.entr_w.append(entr_max)
+                    self.entr_w.append(entr_mean)
+                    self.entr_w.append(entr_std)
+                    self.entr_chem.extend([entr_min, entr_max, entr_mean, entr_std])
+                    #
         #
     def split_thickness(self, thickness, n_units):
         list_thickness = np.random.multinomial(thickness, np.ones(n_units)/n_units, size=1)[0]
         #
         return list_thickness
+    #
+    def extract_data(self, data):
+        print(data)
     #
 if __name__ == "__main__":
     root = tk.Tk()

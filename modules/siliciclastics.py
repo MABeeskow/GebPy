@@ -517,7 +517,7 @@ class sandstone:
     def create_simple_sandstone(self, w_Fe=None, amounts=None, porosity=None, pure=False, dict_output=False):
         #
         results = {}
-        results["rock"] = "sandstone"
+        results["rock"] = "Sandstone"
         #
         # [symbol, atomic number, atomic mass, oxidation states, melting point, boiling point, density, electronegativity]
         chemH = ["H", 1, 1.0078, 1, 13.99, 20.271, 0.084, 2.2]
@@ -1491,7 +1491,7 @@ class shale:
                             amounts=None, porosity=None, dict_output=False):
         #
         results = {}
-        results["rock"] = "shale"
+        results["rock"] = "Shale"
         #
         self.w_C = w_C
         self.w_F = w_F
