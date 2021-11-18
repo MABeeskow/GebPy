@@ -25,7 +25,8 @@ from modules import sequences, geophysics
 max_thickness = 500
 n_units = int(max_thickness/25)
 data = sequences.SedimentaryBasin()
-data_sedbasin = data.create_sedimentary_basin(maximum_thickness=max_thickness, n_units=n_units, csv_stratigraphy=True, csv_lithology=True, excludeRocksalt=True, excludeLimestone=True)
+data_sedbasin = data.create_sedimentary_basin(maximum_thickness=max_thickness, n_units=n_units, csv_stratigraphy=True,
+                                              csv_lithology=True, excludeRocksalt=True, excludeLimestone=True)
 rock = []
 top = []
 bottom = []

@@ -514,7 +514,7 @@ class sandstone:
         #
         return sandstone
     
-    def create_simple_sandstone(self, w_Fe=None, amounts=None, porosity=None, pure=False, dict=False):
+    def create_simple_sandstone(self, w_Fe=None, amounts=None, porosity=None, pure=False, dict_output=False):
         #
         results = {}
         results["rock"] = "sandstone"
@@ -838,6 +838,14 @@ class sandstone:
                 w_Chl = round(abs(np.random.normal(self.amounts[4], 0.025)), 4)
                 w_Ms = round(abs(np.random.normal(self.amounts[5], 0.025)), 4)
                 w_Hem = round(1-w_Qz-w_Afs-w_Pl-w_Cal-w_Chl-w_Ms, 4)
+            elif isinstance(self.amounts, dict):
+                w_Qz = round(abs(np.random.normal(self.amounts["Qz"], 0.025)), 4)
+                w_Afs = round(abs(np.random.normal(self.amounts["Kfs"], 0.025)), 4)
+                w_Pl = round(abs(np.random.normal(self.amounts["Pl"], 0.025)), 4)
+                w_Cal = round(abs(np.random.normal(self.amounts["Cal"], 0.025)), 4)
+                w_Chl = round(abs(np.random.normal(self.amounts["Chl"], 0.025)), 4)
+                w_Ms = round(abs(np.random.normal(self.amounts["Ms"], 0.025)), 4)
+                w_Hem = round(1-w_Qz-w_Afs-w_Pl-w_Cal-w_Chl-w_Ms, 4)
             #
             if w_Qz >= 0.0 and w_Afs >= 0.0 and w_Pl >= 0.0 and w_Cal >= 0.0 and w_Chl >= 0.0 and w_Ms  >= 0.0 and w_Hem >= 0.0:
                 sumMin = round(w_Qz + w_Afs + w_Pl + w_Cal + w_Chl + w_Ms + w_Hem, 4)
@@ -1052,7 +1060,7 @@ class sandstone:
             data.append(concentrations)
             data.append(amounts)
         #
-        if dict == False:
+        if dict_output == False:
             return data
         else:
             return results
@@ -1480,7 +1488,7 @@ class shale:
         return data
     #
     def create_simple_shale(self, w_C=None, w_F=None, w_Na=None, w_Mg=None, w_S=None, w_K=None, w_Ca=None, w_Fe=None,
-                            amounts=None, porosity=None, dict=False):
+                            amounts=None, porosity=None, dict_output=False):
         #
         results = {}
         results["rock"] = "shale"
@@ -1817,6 +1825,17 @@ class shale:
                 w_mnt = round(abs(np.random.normal(self.amounts[6], 0.025)), 4)
                 w_bt = round(abs(np.random.normal(self.amounts[7], 0.025)), 4)
                 w_ms = round(1-w_org-w_qz-w_cal-w_ilt-w_kln-w_mnt-w_bt-w_urn, 4)
+            elif isinstance(self.amounts, dict):
+                w_urn = round(abs(np.random.normal(self.amounts["Urn"], 5e-07)), 6)
+                w_org = round(abs(np.random.normal(self.amounts["Org"], 0.025)), 4)
+                w_qz = round(abs(np.random.normal(self.amounts["Qz"], 0.025)), 4)
+                w_cal = round(abs(np.random.normal(self.amounts["Cal"], 0.025)), 4)
+                w_Py = round(abs(np.random.normal(self.amounts["Py"], 0.025)), 4)
+                w_ilt = round(abs(np.random.normal(self.amounts["Ilt"], 0.025)), 4)
+                w_kln = round(abs(np.random.normal(self.amounts["Kln"], 0.025)), 4)
+                w_mnt = round(abs(np.random.normal(self.amounts["Mnt"], 0.025)), 4)
+                w_bt = round(abs(np.random.normal(self.amounts["Bt"], 0.025)), 4)
+                w_ms = round(1-w_org-w_qz-w_cal-w_ilt-w_kln-w_mnt-w_bt-w_urn, 4)
             #
             if w_org >= 0.0 and w_qz >= 0.0 and w_cal >= 0.0 and w_Py >= 0.0 and w_ilt >= 0.0 and w_kln >= 0.0 and w_mnt >= 0.0 and w_bt >= 0.0 and w_ms >= 0.0 and w_urn >= 0.0:
                 sumMin = round(w_org + w_qz + w_cal + w_Py + w_ilt + w_kln + w_mnt + w_bt + w_ms + w_urn, 4)
@@ -1914,7 +1933,7 @@ class shale:
         data.append(concentrations)
         data.append(amounts)
         #
-        if dict == False:
+        if dict_output == False:
             return data
         else:
             return results

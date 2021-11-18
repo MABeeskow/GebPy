@@ -6,7 +6,7 @@
 # Name:		gui.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		15.11.2021
+# Date:		17.11.2021
 
 #-----------------------------------------------
 
@@ -22,6 +22,7 @@ from modules.pyllosilicates import Pyllosilicates
 from modules.minerals import feldspars
 from modules.siliciclastics import sandstone, shale
 from modules.carbonates import limestone, dolomite
+from modules.sequences import SedimentaryBasin
 from modules.ore import Ores
 from modules.igneous import Plutonic
 from modules.evaporites import Evaporites
@@ -133,9 +134,20 @@ class GebPyGUI(tk.Frame):
         #
         ## Button
         self.btn_randseq = SE(parent=self.parent, row_id=22, column_id=0, n_rows=2, n_columns=2, bg=self.color_accent_02,
-                              fg=self.color_fg_dark).create_button(text="Create Random Sequence")
+                              fg=self.color_fg_dark).create_button(text="Create Random Sequence",
+                                                                   command=lambda var_btn="random": self.pressed_button(var_btn))
         self.btn_custseq = SE(parent=self.parent, row_id=24, column_id=0, n_rows=2, n_columns=2, bg=self.color_accent_02,
                               fg=self.color_fg_dark).create_button(text="Create Custom Sequence")
+    #
+    def pressed_button(self, var_btn):
+        if var_btn == "random":
+            Subsurface(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
+                       color_acc=[self.color_accent_03, self.color_accent_04], subsurface=var_btn, lbl_w=self.lbl_w,
+                       entr_w=self.entr_w)
+        else:
+            Subsurface(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
+                       color_acc=[self.color_accent_03, self.color_accent_04], subsurface=var_btn, lbl_w=self.lbl_w,
+                       entr_w=self.entr_w)
     #
     def select_opt(self, var_opt):
         # Minerals
@@ -1074,9 +1086,9 @@ class Rocks:
         data_all = []
         for i in range(var_entr_start):
             if self.rock == "Sandstone":
-                data = sandstone(fluid="water", actualThickness=0).create_simple_sandstone(dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
+                data = sandstone(fluid="water", actualThickness=0).create_simple_sandstone(dict_output=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
             elif self.rock == "Shale":
-                data = shale(fluid="water").create_simple_shale(dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
+                data = shale(fluid="water").create_simple_shale(dict_output=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
             elif self.rock == "Limestone":
                 data = limestone(fluid="water", actualThickness=0).create_simple_limestone(dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
             elif self.rock == "Dolomite Rock":
@@ -1087,11 +1099,11 @@ class Rocks:
             elif self.rock == "Intermediate Rock":
                 data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_intermediate()
             elif self.rock == "Granite":
-                data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_simple_granite()
+                data = Plutonic(fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_simple_granite()
             elif self.rock == "Gabbro":
-                data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_simple_gabbro()
+                data = Plutonic(fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_simple_gabbro()
             elif self.rock == "Diorite":
-                data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_simple_diorite()
+                data = Plutonic(fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_simple_diorite()
             elif self.rock == "Granodiorite":
                 data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_simple_granodiorite()
             elif self.rock == "Monzonite":
@@ -1376,9 +1388,9 @@ class Rocks:
         data_all = []
         for i in range(var_entr.get()):
             if self.rock == "Sandstone":
-                data = sandstone(fluid="water", actualThickness=0).create_simple_sandstone(dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
+                data = sandstone(fluid="water", actualThickness=0).create_simple_sandstone(dict_output=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
             elif self.rock == "Shale":
-                data = shale(fluid="water").create_simple_shale(dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
+                data = shale(fluid="water").create_simple_shale(dict_output=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
             elif self.rock == "Limestone":
                 data = limestone(fluid="water", actualThickness=0).create_simple_limestone(dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
             elif self.rock == "Dolomite Rock":
@@ -1389,11 +1401,11 @@ class Rocks:
             elif self.rock == "Intermediate Rock":
                 data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_intermediate()
             elif self.rock == "Granite":
-                data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_simple_granite()
+                data = Plutonic(fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_simple_granite()
             elif self.rock == "Gabbro":
-                data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_simple_gabbro()
+                data = Plutonic(fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_simple_gabbro()
             elif self.rock == "Diorite":
-                data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_simple_diorite()
+                data = Plutonic(fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_simple_diorite()
             elif self.rock == "Granodiorite":
                 data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_simple_granodiorite()
             elif self.rock == "Monzonite":
@@ -1789,6 +1801,166 @@ class Rocks:
     #
     def __call__(self):
         return self.lbl_w, self.entr_w
+#
+class Subsurface:
+    #
+    def __init__(self, parent, color_bg, color_fg, color_acc, subsurface, lbl_w, entr_w):
+        #
+        try:
+            for lbl in lbl_w:
+                lbl.grid_forget()
+            for entr in entr_w:
+                entr.grid_forget()
+            lbl_w.clear()
+            entr_w.clear()
+        except:
+            pass
+        #
+        self.parent_subsurface = parent
+        self.color_bg = color_bg
+        self.color_fg = color_fg
+        self.color_acc_01 = color_acc[0]
+        self.color_acc_02 = color_acc[1]
+        self.var_entr = tk.IntVar()
+        var_entr_start = 100
+        self.var_phi0 = tk.IntVar()
+        var_phi0_start = 5
+        self.var_phi1 = tk.IntVar()
+        var_phi1_start = 30
+        self.var_rb = tk.IntVar()
+        self.var_rb_geochem = tk.IntVar()
+        var_rb_start = 0
+        var_rb_geochem_start = 2
+        self.subsurface = subsurface
+        self.lbl_w = lbl_w
+        self.entr_w = entr_w
+        self.lbl_chem = []
+        self.entr_chem = []
+        #
+        if self.subsurface == "random":
+            self.create_random_sequences(thickness=1000, style="siliciclastic")
+            # data = SedimentaryBasin().create_sedimentary_basin()
+            # for item in data:
+            #     print(item)
+        #
+    def create_random_sequences(self, thickness, style):
+        #
+        results_subsurface = {}
+        #
+        if style == "siliciclastic":
+            rocks = ["sandstone", "shale"]
+            basement = ["granite", "gabbro", "diorite"]
+            list_rocks = []
+            #
+            n_units = rd.randint(10, 20)
+            for i in range(n_units):
+                if len(list_rocks) < n_units - 1:
+                    magicnumber = rd.randint(0, len(rocks)-1)
+                    list_rocks.append(rocks[magicnumber])
+                else:
+                    magicnumber = rd.randint(0, len(basement)-1)
+                    list_rocks.append(basement[magicnumber])
+            list_thickness = self.split_thickness(thickness=thickness, n_units=n_units)
+            #
+            for index, rock in enumerate(list_rocks, start=0):
+                results_subsurface[index] = {}
+                if rock == "sandstone":
+                    if index == 0:
+                        thickness_unit = self.split_thickness(thickness=list_thickness[index], n_units=10)
+                        for i, d in enumerate(thickness_unit, start=0):
+                            if i == 0:
+                                results_subsurface[index][i] = sandstone(fluid="water", actualThickness=0).create_simple_sandstone(dict_output=True, porosity=rd.uniform(0.05, 0.3))
+                                results_subsurface[index][i]["thickness"] = d
+                            else:
+                                results_subsurface[index][i] = sandstone(fluid="water", actualThickness=0).create_simple_sandstone(dict_output=True, porosity=rd.uniform(0.05, 0.3),
+                                                                                                                                   amounts=results_subsurface[index][i-1]["mineralogy"])
+                                results_subsurface[index][i]["thickness"] = d
+                    else:
+                        thickness_unit = self.split_thickness(thickness=list_thickness[index], n_units=10)
+                        for i, d in enumerate(thickness_unit, start=0):
+                            if i == 0:
+                                if list_rocks[index-1] == "shale":
+                                    magicnumber = rd.randint(0, 2)
+                                    if magicnumber == 0:
+                                        results_subsurface[index][i] = sandstone(fluid="gas", actualThickness=0).create_simple_sandstone(dict_output=True, porosity=rd.uniform(0.05, 0.3))
+                                    elif magicnumber == 1:
+                                        results_subsurface[index][i] = sandstone(fluid="oil", actualThickness=0).create_simple_sandstone(dict_output=True, porosity=rd.uniform(0.05, 0.3))
+                                    elif magicnumber == 2:
+                                        results_subsurface[index][i] = sandstone(fluid="water", actualThickness=0).create_simple_sandstone(dict_output=True, porosity=rd.uniform(0.05, 0.3))
+                                elif list_rocks[index-1] == "sandstone" and results_subsurface[index-1][i]["fluid"] == "gas":
+                                    results_subsurface[index][i] = sandstone(fluid="oil", actualThickness=0).create_simple_sandstone(dict_output=True, porosity=rd.uniform(0.05, 0.3))
+                                elif list_rocks[index-1] == "sandstone" and results_subsurface[index-1][i]["fluid"] == "oil":
+                                    results_subsurface[index][i] = sandstone(fluid="water", actualThickness=0).create_simple_sandstone(dict_output=True, porosity=rd.uniform(0.05, 0.3))
+                                else:
+                                    results_subsurface[index][i] = sandstone(fluid="water", actualThickness=0).create_simple_sandstone(dict_output=True, porosity=rd.uniform(0.05, 0.3))
+                                #
+                                results_subsurface[index][i]["thickness"] = d
+                            else:
+                                if list_rocks[index-1] == "shale":
+                                    magicnumber = rd.randint(0, 2)
+                                    if magicnumber == 0:
+                                        results_subsurface[index][i] = sandstone(fluid="gas", actualThickness=0).create_simple_sandstone(dict_output=True, porosity=rd.uniform(0.05, 0.3),
+                                                                                                                                         amounts=results_subsurface[index][i-1]["mineralogy"])
+                                    elif magicnumber == 1:
+                                        results_subsurface[index][i] = sandstone(fluid="oil", actualThickness=0).create_simple_sandstone(dict_output=True, porosity=rd.uniform(0.05, 0.3),
+                                                                                                                                         amounts=results_subsurface[index][i-1]["mineralogy"])
+                                    if magicnumber == 2:
+                                        results_subsurface[index][i] = sandstone(fluid="water", actualThickness=0).create_simple_sandstone(dict_output=True, porosity=rd.uniform(0.05, 0.3),
+                                                                                                                                           amounts=results_subsurface[index][i-1]["mineralogy"])
+                                elif list_rocks[index-1] == "sandstone" and results_subsurface[index-1][i]["fluid"] == "gas":
+                                    results_subsurface[index][i] = sandstone(fluid="oil", actualThickness=0).create_simple_sandstone(dict_output=True, porosity=rd.uniform(0.05, 0.3),
+                                                                                                                                     amounts=results_subsurface[index][i-1]["mineralogy"])
+                                elif list_rocks[index-1] == "sandstone" and results_subsurface[index-1][i]["fluid"] == "oil":
+                                    results_subsurface[index][i] = sandstone(fluid="water", actualThickness=0).create_simple_sandstone(dict_output=True, porosity=rd.uniform(0.05, 0.3),
+                                                                                                                                       amounts=results_subsurface[index][i-1]["mineralogy"])
+                                else:
+                                    results_subsurface[index][i] = sandstone(fluid="water", actualThickness=0).create_simple_sandstone(dict_output=True, porosity=rd.uniform(0.05, 0.3),
+                                                                                                                                       amounts=results_subsurface[index][i-1]["mineralogy"])
+                                #
+                                results_subsurface[index][i]["thickness"] = d
+                #
+                elif rock == "shale":
+                    thickness_unit = self.split_thickness(thickness=list_thickness[index], n_units=10)
+                    for i, d in enumerate(thickness_unit, start=0):
+                        if i == 0:
+                            results_subsurface[index][i] = shale(fluid="water").create_simple_shale(dict_output=True, porosity=rd.uniform(0, 0.1))
+                        else:
+                            results_subsurface[index][i] = shale(fluid="water").create_simple_shale(dict_output=True, porosity=rd.uniform(0, 0.1), amounts=results_subsurface[index][i-1]["mineralogy"])
+                #
+                elif rock == "granite":
+                    thickness_unit = self.split_thickness(thickness=list_thickness[index], n_units=10)
+                    for i, d in enumerate(thickness_unit, start=0):
+                        if i == 0:
+                            results_subsurface[index][i] = Plutonic(fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(0, 0.05)).create_simple_granite()
+                        else:
+                            results_subsurface[index][i] = Plutonic(fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(0, 0.05)).create_simple_granite(amounts=results_subsurface[index][i-1]["mineralogy"])
+                elif rock == "gabbro":
+                    thickness_unit = self.split_thickness(thickness=list_thickness[index], n_units=10)
+                    for i, d in enumerate(thickness_unit, start=0):
+                        if i == 0:
+                            results_subsurface[index][i] = Plutonic(fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(0, 0.05)).create_simple_gabbro()
+                        else:
+                            results_subsurface[index][i] = Plutonic(fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(0, 0.05)).create_simple_gabbro(amounts=results_subsurface[index][i-1]["mineralogy"])
+                elif rock == "diorite":
+                    thickness_unit = self.split_thickness(thickness=list_thickness[index], n_units=10)
+                    for i, d in enumerate(thickness_unit, start=0):
+                        if i == 0:
+                            results_subsurface[index][i] = Plutonic(fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(0, 0.05)).create_simple_diorite()
+                        else:
+                            results_subsurface[index][i] = Plutonic(fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(0, 0.05)).create_simple_diorite(amounts=results_subsurface[index][i-1]["mineralogy"])
+                #
+                results_subsurface[index][i]["thickness"] = list_thickness[index]
+        #
+        print("Summary:")
+        for item in results_subsurface.values():
+            for item_part in item.values():
+                print(item_part["rock"], item_part["rho"])
+
+        #
+    def split_thickness(self, thickness, n_units):
+        list_thickness = np.random.multinomial(thickness, np.ones(n_units)/n_units, size=1)[0]
+        #
+        return list_thickness
     #
 if __name__ == "__main__":
     root = tk.Tk()

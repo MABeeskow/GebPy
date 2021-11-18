@@ -1825,7 +1825,8 @@ class SedimentaryBasin:
         #
         return sequence
     #
-    def create_sedimentary_basin(self, maximum_thickness=500, n_units = 15, csv_stratigraphy=False, csv_lithology=False, excludeRocksalt=False, excludeLimestone=False):
+    def create_sedimentary_basin(self, maximum_thickness=500, n_units = 15, csv_stratigraphy=False, csv_lithology=False,
+                                 excludeRocksalt=False, excludeLimestone=False):
         self.maximum_thickness = maximum_thickness
         sequence = []
         thickness_list = [0, rd.randint(5, 10), rd.randint(5, 15)]

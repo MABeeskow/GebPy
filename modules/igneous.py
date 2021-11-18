@@ -111,10 +111,10 @@ class plutonic:
     #
 class Plutonic:
     #
-    def __init__(self, fluid, actualThickness, dict=False, porosity=None):
+    def __init__(self, fluid, actualThickness, dict_output=False, porosity=None):
         self.fluid = fluid
         self.actualThickness = actualThickness
-        self.dict = dict
+        self.dict_output = dict_output
         self.porosity = porosity
     #
     def create_felsic(self, w_Na=None, w_Mg=None, w_K=None, w_Ca=None, w_Fe = None, amounts=None):
@@ -271,7 +271,7 @@ class Plutonic:
         poisson_elastic = (3*K_bulk - 2*G_bulk)/(6*K_bulk + 2*G_bulk)
         poisson_mineralogical = w_qz*quartz[3][3] + w_kfs*alkalifeldspar[3][3] + w_pl*plagioclase[3][3] + w_bt*biotite[3][3] + w_ms*muscovite[3][3] + w_amph*amphibole[3][3]
         #
-        if self.dict == False:
+        if self.dict_output == False:
             data.append([round(rho, 3), round(rhoSolid, 3), round(water[2] / 1000, 6)])
             data.append([round(K_bulk*10**(-6), 2), round(G_bulk*10**(-6), 2), round(E_bulk*10**(-6), 2), round(poisson_mineralogical, 3)])
             data.append([round(vP, 2), round(vS, 2), round(vP_solid, 2), round(water[4][0], 2)])
@@ -470,7 +470,7 @@ class Plutonic:
         poisson_elastic = (3*K_bulk - 2*G_bulk)/(6*K_bulk + 2*G_bulk)
         poisson_mineralogical = w_qz*quartz[3][3] + w_kfs*alkalifeldspar[3][3] + w_pl*plagioclase[3][3] + w_bt*biotite[3][3] + w_amph*amphibole[3][3] + w_pyx*pyroxene[3][3]
         #
-        if self.dict == False:
+        if self.dict_output == False:
             data.append([round(rho, 3), round(rhoSolid, 3), round(water[2] / 1000, 6)])
             data.append([round(K_bulk*10**(-6), 2), round(G_bulk*10**(-6), 2), round(E_bulk*10**(-6), 2), round(poisson_mineralogical, 3)])
             data.append([round(vP, 2), round(vS, 2), round(vP_solid, 2), round(water[4][0], 2)])
@@ -619,6 +619,15 @@ class Plutonic:
                 w_act = round(abs(np.random.normal(self.amounts[5], 0.025)), 4)
                 w_tr = round(abs(np.random.normal(self.amounts[6], 0.025)), 4)
                 w_aug = round(1-w_qz-w_kfs-w_pl-w_bt-w_ms-w_act-w_tr, 4)
+            elif isinstance(self.amounts, dict):
+                w_qz = round(abs(np.random.normal(self.amounts["Qz"], 0.025)), 4)
+                w_kfs = round(abs(np.random.normal(self.amounts["Kfs"], 0.025)), 4)
+                w_pl = round(abs(np.random.normal(self.amounts["Pl"], 0.025)), 4)
+                w_bt = round(abs(np.random.normal(self.amounts["Bt"], 0.025)), 4)
+                w_ms = round(abs(np.random.normal(self.amounts["Ms"], 0.025)), 4)
+                w_act = round(abs(np.random.normal(self.amounts["Act"], 0.025)), 4)
+                w_tr = round(abs(np.random.normal(self.amounts["Tr"], 0.025)), 4)
+                w_aug = round(1-w_qz-w_kfs-w_pl-w_bt-w_ms-w_act-w_tr, 4)
             #
             if w_qz >= 0.0 and w_kfs >= 0.0 and w_pl >= 0.0 and w_bt >= 0.0 and w_ms >= 0.0 and w_act >= 0.0 and w_tr >= 0.0 and w_aug >= 0.0:
                 sumMin = round(w_qz + w_kfs + w_pl + w_bt + w_ms + w_act + w_tr + w_aug, 4)
@@ -696,7 +705,7 @@ class Plutonic:
         poisson_elastic = (3*K_bulk - 2*G_bulk)/(6*K_bulk + 2*G_bulk)
         poisson_mineralogical = w_qz*quartz[3][3] + w_kfs*alkalifeldspar[3][3] + w_pl*plagioclase[3][3] + w_bt*biotite[3][3] + w_ms*muscovite[3][3] + w_act*actinolite[3][3] + w_tr*tremolite[3][3] + w_aug*augite[3][3]
         #
-        if self.dict == False:
+        if self.dict_output == False:
             data.append([round(rho, 3), round(rhoSolid, 3), round(water[2] / 1000, 6)])
             data.append([round(K_bulk*10**(-6), 2), round(G_bulk*10**(-6), 2), round(E_bulk*10**(-6), 2), round(poisson_mineralogical, 3)])
             data.append([round(vP, 2), round(vS, 2), round(vP_solid, 2), round(water[4][0], 2)])
@@ -920,7 +929,7 @@ class Plutonic:
         poisson_elastic = (3*K_bulk - 2*G_bulk)/(6*K_bulk + 2*G_bulk)
         poisson_mineralogical = w_qz*quartz[3][3] + w_kfs*alkalifeldspar[3][3] + w_pl*plagioclase[3][3] + w_bt*biotite[3][3] + w_ms*muscovite[3][3] + w_act*actinolite[3][3] + w_tr*tremolite[3][3] + w_aug*augite[3][3]
         #
-        if self.dict == False:
+        if self.dict_output == False:
             data.append([round(rho, 3), round(rhoSolid, 3), round(water[2] / 1000, 6)])
             data.append([round(K_bulk*10**(-6), 2), round(G_bulk*10**(-6), 2), round(E_bulk*10**(-6), 2), round(poisson_mineralogical, 3)])
             data.append([round(vP, 2), round(vS, 2), round(vP_solid, 2), round(water[4][0], 2)])
@@ -1144,7 +1153,7 @@ class Plutonic:
         poisson_elastic = (3*K_bulk - 2*G_bulk)/(6*K_bulk + 2*G_bulk)
         poisson_mineralogical = w_qz*quartz[3][3] + w_kfs*alkalifeldspar[3][3] + w_pl*plagioclase[3][3] + w_bt*biotite[3][3] + w_ms*muscovite[3][3] + w_act*actinolite[3][3] + w_tr*tremolite[3][3] + w_aug*augite[3][3]
         #
-        if self.dict == False:
+        if self.dict_output == False:
             data.append([round(rho, 3), round(rhoSolid, 3), round(water[2] / 1000, 6)])
             data.append([round(K_bulk*10**(-6), 2), round(G_bulk*10**(-6), 2), round(E_bulk*10**(-6), 2), round(poisson_mineralogical, 3)])
             data.append([round(vP, 2), round(vS, 2), round(vP_solid, 2), round(water[4][0], 2)])
@@ -1294,6 +1303,15 @@ class Plutonic:
                 w_act = round(abs(np.random.normal(self.amounts[5], 0.025)), 4)
                 w_tr = round(abs(np.random.normal(self.amounts[6], 0.025)), 4)
                 w_aug = round(1-w_qz-w_kfs-w_pl-w_bt-w_ms-w_act-w_tr, 4)
+            elif isinstance(self.amounts, dict):
+                w_qz = round(abs(np.random.normal(self.amounts["Qz"], 0.025)), 4)
+                w_kfs = round(abs(np.random.normal(self.amounts["Kfs"], 0.025)), 4)
+                w_pl = round(abs(np.random.normal(self.amounts["Pl"], 0.025)), 4)
+                w_bt = round(abs(np.random.normal(self.amounts["Bt"], 0.025)), 4)
+                w_ms = round(abs(np.random.normal(self.amounts["Ms"], 0.025)), 4)
+                w_act = round(abs(np.random.normal(self.amounts["Act"], 0.025)), 4)
+                w_tr = round(abs(np.random.normal(self.amounts["Tr"], 0.025)), 4)
+                w_aug = round(1-w_qz-w_kfs-w_pl-w_bt-w_ms-w_act-w_tr, 4)
             #
             if w_qz >= 0.0 and w_kfs >= 0.0 and w_pl >= 0.0 and w_bt >= 0.0 and w_ms >= 0.0 and w_act >= 0.0 and w_tr >= 0.0 and w_aug >= 0.0:
                 sumMin = round(w_qz + w_kfs + w_pl + w_bt + w_ms + w_act + w_tr + w_aug, 4)
@@ -1370,7 +1388,7 @@ class Plutonic:
         poisson_elastic = (3*K_bulk - 2*G_bulk)/(6*K_bulk + 2*G_bulk)
         poisson_mineralogical = w_qz*quartz[3][3] + w_kfs*alkalifeldspar[3][3] + w_pl*plagioclase[3][3] + w_bt*biotite[3][3] + w_ms*muscovite[3][3] + w_act*actinolite[3][3] + w_tr*tremolite[3][3] + w_aug*augite[3][3]
         #
-        if self.dict == False:
+        if self.dict_output == False:
             data.append([round(rho, 3), round(rhoSolid, 3), round(water[2] / 1000, 6)])
             data.append([round(K_bulk*10**(-6), 2), round(G_bulk*10**(-6), 2), round(E_bulk*10**(-6), 2), round(poisson_mineralogical, 3)])
             data.append([round(vP, 2), round(vS, 2), round(vP_solid, 2), round(water[4][0], 2)])
@@ -1518,6 +1536,15 @@ class Plutonic:
                 w_act = round(abs(np.random.normal(self.amounts[5], 0.025)), 4)
                 w_tr = round(abs(np.random.normal(self.amounts[6], 0.025)), 4)
                 w_aug = round(1-w_qz-w_kfs-w_pl-w_bt-w_ms-w_act-w_tr, 4)
+            elif isinstance(self.amounts, dict):
+                w_qz = round(abs(np.random.normal(self.amounts["Qz"], 0.025)), 4)
+                w_kfs = round(abs(np.random.normal(self.amounts["Kfs"], 0.025)), 4)
+                w_pl = round(abs(np.random.normal(self.amounts["Pl"], 0.025)), 4)
+                w_bt = round(abs(np.random.normal(self.amounts["Bt"], 0.025)), 4)
+                w_ms = round(abs(np.random.normal(self.amounts["Ms"], 0.025)), 4)
+                w_act = round(abs(np.random.normal(self.amounts["Act"], 0.025)), 4)
+                w_tr = round(abs(np.random.normal(self.amounts["Tr"], 0.025)), 4)
+                w_aug = round(1-w_qz-w_kfs-w_pl-w_bt-w_ms-w_act-w_tr, 4)
             #
             if w_qz >= 0.0 and w_kfs >= 0.0 and w_pl >= 0.0 and w_bt >= 0.0 and w_ms >= 0.0 and w_act >= 0.0 and w_tr >= 0.0 and w_aug >= 0.0:
                 sumMin = round(w_qz + w_kfs + w_pl + w_bt + w_ms + w_act + w_tr + w_aug, 4)
@@ -1595,7 +1622,7 @@ class Plutonic:
         poisson_elastic = (3*K_bulk - 2*G_bulk)/(6*K_bulk + 2*G_bulk)
         poisson_mineralogical = w_qz*quartz[3][3] + w_kfs*alkalifeldspar[3][3] + w_pl*plagioclase[3][3] + w_bt*biotite[3][3] + w_ms*muscovite[3][3] + w_act*actinolite[3][3] + w_tr*tremolite[3][3] + w_aug*augite[3][3]
         #
-        if self.dict == False:
+        if self.dict_output == False:
             data.append([round(rho, 3), round(rhoSolid, 3), round(water[2] / 1000, 6)])
             data.append([round(K_bulk*10**(-6), 2), round(G_bulk*10**(-6), 2), round(E_bulk*10**(-6), 2), round(poisson_mineralogical, 3)])
             data.append([round(vP, 2), round(vS, 2), round(vP_solid, 2), round(water[4][0], 2)])
@@ -1820,7 +1847,7 @@ class Plutonic:
         poisson_elastic = (3*K_bulk - 2*G_bulk)/(6*K_bulk + 2*G_bulk)
         poisson_mineralogical = w_qz*quartz[3][3] + w_kfs*alkalifeldspar[3][3] + w_pl*plagioclase[3][3] + w_bt*biotite[3][3] + w_ms*muscovite[3][3] + w_act*actinolite[3][3] + w_tr*tremolite[3][3] + w_aug*augite[3][3]
         #
-        if self.dict == False:
+        if self.dict_output == False:
             data.append([round(rho, 3), round(rhoSolid, 3), round(water[2] / 1000, 6)])
             data.append([round(K_bulk*10**(-6), 2), round(G_bulk*10**(-6), 2), round(E_bulk*10**(-6), 2), round(poisson_mineralogical, 3)])
             data.append([round(vP, 2), round(vS, 2), round(vP_solid, 2), round(water[4][0], 2)])
@@ -2045,7 +2072,7 @@ class Plutonic:
         poisson_elastic = (3*K_bulk - 2*G_bulk)/(6*K_bulk + 2*G_bulk)
         poisson_mineralogical = w_qz*quartz[3][3] + w_kfs*alkalifeldspar[3][3] + w_pl*plagioclase[3][3] + w_bt*biotite[3][3] + w_ms*muscovite[3][3] + w_act*actinolite[3][3] + w_tr*tremolite[3][3] + w_aug*augite[3][3]
         #
-        if self.dict == False:
+        if self.dict_output == False:
             data.append([round(rho, 3), round(rhoSolid, 3), round(water[2] / 1000, 6)])
             data.append([round(K_bulk*10**(-6), 2), round(G_bulk*10**(-6), 2), round(E_bulk*10**(-6), 2), round(poisson_mineralogical, 3)])
             data.append([round(vP, 2), round(vS, 2), round(vP_solid, 2), round(water[4][0], 2)])
@@ -2229,7 +2256,7 @@ class Plutonic:
         poisson_elastic = (3*K_bulk - 2*G_bulk)/(6*K_bulk + 2*G_bulk)
         poisson_mineralogical = w_qz*quartz[3][3] + w_kfs*alkalifeldspar[3][3] + w_pl*plagioclase[3][3] + w_ms*muscovite[3][3] + w_trm*schorl[3][3] + w_tpz*topaz[3][3]
         #
-        if self.dict == False:
+        if self.dict_output == False:
             data.append([round(rho, 3), round(rhoSolid, 3), round(water[2] / 1000, 6)])
             data.append([round(K_bulk*10**(-6), 2), round(G_bulk*10**(-6), 2), round(E_bulk*10**(-6), 2), round(poisson_mineralogical, 3)])
             data.append([round(vP, 2), round(vS, 2), round(vP_solid, 2), round(water[4][0], 2)])
@@ -2413,7 +2440,7 @@ class Plutonic:
         poisson_elastic = (3*K_bulk - 2*G_bulk)/(6*K_bulk + 2*G_bulk)
         poisson_mineralogical = w_qz*quartz[3][3] + w_kfs*alkalifeldspar[3][3] + w_pl*plagioclase[3][3] + w_ms*muscovite[3][3] + w_trm*schorl[3][3] + w_tpz*topaz[3][3]
         #
-        if self.dict == False:
+        if self.dict_output == False:
             data.append([round(rho, 3), round(rhoSolid, 3), round(water[2] / 1000, 6)])
             data.append([round(K_bulk*10**(-6), 2), round(G_bulk*10**(-6), 2), round(E_bulk*10**(-6), 2), round(poisson_mineralogical, 3)])
             data.append([round(vP, 2), round(vS, 2), round(vP_solid, 2), round(water[4][0], 2)])
