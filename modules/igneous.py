@@ -296,7 +296,7 @@ class Plutonic:
             for index, mineral in enumerate(mineral_list, start=0):
                 results["mineralogy"][mineral] = amounts[index]
             #
-            results["phi"] = phi
+            results["phi"] = round(phi, 4)
             results["fluid"] = self.fluid
             #
             results["rho"] = round(rho*1000, 4)
@@ -495,7 +495,7 @@ class Plutonic:
             for index, mineral in enumerate(mineral_list, start=0):
                 results["mineralogy"][mineral] = amounts[index]
             #
-            results["phi"] = phi
+            results["phi"] = round(phi, 4)
             results["fluid"] = self.fluid
             #
             results["rho"] = round(rho*1000, 4)
@@ -730,7 +730,7 @@ class Plutonic:
             for index, mineral in enumerate(mineral_list, start=0):
                 results["mineralogy"][mineral] = amounts[index]
             #
-            results["phi"] = phi
+            results["phi"] = round(phi, 4)
             results["fluid"] = self.fluid
             #
             results["rho"] = round(rho*1000, 4)
@@ -954,7 +954,7 @@ class Plutonic:
             for index, mineral in enumerate(mineral_list, start=0):
                 results["mineralogy"][mineral] = amounts[index]
             #
-            results["phi"] = phi
+            results["phi"] = round(phi, 4)
             results["fluid"] = self.fluid
             #
             results["rho"] = round(rho*1000, 4)
@@ -1178,7 +1178,7 @@ class Plutonic:
             for index, mineral in enumerate(mineral_list, start=0):
                 results["mineralogy"][mineral] = amounts[index]
             #
-            results["phi"] = phi
+            results["phi"] = round(phi, 4)
             results["fluid"] = self.fluid
             #
             results["rho"] = round(rho*1000, 4)
@@ -1413,7 +1413,7 @@ class Plutonic:
             for index, mineral in enumerate(mineral_list, start=0):
                 results["mineralogy"][mineral] = amounts[index]
             #
-            results["phi"] = phi
+            results["phi"] = round(phi, 4)
             results["fluid"] = self.fluid
             #
             results["rho"] = round(rho*1000, 4)
@@ -1647,7 +1647,7 @@ class Plutonic:
             for index, mineral in enumerate(mineral_list, start=0):
                 results["mineralogy"][mineral] = amounts[index]
             #
-            results["phi"] = phi
+            results["phi"] = round(phi, 4)
             results["fluid"] = self.fluid
             #
             results["rho"] = round(rho*1000, 4)
@@ -1872,7 +1872,7 @@ class Plutonic:
             for index, mineral in enumerate(mineral_list, start=0):
                 results["mineralogy"][mineral] = amounts[index]
             #
-            results["phi"] = phi
+            results["phi"] = round(phi, 4)
             results["fluid"] = self.fluid
             #
             results["rho"] = round(rho*1000, 4)
@@ -2097,7 +2097,7 @@ class Plutonic:
             for index, mineral in enumerate(mineral_list, start=0):
                 results["mineralogy"][mineral] = amounts[index]
             #
-            results["phi"] = phi
+            results["phi"] = round(phi, 4)
             results["fluid"] = self.fluid
             #
             results["rho"] = round(rho*1000, 4)
@@ -2281,7 +2281,7 @@ class Plutonic:
             for index, mineral in enumerate(mineral_list, start=0):
                 results["mineralogy"][mineral] = amounts[index]
             #
-            results["phi"] = phi
+            results["phi"] = round(phi, 4)
             results["fluid"] = self.fluid
             #
             results["rho"] = round(rho*1000, 4)
@@ -2465,7 +2465,7 @@ class Plutonic:
             for index, mineral in enumerate(mineral_list, start=0):
                 results["mineralogy"][mineral] = amounts[index]
             #
-            results["phi"] = phi
+            results["phi"] = round(phi, 4)
             results["fluid"] = self.fluid
             #
             results["rho"] = round(rho*1000, 4)

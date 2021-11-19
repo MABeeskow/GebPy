@@ -109,7 +109,7 @@ for i in range(len(colors)):
     for j in range(len(units_sorted)):
         if units_sorted[j][0] == colors[i][0] and colors[i][1] not in units_sorted[j]:
             units_sorted[j].append(colors[i][1])
-#print("units_sorted:", units_sorted)
+print("units_sorted:", units_sorted)
 legend_lithology = []
 n_units = []
 for i in range(len(units_sorted)):
@@ -118,7 +118,8 @@ for i in range(len(units_sorted)):
 print("")
 for i in range(len(n_units)):
     print(units_sorted[i][0], n_units[i])
-print("sum:", sum(n_units))
+print("sum:", sum(n_units), n_units)
+print(legend_lithology)
 
 ## PLOTTING
 fig, ax = plt.subplots(1, 1, dpi=100)

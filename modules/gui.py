@@ -33,6 +33,8 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from matplotlib.ticker import NullFormatter
+import matplotlib.patches as mpatches
 
 ## GUI
 class GebPyGUI(tk.Frame):
@@ -1879,7 +1881,7 @@ class Subsurface:
         #
         results_subsurface = {}
         self.results_sorted = {}
-        properties = ["thickness", "rock", "rho", "vP", "vS", "phi", "K", "G", "GR", "PE", "Top", "Bottom"]
+        properties = ["thickness", "rock", "rho", "vP", "vS", "vPvS", "phi", "K", "G", "Poisson", "GR", "PE", "Top", "Bottom"]
         for prop in properties:
             self.results_sorted[prop] = []
         #
@@ -1919,9 +1921,11 @@ class Subsurface:
                                 self.results_sorted["rho"].append(results_subsurface[index][i]["rho"])
                                 self.results_sorted["vP"].append(results_subsurface[index][i]["vP"])
                                 self.results_sorted["vS"].append(results_subsurface[index][i]["vS"])
+                                self.results_sorted["vPvS"].append(results_subsurface[index][i]["vP/vS"])
                                 self.results_sorted["phi"].append(results_subsurface[index][i]["phi"])
                                 self.results_sorted["K"].append(results_subsurface[index][i]["K"])
                                 self.results_sorted["G"].append(results_subsurface[index][i]["G"])
+                                self.results_sorted["Poisson"].append(results_subsurface[index][i]["nu"])
                                 self.results_sorted["GR"].append(results_subsurface[index][i]["GR"])
                                 self.results_sorted["PE"].append(results_subsurface[index][i]["PE"])
                             else:
@@ -1935,9 +1939,11 @@ class Subsurface:
                                 self.results_sorted["rho"].append(results_subsurface[index][i]["rho"])
                                 self.results_sorted["vP"].append(results_subsurface[index][i]["vP"])
                                 self.results_sorted["vS"].append(results_subsurface[index][i]["vS"])
+                                self.results_sorted["vPvS"].append(results_subsurface[index][i]["vP/vS"])
                                 self.results_sorted["phi"].append(results_subsurface[index][i]["phi"])
                                 self.results_sorted["K"].append(results_subsurface[index][i]["K"])
                                 self.results_sorted["G"].append(results_subsurface[index][i]["G"])
+                                self.results_sorted["Poisson"].append(results_subsurface[index][i]["nu"])
                                 self.results_sorted["GR"].append(results_subsurface[index][i]["GR"])
                                 self.results_sorted["PE"].append(results_subsurface[index][i]["PE"])
                     else:
@@ -1967,9 +1973,11 @@ class Subsurface:
                                 self.results_sorted["rho"].append(results_subsurface[index][i]["rho"])
                                 self.results_sorted["vP"].append(results_subsurface[index][i]["vP"])
                                 self.results_sorted["vS"].append(results_subsurface[index][i]["vS"])
+                                self.results_sorted["vPvS"].append(results_subsurface[index][i]["vP/vS"])
                                 self.results_sorted["phi"].append(results_subsurface[index][i]["phi"])
                                 self.results_sorted["K"].append(results_subsurface[index][i]["K"])
                                 self.results_sorted["G"].append(results_subsurface[index][i]["G"])
+                                self.results_sorted["Poisson"].append(results_subsurface[index][i]["nu"])
                                 self.results_sorted["GR"].append(results_subsurface[index][i]["GR"])
                                 self.results_sorted["PE"].append(results_subsurface[index][i]["PE"])
                             else:
@@ -2002,9 +2010,11 @@ class Subsurface:
                                 self.results_sorted["rho"].append(results_subsurface[index][i]["rho"])
                                 self.results_sorted["vP"].append(results_subsurface[index][i]["vP"])
                                 self.results_sorted["vS"].append(results_subsurface[index][i]["vS"])
+                                self.results_sorted["vPvS"].append(results_subsurface[index][i]["vP/vS"])
                                 self.results_sorted["phi"].append(results_subsurface[index][i]["phi"])
                                 self.results_sorted["K"].append(results_subsurface[index][i]["K"])
                                 self.results_sorted["G"].append(results_subsurface[index][i]["G"])
+                                self.results_sorted["Poisson"].append(results_subsurface[index][i]["nu"])
                                 self.results_sorted["GR"].append(results_subsurface[index][i]["GR"])
                                 self.results_sorted["PE"].append(results_subsurface[index][i]["PE"])
                 #
@@ -2021,9 +2031,11 @@ class Subsurface:
                                 self.results_sorted["rho"].append(results_subsurface[index][i]["rho"])
                                 self.results_sorted["vP"].append(results_subsurface[index][i]["vP"])
                                 self.results_sorted["vS"].append(results_subsurface[index][i]["vS"])
+                                self.results_sorted["vPvS"].append(results_subsurface[index][i]["vP/vS"])
                                 self.results_sorted["phi"].append(results_subsurface[index][i]["phi"])
                                 self.results_sorted["K"].append(results_subsurface[index][i]["K"])
                                 self.results_sorted["G"].append(results_subsurface[index][i]["G"])
+                                self.results_sorted["Poisson"].append(results_subsurface[index][i]["nu"])
                                 self.results_sorted["GR"].append(results_subsurface[index][i]["GR"])
                                 self.results_sorted["PE"].append(results_subsurface[index][i]["PE"])
                             else:
@@ -2035,9 +2047,11 @@ class Subsurface:
                                 self.results_sorted["rho"].append(results_subsurface[index][i]["rho"])
                                 self.results_sorted["vP"].append(results_subsurface[index][i]["vP"])
                                 self.results_sorted["vS"].append(results_subsurface[index][i]["vS"])
+                                self.results_sorted["vPvS"].append(results_subsurface[index][i]["vP/vS"])
                                 self.results_sorted["phi"].append(results_subsurface[index][i]["phi"])
                                 self.results_sorted["K"].append(results_subsurface[index][i]["K"])
                                 self.results_sorted["G"].append(results_subsurface[index][i]["G"])
+                                self.results_sorted["Poisson"].append(results_subsurface[index][i]["nu"])
                                 self.results_sorted["GR"].append(results_subsurface[index][i]["GR"])
                                 self.results_sorted["PE"].append(results_subsurface[index][i]["PE"])
                     else:
@@ -2055,9 +2069,11 @@ class Subsurface:
                             self.results_sorted["rho"].append(results_subsurface[index][i]["rho"])
                             self.results_sorted["vP"].append(results_subsurface[index][i]["vP"])
                             self.results_sorted["vS"].append(results_subsurface[index][i]["vS"])
+                            self.results_sorted["vPvS"].append(results_subsurface[index][i]["vP/vS"])
                             self.results_sorted["phi"].append(results_subsurface[index][i]["phi"])
                             self.results_sorted["K"].append(results_subsurface[index][i]["K"])
                             self.results_sorted["G"].append(results_subsurface[index][i]["G"])
+                            self.results_sorted["Poisson"].append(results_subsurface[index][i]["nu"])
                             self.results_sorted["GR"].append(results_subsurface[index][i]["GR"])
                             self.results_sorted["PE"].append(results_subsurface[index][i]["PE"])
                 #
@@ -2076,9 +2092,11 @@ class Subsurface:
                         self.results_sorted["rho"].append(results_subsurface[index][i]["rho"])
                         self.results_sorted["vP"].append(results_subsurface[index][i]["vP"])
                         self.results_sorted["vS"].append(results_subsurface[index][i]["vS"])
+                        self.results_sorted["vPvS"].append(results_subsurface[index][i]["vP/vS"])
                         self.results_sorted["phi"].append(results_subsurface[index][i]["phi"])
                         self.results_sorted["K"].append(results_subsurface[index][i]["K"])
                         self.results_sorted["G"].append(results_subsurface[index][i]["G"])
+                        self.results_sorted["Poisson"].append(results_subsurface[index][i]["nu"])
                         self.results_sorted["GR"].append(results_subsurface[index][i]["GR"])
                         self.results_sorted["PE"].append(results_subsurface[index][i]["PE"])
                 #
@@ -2097,9 +2115,11 @@ class Subsurface:
                         self.results_sorted["rho"].append(results_subsurface[index][i]["rho"])
                         self.results_sorted["vP"].append(results_subsurface[index][i]["vP"])
                         self.results_sorted["vS"].append(results_subsurface[index][i]["vS"])
+                        self.results_sorted["vPvS"].append(results_subsurface[index][i]["vP/vS"])
                         self.results_sorted["phi"].append(results_subsurface[index][i]["phi"])
                         self.results_sorted["K"].append(results_subsurface[index][i]["K"])
                         self.results_sorted["G"].append(results_subsurface[index][i]["G"])
+                        self.results_sorted["Poisson"].append(results_subsurface[index][i]["nu"])
                         self.results_sorted["GR"].append(results_subsurface[index][i]["GR"])
                         self.results_sorted["PE"].append(results_subsurface[index][i]["PE"])
                 #
@@ -2107,9 +2127,11 @@ class Subsurface:
                     thickness_unit = self.split_thickness(thickness=list_thickness[index], n_units=10)
                     for i, d in enumerate(thickness_unit, start=0):
                         if i == 0:
-                            results_subsurface[index][i] = Plutonic(fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(0, 0.05)).create_simple_diorite()
+                            results_subsurface[index][i] = Plutonic(fluid="water", actualThickness=0, dict_output=True,
+                                                                    porosity=rd.uniform(0, 0.05)).create_simple_diorite()
                         else:
-                            results_subsurface[index][i] = Plutonic(fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(0, 0.05)).create_simple_diorite(amounts=results_subsurface[index][i-1]["mineralogy"])
+                            results_subsurface[index][i] = Plutonic(fluid="water", actualThickness=0, dict_output=True,
+                                                                    porosity=rd.uniform(0, 0.05)).create_simple_diorite(amounts=results_subsurface[index][i-1]["mineralogy"])
                         #
                         self.results_sorted["Top"].append(self.results_sorted["Bottom"][-1])
                         self.results_sorted["thickness"].append(d)
@@ -2118,13 +2140,47 @@ class Subsurface:
                         self.results_sorted["rho"].append(results_subsurface[index][i]["rho"])
                         self.results_sorted["vP"].append(results_subsurface[index][i]["vP"])
                         self.results_sorted["vS"].append(results_subsurface[index][i]["vS"])
+                        self.results_sorted["vPvS"].append(results_subsurface[index][i]["vP/vS"])
                         self.results_sorted["phi"].append(results_subsurface[index][i]["phi"])
                         self.results_sorted["K"].append(results_subsurface[index][i]["K"])
                         self.results_sorted["G"].append(results_subsurface[index][i]["G"])
+                        self.results_sorted["Poisson"].append(results_subsurface[index][i]["nu"])
                         self.results_sorted["GR"].append(results_subsurface[index][i]["GR"])
                         self.results_sorted["PE"].append(results_subsurface[index][i]["PE"])
                 #
                 results_subsurface[index][i]["thickness"] = list_thickness[index]
+        #
+        self.results_plot = {}
+        for rock in self.list_rocks_short:
+            self.results_plot[rock] = {}
+            for prop in properties:
+                self.results_plot[rock][prop] = []
+        for index, value in enumerate(self.results_sorted["thickness"], start=0):
+            self.results_plot[self.results_sorted["rock"][index]]["thickness"].append(value)
+        for index, value in enumerate(self.results_sorted["Top"], start=0):
+            self.results_plot[self.results_sorted["rock"][index]]["Top"].append(value)
+        for index, value in enumerate(self.results_sorted["Bottom"], start=0):
+            self.results_plot[self.results_sorted["rock"][index]]["Bottom"].append(value)
+        for index, value in enumerate(self.results_sorted["rho"], start=0):
+            self.results_plot[self.results_sorted["rock"][index]]["rho"].append(value)
+        for index, value in enumerate(self.results_sorted["vP"], start=0):
+            self.results_plot[self.results_sorted["rock"][index]]["vP"].append(value)
+        for index, value in enumerate(self.results_sorted["vS"], start=0):
+            self.results_plot[self.results_sorted["rock"][index]]["vS"].append(value)
+        for index, value in enumerate(self.results_sorted["vPvS"], start=0):
+            self.results_plot[self.results_sorted["rock"][index]]["vPvS"].append(value)
+        for index, value in enumerate(self.results_sorted["phi"], start=0):
+            self.results_plot[self.results_sorted["rock"][index]]["phi"].append(value)
+        for index, value in enumerate(self.results_sorted["K"], start=0):
+            self.results_plot[self.results_sorted["rock"][index]]["K"].append(value)
+        for index, value in enumerate(self.results_sorted["G"], start=0):
+            self.results_plot[self.results_sorted["rock"][index]]["G"].append(value)
+        for index, value in enumerate(self.results_sorted["Poisson"], start=0):
+            self.results_plot[self.results_sorted["rock"][index]]["Poisson"].append(value)
+        for index, value in enumerate(self.results_sorted["GR"], start=0):
+            self.results_plot[self.results_sorted["rock"][index]]["GR"].append(value)
+        for index, value in enumerate(self.results_sorted["PE"], start=0):
+            self.results_plot[self.results_sorted["rock"][index]]["PE"].append(value)
         #
         rb_01 = SE(parent=self.parent_subsurface, row_id=28, column_id=0, n_rows=1, n_columns=2, bg=self.color_acc_01,
            fg="black").create_radiobutton(var_rb=self.var_rb_stat, var_rb_set=var_rb_stat_start, value_rb=0,
@@ -2444,11 +2500,114 @@ class Subsurface:
         #
     def change_radiobutton(self, var_rb):
         if var_rb.get() == 0:   # Well Log Plot
-            print(var_rb.get())
+            try:
+                for rb in self.rb_prop:
+                    rb.grid_forget()
+                self.rb_prop.clear()
+            except:
+                pass
+            try:
+                self.fig.clf()
+                self.ax.cla()
+                self.canvas.get_tk_widget().pack_forget()
+            except AttributeError:
+                pass
+            try:
+                if self.canvas:
+                    self.canvas.destroy()
+            except AttributeError:
+                pass
+            #
+            self.create_well_log_plot(parent=self.parent_subsurface, data_x=self.results_sorted["GR"], data_y=self.results_sorted["Top"], row_id=2, column_id=9, n_rows=45, n_columns=9)
+            #
         elif var_rb.get() == 1: # Histogram Plot
-            print(var_rb.get())
+            try:
+                for rb in self.rb_prop:
+                    rb.grid_forget()
+                self.rb_prop.clear()
+            except:
+                pass
+            try:
+                self.fig.clf()
+                self.ax.cla()
+                self.canvas.get_tk_widget().pack_forget()
+            except AttributeError:
+                pass
+            try:
+                if self.canvas:
+                    self.canvas.destroy()
+            except AttributeError:
+                pass
+            #
         elif var_rb.get() == 2: # Scatter Plot
-            print(var_rb.get())
+            try:
+                self.fig.clf()
+                self.ax.cla()
+                self.canvas.get_tk_widget().pack_forget()
+                for rb in self.rb_prop:
+                    rb.grid_forget()
+                self.rb_prop.clear()
+            except AttributeError:
+                pass
+            try:
+                if self.canvas:
+                    self.canvas.destroy()
+            except AttributeError:
+                pass
+            #
+            self.var_prop = tk.IntVar()
+            var_prop_0 = 8
+            rb_rho = SE(parent=self.parent_subsurface, row_id=39, column_id=0, n_rows=1, n_columns=2, bg=self.color_acc_01,
+                        fg="black").create_radiobutton(var_rb=self.var_prop, var_rb_set=var_prop_0, value_rb=8,
+                                                       text="Density", color_bg=self.color_acc_01,
+                                                       command=lambda var_rb=self.var_prop: self.change_radiobutton(var_rb))
+            rb_phi = SE(parent=self.parent_subsurface, row_id=40, column_id=0, n_rows=1, n_columns=2, bg=self.color_acc_01,
+                        fg="black").create_radiobutton(var_rb=self.var_prop, var_rb_set=var_prop_0, value_rb=9,
+                                                       text="Porosity", color_bg=self.color_acc_01,
+                                                       command=lambda var_rb=self.var_prop: self.change_radiobutton(var_rb))
+            self.rb_prop = [rb_rho, rb_phi]
+            #
+            data_x_rho = [np.array(self.results_plot["Sandstone"]["rho"])/1000, np.array(self.results_plot["Shale"]["rho"])/1000,
+                          np.array(self.results_plot[self.list_rocks_short[-1]]["rho"])/1000]
+            #
+            self.create_scatter_plot(parent=self.parent_subsurface, data_x=data_x_rho,
+                                     data_y=[self.results_plot["Sandstone"]["vP"], self.results_plot["Shale"]["vP"], self.results_plot[self.list_rocks_short[-1]]["vP"]],
+                                     row_id=2, column_id=9, n_rows=15, n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)",
+                                     ylabel="Seismic velocity $v_P$ (m/s)", rocks=self.list_rocks_short, colors=["tan", "olivedrab", "darkorange"])
+            self.create_scatter_plot(parent=self.parent_subsurface, data_x=data_x_rho,
+                                     data_y=[self.results_plot["Sandstone"]["vS"], self.results_plot["Shale"]["vS"], self.results_plot[self.list_rocks_short[-1]]["vS"]],
+                                     row_id=2, column_id=12, n_rows=15, n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)",
+                                     ylabel="Seismic velocity $v_P$ (m/s)", rocks=self.list_rocks_short, colors=["tan", "olivedrab", "darkorange"])
+            self.create_scatter_plot(parent=self.parent_subsurface, data_x=data_x_rho,
+                                     data_y=[self.results_plot["Sandstone"]["vPvS"], self.results_plot["Shale"]["vPvS"], self.results_plot[self.list_rocks_short[-1]]["vPvS"]],
+                                     row_id=2, column_id=15, n_rows=15, n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)",
+                                     ylabel="Seismic velocity ratio $v_P/v_S$ (1)", rocks=self.list_rocks_short, colors=["tan", "olivedrab", "darkorange"])
+            #
+            self.create_scatter_plot(parent=self.parent_subsurface, data_x=data_x_rho,
+                                     data_y=[self.results_plot["Sandstone"]["K"], self.results_plot["Shale"]["K"], self.results_plot[self.list_rocks_short[-1]]["K"]],
+                                     row_id=17, column_id=9, n_rows=15, n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)",
+                                     ylabel="Bulk modulus $K$ (GPa)", rocks=self.list_rocks_short, colors=["tan", "olivedrab", "darkorange"])
+            self.create_scatter_plot(parent=self.parent_subsurface, data_x=data_x_rho,
+                                     data_y=[self.results_plot["Sandstone"]["G"], self.results_plot["Shale"]["G"], self.results_plot[self.list_rocks_short[-1]]["G"]],
+                                     row_id=17, column_id=12, n_rows=15, n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)",
+                                     ylabel="Shear modulus $G$ (GPa)", rocks=self.list_rocks_short, colors=["tan", "olivedrab", "darkorange"])
+            self.create_scatter_plot(parent=self.parent_subsurface, data_x=data_x_rho,
+                                     data_y=[self.results_plot["Sandstone"]["Poisson"], self.results_plot["Shale"]["Poisson"], self.results_plot[self.list_rocks_short[-1]]["Poisson"]],
+                                     row_id=17, column_id=15, n_rows=15, n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)",
+                                     ylabel="Poisson's ratio $\\nu$ (1)", rocks=self.list_rocks_short, colors=["tan", "olivedrab", "darkorange"])
+            #
+            self.create_scatter_plot(parent=self.parent_subsurface, data_x=data_x_rho,
+                                     data_y=[self.results_plot["Sandstone"]["phi"], self.results_plot["Shale"]["phi"], self.results_plot[self.list_rocks_short[-1]]["phi"]],
+                                     row_id=32, column_id=9, n_rows=15, n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)",
+                                     ylabel="Porosity $\\phi$ (%)", rocks=self.list_rocks_short, colors=["tan", "olivedrab", "darkorange"])
+            self.create_scatter_plot(parent=self.parent_subsurface, data_x=data_x_rho,
+                                     data_y=[self.results_plot["Sandstone"]["GR"], self.results_plot["Shale"]["GR"], self.results_plot[self.list_rocks_short[-1]]["GR"]],
+                                     row_id=32, column_id=12, n_rows=15, n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)",
+                                     ylabel="Gamma Ray $GR$ (API)", rocks=self.list_rocks_short, colors=["tan", "olivedrab", "darkorange"])
+            self.create_scatter_plot(parent=self.parent_subsurface, data_x=data_x_rho,
+                                     data_y=[self.results_plot["Sandstone"]["PE"], self.results_plot["Shale"]["PE"], self.results_plot[self.list_rocks_short[-1]]["PE"]],
+                                     row_id=32, column_id=15, n_rows=15, n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)",
+                                     ylabel="Photoelectric Effect $PE$ (barns\electron)", rocks=self.list_rocks_short, colors=["tan", "olivedrab", "darkorange"])
         elif var_rb.get() == 3: # Elements
             #
             try:
@@ -2899,11 +3058,266 @@ class Subsurface:
                     self.entr_w.append(entr_std)
                     self.entr_chem.extend([entr_min, entr_max, entr_mean, entr_std])
                     #
+        elif var_rb.get() == 8:
+            try:
+                self.fig.clf()
+                self.ax.cla()
+                self.canvas.get_tk_widget().pack_forget()
+                # for rb in self.rb_prop:
+                #     rb.grid_forget()
+                # self.rb_prop.clear()
+            except AttributeError:
+                pass
+            try:
+                if self.canvas:
+                    self.canvas.destroy()
+            except AttributeError:
+                pass
+            #
+            # self.var_prop = tk.IntVar()
+            # var_prop_0 = 8
+            # rb_rho = SE(parent=self.parent_subsurface, row_id=39, column_id=0, n_rows=1, n_columns=2, bg=self.color_acc_01,
+            #             fg="black").create_radiobutton(var_rb=self.var_prop, var_rb_set=var_prop_0, value_rb=8,
+            #                                            text="Density $\\varrho$", color_bg=self.color_acc_01,
+            #                                            command=lambda var_rb=self.var_prop: self.change_radiobutton(var_rb))
+            # rb_phi = SE(parent=self.parent_subsurface, row_id=40, column_id=0, n_rows=1, n_columns=2, bg=self.color_acc_01,
+            #             fg="black").create_radiobutton(var_rb=self.var_prop, var_rb_set=var_prop_0, value_rb=9,
+            #                                            text="Porosity $\\phi", color_bg=self.color_acc_01,
+            #                                            command=lambda var_rb=self.var_prop: self.change_radiobutton(var_rb))
+            # self.rb_prop = [rb_rho, rb_phi]
+            #
+            data_x_rho = [np.array(self.results_plot["Sandstone"]["rho"])/1000, np.array(self.results_plot["Shale"]["rho"])/1000,
+                          np.array(self.results_plot[self.list_rocks_short[-1]]["rho"])/1000]
+            #
+            self.create_scatter_plot(parent=self.parent_subsurface, data_x=data_x_rho,
+                                     data_y=[self.results_plot["Sandstone"]["vP"], self.results_plot["Shale"]["vP"], self.results_plot[self.list_rocks_short[-1]]["vP"]],
+                                     row_id=2, column_id=9, n_rows=15, n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)",
+                                     ylabel="Seismic velocity $v_P$ (m/s)", rocks=self.list_rocks_short, colors=["tan", "olivedrab", "darkorange"])
+            self.create_scatter_plot(parent=self.parent_subsurface, data_x=data_x_rho,
+                                     data_y=[self.results_plot["Sandstone"]["vS"], self.results_plot["Shale"]["vS"], self.results_plot[self.list_rocks_short[-1]]["vS"]],
+                                     row_id=2, column_id=12, n_rows=15, n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)",
+                                     ylabel="Seismic velocity $v_P$ (m/s)", rocks=self.list_rocks_short, colors=["tan", "olivedrab", "darkorange"])
+            self.create_scatter_plot(parent=self.parent_subsurface, data_x=data_x_rho,
+                                     data_y=[self.results_plot["Sandstone"]["vPvS"], self.results_plot["Shale"]["vPvS"], self.results_plot[self.list_rocks_short[-1]]["vPvS"]],
+                                     row_id=2, column_id=15, n_rows=15, n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)",
+                                     ylabel="Seismic velocity ratio $v_P/v_S$ (1)", rocks=self.list_rocks_short, colors=["tan", "olivedrab", "darkorange"])
+            #
+            self.create_scatter_plot(parent=self.parent_subsurface, data_x=data_x_rho,
+                                     data_y=[self.results_plot["Sandstone"]["K"], self.results_plot["Shale"]["K"], self.results_plot[self.list_rocks_short[-1]]["K"]],
+                                     row_id=17, column_id=9, n_rows=15, n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)",
+                                     ylabel="Bulk modulus $K$ (GPa)", rocks=self.list_rocks_short, colors=["tan", "olivedrab", "darkorange"])
+            self.create_scatter_plot(parent=self.parent_subsurface, data_x=data_x_rho,
+                                     data_y=[self.results_plot["Sandstone"]["G"], self.results_plot["Shale"]["G"], self.results_plot[self.list_rocks_short[-1]]["G"]],
+                                     row_id=17, column_id=12, n_rows=15, n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)",
+                                     ylabel="Shear modulus $G$ (GPa)", rocks=self.list_rocks_short, colors=["tan", "olivedrab", "darkorange"])
+            self.create_scatter_plot(parent=self.parent_subsurface, data_x=data_x_rho,
+                                     data_y=[self.results_plot["Sandstone"]["Poisson"], self.results_plot["Shale"]["Poisson"], self.results_plot[self.list_rocks_short[-1]]["Poisson"]],
+                                     row_id=17, column_id=15, n_rows=15, n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)",
+                                     ylabel="Poisson's ratio $\\nu$ (1)", rocks=self.list_rocks_short, colors=["tan", "olivedrab", "darkorange"])
+            #
+            self.create_scatter_plot(parent=self.parent_subsurface, data_x=data_x_rho,
+                                     data_y=[self.results_plot["Sandstone"]["phi"], self.results_plot["Shale"]["phi"], self.results_plot[self.list_rocks_short[-1]]["phi"]],
+                                     row_id=32, column_id=9, n_rows=15, n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)",
+                                     ylabel="Porosity $\\phi$ (%)", rocks=self.list_rocks_short, colors=["tan", "olivedrab", "darkorange"])
+            self.create_scatter_plot(parent=self.parent_subsurface, data_x=data_x_rho,
+                                     data_y=[self.results_plot["Sandstone"]["GR"], self.results_plot["Shale"]["GR"], self.results_plot[self.list_rocks_short[-1]]["GR"]],
+                                     row_id=32, column_id=12, n_rows=15, n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)",
+                                     ylabel="Gamma Ray $GR$ (API)", rocks=self.list_rocks_short, colors=["tan", "olivedrab", "darkorange"])
+            self.create_scatter_plot(parent=self.parent_subsurface, data_x=data_x_rho,
+                                     data_y=[self.results_plot["Sandstone"]["PE"], self.results_plot["Shale"]["PE"], self.results_plot[self.list_rocks_short[-1]]["PE"]],
+                                     row_id=32, column_id=15, n_rows=15, n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)",
+                                     ylabel="Photoelectric Effect $PE$ (barns\electron)", rocks=self.list_rocks_short, colors=["tan", "olivedrab", "darkorange"])
+        elif var_rb.get() == 9:
+            try:
+                self.fig.clf()
+                self.ax.cla()
+                self.canvas.get_tk_widget().pack_forget()
+            except AttributeError:
+                pass
+            try:
+                if self.canvas:
+                    self.canvas.destroy()
+            except AttributeError:
+                pass
+            #
+            data_x = [np.array(self.results_plot["Sandstone"]["phi"])*100, np.array(self.results_plot["Shale"]["phi"])*100,
+                          np.array(self.results_plot[self.list_rocks_short[-1]]["phi"])*100]
+            #
+            self.create_scatter_plot(parent=self.parent_subsurface, data_x=data_x,
+                                     data_y=[self.results_plot["Sandstone"]["vP"], self.results_plot["Shale"]["vP"], self.results_plot[self.list_rocks_short[-1]]["vP"]],
+                                     row_id=2, column_id=9, n_rows=15, n_columns=3, xlabel="Porosity $\\phi$ (%)",
+                                     ylabel="Seismic velocity $v_P$ (m/s)", rocks=self.list_rocks_short, colors=["tan", "olivedrab", "darkorange"])
+            self.create_scatter_plot(parent=self.parent_subsurface, data_x=data_x,
+                                     data_y=[self.results_plot["Sandstone"]["vS"], self.results_plot["Shale"]["vS"], self.results_plot[self.list_rocks_short[-1]]["vS"]],
+                                     row_id=2, column_id=12, n_rows=15, n_columns=3, xlabel="Porosity $\\phi$ (%)",
+                                     ylabel="Seismic velocity $v_P$ (m/s)", rocks=self.list_rocks_short, colors=["tan", "olivedrab", "darkorange"])
+            self.create_scatter_plot(parent=self.parent_subsurface, data_x=data_x,
+                                     data_y=[self.results_plot["Sandstone"]["vPvS"], self.results_plot["Shale"]["vPvS"], self.results_plot[self.list_rocks_short[-1]]["vPvS"]],
+                                     row_id=2, column_id=15, n_rows=15, n_columns=3, xlabel="Porosity $\\phi$ (%)",
+                                     ylabel="Seismic velocity ratio $v_P/v_S$ (1)", rocks=self.list_rocks_short, colors=["tan", "olivedrab", "darkorange"])
+            #
+            self.create_scatter_plot(parent=self.parent_subsurface, data_x=data_x,
+                                     data_y=[self.results_plot["Sandstone"]["K"], self.results_plot["Shale"]["K"], self.results_plot[self.list_rocks_short[-1]]["K"]],
+                                     row_id=17, column_id=9, n_rows=15, n_columns=3, xlabel="Porosity $\\phi$ (%)",
+                                     ylabel="Bulk modulus $K$ (GPa)", rocks=self.list_rocks_short, colors=["tan", "olivedrab", "darkorange"])
+            self.create_scatter_plot(parent=self.parent_subsurface, data_x=data_x,
+                                     data_y=[self.results_plot["Sandstone"]["G"], self.results_plot["Shale"]["G"], self.results_plot[self.list_rocks_short[-1]]["G"]],
+                                     row_id=17, column_id=12, n_rows=15, n_columns=3, xlabel="Porosity $\\phi$ (%)",
+                                     ylabel="Shear modulus $G$ (GPa)", rocks=self.list_rocks_short, colors=["tan", "olivedrab", "darkorange"])
+            self.create_scatter_plot(parent=self.parent_subsurface, data_x=data_x,
+                                     data_y=[self.results_plot["Sandstone"]["Poisson"], self.results_plot["Shale"]["Poisson"], self.results_plot[self.list_rocks_short[-1]]["Poisson"]],
+                                     row_id=17, column_id=15, n_rows=15, n_columns=3, xlabel="Porosity $\\phi$ (%)",
+                                     ylabel="Poisson's ratio $\\nu$ (1)", rocks=self.list_rocks_short, colors=["tan", "olivedrab", "darkorange"])
+            #
+            self.create_scatter_plot(parent=self.parent_subsurface, data_x=data_x,
+                                     data_y=[np.array(self.results_plot["Sandstone"]["rho"])/1000, np.array(self.results_plot["Shale"]["rho"])/1000, np.array(self.results_plot[self.list_rocks_short[-1]]["rho"])/1000],
+                                     row_id=32, column_id=9, n_rows=15, n_columns=3, xlabel="Porosity $\\phi$ (%)",
+                                     ylabel="Density $\\varrho$ (g/ccm)", rocks=self.list_rocks_short, colors=["tan", "olivedrab", "darkorange"])
+            self.create_scatter_plot(parent=self.parent_subsurface, data_x=data_x,
+                                     data_y=[self.results_plot["Sandstone"]["GR"], self.results_plot["Shale"]["GR"], self.results_plot[self.list_rocks_short[-1]]["GR"]],
+                                     row_id=32, column_id=12, n_rows=15, n_columns=3, xlabel="Porosity $\\phi$ (%)",
+                                     ylabel="Gamma Ray $GR$ (API)", rocks=self.list_rocks_short, colors=["tan", "olivedrab", "darkorange"])
+            self.create_scatter_plot(parent=self.parent_subsurface, data_x=data_x,
+                                     data_y=[self.results_plot["Sandstone"]["PE"], self.results_plot["Shale"]["PE"], self.results_plot[self.list_rocks_short[-1]]["PE"]],
+                                     row_id=32, column_id=15, n_rows=15, n_columns=3, xlabel="Porosity $\\phi$ (%)",
+                                     ylabel="Photoelectric Effect $PE$ (barns\electron)", rocks=self.list_rocks_short, colors=["tan", "olivedrab", "darkorange"])
         #
     def split_thickness(self, thickness, n_units):
         list_thickness = np.random.multinomial(thickness, np.ones(n_units)/n_units, size=1)[0]
         #
         return list_thickness
+    #
+    def create_scatter_plot(self, parent, data_x, data_y, row_id, column_id, n_rows, n_columns, xlabel, ylabel, rocks, colors):
+        #
+        self.canvas = None
+        self.fig = Figure(facecolor="#E9ECED")
+        self.ax = self.fig.add_subplot()
+        #
+        x_min = min([min(data_x[0]), min(data_x[1]), min(data_x[2])])
+        x_max = max([max(data_x[0]), max(data_x[1]), max(data_x[2])])
+        for index, rock in enumerate(rocks, start=0):
+            self.ax.scatter(data_x[index], np.array(data_y[index]), color=colors[index], edgecolor="black", alpha=1.0,
+                            label=rock)
+        self.ax.grid(True)
+        self.ax.set_axisbelow(True)
+        self.ax.set_xlim(0.9*x_min, 1.1*x_max)
+        self.ax.set_xlabel(xlabel, fontsize="small")
+        self.ax.set_ylabel(ylabel, labelpad=0.5, fontsize="small")
+        self.ax.legend(fontsize="xx-small", loc="best")
+        self.fig.subplots_adjust(bottom=0.15, left=0.22)
+        #
+        self.canvas = FigureCanvasTkAgg(self.fig, master=parent)
+        self.canvas.get_tk_widget().grid(row=row_id, column=column_id, rowspan=n_rows, columnspan=n_columns,
+                                         sticky="nesw")
+    #
+    def create_well_log_plot(self, parent, data_x, data_y, row_id, column_id, n_rows, n_columns):
+        #
+        self.canvas = None
+        # self.fig = Figure(facecolor="#E9ECED")
+        # self.ax = self.fig.add_subplot()
+        max_thickness = max(data_y)
+        self.fig, (self.ax1, self.ax2, self.ax3, self.ax4, self.ax5) = plt.subplots(1, 5, sharey='row', gridspec_kw={'wspace': 0.15}, figsize=(9, 12), facecolor="#E9ECED")
+        self.fig.subplots_adjust(wspace=0.25)
+        # 1
+        self.ax1.plot(self.results_sorted["GR"], self.results_sorted["Top"], color="#00549F", linewidth=2)
+        self.ax1.set_xlabel("GR [API]")
+        self.ax1.set_ylabel("Depth [m]")
+        self.ax1.set_xlim(0, 200)
+        self.ax1.set_xticks(np.arange(0, 250, 50))
+        self.ax1.set_ylim(0, max_thickness)
+        self.ax1.set_yticks(np.arange(0, max_thickness+50, 50))
+        self.ax1.grid(color="grey", linestyle="dashed")
+        plt.gca().invert_yaxis()
+        plt.rc('axes', axisbelow=True)
+        # 2
+        vP_edit = np.array(self.results_sorted["vP"])/1000
+        vS_edit = np.array(self.results_sorted["vS"])/1000
+        self.ax2.plot(vP_edit, self.results_sorted["Top"], color="#00549F", linewidth=2)
+        self.ax2.set_xlabel("$v_P$ [km/s]")
+        self.ax2.set_xlim(0, 8.5)
+        self.ax2.set_xticks(np.arange(0, 8.5, 2.0))
+        self.ax2.xaxis.label.set_color("#00549F")
+        self.ax2.set_ylim(0, max_thickness)
+        self.ax2.set_yticks(np.arange(0, max_thickness+50, 50))
+        self.ax2.grid(color="grey", linestyle="dashed")
+        self.ax2_2 = self.ax2.twiny()
+        self.ax2_2.plot(vS_edit, self.results_sorted["Top"], color="#CC071E", linewidth=2)
+        self.ax2_2.set_xlabel("$v_S$ [km/s]")
+        self.ax2_2.set_xlim(0, 8.5)
+        self.ax2_2.set_xticks(np.arange(0, 8.5, 2.0))
+        self.ax2_2.minorticks_on()
+        self.ax2_2.xaxis.label.set_color("#CC071E")
+        self.ax2_2.grid(color="grey", linestyle="dashed")
+        plt.gca().invert_yaxis()
+        plt.rc('axes', axisbelow=True)
+        # 3
+        phi_edit = np.array(self.results_sorted["phi"])*100
+        self.ax3.plot(np.array(self.results_sorted["rho"])/1000, self.results_sorted["Top"], color="#57AB27", linewidth=2)
+        self.ax3.set_xlabel("$\\varrho$ [g/cm$^3$]")
+        self.ax3.set_xlim(1.6, 3.2)
+        self.ax3.set_xticks(np.around(np.linspace(1.6, 3.2, 4, endpoint=True), decimals=1))
+        self.ax3.xaxis.label.set_color("#57AB27")
+        self.ax3.set_ylim(0, max_thickness)
+        self.ax3.set_yticks(np.arange(0, max_thickness+50, 50))
+        self.ax3.grid(color="grey", linestyle="dashed")
+        self.ax3_2 = self.ax3.twiny()
+        self.ax3_2.plot(phi_edit, self.results_sorted["Top"], color="#00549F", linewidth=2)
+        self.ax3_2.set_xlabel("$\\varphi$ [1]")
+        self.ax3_2.set_xlim(60, 0)
+        self.ax3_2.set_xticks(np.around(np.linspace(60, 0, 6, endpoint=True), decimals=0))
+        self.ax3_2.minorticks_on()
+        self.ax3_2.xaxis.label.set_color("#00549F")
+        self.ax3_2.grid(color="grey", linestyle="dashed")
+        plt.gca().invert_yaxis()
+        plt.rc('axes', axisbelow=True)
+        # 4
+        self.ax4.plot(self.results_sorted["PE"], self.results_sorted["Top"], color="#00549F", linewidth=2)
+        self.ax4.set_xlabel("PE [barns/electron]")
+        #self.ax4.set_xscale("log")
+        #self.ax4.get_xaxis().set_major_formatter(mpl.ticker.ScalarFormatter())
+        #self.ax4.get_xaxis().set_minor_formatter(mpl.ticker.ScalarFormatter())
+        #self.ax4.xaxis.set_minor_formatter(NullFormatter())
+        self.ax4.set_xlim(min(self.results_sorted["PE"]), max(self.results_sorted["PE"]))
+        self.ax4.set_ylim(0, max_thickness)
+        self.ax4.set_yticks(np.arange(0, max_thickness+50, 50))
+        self.ax4.grid(color="grey", linestyle="dashed", which="both")
+        plt.gca().invert_yaxis()
+        plt.rc('axes', axisbelow=True)
+        # 5
+        n_units = []
+        units_sorted = []
+        for rock in self.list_rocks_short:
+            units_sorted.append([rock])
+            n_units.append(sum(self.results_plot[rock]["thickness"]))
+            for index, value in enumerate(self.results_plot[rock]["thickness"], start=0):
+                units_sorted[-1].append([self.results_plot[rock]["Top"][index], self.results_plot[rock]["Bottom"][index]])
+            if rock == "Sandstone":
+                units_sorted[-1].append("tan")
+            elif rock == "Shale":
+                units_sorted[-1].append("olivedrab")
+            elif rock in ["Granite", "Gabbro", "Diorite"]:
+                units_sorted[-1].append("darkorange")
+        legend_lithology = []
+        for i in range(len(units_sorted)):
+            legend_lithology.append(mpatches.Patch(facecolor=units_sorted[i][-1], hatch="", label=units_sorted[i][0]))
+        for i in range(len(n_units)):
+            for j in range(1, len(units_sorted[i])-1):
+                self.ax5.hist(x=np.linspace(units_sorted[i][j][0], units_sorted[i][j][1]), bins=len(n_units),
+                              color=units_sorted[i][-1], orientation="horizontal")
+        self.ax5.set_xlabel("Lithology")
+        self.ax5.set_xlim(0, 5)
+        self.ax5.set_xticks([])
+        self.ax5.set_ylim(0, max_thickness)
+        self.ax5.set_yticks(np.arange(0, max_thickness+50, 50))
+        self.ax5.margins(0.3, 0.0)
+        plt.gca().invert_yaxis()
+        plt.rc('axes', axisbelow=True)
+        self.ax5.legend(handles=legend_lithology, loc="lower left", bbox_to_anchor=(0, -0.125), shadow=True, ncol=1, prop={'size': 8}, frameon=False)
+        plt.tight_layout()
+        #
+        self.canvas = FigureCanvasTkAgg(self.fig, master=parent)
+        self.canvas.get_tk_widget().grid(row=row_id, column=column_id, rowspan=n_rows, columnspan=n_columns,
+                                         sticky="nesw")
     #
     def extract_data(self, data):
         print(data)
