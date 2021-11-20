@@ -6,7 +6,7 @@
 # Name:		ore.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		15.11.2021
+# Date:		20.11.2021
 
 # -----------------------------------------------
 
@@ -108,7 +108,7 @@ class Ores:
                     w_py = 0.0
                     w_dg = 0.0
                 elif magicnumber == 4:
-                    w_gn = round(w_ore*rd.uniform(0.5, 1), 4)
+                    w_gn = round(w_ore*rd.uniform(0.33, 0.67), 4)
                     w_ccp = round(w_ore*rd.uniform(0.05, (1-w_gn)), 4)
                     w_py = round(w_ore*rd.uniform(0, (1-w_gn-w_ccp)), 4)
                     w_sp = round(w_ore-w_gn-w_ccp-w_py, 4)
@@ -118,7 +118,7 @@ class Ores:
                     w_cc = 0.0
                     w_dg = 0.0
                 elif magicnumber == 5:
-                    w_py = round(w_ore*rd.uniform(0.5, 1), 4)
+                    w_py = round(w_ore*rd.uniform(0.33, 0.67), 4)
                     w_gn = round(w_ore*rd.uniform(0, (1-w_py)), 4)
                     w_sp = round(w_ore*rd.uniform(0, (1-w_py-w_gn)), 4)
                     w_ccp = round(w_ore-w_py-w_gn-w_sp, 4)
@@ -128,7 +128,7 @@ class Ores:
                     w_cc = 0.0
                     w_dg = 0.0
                 elif magicnumber == 6:
-                    w_sp = round(w_ore*rd.uniform(0.5, 1), 4)
+                    w_sp = round(w_ore*rd.uniform(0.33, 0.67), 4)
                     w_ccp = round(w_ore*rd.uniform(0.05, (1-w_sp)), 4)
                     w_gn = round(w_ore*rd.uniform(0, (1-w_sp-w_ccp)), 4)
                     w_py = round(w_ore-w_sp-w_ccp-w_gn, 4)

@@ -1553,8 +1553,8 @@ class shale:
                     w_Py = w_ore
                     w_clay = round(rd.randint(45, int((0.70-w_ore)*100))/100, 4)
                     w_ilt2 = rd.randint(50, 100)/100
-                    w_kln2 = rd.randint(0, int((1-w_ilt2)*100))/100
-                    w_mnt2 = 1-w_ilt2-w_kln2
+                    w_mnt2 = rd.randint(0, int((1-w_ilt2)*100))/100
+                    w_kln2 = 1-w_ilt2-w_mnt2
                     w_ilt = round(w_clay*w_ilt2, 4)
                     w_kln = round(w_clay*w_kln2, 4)
                     w_mnt = round(w_clay*w_mnt2, 4)
@@ -1573,8 +1573,8 @@ class shale:
                     w_qz = round(rd.randint(25, 50)/100, 4)
                     w_clay = round(rd.randint(40, int((1-w_ore-w_qz)*100))/100, 4)
                     w_ilt2 = rd.randint(50, 100)/100
-                    w_kln2 = rd.randint(0, int((1-w_ilt2)*100))/100
-                    w_mnt2 = 1-w_ilt2-w_kln2
+                    w_mnt2 = rd.randint(0, int((1-w_ilt2)*100))/100
+                    w_kln2 = 1-w_ilt2-w_mnt2
                     w_ilt = round(w_clay*w_ilt2, 4)
                     w_kln = round(w_clay*w_kln2, 4)
                     w_mnt = round(w_clay*w_mnt2, 4)
@@ -1596,8 +1596,8 @@ class shale:
                     w_bt = round(w_mica*w_bt2, 4)
                     w_clay = round(rd.randint(50, int((1-w_ore-w_mica)*100))/100, 4)
                     w_ilt2 = rd.randint(50, 100)/100
-                    w_kln2 = rd.randint(0, int((1-w_ilt2)*100))/100
-                    w_mnt2 = 1-w_ilt2-w_kln2
+                    w_mnt2 = rd.randint(0, int((1-w_ilt2)*100))/100
+                    w_kln2 = 1-w_ilt2-w_mnt2
                     w_ilt = round(w_clay*w_ilt2, 4)
                     w_kln = round(w_clay*w_kln2, 4)
                     w_mnt = round(w_clay*w_mnt2, 4)
@@ -1884,8 +1884,8 @@ class shale:
         G_list = [mineralogy[i][3][1] for i in range(len(mineralogy))]
         K_geo = elast.calc_geometric_mean(self, X, K_list)
         G_geo = elast.calc_geometric_mean(self, X, G_list)
-        K_solid = K_geo/6
-        G_solid = G_geo/6
+        K_solid = K_geo/12
+        G_solid = G_geo/12
         vP_solid = np.sqrt((K_solid*10**9+4/3*G_solid*10**9)/(rhoSolid*10**3))
         vS_solid = np.sqrt((G_solid*10**9)/(rhoSolid*10**3))
         E_solid = (9*K_solid*G_solid)/(3*K_solid+G_solid)
