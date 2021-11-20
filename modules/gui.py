@@ -1827,11 +1827,168 @@ class Rocks:
         #
         ## Buttons
         btn_defmin = SE(parent=self.parent_rock, row_id=36, column_id=0, n_rows=2, n_columns=2, bg=self.color_acc_01,
-                              fg="black").create_button(text="Define Mineralogy")
+                              fg="black").create_button(text="Define Mineralogy", command=lambda var_btn="Define Mineralogy": self.press_button(var_btn))
         btn_update = SE(parent=self.parent_rock, row_id=38, column_id=0, n_rows=2, n_columns=2, bg=self.color_acc_01,
                               fg="black").create_button(text="Generate Data")
         self.lbl_w.extend([btn_defmin, btn_update])
-
+    #
+    def press_button(self, var_btn):
+        print(var_btn)
+        if var_btn == "Define Mineralogy":
+            ## CONSTANTS
+            self.window_custom_mineralogy = tk.Toplevel(self.parent_rock)
+            self.window_custom_mineralogy.title("GebPy")
+            self.window_custom_mineralogy.geometry("1200x960")
+            self.window_custom_mineralogy.resizable(False, False)
+            self.window_custom_mineralogy["bg"] = self.color_bg
+            self.color_menu = "#264653"
+            self.color_border = "#7C9097"
+            self.color_bg = "#E9ECED"
+            self.color_fg_dark = "black"
+            self.color_fg_light = "white"
+            self.color_accent_01 = "#E76F51"    # Orange
+            self.color_accent_02 = "#F0A794"    # Orange light
+            self.color_accent_03 = "#E9C46A"    # Yellow
+            self.color_accent_04 = "#F3DEAD"    # Yellow light
+            #
+            ## LABELS
+            # Oxides
+            lbl_oxides = SE(parent=self.window_custom_mineralogy, row_id=0, column_id=0, n_columns=4,
+                            bg=self.color_accent_01, fg=self.color_fg_dark).create_label(text="Oxides", relief=tk.RAISED)
+            lbl_name = SE(parent=self.window_custom_mineralogy, row_id=1, column_id=0, bg=self.color_accent_01,
+                            fg=self.color_fg_dark).create_label(text="Name", relief=tk.RAISED)
+            lbl_name = SE(parent=self.window_custom_mineralogy, row_id=1, column_id=1, bg=self.color_accent_01,
+                            fg=self.color_fg_dark).create_label(text="Part", relief=tk.RAISED)
+            lbl_name = SE(parent=self.window_custom_mineralogy, row_id=1, column_id=2, bg=self.color_accent_01,
+                            fg=self.color_fg_dark).create_label(text="Min", relief=tk.RAISED)
+            lbl_name = SE(parent=self.window_custom_mineralogy, row_id=1, column_id=3, bg=self.color_accent_01,
+                            fg=self.color_fg_dark).create_label(text="Max", relief=tk.RAISED)
+            list_oxides = ["Quartz", "Magnetite", "Hematite", "Corundum", "Ilmenite", "Rutile", "Pyrolusite", "Cassiterite", "Spinel", "Chromite"]
+            for index, oxide in enumerate(list_oxides, start=0):
+                lbl = SE(parent=self.window_custom_mineralogy, row_id=2+index, column_id=0, bg=self.color_accent_02,
+                         fg=self.color_fg_dark).create_label(text=oxide, relief=tk.RAISED)
+            # Tectosilicates
+            lbl_tectosilicates = SE(parent=self.window_custom_mineralogy, row_id=0, column_id=4, n_columns=4,
+                            bg=self.color_accent_01, fg=self.color_fg_dark).create_label(text="Tectosilicates", relief=tk.RAISED)
+            lbl_name = SE(parent=self.window_custom_mineralogy, row_id=1, column_id=4, bg=self.color_accent_01,
+                            fg=self.color_fg_dark).create_label(text="Name", relief=tk.RAISED)
+            lbl_name = SE(parent=self.window_custom_mineralogy, row_id=1, column_id=5, bg=self.color_accent_01,
+                            fg=self.color_fg_dark).create_label(text="Part", relief=tk.RAISED)
+            lbl_name = SE(parent=self.window_custom_mineralogy, row_id=1, column_id=6, bg=self.color_accent_01,
+                            fg=self.color_fg_dark).create_label(text="Min", relief=tk.RAISED)
+            lbl_name = SE(parent=self.window_custom_mineralogy, row_id=1, column_id=7, bg=self.color_accent_01,
+                            fg=self.color_fg_dark).create_label(text="Max", relief=tk.RAISED)
+            list_tectosilicates = ["Alkali Feldspar", "Plagioclase", "Scapolite"]
+            for index, tectosilicate in enumerate(list_tectosilicates, start=0):
+                lbl = SE(parent=self.window_custom_mineralogy, row_id=2+index, column_id=4, bg=self.color_accent_02,
+                         fg=self.color_fg_dark).create_label(text=tectosilicate, relief=tk.RAISED)
+            # Phyllosilicates
+            lbl_phyllosilicates = SE(parent=self.window_custom_mineralogy, row_id=0, column_id=8, n_columns=4,
+                            bg=self.color_accent_01, fg=self.color_fg_dark).create_label(text="Phyllosilicates", relief=tk.RAISED)
+            lbl_name = SE(parent=self.window_custom_mineralogy, row_id=1, column_id=8, bg=self.color_accent_01,
+                            fg=self.color_fg_dark).create_label(text="Name", relief=tk.RAISED)
+            lbl_name = SE(parent=self.window_custom_mineralogy, row_id=1, column_id=9, bg=self.color_accent_01,
+                            fg=self.color_fg_dark).create_label(text="Part", relief=tk.RAISED)
+            lbl_name = SE(parent=self.window_custom_mineralogy, row_id=1, column_id=10, bg=self.color_accent_01,
+                            fg=self.color_fg_dark).create_label(text="Min", relief=tk.RAISED)
+            lbl_name = SE(parent=self.window_custom_mineralogy, row_id=1, column_id=11, bg=self.color_accent_01,
+                            fg=self.color_fg_dark).create_label(text="Max", relief=tk.RAISED)
+            list_phyllosilicates = ["Illite", "Kaolinite", "Montmorillonite", "Chlorite", "Vermiculite", "Biotite", "Muscovite", "Glauconite"]
+            for index, phyllosilicate in enumerate(list_phyllosilicates, start=0):
+                lbl = SE(parent=self.window_custom_mineralogy, row_id=2+index, column_id=8, bg=self.color_accent_02,
+                         fg=self.color_fg_dark).create_label(text=phyllosilicate, relief=tk.RAISED)
+            # Nesosilicates
+            lbl_nesosilicates = SE(parent=self.window_custom_mineralogy, row_id=0, column_id=12, n_columns=4,
+                            bg=self.color_accent_01, fg=self.color_fg_dark).create_label(text="Nesosilicates", relief=tk.RAISED)
+            lbl_name = SE(parent=self.window_custom_mineralogy, row_id=1, column_id=12, bg=self.color_accent_01,
+                            fg=self.color_fg_dark).create_label(text="Name", relief=tk.RAISED)
+            lbl_name = SE(parent=self.window_custom_mineralogy, row_id=1, column_id=13, bg=self.color_accent_01,
+                            fg=self.color_fg_dark).create_label(text="Part", relief=tk.RAISED)
+            lbl_name = SE(parent=self.window_custom_mineralogy, row_id=1, column_id=14, bg=self.color_accent_01,
+                            fg=self.color_fg_dark).create_label(text="Min", relief=tk.RAISED)
+            lbl_name = SE(parent=self.window_custom_mineralogy, row_id=1, column_id=15, bg=self.color_accent_01,
+                            fg=self.color_fg_dark).create_label(text="Max", relief=tk.RAISED)
+            list_nesosilicates = ["Olivine", "Garnet", "Zircon", "Thorite", "Andalusite", "Kyanite", "Sillimanite", "Topaz", "Staurolite"]
+            for index, nesosilicate in enumerate(list_nesosilicates, start=0):
+                lbl = SE(parent=self.window_custom_mineralogy, row_id=2+index, column_id=12, bg=self.color_accent_02,
+                         fg=self.color_fg_dark).create_label(text=nesosilicate, relief=tk.RAISED)
+            # Inosilicates
+            lbl_inosilicates = SE(parent=self.window_custom_mineralogy, row_id=0, column_id=16, n_columns=4,
+                            bg=self.color_accent_01, fg=self.color_fg_dark).create_label(text="Inosilicates", relief=tk.RAISED)
+            lbl_name = SE(parent=self.window_custom_mineralogy, row_id=1, column_id=16, bg=self.color_accent_01,
+                            fg=self.color_fg_dark).create_label(text="Name", relief=tk.RAISED)
+            lbl_name = SE(parent=self.window_custom_mineralogy, row_id=1, column_id=17, bg=self.color_accent_01,
+                            fg=self.color_fg_dark).create_label(text="Part", relief=tk.RAISED)
+            lbl_name = SE(parent=self.window_custom_mineralogy, row_id=1, column_id=18, bg=self.color_accent_01,
+                            fg=self.color_fg_dark).create_label(text="Min", relief=tk.RAISED)
+            lbl_name = SE(parent=self.window_custom_mineralogy, row_id=1, column_id=19, bg=self.color_accent_01,
+                            fg=self.color_fg_dark).create_label(text="Max", relief=tk.RAISED)
+            list_inosilicates = ["Enstatite", "Ferrosilite", "Diopside", "Jadeite", "Aegirine", "Spodumene",
+                                 "Wollastonite", "Pyroxene", "Amphibole", "Cummingtonite", "Tremolite", "Actinolite",
+                                 "Hornblende", "Glaucophane"]
+            for index, inosilicate in enumerate(list_inosilicates, start=0):
+                lbl = SE(parent=self.window_custom_mineralogy, row_id=2+index, column_id=16, bg=self.color_accent_02,
+                         fg=self.color_fg_dark).create_label(text=inosilicate, relief=tk.RAISED)
+            # Sorosilicates
+            lbl_sorosilicates = SE(parent=self.window_custom_mineralogy, row_id=0, column_id=20, n_columns=4,
+                            bg=self.color_accent_01, fg=self.color_fg_dark).create_label(text="Sorosilicates", relief=tk.RAISED)
+            lbl_name = SE(parent=self.window_custom_mineralogy, row_id=1, column_id=20, bg=self.color_accent_01,
+                            fg=self.color_fg_dark).create_label(text="Name", relief=tk.RAISED)
+            lbl_name = SE(parent=self.window_custom_mineralogy, row_id=1, column_id=21, bg=self.color_accent_01,
+                            fg=self.color_fg_dark).create_label(text="Part", relief=tk.RAISED)
+            lbl_name = SE(parent=self.window_custom_mineralogy, row_id=1, column_id=22, bg=self.color_accent_01,
+                            fg=self.color_fg_dark).create_label(text="Min", relief=tk.RAISED)
+            lbl_name = SE(parent=self.window_custom_mineralogy, row_id=1, column_id=23, bg=self.color_accent_01,
+                            fg=self.color_fg_dark).create_label(text="Max", relief=tk.RAISED)
+            list_sorosilicates = ["Epidote", "Zoisite", "Tanzanite", "Allanite", "Vesuvianite"]
+            for index, sorosilicate in enumerate(list_sorosilicates, start=0):
+                lbl = SE(parent=self.window_custom_mineralogy, row_id=2+index, column_id=20, bg=self.color_accent_02,
+                         fg=self.color_fg_dark).create_label(text=sorosilicate, relief=tk.RAISED)
+            # Sulfides
+            lbl_sulfides = SE(parent=self.window_custom_mineralogy, row_id=16, column_id=4, n_columns=4,
+                            bg=self.color_accent_01, fg=self.color_fg_dark).create_label(text="Sulfides", relief=tk.RAISED)
+            lbl_name = SE(parent=self.window_custom_mineralogy, row_id=17, column_id=4, bg=self.color_accent_01,
+                            fg=self.color_fg_dark).create_label(text="Name", relief=tk.RAISED)
+            lbl_name = SE(parent=self.window_custom_mineralogy, row_id=17, column_id=5, bg=self.color_accent_01,
+                            fg=self.color_fg_dark).create_label(text="Part", relief=tk.RAISED)
+            lbl_name = SE(parent=self.window_custom_mineralogy, row_id=17, column_id=6, bg=self.color_accent_01,
+                            fg=self.color_fg_dark).create_label(text="Min", relief=tk.RAISED)
+            lbl_name = SE(parent=self.window_custom_mineralogy, row_id=17, column_id=7, bg=self.color_accent_01,
+                            fg=self.color_fg_dark).create_label(text="Max", relief=tk.RAISED)
+            list_sulfides = ["Pyrite", "Chalcopyrite", "Bornite", "Covellite", "Molybdenite", "Sphalerite", "Galena", "Fahlore"]
+            for index, sulfide in enumerate(list_sulfides, start=0):
+                lbl = SE(parent=self.window_custom_mineralogy, row_id=18+index, column_id=4, bg=self.color_accent_02,
+                         fg=self.color_fg_dark).create_label(text=sulfide, relief=tk.RAISED)
+            # Carbonates
+            lbl_carbonates = SE(parent=self.window_custom_mineralogy, row_id=16, column_id=0, n_columns=4,
+                            bg=self.color_accent_01, fg=self.color_fg_dark).create_label(text="Carbonates", relief=tk.RAISED)
+            lbl_name = SE(parent=self.window_custom_mineralogy, row_id=17, column_id=0, bg=self.color_accent_01,
+                            fg=self.color_fg_dark).create_label(text="Name", relief=tk.RAISED)
+            lbl_name = SE(parent=self.window_custom_mineralogy, row_id=17, column_id=1, bg=self.color_accent_01,
+                            fg=self.color_fg_dark).create_label(text="Part", relief=tk.RAISED)
+            lbl_name = SE(parent=self.window_custom_mineralogy, row_id=17, column_id=2, bg=self.color_accent_01,
+                            fg=self.color_fg_dark).create_label(text="Min", relief=tk.RAISED)
+            lbl_name = SE(parent=self.window_custom_mineralogy, row_id=17, column_id=3, bg=self.color_accent_01,
+                            fg=self.color_fg_dark).create_label(text="Max", relief=tk.RAISED)
+            list_carbonates = ["Calcite", "Dolomite", "Magnesite", "Rhodochrosite", "Siderite", "Aragonite", "Cerussite", "Ankerite", "Azurite", "Malachite"]
+            for index, carbonate in enumerate(list_carbonates, start=0):
+                lbl = SE(parent=self.window_custom_mineralogy, row_id=18+index, column_id=0, bg=self.color_accent_02,
+                         fg=self.color_fg_dark).create_label(text=carbonate, relief=tk.RAISED)
+            # Sulfates
+            lbl_sulfates = SE(parent=self.window_custom_mineralogy, row_id=16, column_id=8, n_columns=4,
+                            bg=self.color_accent_01, fg=self.color_fg_dark).create_label(text="Sulfates", relief=tk.RAISED)
+            lbl_name = SE(parent=self.window_custom_mineralogy, row_id=17, column_id=8, bg=self.color_accent_01,
+                            fg=self.color_fg_dark).create_label(text="Name", relief=tk.RAISED)
+            lbl_name = SE(parent=self.window_custom_mineralogy, row_id=17, column_id=9, bg=self.color_accent_01,
+                            fg=self.color_fg_dark).create_label(text="Part", relief=tk.RAISED)
+            lbl_name = SE(parent=self.window_custom_mineralogy, row_id=17, column_id=10, bg=self.color_accent_01,
+                            fg=self.color_fg_dark).create_label(text="Min", relief=tk.RAISED)
+            lbl_name = SE(parent=self.window_custom_mineralogy, row_id=17, column_id=11, bg=self.color_accent_01,
+                            fg=self.color_fg_dark).create_label(text="Max", relief=tk.RAISED)
+            list_sulfates = ["Barite", "Anhydrite", "Gypsum", "Alunite", "Jarosite", "Anglesite"]
+            for index, sulfate in enumerate(list_sulfates, start=0):
+                lbl = SE(parent=self.window_custom_mineralogy, row_id=18+index, column_id=8, bg=self.color_accent_02,
+                         fg=self.color_fg_dark).create_label(text=sulfate, relief=tk.RAISED)
 #
 class Subsurface:
     #
@@ -1898,7 +2055,7 @@ class Subsurface:
         #
         self.lbl_w.extend([lbl_01, lbl_02, lbl_03, lbl_04, lbl_05, lbl_06, lbl_07, lbl_08, lbl_09, lbl_10])
         #
-    def create_random_sequences(self, thickness, style):
+    def create_random_sequences(self, thickness, style, n_parts=20):
         #
         self.var_rb_stat = tk.IntVar()
         var_rb_stat_start = 0
@@ -1938,7 +2095,7 @@ class Subsurface:
                 results_subsurface[index] = {}
                 if rock == "Sandstone":
                     if index == 0:
-                        thickness_unit = self.split_thickness(thickness=list_thickness[index], n_units=10)
+                        thickness_unit = self.split_thickness(thickness=list_thickness[index], n_units=n_parts)
                         for i, d in enumerate(thickness_unit, start=0):
                             if i == 0:
                                 results_subsurface[index][i] = sandstone(fluid="water", actualThickness=0).create_simple_sandstone(dict_output=True, porosity=rd.uniform(0.05, 0.3))
@@ -1976,7 +2133,7 @@ class Subsurface:
                                 self.results_sorted["GR"].append(results_subsurface[index][i]["GR"])
                                 self.results_sorted["PE"].append(results_subsurface[index][i]["PE"])
                     else:
-                        thickness_unit = self.split_thickness(thickness=list_thickness[index], n_units=10)
+                        thickness_unit = self.split_thickness(thickness=list_thickness[index], n_units=n_parts)
                         for i, d in enumerate(thickness_unit, start=0):
                             if i == 0:
                                 if list_rocks[index-1] == "Shale":
@@ -2049,7 +2206,7 @@ class Subsurface:
                 #
                 elif rock == "Shale":
                     if index == 0:
-                        thickness_unit = self.split_thickness(thickness=list_thickness[index], n_units=10)
+                        thickness_unit = self.split_thickness(thickness=list_thickness[index], n_units=n_parts)
                         for i, d in enumerate(thickness_unit, start=0):
                             if i == 0:
                                 results_subsurface[index][i] = shale(fluid="water").create_simple_shale(dict_output=True, porosity=rd.uniform(0, 0.1))
@@ -2084,7 +2241,7 @@ class Subsurface:
                                 self.results_sorted["GR"].append(results_subsurface[index][i]["GR"])
                                 self.results_sorted["PE"].append(results_subsurface[index][i]["PE"])
                     else:
-                        thickness_unit = self.split_thickness(thickness=list_thickness[index], n_units=10)
+                        thickness_unit = self.split_thickness(thickness=list_thickness[index], n_units=n_parts)
                         for i, d in enumerate(thickness_unit, start=0):
                             if i == 0:
                                 results_subsurface[index][i] = shale(fluid="water").create_simple_shale(dict_output=True, porosity=rd.uniform(0, 0.1))
@@ -2107,7 +2264,7 @@ class Subsurface:
                             self.results_sorted["PE"].append(results_subsurface[index][i]["PE"])
                 #
                 elif rock == "Granite":
-                    thickness_unit = self.split_thickness(thickness=list_thickness[index], n_units=10)
+                    thickness_unit = self.split_thickness(thickness=list_thickness[index], n_units=n_parts)
                     for i, d in enumerate(thickness_unit, start=0):
                         if i == 0:
                             results_subsurface[index][i] = Plutonic(fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(0, 0.05)).create_simple_granite()
@@ -2130,7 +2287,7 @@ class Subsurface:
                         self.results_sorted["PE"].append(results_subsurface[index][i]["PE"])
                 #
                 elif rock == "Gabbro":
-                    thickness_unit = self.split_thickness(thickness=list_thickness[index], n_units=10)
+                    thickness_unit = self.split_thickness(thickness=list_thickness[index], n_units=n_parts)
                     for i, d in enumerate(thickness_unit, start=0):
                         if i == 0:
                             results_subsurface[index][i] = Plutonic(fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(0, 0.05)).create_simple_gabbro()
@@ -2153,7 +2310,7 @@ class Subsurface:
                         self.results_sorted["PE"].append(results_subsurface[index][i]["PE"])
                 #
                 elif rock == "Diorite":
-                    thickness_unit = self.split_thickness(thickness=list_thickness[index], n_units=10)
+                    thickness_unit = self.split_thickness(thickness=list_thickness[index], n_units=n_parts)
                     for i, d in enumerate(thickness_unit, start=0):
                         if i == 0:
                             results_subsurface[index][i] = Plutonic(fluid="water", actualThickness=0, dict_output=True,

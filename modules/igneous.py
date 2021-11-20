@@ -1353,8 +1353,8 @@ class Plutonic:
         G_list = [mineralogy[i][3][1] for i in range(len(mineralogy))]
         K_geo = elast.calc_geometric_mean(self, X, K_list)
         G_geo = elast.calc_geometric_mean(self, X, G_list)
-        K_solid = K_geo
-        G_solid = G_geo
+        K_solid = 0.9*K_geo
+        G_solid = 0.9*G_geo
         vP_solid = np.sqrt((K_solid*10**9+4/3*G_solid*10**9)/(rhoSolid*10**3))
         vS_solid = np.sqrt((G_solid*10**9)/(rhoSolid*10**3))
         E_solid = (9*K_solid*G_solid)/(3*K_solid+G_solid)
@@ -1457,18 +1457,16 @@ class Plutonic:
         composition = []
         while cond == False:
             if self.w_Mg == None and self.w_K == None and self.w_Ca == None and self.w_Fe == None and self.amounts == None:
-                w_qz = round(abs(rd.uniform(0.0, 0.2)), 4)
-                w_kfs = round(abs(rd.uniform(0.0, 0.35)), 4)
-                w_pl = round(abs(rd.uniform(0.52, 1.0)), 4)
-                w_fsp = w_kfs + w_pl
-                w_acc = round((1-w_qz-w_fsp), 4)
-                w_amph = round(w_acc*rd.uniform(0.5, 1), 4)
-                w_act = round(abs(w_acc*w_amph*rd.uniform(0, 1)), 4)
-                w_tr = round(abs(w_acc*w_amph*rd.uniform(0, (1-w_act))), 4)
-                w_mica = round(w_acc*rd.uniform(0, (1-w_amph)), 4)
-                w_bt = round(abs(w_acc*w_mica*rd.uniform(0.5, 1)), 4)
-                w_ms = round(abs(w_acc*w_mica*rd.uniform(0, (1-w_bt))), 4)
-                w_pyr = round(abs(w_acc*(1-w_mica-w_amph)), 4)
+                w_qz = round(rd.uniform(0, 0.1), 4)
+                w_kfs = round(rd.uniform(0, 0.1), 4)
+                w_pl = round(rd.uniform(0.4, 0.5), 4)
+                w_mica = round(rd.uniform(0, 0.1), 4)
+                w_bt = round(w_mica*rd.uniform(0.95, 1), 4)
+                w_ms = round(w_mica - w_bt, 4)
+                w_amph = round(rd.uniform(0.2, 0.275), 4)
+                w_act = round(w_amph*rd.uniform(0.5, 1), 4)
+                w_tr = round(w_amph - w_act, 4)
+                w_pyr = round(1 - w_qz - w_kfs - w_pl - w_bt - w_ms - w_act - w_tr, 4)
                 w_aug = w_pyr
             elif self.w_Mg != None:
                 w_acc = round(abs(rd.uniform(0.0, 0.05)), 4)
@@ -1587,8 +1585,8 @@ class Plutonic:
         G_list = [mineralogy[i][3][1] for i in range(len(mineralogy))]
         K_geo = elast.calc_geometric_mean(self, X, K_list)
         G_geo = elast.calc_geometric_mean(self, X, G_list)
-        K_solid = K_geo
-        G_solid = G_geo
+        K_solid = 0.75*K_geo
+        G_solid = 0.75*G_geo
         vP_solid = np.sqrt((K_solid*10**9+4/3*G_solid*10**9)/(rhoSolid*10**3))
         vS_solid = np.sqrt((G_solid*10**9)/(rhoSolid*10**3))
         E_solid = (9*K_solid*G_solid)/(3*K_solid+G_solid)
