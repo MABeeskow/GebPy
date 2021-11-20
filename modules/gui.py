@@ -164,7 +164,7 @@ class GebPyGUI(tk.Frame):
             self.lbl_w, self.entr_w = Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                      color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
                      entr_w=self.entr_w)()
-        elif var_opt in ["Magnetite", "Hematite"]:
+        elif var_opt in ["Magnetite", "Hematite", "Aluminium Spinels"]:
             Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                      color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
                      entr_w=self.entr_w)
@@ -271,7 +271,7 @@ class GebPyGUI(tk.Frame):
             except:
                 pass
             var_opt_0_1 = tk.StringVar()
-            opt_list_0_1 = ["Quartz", "Magnetite", "Hematite"]
+            opt_list_0_1 = ["Quartz", "Magnetite", "Hematite", "Aluminium Spinels"]
             self.opt_oxide = SE(parent=self.parent, row_id=10, column_id=0, n_rows=2, n_columns=2,
                                 bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
                 var_opt=var_opt_0_1, var_opt_set="Select Oxide", opt_list=opt_list_0_1, active_bg=self.color_accent_02,
@@ -481,6 +481,9 @@ class Minerals:
             elif self.mineral == "Hematite":
                 self.var_dict = True
                 data = Oxides(impurity="pure").create_hematite(dict=self.var_dict)
+            elif self.mineral == "Aluminium Spinels":
+                self.var_dict = True
+                data = Oxides(impurity="pure", data_type=True).create_aluminium_spinel()
             elif self.mineral == "Pyrite":
                 self.var_dict = True
                 data = Sulfides(impurity="pure", dict=self.var_dict).create_pyrite()
@@ -563,7 +566,7 @@ class Minerals:
             for element in elements:
                 self.element_list[element] = []
                 for index, chem_dict in enumerate(self.chemistry, start=0):
-                    self.element_list[element].append(chem_dict[element]*100)
+                    self.element_list[element].append(abs(chem_dict[element]))
             if self.mineral in ["Magnetite", "Hematite", "Pyrite", "Siderite"]:
                 self.w_element = self.element_list["Fe"]
             elif self.mineral in ["Galena"]:
@@ -572,7 +575,7 @@ class Minerals:
                 self.w_element = self.element_list["Cu"]
             elif self.mineral in ["Calcite", "Dolomite", "Fluorite"]:
                 self.w_element = self.element_list["Ca"]
-            elif self.mineral in ["Magnesite"]:
+            elif self.mineral in ["Magnesite", "Aluminium Spinels"]:
                 self.w_element = self.element_list["Mg"]
             elif self.mineral in ["Halite"]:
                 self.w_element = self.element_list["Na"]
@@ -677,6 +680,7 @@ class Minerals:
         self.canvas = None
         self.fig = Figure(facecolor=self.color_bg)
         self.ax = self.fig.add_subplot()
+        data_x = np.array(data_x)*100
         #
         self.ax.scatter(data_x, data_y, color=color, edgecolor="black")
         self.ax.grid(True)
@@ -684,7 +688,7 @@ class Minerals:
         self.ax.set_axisbelow(True)
         self.ax.set_xlabel(xlabel, fontsize="small")
         self.ax.set_ylabel(ylabel, labelpad=0.5, fontsize="small")
-        self.fig.subplots_adjust(bottom=0.15, left=0.22)
+        self.fig.subplots_adjust(bottom=0.15, left=0.26)
         #
         self.canvas = FigureCanvasTkAgg(self.fig, master=parent)
         self.canvas.get_tk_widget().grid(row=row_id, column=column_id, rowspan=n_rows, columnspan=n_columns,
@@ -714,6 +718,9 @@ class Minerals:
             elif self.mineral == "Hematite":
                 self.var_dict = True
                 data = Oxides(impurity="pure").create_hematite(dict=self.var_dict)
+            elif self.mineral == "Aluminium Spinels":
+                self.var_dict = True
+                data = Oxides(impurity="pure", data_type=True).create_aluminium_spinel()
             elif self.mineral == "Pyrite":
                 self.var_dict = True
                 data = Sulfides(impurity="pure", dict=self.var_dict).create_pyrite()
@@ -796,7 +803,7 @@ class Minerals:
             for element in elements:
                 self.element_list[element] = []
                 for index, chem_dict in enumerate(self.chemistry, start=0):
-                    self.element_list[element].append(chem_dict[element]*100)
+                    self.element_list[element].append(abs(chem_dict[element]))
             if self.mineral in ["Magnetite", "Hematite", "Pyrite", "Siderite"]:
                 self.w_element = self.element_list["Fe"]
             elif self.mineral in ["Galena"]:
@@ -805,7 +812,7 @@ class Minerals:
                 self.w_element = self.element_list["Cu"]
             elif self.mineral in ["Calcite", "Dolomite", "Fluorite"]:
                 self.w_element = self.element_list["Ca"]
-            elif self.mineral in ["Magnesite"]:
+            elif self.mineral in ["Magnesite", "Aluminium Spinels"]:
                 self.w_element = self.element_list["Mg"]
             elif self.mineral in ["Halite"]:
                 self.w_element = self.element_list["Na"]
@@ -944,7 +951,7 @@ class Minerals:
                 element = "Cu"
             elif self.mineral in ["Galena"]:
                 element = "Pb"
-            elif self.mineral in ["Magnesite"]:
+            elif self.mineral in ["Magnesite", "Aluminium Spinels"]:
                 element = "Mg"
             elif self.mineral in ["Halite"]:
                 element = "Na"
@@ -1836,11 +1843,6 @@ class Rocks:
         print(var_btn)
         if var_btn == "Define Mineralogy":
             ## CONSTANTS
-            self.window_custom_mineralogy = tk.Toplevel(self.parent_rock)
-            self.window_custom_mineralogy.title("GebPy")
-            self.window_custom_mineralogy.geometry("1200x960")
-            self.window_custom_mineralogy.resizable(False, False)
-            self.window_custom_mineralogy["bg"] = self.color_bg
             self.color_menu = "#264653"
             self.color_border = "#7C9097"
             self.color_bg = "#E9ECED"
@@ -1850,6 +1852,15 @@ class Rocks:
             self.color_accent_02 = "#F0A794"    # Orange light
             self.color_accent_03 = "#E9C46A"    # Yellow
             self.color_accent_04 = "#F3DEAD"    # Yellow light
+            #
+            self.window_custom_mineralogy = tk.Toplevel(self.parent_rock)
+            self.window_custom_mineralogy.title("GebPy")
+            self.window_custom_mineralogy.geometry("1200x960")
+            self.window_custom_mineralogy.resizable(False, False)
+            self.window_custom_mineralogy["bg"] = self.color_menu
+            #
+            self.var_custom_mineralogy = {}
+            self.var_custom_mineralogy["checkbox"] = {}
             #
             ## LABELS
             # Oxides
@@ -1867,6 +1878,9 @@ class Rocks:
             for index, oxide in enumerate(list_oxides, start=0):
                 lbl = SE(parent=self.window_custom_mineralogy, row_id=2+index, column_id=0, bg=self.color_accent_02,
                          fg=self.color_fg_dark).create_label(text=oxide, relief=tk.RAISED)
+                self.var_custom_mineralogy["checkbox"][oxide] = tk.IntVar()
+                cb = SE(parent=self.window_custom_mineralogy, row_id=2+index, column_id=1, bg=self.color_accent_02,
+                         fg=self.color_fg_dark).create_checkbox(text="", var_cb=self.var_custom_mineralogy["checkbox"][oxide])
             # Tectosilicates
             lbl_tectosilicates = SE(parent=self.window_custom_mineralogy, row_id=0, column_id=4, n_columns=4,
                             bg=self.color_accent_01, fg=self.color_fg_dark).create_label(text="Tectosilicates", relief=tk.RAISED)
@@ -1882,6 +1896,9 @@ class Rocks:
             for index, tectosilicate in enumerate(list_tectosilicates, start=0):
                 lbl = SE(parent=self.window_custom_mineralogy, row_id=2+index, column_id=4, bg=self.color_accent_02,
                          fg=self.color_fg_dark).create_label(text=tectosilicate, relief=tk.RAISED)
+                self.var_custom_mineralogy["checkbox"][tectosilicate] = tk.IntVar()
+                cb = SE(parent=self.window_custom_mineralogy, row_id=2+index, column_id=5, bg=self.color_accent_02,
+                         fg=self.color_fg_dark).create_checkbox(text="", var_cb=self.var_custom_mineralogy["checkbox"][tectosilicate])
             # Phyllosilicates
             lbl_phyllosilicates = SE(parent=self.window_custom_mineralogy, row_id=0, column_id=8, n_columns=4,
                             bg=self.color_accent_01, fg=self.color_fg_dark).create_label(text="Phyllosilicates", relief=tk.RAISED)
@@ -1897,6 +1914,9 @@ class Rocks:
             for index, phyllosilicate in enumerate(list_phyllosilicates, start=0):
                 lbl = SE(parent=self.window_custom_mineralogy, row_id=2+index, column_id=8, bg=self.color_accent_02,
                          fg=self.color_fg_dark).create_label(text=phyllosilicate, relief=tk.RAISED)
+                self.var_custom_mineralogy["checkbox"][phyllosilicate] = tk.IntVar()
+                cb = SE(parent=self.window_custom_mineralogy, row_id=2+index, column_id=9, bg=self.color_accent_02,
+                         fg=self.color_fg_dark).create_checkbox(text="", var_cb=self.var_custom_mineralogy["checkbox"][phyllosilicate])
             # Nesosilicates
             lbl_nesosilicates = SE(parent=self.window_custom_mineralogy, row_id=0, column_id=12, n_columns=4,
                             bg=self.color_accent_01, fg=self.color_fg_dark).create_label(text="Nesosilicates", relief=tk.RAISED)
@@ -1912,6 +1932,9 @@ class Rocks:
             for index, nesosilicate in enumerate(list_nesosilicates, start=0):
                 lbl = SE(parent=self.window_custom_mineralogy, row_id=2+index, column_id=12, bg=self.color_accent_02,
                          fg=self.color_fg_dark).create_label(text=nesosilicate, relief=tk.RAISED)
+                self.var_custom_mineralogy["checkbox"][nesosilicate] = tk.IntVar()
+                cb = SE(parent=self.window_custom_mineralogy, row_id=2+index, column_id=13, bg=self.color_accent_02,
+                         fg=self.color_fg_dark).create_checkbox(text="", var_cb=self.var_custom_mineralogy["checkbox"][nesosilicate])
             # Inosilicates
             lbl_inosilicates = SE(parent=self.window_custom_mineralogy, row_id=0, column_id=16, n_columns=4,
                             bg=self.color_accent_01, fg=self.color_fg_dark).create_label(text="Inosilicates", relief=tk.RAISED)
@@ -1929,6 +1952,9 @@ class Rocks:
             for index, inosilicate in enumerate(list_inosilicates, start=0):
                 lbl = SE(parent=self.window_custom_mineralogy, row_id=2+index, column_id=16, bg=self.color_accent_02,
                          fg=self.color_fg_dark).create_label(text=inosilicate, relief=tk.RAISED)
+                self.var_custom_mineralogy["checkbox"][inosilicate] = tk.IntVar()
+                cb = SE(parent=self.window_custom_mineralogy, row_id=2+index, column_id=17, bg=self.color_accent_02,
+                         fg=self.color_fg_dark).create_checkbox(text="", var_cb=self.var_custom_mineralogy["checkbox"][inosilicate])
             # Sorosilicates
             lbl_sorosilicates = SE(parent=self.window_custom_mineralogy, row_id=0, column_id=20, n_columns=4,
                             bg=self.color_accent_01, fg=self.color_fg_dark).create_label(text="Sorosilicates", relief=tk.RAISED)
@@ -1944,6 +1970,9 @@ class Rocks:
             for index, sorosilicate in enumerate(list_sorosilicates, start=0):
                 lbl = SE(parent=self.window_custom_mineralogy, row_id=2+index, column_id=20, bg=self.color_accent_02,
                          fg=self.color_fg_dark).create_label(text=sorosilicate, relief=tk.RAISED)
+                self.var_custom_mineralogy["checkbox"][sorosilicate] = tk.IntVar()
+                cb = SE(parent=self.window_custom_mineralogy, row_id=2+index, column_id=21, bg=self.color_accent_02,
+                         fg=self.color_fg_dark).create_checkbox(text="", var_cb=self.var_custom_mineralogy["checkbox"][sorosilicate])
             # Sulfides
             lbl_sulfides = SE(parent=self.window_custom_mineralogy, row_id=16, column_id=4, n_columns=4,
                             bg=self.color_accent_01, fg=self.color_fg_dark).create_label(text="Sulfides", relief=tk.RAISED)
@@ -1959,6 +1988,9 @@ class Rocks:
             for index, sulfide in enumerate(list_sulfides, start=0):
                 lbl = SE(parent=self.window_custom_mineralogy, row_id=18+index, column_id=4, bg=self.color_accent_02,
                          fg=self.color_fg_dark).create_label(text=sulfide, relief=tk.RAISED)
+                self.var_custom_mineralogy["checkbox"][sulfide] = tk.IntVar()
+                cb = SE(parent=self.window_custom_mineralogy, row_id=18+index, column_id=5, bg=self.color_accent_02,
+                         fg=self.color_fg_dark).create_checkbox(text="", var_cb=self.var_custom_mineralogy["checkbox"][sulfide])
             # Carbonates
             lbl_carbonates = SE(parent=self.window_custom_mineralogy, row_id=16, column_id=0, n_columns=4,
                             bg=self.color_accent_01, fg=self.color_fg_dark).create_label(text="Carbonates", relief=tk.RAISED)
@@ -1974,6 +2006,9 @@ class Rocks:
             for index, carbonate in enumerate(list_carbonates, start=0):
                 lbl = SE(parent=self.window_custom_mineralogy, row_id=18+index, column_id=0, bg=self.color_accent_02,
                          fg=self.color_fg_dark).create_label(text=carbonate, relief=tk.RAISED)
+                self.var_custom_mineralogy["checkbox"][carbonate] = tk.IntVar()
+                cb = SE(parent=self.window_custom_mineralogy, row_id=18+index, column_id=1, bg=self.color_accent_02,
+                         fg=self.color_fg_dark).create_checkbox(text="", var_cb=self.var_custom_mineralogy["checkbox"][carbonate])
             # Sulfates
             lbl_sulfates = SE(parent=self.window_custom_mineralogy, row_id=16, column_id=8, n_columns=4,
                             bg=self.color_accent_01, fg=self.color_fg_dark).create_label(text="Sulfates", relief=tk.RAISED)
@@ -1989,6 +2024,9 @@ class Rocks:
             for index, sulfate in enumerate(list_sulfates, start=0):
                 lbl = SE(parent=self.window_custom_mineralogy, row_id=18+index, column_id=8, bg=self.color_accent_02,
                          fg=self.color_fg_dark).create_label(text=sulfate, relief=tk.RAISED)
+                self.var_custom_mineralogy["checkbox"][sulfate] = tk.IntVar()
+                cb = SE(parent=self.window_custom_mineralogy, row_id=18+index, column_id=9, bg=self.color_accent_02,
+                         fg=self.color_fg_dark).create_checkbox(text="", var_cb=self.var_custom_mineralogy["checkbox"][sulfate])
 #
 class Subsurface:
     #

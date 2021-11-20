@@ -76,3 +76,14 @@ class SimpleElements:
         #
         return btn
     #
+    def create_checkbox(self, text, var_cb, command=None):
+        if command == None:
+            cb = tk.Checkbutton(self.parent, text=text, variable=var_cb, bg=self.bg, fg=self.fg,
+                                activebackground="#F9DED7", highlightbackground=self.bg, highlightthickness=0)
+        else:
+            cb = tk.Checkbutton(self.parent, text=text, variable=var_cb, bg=self.bg, fg=self.fg,
+                                activebackground="#F9DED7", highlightbackground=self.bg, highlightthickness=0,
+                                command=command)
+        cb.grid(row=self.row_id, column=self.column_id, rowspan=self.n_rows, columnspan=self.n_columns, sticky="nesw")
+        #
+        return cb

@@ -2618,3 +2618,146 @@ class Oxides():
         data.append(amounts)
         #
         return data
+    #
+    def create_aluminium_spinel(self):
+        # Major elements
+        oxygen = PeriodicSystem(name="O").get_data()
+        magnesium = PeriodicSystem(name="Mg").get_data()
+        aluminium = PeriodicSystem(name="Al").get_data()
+        manganese = PeriodicSystem(name="Mn").get_data()
+        iron = PeriodicSystem(name="Fe").get_data()
+        zinc = PeriodicSystem(name="Zn").get_data()
+        majors_name = ["O", "Mg", "Al", "Mn", "Fe", "Zn"]
+        # Minor elements
+        traces_data = []
+        if len(self.traces_list) > 0:
+            self.impurity = "impure"
+        if self.impurity == "random":
+            self.traces_list = []
+            minors = ["Ti", "Ca"]
+            n = rd.randint(1, len(minors))
+            while len(self.traces_list) < n:
+                selection = rd.choice(minors)
+                if selection not in self.traces_list and selection not in majors_name:
+                    self.traces_list.append(selection)
+                else:
+                    continue
+        traces = [PeriodicSystem(name=i).get_data() for i in self.traces_list]
+        x_traces = [round(rd.uniform(0., 0.001), 6) for i in range(len(self.traces_list))]
+        for i in range(len(self.traces_list)):
+            traces_data.append([str(self.traces_list[i]), int(traces[i][1]), float(x_traces[i])])
+        if len(traces_data) > 0:
+            traces_data = np.array(traces_data, dtype=object)
+            traces_data = traces_data[traces_data[:, 1].argsort()]
+        #
+        mineral = "Spi"
+        #
+        # Molar mass
+        w_a = round(rd.uniform(0, 1.0), 4)
+        w_b = round(rd.uniform(0, (1-w_a)), 4)
+        w_c = round(rd.uniform(0, (1-w_a-w_b)), 4)
+        w_d = round(1-w_a-w_b-w_c, 4)
+        #
+        majors_data = np.array([["O", oxygen[1], 4, oxygen[2]], ["Mg", magnesium[1], w_a, magnesium[2]],
+                                ["Al", aluminium[1], 2, aluminium[2]], ["Mn", manganese[1], w_d, manganese[2]],
+                                ["Fe", iron[1], w_b, iron[2]], ["Zn", zinc[1], w_c, zinc[2]]], dtype=object)
+        #
+        molar_mass_pure = w_a*magnesium[2] + w_b*iron[2] + w_c*zinc[2] + w_d*manganese[2] + 2*aluminium[2] + 4*oxygen[2]
+        molar_mass, amounts = MineralChemistry(w_traces=traces_data, molar_mass_pure=molar_mass_pure,
+                                               majors=majors_data).calculate_molar_mass()
+        element = [PeriodicSystem(name=amounts[i][0]).get_data() for i in range(len(amounts))]
+        # Density
+        dataV_spi = CrystalPhysics([[8.08], [], "cubic"])
+        V_spi = dataV_spi.calculate_volume()
+        dataRho_spi = CrystalPhysics([molar_mass, 8, V_spi])
+        rho_spi = dataRho_spi.calculate_bulk_density()
+        rho_e_spi = wg(amounts=amounts, elements=element, rho_b=rho_spi).calculate_electron_density()
+        dataV_hc = CrystalPhysics([[8.136], [], "cubic"])
+        V_hc = dataV_hc.calculate_volume()
+        dataRho_hc = CrystalPhysics([molar_mass, 8, V_hc])
+        rho_hc = dataRho_hc.calculate_bulk_density()
+        rho_e_hc = wg(amounts=amounts, elements=element, rho_b=rho_hc).calculate_electron_density()
+        dataV_glx = CrystalPhysics([[8.29], [], "cubic"])
+        V_glx = dataV_glx.calculate_volume()
+        dataRho_glx = CrystalPhysics([molar_mass, 8, V_glx])
+        rho_glx = dataRho_glx.calculate_bulk_density()
+        rho_e_glx = wg(amounts=amounts, elements=element, rho_b=rho_glx).calculate_electron_density()
+        dataV_ghn = CrystalPhysics([[8.062], [], "cubic"])
+        V_ghn = dataV_ghn.calculate_volume()
+        dataRho_ghn = CrystalPhysics([molar_mass, 8, V_ghn])
+        rho_ghn = dataRho_ghn.calculate_bulk_density()
+        rho_e_ghn = wg(amounts=amounts, elements=element, rho_b=rho_ghn).calculate_electron_density()
+        #
+        V = w_a*V_spi + w_b*V_hc + w_c*V_ghn + w_d*V_glx
+        rho = w_a*rho_spi + w_b*rho_hc + w_c*rho_ghn + w_d*rho_glx
+        rho_e = w_a*rho_e_spi + w_b*rho_e_hc + w_c*rho_e_ghn + w_d*rho_e_glx
+        #
+        # Bulk modulus
+        K_spi = 180*10**9
+        K_hc = 177.30*10**9
+        K_glx = 171.81*10**9
+        K_ghn = 179.24*10**9
+        K = w_a*K_spi + w_b*K_hc + w_c*K_ghn + w_d*K_glx
+        # Shear modulus
+        G_spi = 96*10**9
+        G_hc = 93.57*10**9
+        G_glx = 92.88*10**9
+        G_ghn = 93.52*10**9
+        G = w_a*G_spi + w_b*G_hc + w_c*G_ghn + w_d*G_glx
+        # Young's modulus
+        E = (9*K*G)/(3*K + G)
+        # Poisson's ratio
+        nu = (3*K - 2*G)/(2*(3*K + G))
+        # vP/vS
+        vPvS = ((K + 4/3*G)/G)**0.5
+        # P-wave velocity
+        vP = ((K + 4/3*G)/rho)**0.5
+        # S-wave velocity
+        vS = (G/rho)**0.5
+        # Gamma ray
+        gamma_ray = wg(amounts=amounts, elements=element).calculate_gr()
+        # Photoelectricity
+        pe = wg(amounts=amounts, elements=element).calculate_pe()
+        U = pe*rho_e*10**(-3)
+        # Electrical resistivity
+        p = None
+        #
+        if self.data_type == False:
+            data = []
+            data.append(mineral)
+            data.append(round(molar_mass, 3))
+            data.append(round(rho, 2))
+            data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 4)])
+            data.append([round(vP, 2), round(vS, 2), round(vPvS, 2)])
+            data.append([round(gamma_ray, 2), round(pe, 2), round(U, 2), p])
+            data.append(amounts)
+            #
+            return data
+        else:
+            #
+            results = {}
+            results["mineral"] = mineral
+            results["M"] = molar_mass
+            element_list = np.array(amounts)[:, 0]
+            results["chemistry"] = {}
+            for index, element in enumerate(element_list, start=0):
+                results["chemistry"][element] = amounts[index][2]
+            results["rho"] = round(rho, 4)
+            results["rho_e"] = round(rho_e, 4)
+            results["V"] = round(V, 4)
+            results["vP"] = round(vP, 4)
+            results["vS"] = round(vS, 4)
+            results["vP/vS"] = round(vPvS, 4)
+            results["G"] = round(G*10**(-9), 4)
+            results["K"] = round(K*10**(-9), 4)
+            results["E"] = round(E*10**(-9), 4)
+            results["nu"] = round(nu, 4)
+            results["GR"] = round(gamma_ray, 4)
+            results["PE"] = round(pe, 4)
+            results["U"] = round(U, 4)
+            if p != None:
+                results["p"] = round(p, 4)
+            else:
+                results["p"] = p
+            #
+            return results
