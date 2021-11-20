@@ -6,7 +6,7 @@
 # Name:		test_minerals.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		10.07.2021
+# Date:		20.11.2021
 
 # -----------------------------------------------
 
@@ -20,6 +20,8 @@ import matplotlib.patches as mpatches
 from matplotlib.ticker import NullFormatter
 from modules import sequences, geophysics, minerals, oxides, sulfides, sulfates, silicates
 from modules.pyllosilicates import Pyllosilicates
+from modules.carbonates import Carbonates
+from modules.organics import Organics
 
 class TESTING_MINERALS:
     #
@@ -34,16 +36,16 @@ class TESTING_MINERALS:
         ## TESTING ORGANICS
         print("TEST - ORGANICS")
         # Test Carbohydrates
-        data = minerals.Organics.carbohydrates("")
+        data = Organics(dict=True).create_carbohydrates()
         print("Carbohydrates:\n", data)
         # Test Lignin
-        data = minerals.Organics.lignin("")
+        data = Organics(dict=True).create_lignin()
         print("Lignin:\n", data)
         # Test Lipid
-        data = minerals.Organics.lipid("")
+        data = Organics(dict=True).create_lipid()
         print("Lipid:\n", data)
         # Test Organic matter
-        data = minerals.Organics.organic_matter("")
+        data = Organics(dict=True).create_organics_matter()
         print("Organic matter:\n", data)
 
         print("")

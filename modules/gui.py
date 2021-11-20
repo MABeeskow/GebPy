@@ -6,7 +6,7 @@
 # Name:		gui.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		17.11.2021
+# Date:		20.11.2021
 
 #-----------------------------------------------
 
@@ -165,7 +165,7 @@ class GebPyGUI(tk.Frame):
             Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                      color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
                      entr_w=self.entr_w)
-        elif var_opt in ["Calcite", "Dolomite", "Magnesite", "Halite", "Fluorite", "Sylvite", "Illite"]:
+        elif var_opt in ["Calcite", "Dolomite", "Magnesite", "Halite", "Fluorite", "Sylvite", "Illite", "Siderite"]:
             Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                      color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
                      entr_w=self.entr_w)
@@ -294,7 +294,7 @@ class GebPyGUI(tk.Frame):
             except:
                 pass
             var_opt_0_3 = tk.StringVar()
-            opt_list_0_3 = ["Calcite", "Dolomite", "Magnesite"]
+            opt_list_0_3 = ["Calcite", "Dolomite", "Magnesite", "Siderite"]
             self.opt_carb = SE(parent=self.parent, row_id=10, column_id=0, n_rows=2, n_columns=2,
                                bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
                 var_opt=var_opt_0_3, var_opt_set="Select Carbonate", opt_list=opt_list_0_3,
@@ -492,6 +492,9 @@ class Minerals:
             elif self.mineral == "Magnesite":
                 self.var_dict = True
                 data = Carbonates(impurity="pure", dict=self.var_dict).create_magnesite()
+            elif self.mineral == "Siderite":
+                self.var_dict = True
+                data = Carbonates(impurity="pure", dict=self.var_dict).create_siderite()
             elif self.mineral == "Halite":
                 self.var_dict = True
                 data = Halogenes(impurity="pure", dict=self.var_dict).create_halite()
@@ -554,7 +557,7 @@ class Minerals:
                 self.element_list[element] = []
                 for index, chem_dict in enumerate(self.chemistry, start=0):
                     self.element_list[element].append(chem_dict[element]*100)
-            if self.mineral in ["Magnetite", "Hematite", "Pyrite"]:
+            if self.mineral in ["Magnetite", "Hematite", "Pyrite", "Siderite"]:
                 self.w_element = self.element_list["Fe"]
             elif self.mineral in ["Galena"]:
                 self.w_element = self.element_list["Pb"]
@@ -722,6 +725,9 @@ class Minerals:
             elif self.mineral == "Magnesite":
                 self.var_dict = True
                 data = Carbonates(impurity="pure", dict=self.var_dict).create_magnesite()
+            elif self.mineral == "Siderite":
+                self.var_dict = True
+                data = Carbonates(impurity="pure", dict=self.var_dict).create_siderite()
             elif self.mineral == "Halite":
                 self.var_dict = True
                 data = Halogenes(impurity="pure", dict=self.var_dict).create_halite()
@@ -784,7 +790,7 @@ class Minerals:
                 self.element_list[element] = []
                 for index, chem_dict in enumerate(self.chemistry, start=0):
                     self.element_list[element].append(chem_dict[element]*100)
-            if self.mineral in ["Magnetite", "Hematite", "Pyrite"]:
+            if self.mineral in ["Magnetite", "Hematite", "Pyrite", "Siderite"]:
                 self.w_element = self.element_list["Fe"]
             elif self.mineral in ["Galena"]:
                 self.w_element = self.element_list["Pb"]
@@ -925,7 +931,7 @@ class Minerals:
             #
             if self.mineral == "Quartz":
                 element = "Si"
-            elif self.mineral in ["Magnetite", "Hematite", "Pyrite"]:
+            elif self.mineral in ["Magnetite", "Hematite", "Pyrite", "Siderite"]:
                 element = "Fe"
             elif self.mineral in ["Chalcopyrite"]:
                 element = "Cu"
