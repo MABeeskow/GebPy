@@ -1121,7 +1121,6 @@ class Rocks:
         self.lbl_w.extend([rb_03, rb_04])
         #
         if self.rock == "Custom":
-            print("Ich bin hier")
             self.create_custom_rock()
         else:
             #
@@ -1139,9 +1138,9 @@ class Rocks:
                     data = CustomCarbonates(fluid="water", actualThickness=0, output_type=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_custom_rock_01()
                 #
                 elif self.rock == "Felsic Rock":
-                    data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_felsic()
+                    data = Plutonic(fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_felsic()
                 elif self.rock == "Intermediate Rock":
-                    data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_intermediate()
+                    data = Plutonic(fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_intermediate()
                 elif self.rock == "Granite":
                     data = Plutonic(fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_simple_granite()
                 elif self.rock == "Gabbro":
@@ -1149,17 +1148,17 @@ class Rocks:
                 elif self.rock == "Diorite":
                     data = Plutonic(fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_simple_diorite()
                 elif self.rock == "Granodiorite":
-                    data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_simple_granodiorite()
+                    data = Plutonic(fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_simple_granodiorite()
                 elif self.rock == "Monzonite":
-                    data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_simple_monzonite()
+                    data = Plutonic(fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_simple_monzonite()
                 elif self.rock == "Quartzolite":
-                    data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_simple_quartzolite()
+                    data = Plutonic(fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_simple_quartzolite()
                 elif self.rock == "Qz-rich Granitoid":
-                    data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_simple_quartzrich_granitoid()
+                    data = Plutonic(fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_simple_quartzrich_granitoid()
                 elif self.rock == "Syenite":
-                    data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_simple_syenite()
+                    data = Plutonic(fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_simple_syenite()
                 elif self.rock == "Tonalite":
-                    data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_simple_tonalite()
+                    data = Plutonic(fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_simple_tonalite()
                 #
                 elif self.rock == "Rock Salt":
                     data = Evaporites(fluid="water", actualThickness=0).create_simple_rocksalt(dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
@@ -1219,6 +1218,7 @@ class Rocks:
                                fg="black").create_option_menu(var_opt=self.var_opt_chem, var_opt_set="Select Element/Mineral",
                                                               opt_list=opt_list_chem, active_bg=self.color_acc_02,
                                                               command=lambda var_opt=self.var_opt_chem: self.select_opt(var_opt))
+            self.lbl_w.append(self.opt_chem)
             #
             self.entr_list_min = []
             self.entr_list_max = []
@@ -1339,7 +1339,7 @@ class Rocks:
         #
         self.ax_histo.axvline(x=np.mean(data), color="#E76F51", linewidth=3, linestyle="dashed")
         self.ax_histo.hist(data, bins=15, color=color, edgecolor="black")
-        self.ax_histo.grid(True)
+        self.ax_histo.grid(color="grey", linestyle="dashed", which="both")
         self.ax_histo.set_axisbelow(True)
         self.ax_histo.set_xlabel(xlabel, fontsize="small")
         self.ax_histo.set_ylabel("Frequency", labelpad=0.5, fontsize="small")
@@ -1366,12 +1366,10 @@ class Rocks:
                                        edgecolor="black", alpha=1)
             cbar = self.fig.colorbar(plot)
             cbar.set_label(self.var_opt_chem.get()+" (%)", rotation=90)
-        self.ax.grid(True)
+        self.ax.grid(color="grey", linestyle="dashed", which="both")
         self.ax.set_axisbelow(True)
-        #self.ax.set_xlim(0.9*min(data_x), 1.1*max(data_x))
         self.ax.set_xlim(min(data_x), max(data_x))
-        #self.ax.set_xticks(np.linspace(0.9*min(data_x), 1.1*max(data_x), 5))
-        self.ax.set_xticks(np.linspace(int(round(min(data_x), 0)), int(round(max(data_x), 0)), 5))
+        self.ax.set_xticks(np.around(np.linspace(round(0.995*min(data_x), 4), 1.005*round(max(data_x), 4), 5), 2))
         self.ax.set_xlabel(xlabel, fontsize="small")
         self.ax.set_ylabel(ylabel, labelpad=0.5, fontsize="small")
         self.fig.subplots_adjust(bottom=0.15, left=0.22)
@@ -1433,9 +1431,9 @@ class Rocks:
                     data = CustomCarbonates(fluid="water", actualThickness=0, output_type=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_custom_rock_01()
             #
             elif self.rock == "Felsic Rock":
-                data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_felsic()
+                data = Plutonic(fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_felsic()
             elif self.rock == "Intermediate Rock":
-                data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_intermediate()
+                data = Plutonic(fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_intermediate()
             elif self.rock == "Granite":
                 data = Plutonic(fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_simple_granite()
             elif self.rock == "Gabbro":
@@ -1443,17 +1441,17 @@ class Rocks:
             elif self.rock == "Diorite":
                 data = Plutonic(fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_simple_diorite()
             elif self.rock == "Granodiorite":
-                data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_simple_granodiorite()
+                data = Plutonic(fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_simple_granodiorite()
             elif self.rock == "Monzonite":
-                data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_simple_monzonite()
+                data = Plutonic(fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_simple_monzonite()
             elif self.rock == "Quartzolite":
-                data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_simple_quartzolite()
+                data = Plutonic(fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_simple_quartzolite()
             elif self.rock == "Qz-rich Granitoid":
-                data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_simple_quartzrich_granitoid()
+                data = Plutonic(fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_simple_quartzrich_granitoid()
             elif self.rock == "Syenite":
-                data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_simple_syenite()
+                data = Plutonic(fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_simple_syenite()
             elif self.rock == "Tonalite":
-                data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_simple_tonalite()
+                data = Plutonic(fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_simple_tonalite()
             #
             elif self.rock == "Rock Salt":
                 data = Evaporites(fluid="water", actualThickness=0).create_simple_rocksalt(dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
@@ -1651,32 +1649,35 @@ class Rocks:
                                                        text="Porosity", color_bg=self.color_acc_01,
                                                        command=lambda var_rb=self.var_prop: self.change_radiobutton(var_rb))
             self.rb_prop = [rb_rho, rb_phi]
+            self.lbl_w.extend(self.rb_prop)
             #
-            self.create_scatter_plot(parent=self.parent_rock, data_x=self.rho, data_y=self.vP, row_id=2,
+            data_x_rho = np.array(self.rho)/1000
+            #
+            self.create_scatter_plot(parent=self.parent_rock, data_x=data_x_rho, data_y=self.vP, row_id=2,
                                      column_id=9, n_rows=15, n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)",
                                      ylabel="Seismic velocity $v_P$ (m/s)", color=self.color_rock)
-            self.create_scatter_plot(parent=self.parent_rock, data_x=self.rho, data_y=self.vS, row_id=2,
+            self.create_scatter_plot(parent=self.parent_rock, data_x=data_x_rho, data_y=self.vS, row_id=2,
                                      column_id=12, n_rows=15, n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)",
                                      ylabel="Seismic velocity $v_S$ (m/s)", color=self.color_rock)
-            self.create_scatter_plot(parent=self.parent_rock, data_x=self.rho, data_y=self.vP/self.vS, row_id=2,
+            self.create_scatter_plot(parent=self.parent_rock, data_x=data_x_rho, data_y=self.vP/self.vS, row_id=2,
                                      column_id=15, n_rows=15, n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)",
                                      ylabel="Velocity ratio $v_P/v_S$ (1)", color=self.color_rock)
-            self.create_scatter_plot(parent=self.parent_rock, data_x=self.rho, data_y=self.bulk_mod, row_id=17,
+            self.create_scatter_plot(parent=self.parent_rock, data_x=data_x_rho, data_y=self.bulk_mod, row_id=17,
                                      column_id=9, n_rows=15, n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)",
                                      ylabel="Bulk modulus $K$ (GPa)", color=self.color_rock)
-            self.create_scatter_plot(parent=self.parent_rock, data_x=self.rho, data_y=self.shear_mod, row_id=17,
+            self.create_scatter_plot(parent=self.parent_rock, data_x=data_x_rho, data_y=self.shear_mod, row_id=17,
                                      column_id=12, n_rows=15, n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)",
                                      ylabel="Shear modulus $G$ (GPa)", color=self.color_rock)
-            self.create_scatter_plot(parent=self.parent_rock, data_x=self.rho, data_y=self.poisson, row_id=17,
+            self.create_scatter_plot(parent=self.parent_rock, data_x=data_x_rho, data_y=self.poisson, row_id=17,
                                      column_id=15, n_rows=15, n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)",
                                      ylabel="Poisson's ratio $\\mu$ (1)", color=self.color_rock)
-            self.create_scatter_plot(parent=self.parent_rock, data_x=self.rho, data_y=self.phi*100, row_id=32,
+            self.create_scatter_plot(parent=self.parent_rock, data_x=data_x_rho, data_y=self.phi*100, row_id=32,
                                      column_id=9, n_rows=15, n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)",
                                      ylabel="Porosity $\\phi$ (%)", color=self.color_rock)
-            self.create_scatter_plot(parent=self.parent_rock, data_x=self.rho, data_y=self.gamma_ray, row_id=32,
+            self.create_scatter_plot(parent=self.parent_rock, data_x=data_x_rho, data_y=self.gamma_ray, row_id=32,
                                      column_id=12, n_rows=15, n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)",
                                      ylabel="Gamma ray GR (API)", color=self.color_rock)
-            self.create_scatter_plot(parent=self.parent_rock, data_x=self.rho, data_y=self.photoelectricity,
+            self.create_scatter_plot(parent=self.parent_rock, data_x=data_x_rho, data_y=self.photoelectricity,
                                      row_id=32, column_id=15, n_rows=15, n_columns=3,
                                      xlabel="Densitiy $\\varrho$ (g/ccm)",
                                      ylabel="Photoelectricity PE (barns/electron)", color=self.color_rock)
@@ -1868,6 +1869,7 @@ class Rocks:
                 pass
             #
             data_x_phi = np.around(np.array(self.phi)*100, 4)
+            data_x_phi = np.array(self.phi)*100
             #
             self.create_scatter_plot(parent=self.parent_rock, data_x=data_x_phi,
                                      data_y=self.vP,
@@ -1915,40 +1917,54 @@ class Rocks:
             self.canvas_histo.get_tk_widget().pack_forget()
         except AttributeError:
             pass
-
         try:
             if self.canvas_histo:
                 self.canvas_histo.destroy()
         except AttributeError:
             pass
         #
+        self.var_prop = tk.IntVar()
+        var_prop_0 = 8
+        rb_rho = SE(parent=self.parent_rock, row_id=37, column_id=0, n_rows=1, n_columns=2, bg=self.color_acc_01,
+                    fg="black").create_radiobutton(var_rb=self.var_prop, var_rb_set=var_prop_0, value_rb=8,
+                                                   text="Density", color_bg=self.color_acc_01,
+                                                   command=lambda var_rb=self.var_prop: self.change_radiobutton(var_rb))
+        rb_phi = SE(parent=self.parent_rock, row_id=38, column_id=0, n_rows=1, n_columns=2, bg=self.color_acc_01,
+                    fg="black").create_radiobutton(var_rb=self.var_prop, var_rb_set=var_prop_0, value_rb=9,
+                                                   text="Porosity", color_bg=self.color_acc_01,
+                                                   command=lambda var_rb=self.var_prop: self.change_radiobutton(var_rb))
+        self.rb_prop = [rb_rho, rb_phi]
+        self.lbl_w.extend(self.rb_prop)
+        #
         self.var_rb.set(1)
         #
-        self.create_scatter_plot(parent=self.parent_rock, data_x=self.rho, data_y=self.vP, row_id=2,
+        data_x_rho = np.array(self.rho)/1000
+        #
+        self.create_scatter_plot(parent=self.parent_rock, data_x=data_x_rho, data_y=self.vP, row_id=2,
                                  column_id=9, n_rows=15, n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)",
                                  ylabel="Seismic velocity $v_P$ (m/s)", color=self.color_rock)
-        self.create_scatter_plot(parent=self.parent_rock, data_x=self.rho, data_y=self.vS, row_id=2,
+        self.create_scatter_plot(parent=self.parent_rock, data_x=data_x_rho, data_y=self.vS, row_id=2,
                                  column_id=12, n_rows=15, n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)",
                                  ylabel="Seismic velocity $v_S$ (m/s)", color=self.color_rock)
-        self.create_scatter_plot(parent=self.parent_rock, data_x=self.rho, data_y=self.vP/self.vS, row_id=2,
+        self.create_scatter_plot(parent=self.parent_rock, data_x=data_x_rho, data_y=self.vP/self.vS, row_id=2,
                                  column_id=15, n_rows=15, n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)",
                                  ylabel="Velocity ratio $v_P/v_S$ (1)", color=self.color_rock)
-        self.create_scatter_plot(parent=self.parent_rock, data_x=self.rho, data_y=self.bulk_mod, row_id=17,
+        self.create_scatter_plot(parent=self.parent_rock, data_x=data_x_rho, data_y=self.bulk_mod, row_id=17,
                                  column_id=9, n_rows=15, n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)",
                                  ylabel="Bulk modulus $K$ (GPa)", color=self.color_rock)
-        self.create_scatter_plot(parent=self.parent_rock, data_x=self.rho, data_y=self.shear_mod, row_id=17,
+        self.create_scatter_plot(parent=self.parent_rock, data_x=data_x_rho, data_y=self.shear_mod, row_id=17,
                                  column_id=12, n_rows=15, n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)",
                                  ylabel="Shear modulus $G$ (GPa)", color=self.color_rock)
-        self.create_scatter_plot(parent=self.parent_rock, data_x=self.rho, data_y=self.poisson, row_id=17,
+        self.create_scatter_plot(parent=self.parent_rock, data_x=data_x_rho, data_y=self.poisson, row_id=17,
                                  column_id=15, n_rows=15, n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)",
                                  ylabel="Poisson's ratio $\\mu$ (1)", color=self.color_rock)
-        self.create_scatter_plot(parent=self.parent_rock, data_x=self.rho, data_y=self.phi*100, row_id=32,
+        self.create_scatter_plot(parent=self.parent_rock, data_x=data_x_rho, data_y=self.phi*100, row_id=32,
                                  column_id=9, n_rows=15, n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)",
                                  ylabel="Porosity $\\phi$ (%)", color=self.color_rock)
-        self.create_scatter_plot(parent=self.parent_rock, data_x=self.rho, data_y=self.gamma_ray, row_id=32,
+        self.create_scatter_plot(parent=self.parent_rock, data_x=data_x_rho, data_y=self.gamma_ray, row_id=32,
                                  column_id=12, n_rows=15, n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)",
                                  ylabel="Gamma ray GR (API)", color=self.color_rock)
-        self.create_scatter_plot(parent=self.parent_rock, data_x=self.rho, data_y=self.photoelectricity,
+        self.create_scatter_plot(parent=self.parent_rock, data_x=data_x_rho, data_y=self.photoelectricity,
                                  row_id=32, column_id=15, n_rows=15, n_columns=3,
                                  xlabel="Densitiy $\\varrho$ (g/ccm)",
                                  ylabel="Photoelectricity PE (barns/electron)", color=self.color_rock)
