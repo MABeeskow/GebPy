@@ -21,7 +21,7 @@ from modules.silicates import Tectosilicates
 from modules.pyllosilicates import Pyllosilicates
 from modules.minerals import feldspars
 from modules.siliciclastics import sandstone, shale
-from modules.carbonates import limestone, dolomite
+from modules.carbonates import limestone, dolomite, CustomCarbonates
 from modules.sequences import SedimentaryBasin
 from modules.ore import Ores
 from modules.igneous import Plutonic
@@ -202,6 +202,10 @@ class GebPyGUI(tk.Frame):
             Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                   color_acc=[self.color_accent_03, self.color_accent_04], rock=var_opt, lbl_w=self.lbl_w,
                   entr_w=self.entr_w)
+        elif var_opt == "Custom Carbonate Rock":
+            Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
+                  color_acc=[self.color_accent_03, self.color_accent_04], rock=var_opt, lbl_w=self.lbl_w,
+                  entr_w=self.entr_w)
         #
         elif var_opt == "Felsic Rock":
             Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
@@ -360,7 +364,7 @@ class GebPyGUI(tk.Frame):
                 command=lambda var_opt=var_opt_1_1: self.select_opt(var_opt))
         elif var_opt == "Carbonate Rocks":
             var_opt_1_2 = tk.StringVar()
-            opt_list_1_2 = ["Limestone", "Dolomite Rock"]
+            opt_list_1_2 = ["Limestone", "Dolomite Rock", "Custom Carbonate Rock"]
             self.opt_carb = SE(parent=self.parent, row_id=16, column_id=0, n_rows=2, n_columns=2,
                                bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
                 var_opt=var_opt_1_2, var_opt_set="Select Rock", opt_list=opt_list_1_2,
@@ -1066,7 +1070,7 @@ class Rocks:
         elif self.rock in ["Shale", "Kupferschiefer"]:
             var_phi0_start = 0
             var_phi1_start = 10
-        elif self.rock in ["Limestone", "Dolomite Rock"]:
+        elif self.rock in ["Limestone", "Dolomite Rock", "Custom Carbonate Rock"]:
             var_phi0_start = 0
             var_phi1_start = 50
         elif self.rock in ["Rock Salt", "Anhydrite", "Felsic Rock", "Intermediate Rock", "Granite", "Gabbro", "Syenite",
@@ -1131,6 +1135,8 @@ class Rocks:
                     data = limestone(fluid="water", actualThickness=0).create_simple_limestone(dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
                 elif self.rock == "Dolomite Rock":
                     data = dolomite(fluid="water", actualThickness=0).create_simple_dolomite(dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
+                elif self.rock == "Custom Carbonate Rock":
+                    data = CustomCarbonates(fluid="water", actualThickness=0, output_type=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_custom_rock_01()
                 #
                 elif self.rock == "Felsic Rock":
                     data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_felsic()
@@ -1350,19 +1356,22 @@ class Rocks:
         self.ax = self.fig.add_subplot()
         #
         if self.var_opt_chem.get() in ["No Selection", "Select Element/Mineral"]:
-            self.ax.scatter(data_x/1000, data_y, color=color, edgecolor="black", alpha=0.5)
+            self.ax.scatter(data_x, data_y, color=color, edgecolor="black", alpha=0.5)
         else:
             if self.var_opt_chem.get() in self.list_elements:
-                plot = self.ax.scatter(data_x/1000, data_y, c=self.elements[self.var_opt_chem.get()], cmap="viridis",
+                plot = self.ax.scatter(data_x, data_y, c=self.elements[self.var_opt_chem.get()], cmap="viridis",
                                        edgecolor="black", alpha=1)
             elif self.var_opt_chem.get() in self.list_minerals:
-                plot = self.ax.scatter(data_x/1000, data_y, c=self.minerals[self.var_opt_chem.get()], cmap="viridis",
+                plot = self.ax.scatter(data_x, data_y, c=self.minerals[self.var_opt_chem.get()], cmap="viridis",
                                        edgecolor="black", alpha=1)
             cbar = self.fig.colorbar(plot)
             cbar.set_label(self.var_opt_chem.get()+" (%)", rotation=90)
         self.ax.grid(True)
         self.ax.set_axisbelow(True)
-        self.ax.set_xlim(0.9*min(data_x/1000), 1.1*max(data_x/1000))
+        #self.ax.set_xlim(0.9*min(data_x), 1.1*max(data_x))
+        self.ax.set_xlim(min(data_x), max(data_x))
+        #self.ax.set_xticks(np.linspace(0.9*min(data_x), 1.1*max(data_x), 5))
+        self.ax.set_xticks(np.linspace(int(round(min(data_x), 0)), int(round(max(data_x), 0)), 5))
         self.ax.set_xlabel(xlabel, fontsize="small")
         self.ax.set_ylabel(ylabel, labelpad=0.5, fontsize="small")
         self.fig.subplots_adjust(bottom=0.15, left=0.22)
@@ -1420,6 +1429,8 @@ class Rocks:
                 data = limestone(fluid="water", actualThickness=0).create_simple_limestone(dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
             elif self.rock == "Dolomite Rock":
                 data = dolomite(fluid="water", actualThickness=0).create_simple_dolomite(dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
+            elif self.rock == "Custom Carbonate Rock":
+                    data = CustomCarbonates(fluid="water", actualThickness=0, output_type=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_custom_rock_01()
             #
             elif self.rock == "Felsic Rock":
                 data = Plutonic(fluid="water", actualThickness=0, dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_felsic()
@@ -1629,6 +1640,18 @@ class Rocks:
             except AttributeError:
                 pass
             #
+            self.var_prop = tk.IntVar()
+            var_prop_0 = 8
+            rb_rho = SE(parent=self.parent_rock, row_id=37, column_id=0, n_rows=1, n_columns=2, bg=self.color_acc_01,
+                        fg="black").create_radiobutton(var_rb=self.var_prop, var_rb_set=var_prop_0, value_rb=8,
+                                                       text="Density", color_bg=self.color_acc_01,
+                                                       command=lambda var_rb=self.var_prop: self.change_radiobutton(var_rb))
+            rb_phi = SE(parent=self.parent_rock, row_id=38, column_id=0, n_rows=1, n_columns=2, bg=self.color_acc_01,
+                        fg="black").create_radiobutton(var_rb=self.var_prop, var_rb_set=var_prop_0, value_rb=9,
+                                                       text="Porosity", color_bg=self.color_acc_01,
+                                                       command=lambda var_rb=self.var_prop: self.change_radiobutton(var_rb))
+            self.rb_prop = [rb_rho, rb_phi]
+            #
             self.create_scatter_plot(parent=self.parent_rock, data_x=self.rho, data_y=self.vP, row_id=2,
                                      column_id=9, n_rows=15, n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)",
                                      ylabel="Seismic velocity $v_P$ (m/s)", color=self.color_rock)
@@ -1778,6 +1801,112 @@ class Rocks:
                 self.entr_w.append(entr_mean)
                 self.entr_w.append(entr_std)
                 self.entr_chem.extend([entr_min, entr_max, entr_mean, entr_std])
+        #
+        elif var_rb.get() == 8:
+            try:
+                self.fig.clf()
+                self.ax.cla()
+                self.canvas.get_tk_widget().pack_forget()
+            except AttributeError:
+                pass
+            try:
+                if self.canvas:
+                    self.canvas.destroy()
+            except AttributeError:
+                pass
+            #
+            data_x_rho = np.array(self.rho)/1000
+            #
+            self.create_scatter_plot(parent=self.parent_rock, data_x=data_x_rho, data_y=self.vP,
+                                     row_id=2, column_id=9, n_rows=15, n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)",
+                                     ylabel="Seismic velocity $v_P$ (m/s)", color=self.color_rock)
+            self.create_scatter_plot(parent=self.parent_rock, data_x=data_x_rho,
+                                     data_y=self.vS,
+                                     row_id=2, column_id=12, n_rows=15, n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)",
+                                     ylabel="Seismic velocity $v_P$ (m/s)", color=self.color_rock)
+            self.create_scatter_plot(parent=self.parent_rock, data_x=data_x_rho,
+                                     data_y=self.vP,
+                                     row_id=2, column_id=15, n_rows=15, n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)",
+                                     ylabel="Seismic velocity ratio $v_P/v_S$ (1)", color=self.color_rock)
+            #
+            self.create_scatter_plot(parent=self.parent_rock, data_x=data_x_rho,
+                                     data_y=self.bulk_mod,
+                                     row_id=17, column_id=9, n_rows=15, n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)",
+                                     ylabel="Bulk modulus $K$ (GPa)", color=self.color_rock)
+            self.create_scatter_plot(parent=self.parent_rock, data_x=data_x_rho,
+                                     data_y=self.shear_mod,
+                                     row_id=17, column_id=12, n_rows=15, n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)",
+                                     ylabel="Shear modulus $G$ (GPa)", color=self.color_rock)
+            self.create_scatter_plot(parent=self.parent_rock, data_x=data_x_rho,
+                                     data_y=self.poisson,
+                                     row_id=17, column_id=15, n_rows=15, n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)",
+                                     ylabel="Poisson's ratio $\\nu$ (1)", color=self.color_rock)
+            #
+            self.create_scatter_plot(parent=self.parent_rock, data_x=data_x_rho,
+                                     data_y=self.phi,
+                                     row_id=32, column_id=9, n_rows=15, n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)",
+                                     ylabel="Porosity $\\phi$ (%)", color=self.color_rock)
+            self.create_scatter_plot(parent=self.parent_rock, data_x=data_x_rho,
+                                     data_y=self.gamma_ray,
+                                     row_id=32, column_id=12, n_rows=15, n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)",
+                                     ylabel="Gamma Ray $GR$ (API)", color=self.color_rock)
+            self.create_scatter_plot(parent=self.parent_rock, data_x=data_x_rho,
+                                     data_y=self.photoelectricity,
+                                     row_id=32, column_id=15, n_rows=15, n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)",
+                                     ylabel="Photoelectric Effect $PE$ (barns\electron)", color=self.color_rock)
+        elif var_rb.get() == 9:
+            try:
+                self.fig.clf()
+                self.ax.cla()
+                self.canvas.get_tk_widget().pack_forget()
+            except AttributeError:
+                pass
+            try:
+                if self.canvas:
+                    self.canvas.destroy()
+            except AttributeError:
+                pass
+            #
+            data_x_phi = np.around(np.array(self.phi)*100, 4)
+            #
+            self.create_scatter_plot(parent=self.parent_rock, data_x=data_x_phi,
+                                     data_y=self.vP,
+                                     row_id=2, column_id=9, n_rows=15, n_columns=3, xlabel="Porosity $\\phi$ (%)",
+                                     ylabel="Seismic velocity $v_P$ (m/s)", color=self.color_rock)
+            self.create_scatter_plot(parent=self.parent_rock, data_x=data_x_phi,
+                                     data_y=self.vS,
+                                     row_id=2, column_id=12, n_rows=15, n_columns=3, xlabel="Porosity $\\phi$ (%)",
+                                     ylabel="Seismic velocity $v_P$ (m/s)", color=self.color_rock)
+            self.create_scatter_plot(parent=self.parent_rock, data_x=data_x_phi,
+                                     data_y=self.vPvS,
+                                     row_id=2, column_id=15, n_rows=15, n_columns=3, xlabel="Porosity $\\phi$ (%)",
+                                     ylabel="Seismic velocity ratio $v_P/v_S$ (1)", color=self.color_rock)
+            #
+            self.create_scatter_plot(parent=self.parent_rock, data_x=data_x_phi,
+                                     data_y=self.bulk_mod,
+                                     row_id=17, column_id=9, n_rows=15, n_columns=3, xlabel="Porosity $\\phi$ (%)",
+                                     ylabel="Bulk modulus $K$ (GPa)", color=self.color_rock)
+            self.create_scatter_plot(parent=self.parent_rock, data_x=data_x_phi,
+                                     data_y=self.shear_mod,
+                                     row_id=17, column_id=12, n_rows=15, n_columns=3, xlabel="Porosity $\\phi$ (%)",
+                                     ylabel="Shear modulus $G$ (GPa)", color=self.color_rock)
+            self.create_scatter_plot(parent=self.parent_rock, data_x=data_x_phi,
+                                     data_y=self.poisson,
+                                     row_id=17, column_id=15, n_rows=15, n_columns=3, xlabel="Porosity $\\phi$ (%)",
+                                     ylabel="Poisson's ratio $\\nu$ (1)", color=self.color_rock)
+            #
+            self.create_scatter_plot(parent=self.parent_rock, data_x=data_x_phi,
+                                     data_y=np.array(self.rho)/1000,
+                                     row_id=32, column_id=9, n_rows=15, n_columns=3, xlabel="Porosity $\\phi$ (%)",
+                                     ylabel="Density $\\varrho$ (g/ccm)", color=self.color_rock)
+            self.create_scatter_plot(parent=self.parent_rock, data_x=data_x_phi,
+                                     data_y=self.gamma_ray,
+                                     row_id=32, column_id=12, n_rows=15, n_columns=3, xlabel="Porosity $\\phi$ (%)",
+                                     ylabel="Gamma Ray $GR$ (API)", color=self.color_rock)
+            self.create_scatter_plot(parent=self.parent_rock, data_x=data_x_phi,
+                                     data_y=self.photoelectricity,
+                                     row_id=32, column_id=15, n_rows=15, n_columns=3, xlabel="Porosity $\\phi$ (%)",
+                                     ylabel="Photoelectric Effect $PE$ (barns\electron)", color=self.color_rock)
     #
     def select_opt(self, var_opt):
         try:
@@ -2026,7 +2155,11 @@ class Rocks:
                          fg=self.color_fg_dark).create_label(text=sulfate, relief=tk.RAISED)
                 self.var_custom_mineralogy["checkbox"][sulfate] = tk.IntVar()
                 cb = SE(parent=self.window_custom_mineralogy, row_id=18+index, column_id=9, bg=self.color_accent_02,
-                         fg=self.color_fg_dark).create_checkbox(text="", var_cb=self.var_custom_mineralogy["checkbox"][sulfate])
+                         fg=self.color_fg_dark).create_checkbox(text="", var_cb=self.var_custom_mineralogy["checkbox"][sulfate],
+                                                                command=lambda var_cb=self.var_custom_mineralogy["checkbox"][sulfate]: self.marked_checkbox(var_cb))
+    #
+    def marked_checkbox(self, var_cb):
+        print(var_cb.get())
 #
 class Subsurface:
     #

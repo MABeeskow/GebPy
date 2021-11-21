@@ -23,6 +23,11 @@ from modules.minerals import CrystalPhysics
 from modules.geophysics import WellLog as wg
 from modules.geochemistry import MineralChemistry
 from modules.minerals import Organics
+from modules.oxides import Oxides
+from modules.silicates import Tectosilicates
+from modules.sulfides import Sulfides
+from modules.pyllosilicates import Pyllosilicates
+from modules.sulfates import Sulfates
 
 class limestone:
     #
@@ -2146,4 +2151,181 @@ class Carbonates():
             else:
                 results["p"] = p
             #
+            return results
+#
+class CustomCarbonates:
+    #
+    def __init__(self, fluid, actualThickness, output_type=False, porosity=None):
+        self.fluid = fluid
+        self.actualThickness = actualThickness
+        self.output_type = output_type
+        self.porosity = porosity
+    #
+    def create_custom_rock_01(self, amounts=None):
+        #
+        self.amounts = amounts
+        #
+        # Mineralogy + Fluids
+        org = Carbonates(impurity="pure", dict=True).create_organic_matter()
+        quartz = Oxides(impurity="pure", data_type=True).create_quartz()
+        alkalifeldspar = Tectosilicates(impurity="pure", data_type=True).create_alkalifeldspar()
+        plagioclase = Tectosilicates(impurity="pure", data_type=True).create_plagioclase()
+        calcite = Carbonates(impurity="pure", dict=True).create_calcite()
+        dolomite = Carbonates(impurity="pure", dict=True).create_dolomite()
+        siderite = Carbonates(impurity="pure", dict=True).create_siderite()
+        anhydrite = Sulfates(data_type=True).create_anhydrite()
+        gypsum = Sulfates(data_type=True).create_gypsum()
+        pyrite = Sulfides(impurity="pure", dict=True).create_pyrite()
+        illite = Pyllosilicates(impurity="pure", dict=True).create_illite()
+        #
+        mineralogy = [org, quartz, alkalifeldspar, plagioclase, calcite, dolomite, siderite, anhydrite, gypsum, pyrite,
+                      illite]
+        #
+        water = fluids.Water.water("")
+        #
+        data = []
+        results = {}
+        #
+        cond = False
+        composition = []
+        while cond == False:
+            if self.amounts == None:
+                w_org = round(0.1/100, 4)
+                w_qz = round(1.3/100, 4)
+                w_kfs = round(0/100, 4)
+                w_pl = round(0/100, 4)
+                w_cal = round(8.1/100, 4)
+                w_dol = round(87/100, 4)
+                w_sd = round(0/100, 4)
+                w_anh = round(0/100, 4)
+                w_gyp = round(0/100, 4)
+                w_py = round(0.1/100, 4)
+                w_ilt = round(1 - w_org - w_qz - w_kfs - w_pl - w_cal - w_dol - w_sd - w_anh - w_gyp - w_py, 4)
+            elif type(self.amounts) is list:
+                w_org = round(abs(np.random.normal(self.amounts[0], 0.025)), 4)
+                w_qz = round(abs(np.random.normal(self.amounts[1], 0.025)), 4)
+                w_kfs = round(abs(np.random.normal(self.amounts[2], 0.025)), 4)
+                w_pl = round(abs(np.random.normal(self.amounts[3], 0.025)), 4)
+                w_cal = round(abs(np.random.normal(self.amounts[4], 0.025)), 4)
+                w_dol = round(abs(np.random.normal(self.amounts[5], 0.025)), 4)
+                w_sd = round(abs(np.random.normal(self.amounts[6], 0.025)), 4)
+                w_anh = round(abs(np.random.normal(self.amounts[7], 0.025)), 4)
+                w_gyp = round(abs(np.random.normal(self.amounts[8], 0.025)), 4)
+                w_py = round(abs(np.random.normal(self.amounts[9], 0.025)), 4)
+                w_ilt = round(1 - w_org - w_qz - w_kfs - w_pl - w_cal - w_dol - w_sd - w_anh - w_gyp - w_py, 4)
+            #
+            if w_org >= 0.0 and w_qz >= 0.0 and w_kfs >= 0.0 and w_pl >= 0.0 and w_cal >= 0.0 and w_dol >= 0.0 \
+                    and w_sd >= 0.0 and w_anh >= 0.0 and w_gyp >= 0.0 and w_py >= 0.0 and w_ilt >= 0.0:
+                sumMin = round(w_org + w_qz + w_kfs + w_pl + w_cal + w_dol + w_sd + w_anh + w_gyp + w_py + w_ilt, 4)
+            else:
+                sumMin = 0
+            #
+            w_H = round(w_org*org["chemistry"]["H"] + w_gyp*gypsum["chemistry"]["H"] + w_ilt*illite["chemistry"]["H"], 4)
+            w_C = round(w_org*org["chemistry"]["C"] + w_cal*calcite["chemistry"]["C"] + w_dol*dolomite["chemistry"]["C"] + w_sd*siderite["chemistry"]["C"], 4)
+            w_N = round(w_org*org["chemistry"]["N"], 4)
+            w_Na = round(w_kfs*alkalifeldspar["chemistry"]["Na"] + w_pl*plagioclase["chemistry"]["Na"], 4)
+            w_Mg = round(w_dol*dolomite["chemistry"]["Mg"] + w_ilt*illite["chemistry"]["Mg"], 4)
+            w_Al = round(w_kfs*alkalifeldspar["chemistry"]["Al"] + w_pl*plagioclase["chemistry"]["Al"] + w_ilt*illite["chemistry"]["Al"], 4)
+            w_Si = round(w_qz*quartz["chemistry"]["Si"] + w_kfs*alkalifeldspar["chemistry"]["Si"] + w_pl*plagioclase["chemistry"]["Si"] + w_ilt*illite["chemistry"]["Si"], 4)
+            w_S = round(w_org*org["chemistry"]["S"] + w_py*pyrite["chemistry"]["S"], 4)
+            w_K = round(w_kfs*alkalifeldspar["chemistry"]["K"] + w_ilt*illite["chemistry"]["K"], 4)
+            w_Ca = round(w_pl*plagioclase["chemistry"]["Ca"] + w_cal*calcite["chemistry"]["Ca"] + w_dol*dolomite["chemistry"]["Ca"] + w_anh*anhydrite["chemistry"]["Ca"] + w_gyp*gypsum["chemistry"]["Ca"], 4)
+            w_Fe = round(w_sd*siderite["chemistry"]["Fe"] + w_py*pyrite["chemistry"]["Fe"] + w_ilt*illite["chemistry"]["Fe"], 4)
+            w_O = round(1 - w_H - w_C - w_N - w_Na - w_Mg - w_Al - w_Si - w_S - w_K - w_Ca - w_Fe, 4)
+            sumConc = round(w_H + w_C + w_N + w_O + w_Na + w_Mg + w_Al + w_Si + w_S + w_K + w_Ca + w_Fe, 4)
+            #print("Amount:", sumMin, "C:", sumConc)
+            #
+            if sumMin == 1 and sumConc == 1:
+                cond = True
+                composition.extend((["Org", "Qz", "Kfs", "Pl", "Cal", "Dol", "Sd", "Anh", "Gyp", "Py", "Ilt"]))
+                concentrations = [w_H, w_C, w_N, w_O, w_Na, w_Mg, w_Al, w_Si, w_S, w_K, w_Ca, w_Fe]
+                amounts = [w_org, w_qz, w_kfs, w_pl, w_cal, w_dol, w_sd, w_anh, w_gyp, w_py, w_ilt]
+            else:
+                cond = False
+        #
+        element_list = ["H", "C", "N", "O", "Na", "Mg", "Al", "Si", "S", "K", "Ca", "Fe"]
+        mineral_list = ["Org", "Qz", "Kfs", "Pl", "Cal", "Dol", "Sd", "Anh", "Gyp", "Py", "Ilt"]
+        data.append(composition)
+        results["chemistry"] = {}
+        results["mineralogy"] = {}
+        for index, element in enumerate(element_list, start=0):
+            results["chemistry"][element] = concentrations[index]
+        for index, mineral in enumerate(mineral_list, start=0):
+            results["mineralogy"][mineral] = amounts[index]
+        #
+        rhoSolid = (w_org*org["rho"] + w_qz*quartz["rho"] + w_kfs*alkalifeldspar["rho"] + w_pl*plagioclase["rho"]
+                    + w_cal*calcite["rho"] + w_dol*dolomite["rho"] + w_sd*siderite["rho"] + w_anh*anhydrite["rho"]
+                    + w_gyp*gypsum["rho"] + w_py*pyrite["rho"] + w_ilt*illite["rho"]) / 1000
+        X = [w_org, w_qz, w_kfs, w_pl, w_cal, w_dol, w_sd, w_anh, w_gyp, w_py, w_ilt]
+        K_list = [mineralogy[i]["K"] for i in range(len(mineralogy))]
+        G_list = [mineralogy[i]["G"] for i in range(len(mineralogy))]
+        K_geo = elast.calc_geometric_mean(self, X, K_list)
+        G_geo = elast.calc_geometric_mean(self, X, G_list)
+        K_solid = K_geo
+        G_solid = G_geo
+        vP_solid = np.sqrt((K_solid*10**9+4/3*G_solid*10**9)/(rhoSolid*10**3))
+        vS_solid = np.sqrt((G_solid*10**9)/(rhoSolid*10**3))
+        E_solid = (9*K_solid*G_solid)/(3*K_solid+G_solid)
+        nu_solid = (3*K_solid-2*G_solid)/(2*(3*K_solid+G_solid))
+        #
+        if self.porosity == None:
+            if self.actualThickness <= 1000:
+                phi = rd.uniform(0.0, 0.025)
+            elif self.actualThickness > 1000 and self.actualThickness <= 2000:
+                phi = rd.uniform(0.0, 0.025)
+            elif self.actualThickness > 2000 and self.actualThickness <= 3000:
+                phi = rd.uniform(0.0, 0.025)
+            elif self.actualThickness > 3000 and self.actualThickness <= 4000:
+                phi = rd.uniform(0.0, 0.025)
+            elif self.actualThickness > 4000:
+                phi = rd.uniform(0.0, 0.025)
+        else:
+            phi = self.porosity
+        #
+        results["phi"] = phi
+        results["fluid"] = self.fluid
+        #
+        rho = (1 - phi) * rhoSolid + phi * water[2] / 1000
+        vP = (1-phi)*vP_solid + phi*water[4][0]
+        vS = (1 - phi) * vS_solid
+        G_bulk = vS**2 * rho
+        K_bulk = vP**2 * rho - 4/3*G_bulk
+        E_bulk = (9*K_bulk*G_bulk)/(3*K_bulk+G_bulk)
+        phiD = (rhoSolid - rho) / (rhoSolid - water[2] / 1000)
+        phiN = (2 * phi ** 2 - phiD ** 2) ** (0.5)
+        GR = w_org*org["GR"] + w_qz*quartz["GR"] + w_kfs*alkalifeldspar["GR"] + w_pl*plagioclase["GR"] \
+             + w_cal*calcite["GR"] + w_dol*dolomite["GR"] + w_sd*siderite["GR"] + w_anh*anhydrite["GR"] \
+             + w_gyp*gypsum["GR"] + w_py*pyrite["GR"] + w_ilt*illite["GR"]
+        PE = w_org*org["PE"] + w_qz*quartz["PE"] + w_kfs*alkalifeldspar["PE"] + w_pl*plagioclase["PE"] \
+             + w_cal*calcite["PE"] + w_dol*dolomite["PE"] + w_sd*siderite["PE"] + w_anh*anhydrite["PE"] \
+             + w_gyp*gypsum["PE"] + w_py*pyrite["PE"] + w_ilt*illite["PE"]
+        poisson_seismic = 0.5*(vP**2 - 2*vS**2)/(vP**2 - vS**2)
+        poisson_elastic = (3*K_bulk - 2*G_bulk)/(6*K_bulk + 2*G_bulk)
+        poisson_mineralogical = w_org*org["nu"] + w_qz*quartz["nu"] + w_kfs*alkalifeldspar["nu"] + w_pl*plagioclase["nu"] \
+                                + w_cal*calcite["nu"] + w_dol*dolomite["nu"] + w_sd*siderite["nu"] + w_anh*anhydrite["nu"] \
+                                + w_gyp*gypsum["nu"] + w_py*pyrite["nu"] + w_ilt*illite["nu"]
+        #
+        results["rho"] = round(rho*1000, 4)
+        results["vP"] = round(vP, 4)
+        results["vS"] = round(vS, 4)
+        results["vP/vS"] = round(vP/vS, 4)
+        results["G"] = round(G_bulk*10**(-6), 4)
+        results["K"] = round(K_bulk*10**(-6), 4)
+        results["E"] = round(E_bulk*10**(-6), 4)
+        results["nu"] = round(poisson_mineralogical, 4)
+        results["GR"] = round(GR, 4)
+        results["PE"] = round(PE, 4)
+        #
+        data.append([round(rho, 3), round(rhoSolid, 3), round(water[2] / 1000, 6)])
+        data.append([round(K_bulk*10**(-6), 2), round(G_bulk*10**(-6), 2), round(E_bulk*10**(-6), 2), round(poisson_mineralogical, 3)])
+        data.append([round(vP, 2), round(vS, 2), round(vP_solid, 2), round(water[4][0], 2)])
+        data.append([round(phi, 3), round(phiD, 3), round(phiN, 3)])
+        data.append("water")
+        data.append([round(GR, 3), round(PE, 3)])
+        data.append(concentrations)
+        data.append(amounts)
+        #
+        if dict == False:
+            return data
+        else:
             return results
