@@ -2256,13 +2256,14 @@ class CustomCarbonates:
         rhoSolid = (w_org*org["rho"] + w_qz*quartz["rho"] + w_kfs*alkalifeldspar["rho"] + w_pl*plagioclase["rho"]
                     + w_cal*calcite["rho"] + w_dol*dolomite["rho"] + w_sd*siderite["rho"] + w_anh*anhydrite["rho"]
                     + w_gyp*gypsum["rho"] + w_py*pyrite["rho"] + w_ilt*illite["rho"]) / 1000
+        rhoSolid = 0.975*rhoSolid
         X = [w_org, w_qz, w_kfs, w_pl, w_cal, w_dol, w_sd, w_anh, w_gyp, w_py, w_ilt]
         K_list = [mineralogy[i]["K"] for i in range(len(mineralogy))]
         G_list = [mineralogy[i]["G"] for i in range(len(mineralogy))]
         K_geo = elast.calc_geometric_mean(self, X, K_list)
         G_geo = elast.calc_geometric_mean(self, X, G_list)
-        K_solid = K_geo
-        G_solid = G_geo
+        K_solid = 0.35*K_geo
+        G_solid = 0.275*G_geo
         vP_solid = np.sqrt((K_solid*10**9+4/3*G_solid*10**9)/(rhoSolid*10**3))
         vS_solid = np.sqrt((G_solid*10**9)/(rhoSolid*10**3))
         E_solid = (9*K_solid*G_solid)/(3*K_solid+G_solid)
