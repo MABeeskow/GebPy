@@ -6,7 +6,7 @@
 # Name:		gui.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		20.11.2021
+# Date:		04.12.2021
 
 #-----------------------------------------------
 
@@ -35,6 +35,7 @@ from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.ticker import NullFormatter
 import matplotlib.patches as mpatches
+import time
 
 ## GUI
 class GebPyGUI(tk.Frame):
@@ -164,7 +165,8 @@ class GebPyGUI(tk.Frame):
             self.lbl_w, self.entr_w = Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                      color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
                      entr_w=self.entr_w)()
-        elif var_opt in ["Magnetite", "Hematite", "Aluminium Spinels"]:
+        elif var_opt in ["Magnetite", "Hematite", "Aluminium Spinels", "Ilmenite", "Cassiterite", "Chromite", "Corundum",
+                         "Rutile", "Pyrolusite", "Magnesiochromite", "Zincochromite", "Chromium Spinels"]:
             Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                      color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
                      entr_w=self.entr_w)
@@ -275,7 +277,10 @@ class GebPyGUI(tk.Frame):
             except:
                 pass
             var_opt_0_1 = tk.StringVar()
-            opt_list_0_1 = ["Quartz", "Magnetite", "Hematite", "Aluminium Spinels"]
+            opt_list_0_1 = ["Quartz", "Magnetite", "Hematite", "Aluminium Spinels", "Iron Spinels", "Chromium Spinels",
+                            "Corundum", "Ilmenite", "Rutile", "Pyrolusite", "Cassiterite", "Chromite",
+                            "Magnesiochromite", "Zincochromite"]
+            opt_list_0_1.sort()
             self.opt_oxide = SE(parent=self.parent, row_id=10, column_id=0, n_rows=2, n_columns=2,
                                 bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
                 var_opt=var_opt_0_1, var_opt_set="Select Oxide", opt_list=opt_list_0_1, active_bg=self.color_accent_02,
@@ -431,7 +436,7 @@ class Minerals:
         lbl_01 = SE(parent=self.parent_mineral, row_id=4, column_id=3, n_rows=2, bg=self.color_bg,
            fg="black").create_label(text="Molar mass\n (g/mol)", relief=tk.RAISED)
         lbl_02 = SE(parent=self.parent_mineral, row_id=6, column_id=3, n_rows=2, bg=self.color_bg,
-           fg="black").create_label(text="Density\n (g/ccm)", relief=tk.RAISED)
+           fg="black").create_label(text="Density\n (kg/cbm)", relief=tk.RAISED)
         lbl_03 = SE(parent=self.parent_mineral, row_id=8, column_id=3, n_rows=2, bg=self.color_bg,
            fg="black").create_label(text="P-wave velocity\n (km/s)", relief=tk.RAISED)
         lbl_04 = SE(parent=self.parent_mineral, row_id=10, column_id=3, n_rows=2, bg=self.color_bg,
@@ -474,66 +479,74 @@ class Minerals:
                                            command=lambda var_rb=self.var_rb: self.change_radiobutton(var_rb))
         self.lbl_w.extend([rb_01, rb_02])
         #
-        self.var_dict = False
+        self.var_dict = True
         data_all = []
+        time_0 = time.time()
         for i in range(var_entr_start):
+            # Oxides
             if self.mineral == "Quartz":
-                data = Oxides(impurity="pure").create_quartz()
+                data = Oxides(impurity="pure", data_type=True).create_quartz()
             elif self.mineral == "Magnetite":
-                self.var_dict = True
-                data = Oxides(impurity="pure").create_magnetite(dict=self.var_dict)
+                data = Oxides(impurity="pure").create_magnetite(dict=True)
+            elif self.mineral == "Cassiterite":
+                data = Oxides(impurity="pure", data_type=True).create_cassiterite()
+            elif self.mineral == "Pyrolusite":
+                data = Oxides(impurity="pure", data_type=True).create_pyrolusite()
+            elif self.mineral == "Chromite":
+                data = Oxides(impurity="pure", data_type=True).create_chromite()
+            elif self.mineral == "Magnesiochromite":
+                data = Oxides(impurity="pure", data_type=True).create_magnesiochromite()
+            elif self.mineral == "Zincochromite":
+                data = Oxides(impurity="pure", data_type=True).create_zincochromite()
+            elif self.mineral == "Rutile":
+                data = Oxides(impurity="pure", data_type=True).create_rutile()
             elif self.mineral == "Hematite":
-                self.var_dict = True
-                data = Oxides(impurity="pure").create_hematite(dict=self.var_dict)
+                data = Oxides(impurity="pure").create_hematite(dict=True)
+            elif self.mineral == "Ilmenite":
+                data = Oxides(impurity="pure", data_type=True).create_ilmenite()
             elif self.mineral == "Aluminium Spinels":
-                self.var_dict = True
                 data = Oxides(impurity="pure", data_type=True).create_aluminium_spinel()
+            elif self.mineral == "Chromium Spinels":
+                data = Oxides(impurity="pure", data_type=True).create_chromium_spinel()
             elif self.mineral == "Pyrite":
-                self.var_dict = True
-                data = Sulfides(impurity="pure", dict=self.var_dict).create_pyrite()
+                data = Sulfides(impurity="pure", dict=True).create_pyrite()
             elif self.mineral == "Chalcopyrite":
-                self.var_dict = True
-                data = Sulfides(impurity="pure", dict=self.var_dict).create_chalcopyrite()
+                data = Sulfides(impurity="pure", dict=True).create_chalcopyrite()
             elif self.mineral == "Galena":
-                self.var_dict = True
-                data = Sulfides(impurity="pure", dict=self.var_dict).create_galena()
+                data = Sulfides(impurity="pure", dict=True).create_galena()
             elif self.mineral == "Calcite":
-                self.var_dict = True
-                data = Carbonates(impurity="pure", dict=self.var_dict).create_calcite()
+                data = Carbonates(impurity="pure", dict=True).create_calcite()
+            elif self.mineral == "Corundum":
+                data = Oxides(impurity="pure", data_type=True).create_corundum()
             elif self.mineral == "Dolomite":
-                self.var_dict = True
-                data = Carbonates(impurity="pure", dict=self.var_dict).create_dolomite()
+                data = Carbonates(impurity="pure", dict=True).create_dolomite()
             elif self.mineral == "Magnesite":
-                self.var_dict = True
-                data = Carbonates(impurity="pure", dict=self.var_dict).create_magnesite()
+                data = Carbonates(impurity="pure", dict=True).create_magnesite()
             elif self.mineral == "Siderite":
-                self.var_dict = True
-                data = Carbonates(impurity="pure", dict=self.var_dict).create_siderite()
+                data = Carbonates(impurity="pure", dict=True).create_siderite()
             elif self.mineral == "Halite":
-                self.var_dict = True
-                data = Halogenes(impurity="pure", dict=self.var_dict).create_halite()
+                data = Halogenes(impurity="pure", dict=True).create_halite()
             elif self.mineral == "Fluorite":
-                self.var_dict = True
-                data = Halogenes(impurity="pure", dict=self.var_dict).create_fluorite()
+                data = Halogenes(impurity="pure", dict=True).create_fluorite()
             elif self.mineral == "Sylvite":
-                self.var_dict = True
-                data = Halogenes(impurity="pure", dict=self.var_dict).create_sylvite()
+                data = Halogenes(impurity="pure", dict=True).create_sylvite()
             elif self.mineral == "Illite":
-                self.var_dict = True
-                data = Pyllosilicates(impurity="pure", dict=self.var_dict).create_illite()
+                data = Pyllosilicates(impurity="pure", dict=True).create_illite()
             elif self.mineral == "Alkalifeldspar":
-                data = Tectosilicates(impurity="pure").create_alkalifeldspar()
+                data = Tectosilicates(impurity="pure", data_type=True).create_alkalifeldspar()
             elif self.mineral == "Plagioclase":
-                data = Tectosilicates(impurity="pure").create_plagioclase()
+                data = Tectosilicates(impurity="pure", data_type=True).create_plagioclase()
             self.color_mineral = "#7C9097"
             #
             data_all.append(data)
+        time_1 = time.time()
+        #print('{:6.4f} s'.format(time_1 - time_0))
         #
         if self.var_dict == False:
             elements = np.array(data_all[0][-1])[:, 0]
             self.element_list = []
             for element in elements:
-                self.element_list.append(DP(dataset=data_all).extract_element_amounts(type="mineral", element=element))
+                self.element_list.append(DP(dataset=data_all).extract_element_amounts(type="mineral", element=element)*100)
             #
             self.rho_b = DP(dataset=data_all).extract_densities(type="mineral", keyword="bulk")
             self.molar_mass = DP(dataset=data_all).extract_molar_mass()
@@ -570,23 +583,43 @@ class Minerals:
             for element in elements:
                 self.element_list[element] = []
                 for index, chem_dict in enumerate(self.chemistry, start=0):
-                    self.element_list[element].append(abs(chem_dict[element]))
+                    self.element_list[element].append(abs(chem_dict[element]*100))
             if self.mineral in ["Magnetite", "Hematite", "Pyrite", "Siderite"]:
                 self.w_element = self.element_list["Fe"]
+            elif self.mineral in ["Quartz"]:
+                self.w_element = self.element_list["Si"]
             elif self.mineral in ["Galena"]:
                 self.w_element = self.element_list["Pb"]
             elif self.mineral in ["Chalcopyrite"]:
                 self.w_element = self.element_list["Cu"]
-            elif self.mineral in ["Calcite", "Dolomite", "Fluorite"]:
+            elif self.mineral in ["Cassiterite"]:
+                self.w_element = self.element_list["Sn"]
+            elif self.mineral in ["Calcite", "Dolomite", "Fluorite", "Plagioclase"]:
                 self.w_element = self.element_list["Ca"]
             elif self.mineral in ["Magnesite", "Aluminium Spinels"]:
                 self.w_element = self.element_list["Mg"]
             elif self.mineral in ["Halite"]:
                 self.w_element = self.element_list["Na"]
-            elif self.mineral in ["Sylvite"]:
+            elif self.mineral in ["Chromite", "Magnesiochromite", "Zincochromite", "Chromium Spinels"]:
+                self.w_element = self.element_list["Cr"]
+            elif self.mineral in ["Pyrolusite"]:
+                self.w_element = self.element_list["Mn"]
+            elif self.mineral in ["Ilmenite", "Rutile"]:
+                self.w_element = self.element_list["Ti"]
+            elif self.mineral in ["Sylvite", "Alkalifeldspar"]:
                 self.w_element = self.element_list["K"]
-            elif self.mineral in ["Illite"]:
+            elif self.mineral in ["Illite", "Corundum"]:
                 self.w_element = self.element_list["Al"]
+        #
+        self.var_opt_chem = tk.StringVar()
+        self.list_elements = list(self.chemistry[0].keys())
+        opt_list_chem = ["No Selection"]
+        opt_list_chem.extend(self.list_elements)
+        self.opt_chem = SE(parent=self.parent_mineral, row_id=32, column_id=0, n_rows=1, n_columns=2, bg=self.color_acc_01,
+                           fg="black").create_option_menu(var_opt=self.var_opt_chem, var_opt_set="Select Element",
+                                                          opt_list=opt_list_chem, active_bg=self.color_acc_02,
+                                                          command=lambda var_opt=self.var_opt_chem: self.select_opt(var_opt))
+        self.lbl_w.append(self.opt_chem)
         #
         self.results = [self.molar_mass, self.rho_b, self.vP, self.vS, self.vPvS, self.bulk_mod, self.shear_mod,
                         self.poisson, self.gamma_ray, self.photoelectricity]
@@ -627,16 +660,16 @@ class Minerals:
             elif i >= 10:
                 entr_min = SE(parent=self.parent_mineral, row_id=15+i, column_id=4, n_rows=1, bg=self.color_bg,
                               fg=self.color_fg).create_entry(var_entr=self.entr_list_min[i],
-                                                             var_entr_set=round(np.min(self.results[i])*100, 2))
+                                                             var_entr_set=round(np.min(self.results[i]), 2))
                 entr_max = SE(parent=self.parent_mineral, row_id=15+i, column_id=5, n_rows=1, bg=self.color_bg,
                               fg=self.color_fg).create_entry(var_entr=self.entr_list_max[i],
-                                                             var_entr_set=round(np.max(self.results[i])*100, 2))
+                                                             var_entr_set=round(np.max(self.results[i]), 2))
                 entr_mean = SE(parent=self.parent_mineral, row_id=15+i, column_id=6, n_rows=1, bg=self.color_bg,
                                fg=self.color_fg).create_entry(var_entr=self.entr_list_mean[i],
-                                                              var_entr_set=round(np.mean(self.results[i])*100, 2))
+                                                              var_entr_set=round(np.mean(self.results[i]), 2))
                 entr_std = SE(parent=self.parent_mineral, row_id=15+i, column_id=7, n_rows=1, bg=self.color_bg,
                               fg=self.color_fg).create_entry(var_entr=self.entr_list_std[i],
-                                                             var_entr_set=round(np.std(self.results[i], ddof=1)*100, 2))
+                                                             var_entr_set=round(np.std(self.results[i], ddof=1), 2))
                 self.entr_w.append(entr_min)
                 self.entr_w.append(entr_max)
                 self.entr_w.append(entr_mean)
@@ -684,11 +717,19 @@ class Minerals:
         self.canvas = None
         self.fig = Figure(facecolor=self.color_bg)
         self.ax = self.fig.add_subplot()
-        data_x = np.array(data_x)*100
+        data_x = np.array(data_x)
         #
-        self.ax.scatter(data_x, data_y, color=color, edgecolor="black")
+        if self.var_opt_chem.get() in ["No Selection", "Select Element"]:
+            self.ax.scatter(data_x, data_y, color=color, edgecolor="black", alpha=0.5)
+        else:
+            if self.var_opt_chem.get() in self.list_elements:
+                plot = self.ax.scatter(data_x, data_y, c=self.data_c, cmap="viridis",
+                                       edgecolor="black", alpha=1)
+            cbar = self.fig.colorbar(plot, format="%.0f")
+            cbar.set_label(self.var_opt_chem.get()+" (%)", rotation=90)
         self.ax.grid(True)
-        self.ax.set_xticks(np.around(np.linspace(int(0.9*min(data_x)), int(1.1*max(data_x)), 5), 2))
+        self.ax.set_xlim(float(0.95*min(data_x)), float(1.05*max(data_x)))
+        self.ax.set_xticks(np.around(np.linspace(float(0.95*min(data_x)), float(1.05*max(data_x)), 5), 2))
         self.ax.set_axisbelow(True)
         self.ax.set_xlabel(xlabel, fontsize="small")
         self.ax.set_ylabel(ylabel, labelpad=0.5, fontsize="small")
@@ -714,54 +755,59 @@ class Minerals:
         #
         data_all = []
         for i in range(var_entr.get()):
+            # Oxides
             if self.mineral == "Quartz":
-                data = Oxides(impurity="pure").create_quartz()
+                data = Oxides(impurity="pure", data_type=True).create_quartz()
             elif self.mineral == "Magnetite":
-                self.var_dict = True
-                data = Oxides(impurity="pure").create_magnetite(dict=self.var_dict)
+                data = Oxides(impurity="pure").create_magnetite(dict=True)
+            elif self.mineral == "Cassiterite":
+                data = Oxides(impurity="pure", data_type=True).create_cassiterite()
+            elif self.mineral == "Chromite":
+                data = Oxides(impurity="pure", data_type=True).create_chromite()
+            elif self.mineral == "Magnesiochromite":
+                data = Oxides(impurity="pure", data_type=True).create_magnesiochromite()
+            elif self.mineral == "Zincochromite":
+                data = Oxides(impurity="pure", data_type=True).create_zincochromite()
             elif self.mineral == "Hematite":
-                self.var_dict = True
-                data = Oxides(impurity="pure").create_hematite(dict=self.var_dict)
+                data = Oxides(impurity="pure").create_hematite(dict=True)
+            elif self.mineral == "Pyrolusite":
+                data = Oxides(impurity="pure", data_type=True).create_pyrolusite()
+            elif self.mineral == "Rutile":
+                data = Oxides(impurity="pure", data_type=True).create_rutile()
+            elif self.mineral == "Ilmenite":
+                data = Oxides(impurity="pure", data_type=True).create_ilmenite()
+            elif self.mineral == "Corundum":
+                data = Oxides(impurity="pure", data_type=True).create_corundum()
             elif self.mineral == "Aluminium Spinels":
-                self.var_dict = True
                 data = Oxides(impurity="pure", data_type=True).create_aluminium_spinel()
+            elif self.mineral == "Chromium Spinels":
+                data = Oxides(impurity="pure", data_type=True).create_chromium_spinel()
             elif self.mineral == "Pyrite":
-                self.var_dict = True
-                data = Sulfides(impurity="pure", dict=self.var_dict).create_pyrite()
+                data = Sulfides(impurity="pure", dict=True).create_pyrite()
             elif self.mineral == "Chalcopyrite":
-                self.var_dict = True
-                data = Sulfides(impurity="pure", dict=self.var_dict).create_chalcopyrite()
+                data = Sulfides(impurity="pure", dict=True).create_chalcopyrite()
             elif self.mineral == "Galena":
-                self.var_dict = True
-                data = Sulfides(impurity="pure", dict=self.var_dict).create_galena()
+                data = Sulfides(impurity="pure", dict=True).create_galena()
             elif self.mineral == "Calcite":
-                self.var_dict = True
-                data = Carbonates(impurity="pure", dict=self.var_dict).create_calcite()
+                data = Carbonates(impurity="pure", dict=True).create_calcite()
             elif self.mineral == "Dolomite":
-                self.var_dict = True
-                data = Carbonates(impurity="pure", dict=self.var_dict).create_dolomite()
+                data = Carbonates(impurity="pure", dict=True).create_dolomite()
             elif self.mineral == "Magnesite":
-                self.var_dict = True
-                data = Carbonates(impurity="pure", dict=self.var_dict).create_magnesite()
+                data = Carbonates(impurity="pure", dict=True).create_magnesite()
             elif self.mineral == "Siderite":
-                self.var_dict = True
-                data = Carbonates(impurity="pure", dict=self.var_dict).create_siderite()
+                data = Carbonates(impurity="pure", dict=True).create_siderite()
             elif self.mineral == "Halite":
-                self.var_dict = True
-                data = Halogenes(impurity="pure", dict=self.var_dict).create_halite()
+                data = Halogenes(impurity="pure", dict=True).create_halite()
             elif self.mineral == "Fluorite":
-                self.var_dict = True
-                data = Halogenes(impurity="pure", dict=self.var_dict).create_fluorite()
+                data = Halogenes(impurity="pure", dict=True).create_fluorite()
             elif self.mineral == "Sylvite":
-                self.var_dict = True
-                data = Halogenes(impurity="pure", dict=self.var_dict).create_sylvite()
+                data = Halogenes(impurity="pure", dict=True).create_sylvite()
             elif self.mineral == "Illite":
-                self.var_dict = True
-                data = Pyllosilicates(impurity="pure", dict=self.var_dict).create_illite()
+                data = Pyllosilicates(impurity="pure", dict=True).create_illite()
             elif self.mineral == "Alkalifeldspar":
-                data = Tectosilicates(impurity="pure").create_alkalifeldspar()
+                data = Tectosilicates(impurity="pure", data_type=True).create_alkalifeldspar()
             elif self.mineral == "Plagioclase":
-                data = Tectosilicates(impurity="pure").create_plagioclase()
+                data = Tectosilicates(impurity="pure", data_type=True).create_plagioclase()
             self.color_mineral = "#7C9097"
             #
             data_all.append(data)
@@ -770,7 +816,7 @@ class Minerals:
             elements = np.array(data_all[0][-1])[:, 0]
             self.element_list = []
             for element in elements:
-                self.element_list.append(DP(dataset=data_all).extract_element_amounts(type="mineral", element=element))
+                self.element_list.append(DP(dataset=data_all).extract_element_amounts(type="mineral", element=element)*100)
             #
             self.rho_b = DP(dataset=data_all).extract_densities(type="mineral", keyword="bulk")
             self.molar_mass = DP(dataset=data_all).extract_molar_mass()
@@ -807,23 +853,35 @@ class Minerals:
             for element in elements:
                 self.element_list[element] = []
                 for index, chem_dict in enumerate(self.chemistry, start=0):
-                    self.element_list[element].append(abs(chem_dict[element]))
+                    self.element_list[element].append(abs(chem_dict[element]*100))
             if self.mineral in ["Magnetite", "Hematite", "Pyrite", "Siderite"]:
                 self.w_element = self.element_list["Fe"]
+            elif self.mineral in ["Quartz"]:
+                self.w_element = self.element_list["Si"]
             elif self.mineral in ["Galena"]:
                 self.w_element = self.element_list["Pb"]
             elif self.mineral in ["Chalcopyrite"]:
                 self.w_element = self.element_list["Cu"]
-            elif self.mineral in ["Calcite", "Dolomite", "Fluorite"]:
+            elif self.mineral in ["Cassiterite"]:
+                self.w_element = self.element_list["Sn"]
+            elif self.mineral in ["Calcite", "Dolomite", "Fluorite", "Plagioclase"]:
                 self.w_element = self.element_list["Ca"]
             elif self.mineral in ["Magnesite", "Aluminium Spinels"]:
                 self.w_element = self.element_list["Mg"]
             elif self.mineral in ["Halite"]:
                 self.w_element = self.element_list["Na"]
-            elif self.mineral in ["Sylvite"]:
+            elif self.mineral in ["Chromite", "Magnesiochromite", "Zincochromite", "Chromium Spinels"]:
+                self.w_element = self.element_list["Cr"]
+            elif self.mineral in ["Ilmenite", "Rutile"]:
+                self.w_element = self.element_list["Ti"]
+            elif self.mineral in ["Sylvite", "Alkalifeldspar"]:
                 self.w_element = self.element_list["K"]
-            elif self.mineral in ["Illite"]:
+            elif self.mineral in ["Illite", "Corundum"]:
                 self.w_element = self.element_list["Al"]
+            elif self.mineral in ["Pyrolusite"]:
+                self.w_element = self.element_list["Mn"]
+        #
+        self.var_opt_chem.set("Select Element")
         #
         self.results = [self.molar_mass, self.rho_b, self.vP, self.vS, self.vPvS, self.bulk_mod, self.shear_mod,
                         self.poisson, self.gamma_ray, self.photoelectricity]
@@ -864,16 +922,16 @@ class Minerals:
             elif i >= 10:
                 entr_min = SE(parent=self.parent_mineral, row_id=15+i, column_id=4, n_rows=1, bg=self.color_bg,
                               fg=self.color_fg).create_entry(var_entr=self.entr_list_min[i],
-                                                             var_entr_set=round(np.min(self.results[i])*100, 2))
+                                                             var_entr_set=round(np.min(self.results[i]), 2))
                 entr_max = SE(parent=self.parent_mineral, row_id=15+i, column_id=5, n_rows=1, bg=self.color_bg,
                               fg=self.color_fg).create_entry(var_entr=self.entr_list_max[i],
-                                                             var_entr_set=round(np.max(self.results[i])*100, 2))
+                                                             var_entr_set=round(np.max(self.results[i]), 2))
                 entr_mean = SE(parent=self.parent_mineral, row_id=15+i, column_id=6, n_rows=1, bg=self.color_bg,
                                fg=self.color_fg).create_entry(var_entr=self.entr_list_mean[i],
-                                                              var_entr_set=round(np.mean(self.results[i])*100, 2))
+                                                              var_entr_set=round(np.mean(self.results[i]), 2))
                 entr_std = SE(parent=self.parent_mineral, row_id=15+i, column_id=7, n_rows=1, bg=self.color_bg,
                               fg=self.color_fg).create_entry(var_entr=self.entr_list_std[i],
-                                                             var_entr_set=round(np.std(self.results[i], ddof=1)*100, 2))
+                                                             var_entr_set=round(np.std(self.results[i], ddof=1), 2))
                 self.entr_w.append(entr_min)
                 self.entr_w.append(entr_max)
                 self.entr_w.append(entr_mean)
@@ -959,48 +1017,118 @@ class Minerals:
                 element = "Mg"
             elif self.mineral in ["Halite"]:
                 element = "Na"
-            elif self.mineral in ["Illite"]:
+            elif self.mineral in ["Chromite", "Magnesiochromite", "Zincochromite", "Chromium Spinels"]:
+                element = "Cr"
+            elif self.mineral in ["Ilmenite", "Rutile"]:
+                element = "Ti"
+            elif self.mineral in ["Cassiterite"]:
+                element = "Sn"
+            elif self.mineral in ["Pyrolusite"]:
+                element = "Mn"
+            elif self.mineral in ["Illite", "Corundum"]:
                 element = "Al"
             elif self.mineral in ["Alkalifeldspar", "Sylvite"]:
                 element = "K"
             elif self.mineral in ["Plagioclase", "Calcite", "Dolomite", "Fluorite"]:
                 element = "Ca"
-            self.create_scatter_plot(parent=self.parent_mineral, data_x=self.w_element, data_y=self.vP/1000, row_id=2,
+            #
+            data_x = np.array(self.rho_b)/1000
+            #
+            self.create_scatter_plot(parent=self.parent_mineral, data_x=data_x, data_y=self.vP/1000, row_id=2,
                                      column_id=9, n_rows=15, n_columns=3,
-                                     xlabel=str(element)+" amount $w_{"+str(element)+"}$ (1)",
+                                     xlabel="Density $\\varrho$ g/ccm",
                                      ylabel="Seismic velocity $v_P$ (km/s)", color=self.color_mineral)
-            self.create_scatter_plot(parent=self.parent_mineral, data_x=self.w_element, data_y=self.vS/1000, row_id=2,
+            self.create_scatter_plot(parent=self.parent_mineral, data_x=data_x, data_y=self.vS/1000, row_id=2,
                                      column_id=12, n_rows=15, n_columns=3,
-                                     xlabel=str(element)+" amount $w_{"+str(element)+"}$ (1)",
+                                     xlabel="Density $\\varrho$ g/ccm",
                                      ylabel="Seismic velocity $v_S$ (km/s)", color=self.color_mineral)
-            self.create_scatter_plot(parent=self.parent_mineral, data_x=self.w_element, data_y=self.vP/self.vS,
+            self.create_scatter_plot(parent=self.parent_mineral, data_x=data_x, data_y=self.vP/self.vS,
                                      row_id=2, column_id=15, n_rows=15, n_columns=3,
-                                     xlabel=str(element)+" amount $w_{"+str(element)+"}$ (1)",
+                                     xlabel="Density $\\varrho$ g/ccm",
                                      ylabel="Velocity ratio $v_P/v_S$ (1)", color=self.color_mineral)
-            self.create_scatter_plot(parent=self.parent_mineral, data_x=self.w_element, data_y=self.bulk_mod, row_id=17,
+            self.create_scatter_plot(parent=self.parent_mineral, data_x=data_x, data_y=self.bulk_mod, row_id=17,
                                      column_id=9, n_rows=15, n_columns=3,
-                                     xlabel=str(element)+" amount $w_{"+str(element)+"}$ (1)",
+                                     xlabel="Density $\\varrho$ g/ccm",
                                      ylabel="Bulk modulus $K$ (GPa)", color=self.color_mineral)
-            self.create_scatter_plot(parent=self.parent_mineral, data_x=self.w_element, data_y=self.shear_mod,
+            self.create_scatter_plot(parent=self.parent_mineral, data_x=data_x, data_y=self.shear_mod,
                                      row_id=17, column_id=12, n_rows=15, n_columns=3,
-                                     xlabel=str(element)+" amount $w_{"+str(element)+"}$ (1)",
+                                     xlabel="Density $\\varrho$ g/ccm",
                                      ylabel="Shear modulus $G$ (GPa)", color=self.color_mineral)
-            self.create_scatter_plot(parent=self.parent_mineral, data_x=self.w_element, data_y=self.poisson, row_id=17,
+            self.create_scatter_plot(parent=self.parent_mineral, data_x=data_x, data_y=self.poisson, row_id=17,
                                      column_id=15, n_rows=15, n_columns=3,
-                                     xlabel=str(element)+" amount $w_{"+str(element)+"}$ (1)",
+                                     xlabel="Density $\\varrho$ g/ccm",
                                      ylabel="Poisson's ratio $\\mu$ (1)", color=self.color_mineral)
-            self.create_scatter_plot(parent=self.parent_mineral, data_x=self.w_element, data_y=self.molar_mass,
+            self.create_scatter_plot(parent=self.parent_mineral, data_x=data_x, data_y=self.molar_mass,
                                      row_id=32, column_id=9, n_rows=15, n_columns=3,
-                                     xlabel=str(element)+" amount $w_{"+str(element)+"}$ (1)",
+                                     xlabel="Density $\\varrho$ g/ccm",
                                      ylabel="Molar mass $M$ (g/mol)", color=self.color_mineral)
-            self.create_scatter_plot(parent=self.parent_mineral, data_x=self.w_element, data_y=self.gamma_ray,
+            self.create_scatter_plot(parent=self.parent_mineral, data_x=data_x, data_y=self.gamma_ray,
                                      row_id=32, column_id=12, n_rows=15, n_columns=3,
-                                     xlabel=str(element)+" amount $w_{"+str(element)+"}$ (1)",
+                                     xlabel="Density $\\varrho$ g/ccm",
                                      ylabel="Gamma ray GR (API)", color=self.color_mineral)
-            self.create_scatter_plot(parent=self.parent_mineral, data_x=self.w_element, data_y=self.photoelectricity,
+            self.create_scatter_plot(parent=self.parent_mineral, data_x=data_x, data_y=self.photoelectricity,
                                      row_id=32, column_id=15, n_rows=15, n_columns=3,
-                                     xlabel=str(element)+" amount $w_{"+str(element)+"}$ (1)",
+                                     xlabel="Density $\\varrho$ g/ccm",
                                      ylabel="Photoelectricity PE (barns/electron)", color=self.color_mineral)
+    #
+    def select_opt(self, var_opt):
+        try:
+            self.fig_histo.clf()
+            self.ax_histo.cla()
+            self.canvas_histo.get_tk_widget().pack_forget()
+        except AttributeError:
+            pass
+        try:
+            if self.canvas_histo:
+                self.canvas_histo.destroy()
+        except AttributeError:
+            pass
+        #
+        self.var_rb.set(1)
+        #
+        data_c = []
+        for item in self.chemistry:
+            data_c.append(item[var_opt])
+        self.data_c = np.array(data_c)*100
+        element = var_opt
+        data_x = np.array(self.rho_b)/1000
+        #
+        self.create_scatter_plot(parent=self.parent_mineral, data_x=data_x, data_y=self.vP/1000, row_id=2,
+                                 column_id=9, n_rows=15, n_columns=3,
+                                 xlabel="Density $\\varrho$ g/ccm",
+                                 ylabel="Seismic velocity $v_P$ (km/s)", color=self.color_mineral)
+        self.create_scatter_plot(parent=self.parent_mineral, data_x=data_x, data_y=self.vS/1000, row_id=2,
+                                 column_id=12, n_rows=15, n_columns=3,
+                                 xlabel="Density $\\varrho$ g/ccm",
+                                 ylabel="Seismic velocity $v_S$ (km/s)", color=self.color_mineral)
+        self.create_scatter_plot(parent=self.parent_mineral, data_x=data_x, data_y=self.vP/self.vS,
+                                 row_id=2, column_id=15, n_rows=15, n_columns=3,
+                                 xlabel="Density $\\varrho$ g/ccm",
+                                 ylabel="Velocity ratio $v_P/v_S$ (1)", color=self.color_mineral)
+        self.create_scatter_plot(parent=self.parent_mineral, data_x=data_x, data_y=self.bulk_mod, row_id=17,
+                                 column_id=9, n_rows=15, n_columns=3,
+                                 xlabel="Density $\\varrho$ g/ccm",
+                                 ylabel="Bulk modulus $K$ (GPa)", color=self.color_mineral)
+        self.create_scatter_plot(parent=self.parent_mineral, data_x=data_x, data_y=self.shear_mod,
+                                 row_id=17, column_id=12, n_rows=15, n_columns=3,
+                                 xlabel="Density $\\varrho$ g/ccm",
+                                 ylabel="Shear modulus $G$ (GPa)", color=self.color_mineral)
+        self.create_scatter_plot(parent=self.parent_mineral, data_x=data_x, data_y=self.poisson, row_id=17,
+                                 column_id=15, n_rows=15, n_columns=3,
+                                 xlabel="Density $\\varrho$ g/ccm",
+                                 ylabel="Poisson's ratio $\\mu$ (1)", color=self.color_mineral)
+        self.create_scatter_plot(parent=self.parent_mineral, data_x=data_x, data_y=self.molar_mass,
+                                 row_id=32, column_id=9, n_rows=15, n_columns=3,
+                                 xlabel="Density $\\varrho$ g/ccm",
+                                 ylabel="Molar mass $M$ (g/mol)", color=self.color_mineral)
+        self.create_scatter_plot(parent=self.parent_mineral, data_x=data_x, data_y=self.gamma_ray,
+                                 row_id=32, column_id=12, n_rows=15, n_columns=3,
+                                 xlabel="Density $\\varrho$ g/ccm",
+                                 ylabel="Gamma ray GR (API)", color=self.color_mineral)
+        self.create_scatter_plot(parent=self.parent_mineral, data_x=data_x, data_y=self.photoelectricity,
+                                 row_id=32, column_id=15, n_rows=15, n_columns=3,
+                                 xlabel="Density $\\varrho$ g/ccm",
+                                 ylabel="Photoelectricity PE (barns/electron)", color=self.color_mineral)
     #
     def __call__(self):
         return self.lbl_w, self.entr_w
@@ -1285,17 +1413,6 @@ class Rocks:
                 self.entr_w.append(entr_std)
                 self.entr_chem.extend([entr_min, entr_max, entr_mean, entr_std])
             #
-            # rb_03 = SE(parent=self.parent_rock, row_id=34, column_id=0, n_rows=1, n_columns=2, bg=self.color_acc_01,
-            #    fg="black").create_radiobutton(var_rb=self.var_rb_geochem, var_rb_set=var_rb_geochem_start, value_rb=2,
-            #                                   text="Elements", color_bg=self.color_acc_01,
-            #                                   command=lambda var_rb=self.var_rb_geochem: self.change_radiobutton(var_rb))
-            # rb_04 = SE(parent=self.parent_rock, row_id=35, column_id=0, n_rows=1, n_columns=2, bg=self.color_acc_01,
-            #    fg="black").create_radiobutton(var_rb=self.var_rb_geochem, var_rb_set=var_rb_geochem_start, value_rb=3,
-            #                                   text="Minerals", color_bg=self.color_acc_01,
-            #                                   command=lambda var_rb=self.var_rb_geochem: self.change_radiobutton(var_rb))
-            # #
-            # self.lbl_w.extend([rb_03, rb_04])
-            #
             lbl = SE(parent=self.parent_rock, row_id=24, column_id=3, n_columns=5, bg=self.color_bg,
                      fg="black").create_label(text="Chemical composition (weight amounts %)", relief=tk.RAISED)
             self.lbl_w.append(lbl)
@@ -1364,7 +1481,7 @@ class Rocks:
             elif self.var_opt_chem.get() in self.list_minerals:
                 plot = self.ax.scatter(data_x, data_y, c=self.minerals[self.var_opt_chem.get()], cmap="viridis",
                                        edgecolor="black", alpha=1)
-            cbar = self.fig.colorbar(plot)
+            cbar = self.fig.colorbar(plot, format="%.1f")
             cbar.set_label(self.var_opt_chem.get()+" (%)", rotation=90)
         self.ax.grid(color="grey", linestyle="dashed", which="both")
         self.ax.set_axisbelow(True)
