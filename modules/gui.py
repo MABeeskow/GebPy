@@ -372,7 +372,7 @@ class GebPyGUI(tk.Frame):
                 command=lambda var_opt=var_opt_1_1: self.select_opt(var_opt))
         elif var_opt == "Carbonate Rocks":
             var_opt_1_2 = tk.StringVar()
-            opt_list_1_2 = ["Limestone", "Dolomite Rock", "Custom Carbonate Rock"]
+            opt_list_1_2 = ["Limestone", "Dolomite Rock"]
             self.opt_carb = SE(parent=self.parent, row_id=16, column_id=0, n_rows=2, n_columns=2,
                                bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
                 var_opt=var_opt_1_2, var_opt_set="Select Rock", opt_list=opt_list_1_2,
@@ -1233,7 +1233,7 @@ class Rocks:
         elif self.rock in ["Shale", "Kupferschiefer"]:
             var_phi0_start = 0
             var_phi1_start = 10
-        elif self.rock in ["Limestone", "Dolomite Rock", "Custom Carbonate Rock"]:
+        elif self.rock in ["Limestone", "Dolomite Rock"]:
             var_phi0_start = 0
             var_phi1_start = 50
         elif self.rock in ["Rock Salt", "Anhydrite", "Felsic Rock", "Intermediate Rock", "Granite", "Gabbro", "Syenite",
@@ -1297,8 +1297,6 @@ class Rocks:
                     data = limestone(fluid="water", actualThickness=0).create_simple_limestone(dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
                 elif self.rock == "Dolomite Rock":
                     data = dolomite(fluid="water", actualThickness=0).create_simple_dolomite(dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
-                elif self.rock == "Custom Carbonate Rock":
-                    data = CustomCarbonates(fluid="water", actualThickness=0, output_type=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_custom_rock_01()
                 #
                 elif self.rock == "Felsic Rock":
                     data = Plutonic(fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_felsic()
@@ -1579,8 +1577,6 @@ class Rocks:
                 data = limestone(fluid="water", actualThickness=0).create_simple_limestone(dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
             elif self.rock == "Dolomite Rock":
                 data = dolomite(fluid="water", actualThickness=0).create_simple_dolomite(dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
-            elif self.rock == "Custom Carbonate Rock":
-                    data = CustomCarbonates(fluid="water", actualThickness=0, output_type=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_custom_rock_01()
             #
             elif self.rock == "Felsic Rock":
                 data = Plutonic(fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_felsic()
