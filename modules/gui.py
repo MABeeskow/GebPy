@@ -166,7 +166,9 @@ class GebPyGUI(tk.Frame):
                      color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
                      entr_w=self.entr_w)()
         elif var_opt in ["Magnetite", "Hematite", "Aluminium Spinels", "Ilmenite", "Cassiterite", "Chromite", "Corundum",
-                         "Rutile", "Pyrolusite", "Magnesiochromite", "Zincochromite", "Chromium Spinels"]:
+                         "Rutile", "Pyrolusite", "Magnesiochromite", "Zincochromite", "Chromium Spinels", "Cuprospinel",
+                         "Jacobsite", "Magnesioferrite", "Trevorite", "Franklinite", "Ulvöspinel", "Iron Spinels",
+                         "Uraninite"]:
             Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                      color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
                      entr_w=self.entr_w)
@@ -279,7 +281,8 @@ class GebPyGUI(tk.Frame):
             var_opt_0_1 = tk.StringVar()
             opt_list_0_1 = ["Quartz", "Magnetite", "Hematite", "Aluminium Spinels", "Iron Spinels", "Chromium Spinels",
                             "Corundum", "Ilmenite", "Rutile", "Pyrolusite", "Cassiterite", "Chromite",
-                            "Magnesiochromite", "Zincochromite"]
+                            "Magnesiochromite", "Zincochromite", "Cuprospinel", "Jacobsite", "Magnesioferrite",
+                            "Trevorite", "Franklinite", "Ulvöspinel", "Uraninite"]
             opt_list_0_1.sort()
             self.opt_oxide = SE(parent=self.parent, row_id=10, column_id=0, n_rows=2, n_columns=2,
                                 bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
@@ -504,10 +507,26 @@ class Minerals:
                 data = Oxides(impurity="pure").create_hematite(dict=True)
             elif self.mineral == "Ilmenite":
                 data = Oxides(impurity="pure", data_type=True).create_ilmenite()
+            elif self.mineral == "Cuprospinel":
+                data = Oxides(impurity="pure", data_type=True).create_cuprospinel()
+            elif self.mineral == "Jacobsite":
+                data = Oxides(impurity="pure", data_type=True).create_jacobsite()
+            elif self.mineral == "Uraninite":
+                data = Oxides(impurity="pure", data_type=True).create_uraninite()
+            elif self.mineral == "Magnesioferrite":
+                data = Oxides(impurity="pure", data_type=True).create_magnesioferrite()
             elif self.mineral == "Aluminium Spinels":
                 data = Oxides(impurity="pure", data_type=True).create_aluminium_spinel()
             elif self.mineral == "Chromium Spinels":
                 data = Oxides(impurity="pure", data_type=True).create_chromium_spinel()
+            elif self.mineral == "Iron Spinels":
+                data = Oxides(impurity="pure", data_type=True).create_iron_spinel()
+            elif self.mineral == "Trevorite":
+                data = Oxides(impurity="pure", data_type=True).create_trevorite()
+            elif self.mineral == "Franklinite":
+                data = Oxides(impurity="pure", data_type=True).create_franklinite()
+            elif self.mineral == "Ulvöspinel":
+                data = Oxides(impurity="pure", data_type=True).create_ulvoespinel()
             elif self.mineral == "Pyrite":
                 data = Sulfides(impurity="pure", dict=True).create_pyrite()
             elif self.mineral == "Chalcopyrite":
@@ -590,7 +609,7 @@ class Minerals:
                 self.w_element = self.element_list["Si"]
             elif self.mineral in ["Galena"]:
                 self.w_element = self.element_list["Pb"]
-            elif self.mineral in ["Chalcopyrite"]:
+            elif self.mineral in ["Chalcopyrite", "Cuprospinel"]:
                 self.w_element = self.element_list["Cu"]
             elif self.mineral in ["Cassiterite"]:
                 self.w_element = self.element_list["Sn"]
@@ -768,6 +787,8 @@ class Minerals:
                 data = Oxides(impurity="pure", data_type=True).create_magnesiochromite()
             elif self.mineral == "Zincochromite":
                 data = Oxides(impurity="pure", data_type=True).create_zincochromite()
+            elif self.mineral == "Trevorite":
+                data = Oxides(impurity="pure", data_type=True).create_trevorite()
             elif self.mineral == "Hematite":
                 data = Oxides(impurity="pure").create_hematite(dict=True)
             elif self.mineral == "Pyrolusite":
@@ -776,12 +797,26 @@ class Minerals:
                 data = Oxides(impurity="pure", data_type=True).create_rutile()
             elif self.mineral == "Ilmenite":
                 data = Oxides(impurity="pure", data_type=True).create_ilmenite()
+            elif self.mineral == "Uraninite":
+                data = Oxides(impurity="pure", data_type=True).create_uraninite()
             elif self.mineral == "Corundum":
                 data = Oxides(impurity="pure", data_type=True).create_corundum()
             elif self.mineral == "Aluminium Spinels":
                 data = Oxides(impurity="pure", data_type=True).create_aluminium_spinel()
             elif self.mineral == "Chromium Spinels":
                 data = Oxides(impurity="pure", data_type=True).create_chromium_spinel()
+            elif self.mineral == "Iron Spinels":
+                data = Oxides(impurity="pure", data_type=True).create_iron_spinel()
+            elif self.mineral == "Cuprospinel":
+                data = Oxides(impurity="pure", data_type=True).create_cuprospinel()
+            elif self.mineral == "Jacobsite":
+                data = Oxides(impurity="pure", data_type=True).create_jacobsite()
+            elif self.mineral == "Magnesioferrite":
+                data = Oxides(impurity="pure", data_type=True).create_magnesioferrite()
+            elif self.mineral == "Franklinite":
+                data = Oxides(impurity="pure", data_type=True).create_franklinite()
+            elif self.mineral == "Ulvöspinel":
+                data = Oxides(impurity="pure", data_type=True).create_ulvoespinel()
             elif self.mineral == "Pyrite":
                 data = Sulfides(impurity="pure", dict=True).create_pyrite()
             elif self.mineral == "Chalcopyrite":
@@ -860,7 +895,7 @@ class Minerals:
                 self.w_element = self.element_list["Si"]
             elif self.mineral in ["Galena"]:
                 self.w_element = self.element_list["Pb"]
-            elif self.mineral in ["Chalcopyrite"]:
+            elif self.mineral in ["Chalcopyrite", "Cuprospinel"]:
                 self.w_element = self.element_list["Cu"]
             elif self.mineral in ["Cassiterite"]:
                 self.w_element = self.element_list["Sn"]
@@ -1009,7 +1044,7 @@ class Minerals:
                 element = "Si"
             elif self.mineral in ["Magnetite", "Hematite", "Pyrite", "Siderite"]:
                 element = "Fe"
-            elif self.mineral in ["Chalcopyrite"]:
+            elif self.mineral in ["Chalcopyrite", "Cuprospinel"]:
                 element = "Cu"
             elif self.mineral in ["Galena"]:
                 element = "Pb"
