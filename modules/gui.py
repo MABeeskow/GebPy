@@ -172,7 +172,9 @@ class GebPyGUI(tk.Frame):
             Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                      color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
                      entr_w=self.entr_w)
-        elif var_opt in ["Pyrite", "Chalcopyrite", "Galena"]:
+        elif var_opt in ["Pyrite", "Chalcopyrite", "Galena", "Acanthite", "Chalcocite", "Bornite", "Sphalerite",
+                         "Pyrrhotite", "Millerite", "Pentlandite", "Covellite", "Cinnabar", "Realgar", "Orpiment",
+                         "Stibnite", "Marcasite", "Molybdenite", "Fahlore"]:
             Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                      color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
                      entr_w=self.entr_w)
@@ -298,7 +300,10 @@ class GebPyGUI(tk.Frame):
             except:
                 pass
             var_opt_0_2 = tk.StringVar()
-            opt_list_0_2 = ["Pyrite", "Chalcopyrite", "Galena"]
+            opt_list_0_2 = ["Pyrite", "Chalcopyrite", "Galena", "Acanthite", "Chalcocite", "Bornite", "Sphalerite",
+                            "Pyrrhotite", "Millerite", "Pentlandite", "Covellite", "Cinnabar", "Realgar", "Orpiment",
+                            "Stibnite", "Marcasite", "Molybdenite", "Fahlore"]
+            opt_list_0_2.sort()
             self.opt_sulfide = SE(parent=self.parent, row_id=10, column_id=0, n_rows=2, n_columns=2,
                                   bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
                 var_opt=var_opt_0_2, var_opt_set="Select Sulfide", opt_list=opt_list_0_2,
@@ -528,11 +533,41 @@ class Minerals:
             elif self.mineral == "Ulvöspinel":
                 data = Oxides(impurity="pure", data_type=True).create_ulvoespinel()
             elif self.mineral == "Pyrite":
-                data = Sulfides(impurity="pure", dict=True).create_pyrite()
+                data = Sulfides(impurity="pure", data_type=True).create_pyrite()
             elif self.mineral == "Chalcopyrite":
-                data = Sulfides(impurity="pure", dict=True).create_chalcopyrite()
+                data = Sulfides(impurity="pure", data_type=True).create_chalcopyrite()
             elif self.mineral == "Galena":
-                data = Sulfides(impurity="pure", dict=True).create_galena()
+                data = Sulfides(impurity="pure", data_type=True).create_galena()
+            elif self.mineral == "Acanthite":
+                data = Sulfides(impurity="pure", data_type=True).create_acanthite()
+            elif self.mineral == "Chalcocite":
+                data = Sulfides(impurity="pure", data_type=True).create_chalcocite()
+            elif self.mineral == "Bornite":
+                data = Sulfides(impurity="pure", data_type=True).create_bornite()
+            elif self.mineral == "Sphalerite":
+                data = Sulfides(impurity="pure", data_type=True).create_sphalerite()
+            elif self.mineral == "Pyrrhotite":
+                data = Sulfides(impurity="pure", data_type=True).create_pyrrhotite()
+            elif self.mineral == "Millerite":
+                data = Sulfides(impurity="pure", data_type=True).create_millerite()
+            elif self.mineral == "Pentlandite":
+                data = Sulfides(impurity="pure", data_type=True).create_pentlandite()
+            elif self.mineral == "Covellite":
+                data = Sulfides(impurity="pure", data_type=True).create_covellite()
+            elif self.mineral == "Cinnabar":
+                data = Sulfides(impurity="pure", data_type=True).create_cinnabar()
+            elif self.mineral == "Stibnite":
+                data = Sulfides(impurity="pure", data_type=True).create_stibnite()
+            elif self.mineral == "Molybdenite":
+                data = Sulfides(impurity="pure", data_type=True).create_molybdenite()
+            elif self.mineral == "Realgar":
+                data = Sulfides(impurity="pure", data_type=True).create_realgar()
+            elif self.mineral == "Orpiment":
+                data = Sulfides(impurity="pure", data_type=True).create_orpiment()
+            elif self.mineral == "Marcasite":
+                data = Sulfides(impurity="pure", data_type=True).create_marcasite()
+            elif self.mineral == "Fahlore":
+                data = Sulfides(impurity="pure", data_type=True).create_fahlore()
             elif self.mineral == "Calcite":
                 data = Carbonates(impurity="pure", dict=True).create_calcite()
             elif self.mineral == "Corundum":
@@ -818,11 +853,41 @@ class Minerals:
             elif self.mineral == "Ulvöspinel":
                 data = Oxides(impurity="pure", data_type=True).create_ulvoespinel()
             elif self.mineral == "Pyrite":
-                data = Sulfides(impurity="pure", dict=True).create_pyrite()
+                data = Sulfides(impurity="pure", data_type=True).create_pyrite()
             elif self.mineral == "Chalcopyrite":
-                data = Sulfides(impurity="pure", dict=True).create_chalcopyrite()
+                data = Sulfides(impurity="pure", data_type=True).create_chalcopyrite()
             elif self.mineral == "Galena":
-                data = Sulfides(impurity="pure", dict=True).create_galena()
+                data = Sulfides(impurity="pure", data_type=True).create_galena()
+            elif self.mineral == "Acanthite":
+                data = Sulfides(impurity="pure", data_type=True).create_acanthite()
+            elif self.mineral == "Chalcocite":
+                data = Sulfides(impurity="pure", data_type=True).create_chalcocite()
+            elif self.mineral == "Bornite":
+                data = Sulfides(impurity="pure", data_type=True).create_bornite()
+            elif self.mineral == "Sphalerite":
+                data = Sulfides(impurity="pure", data_type=True).create_sphalerite()
+            elif self.mineral == "Pyrrhotite":
+                data = Sulfides(impurity="pure", data_type=True).create_pyrrhotite()
+            elif self.mineral == "Millerite":
+                data = Sulfides(impurity="pure", data_type=True).create_millerite()
+            elif self.mineral == "Pentlandite":
+                data = Sulfides(impurity="pure", data_type=True).create_pentlandite()
+            elif self.mineral == "Covellite":
+                data = Sulfides(impurity="pure", data_type=True).create_covellite()
+            elif self.mineral == "Cinnabar":
+                data = Sulfides(impurity="pure", data_type=True).create_cinnabar()
+            elif self.mineral == "Stibnite":
+                data = Sulfides(impurity="pure", data_type=True).create_stibnite()
+            elif self.mineral == "Molybdenite":
+                data = Sulfides(impurity="pure", data_type=True).create_molybdenite()
+            elif self.mineral == "Fahlore":
+                data = Sulfides(impurity="pure", data_type=True).create_fahlore()
+            elif self.mineral == "Realgar":
+                data = Sulfides(impurity="pure", data_type=True).create_realgar()
+            elif self.mineral == "Orpiment":
+                data = Sulfides(impurity="pure", data_type=True).create_orpiment()
+            elif self.mineral == "Marcasite":
+                data = Sulfides(impurity="pure", data_type=True).create_marcasite()
             elif self.mineral == "Calcite":
                 data = Carbonates(impurity="pure", dict=True).create_calcite()
             elif self.mineral == "Dolomite":
