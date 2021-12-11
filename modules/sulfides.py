@@ -1682,7 +1682,7 @@ class Sulfides():
         # Electrical resistivity
         p = None
         #
-        if self.dict == False:
+        if self.data_type == False:
             data = []
             data.append(mineral)
             data.append(round(molar_mass, 3))

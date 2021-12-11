@@ -11,6 +11,7 @@
 #-----------------------------------------------
 
 ## MODULES
+import re
 import numpy as np
 from numpy import round
 import scipy.constants as const
@@ -963,9 +964,12 @@ class MineralChemistry():
         self.w_traces = w_traces    # [ [Atom name, amount] ]
         self.molar_mass_pure = molar_mass_pure
         self.majors = majors
-        self.compounds = [["H", ["H2O", 2, 1, "O"]], ["Li", ["Li2O", 2, 1, "O"]], ["Na", ["Na2O", 2, 1, "O"]],
-                          ["Mg", ["MgO", 1, 1, "O"]], ["Al", ["Al2O3", 2, 3, "O"]], ["Si", ["SiO2", 1, 2, "O"]],
-                          ["Ti", ["TiO2", 1, 2, "O"]], ["Fe", ["Fe2O3", 2, 3, "O"]], ["Ge", ["GeO2", 1, 2, "O"]]]
+        self.compounds = [["H", ["H2O", 2, 1, "O"]], ["Li", ["Li2O", 2, 1, "O"]], ["B", ["B2O3", 2, 3, "O"]],
+                          ["Na", ["Na2O", 2, 1, "O"]], ["Mg", ["MgO", 1, 1, "O"]], ["Al", ["Al2O3", 2, 3, "O"]],
+                          ["Si", ["SiO2", 1, 2, "O"]], ["K", ["K2O", 2, 1, "O"]], ["Ti", ["TiO2", 1, 2, "O"]],
+                          ["Fe", ["Fe2O3", 2, 3, "O"]], ["Cu", ["CuO", 1, 1, "O"]], ["Ga", ["Ga2O3", 2, 3, "O"]],
+                          ["Ge", ["GeO2", 1, 2, "O"]], ["As", ["As2O3", 2, 3, "O"]], ["Ag", ["Ag2O", 2, 1, "O"]],
+                          ["Sn", ["SnO2", 1, 2, "O"]]]
     #
     def calculate_molar_mass_compounds(self):
         molar_mass_compounds = []
@@ -1019,3 +1023,175 @@ class MineralChemistry():
         amounts = amounts.tolist()
         #
         return molar_mass, amounts
+#
+class Compounds:
+    #
+    def __init__(self, formula):
+        self.formula = formula
+        #
+    def split_formula(self):
+        compound = {}
+        chemistry = {}
+        for item in self.formula:
+            key = re.search(r"([A-Z][a-z]?)(\d*)([A-Z][a-z]?)(\d*)?", item)
+            if key == None:
+                key = re.search(r"([A-Z][a-z]?)(\d*)", item)
+            if len(key.groups()) == 4:
+                compound[key.group()] = {}
+                compound[key.group()]["Total"] = 0
+                chemistry[key.group(1)] = PeriodicSystem(name=key.group(1)).get_data()[2]
+                if key.group(3) not in chemistry:
+                    chemistry[key.group(3)] = PeriodicSystem(name=key.group(3)).get_data()[2]
+                #
+                if key.group(2) == "":
+                    compound[key.group()][key.group(1)] = [1, PeriodicSystem(name=key.group(1)).get_data()[2]]
+                    compound[key.group()]["Total"] += round(1*chemistry[key.group(1)], 3)
+                else:
+                    compound[key.group()][key.group(1)] = [int(key.group(2)), PeriodicSystem(name=key.group(1)).get_data()[2]]
+                    compound[key.group()]["Total"] += round(int(key.group(2))*PeriodicSystem(name=key.group(1)).get_data()[2], 3)
+                if key.group(4) == "":
+                    compound[key.group()][key.group(3)] = [1, PeriodicSystem(name=key.group(3)).get_data()[2]]
+                    compound[key.group()]["Total"] += round(1*chemistry[key.group(3)], 3)
+                else:
+                    compound[key.group()][key.group(3)] = [int(key.group(4)), PeriodicSystem(name=key.group(3)).get_data()[2]]
+                    compound[key.group()]["Total"] += round(int(key.group(4))*PeriodicSystem(name=key.group(3)).get_data()[2], 3)
+                #
+                compound[key.group()]["Total"] = round(compound[key.group()]["Total"], 3)
+                compound[key.group()][key.group(1)].append(round(compound[key.group()][key.group(1)][0]*chemistry[key.group(1)]/compound[key.group()]["Total"], 4))
+                compound[key.group()][key.group(3)].append(round(compound[key.group()][key.group(3)][0]*chemistry[key.group(3)]/compound[key.group()]["Total"], 4))
+            elif len(key.groups()) == 2:
+                compound[key.group()] = {}
+                compound[key.group()]["Total"] = 0
+                chemistry[key.group(1)] = PeriodicSystem(name=key.group(1)).get_data()[2]
+                #
+                if key.group(2) == "":
+                    compound[key.group()][key.group(1)] = [1, PeriodicSystem(name=key.group(1)).get_data()[2]]
+                    compound[key.group()]["Total"] += round(1*chemistry[key.group(1)], 3)
+                else:
+                    compound[key.group()][key.group(1)] = [int(key.group(2)), PeriodicSystem(name=key.group(1)).get_data()[2]]
+                    compound[key.group()]["Total"] += round(int(key.group(2))*PeriodicSystem(name=key.group(1)).get_data()[2], 3)
+                #
+                compound[key.group()]["Total"] = round(compound[key.group()]["Total"], 3)
+                compound[key.group()][key.group(1)].append(round(compound[key.group()][key.group(1)][0]*chemistry[key.group(1)]/compound[key.group()]["Total"], 4))
+        #
+        return compound
+#
+class TraceElements:
+    #
+    def __init__(self, tracer):
+        self.tracer = tracer
+    #
+    def calculate_composition_quartz(self):
+        parts_qz = 1000000
+        oxides = ["SiO2"]
+        element_list = ["O", "Si"]
+        #
+        cond_w = 0
+        cond_x = 0
+        while cond_w == False and cond_x == False:
+            w_total = 0
+            x_total = 0
+            #
+            element_list = ["O", "Si"]
+            composition = {}
+            composition[oxides[0]] = parts_qz
+            #
+            trace_groups = {}
+            trace_groups["W"] = []
+            trace_groups["X"] = []
+            trace_groups["Y"] = []
+            trace_groups["Z"] = []
+            trace_combinations = {}
+            trace_combinations["singles"] = []
+            trace_combinations["couples"] = []
+            for tracer in self.tracer:
+                if tracer in ["Ti", "Ge", "Sn"]:
+                    element_list.append(tracer)
+                    compound = tracer+str("O2")
+                    trace_groups["X"].append(compound)
+                    trace_combinations["singles"].append([compound])
+                elif tracer in ["Al", "Fe", "B", "As", "Ga"]:
+                    element_list.append(tracer)
+                    compound = tracer+str("2O3")
+                    trace_groups["Y"].append(compound)
+                    trace_combinations["couples"].append([compound])
+                elif tracer in ["H", "Li", "Na", "Ag", "K"]:
+                    element_list.append(tracer)
+                    compound = tracer+str("2O")
+                    trace_groups["Z"].append(compound)
+                elif tracer in ["Mg", "Be", "Ca", "Mn", "Cu", "Zn"]:
+                    element_list.append(tracer)
+                    compound = tracer+str("O")
+                    trace_groups["W"].append(compound)
+                    trace_combinations["couples"].append([compound])
+            for index_y, couple in enumerate(trace_combinations["couples"], start=0):
+                for index_z, item_z in enumerate(trace_groups["Z"], start=0):
+                    if item_z not in couple and index_y == index_z:
+                        if len(couple) == 2:
+                            del couple[-1]
+                        if couple[0] in trace_groups["W"]:
+                            key = re.search(r"([A-Z][a-z]?)(\d*)([A-Z][a-z]?)(\d*)?", item_z)
+                            couple.append(key.group(1)+key.group(2))
+                        else:
+                            couple.append(item_z)
+                    elif item_z not in couple and len(couple) == 1 and index_y-index_z != 1:
+                        if couple[0] in trace_groups["W"]:
+                            key = re.search(r"([A-Z][a-z]?)(\d*)([A-Z][a-z]?)(\d*)?", item_z)
+                            couple.append(key.group(1)+key.group(2))
+                        else:
+                            couple.append(item_z)
+            #
+            for key in trace_combinations:
+                for item in trace_combinations[key]:
+                    amount = rd.uniform(1*10**(-6), 0.1)
+                    amount_ppm = int(amount*10000)
+                    for compound in item:
+                        oxides.append(compound)
+                        composition[compound] = amount_ppm
+                        composition[oxides[0]] -= amount_ppm
+                    item.append(amount_ppm)
+            #
+            #print("Groups:", trace_groups)
+            #print("Families:", trace_combinations)
+            #
+            results = Compounds(formula=oxides).split_formula()
+            #print("Composition:", composition)
+            #print("Results:", results)
+            M = 0
+            for oxide in composition:
+                M += composition[oxide]*10**(-6) * results[oxide]["Total"]
+            element_list = np.sort(element_list)
+            final_comp = {}
+            for element in element_list:
+                final_comp[element] = {}
+                final_comp[element]["w"] = 0
+                final_comp[element]["x"] = 0
+            for oxide in composition:
+                for element in element_list:
+                    if element in results[oxide]:
+                        #final_comp[element]["w"] += composition[oxide]*10**(-6) * results[oxide][element][0]*results[oxide][element][1]/M
+                        final_comp[element]["w"] += round(composition[oxide]*10**(-6) * results[oxide][element][2], 6)
+                        final_comp[element]["x"] += round(composition[oxide]*10**(-6)*results[oxide][element][0], 6)
+            final_comp["O"]["w"] = 1
+            final_comp["O"]["x"] = 2
+            final_comp["Si"]["x"] = 1
+            for element in final_comp:
+                if element != "O":
+                    final_comp["O"]["w"] -= final_comp[element]["w"]
+                    if element != "Si":
+                        final_comp["Si"]["x"] -= final_comp[element]["x"]
+            for element in final_comp:
+                final_comp[element]["w"] = round(final_comp[element]["w"], 6)
+                final_comp[element]["x"] = round(final_comp[element]["x"], 6)
+                w_total += final_comp[element]["w"]
+                x_total += final_comp[element]["x"]
+            #
+            if w_total == 1:
+                cond_w = True
+            if x_total == 3:
+                cond_x = True
+
+        #print("Final:", final_comp)
+        #print("Final:", round(w_total, 6), round(x_total, 6))
+        #
+        return final_comp

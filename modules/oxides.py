@@ -17,7 +17,7 @@ from modules.chemistry import PeriodicSystem, DataProcessing
 from modules.minerals import CrystalPhysics
 from modules.geophysics import BoreholeGeophysics as bg
 from modules.geophysics import WellLog as wg
-from modules.geochemistry import MineralChemistry
+from modules.geochemistry import MineralChemistry, TraceElements
 
 # OXIDES
 class Oxides():
@@ -38,30 +38,41 @@ class Oxides():
         traces_data = []
         if len(self.traces_list) > 0:
             self.impurity = "impure"
-        if self.impurity == "random":
-            self.traces_list = []
-            minors = ["H", "Al", "Li", "Fe", "Ti", "Na", "Mg", "Ge"]
-            n = rd.randint(1, len(minors))
+        if self.impurity == "pure":
+            pass
+        else:
+            if self.impurity == "random":
+                self.traces_list = []
+                minors = ["H", "Al", "Li", "Fe", "Ti", "Na", "Mg", "Ge", "Sn", "Ga", "As", "B", "Cu", "Ag", "K"]
+                n = rd.randint(1, len(minors))
+            elif self.impurity == "Ti":
+                self.traces_list = []
+                minors = ["Ti"]
+                n = 1
             while len(self.traces_list) < n:
                 selection = rd.choice(minors)
                 if selection not in self.traces_list and selection not in majors_name:
                     self.traces_list.append(selection)
                 else:
                     continue
-        traces = [PeriodicSystem(name=i).get_data() for i in self.traces_list]
-        x_traces = [round(rd.uniform(0., 0.001), 6) for i in range(len(self.traces_list))]
-        for i in range(len(self.traces_list)):
-            traces_data.append([str(self.traces_list[i]), int(traces[i][1]), float(x_traces[i])])
-        if len(traces_data) > 0:
-            traces_data = np.array(traces_data, dtype=object)
-            traces_data = traces_data[traces_data[:, 1].argsort()]
+            traces = [PeriodicSystem(name=i).get_data() for i in self.traces_list]
+            x_traces = [round(rd.uniform(0., 0.01), 6) for i in range(len(self.traces_list))]
+            for i in range(len(self.traces_list)):
+                traces_data.append([str(self.traces_list[i]), int(traces[i][1]), float(x_traces[i])])
+            if len(traces_data) > 0:
+                traces_data = np.array(traces_data, dtype=object)
+                traces_data = traces_data[traces_data[:, 1].argsort()]
         #
+        tracer_list = ["Al", "Na", "Li", "Ti", "Ga", "Mg"]
+        rd.shuffle(tracer_list)
+        compositon_data = TraceElements(tracer=tracer_list).calculate_composition_quartz()
+        print(compositon_data)
         mineral = "Qz"
         #
         # Molar mass
         molar_mass_pure = silicon[2] + 2*oxygen[2]
         molar_mass, amounts = MineralChemistry(w_traces=traces_data, molar_mass_pure=molar_mass_pure,
-                                      majors=majors_data).calculate_molar_mass()
+                                               majors=majors_data).calculate_molar_mass()
         element = [PeriodicSystem(name=amounts[i][0]).get_data() for i in range(len(amounts))]
         # Density
         dataV = CrystalPhysics([[4.9135, 5.4050], [], "trigonal"])

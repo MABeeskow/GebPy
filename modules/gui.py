@@ -182,14 +182,18 @@ class GebPyGUI(tk.Frame):
             Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                      color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
                      entr_w=self.entr_w)
-        elif var_opt == "Alkalifeldspar":
+        elif var_opt in ["Alkalifeldspar", "Plagioclase", "Scapolite"]:
             Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                      color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
                      entr_w=self.entr_w)
-        elif var_opt == "Plagioclase":
-            Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
-                     color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
-                     entr_w=self.entr_w)
+        # elif var_opt == "Alkalifeldspar":
+        #     Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
+        #              color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
+        #              entr_w=self.entr_w)
+        # elif var_opt == "Plagioclase":
+        #     Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
+        #              color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
+        #              entr_w=self.entr_w)
         # Rocks
         elif var_opt == "Sandstone":
             self.lbl_w, self.entr_w = Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
@@ -348,7 +352,7 @@ class GebPyGUI(tk.Frame):
             except:
                 pass
             var_opt_0_5 = tk.StringVar()
-            opt_list_0_5 = ["Alkalifeldspar", "Plagioclase"]
+            opt_list_0_5 = ["Alkalifeldspar", "Plagioclase", "Scapolite"]
             self.opt_afs = SE(parent=self.parent, row_id=10, column_id=0, n_rows=2, n_columns=2,
                               bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
                 var_opt=var_opt_0_5, var_opt_set="Select Tectosilicate", opt_list=opt_list_0_5,
@@ -590,6 +594,8 @@ class Minerals:
                 data = Tectosilicates(impurity="pure", data_type=True).create_alkalifeldspar()
             elif self.mineral == "Plagioclase":
                 data = Tectosilicates(impurity="pure", data_type=True).create_plagioclase()
+            elif self.mineral == "Scapolite":
+                data = Tectosilicates(impurity="pure", data_type=True).create_scapolite()
             self.color_mineral = "#7C9097"
             #
             data_all.append(data)
@@ -908,6 +914,8 @@ class Minerals:
                 data = Tectosilicates(impurity="pure", data_type=True).create_alkalifeldspar()
             elif self.mineral == "Plagioclase":
                 data = Tectosilicates(impurity="pure", data_type=True).create_plagioclase()
+            elif self.mineral == "Scapolite":
+                data = Tectosilicates(impurity="pure", data_type=True).create_scapolite()
             self.color_mineral = "#7C9097"
             #
             data_all.append(data)
