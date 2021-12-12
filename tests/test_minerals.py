@@ -105,7 +105,7 @@ class TESTING_MINERALS:
         print("Quartz (pure):\n", data)
         data = oxides.Oxides(impurity="random").create_quartz()
         print("Quartz (random):\n", data)
-        data = oxides.Oxides(impurity="Ti").create_quartz()
+        data = oxides.Oxides(impurity=["Ti"]).create_quartz()
         print("Quartz (Ti):\n", data)
         # Test Uraninite (incl. trace elements)
         data = oxides.Oxides(impurity="pure").create_uraninite()

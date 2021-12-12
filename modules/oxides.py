@@ -6,7 +6,7 @@
 # Name:		oxides.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		14.11.2021
+# Date:		12.12.2021
 
 # -----------------------------------------------
 
@@ -29,11 +29,9 @@ class Oxides():
         self.data_type = data_type
     #
     def create_quartz(self):
-        # Major elements
-        oxygen = PeriodicSystem(name="O").get_data()
-        silicon = PeriodicSystem(name="Si").get_data()
-        majors_name = ["O", "Si"]
-        majors_data = np.array([["O", oxygen[1], 2, oxygen[2]], ["Si", silicon[1], 1, silicon[2]]], dtype=object)
+        #
+        name = "Qz"
+        #
         # Minor elements
         traces_data = []
         if len(self.traces_list) > 0:
@@ -41,20 +39,50 @@ class Oxides():
         if self.impurity == "pure":
             pass
         else:
+            self.traces_list = []
+            minors_x = ["Ti", "Ge", "Sn"]               # mainly 4+
+            minors_y = ["Al", "Fe", "Ga", "As", "B"]    # mainly 3+
+            minors_z = ["H", "Li", "Na", "Ag", "K"]     # mainly 1+
+            minors_w = ["Mg", "Cu"]                     # mainly 2+
             if self.impurity == "random":
+                n_x = rd.randint(0, len(minors_x))
+                n_y = rd.randint(0, len(minors_y))
+                n_w = rd.randint(0, len(minors_w))
+                if n_x > 0:
+                    selection_x = rd.sample(minors_x, n_x)
+                    self.traces_list.extend(selection_x)
+                if n_y > 0 and n_w == 0:
+                    n_z = rd.randint(1, n_y)
+                    selection_y = rd.sample(minors_y, n_y)
+                    selection_z = rd.sample(minors_z, n_z)
+                    self.traces_list.extend(selection_y)
+                    self.traces_list.extend(selection_z)
+                if n_w > 0 and n_y == 0:
+                    n_z = rd.randint(1, n_w)
+                    selection_w = rd.sample(minors_w, n_w)
+                    selection_z = rd.sample(minors_z, n_z)
+                    self.traces_list.extend(selection_w)
+                    self.traces_list.extend(selection_z)
+                if n_y > 0 and n_w > 0:
+                    n_z = rd.randint(1, (n_y + n_w))
+                    selection_y = rd.sample(minors_y, n_y)
+                    selection_w = rd.sample(minors_w, n_w)
+                    selection_z = rd.sample(minors_z, n_z)
+                    self.traces_list.extend(selection_y)
+                    self.traces_list.extend(selection_w)
+                    self.traces_list.extend(selection_z)
+            elif self.impurity != "random":
                 self.traces_list = []
-                minors = ["H", "Al", "Li", "Fe", "Ti", "Na", "Mg", "Ge", "Sn", "Ga", "As", "B", "Cu", "Ag", "K"]
-                n = rd.randint(1, len(minors))
-            elif self.impurity == "Ti":
-                self.traces_list = []
-                minors = ["Ti"]
-                n = 1
-            while len(self.traces_list) < n:
-                selection = rd.choice(minors)
-                if selection not in self.traces_list and selection not in majors_name:
-                    self.traces_list.append(selection)
-                else:
-                    continue
+                for element in self.impurity:
+                    if element in minors_x:
+                        self.traces_list.append(element)
+                    elif element in minors_y:
+                        self.traces_list.append(element)
+                    elif element in minors_z:
+                        self.traces_list.append(element)
+                    elif element in minors_w:
+                        self.traces_list.append(element)
+            #
             traces = [PeriodicSystem(name=i).get_data() for i in self.traces_list]
             x_traces = [round(rd.uniform(0., 0.01), 6) for i in range(len(self.traces_list))]
             for i in range(len(self.traces_list)):
@@ -63,21 +91,22 @@ class Oxides():
                 traces_data = np.array(traces_data, dtype=object)
                 traces_data = traces_data[traces_data[:, 1].argsort()]
         #
-        tracer_list = ["Al", "Na", "Li", "Ti", "Ga", "Mg"]
-        rd.shuffle(tracer_list)
-        compositon_data = TraceElements(tracer=tracer_list).calculate_composition_quartz()
-        print(compositon_data)
-        mineral = "Qz"
+        compositon_data = TraceElements(tracer=self.traces_list).calculate_composition_quartz()
         #
         # Molar mass
-        molar_mass_pure = silicon[2] + 2*oxygen[2]
-        molar_mass, amounts = MineralChemistry(w_traces=traces_data, molar_mass_pure=molar_mass_pure,
-                                               majors=majors_data).calculate_molar_mass()
+        molar_mass = 0
+        amounts = []
+        for element in compositon_data:
+            chem_data = PeriodicSystem(name=element).get_data()
+            molar_mass += compositon_data[element]["x"]*chem_data[2]
+            amounts.append([chem_data[0], chem_data[1], compositon_data[element]["w"]])
         element = [PeriodicSystem(name=amounts[i][0]).get_data() for i in range(len(amounts))]
         # Density
         dataV = CrystalPhysics([[4.9135, 5.4050], [], "trigonal"])
         V = dataV.calculate_volume()
-        dataRho = CrystalPhysics([molar_mass, 3, V])
+        Z = 3
+        V_m = MineralChemistry().calculate_molar_volume(volume_cell=V, z=Z)
+        dataRho = CrystalPhysics([molar_mass, Z, V])
         rho = dataRho.calculate_bulk_density()
         rho_e = wg(amounts=amounts, elements=element, rho_b=rho).calculate_electron_density()
         # Bulk modulus
@@ -104,7 +133,7 @@ class Oxides():
         #
         if self.data_type == False:
             data = []
-            data.append(mineral)
+            data.append(name)
             data.append(round(molar_mass, 3))
             data.append(round(rho, 2))
             data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 4)])
@@ -116,7 +145,7 @@ class Oxides():
         else:
             #
             results = {}
-            results["mineral"] = mineral
+            results["mineral"] = name
             results["M"] = molar_mass
             element_list = np.array(amounts)[:, 0]
             results["chemistry"] = {}
@@ -124,7 +153,7 @@ class Oxides():
                 results["chemistry"][element] = amounts[index][2]
             results["rho"] = round(rho, 4)
             results["rho_e"] = round(rho_e, 4)
-            results["V"] = round(V, 4)
+            results["V"] = round(V_m, 4)
             results["vP"] = round(vP, 4)
             results["vS"] = round(vS, 4)
             results["vP/vS"] = round(vPvS, 4)
@@ -176,12 +205,14 @@ class Oxides():
         # Molar mass
         molar_mass_pure = uranium[2] + 2*oxygen[2]
         molar_mass, amounts = MineralChemistry(w_traces=traces_data, molar_mass_pure=molar_mass_pure,
-                                      majors=majors_data).calculate_molar_mass()
+                                               majors=majors_data).calculate_molar_mass()
         element = [PeriodicSystem(name=amounts[i][0]).get_data() for i in range(len(amounts))]
         # Density
         dataV = CrystalPhysics([[5.4682], [], "cubic"])
         V = dataV.calculate_volume()
-        dataRho = CrystalPhysics([molar_mass, 4, V])
+        Z = 4
+        V_m = MineralChemistry().calculate_molar_volume(volume_cell=V, z=Z)
+        dataRho = CrystalPhysics([molar_mass, Z, V])
         rho = dataRho.calculate_bulk_density()
         rho_e = wg(amounts=amounts, elements=element, rho_b=rho).calculate_electron_density()
         # Bulk modulus
@@ -227,7 +258,7 @@ class Oxides():
                 results["chemistry"][element] = amounts[index][2]
             results["rho"] = round(rho, 4)
             results["rho_e"] = round(rho_e, 4)
-            results["V"] = round(V, 4)
+            results["V"] = round(V_m, 4)
             results["vP"] = round(vP, 4)
             results["vS"] = round(vS, 4)
             results["vP/vS"] = round(vPvS, 4)
@@ -298,7 +329,9 @@ class Oxides():
         # Density
         dataV = CrystalPhysics([[8.396], [], "cubic"])
         V = dataV.calculate_volume()
-        dataRho = CrystalPhysics([molar_mass, 8, V])
+        Z = 8
+        V_m = MineralChemistry().calculate_molar_volume(volume_cell=V, z=Z)
+        dataRho = CrystalPhysics([molar_mass, Z, V])
         rho = dataRho.calculate_bulk_density()
         rho_e = wg(amounts=amounts, elements=element, rho_b=rho).calculate_electron_density()
         #
@@ -326,7 +359,7 @@ class Oxides():
         #
         results["rho"] = round(rho, 4)
         results["rho_e"] = round(rho_e, 4)
-        results["V"] = round(V, 4)
+        results["V"] = round(V_m, 4)
         results["vP"] = round(vP, 4)
         results["vS"] = round(vS, 4)
         results["vP/vS"] = round(vPvS, 4)
@@ -404,7 +437,9 @@ class Oxides():
         # Density
         dataV = CrystalPhysics([[5.038, 13.772], [], "trigonal"])
         V = dataV.calculate_volume()
-        dataRho = CrystalPhysics([molar_mass, 6, V])
+        Z = 6
+        V_m = MineralChemistry().calculate_molar_volume(volume_cell=V, z=Z)
+        dataRho = CrystalPhysics([molar_mass, Z, V])
         rho = dataRho.calculate_bulk_density()
         rho_e = wg(amounts=amounts, elements=element, rho_b=rho).calculate_electron_density()
         # Bulk modulus
@@ -431,7 +466,7 @@ class Oxides():
         #
         results["rho"] = round(rho, 4)
         results["rho_e"] = round(rho_e, 4)
-        results["V"] = round(V, 4)
+        results["V"] = round(V_m, 4)
         results["vP"] = round(vP, 4)
         results["vS"] = round(vS, 4)
         results["vP/vS"] = round(vPvS, 4)
@@ -496,7 +531,9 @@ class Oxides():
         # Density
         dataV = CrystalPhysics([[4.75, 12.982], [], "trigonal"])
         V = dataV.calculate_volume()
-        dataRho = CrystalPhysics([molar_mass, 6, V])
+        Z = 6
+        V_m = MineralChemistry().calculate_molar_volume(volume_cell=V, z=Z)
+        dataRho = CrystalPhysics([molar_mass, Z, V])
         rho = dataRho.calculate_bulk_density()
         rho_e = wg(amounts=amounts, elements=element, rho_b=rho).calculate_electron_density()
         # Bulk modulus
@@ -538,7 +575,7 @@ class Oxides():
             results["M"] = molar_mass
             results["rho"] = round(rho, 4)
             results["rho_e"] = round(rho_e, 4)
-            results["V"] = round(V, 4)
+            results["V"] = round(V_m, 4)
             results["vP"] = round(vP, 4)
             results["vS"] = round(vS, 4)
             results["vP/vS"] = round(vPvS, 4)
@@ -600,7 +637,9 @@ class Oxides():
         # Density
         dataV = CrystalPhysics([[4.296], [], "cubic"])
         V = dataV.calculate_volume()
-        dataRho = CrystalPhysics([molar_mass, 4, V])
+        Z = 4
+        V_m = MineralChemistry().calculate_molar_volume(volume_cell=V, z=Z)
+        dataRho = CrystalPhysics([molar_mass, Z, V])
         rho = dataRho.calculate_bulk_density()
         rho_e = wg(amounts=amounts, elements=element, rho_b=rho).calculate_electron_density()
         # Bulk modulus
@@ -676,7 +715,9 @@ class Oxides():
         # Density
         dataV = CrystalPhysics([[8.344], [], "cubic"])
         V = dataV.calculate_volume()
-        dataRho = CrystalPhysics([molar_mass, 8, V])
+        Z = 8
+        V_m = MineralChemistry().calculate_molar_volume(volume_cell=V, z=Z)
+        dataRho = CrystalPhysics([molar_mass, Z, V])
         rho = dataRho.calculate_bulk_density()
         rho_e = wg(amounts=amounts, elements=element, rho_b=rho).calculate_electron_density()
         # Bulk modulus
@@ -718,7 +759,7 @@ class Oxides():
             results["M"] = molar_mass
             results["rho"] = round(rho, 4)
             results["rho_e"] = round(rho_e, 4)
-            results["V"] = round(V, 4)
+            results["V"] = round(V_m, 4)
             results["vP"] = round(vP, 4)
             results["vS"] = round(vS, 4)
             results["vP/vS"] = round(vPvS, 4)
@@ -782,7 +823,9 @@ class Oxides():
         # Density
         dataV = CrystalPhysics([[8.0898], [], "cubic"])
         V = dataV.calculate_volume()
-        dataRho = CrystalPhysics([molar_mass, 8, V])
+        Z = 8
+        V_m = MineralChemistry().calculate_molar_volume(volume_cell=V, z=Z)
+        dataRho = CrystalPhysics([molar_mass, Z, V])
         rho = dataRho.calculate_bulk_density()
         rho_e = wg(amounts=amounts, elements=element, rho_b=rho).calculate_electron_density()
         # Bulk modulus
@@ -859,7 +902,9 @@ class Oxides():
         # Density
         dataV = CrystalPhysics([[2.868, 12.227, 3.7], [], "orthorhombic"])
         V = dataV.calculate_volume()
-        dataRho = CrystalPhysics([molar_mass, 4, V])
+        Z = 4
+        V_m = MineralChemistry().calculate_molar_volume(volume_cell=V, z=Z)
+        dataRho = CrystalPhysics([molar_mass, Z, V])
         rho = dataRho.calculate_bulk_density()
         rho_e = wg(amounts=amounts, elements=element, rho_b=rho).calculate_electron_density()
         # Bulk modulus
@@ -936,7 +981,9 @@ class Oxides():
         # Density
         dataV = CrystalPhysics([[4.397, 9.421, 2.8439], [], "orthorhombic"])
         V = dataV.calculate_volume()
-        dataRho = CrystalPhysics([molar_mass, 4, V])
+        Z = 4
+        V_m = MineralChemistry().calculate_molar_volume(volume_cell=V, z=Z)
+        dataRho = CrystalPhysics([molar_mass, Z, V])
         rho = dataRho.calculate_bulk_density()
         rho_e = wg(amounts=amounts, elements=element, rho_b=rho).calculate_electron_density()
         # Bulk modulus
@@ -1013,7 +1060,9 @@ class Oxides():
         # Density
         dataV = CrystalPhysics([[8.641, 5.07, 9.719], [94.566], "monoclinic"])
         V = dataV.calculate_volume()
-        dataRho = CrystalPhysics([molar_mass, 8, V])
+        Z = 8
+        V_m = MineralChemistry().calculate_molar_volume(volume_cell=V, z=Z)
+        dataRho = CrystalPhysics([molar_mass, Z, V])
         rho = dataRho.calculate_bulk_density()
         rho_e = wg(amounts=amounts, elements=element, rho_b=rho).calculate_electron_density()
         # Bulk modulus
@@ -1088,7 +1137,9 @@ class Oxides():
         # Density
         dataV = CrystalPhysics([[4.2696], [], "cubic"])
         V = dataV.calculate_volume()
-        dataRho = CrystalPhysics([molar_mass, 2, V])
+        Z = 2
+        V_m = MineralChemistry().calculate_molar_volume(volume_cell=V, z=Z)
+        dataRho = CrystalPhysics([molar_mass, Z, V])
         rho = dataRho.calculate_bulk_density()
         rho_e = wg(amounts=amounts, elements=element, rho_b=rho).calculate_electron_density()
         # Bulk modulus
@@ -1165,7 +1216,9 @@ class Oxides():
         # Density
         dataV = CrystalPhysics([[4.596, 9.957, 3.021], [], "orthorhombic"])
         V = dataV.calculate_volume()
-        dataRho = CrystalPhysics([molar_mass, 4, V])
+        Z = 4
+        V_m = MineralChemistry().calculate_molar_volume(volume_cell=V, z=Z)
+        dataRho = CrystalPhysics([molar_mass, Z, V])
         rho = dataRho.calculate_bulk_density()
         rho_e = wg(amounts=amounts, elements=element, rho_b=rho).calculate_electron_density()
         # Bulk modulus
@@ -1241,7 +1294,9 @@ class Oxides():
         # Density
         dataV = CrystalPhysics([[5.093, 14.06], [], "trigonal"])
         V = dataV.calculate_volume()
-        dataRho = CrystalPhysics([molar_mass, 6, V])
+        Z = 6
+        V_m = MineralChemistry().calculate_molar_volume(volume_cell=V, z=Z)
+        dataRho = CrystalPhysics([molar_mass, Z, V])
         rho = dataRho.calculate_bulk_density()
         rho_e = wg(amounts=amounts, elements=element, rho_b=rho).calculate_electron_density()
         # Bulk modulus
@@ -1283,7 +1338,7 @@ class Oxides():
             results["M"] = molar_mass
             results["rho"] = round(rho, 4)
             results["rho_e"] = round(rho_e, 4)
-            results["V"] = round(V, 4)
+            results["V"] = round(V_m, 4)
             results["vP"] = round(vP, 4)
             results["vS"] = round(vS, 4)
             results["vP/vS"] = round(vPvS, 4)
@@ -1344,7 +1399,9 @@ class Oxides():
         # Density
         dataV = CrystalPhysics([[4.594, 2.958], [], "tetragonal"])
         V = dataV.calculate_volume()
-        dataRho = CrystalPhysics([molar_mass, 2, V])
+        Z = 2
+        V_m = MineralChemistry().calculate_molar_volume(volume_cell=V, z=Z)
+        dataRho = CrystalPhysics([molar_mass, Z, V])
         rho = dataRho.calculate_bulk_density()
         rho_e = wg(amounts=amounts, elements=element, rho_b=rho).calculate_electron_density()
         # Bulk modulus
@@ -1386,7 +1443,7 @@ class Oxides():
             results["M"] = molar_mass
             results["rho"] = round(rho, 4)
             results["rho_e"] = round(rho_e, 4)
-            results["V"] = round(V, 4)
+            results["V"] = round(V_m, 4)
             results["vP"] = round(vP, 4)
             results["vS"] = round(vS, 4)
             results["vP/vS"] = round(vPvS, 4)
@@ -1448,7 +1505,9 @@ class Oxides():
         # Density
         dataV = CrystalPhysics([[5.456, 9.182, 5.143], [], "orthorhombic"])
         V = dataV.calculate_volume()
-        dataRho = CrystalPhysics([molar_mass, 8, V])
+        Z = 8
+        V_m = MineralChemistry().calculate_molar_volume(volume_cell=V, z=Z)
+        dataRho = CrystalPhysics([molar_mass, Z, V])
         rho = dataRho.calculate_bulk_density()
         rho_e = wg(amounts=amounts, elements=element, rho_b=rho).calculate_electron_density()
         # Bulk modulus
@@ -1523,7 +1582,9 @@ class Oxides():
         # Density
         dataV = CrystalPhysics([[3.793, 9.51], [], "tetragonal"])
         V = dataV.calculate_volume()
-        dataRho = CrystalPhysics([molar_mass, 4, V])
+        Z = 4
+        V_m = MineralChemistry().calculate_molar_volume(volume_cell=V, z=Z)
+        dataRho = CrystalPhysics([molar_mass, Z, V])
         rho = dataRho.calculate_bulk_density()
         rho_e = wg(amounts=amounts, elements=element, rho_b=rho).calculate_electron_density()
         # Bulk modulus
@@ -1600,7 +1661,9 @@ class Oxides():
         # Density
         dataV = CrystalPhysics([[8.94, 5.28, 5.74], [90], "monoclinic"])
         V = dataV.calculate_volume()
-        dataRho = CrystalPhysics([molar_mass, 8, V])
+        Z = 8
+        V_m = MineralChemistry().calculate_molar_volume(volume_cell=V, z=Z)
+        dataRho = CrystalPhysics([molar_mass, Z, V])
         rho = dataRho.calculate_bulk_density()
         rho_e = wg(amounts=amounts, elements=element, rho_b=rho).calculate_electron_density()
         # Bulk modulus
@@ -1677,7 +1740,9 @@ class Oxides():
         # Density
         dataV = CrystalPhysics([[4.56, 10.7, 2.85], [], "orthorhombic"])
         V = dataV.calculate_volume()
-        dataRho = CrystalPhysics([molar_mass, 4, V])
+        Z = 4
+        V_m = MineralChemistry().calculate_molar_volume(volume_cell=V, z=Z)
+        dataRho = CrystalPhysics([molar_mass, Z, V])
         rho = dataRho.calculate_bulk_density()
         rho_e = wg(amounts=amounts, elements=element, rho_b=rho).calculate_electron_density()
         # Bulk modulus
@@ -1754,7 +1819,9 @@ class Oxides():
         # Density
         dataV = CrystalPhysics([[5.137, 14.29], [], "trigonal"])
         V = dataV.calculate_volume()
-        dataRho = CrystalPhysics([molar_mass, 6, V])
+        Z = 6
+        V_m = MineralChemistry().calculate_molar_volume(volume_cell=V, z=Z)
+        dataRho = CrystalPhysics([molar_mass, Z, V])
         rho = dataRho.calculate_bulk_density()
         rho_e = wg(amounts=amounts, elements=element, rho_b=rho).calculate_electron_density()
         # Bulk modulus
@@ -1831,7 +1898,9 @@ class Oxides():
         # Density
         dataV = CrystalPhysics([[5.086, 14.093], [], "trigonal"])
         V = dataV.calculate_volume()
-        dataRho = CrystalPhysics([molar_mass, 6, V])
+        Z = 6
+        V_m = MineralChemistry().calculate_molar_volume(volume_cell=V, z=Z)
+        dataRho = CrystalPhysics([molar_mass, Z, V])
         rho = dataRho.calculate_bulk_density()
         rho_e = wg(amounts=amounts, elements=element, rho_b=rho).calculate_electron_density()
         # Bulk modulus
@@ -1906,7 +1975,9 @@ class Oxides():
         # Density
         dataV = CrystalPhysics([[4.958, 13.6], [], "trigonal"])
         V = dataV.calculate_volume()
-        dataRho = CrystalPhysics([molar_mass, 6, V])
+        Z = 6
+        V_m = MineralChemistry().calculate_molar_volume(volume_cell=V, z=Z)
+        dataRho = CrystalPhysics([molar_mass, Z, V])
         rho = dataRho.calculate_bulk_density()
         rho_e = wg(amounts=amounts, elements=element, rho_b=rho).calculate_electron_density()
         # Bulk modulus
@@ -1981,7 +2052,9 @@ class Oxides():
         # Density
         dataV = CrystalPhysics([[4.99, 13.98], [], "trigonal"])
         V = dataV.calculate_volume()
-        dataRho = CrystalPhysics([molar_mass, 6, V])
+        Z = 6
+        V_m = MineralChemistry().calculate_molar_volume(volume_cell=V, z=Z)
+        dataRho = CrystalPhysics([molar_mass, Z, V])
         rho = dataRho.calculate_bulk_density()
         rho_e = wg(amounts=amounts, elements=element, rho_b=rho).calculate_electron_density()
         # Bulk modulus
@@ -2056,7 +2129,9 @@ class Oxides():
         # Density
         dataV = CrystalPhysics([[5.339, 12.984, 4.5405], [94.26], "monoclinic"])
         V = dataV.calculate_volume()
-        dataRho = CrystalPhysics([molar_mass, 4, V])
+        Z = 4
+        V_m = MineralChemistry().calculate_molar_volume(volume_cell=V, z=Z)
+        dataRho = CrystalPhysics([molar_mass, Z, V])
         rho = dataRho.calculate_bulk_density()
         rho_e = wg(amounts=amounts, elements=element, rho_b=rho).calculate_electron_density()
         # Bulk modulus
@@ -2131,7 +2206,9 @@ class Oxides():
         # Density
         dataV = CrystalPhysics([[11.0457], [], "cubic"])
         V = dataV.calculate_volume()
-        dataRho = CrystalPhysics([molar_mass, 16, V])
+        Z = 16
+        V_m = MineralChemistry().calculate_molar_volume(volume_cell=V, z=Z)
+        dataRho = CrystalPhysics([molar_mass, Z, V])
         rho = dataRho.calculate_bulk_density()
         rho_e = wg(amounts=amounts, elements=element, rho_b=rho).calculate_electron_density()
         # Bulk modulus
@@ -2206,7 +2283,9 @@ class Oxides():
         # Density
         dataV = CrystalPhysics([[11.14], [], "cubic"])
         V = dataV.calculate_volume()
-        dataRho = CrystalPhysics([molar_mass, 16, V])
+        Z = 16
+        V_m = MineralChemistry().calculate_molar_volume(volume_cell=V, z=Z)
+        dataRho = CrystalPhysics([molar_mass, Z, V])
         rho = dataRho.calculate_bulk_density()
         rho_e = wg(amounts=amounts, elements=element, rho_b=rho).calculate_electron_density()
         # Bulk modulus
@@ -2281,7 +2360,9 @@ class Oxides():
         # Density
         dataV = CrystalPhysics([[4.92, 12.46, 5.42], [], "orthorhombic"])
         V = dataV.calculate_volume()
-        dataRho = CrystalPhysics([molar_mass, 4, V])
+        Z = 4
+        V_m = MineralChemistry().calculate_molar_volume(volume_cell=V, z=Z)
+        dataRho = CrystalPhysics([molar_mass, Z, V])
         rho = dataRho.calculate_bulk_density()
         rho_e = wg(amounts=amounts, elements=element, rho_b=rho).calculate_electron_density()
         # Bulk modulus
@@ -2356,7 +2437,9 @@ class Oxides():
         # Density
         dataV = CrystalPhysics([[5.83, 8.14, 7.48], [67.066], "monoclinic"])
         V = dataV.calculate_volume()
-        dataRho = CrystalPhysics([molar_mass, 4, V])
+        Z = 4
+        V_m = MineralChemistry().calculate_molar_volume(volume_cell=V, z=Z)
+        dataRho = CrystalPhysics([molar_mass, Z, V])
         rho = dataRho.calculate_bulk_density()
         rho_e = wg(amounts=amounts, elements=element, rho_b=rho).calculate_electron_density()
         # Bulk modulus
@@ -2431,7 +2514,9 @@ class Oxides():
         # Density
         dataV = CrystalPhysics([[8.08, 6.46], [], "tetragonal"])
         V = dataV.calculate_volume()
-        dataRho = CrystalPhysics([molar_mass, 4, V])
+        Z = 4
+        V_m = MineralChemistry().calculate_molar_volume(volume_cell=V, z=Z)
+        dataRho = CrystalPhysics([molar_mass, Z, V])
         rho = dataRho.calculate_bulk_density()
         rho_e = wg(amounts=amounts, elements=element, rho_b=rho).calculate_electron_density()
         # Bulk modulus
@@ -2506,7 +2591,9 @@ class Oxides():
         # Density
         dataV = CrystalPhysics([[4.738, 3.118], [], "tetragonal"])
         V = dataV.calculate_volume()
-        dataRho = CrystalPhysics([molar_mass, 2, V])
+        Z = 2
+        V_m = MineralChemistry().calculate_molar_volume(volume_cell=V, z=Z)
+        dataRho = CrystalPhysics([molar_mass, Z, V])
         rho = dataRho.calculate_bulk_density()
         rho_e = wg(amounts=amounts, elements=element, rho_b=rho).calculate_electron_density()
         # Bulk modulus
@@ -2580,7 +2667,9 @@ class Oxides():
         # Density
         dataV = CrystalPhysics([[4.39, 2.86], [], "tetragonal"])
         V = dataV.calculate_volume()
-        dataRho = CrystalPhysics([molar_mass, 2, V])
+        Z = 2
+        V_m = MineralChemistry().calculate_molar_volume(volume_cell=V, z=Z)
+        dataRho = CrystalPhysics([molar_mass, Z, V])
         rho = dataRho.calculate_bulk_density()
         rho_e = wg(amounts=amounts, elements=element, rho_b=rho).calculate_electron_density()
         # Bulk modulus
@@ -2622,7 +2711,7 @@ class Oxides():
             results["M"] = molar_mass
             results["rho"] = round(rho, 4)
             results["rho_e"] = round(rho_e, 4)
-            results["V"] = round(V, 4)
+            results["V"] = round(V_m, 4)
             results["vP"] = round(vP, 4)
             results["vS"] = round(vS, 4)
             results["vP/vS"] = round(vPvS, 4)
@@ -2686,7 +2775,9 @@ class Oxides():
         # Density
         dataV = CrystalPhysics([[3.147, 4.769], [], "trigonal"])
         V = dataV.calculate_volume()
-        dataRho = CrystalPhysics([molar_mass, 1, V])
+        Z = 1
+        V_m = MineralChemistry().calculate_molar_volume(volume_cell=V, z=Z)
+        dataRho = CrystalPhysics([molar_mass, Z, V])
         rho = dataRho.calculate_bulk_density()
         rho_e = wg(amounts=amounts, elements=element, rho_b=rho).calculate_electron_density()
         # Bulk modulus
@@ -2763,7 +2854,9 @@ class Oxides():
         # Density
         dataV = CrystalPhysics([[8.4596], [], "cubic"])
         V = dataV.calculate_volume()
-        dataRho = CrystalPhysics([molar_mass, 8, V])
+        Z = 8
+        V_m = MineralChemistry().calculate_molar_volume(volume_cell=V, z=Z)
+        dataRho = CrystalPhysics([molar_mass, Z, V])
         rho = dataRho.calculate_bulk_density()
         rho_e = wg(amounts=amounts, elements=element, rho_b=rho).calculate_electron_density()
         # Bulk modulus
@@ -2848,26 +2941,35 @@ class Oxides():
         # Density
         dataV_spi = CrystalPhysics([[8.08], [], "cubic"])
         V_spi = dataV_spi.calculate_volume()
-        dataRho_spi = CrystalPhysics([molar_mass, 8, V_spi])
+        Z_spi = 8
+        V_m_spi = MineralChemistry().calculate_molar_volume(volume_cell=V_spi, z=Z_spi)
+        dataRho_spi = CrystalPhysics([molar_mass, Z_spi, V_spi])
         rho_spi = dataRho_spi.calculate_bulk_density()
         rho_e_spi = wg(amounts=amounts, elements=element, rho_b=rho_spi).calculate_electron_density()
         dataV_hc = CrystalPhysics([[8.136], [], "cubic"])
         V_hc = dataV_hc.calculate_volume()
-        dataRho_hc = CrystalPhysics([molar_mass, 8, V_hc])
+        Z_hc = 8
+        V_m_hc = MineralChemistry().calculate_molar_volume(volume_cell=V_hc, z=Z_hc)
+        dataRho_hc = CrystalPhysics([molar_mass, Z_hc, V_hc])
         rho_hc = dataRho_hc.calculate_bulk_density()
         rho_e_hc = wg(amounts=amounts, elements=element, rho_b=rho_hc).calculate_electron_density()
         dataV_glx = CrystalPhysics([[8.29], [], "cubic"])
         V_glx = dataV_glx.calculate_volume()
-        dataRho_glx = CrystalPhysics([molar_mass, 8, V_glx])
+        Z_glx = 8
+        V_m_glx = MineralChemistry().calculate_molar_volume(volume_cell=V_glx, z=Z_glx)
+        dataRho_glx = CrystalPhysics([molar_mass, Z_glx, V_glx])
         rho_glx = dataRho_glx.calculate_bulk_density()
         rho_e_glx = wg(amounts=amounts, elements=element, rho_b=rho_glx).calculate_electron_density()
         dataV_ghn = CrystalPhysics([[8.062], [], "cubic"])
         V_ghn = dataV_ghn.calculate_volume()
-        dataRho_ghn = CrystalPhysics([molar_mass, 8, V_ghn])
+        Z_ghn = 8
+        V_m_ghn = MineralChemistry().calculate_molar_volume(volume_cell=V_ghn, z=Z_ghn)
+        dataRho_ghn = CrystalPhysics([molar_mass, Z_ghn, V_ghn])
         rho_ghn = dataRho_ghn.calculate_bulk_density()
         rho_e_ghn = wg(amounts=amounts, elements=element, rho_b=rho_ghn).calculate_electron_density()
         #
         V = w_a*V_spi + w_b*V_hc + w_c*V_ghn + w_d*V_glx
+        V_m = w_a*V_m_spi + w_b*V_m_hc + w_c*V_m_ghn + w_d*V_m_glx
         rho = w_a*rho_spi + w_b*rho_hc + w_c*rho_ghn + w_d*rho_glx
         rho_e = w_a*rho_e_spi + w_b*rho_e_hc + w_c*rho_e_ghn + w_d*rho_e_glx
         #
@@ -2923,7 +3025,7 @@ class Oxides():
                 results["chemistry"][element] = amounts[index][2]
             results["rho"] = round(rho, 4)
             results["rho_e"] = round(rho_e, 4)
-            results["V"] = round(V, 4)
+            results["V"] = round(V_m, 4)
             results["vP"] = round(vP, 4)
             results["vS"] = round(vS, 4)
             results["vP/vS"] = round(vPvS, 4)
@@ -2989,21 +3091,28 @@ class Oxides():
         # Density
         dataV_Chr = CrystalPhysics([[8.344], [], "cubic"])
         V_Chr = dataV_Chr.calculate_volume()
-        dataRho_Chr = CrystalPhysics([molar_mass, 8, V_Chr])
+        Z_Chr = 8
+        V_m_Chr = MineralChemistry().calculate_molar_volume(volume_cell=V_Chr, z=Z_Chr)
+        dataRho_Chr = CrystalPhysics([molar_mass, Z_Chr, V_Chr])
         rho_Chr = dataRho_Chr.calculate_bulk_density()
         rho_e_Chr = wg(amounts=amounts, elements=element, rho_b=rho_Chr).calculate_electron_density()
         dataV_MgChr = CrystalPhysics([[8.277], [], "cubic"])
         V_MgChr = dataV_MgChr.calculate_volume()
-        dataRho_MgChr = CrystalPhysics([molar_mass, 8, V_MgChr])
+        Z_MgChr = 8
+        V_m_MgChr = MineralChemistry().calculate_molar_volume(volume_cell=V_MgChr, z=Z_MgChr)
+        dataRho_MgChr = CrystalPhysics([molar_mass, Z_MgChr, V_MgChr])
         rho_MgChr = dataRho_MgChr.calculate_bulk_density()
         rho_e_MgChr = wg(amounts=amounts, elements=element, rho_b=rho_MgChr).calculate_electron_density()
         dataV_ZnChr = CrystalPhysics([[8.352], [], "cubic"])
         V_ZnChr = dataV_ZnChr.calculate_volume()
-        dataRho_ZnChr = CrystalPhysics([molar_mass, 8, V_ZnChr])
+        Z_ZnChr = 8
+        V_m_ZnChr = MineralChemistry().calculate_molar_volume(volume_cell=V_ZnChr, z=Z_ZnChr)
+        dataRho_ZnChr = CrystalPhysics([molar_mass, Z_ZnChr, V_ZnChr])
         rho_ZnChr = dataRho_ZnChr.calculate_bulk_density()
         rho_e_ZnChr = wg(amounts=amounts, elements=element, rho_b=rho_ZnChr).calculate_electron_density()
         #
         V = w_a*V_Chr + w_b*V_MgChr + w_c*V_ZnChr
+        V_m = w_a*V_m_Chr + w_b*V_m_MgChr + w_c*V_m_ZnChr
         rho = w_a*rho_Chr + w_b*rho_MgChr + w_c*rho_ZnChr
         rho_e = w_a*rho_e_Chr + w_b*rho_e_MgChr + w_c*rho_e_ZnChr
         #
@@ -3056,7 +3165,7 @@ class Oxides():
                 results["chemistry"][element] = amounts[index][2]
             results["rho"] = round(rho, 4)
             results["rho_e"] = round(rho_e, 4)
-            results["V"] = round(V, 4)
+            results["V"] = round(V_m, 4)
             results["vP"] = round(vP, 4)
             results["vS"] = round(vS, 4)
             results["vP/vS"] = round(vPvS, 4)
@@ -3113,7 +3222,9 @@ class Oxides():
         # Density
         dataV = CrystalPhysics([[4.738, 3.118], [], "tetragonal"])
         V = dataV.calculate_volume()
-        dataRho = CrystalPhysics([molar_mass, 2, V])
+        Z = 2
+        V_m = MineralChemistry().calculate_molar_volume(volume_cell=V, z=Z)
+        dataRho = CrystalPhysics([molar_mass, Z, V])
         rho = dataRho.calculate_bulk_density()
         rho_e = wg(amounts=amounts, elements=element, rho_b=rho).calculate_electron_density()
         # Bulk modulus
@@ -3155,7 +3266,7 @@ class Oxides():
             results["M"] = molar_mass
             results["rho"] = round(rho, 4)
             results["rho_e"] = round(rho_e, 4)
-            results["V"] = round(V, 4)
+            results["V"] = round(V_m, 4)
             results["vP"] = round(vP, 4)
             results["vS"] = round(vS, 4)
             results["vP/vS"] = round(vPvS, 4)
@@ -3218,7 +3329,9 @@ class Oxides():
         # Density
         dataV = CrystalPhysics([[8.277], [], "cubic"])
         V = dataV.calculate_volume()
-        dataRho = CrystalPhysics([molar_mass, 8, V])
+        Z = 8
+        V_m = MineralChemistry().calculate_molar_volume(volume_cell=V, z=Z)
+        dataRho = CrystalPhysics([molar_mass, Z, V])
         rho = dataRho.calculate_bulk_density()
         rho_e = wg(amounts=amounts, elements=element, rho_b=rho).calculate_electron_density()
         # Bulk modulus
@@ -3260,7 +3373,7 @@ class Oxides():
             results["M"] = molar_mass
             results["rho"] = round(rho, 4)
             results["rho_e"] = round(rho_e, 4)
-            results["V"] = round(V, 4)
+            results["V"] = round(V_m, 4)
             results["vP"] = round(vP, 4)
             results["vS"] = round(vS, 4)
             results["vP/vS"] = round(vPvS, 4)
@@ -3323,7 +3436,9 @@ class Oxides():
         # Density
         dataV = CrystalPhysics([[8.352], [], "cubic"])
         V = dataV.calculate_volume()
-        dataRho = CrystalPhysics([molar_mass, 8, V])
+        Z = 8
+        V_m = MineralChemistry().calculate_molar_volume(volume_cell=V, z=Z)
+        dataRho = CrystalPhysics([molar_mass, Z, V])
         rho = dataRho.calculate_bulk_density()
         rho_e = wg(amounts=amounts, elements=element, rho_b=rho).calculate_electron_density()
         # Bulk modulus
@@ -3365,7 +3480,7 @@ class Oxides():
             results["M"] = molar_mass
             results["rho"] = round(rho, 4)
             results["rho_e"] = round(rho_e, 4)
-            results["V"] = round(V, 4)
+            results["V"] = round(V_m, 4)
             results["vP"] = round(vP, 4)
             results["vS"] = round(vS, 4)
             results["vP/vS"] = round(vPvS, 4)
@@ -3428,7 +3543,9 @@ class Oxides():
         # Density
         dataV = CrystalPhysics([[8.369], [], "cubic"])
         V = dataV.calculate_volume()
-        dataRho = CrystalPhysics([molar_mass, 8, V])
+        Z = 8
+        V_m = MineralChemistry().calculate_molar_volume(volume_cell=V, z=Z)
+        dataRho = CrystalPhysics([molar_mass, Z, V])
         rho = dataRho.calculate_bulk_density()
         rho_e = wg(amounts=amounts, elements=element, rho_b=rho).calculate_electron_density()
         # Bulk modulus
@@ -3470,7 +3587,7 @@ class Oxides():
             results["M"] = molar_mass
             results["rho"] = round(rho, 4)
             results["rho_e"] = round(rho_e, 4)
-            results["V"] = round(V, 4)
+            results["V"] = round(V_m, 4)
             results["vP"] = round(vP, 4)
             results["vS"] = round(vS, 4)
             results["vP/vS"] = round(vPvS, 4)
@@ -3533,7 +3650,9 @@ class Oxides():
         # Density
         dataV = CrystalPhysics([[8.499], [], "cubic"])
         V = dataV.calculate_volume()
-        dataRho = CrystalPhysics([molar_mass, 8, V])
+        Z = 8
+        V_m = MineralChemistry().calculate_molar_volume(volume_cell=V, z=Z)
+        dataRho = CrystalPhysics([molar_mass, Z, V])
         rho = dataRho.calculate_bulk_density()
         rho_e = wg(amounts=amounts, elements=element, rho_b=rho).calculate_electron_density()
         # Bulk modulus
@@ -3575,7 +3694,7 @@ class Oxides():
             results["M"] = molar_mass
             results["rho"] = round(rho, 4)
             results["rho_e"] = round(rho_e, 4)
-            results["V"] = round(V, 4)
+            results["V"] = round(V_m, 4)
             results["vP"] = round(vP, 4)
             results["vS"] = round(vS, 4)
             results["vP/vS"] = round(vPvS, 4)
@@ -3638,7 +3757,9 @@ class Oxides():
         # Density
         dataV = CrystalPhysics([[8.366], [], "cubic"])
         V = dataV.calculate_volume()
-        dataRho = CrystalPhysics([molar_mass, 8, V])
+        Z = 8
+        V_m = MineralChemistry().calculate_molar_volume(volume_cell=V, z=Z)
+        dataRho = CrystalPhysics([molar_mass, Z, V])
         rho = dataRho.calculate_bulk_density()
         rho_e = wg(amounts=amounts, elements=element, rho_b=rho).calculate_electron_density()
         # Bulk modulus
@@ -3680,7 +3801,7 @@ class Oxides():
             results["M"] = molar_mass
             results["rho"] = round(rho, 4)
             results["rho_e"] = round(rho_e, 4)
-            results["V"] = round(V, 4)
+            results["V"] = round(V_m, 4)
             results["vP"] = round(vP, 4)
             results["vS"] = round(vS, 4)
             results["vP/vS"] = round(vPvS, 4)
@@ -3743,7 +3864,9 @@ class Oxides():
         # Density
         dataV = CrystalPhysics([[8.41], [], "cubic"])
         V = dataV.calculate_volume()
-        dataRho = CrystalPhysics([molar_mass, 8, V])
+        Z = 8
+        V_m = MineralChemistry().calculate_molar_volume(volume_cell=V, z=Z)
+        dataRho = CrystalPhysics([molar_mass, Z, V])
         rho = dataRho.calculate_bulk_density()
         rho_e = wg(amounts=amounts, elements=element, rho_b=rho).calculate_electron_density()
         # Bulk modulus
@@ -3785,7 +3908,7 @@ class Oxides():
             results["M"] = molar_mass
             results["rho"] = round(rho, 4)
             results["rho_e"] = round(rho_e, 4)
-            results["V"] = round(V, 4)
+            results["V"] = round(V_m, 4)
             results["vP"] = round(vP, 4)
             results["vS"] = round(vS, 4)
             results["vP/vS"] = round(vPvS, 4)
@@ -3848,7 +3971,9 @@ class Oxides():
         # Density
         dataV = CrystalPhysics([[8.42], [], "cubic"])
         V = dataV.calculate_volume()
-        dataRho = CrystalPhysics([molar_mass, 8, V])
+        Z = 8
+        V_m = MineralChemistry().calculate_molar_volume(volume_cell=V, z=Z)
+        dataRho = CrystalPhysics([molar_mass, Z, V])
         rho = dataRho.calculate_bulk_density()
         rho_e = wg(amounts=amounts, elements=element, rho_b=rho).calculate_electron_density()
         # Bulk modulus
@@ -3890,7 +4015,7 @@ class Oxides():
             results["M"] = molar_mass
             results["rho"] = round(rho, 4)
             results["rho_e"] = round(rho_e, 4)
-            results["V"] = round(V, 4)
+            results["V"] = round(V_m, 4)
             results["vP"] = round(vP, 4)
             results["vS"] = round(vS, 4)
             results["vP/vS"] = round(vPvS, 4)
@@ -3953,7 +4078,9 @@ class Oxides():
         # Density
         dataV = CrystalPhysics([[8.4596], [], "cubic"])
         V = dataV.calculate_volume()
-        dataRho = CrystalPhysics([molar_mass, 8, V])
+        Z = 8
+        V_m = MineralChemistry().calculate_molar_volume(volume_cell=V, z=Z)
+        dataRho = CrystalPhysics([molar_mass, Z, V])
         rho = dataRho.calculate_bulk_density()
         rho_e = wg(amounts=amounts, elements=element, rho_b=rho).calculate_electron_density()
         # Bulk modulus
@@ -3995,7 +4122,7 @@ class Oxides():
             results["M"] = molar_mass
             results["rho"] = round(rho, 4)
             results["rho_e"] = round(rho_e, 4)
-            results["V"] = round(V, 4)
+            results["V"] = round(V_m, 4)
             results["vP"] = round(vP, 4)
             results["vS"] = round(vS, 4)
             results["vP/vS"] = round(vPvS, 4)
@@ -4074,41 +4201,56 @@ class Oxides():
         # Density
         dataV_Mag = CrystalPhysics([[8.396], [], "cubic"])
         V_Mag = dataV_Mag.calculate_volume()
-        dataRho_Mag = CrystalPhysics([molar_mass, 8, V_Mag])
+        Z_Mag = 8
+        V_m_Mag = MineralChemistry().calculate_molar_volume(volume_cell=V_Mag, z=Z_Mag)
+        dataRho_Mag = CrystalPhysics([molar_mass, Z_Mag, V_Mag])
         rho_Mag = dataRho_Mag.calculate_bulk_density()
         rho_e_Mag = wg(amounts=amounts, elements=element, rho_b=rho_Mag).calculate_electron_density()
         dataV_Mfr = CrystalPhysics([[8.366], [], "cubic"])
         V_Mfr = dataV_Mfr.calculate_volume()
-        dataRho_Mfr = CrystalPhysics([molar_mass, 8, V_Mfr])
+        Z_Mfr = 8
+        V_m_Mfr = MineralChemistry().calculate_molar_volume(volume_cell=V_Mfr, z=Z_Mfr)
+        dataRho_Mfr = CrystalPhysics([molar_mass, Z_Mfr, V_Mfr])
         rho_Mfr = dataRho_Mfr.calculate_bulk_density()
         rho_e_Mfr = wg(amounts=amounts, elements=element, rho_b=rho_Mfr).calculate_electron_density()
         dataV_Usp = CrystalPhysics([[8.4596], [], "cubic"])
         V_Usp = dataV_Usp.calculate_volume()
-        dataRho_Usp = CrystalPhysics([molar_mass, 8, V_Usp])
+        Z_Usp = 8
+        V_m_Usp = MineralChemistry().calculate_molar_volume(volume_cell=V_Usp, z=Z_Usp)
+        dataRho_Usp = CrystalPhysics([molar_mass, Z_Usp, V_Usp])
         rho_Usp = dataRho_Usp.calculate_bulk_density()
         rho_e_Usp = wg(amounts=amounts, elements=element, rho_b=rho_Usp).calculate_electron_density()
         dataV_Frk = CrystalPhysics([[8.42], [], "cubic"])
         V_Frk = dataV_Frk.calculate_volume()
-        dataRho_Frk = CrystalPhysics([molar_mass, 8, V_Frk])
+        Z_Frk = 8
+        V_m_Frk = MineralChemistry().calculate_molar_volume(volume_cell=V_Frk, z=Z_Frk)
+        dataRho_Frk = CrystalPhysics([molar_mass, Z_Frk, V_Frk])
         rho_Frk = dataRho_Frk.calculate_bulk_density()
         rho_e_Frk = wg(amounts=amounts, elements=element, rho_b=rho_Frk).calculate_electron_density()
         dataV_Jcb = CrystalPhysics([[8.499], [], "cubic"])
         V_Jcb = dataV_Jcb.calculate_volume()
-        dataRho_Jcb = CrystalPhysics([molar_mass, 8, V_Jcb])
+        Z_Jcb = 8
+        V_m_Jcb = MineralChemistry().calculate_molar_volume(volume_cell=V_Jcb, z=Z_Jcb)
+        dataRho_Jcb = CrystalPhysics([molar_mass, Z_Jcb, V_Jcb])
         rho_Jcb = dataRho_Jcb.calculate_bulk_density()
         rho_e_Jcb = wg(amounts=amounts, elements=element, rho_b=rho_Jcb).calculate_electron_density()
         dataV_Trv = CrystalPhysics([[8.41], [], "cubic"])
         V_Trv = dataV_Trv.calculate_volume()
-        dataRho_Trv = CrystalPhysics([molar_mass, 8, V_Trv])
+        Z_Trv = 8
+        V_m_Trv = MineralChemistry().calculate_molar_volume(volume_cell=V_Trv, z=Z_Trv)
+        dataRho_Trv = CrystalPhysics([molar_mass, Z_Trv, V_Trv])
         rho_Trv = dataRho_Trv.calculate_bulk_density()
         rho_e_Trv = wg(amounts=amounts, elements=element, rho_b=rho_Trv).calculate_electron_density()
         dataV_CuSpi = CrystalPhysics([[8.369], [], "cubic"])
         V_CuSpi = dataV_CuSpi.calculate_volume()
-        dataRho_CuSpi = CrystalPhysics([molar_mass, 8, V_CuSpi])
+        Z_CuSpi = 8
+        V_m_CuSpi = MineralChemistry().calculate_molar_volume(volume_cell=V_CuSpi, z=Z_CuSpi)
+        dataRho_CuSpi = CrystalPhysics([molar_mass, Z_CuSpi, V_CuSpi])
         rho_CuSpi = dataRho_CuSpi.calculate_bulk_density()
         rho_e_CuSpi = wg(amounts=amounts, elements=element, rho_b=rho_CuSpi).calculate_electron_density()
         #
         V = w_a*V_Mag + w_b*V_Mfr + w_c*V_Usp + w_d*V_Frk + w_e*V_Jcb + w_f*V_Trv + w_g*V_CuSpi
+        V_m = w_a*V_m_Mag + w_b*V_m_Mfr + w_c*V_m_Usp + w_d*V_m_Frk + w_e*V_m_Jcb + w_f*V_m_Trv + w_g*V_m_CuSpi
         rho = w_a*rho_Mag + w_b*rho_Mfr + w_c*rho_Usp + w_d*rho_Frk + w_e*rho_Jcb + w_f*rho_Trv + w_g*rho_CuSpi
         rho_e = w_a*rho_e_Mag + w_b*rho_e_Mfr + w_c*rho_e_Usp + w_d*rho_e_Frk + w_e*rho_e_Jcb + w_f*rho_e_Trv + w_g*rho_e_CuSpi
         #
@@ -4168,7 +4310,7 @@ class Oxides():
                 results["chemistry"][element] = amounts[index][2]
             results["rho"] = round(rho, 4)
             results["rho_e"] = round(rho_e, 4)
-            results["V"] = round(V, 4)
+            results["V"] = round(V_m, 4)
             results["vP"] = round(vP, 4)
             results["vS"] = round(vS, 4)
             results["vP/vS"] = round(vPvS, 4)

@@ -6,7 +6,7 @@
 # Name:		gui.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		04.12.2021
+# Date:		12.12.2021
 
 #-----------------------------------------------
 
@@ -186,14 +186,6 @@ class GebPyGUI(tk.Frame):
             Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                      color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
                      entr_w=self.entr_w)
-        # elif var_opt == "Alkalifeldspar":
-        #     Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
-        #              color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
-        #              entr_w=self.entr_w)
-        # elif var_opt == "Plagioclase":
-        #     Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
-        #              color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
-        #              entr_w=self.entr_w)
         # Rocks
         elif var_opt == "Sandstone":
             self.lbl_w, self.entr_w = Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
@@ -439,6 +431,8 @@ class Minerals:
         self.mineral = mineral
         self.var_rb = tk.IntVar()
         var_rb_start = 0
+        self.var_rb_trace = tk.IntVar()
+        var_rb_trace_0 = 2
         self.var_entr = tk.IntVar()
         var_entr_start = 100
         self.lbl_w = lbl_w
@@ -489,7 +483,17 @@ class Minerals:
            fg="black").create_radiobutton(var_rb=self.var_rb, var_rb_set=var_rb_start, value_rb=1, text="Scatter plot",
                                            color_bg=self.color_acc_01,
                                            command=lambda var_rb=self.var_rb: self.change_radiobutton(var_rb))
-        self.lbl_w.extend([rb_01, rb_02])
+        #
+        rb_03 = SE(parent=self.parent_mineral, row_id=32, column_id=0, n_rows=1, n_columns=2, bg=self.color_acc_01,
+           fg="black").create_radiobutton(var_rb=self.var_rb_trace, var_rb_set=var_rb_trace_0, value_rb=2,
+                                          text="Without Trace Elements", color_bg=self.color_acc_01,
+                                          command=lambda var_rb=self.var_rb: self.change_radiobutton(var_rb))
+        rb_04 = SE(parent=self.parent_mineral, row_id=33, column_id=0, n_rows=1, n_columns=2, bg=self.color_acc_01,
+           fg="black").create_radiobutton(var_rb=self.var_rb_trace, var_rb_set=var_rb_trace_0, value_rb=3,
+                                          text="With Trace Elements", color_bg=self.color_acc_01,
+                                          command=lambda var_rb=self.var_rb: self.change_radiobutton(var_rb))
+        #
+        self.lbl_w.extend([rb_01, rb_02, rb_03, rb_04])
         #
         self.var_dict = True
         data_all = []
@@ -610,6 +614,7 @@ class Minerals:
             #
             self.rho_b = DP(dataset=data_all).extract_densities(type="mineral", keyword="bulk")
             self.molar_mass = DP(dataset=data_all).extract_molar_mass()
+            self.volume = DP(dataset=data_all).extract_seismic_velocities(type="mineral", keyword="V")
             self.bulk_mod = DP(dataset=data_all).extract_elastic_moduli(type="mineral", keyword="bulk")
             self.shear_mod = DP(dataset=data_all).extract_elastic_moduli(type="mineral", keyword="shear")
             self.poisson = DP(dataset=data_all).extract_elastic_moduli(type="mineral", keyword="poisson")
@@ -627,6 +632,7 @@ class Minerals:
                 self.w_element = DP(dataset=data_all).extract_element_amounts(type="mineral", element="Ca")*100
         else:
             self.molar_mass = DP(dataset=data_all).extract_data(keyword="M")
+            self.volume = DP(dataset=data_all).extract_data(keyword="V")
             self.rho_b = DP(dataset=data_all).extract_data(keyword="rho")
             self.vP = DP(dataset=data_all).extract_data(keyword="vP")
             self.vS = DP(dataset=data_all).extract_data(keyword="vS")
@@ -675,7 +681,7 @@ class Minerals:
         self.list_elements = list(self.chemistry[0].keys())
         opt_list_chem = ["No Selection"]
         opt_list_chem.extend(self.list_elements)
-        self.opt_chem = SE(parent=self.parent_mineral, row_id=32, column_id=0, n_rows=1, n_columns=2, bg=self.color_acc_01,
+        self.opt_chem = SE(parent=self.parent_mineral, row_id=34, column_id=0, n_rows=1, n_columns=2, bg=self.color_acc_01,
                            fg="black").create_option_menu(var_opt=self.var_opt_chem, var_opt_set="Select Element",
                                                           opt_list=opt_list_chem, active_bg=self.color_acc_02,
                                                           command=lambda var_opt=self.var_opt_chem: self.select_opt(var_opt))
@@ -945,6 +951,7 @@ class Minerals:
                 self.w_element = DP(dataset=data_all).extract_element_amounts(type="mineral", element="Ca")*100
         else:
             self.molar_mass = DP(dataset=data_all).extract_data(keyword="M")
+            self.volume = DP(dataset=data_all).extract_data(keyword="V")
             self.rho_b = DP(dataset=data_all).extract_data(keyword="rho")
             self.vP = DP(dataset=data_all).extract_data(keyword="vP")
             self.vS = DP(dataset=data_all).extract_data(keyword="vS")
@@ -1112,33 +1119,6 @@ class Minerals:
                     self.canvas_histo.destroy()
             except AttributeError:
                 pass
-            #
-            if self.mineral == "Quartz":
-                element = "Si"
-            elif self.mineral in ["Magnetite", "Hematite", "Pyrite", "Siderite"]:
-                element = "Fe"
-            elif self.mineral in ["Chalcopyrite", "Cuprospinel"]:
-                element = "Cu"
-            elif self.mineral in ["Galena"]:
-                element = "Pb"
-            elif self.mineral in ["Magnesite", "Aluminium Spinels"]:
-                element = "Mg"
-            elif self.mineral in ["Halite"]:
-                element = "Na"
-            elif self.mineral in ["Chromite", "Magnesiochromite", "Zincochromite", "Chromium Spinels"]:
-                element = "Cr"
-            elif self.mineral in ["Ilmenite", "Rutile"]:
-                element = "Ti"
-            elif self.mineral in ["Cassiterite"]:
-                element = "Sn"
-            elif self.mineral in ["Pyrolusite"]:
-                element = "Mn"
-            elif self.mineral in ["Illite", "Corundum"]:
-                element = "Al"
-            elif self.mineral in ["Alkalifeldspar", "Sylvite"]:
-                element = "K"
-            elif self.mineral in ["Plagioclase", "Calcite", "Dolomite", "Fluorite"]:
-                element = "Ca"
             #
             data_x = np.array(self.rho_b)/1000
             #

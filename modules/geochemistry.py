@@ -981,6 +981,12 @@ class MineralChemistry():
                     molar_mass_compounds.append([item[0], item[1], molar_mass_trace_compound])
         return molar_mass_compounds
     #
+    def calculate_molar_volume(self, volume_cell, z):
+        N_A = const.physical_constants["Avogadro constant"][0]
+        V_m = (N_A * volume_cell)/(z)
+        #
+        return V_m
+    #
     def calculate_molar_mass(self):
         molar_mass = 0
         molar_masses = []
