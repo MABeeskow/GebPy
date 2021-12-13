@@ -178,7 +178,8 @@ class GebPyGUI(tk.Frame):
             Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                      color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
                      entr_w=self.entr_w)
-        elif var_opt in ["Calcite", "Dolomite", "Magnesite", "Halite", "Fluorite", "Sylvite", "Illite", "Siderite"]:
+        elif var_opt in ["Calcite", "Dolomite", "Magnesite", "Halite", "Fluorite", "Sylvite", "Illite", "Siderite",
+                         "Rhodochrosite", "Aragonite", "Cerussite", "Ankerite", "Azurite", "Malachite"]:
             Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                      color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
                      entr_w=self.entr_w)
@@ -314,7 +315,9 @@ class GebPyGUI(tk.Frame):
             except:
                 pass
             var_opt_0_3 = tk.StringVar()
-            opt_list_0_3 = ["Calcite", "Dolomite", "Magnesite", "Siderite"]
+            opt_list_0_3 = ["Calcite", "Dolomite", "Magnesite", "Siderite", "Rhodochrosite", "Aragonite", "Cerussite",
+                            "Ankerite", "Azurite", "Malachite"]
+            opt_list_0_3.sort()
             self.opt_carb = SE(parent=self.parent, row_id=10, column_id=0, n_rows=2, n_columns=2,
                                bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
                 var_opt=var_opt_0_3, var_opt_set="Select Carbonate", opt_list=opt_list_0_3,
@@ -577,15 +580,27 @@ class Minerals:
             elif self.mineral == "Fahlore":
                 data = Sulfides(impurity="pure", data_type=True).create_fahlore()
             elif self.mineral == "Calcite":
-                data = Carbonates(impurity="pure", dict=True).create_calcite()
+                data = Carbonates(impurity="pure", data_type=True).create_calcite()
             elif self.mineral == "Corundum":
                 data = Oxides(impurity="pure", data_type=True).create_corundum()
             elif self.mineral == "Dolomite":
-                data = Carbonates(impurity="pure", dict=True).create_dolomite()
+                data = Carbonates(impurity="pure", data_type=True).create_dolomite()
             elif self.mineral == "Magnesite":
-                data = Carbonates(impurity="pure", dict=True).create_magnesite()
+                data = Carbonates(impurity="pure", data_type=True).create_magnesite()
             elif self.mineral == "Siderite":
-                data = Carbonates(impurity="pure", dict=True).create_siderite()
+                data = Carbonates(impurity="pure", data_type=True).create_siderite()
+            elif self.mineral == "Rhodochrosite":
+                data = Carbonates(impurity="pure", data_type=True).create_rhodochrosite()
+            elif self.mineral == "Aragonite":
+                data = Carbonates(impurity="pure", data_type=True).create_aragonite()
+            elif self.mineral == "Cerussite":
+                data = Carbonates(impurity="pure", data_type=True).create_cerussite()
+            elif self.mineral == "Ankerite":
+                data = Carbonates(impurity="pure", data_type=True).create_ankerite()
+            elif self.mineral == "Azurite":
+                data = Carbonates(impurity="pure", data_type=True).create_azurite()
+            elif self.mineral == "Malachite":
+                data = Carbonates(impurity="pure", data_type=True).create_malachite()
             elif self.mineral == "Halite":
                 data = Halogenes(impurity="pure", dict=True).create_halite()
             elif self.mineral == "Fluorite":
@@ -908,6 +923,18 @@ class Minerals:
                 data = Carbonates(impurity="pure", dict=True).create_magnesite()
             elif self.mineral == "Siderite":
                 data = Carbonates(impurity="pure", dict=True).create_siderite()
+            elif self.mineral == "Rhodochrosite":
+                data = Carbonates(impurity="pure", data_type=True).create_rhodochrosite()
+            elif self.mineral == "Aragonite":
+                data = Carbonates(impurity="pure", data_type=True).create_aragonite()
+            elif self.mineral == "Cerussite":
+                data = Carbonates(impurity="pure", data_type=True).create_cerussite()
+            elif self.mineral == "Ankerite":
+                data = Carbonates(impurity="pure", data_type=True).create_ankerite()
+            elif self.mineral == "Azurite":
+                data = Carbonates(impurity="pure", data_type=True).create_azurite()
+            elif self.mineral == "Malachite":
+                data = Carbonates(impurity="pure", data_type=True).create_malachite()
             elif self.mineral == "Halite":
                 data = Halogenes(impurity="pure", dict=True).create_halite()
             elif self.mineral == "Fluorite":
