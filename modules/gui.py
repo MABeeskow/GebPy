@@ -13,6 +13,7 @@
 ## MODULES
 import tkinter as tk
 from modules.gui_elements import SimpleElements as SE
+from modules.sulfates import Sulfates
 from modules.oxides import Oxides
 from modules.sulfides import Sulfides
 from modules.carbonates import Carbonates
@@ -119,7 +120,8 @@ class GebPyGUI(tk.Frame):
         #
         ## Option Menu
         var_opt_0_0 = tk.StringVar()
-        opt_list_0_0 = ["Oxides", "Sulfides", "Carbonates", "Halogenes", "Tectosilicates", "Phyllosilicates"]
+        opt_list_0_0 = ["Oxides", "Sulfides", "Carbonates", "Halogenes", "Tectosilicates", "Phyllosilicates", "Sulfates"]
+        opt_list_0_0.sort()
         self.opt_mingroup = SE(parent=self.parent, row_id=8, column_id=0, n_rows=2, n_columns=2, bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
             var_opt=var_opt_0_0, var_opt_set="Select Mineral Group", opt_list=opt_list_0_0,
             command=lambda var_opt=var_opt_0_0: self.select_opt(var_opt))
@@ -168,7 +170,7 @@ class GebPyGUI(tk.Frame):
         elif var_opt in ["Magnetite", "Hematite", "Aluminium Spinels", "Ilmenite", "Cassiterite", "Chromite", "Corundum",
                          "Rutile", "Pyrolusite", "Magnesiochromite", "Zincochromite", "Chromium Spinels", "Cuprospinel",
                          "Jacobsite", "Magnesioferrite", "Trevorite", "Franklinite", "Ulvöspinel", "Iron Spinels",
-                         "Uraninite"]:
+                         "Uraninite", "Litharge", "Massicot", "Minium", "Plattnerite", "Scrutinyite", "Zincite"]:
             Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                      color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
                      entr_w=self.entr_w)
@@ -180,6 +182,11 @@ class GebPyGUI(tk.Frame):
                      entr_w=self.entr_w)
         elif var_opt in ["Calcite", "Dolomite", "Magnesite", "Halite", "Fluorite", "Sylvite", "Illite", "Siderite",
                          "Rhodochrosite", "Aragonite", "Cerussite", "Ankerite", "Azurite", "Malachite"]:
+            Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
+                     color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
+                     entr_w=self.entr_w)
+        elif var_opt in ["Barite", "Celestite", "Anglesite", "Anhydrite", "Hanksite", "Gypsum", "Alunite", "Jarosite",
+                         "Chalcanthite", "Kieserite", "Scheelite", "Hexahydrite"]:
             Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                      color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
                      entr_w=self.entr_w)
@@ -275,13 +282,15 @@ class GebPyGUI(tk.Frame):
                 self.opt_halogene.grid_remove()
                 self.opt_clays.grid_remove()
                 self.opt_afs.grid_remove()
+                self.opt_sulfate.grid_remove()
             except:
                 pass
             var_opt_0_1 = tk.StringVar()
             opt_list_0_1 = ["Quartz", "Magnetite", "Hematite", "Aluminium Spinels", "Iron Spinels", "Chromium Spinels",
                             "Corundum", "Ilmenite", "Rutile", "Pyrolusite", "Cassiterite", "Chromite",
                             "Magnesiochromite", "Zincochromite", "Cuprospinel", "Jacobsite", "Magnesioferrite",
-                            "Trevorite", "Franklinite", "Ulvöspinel", "Uraninite"]
+                            "Trevorite", "Franklinite", "Ulvöspinel", "Uraninite", "Litharge", "Massicot", "Minium",
+                            "Plattnerite", "Scrutinyite", "Zincite"]
             opt_list_0_1.sort()
             self.opt_oxide = SE(parent=self.parent, row_id=10, column_id=0, n_rows=2, n_columns=2,
                                 bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
@@ -294,6 +303,7 @@ class GebPyGUI(tk.Frame):
                 self.opt_halogene.grid_remove()
                 self.opt_clays.grid_remove()
                 self.opt_afs.grid_remove()
+                self.opt_sulfate.grid_remove()
             except:
                 pass
             var_opt_0_2 = tk.StringVar()
@@ -312,6 +322,7 @@ class GebPyGUI(tk.Frame):
                 self.opt_halogene.grid_remove()
                 self.opt_clays.grid_remove()
                 self.opt_afs.grid_remove()
+                self.opt_sulfate.grid_remove()
             except:
                 pass
             var_opt_0_3 = tk.StringVar()
@@ -329,6 +340,7 @@ class GebPyGUI(tk.Frame):
                 self.opt_carb.grid_remove()
                 self.opt_clays.grid_remove()
                 self.opt_afs.grid_remove()
+                self.opt_sulfate.grid_remove()
             except:
                 pass
             var_opt_0_4 = tk.StringVar()
@@ -344,6 +356,7 @@ class GebPyGUI(tk.Frame):
                 self.opt_carb.grid_remove()
                 self.opt_halogene.grid_remove()
                 self.opt_clays.grid_remove()
+                self.opt_sulfate.grid_remove()
             except:
                 pass
             var_opt_0_5 = tk.StringVar()
@@ -359,6 +372,7 @@ class GebPyGUI(tk.Frame):
                 self.opt_carb.grid_remove()
                 self.opt_halogene.grid_remove()
                 self.opt_afs.grid_remove()
+                self.opt_sulfate.grid_remove()
             except:
                 pass
             var_opt_0_6 = tk.StringVar()
@@ -367,6 +381,24 @@ class GebPyGUI(tk.Frame):
                               bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
                 var_opt=var_opt_0_6, var_opt_set="Select Pyllosilicates", opt_list=opt_list_0_6,
                 command=lambda var_opt=var_opt_0_6: self.select_opt(var_opt))
+        elif var_opt == "Sulfates":
+            try:
+                self.opt_oxide.grid_remove()
+                self.opt_sulfide.grid_remove()
+                self.opt_carb.grid_remove()
+                self.opt_halogene.grid_remove()
+                self.opt_afs.grid_remove()
+                self.opt_clays.grid_remove()
+            except:
+                pass
+            var_opt_0_7 = tk.StringVar()
+            opt_list_0_7 = ["Barite", "Celestite", "Anglesite", "Anhydrite", "Hanksite", "Gypsum", "Alunite", "Jarosite",
+                            "Chalcanthite", "Kieserite", "Scheelite", "Hexahydrite"]
+            opt_list_0_7.sort()
+            self.opt_sulfate = SE(parent=self.parent, row_id=10, column_id=0, n_rows=2, n_columns=2,
+                              bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
+                var_opt=var_opt_0_7, var_opt_set="Select Sulfate Mineral", opt_list=opt_list_0_7,
+                command=lambda var_opt=var_opt_0_7: self.select_opt(var_opt))
         elif var_opt == "Siliciclastic Rocks":
             var_opt_1_1 = tk.StringVar()
             opt_list_1_1 = ["Sandstone", "Shale"]
@@ -523,6 +555,18 @@ class Minerals:
                 data = Oxides(impurity="pure").create_hematite(dict=True)
             elif self.mineral == "Ilmenite":
                 data = Oxides(impurity="pure", data_type=True).create_ilmenite()
+            elif self.mineral == "Litharge":
+                data = Oxides(impurity="pure", data_type=True).create_litharge()
+            elif self.mineral == "Massicot":
+                data = Oxides(impurity="pure", data_type=True).create_massicot()
+            elif self.mineral == "Minium":
+                data = Oxides(impurity="pure", data_type=True).create_minium()
+            elif self.mineral == "Plattnerite":
+                data = Oxides(impurity="pure", data_type=True).create_plattnerite()
+            elif self.mineral == "Scrutinyite":
+                data = Oxides(impurity="pure", data_type=True).create_scrutinyite()
+            elif self.mineral == "Zincite":
+                data = Oxides(impurity="pure", data_type=True).create_zincite()
             elif self.mineral == "Cuprospinel":
                 data = Oxides(impurity="pure", data_type=True).create_cuprospinel()
             elif self.mineral == "Jacobsite":
@@ -615,6 +659,30 @@ class Minerals:
                 data = Tectosilicates(impurity="pure", data_type=True).create_plagioclase()
             elif self.mineral == "Scapolite":
                 data = Tectosilicates(impurity="pure", data_type=True).create_scapolite()
+            elif self.mineral == "Barite":
+                data = Sulfates(impurity="pure", data_type=True).create_barite()
+            elif self.mineral == "Anhydrite":
+                data = Sulfates(impurity="pure", data_type=True).create_anhydrite()
+            elif self.mineral == "Gypsum":
+                data = Sulfates(impurity="pure", data_type=True).create_gypsum()
+            elif self.mineral == "Celestite":
+                data = Sulfates(impurity="pure", data_type=True).create_celestine()
+            elif self.mineral == "Anglesite":
+                data = Sulfates(impurity="pure", data_type=True).create_anglesite()
+            elif self.mineral == "Hanksite":
+                data = Sulfates(impurity="pure", data_type=True).create_hanksite()
+            elif self.mineral == "Jarosite":
+                data = Sulfates(impurity="pure", data_type=True).create_jarosite()
+            elif self.mineral == "Alunite":
+                data = Sulfates(impurity="pure", data_type=True).create_alunite()
+            elif self.mineral == "Chalcanthite":
+                data = Sulfates(impurity="pure", data_type=True).create_chalcanthite()
+            elif self.mineral == "Kieserite":
+                data = Sulfates(impurity="pure", data_type=True).create_kieserite()
+            elif self.mineral == "Scheelite":
+                data = Sulfates(impurity="pure", data_type=True).create_scheelite()
+            elif self.mineral == "Hexahydrite":
+                data = Sulfates(impurity="pure", data_type=True).create_hexahydrite()
             self.color_mineral = "#7C9097"
             #
             data_all.append(data)
@@ -859,6 +927,18 @@ class Minerals:
                 data = Oxides(impurity="pure", data_type=True).create_rutile()
             elif self.mineral == "Ilmenite":
                 data = Oxides(impurity="pure", data_type=True).create_ilmenite()
+            elif self.mineral == "Litharge":
+                data = Oxides(impurity="pure", data_type=True).create_litharge()
+            elif self.mineral == "Massicot":
+                data = Oxides(impurity="pure", data_type=True).create_massicot()
+            elif self.mineral == "Minium":
+                data = Oxides(impurity="pure", data_type=True).create_minium()
+            elif self.mineral == "Plattnerite":
+                data = Oxides(impurity="pure", data_type=True).create_plattnerite()
+            elif self.mineral == "Scrutinyite":
+                data = Oxides(impurity="pure", data_type=True).create_scrutinyite()
+            elif self.mineral == "Zincite":
+                data = Oxides(impurity="pure", data_type=True).create_zincite()
             elif self.mineral == "Uraninite":
                 data = Oxides(impurity="pure", data_type=True).create_uraninite()
             elif self.mineral == "Corundum":
@@ -949,6 +1029,30 @@ class Minerals:
                 data = Tectosilicates(impurity="pure", data_type=True).create_plagioclase()
             elif self.mineral == "Scapolite":
                 data = Tectosilicates(impurity="pure", data_type=True).create_scapolite()
+            elif self.mineral == "Barite":
+                data = Sulfates(impurity="pure", data_type=True).create_barite()
+            elif self.mineral == "Anhydrite":
+                data = Sulfates(impurity="pure", data_type=True).create_anhydrite()
+            elif self.mineral == "Gypsum":
+                data = Sulfates(impurity="pure", data_type=True).create_gypsum()
+            elif self.mineral == "Celestite":
+                data = Sulfates(impurity="pure", data_type=True).create_celestine()
+            elif self.mineral == "Anglesite":
+                data = Sulfates(impurity="pure", data_type=True).create_anglesite()
+            elif self.mineral == "Hanksite":
+                data = Sulfates(impurity="pure", data_type=True).create_hanksite()
+            elif self.mineral == "Jarosite":
+                data = Sulfates(impurity="pure", data_type=True).create_jarosite()
+            elif self.mineral == "Alunite":
+                data = Sulfates(impurity="pure", data_type=True).create_alunite()
+            elif self.mineral == "Chalcanthite":
+                data = Sulfates(impurity="pure", data_type=True).create_chalcanthite()
+            elif self.mineral == "Kieserite":
+                data = Sulfates(impurity="pure", data_type=True).create_kieserite()
+            elif self.mineral == "Scheelite":
+                data = Sulfates(impurity="pure", data_type=True).create_scheelite()
+            elif self.mineral == "Hexahydrite":
+                data = Sulfates(impurity="pure", data_type=True).create_hexahydrite()
             self.color_mineral = "#7C9097"
             #
             data_all.append(data)
@@ -2375,7 +2479,9 @@ class Rocks:
                             fg=self.color_fg_dark).create_label(text="Min", relief=tk.RAISED)
             lbl_name = SE(parent=self.window_custom_mineralogy, row_id=17, column_id=3, bg=self.color_accent_01,
                             fg=self.color_fg_dark).create_label(text="Max", relief=tk.RAISED)
-            list_carbonates = ["Calcite", "Dolomite", "Magnesite", "Rhodochrosite", "Siderite", "Aragonite", "Cerussite", "Ankerite", "Azurite", "Malachite"]
+            list_carbonates = ["Calcite", "Dolomite", "Magnesite", "Rhodochrosite", "Siderite", "Aragonite",
+                               "Cerussite", "Ankerite", "Azurite", "Malachite"]
+            list_carbonates.sort()
             for index, carbonate in enumerate(list_carbonates, start=0):
                 lbl = SE(parent=self.window_custom_mineralogy, row_id=18+index, column_id=0, bg=self.color_accent_02,
                          fg=self.color_fg_dark).create_label(text=carbonate, relief=tk.RAISED)
@@ -2393,7 +2499,9 @@ class Rocks:
                             fg=self.color_fg_dark).create_label(text="Min", relief=tk.RAISED)
             lbl_name = SE(parent=self.window_custom_mineralogy, row_id=17, column_id=11, bg=self.color_accent_01,
                             fg=self.color_fg_dark).create_label(text="Max", relief=tk.RAISED)
-            list_sulfates = ["Barite", "Anhydrite", "Gypsum", "Alunite", "Jarosite", "Anglesite"]
+            list_sulfates = ["Barite", "Anhydrite", "Gypsum", "Alunite", "Jarosite", "Anglesite", "Hanksite",
+                             "Celestite", "Kieserite", "Chalcanthite", "Scheelite"]
+            list_sulfates.sort()
             for index, sulfate in enumerate(list_sulfates, start=0):
                 lbl = SE(parent=self.window_custom_mineralogy, row_id=18+index, column_id=8, bg=self.color_accent_02,
                          fg=self.color_fg_dark).create_label(text=sulfate, relief=tk.RAISED)
