@@ -6,7 +6,7 @@
 # Name:		gui.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		12.12.2021
+# Date:		18.12.2021
 
 #-----------------------------------------------
 
@@ -18,8 +18,8 @@ from modules.oxides import Oxides
 from modules.sulfides import Sulfides
 from modules.carbonates import Carbonates
 from modules.halogenes import Halogenes
-from modules.silicates import Tectosilicates
-from modules.pyllosilicates import Pyllosilicates
+from modules.silicates import Tectosilicates, Phyllosilicates
+#from modules.pyllosilicates import Pyllosilicates
 from modules.minerals import feldspars
 from modules.siliciclastics import sandstone, shale
 from modules.carbonates import limestone, dolomite, CustomCarbonates
@@ -180,7 +180,7 @@ class GebPyGUI(tk.Frame):
             Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                      color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
                      entr_w=self.entr_w)
-        elif var_opt in ["Calcite", "Dolomite", "Magnesite", "Halite", "Fluorite", "Sylvite", "Illite", "Siderite",
+        elif var_opt in ["Calcite", "Dolomite", "Magnesite", "Halite", "Fluorite", "Sylvite", "Siderite",
                          "Rhodochrosite", "Aragonite", "Cerussite", "Ankerite", "Azurite", "Malachite"]:
             Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                      color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
@@ -191,6 +191,11 @@ class GebPyGUI(tk.Frame):
                      color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
                      entr_w=self.entr_w)
         elif var_opt in ["Alkalifeldspar", "Plagioclase", "Scapolite"]:
+            Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
+                     color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
+                     entr_w=self.entr_w)
+        elif var_opt in ["Illite", "Kaolinite", "Montmorillonite", "Chamosite", "Clinochlore", "Pennantite", "Nimite",
+                         "Chlorite"]:
             Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                      color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
                      entr_w=self.entr_w)
@@ -376,10 +381,12 @@ class GebPyGUI(tk.Frame):
             except:
                 pass
             var_opt_0_6 = tk.StringVar()
-            opt_list_0_6 = ["Illite"]
+            opt_list_0_6 = ["Illite", "Kaolinite", "Montmorillonite", "Chamosite", "Clinochlore", "Pennantite",
+                            "Nimite", "Chlorite"]
+            opt_list_0_6.sort()
             self.opt_clays = SE(parent=self.parent, row_id=10, column_id=0, n_rows=2, n_columns=2,
                               bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
-                var_opt=var_opt_0_6, var_opt_set="Select Pyllosilicates", opt_list=opt_list_0_6,
+                var_opt=var_opt_0_6, var_opt_set="Select Phyllosilicates", opt_list=opt_list_0_6,
                 command=lambda var_opt=var_opt_0_6: self.select_opt(var_opt))
         elif var_opt == "Sulfates":
             try:
@@ -651,8 +658,24 @@ class Minerals:
                 data = Halogenes(impurity="pure", dict=True).create_fluorite()
             elif self.mineral == "Sylvite":
                 data = Halogenes(impurity="pure", dict=True).create_sylvite()
+            # Phyllosilicates
             elif self.mineral == "Illite":
-                data = Pyllosilicates(impurity="pure", dict=True).create_illite()
+                data = Phyllosilicates(data_type=True).create_illite()
+            elif self.mineral == "Kaolinite":
+                data = Phyllosilicates(data_type=True).create_kaolinite()
+            elif self.mineral == "Montmorillonite":
+                data = Phyllosilicates(data_type=True).create_montmorillonite()
+            elif self.mineral == "Chamosite":
+                data = Phyllosilicates(impurity="pure", data_type=True).create_chamosite()
+            elif self.mineral == "Clinochlore":
+                data = Phyllosilicates(impurity="pure", data_type=True).create_clinochlore()
+            elif self.mineral == "Pennantite":
+                data = Phyllosilicates(impurity="pure", data_type=True).create_pennantite()
+            elif self.mineral == "Nimite":
+                data = Phyllosilicates(impurity="pure", data_type=True).create_nimite()
+            elif self.mineral == "Chlorite":
+                data = Phyllosilicates(impurity="pure", data_type=True).create_chlorite()
+            # Tectosilicates
             elif self.mineral == "Alkalifeldspar":
                 data = Tectosilicates(impurity="pure", data_type=True).create_alkalifeldspar()
             elif self.mineral == "Plagioclase":
@@ -996,13 +1019,13 @@ class Minerals:
             elif self.mineral == "Marcasite":
                 data = Sulfides(impurity="pure", data_type=True).create_marcasite()
             elif self.mineral == "Calcite":
-                data = Carbonates(impurity="pure", dict=True).create_calcite()
+                data = Carbonates(impurity="pure", data_type=True).create_calcite()
             elif self.mineral == "Dolomite":
-                data = Carbonates(impurity="pure", dict=True).create_dolomite()
+                data = Carbonates(impurity="pure", data_type=True).create_dolomite()
             elif self.mineral == "Magnesite":
-                data = Carbonates(impurity="pure", dict=True).create_magnesite()
+                data = Carbonates(impurity="pure", data_type=True).create_magnesite()
             elif self.mineral == "Siderite":
-                data = Carbonates(impurity="pure", dict=True).create_siderite()
+                data = Carbonates(impurity="pure", data_type=True).create_siderite()
             elif self.mineral == "Rhodochrosite":
                 data = Carbonates(impurity="pure", data_type=True).create_rhodochrosite()
             elif self.mineral == "Aragonite":
@@ -1021,8 +1044,24 @@ class Minerals:
                 data = Halogenes(impurity="pure", dict=True).create_fluorite()
             elif self.mineral == "Sylvite":
                 data = Halogenes(impurity="pure", dict=True).create_sylvite()
+            # Phyllosilicates
             elif self.mineral == "Illite":
-                data = Pyllosilicates(impurity="pure", dict=True).create_illite()
+                data = Phyllosilicates(impurity="pure", data_type=True).create_illite()
+            elif self.mineral == "Kaolinite":
+                data = Phyllosilicates(impurity="pure", data_type=True).create_kaolinite()
+            elif self.mineral == "Montmorillonite":
+                data = Phyllosilicates(impurity="pure", data_type=True).create_montmorillonite()
+            elif self.mineral == "Chamosite":
+                data = Phyllosilicates(impurity="pure", data_type=True).create_chamosite()
+            elif self.mineral == "Clinochlore":
+                data = Phyllosilicates(impurity="pure", data_type=True).create_clinochlore()
+            elif self.mineral == "Pennantite":
+                data = Phyllosilicates(impurity="pure", data_type=True).create_pennantite()
+            elif self.mineral == "Nimite":
+                data = Phyllosilicates(impurity="pure", data_type=True).create_nimite()
+            elif self.mineral == "Chlorite":
+                data = Phyllosilicates(impurity="pure", data_type=True).create_chlorite()
+            # Tectosilicates
             elif self.mineral == "Alkalifeldspar":
                 data = Tectosilicates(impurity="pure", data_type=True).create_alkalifeldspar()
             elif self.mineral == "Plagioclase":
