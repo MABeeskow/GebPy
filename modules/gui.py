@@ -18,7 +18,7 @@ from modules.oxides import Oxides
 from modules.sulfides import Sulfides
 from modules.carbonates import Carbonates
 from modules.halogenes import Halogenes
-from modules.silicates import Tectosilicates, Phyllosilicates
+from modules.silicates import Tectosilicates, Phyllosilicates, Nesosilicates
 #from modules.pyllosilicates import Pyllosilicates
 from modules.minerals import feldspars
 from modules.siliciclastics import sandstone, shale
@@ -120,7 +120,8 @@ class GebPyGUI(tk.Frame):
         #
         ## Option Menu
         var_opt_0_0 = tk.StringVar()
-        opt_list_0_0 = ["Oxides", "Sulfides", "Carbonates", "Halogenes", "Tectosilicates", "Phyllosilicates", "Sulfates"]
+        opt_list_0_0 = ["Oxides", "Sulfides", "Carbonates", "Halogenes", "Tectosilicates", "Phyllosilicates",
+                        "Sulfates", "Nesosilicates"]
         opt_list_0_0.sort()
         self.opt_mingroup = SE(parent=self.parent, row_id=8, column_id=0, n_rows=2, n_columns=2, bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
             var_opt=var_opt_0_0, var_opt_set="Select Mineral Group", opt_list=opt_list_0_0,
@@ -197,6 +198,10 @@ class GebPyGUI(tk.Frame):
         elif var_opt in ["Illite", "Kaolinite", "Montmorillonite", "Chamosite", "Clinochlore", "Pennantite", "Nimite",
                          "Chlorite", "Vermiculite", "Annite", "Phlogopite", "Eastonite", "Siderophyllite", "Biotite",
                          "Muscovite", "Glauconite"]:
+            Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
+                     color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
+                     entr_w=self.entr_w)
+        elif var_opt in ["Zircon", "Thorite"]:
             Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                      color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
                      entr_w=self.entr_w)
@@ -289,6 +294,7 @@ class GebPyGUI(tk.Frame):
                 self.opt_clays.grid_remove()
                 self.opt_afs.grid_remove()
                 self.opt_sulfate.grid_remove()
+                self.opt_nesosilicate.grid_remove()
             except:
                 pass
             var_opt_0_1 = tk.StringVar()
@@ -310,6 +316,7 @@ class GebPyGUI(tk.Frame):
                 self.opt_clays.grid_remove()
                 self.opt_afs.grid_remove()
                 self.opt_sulfate.grid_remove()
+                self.opt_nesosilicate.grid_remove()
             except:
                 pass
             var_opt_0_2 = tk.StringVar()
@@ -329,6 +336,7 @@ class GebPyGUI(tk.Frame):
                 self.opt_clays.grid_remove()
                 self.opt_afs.grid_remove()
                 self.opt_sulfate.grid_remove()
+                self.opt_nesosilicate.grid_remove()
             except:
                 pass
             var_opt_0_3 = tk.StringVar()
@@ -347,6 +355,7 @@ class GebPyGUI(tk.Frame):
                 self.opt_clays.grid_remove()
                 self.opt_afs.grid_remove()
                 self.opt_sulfate.grid_remove()
+                self.opt_nesosilicate.grid_remove()
             except:
                 pass
             var_opt_0_4 = tk.StringVar()
@@ -363,6 +372,7 @@ class GebPyGUI(tk.Frame):
                 self.opt_halogene.grid_remove()
                 self.opt_clays.grid_remove()
                 self.opt_sulfate.grid_remove()
+                self.opt_nesosilicate.grid_remove()
             except:
                 pass
             var_opt_0_5 = tk.StringVar()
@@ -379,6 +389,7 @@ class GebPyGUI(tk.Frame):
                 self.opt_halogene.grid_remove()
                 self.opt_afs.grid_remove()
                 self.opt_sulfate.grid_remove()
+                self.opt_nesosilicate.grid_remove()
             except:
                 pass
             var_opt_0_6 = tk.StringVar()
@@ -398,6 +409,7 @@ class GebPyGUI(tk.Frame):
                 self.opt_halogene.grid_remove()
                 self.opt_afs.grid_remove()
                 self.opt_clays.grid_remove()
+                self.opt_nesosilicate.grid_remove()
             except:
                 pass
             var_opt_0_7 = tk.StringVar()
@@ -408,6 +420,24 @@ class GebPyGUI(tk.Frame):
                               bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
                 var_opt=var_opt_0_7, var_opt_set="Select Sulfate Mineral", opt_list=opt_list_0_7,
                 command=lambda var_opt=var_opt_0_7: self.select_opt(var_opt))
+        elif var_opt == "Nesosilicates":
+            try:
+                self.opt_oxide.grid_remove()
+                self.opt_sulfide.grid_remove()
+                self.opt_carb.grid_remove()
+                self.opt_halogene.grid_remove()
+                self.opt_afs.grid_remove()
+                self.opt_clays.grid_remove()
+                self.opt_sulfate.grid_remove()
+            except:
+                pass
+            var_opt_0_8 = tk.StringVar()
+            opt_list_0_8 = ["Zircon", "Thorite"]
+            opt_list_0_8.sort()
+            self.opt_nesosilicate = SE(parent=self.parent, row_id=10, column_id=0, n_rows=2, n_columns=2,
+                              bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
+                var_opt=var_opt_0_8, var_opt_set="Select Sulfate Mineral", opt_list=opt_list_0_8,
+                command=lambda var_opt=var_opt_0_8: self.select_opt(var_opt))
         elif var_opt == "Siliciclastic Rocks":
             var_opt_1_1 = tk.StringVar()
             opt_list_1_1 = ["Sandstone", "Shale"]
@@ -724,6 +754,11 @@ class Minerals:
                 data = Sulfates(impurity="pure", data_type=True).create_scheelite()
             elif self.mineral == "Hexahydrite":
                 data = Sulfates(impurity="pure", data_type=True).create_hexahydrite()
+            # Nesosilicates
+            elif self.mineral == "Zircon":
+                data = Nesosilicates(data_type=True).create_zircon()
+            elif self.mineral == "Thorite":
+                data = Nesosilicates(data_type=True).create_thorite()
             self.color_mineral = "#7C9097"
             #
             data_all.append(data)
@@ -1126,6 +1161,11 @@ class Minerals:
                 data = Sulfates(impurity="pure", data_type=True).create_scheelite()
             elif self.mineral == "Hexahydrite":
                 data = Sulfates(impurity="pure", data_type=True).create_hexahydrite()
+            # Nesosilicates
+            elif self.mineral == "Zircon":
+                data = Nesosilicates(data_type=True).create_zircon()
+            elif self.mineral == "Thorite":
+                data = Nesosilicates(data_type=True).create_thorite()
             self.color_mineral = "#7C9097"
             #
             data_all.append(data)
