@@ -18,7 +18,7 @@ from modules.oxides import Oxides
 from modules.sulfides import Sulfides
 from modules.carbonates import Carbonates
 from modules.halogenes import Halogenes
-from modules.silicates import Tectosilicates, Phyllosilicates, Nesosilicates, Sorosilicates
+from modules.silicates import Tectosilicates, Phyllosilicates, Nesosilicates, Sorosilicates, Inosilicates
 #from modules.pyllosilicates import Pyllosilicates
 from modules.minerals import feldspars
 from modules.siliciclastics import sandstone, shale
@@ -121,7 +121,7 @@ class GebPyGUI(tk.Frame):
         ## Option Menu
         var_opt_0_0 = tk.StringVar()
         opt_list_0_0 = ["Oxides", "Sulfides", "Carbonates", "Halogenes", "Tectosilicates", "Phyllosilicates",
-                        "Sulfates", "Nesosilicates", "Sorosilicates"]
+                        "Sulfates", "Nesosilicates", "Sorosilicates", "Inosilicates"]
         opt_list_0_0.sort()
         self.opt_mingroup = SE(parent=self.parent, row_id=8, column_id=0, n_rows=2, n_columns=2, bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
             var_opt=var_opt_0_0, var_opt_set="Select Mineral Group", opt_list=opt_list_0_0,
@@ -209,7 +209,14 @@ class GebPyGUI(tk.Frame):
                      color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
                      entr_w=self.entr_w)
         # SOROSILICATES
-        elif var_opt in ["Epidote"]:
+        elif var_opt in ["Epidote", "Zoisite", "Gehlenite"]:
+            Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
+                     color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
+                     entr_w=self.entr_w)
+        # INOSILICATES
+        elif var_opt in ["Enstatite", "Ferrosilite", "Diopside", "Jadeite", "Aegirine", "Spodumene", "Wollastonite",
+                         "Tremolite", "Actinolite", "Glaucophane", "Augite", "Riebeckite", "Arfvedsonite",
+                         "Calcium Amphibole", "Sodium Amphibole", "Mg-Fe Pyroxene", "Calcium Pyroxene"]:
             Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                      color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
                      entr_w=self.entr_w)
@@ -304,6 +311,7 @@ class GebPyGUI(tk.Frame):
                 self.opt_sulfate.grid_remove()
                 self.opt_nesosilicate.grid_remove()
                 self.opt_sorosilicate.grid_remove()
+                self.opt_inosilicate.grid_remove()
             except:
                 pass
             var_opt_0_1 = tk.StringVar()
@@ -315,7 +323,7 @@ class GebPyGUI(tk.Frame):
             opt_list_0_1.sort()
             self.opt_oxide = SE(parent=self.parent, row_id=10, column_id=0, n_rows=2, n_columns=2,
                                 bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
-                var_opt=var_opt_0_1, var_opt_set="Select Oxide", opt_list=opt_list_0_1, active_bg=self.color_accent_02,
+                var_opt=var_opt_0_1, var_opt_set="Select Oxide Mineral", opt_list=opt_list_0_1, active_bg=self.color_accent_02,
                 command=lambda var_opt=var_opt_0_1: self.select_opt(var_opt))
         elif var_opt == "Sulfides":
             try:
@@ -327,6 +335,7 @@ class GebPyGUI(tk.Frame):
                 self.opt_sulfate.grid_remove()
                 self.opt_nesosilicate.grid_remove()
                 self.opt_sorosilicate.grid_remove()
+                self.opt_inosilicate.grid_remove()
             except:
                 pass
             var_opt_0_2 = tk.StringVar()
@@ -336,7 +345,7 @@ class GebPyGUI(tk.Frame):
             opt_list_0_2.sort()
             self.opt_sulfide = SE(parent=self.parent, row_id=10, column_id=0, n_rows=2, n_columns=2,
                                   bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
-                var_opt=var_opt_0_2, var_opt_set="Select Sulfide", opt_list=opt_list_0_2,
+                var_opt=var_opt_0_2, var_opt_set="Select Sulfide Mineral", opt_list=opt_list_0_2,
                 command=lambda var_opt=var_opt_0_2: self.select_opt(var_opt))
         elif var_opt == "Carbonates":
             try:
@@ -348,6 +357,7 @@ class GebPyGUI(tk.Frame):
                 self.opt_sulfate.grid_remove()
                 self.opt_nesosilicate.grid_remove()
                 self.opt_sorosilicate.grid_remove()
+                self.opt_inosilicate.grid_remove()
             except:
                 pass
             var_opt_0_3 = tk.StringVar()
@@ -356,7 +366,7 @@ class GebPyGUI(tk.Frame):
             opt_list_0_3.sort()
             self.opt_carb = SE(parent=self.parent, row_id=10, column_id=0, n_rows=2, n_columns=2,
                                bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
-                var_opt=var_opt_0_3, var_opt_set="Select Carbonate", opt_list=opt_list_0_3,
+                var_opt=var_opt_0_3, var_opt_set="Select Carbonate Mineral", opt_list=opt_list_0_3,
                 command=lambda var_opt=var_opt_0_3: self.select_opt(var_opt))
         elif var_opt == "Halogenes":
             try:
@@ -368,13 +378,14 @@ class GebPyGUI(tk.Frame):
                 self.opt_sulfate.grid_remove()
                 self.opt_nesosilicate.grid_remove()
                 self.opt_sorosilicate.grid_remove()
+                self.opt_inosilicate.grid_remove()
             except:
                 pass
             var_opt_0_4 = tk.StringVar()
             opt_list_0_4 = ["Halite", "Fluorite", "Sylvite"]
             self.opt_halogene = SE(parent=self.parent, row_id=10, column_id=0, n_rows=2, n_columns=2,
                                    bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
-                var_opt=var_opt_0_4, var_opt_set="Select Halogene", opt_list=opt_list_0_4,
+                var_opt=var_opt_0_4, var_opt_set="Select Halogene Mineral", opt_list=opt_list_0_4,
                 command=lambda var_opt=var_opt_0_4: self.select_opt(var_opt))
         elif var_opt == "Tectosilicates":
             try:
@@ -386,13 +397,14 @@ class GebPyGUI(tk.Frame):
                 self.opt_sulfate.grid_remove()
                 self.opt_nesosilicate.grid_remove()
                 self.opt_sorosilicate.grid_remove()
+                self.opt_inosilicate.grid_remove()
             except:
                 pass
             var_opt_0_5 = tk.StringVar()
             opt_list_0_5 = ["Alkalifeldspar", "Plagioclase", "Scapolite"]
             self.opt_afs = SE(parent=self.parent, row_id=10, column_id=0, n_rows=2, n_columns=2,
                               bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
-                var_opt=var_opt_0_5, var_opt_set="Select Tectosilicate", opt_list=opt_list_0_5,
+                var_opt=var_opt_0_5, var_opt_set="Select Tectosilicate Mineral", opt_list=opt_list_0_5,
                 command=lambda var_opt=var_opt_0_5: self.select_opt(var_opt))
         elif var_opt == "Phyllosilicates":
             try:
@@ -404,6 +416,7 @@ class GebPyGUI(tk.Frame):
                 self.opt_sulfate.grid_remove()
                 self.opt_nesosilicate.grid_remove()
                 self.opt_sorosilicate.grid_remove()
+                self.opt_inosilicate.grid_remove()
             except:
                 pass
             var_opt_0_6 = tk.StringVar()
@@ -413,7 +426,7 @@ class GebPyGUI(tk.Frame):
             opt_list_0_6.sort()
             self.opt_clays = SE(parent=self.parent, row_id=10, column_id=0, n_rows=2, n_columns=2,
                               bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
-                var_opt=var_opt_0_6, var_opt_set="Select Phyllosilicates", opt_list=opt_list_0_6,
+                var_opt=var_opt_0_6, var_opt_set="Select Phyllosilicate Mineral", opt_list=opt_list_0_6,
                 command=lambda var_opt=var_opt_0_6: self.select_opt(var_opt))
         elif var_opt == "Sulfates":
             try:
@@ -425,6 +438,7 @@ class GebPyGUI(tk.Frame):
                 self.opt_clays.grid_remove()
                 self.opt_nesosilicate.grid_remove()
                 self.opt_sorosilicate.grid_remove()
+                self.opt_inosilicate.grid_remove()
             except:
                 pass
             var_opt_0_7 = tk.StringVar()
@@ -446,6 +460,7 @@ class GebPyGUI(tk.Frame):
                 self.opt_clays.grid_remove()
                 self.opt_sulfate.grid_remove()
                 self.opt_sorosilicate.grid_remove()
+                self.opt_inosilicate.grid_remove()
             except:
                 pass
             var_opt_0_8 = tk.StringVar()
@@ -456,7 +471,7 @@ class GebPyGUI(tk.Frame):
             opt_list_0_8.sort()
             self.opt_nesosilicate = SE(parent=self.parent, row_id=10, column_id=0, n_rows=2, n_columns=2,
                               bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
-                var_opt=var_opt_0_8, var_opt_set="Select Sulfate Mineral", opt_list=opt_list_0_8,
+                var_opt=var_opt_0_8, var_opt_set="Select Nesosilicate Mineral", opt_list=opt_list_0_8,
                 command=lambda var_opt=var_opt_0_8: self.select_opt(var_opt))
         # SOROSILICATES
         elif var_opt == "Sorosilicates":
@@ -469,15 +484,39 @@ class GebPyGUI(tk.Frame):
                 self.opt_clays.grid_remove()
                 self.opt_sulfate.grid_remove()
                 self.opt_nesosilicate.grid_remove()
+                self.opt_inosilicate.grid_remove()
             except:
                 pass
             var_opt_0_9 = tk.StringVar()
-            opt_list_0_9 = ["Epidote"]
+            opt_list_0_9 = ["Epidote", "Zoisite", "Gehlenite"]
             opt_list_0_9.sort()
             self.opt_sorosilicate = SE(parent=self.parent, row_id=10, column_id=0, n_rows=2, n_columns=2,
                                        bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
-                var_opt=var_opt_0_9, var_opt_set="Select Sulfate Mineral", opt_list=opt_list_0_9,
+                var_opt=var_opt_0_9, var_opt_set="Select Sorosilicate Mineral", opt_list=opt_list_0_9,
                 command=lambda var_opt=var_opt_0_9: self.select_opt(var_opt))
+        # INOSILICATES
+        elif var_opt == "Inosilicates":
+            try:
+                self.opt_oxide.grid_remove()
+                self.opt_sulfide.grid_remove()
+                self.opt_carb.grid_remove()
+                self.opt_halogene.grid_remove()
+                self.opt_afs.grid_remove()
+                self.opt_clays.grid_remove()
+                self.opt_sulfate.grid_remove()
+                self.opt_nesosilicate.grid_remove()
+                self.opt_sorosilicate.grid_remove()
+            except:
+                pass
+            var_opt_0_10 = tk.StringVar()
+            opt_list_0_10 = ["Enstatite", "Ferrosilite", "Diopside", "Jadeite", "Aegirine", "Spodumene", "Wollastonite",
+                             "Tremolite", "Actinolite", "Glaucophane", "Augite", "Riebeckite", "Arfvedsonite",
+                             "Calcium Amphibole", "Sodium Amphibole", "Mg-Fe Pyroxene", "Calcium Pyroxene"]
+            opt_list_0_10.sort()
+            self.opt_inosilicate = SE(parent=self.parent, row_id=10, column_id=0, n_rows=2, n_columns=2,
+                                       bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
+                var_opt=var_opt_0_10, var_opt_set="Select Inosilicate Mineral", opt_list=opt_list_0_10,
+                command=lambda var_opt=var_opt_0_10: self.select_opt(var_opt))
         elif var_opt == "Siliciclastic Rocks":
             var_opt_1_1 = tk.StringVar()
             opt_list_1_1 = ["Sandstone", "Shale"]
@@ -838,6 +877,46 @@ class Minerals:
             # Sorosilicates
             elif self.mineral == "Epidote":
                 data = Sorosilicates(data_type=True).create_epidote()
+            elif self.mineral == "Zoisite":
+                data = Sorosilicates(data_type=True).create_zoisite()
+            elif self.mineral == "Gehlenite":
+                data = Sorosilicates(data_type=True).create_gehlenite()
+            # Inosilicates
+            elif self.mineral == "Enstatite":
+                data = Inosilicates(data_type=True).create_enstatite()
+            elif self.mineral == "Ferrosilite":
+                data = Inosilicates(data_type=True).create_ferrosilite()
+            elif self.mineral == "Diopside":
+                data = Inosilicates(data_type=True).create_diopside()
+            elif self.mineral == "Jadeite":
+                data = Inosilicates(data_type=True).create_jadeite()
+            elif self.mineral == "Aegirine":
+                data = Inosilicates(data_type=True).create_aegirine()
+            elif self.mineral == "Spodumene":
+                data = Inosilicates(data_type=True).create_spodumene()
+            elif self.mineral == "Wollastonite":
+                data = Inosilicates(data_type=True).create_wollastonite()
+            elif self.mineral == "Tremolite":
+                data = Inosilicates(data_type=True).create_tremolite()
+            elif self.mineral == "Actinolite":
+                data = Inosilicates(data_type=True).create_actinolite()
+            elif self.mineral == "Glaucophane":
+                data = Inosilicates(data_type=True).create_glaucophane()
+            elif self.mineral == "Augite":
+                data = Inosilicates(data_type=True).create_augite()
+            elif self.mineral == "Riebeckite":
+                data = Inosilicates(data_type=True).create_riebeckite()
+            elif self.mineral == "Arfvedsonite":
+                data = Inosilicates(data_type=True).create_arfvedsonite()
+            elif self.mineral == "Calcium Amphibole":
+                data = Inosilicates(data_type=True).create_calcium_amphibole()
+            elif self.mineral == "Sodium Amphibole":
+                data = Inosilicates(data_type=True).create_sodium_amphibole()
+            elif self.mineral == "Mg-Fe Pyroxene":
+                data = Inosilicates(data_type=True).create_mg_fe_pyroxene()
+            elif self.mineral == "Calcium Pyroxene":
+                data = Inosilicates(data_type=True).create_calium_pyroxene()
+            #
             self.color_mineral = "#7C9097"
             #
             data_all.append(data)
@@ -1284,6 +1363,45 @@ class Minerals:
             # Sorosilicates
             elif self.mineral == "Epidote":
                 data = Sorosilicates(data_type=True).create_epidote()
+            elif self.mineral == "Zoisite":
+                data = Sorosilicates(data_type=True).create_zoisite()
+            elif self.mineral == "Gehlenite":
+                data = Sorosilicates(data_type=True).create_gehlenite()
+            # Inosilicates
+            elif self.mineral == "Enstatite":
+                data = Inosilicates(data_type=True).create_enstatite()
+            elif self.mineral == "Ferrosilite":
+                data = Inosilicates(data_type=True).create_ferrosilite()
+            elif self.mineral == "Diopside":
+                data = Inosilicates(data_type=True).create_diopside()
+            elif self.mineral == "Jadeite":
+                data = Inosilicates(data_type=True).create_jadeite()
+            elif self.mineral == "Aegirine":
+                data = Inosilicates(data_type=True).create_aegirine()
+            elif self.mineral == "Spodumene":
+                data = Inosilicates(data_type=True).create_spodumene()
+            elif self.mineral == "Wollastonite":
+                data = Inosilicates(data_type=True).create_wollastonite()
+            elif self.mineral == "Tremolite":
+                data = Inosilicates(data_type=True).create_tremolite()
+            elif self.mineral == "Actinolite":
+                data = Inosilicates(data_type=True).create_actinolite()
+            elif self.mineral == "Glaucophane":
+                data = Inosilicates(data_type=True).create_glaucophane()
+            elif self.mineral == "Augite":
+                data = Inosilicates(data_type=True).create_augite()
+            elif self.mineral == "Riebeckite":
+                data = Inosilicates(data_type=True).create_riebeckite()
+            elif self.mineral == "Arfvedsonite":
+                data = Inosilicates(data_type=True).create_arfvedsonite()
+            elif self.mineral == "Calcium Amphibole":
+                data = Inosilicates(data_type=True).create_calcium_amphibole()
+            elif self.mineral == "Sodium Amphibole":
+                data = Inosilicates(data_type=True).create_sodium_amphibole()
+            elif self.mineral == "Mg-Fe Pyroxene":
+                data = Inosilicates(data_type=True).create_mg_fe_pyroxene()
+            elif self.mineral == "Calcium Pyroxene":
+                data = Inosilicates(data_type=True).create_calium_pyroxene()
             #
             self.color_mineral = "#7C9097"
             #
@@ -2675,7 +2793,7 @@ class Rocks:
                             fg=self.color_fg_dark).create_label(text="Min", relief=tk.RAISED)
             lbl_name = SE(parent=self.window_custom_mineralogy, row_id=1, column_id=23, bg=self.color_accent_01,
                             fg=self.color_fg_dark).create_label(text="Max", relief=tk.RAISED)
-            list_sorosilicates = ["Epidote", "Zoisite", "Tanzanite", "Allanite", "Vesuvianite"]
+            list_sorosilicates = ["Epidote", "Zoisite", "Gehlenite"]
             for index, sorosilicate in enumerate(list_sorosilicates, start=0):
                 lbl = SE(parent=self.window_custom_mineralogy, row_id=2+index, column_id=20, bg=self.color_accent_02,
                          fg=self.color_fg_dark).create_label(text=sorosilicate, relief=tk.RAISED)
