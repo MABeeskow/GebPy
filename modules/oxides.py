@@ -43,7 +43,7 @@ class Oxides():
             minors_x = ["Ti", "Ge", "Sn"]               # mainly 4+
             minors_y = ["Al", "Fe", "Ga", "As", "B"]    # mainly 3+
             minors_z = ["H", "Li", "Na", "Ag", "K"]     # mainly 1+
-            minors_w = ["Mg", "Cu"]                     # mainly 2+
+            minors_w = ["Mg", "Cu", "Be", "Mn"]         # mainly 2+
             if self.impurity == "random":
                 n_x = rd.randint(0, len(minors_x))
                 n_y = rd.randint(0, len(minors_y))
