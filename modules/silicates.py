@@ -6825,7 +6825,6 @@ class Inosilicates:
         vP = ((K + 4/3*G)/rho)**0.5
         # S-wave velocity
         vS = (G/rho)**0.5
-        print(amounts)
         # Gamma ray
         gamma_ray = wg(amounts=amounts, elements=element).calculate_gr()
         # Photoelectricity

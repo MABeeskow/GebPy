@@ -6,7 +6,7 @@
 # Name:		carbonates.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		13.11.2021
+# Date:		04.01.2022
 
 #-----------------------------------------------
 
@@ -1656,7 +1656,9 @@ class Carbonates():
         # Density
         dataV = CrystalPhysics([[4.99, 17.06], [], "trigonal"])
         V = dataV.calculate_volume()
-        dataRho = CrystalPhysics([molar_mass, 6, V])
+        Z = 6
+        V_m = MineralChemistry().calculate_molar_volume(volume_cell=V, z=Z)
+        dataRho = CrystalPhysics([molar_mass, Z, V])
         rho = dataRho.calculate_bulk_density()
         rho_e = wg(amounts=amounts, elements=element, rho_b=rho).calculate_electron_density()
         # Bulk modulus
@@ -1702,7 +1704,7 @@ class Carbonates():
                 results["chemistry"][element] = amounts[index][2]
             results["rho"] = round(rho, 4)
             results["rho_e"] = round(rho_e, 4)
-            results["V"] = round(V, 4)
+            results["V"] = round(V_m, 4)
             results["vP"] = round(vP, 4)
             results["vS"] = round(vS, 4)
             results["vP/vS"] = round(vPvS, 4)
@@ -1762,7 +1764,9 @@ class Carbonates():
         # Density
         dataV = CrystalPhysics([[4.81, 16.01], [], "trigonal"])
         V = dataV.calculate_volume()
-        dataRho = CrystalPhysics([molar_mass, 3, V])
+        Z = 3
+        V_m = MineralChemistry().calculate_molar_volume(volume_cell=V, z=Z)
+        dataRho = CrystalPhysics([molar_mass, Z, V])
         rho = dataRho.calculate_bulk_density()
         rho_e = wg(amounts=amounts, elements=element, rho_b=rho).calculate_electron_density()
         # Bulk modulus
@@ -1808,7 +1812,7 @@ class Carbonates():
                 results["chemistry"][element] = amounts[index][2]
             results["rho"] = round(rho, 4)
             results["rho_e"] = round(rho_e, 4)
-            results["V"] = round(V, 4)
+            results["V"] = round(V_m, 4)
             results["vP"] = round(vP, 4)
             results["vS"] = round(vS, 4)
             results["vP/vS"] = round(vPvS, 4)
@@ -1867,7 +1871,9 @@ class Carbonates():
         # Density
         dataV = CrystalPhysics([[4.63, 15.03], [], "trigonal"])
         V = dataV.calculate_volume()
-        dataRho = CrystalPhysics([molar_mass, 6, V])
+        Z = 6
+        V_m = MineralChemistry().calculate_molar_volume(volume_cell=V, z=Z)
+        dataRho = CrystalPhysics([molar_mass, Z, V])
         rho = dataRho.calculate_bulk_density()
         rho_e = wg(amounts=amounts, elements=element, rho_b=rho).calculate_electron_density()
         # Bulk modulus
@@ -1913,7 +1919,7 @@ class Carbonates():
                 results["chemistry"][element] = amounts[index][2]
             results["rho"] = round(rho, 4)
             results["rho_e"] = round(rho_e, 4)
-            results["V"] = round(V, 4)
+            results["V"] = round(V_m, 4)
             results["vP"] = round(vP, 4)
             results["vS"] = round(vS, 4)
             results["vP/vS"] = round(vPvS, 4)
@@ -1971,7 +1977,9 @@ class Carbonates():
         # Density
         dataV = CrystalPhysics([[4.69, 15.38], [], "trigonal"])
         V = dataV.calculate_volume()
-        dataRho = CrystalPhysics([molar_mass, 6, V])
+        Z = 6
+        V_m = MineralChemistry().calculate_molar_volume(volume_cell=V, z=Z)
+        dataRho = CrystalPhysics([molar_mass, Z, V])
         rho = dataRho.calculate_bulk_density()
         rho_e = wg(amounts=amounts, elements=element, rho_b=rho).calculate_electron_density()
         # Bulk modulus
@@ -2018,7 +2026,7 @@ class Carbonates():
                 results["chemistry"][element] = amounts[index][2]
             results["rho"] = round(rho, 4)
             results["rho_e"] = round(rho_e, 4)
-            results["V"] = round(V, 4)
+            results["V"] = round(V_m, 4)
             results["vP"] = round(vP, 4)
             results["vS"] = round(vS, 4)
             results["vP/vS"] = round(vPvS, 4)
