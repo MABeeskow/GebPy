@@ -1298,7 +1298,7 @@ class Rocks:
                 elif self.rock == "Dolomite Rock":
                     data = dolomite(fluid="water", actualThickness=0).create_simple_dolomite(dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
                 elif self.rock == "Custom Carbonate Rock":
-                    data = CustomCarbonates(fluid="water", actualThickness=0, output_type=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_custom_rock_01()
+                    data = CustomCarbonates(fluid="water", actualThickness=0, output_type=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_custom_rock_all()
                 #
                 elif self.rock == "Felsic Rock":
                     data = Plutonic(fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_felsic()
@@ -1580,7 +1580,7 @@ class Rocks:
             elif self.rock == "Dolomite Rock":
                 data = dolomite(fluid="water", actualThickness=0).create_simple_dolomite(dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
             elif self.rock == "Custom Carbonate Rock":
-                    data = CustomCarbonates(fluid="water", actualThickness=0, output_type=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_custom_rock_01()
+                    data = CustomCarbonates(fluid="water", actualThickness=0, output_type=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_custom_rock_all()
             #
             elif self.rock == "Felsic Rock":
                 data = Plutonic(fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_felsic()
