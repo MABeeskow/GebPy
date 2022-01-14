@@ -586,10 +586,13 @@ class Minerals:
         var_rb_start = 0
         self.var_rb_trace = tk.IntVar()
         var_rb_trace_0 = 2
+        self.var_actual_trace = var_rb_trace_0
         self.var_entr = tk.IntVar()
         var_entr_start = 100
         self.lbl_w = lbl_w
         self.entr_w = entr_w
+        self.lbl_chem = []
+        self.entr_chem = []
         #
         ## Labels
         lbl_01 = SE(parent=self.parent_mineral, row_id=4, column_id=3, n_rows=2, bg=self.color_bg,
@@ -640,11 +643,11 @@ class Minerals:
         rb_03 = SE(parent=self.parent_mineral, row_id=32, column_id=0, n_rows=1, n_columns=2, bg=self.color_acc_01,
            fg="black").create_radiobutton(var_rb=self.var_rb_trace, var_rb_set=var_rb_trace_0, value_rb=2,
                                           text="Without Trace Elements", color_bg=self.color_acc_01,
-                                          command=lambda var_rb=self.var_rb: self.change_radiobutton(var_rb))
+                                          command=lambda var_rb=self.var_rb_trace: self.change_radiobutton(var_rb))
         rb_04 = SE(parent=self.parent_mineral, row_id=33, column_id=0, n_rows=1, n_columns=2, bg=self.color_acc_01,
            fg="black").create_radiobutton(var_rb=self.var_rb_trace, var_rb_set=var_rb_trace_0, value_rb=3,
                                           text="With Trace Elements", color_bg=self.color_acc_01,
-                                          command=lambda var_rb=self.var_rb: self.change_radiobutton(var_rb))
+                                          command=lambda var_rb=self.var_rb_trace: self.change_radiobutton(var_rb))
         #
         self.lbl_w.extend([rb_01, rb_02, rb_03, rb_04])
         #
@@ -1003,6 +1006,7 @@ class Minerals:
                                                           opt_list=opt_list_chem, active_bg=self.color_acc_02,
                                                           command=lambda var_opt=self.var_opt_chem: self.select_opt(var_opt))
         self.lbl_w.append(self.opt_chem)
+        self.lbl_chem.append(self.opt_chem)
         #
         self.results = [self.molar_mass, self.rho_b, self.vP, self.vS, self.vPvS, self.bulk_mod, self.shear_mod,
                         self.poisson, self.gamma_ray, self.photoelectricity]
@@ -1022,6 +1026,7 @@ class Minerals:
             lbl_w = SE(parent=self.parent_mineral, row_id=25+i, column_id=3, bg=self.color_bg,
                fg="black").create_label(text=str(element), relief=tk.RAISED)
             self.lbl_w.append(lbl_w)
+            self.lbl_chem.append(lbl_w)
             if self.var_dict == False:
                 self.results.append(self.element_list[i])
             else:
@@ -1057,6 +1062,10 @@ class Minerals:
                 self.entr_w.append(entr_max)
                 self.entr_w.append(entr_mean)
                 self.entr_w.append(entr_std)
+                self.entr_chem.append(entr_min)
+                self.entr_chem.append(entr_max)
+                self.entr_chem.append(entr_mean)
+                self.entr_chem.append(entr_std)
         #
         self.create_plot(parent=self.parent_mineral, data=self.rho_b/1000, row_id=2, column_id=9, n_rows=15,
                          n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)", color=self.color_mineral)
@@ -1639,6 +1648,903 @@ class Minerals:
                                      row_id=32, column_id=15, n_rows=15, n_columns=3,
                                      xlabel="Density $\\varrho$ g/ccm",
                                      ylabel="Photoelectricity PE (barns/electron)", color=self.color_mineral)
+        elif var_rb.get() == 2:
+            print(var_rb.get(), self.var_actual_trace)
+            if var_rb.get() != self.var_actual_trace:
+                try:
+                    self.fig_histo.clf()
+                    self.ax_histo.cla()
+                    self.canvas_histo.get_tk_widget().pack_forget()
+                    for lbl in self.lbl_chem:
+                        lbl.grid_forget()
+                    for entr in self.entr_chem:
+                        entr.grid_forget()
+                    self.lbl_chem.clear()
+                    self.entr_chem.clear()
+                except AttributeError:
+                    pass
+
+                try:
+                    if self.canvas_histo:
+                        self.canvas_histo.destroy()
+                except AttributeError:
+                    pass
+                #
+                self.var_actual_trace = var_rb.get()
+                data_all = []
+                for i in range(self.var_entr.get()):
+                    # Oxides
+                    if self.mineral == "Quartz":
+                        data = Oxides(impurity="pure", data_type=True).create_quartz()
+                    elif self.mineral == "Magnetite":
+                        data = Oxides(impurity="pure").create_magnetite(dict=True)
+                    elif self.mineral == "Cassiterite":
+                        data = Oxides(impurity="pure", data_type=True).create_cassiterite()
+                    elif self.mineral == "Chromite":
+                        data = Oxides(impurity="pure", data_type=True).create_chromite()
+                    elif self.mineral == "Magnesiochromite":
+                        data = Oxides(impurity="pure", data_type=True).create_magnesiochromite()
+                    elif self.mineral == "Zincochromite":
+                        data = Oxides(impurity="pure", data_type=True).create_zincochromite()
+                    elif self.mineral == "Trevorite":
+                        data = Oxides(impurity="pure", data_type=True).create_trevorite()
+                    elif self.mineral == "Hematite":
+                        data = Oxides(impurity="pure").create_hematite(dict=True)
+                    elif self.mineral == "Pyrolusite":
+                        data = Oxides(impurity="pure", data_type=True).create_pyrolusite()
+                    elif self.mineral == "Rutile":
+                        data = Oxides(impurity="pure", data_type=True).create_rutile()
+                    elif self.mineral == "Ilmenite":
+                        data = Oxides(impurity="pure", data_type=True).create_ilmenite()
+                    elif self.mineral == "Litharge":
+                        data = Oxides(impurity="pure", data_type=True).create_litharge()
+                    elif self.mineral == "Massicot":
+                        data = Oxides(impurity="pure", data_type=True).create_massicot()
+                    elif self.mineral == "Minium":
+                        data = Oxides(impurity="pure", data_type=True).create_minium()
+                    elif self.mineral == "Plattnerite":
+                        data = Oxides(impurity="pure", data_type=True).create_plattnerite()
+                    elif self.mineral == "Scrutinyite":
+                        data = Oxides(impurity="pure", data_type=True).create_scrutinyite()
+                    elif self.mineral == "Zincite":
+                        data = Oxides(impurity="pure", data_type=True).create_zincite()
+                    elif self.mineral == "Uraninite":
+                        data = Oxides(impurity="pure", data_type=True).create_uraninite()
+                    elif self.mineral == "Corundum":
+                        data = Oxides(impurity="pure", data_type=True).create_corundum()
+                    elif self.mineral == "Aluminium Spinels":
+                        data = Oxides(impurity="pure", data_type=True).create_aluminium_spinel()
+                    elif self.mineral == "Chromium Spinels":
+                        data = Oxides(impurity="pure", data_type=True).create_chromium_spinel()
+                    elif self.mineral == "Iron Spinels":
+                        data = Oxides(impurity="pure", data_type=True).create_iron_spinel()
+                    elif self.mineral == "Cuprospinel":
+                        data = Oxides(impurity="pure", data_type=True).create_cuprospinel()
+                    elif self.mineral == "Jacobsite":
+                        data = Oxides(impurity="pure", data_type=True).create_jacobsite()
+                    elif self.mineral == "Magnesioferrite":
+                        data = Oxides(impurity="pure", data_type=True).create_magnesioferrite()
+                    elif self.mineral == "Franklinite":
+                        data = Oxides(impurity="pure", data_type=True).create_franklinite()
+                    elif self.mineral == "Ulvöspinel":
+                        data = Oxides(impurity="pure", data_type=True).create_ulvoespinel()
+                    elif self.mineral == "Pyrite":
+                        data = Sulfides(impurity="pure", data_type=True).create_pyrite()
+                    elif self.mineral == "Chalcopyrite":
+                        data = Sulfides(impurity="pure", data_type=True).create_chalcopyrite()
+                    elif self.mineral == "Galena":
+                        data = Sulfides(impurity="pure", data_type=True).create_galena()
+                    elif self.mineral == "Acanthite":
+                        data = Sulfides(impurity="pure", data_type=True).create_acanthite()
+                    elif self.mineral == "Chalcocite":
+                        data = Sulfides(impurity="pure", data_type=True).create_chalcocite()
+                    elif self.mineral == "Bornite":
+                        data = Sulfides(impurity="pure", data_type=True).create_bornite()
+                    elif self.mineral == "Sphalerite":
+                        data = Sulfides(impurity="pure", data_type=True).create_sphalerite()
+                    elif self.mineral == "Pyrrhotite":
+                        data = Sulfides(impurity="pure", data_type=True).create_pyrrhotite()
+                    elif self.mineral == "Millerite":
+                        data = Sulfides(impurity="pure", data_type=True).create_millerite()
+                    elif self.mineral == "Pentlandite":
+                        data = Sulfides(impurity="pure", data_type=True).create_pentlandite()
+                    elif self.mineral == "Covellite":
+                        data = Sulfides(impurity="pure", data_type=True).create_covellite()
+                    elif self.mineral == "Cinnabar":
+                        data = Sulfides(impurity="pure", data_type=True).create_cinnabar()
+                    elif self.mineral == "Stibnite":
+                        data = Sulfides(impurity="pure", data_type=True).create_stibnite()
+                    elif self.mineral == "Molybdenite":
+                        data = Sulfides(impurity="pure", data_type=True).create_molybdenite()
+                    elif self.mineral == "Fahlore":
+                        data = Sulfides(impurity="pure", data_type=True).create_fahlore()
+                    elif self.mineral == "Realgar":
+                        data = Sulfides(impurity="pure", data_type=True).create_realgar()
+                    elif self.mineral == "Orpiment":
+                        data = Sulfides(impurity="pure", data_type=True).create_orpiment()
+                    elif self.mineral == "Marcasite":
+                        data = Sulfides(impurity="pure", data_type=True).create_marcasite()
+                    elif self.mineral == "Calcite":
+                        data = Carbonates(impurity="pure", data_type=True).create_calcite()
+                    elif self.mineral == "Dolomite":
+                        data = Carbonates(impurity="pure", data_type=True).create_dolomite()
+                    elif self.mineral == "Magnesite":
+                        data = Carbonates(impurity="pure", data_type=True).create_magnesite()
+                    elif self.mineral == "Siderite":
+                        data = Carbonates(impurity="pure", data_type=True).create_siderite()
+                    elif self.mineral == "Rhodochrosite":
+                        data = Carbonates(impurity="pure", data_type=True).create_rhodochrosite()
+                    elif self.mineral == "Aragonite":
+                        data = Carbonates(impurity="pure", data_type=True).create_aragonite()
+                    elif self.mineral == "Cerussite":
+                        data = Carbonates(impurity="pure", data_type=True).create_cerussite()
+                    elif self.mineral == "Ankerite":
+                        data = Carbonates(impurity="pure", data_type=True).create_ankerite()
+                    elif self.mineral == "Azurite":
+                        data = Carbonates(impurity="pure", data_type=True).create_azurite()
+                    elif self.mineral == "Malachite":
+                        data = Carbonates(impurity="pure", data_type=True).create_malachite()
+                    elif self.mineral == "Halite":
+                        data = Halogenes(impurity="pure", dict=True).create_halite()
+                    elif self.mineral == "Fluorite":
+                        data = Halogenes(impurity="pure", dict=True).create_fluorite()
+                    elif self.mineral == "Sylvite":
+                        data = Halogenes(impurity="pure", dict=True).create_sylvite()
+                    # Phyllosilicates
+                    elif self.mineral == "Illite":
+                        data = Phyllosilicates(impurity="pure", data_type=True).create_illite()
+                    elif self.mineral == "Kaolinite":
+                        data = Phyllosilicates(impurity="pure", data_type=True).create_kaolinite()
+                    elif self.mineral == "Montmorillonite":
+                        data = Phyllosilicates(impurity="pure", data_type=True).create_montmorillonite()
+                    elif self.mineral == "Chamosite":
+                        data = Phyllosilicates(impurity="pure", data_type=True).create_chamosite()
+                    elif self.mineral == "Clinochlore":
+                        data = Phyllosilicates(impurity="pure", data_type=True).create_clinochlore()
+                    elif self.mineral == "Pennantite":
+                        data = Phyllosilicates(impurity="pure", data_type=True).create_pennantite()
+                    elif self.mineral == "Nimite":
+                        data = Phyllosilicates(impurity="pure", data_type=True).create_nimite()
+                    elif self.mineral == "Chlorite":
+                        data = Phyllosilicates(impurity="pure", data_type=True).create_chlorite()
+                    elif self.mineral == "Vermiculite":
+                        data = Phyllosilicates(impurity="pure", data_type=True).create_vermiculite()
+                    elif self.mineral == "Annite":
+                        data = Phyllosilicates(impurity="pure", data_type=True).create_annite()
+                    elif self.mineral == "Phlogopite":
+                        data = Phyllosilicates(impurity="pure", data_type=True).create_phlogopite()
+                    elif self.mineral == "Eastonite":
+                        data = Phyllosilicates(impurity="pure", data_type=True).create_eastonite()
+                    elif self.mineral == "Siderophyllite":
+                        data = Phyllosilicates(impurity="pure", data_type=True).create_siderophyllite()
+                    elif self.mineral == "Biotite":
+                        data = Phyllosilicates(impurity="pure", data_type=True).create_biotite()
+                    elif self.mineral == "Muscovite":
+                        data = Phyllosilicates(impurity="pure", data_type=True).create_muscovite()
+                    elif self.mineral == "Glauconite":
+                        data = Phyllosilicates(impurity="pure", data_type=True).create_glauconite()
+                    # Tectosilicates
+                    elif self.mineral == "Alkalifeldspar":
+                        data = Tectosilicates(impurity="pure", data_type=True).create_alkalifeldspar()
+                    elif self.mineral == "Plagioclase":
+                        data = Tectosilicates(impurity="pure", data_type=True).create_plagioclase()
+                    elif self.mineral == "Scapolite":
+                        data = Tectosilicates(impurity="pure", data_type=True).create_scapolite()
+                    elif self.mineral == "Barite":
+                        data = Sulfates(impurity="pure", data_type=True).create_barite()
+                    elif self.mineral == "Anhydrite":
+                        data = Sulfates(impurity="pure", data_type=True).create_anhydrite()
+                    elif self.mineral == "Gypsum":
+                        data = Sulfates(impurity="pure", data_type=True).create_gypsum()
+                    elif self.mineral == "Celestite":
+                        data = Sulfates(impurity="pure", data_type=True).create_celestine()
+                    elif self.mineral == "Anglesite":
+                        data = Sulfates(impurity="pure", data_type=True).create_anglesite()
+                    elif self.mineral == "Hanksite":
+                        data = Sulfates(impurity="pure", data_type=True).create_hanksite()
+                    elif self.mineral == "Jarosite":
+                        data = Sulfates(impurity="pure", data_type=True).create_jarosite()
+                    elif self.mineral == "Alunite":
+                        data = Sulfates(impurity="pure", data_type=True).create_alunite()
+                    elif self.mineral == "Chalcanthite":
+                        data = Sulfates(impurity="pure", data_type=True).create_chalcanthite()
+                    elif self.mineral == "Kieserite":
+                        data = Sulfates(impurity="pure", data_type=True).create_kieserite()
+                    elif self.mineral == "Scheelite":
+                        data = Sulfates(impurity="pure", data_type=True).create_scheelite()
+                    elif self.mineral == "Hexahydrite":
+                        data = Sulfates(impurity="pure", data_type=True).create_hexahydrite()
+                    # Nesosilicates
+                    elif self.mineral == "Zircon":
+                        data = Nesosilicates(data_type=True).create_zircon()
+                    elif self.mineral == "Thorite":
+                        data = Nesosilicates(data_type=True).create_thorite()
+                    elif self.mineral == "Andalusite":
+                        data = Nesosilicates(data_type=True).create_andalusite()
+                    elif self.mineral == "Kyanite":
+                        data = Nesosilicates(data_type=True).create_kyanite()
+                    elif self.mineral == "Sillimanite":
+                        data = Nesosilicates(data_type=True).create_sillimanite()
+                    elif self.mineral == "Topaz":
+                        data = Nesosilicates(data_type=True).create_topaz()
+                    elif self.mineral == "Staurolite":
+                        data = Nesosilicates(data_type=True).create_staurolite()
+                    elif self.mineral == "Forsterite":
+                        data = Nesosilicates(data_type=True).create_forsterite()
+                    elif self.mineral == "Fayalite":
+                        data = Nesosilicates(data_type=True).create_fayalite()
+                    elif self.mineral == "Tephroite":
+                        data = Nesosilicates(data_type=True).create_tephroite()
+                    elif self.mineral == "Calcio-Olivine":
+                        data = Nesosilicates(data_type=True).create_calcio_olivine()
+                    elif self.mineral == "Liebenbergite":
+                        data = Nesosilicates(data_type=True).create_liebenbergite()
+                    elif self.mineral == "Olivine":
+                        data = Nesosilicates(data_type=True).create_olivine()
+                    elif self.mineral == "Pyrope":
+                        data = Nesosilicates(data_type=True).create_pyrope()
+                    elif self.mineral == "Almandine":
+                        data = Nesosilicates(data_type=True).create_almandine()
+                    elif self.mineral == "Grossular":
+                        data = Nesosilicates(data_type=True).create_grossular()
+                    elif self.mineral == "Andradite":
+                        data = Nesosilicates(data_type=True).create_andradite()
+                    elif self.mineral == "Uvarovite":
+                        data = Nesosilicates(data_type=True).create_uvarovite()
+                    elif self.mineral == "Aluminium Garnet":
+                        data = Nesosilicates(data_type=True).create_aluminium_garnet()
+                    elif self.mineral == "Calcium Garnet":
+                        data = Nesosilicates(data_type=True).create_calcium_garnet()
+                    # Sorosilicates
+                    elif self.mineral == "Epidote":
+                        data = Sorosilicates(data_type=True).create_epidote()
+                    elif self.mineral == "Zoisite":
+                        data = Sorosilicates(data_type=True).create_zoisite()
+                    elif self.mineral == "Gehlenite":
+                        data = Sorosilicates(data_type=True).create_gehlenite()
+                    # Inosilicates
+                    elif self.mineral == "Enstatite":
+                        data = Inosilicates(data_type=True).create_enstatite()
+                    elif self.mineral == "Ferrosilite":
+                        data = Inosilicates(data_type=True).create_ferrosilite()
+                    elif self.mineral == "Diopside":
+                        data = Inosilicates(data_type=True).create_diopside()
+                    elif self.mineral == "Jadeite":
+                        data = Inosilicates(data_type=True).create_jadeite()
+                    elif self.mineral == "Aegirine":
+                        data = Inosilicates(data_type=True).create_aegirine()
+                    elif self.mineral == "Spodumene":
+                        data = Inosilicates(data_type=True).create_spodumene()
+                    elif self.mineral == "Wollastonite":
+                        data = Inosilicates(data_type=True).create_wollastonite()
+                    elif self.mineral == "Tremolite":
+                        data = Inosilicates(data_type=True).create_tremolite()
+                    elif self.mineral == "Actinolite":
+                        data = Inosilicates(data_type=True).create_actinolite()
+                    elif self.mineral == "Glaucophane":
+                        data = Inosilicates(data_type=True).create_glaucophane()
+                    elif self.mineral == "Augite":
+                        data = Inosilicates(data_type=True).create_augite()
+                    elif self.mineral == "Riebeckite":
+                        data = Inosilicates(data_type=True).create_riebeckite()
+                    elif self.mineral == "Arfvedsonite":
+                        data = Inosilicates(data_type=True).create_arfvedsonite()
+                    elif self.mineral == "Calcium Amphibole":
+                        data = Inosilicates(data_type=True).create_calcium_amphibole()
+                    elif self.mineral == "Sodium Amphibole":
+                        data = Inosilicates(data_type=True).create_sodium_amphibole()
+                    elif self.mineral == "Mg-Fe Pyroxene":
+                        data = Inosilicates(data_type=True).create_mg_fe_pyroxene()
+                    elif self.mineral == "Calcium Pyroxene":
+                        data = Inosilicates(data_type=True).create_calium_pyroxene()
+                    #
+                    self.color_mineral = "#7C9097"
+                    #
+                    data_all.append(data)
+                #
+                if self.var_dict == False:
+                    elements = np.array(data_all[0][-1])[:, 0]
+                    self.element_list = []
+                    for element in elements:
+                        self.element_list.append(DP(dataset=data_all).extract_element_amounts(type="mineral", element=element)*100)
+                    #
+                    self.rho_b = DP(dataset=data_all).extract_densities(type="mineral", keyword="bulk")
+                    self.molar_mass = DP(dataset=data_all).extract_molar_mass()
+                    self.bulk_mod = DP(dataset=data_all).extract_elastic_moduli(type="mineral", keyword="bulk")
+                    self.shear_mod = DP(dataset=data_all).extract_elastic_moduli(type="mineral", keyword="shear")
+                    self.poisson = DP(dataset=data_all).extract_elastic_moduli(type="mineral", keyword="poisson")
+                    self.vP = DP(dataset=data_all).extract_seismic_velocities(type="mineral", keyword="vP")
+                    self.vS = DP(dataset=data_all).extract_seismic_velocities(type="mineral", keyword="vS")
+                    self.vPvS = DP(dataset=data_all).extract_seismic_velocities(type="mineral", keyword="vPvS")
+                    self.gamma_ray = DP(dataset=data_all).extract_gamma_ray(type="mineral")
+                    self.photoelectricity = DP(dataset=data_all).extract_photoelectricity(type="mineral")
+                    #
+                    if self.mineral == "Quartz":
+                        self.w_element = DP(dataset=data_all).extract_element_amounts(type="mineral", element="Si")*100
+                    elif self.mineral == "Alkalifeldspar":
+                        self.w_element = DP(dataset=data_all).extract_element_amounts(type="mineral", element="K")*100
+                    elif self.mineral == "Plagioclase":
+                        self.w_element = DP(dataset=data_all).extract_element_amounts(type="mineral", element="Ca")*100
+                else:
+                    self.molar_mass = DP(dataset=data_all).extract_data(keyword="M")
+                    self.volume = DP(dataset=data_all).extract_data(keyword="V")
+                    self.rho_b = DP(dataset=data_all).extract_data(keyword="rho")
+                    self.vP = DP(dataset=data_all).extract_data(keyword="vP")
+                    self.vS = DP(dataset=data_all).extract_data(keyword="vS")
+                    self.vPvS = DP(dataset=data_all).extract_data(keyword="vP/vS")
+                    self.bulk_mod = DP(dataset=data_all).extract_data(keyword="K")
+                    self.shear_mod = DP(dataset=data_all).extract_data(keyword="G")
+                    self.youngs_mod = DP(dataset=data_all).extract_data(keyword="E")
+                    self.poisson = DP(dataset=data_all).extract_data(keyword="nu")
+                    self.gamma_ray = DP(dataset=data_all).extract_data(keyword="GR")
+                    self.photoelectricity = DP(dataset=data_all).extract_data(keyword="PE")
+                    self.chemistry = DP(dataset=data_all).extract_data(keyword="chemistry")
+                    elements = np.array(list(data_all[0]["chemistry"].keys()))
+                    self.element_list = {}
+                    for element in elements:
+                        self.element_list[element] = []
+                        for index, chem_dict in enumerate(self.chemistry, start=0):
+                            self.element_list[element].append(abs(chem_dict[element]*100))
+                    if self.mineral in ["Magnetite", "Hematite", "Pyrite", "Siderite"]:
+                        self.w_element = self.element_list["Fe"]
+                    elif self.mineral in ["Quartz"]:
+                        self.w_element = self.element_list["Si"]
+                    elif self.mineral in ["Galena"]:
+                        self.w_element = self.element_list["Pb"]
+                    elif self.mineral in ["Chalcopyrite", "Cuprospinel"]:
+                        self.w_element = self.element_list["Cu"]
+                    elif self.mineral in ["Cassiterite"]:
+                        self.w_element = self.element_list["Sn"]
+                    elif self.mineral in ["Calcite", "Dolomite", "Fluorite", "Plagioclase"]:
+                        self.w_element = self.element_list["Ca"]
+                    elif self.mineral in ["Magnesite", "Aluminium Spinels"]:
+                        self.w_element = self.element_list["Mg"]
+                    elif self.mineral in ["Halite"]:
+                        self.w_element = self.element_list["Na"]
+                    elif self.mineral in ["Chromite", "Magnesiochromite", "Zincochromite", "Chromium Spinels"]:
+                        self.w_element = self.element_list["Cr"]
+                    elif self.mineral in ["Ilmenite", "Rutile"]:
+                        self.w_element = self.element_list["Ti"]
+                    elif self.mineral in ["Sylvite", "Alkalifeldspar"]:
+                        self.w_element = self.element_list["K"]
+                    elif self.mineral in ["Illite", "Corundum"]:
+                        self.w_element = self.element_list["Al"]
+                    elif self.mineral in ["Pyrolusite"]:
+                        self.w_element = self.element_list["Mn"]
+                #
+                self.var_opt_chem.set("Select Element")
+                #
+                self.results = [self.molar_mass, self.rho_b, self.vP, self.vS, self.vPvS, self.bulk_mod, self.shear_mod,
+                                self.poisson, self.gamma_ray, self.photoelectricity]
+                #
+                self.entr_list_min = []
+                self.entr_list_max = []
+                self.entr_list_mean = []
+                self.entr_list_std = []
+                for i in range(10+len(elements)):
+                    self.entr_list_min.append(tk.IntVar())
+                    self.entr_list_max.append(tk.IntVar())
+                    self.entr_list_mean.append(tk.IntVar())
+                    self.entr_list_std.append(tk.IntVar())
+                #
+                i = 0
+                for element in elements:
+                    lbl_w = SE(parent=self.parent_mineral, row_id=25+i, column_id=3, bg=self.color_bg,
+                       fg="black").create_label(text=str(element), relief=tk.RAISED)
+                    self.lbl_w.append(lbl_w)
+                    self.lbl_chem.append(lbl_w)
+                    if self.var_dict == False:
+                        self.results.append(self.element_list[i])
+                    else:
+                        self.results.append(self.element_list[element])
+                    i += 1
+                ## Entry Table
+                for i in range(10+len(elements)):
+                    if i < 10:
+                        entr_min = SE(parent=self.parent_mineral, row_id=4+2*i, column_id=4, n_rows=2, bg=self.color_bg,
+                           fg=self.color_fg).create_entry(var_entr=self.entr_list_min[i], var_entr_set=round(np.min(self.results[i]), 3))
+                        entr_max = SE(parent=self.parent_mineral, row_id=4+2*i, column_id=5, n_rows=2, bg=self.color_bg,
+                           fg=self.color_fg).create_entry(var_entr=self.entr_list_max[i], var_entr_set=round(np.max(self.results[i]), 3))
+                        entr_mean = SE(parent=self.parent_mineral, row_id=4+2*i, column_id=6, n_rows=2, bg=self.color_bg,
+                           fg=self.color_fg).create_entry(var_entr=self.entr_list_mean[i],
+                                                     var_entr_set=round(np.mean(self.results[i]), 3))
+                        entr_std = SE(parent=self.parent_mineral, row_id=4+2*i, column_id=7, n_rows=2, bg=self.color_bg,
+                           fg=self.color_fg).create_entry(var_entr=self.entr_list_std[i],
+                                                     var_entr_set=round(np.std(self.results[i], ddof=1), 3))
+                    elif i >= 10:
+                        entr_min = SE(parent=self.parent_mineral, row_id=15+i, column_id=4, n_rows=1, bg=self.color_bg,
+                                      fg=self.color_fg).create_entry(var_entr=self.entr_list_min[i],
+                                                                     var_entr_set=round(np.min(self.results[i]), 2))
+                        entr_max = SE(parent=self.parent_mineral, row_id=15+i, column_id=5, n_rows=1, bg=self.color_bg,
+                                      fg=self.color_fg).create_entry(var_entr=self.entr_list_max[i],
+                                                                     var_entr_set=round(np.max(self.results[i]), 2))
+                        entr_mean = SE(parent=self.parent_mineral, row_id=15+i, column_id=6, n_rows=1, bg=self.color_bg,
+                                       fg=self.color_fg).create_entry(var_entr=self.entr_list_mean[i],
+                                                                      var_entr_set=round(np.mean(self.results[i]), 2))
+                        entr_std = SE(parent=self.parent_mineral, row_id=15+i, column_id=7, n_rows=1, bg=self.color_bg,
+                                      fg=self.color_fg).create_entry(var_entr=self.entr_list_std[i],
+                                                                     var_entr_set=round(np.std(self.results[i], ddof=1), 2))
+                        self.entr_w.append(entr_min)
+                        self.entr_w.append(entr_max)
+                        self.entr_w.append(entr_mean)
+                        self.entr_w.append(entr_std)
+                        self.entr_chem.append(entr_min)
+                        self.entr_chem.append(entr_max)
+                        self.entr_chem.append(entr_mean)
+                        self.entr_chem.append(entr_std)
+                #
+                self.create_plot(parent=self.parent_mineral, data=self.rho_b/1000, row_id=2, column_id=9, n_rows=15,
+                                 n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)", color=self.color_mineral)
+                self.create_plot(parent=self.parent_mineral, data=self.vP/1000, row_id=2, column_id=12, n_rows=15,
+                                 n_columns=3, xlabel="Seismic velocity $v_P$ (km/s)", color=self.color_mineral)
+                self.create_plot(parent=self.parent_mineral, data=self.vS/1000, row_id=2, column_id=15, n_rows=15,
+                                 n_columns=3, xlabel="Seismic velocity $v_S$ (km/s)", color=self.color_mineral)
+                self.create_plot(parent=self.parent_mineral, data=self.bulk_mod, row_id=17, column_id=9, n_rows=15,
+                                 n_columns=3, xlabel="Bulk modulus $K$ (GPa)", color=self.color_mineral)
+                self.create_plot(parent=self.parent_mineral, data=self.shear_mod, row_id=17, column_id=12, n_rows=15,
+                                 n_columns=3, xlabel="Shear modulus $G$ (GPa)", color=self.color_mineral)
+                self.create_plot(parent=self.parent_mineral, data=self.poisson, row_id=17, column_id=15, n_rows=15,
+                                 n_columns=3, xlabel="Poisson's ratio $\\mu$ (1)", color=self.color_mineral)
+                self.create_plot(parent=self.parent_mineral, data=self.molar_mass, row_id=32, column_id=9, n_rows=15,
+                                 n_columns=3, xlabel="Molar mass $M$ (g/mol)", color=self.color_mineral)
+                self.create_plot(parent=self.parent_mineral, data=self.gamma_ray, row_id=32, column_id=12, n_rows=15,
+                                 n_columns=3, xlabel="Gamma ray GR (API)", color=self.color_mineral)
+                self.create_plot(parent=self.parent_mineral, data=self.photoelectricity, row_id=32, column_id=15, n_rows=15,
+                                 n_columns=3, xlabel="Photoelectricity PE (barns/electron)", color=self.color_mineral)
+                #
+                self.var_rb.set(0)
+            else:
+                print("Nothing to do!")
+        elif var_rb.get() == 3:
+            print(var_rb.get(), self.var_actual_trace)
+            try:
+                self.fig_histo.clf()
+                self.ax_histo.cla()
+                self.canvas_histo.get_tk_widget().pack_forget()
+                for lbl in self.lbl_chem:
+                    lbl.grid_forget()
+                for entr in self.entr_chem:
+                    entr.grid_forget()
+                self.lbl_chem.clear()
+                self.entr_chem.clear()
+            except AttributeError:
+                pass
+
+            try:
+                if self.canvas_histo:
+                    self.canvas_histo.destroy()
+            except AttributeError:
+                pass
+            #
+            self.var_actual_trace = var_rb.get()
+            #
+            if self.mineral == "Quartz":
+                traces = ["Ti", "Ge", "Sn", "Al", "Fe", "Ga", "As", "B", "H", "Li", "Na", "Ag", "K", "Mg", "Cu", "Be", "Mn"]
+                n_trace = rd.randint(1, len(traces))
+                selection_trace = rd.sample(traces, n_trace)
+            data_all = []
+            for i in range(self.var_entr.get()):
+                # Oxides
+                if self.mineral == "Quartz":
+                    data = Oxides(impurity=selection_trace, data_type=True).create_quartz()
+                elif self.mineral == "Magnetite":
+                    data = Oxides(impurity="pure").create_magnetite(dict=True)
+                elif self.mineral == "Cassiterite":
+                    data = Oxides(impurity="pure", data_type=True).create_cassiterite()
+                elif self.mineral == "Chromite":
+                    data = Oxides(impurity="pure", data_type=True).create_chromite()
+                elif self.mineral == "Magnesiochromite":
+                    data = Oxides(impurity="pure", data_type=True).create_magnesiochromite()
+                elif self.mineral == "Zincochromite":
+                    data = Oxides(impurity="pure", data_type=True).create_zincochromite()
+                elif self.mineral == "Trevorite":
+                    data = Oxides(impurity="pure", data_type=True).create_trevorite()
+                elif self.mineral == "Hematite":
+                    data = Oxides(impurity="pure").create_hematite(dict=True)
+                elif self.mineral == "Pyrolusite":
+                    data = Oxides(impurity="pure", data_type=True).create_pyrolusite()
+                elif self.mineral == "Rutile":
+                    data = Oxides(impurity="pure", data_type=True).create_rutile()
+                elif self.mineral == "Ilmenite":
+                    data = Oxides(impurity="pure", data_type=True).create_ilmenite()
+                elif self.mineral == "Litharge":
+                    data = Oxides(impurity="pure", data_type=True).create_litharge()
+                elif self.mineral == "Massicot":
+                    data = Oxides(impurity="pure", data_type=True).create_massicot()
+                elif self.mineral == "Minium":
+                    data = Oxides(impurity="pure", data_type=True).create_minium()
+                elif self.mineral == "Plattnerite":
+                    data = Oxides(impurity="pure", data_type=True).create_plattnerite()
+                elif self.mineral == "Scrutinyite":
+                    data = Oxides(impurity="pure", data_type=True).create_scrutinyite()
+                elif self.mineral == "Zincite":
+                    data = Oxides(impurity="pure", data_type=True).create_zincite()
+                elif self.mineral == "Uraninite":
+                    data = Oxides(impurity="pure", data_type=True).create_uraninite()
+                elif self.mineral == "Corundum":
+                    data = Oxides(impurity="pure", data_type=True).create_corundum()
+                elif self.mineral == "Aluminium Spinels":
+                    data = Oxides(impurity="pure", data_type=True).create_aluminium_spinel()
+                elif self.mineral == "Chromium Spinels":
+                    data = Oxides(impurity="pure", data_type=True).create_chromium_spinel()
+                elif self.mineral == "Iron Spinels":
+                    data = Oxides(impurity="pure", data_type=True).create_iron_spinel()
+                elif self.mineral == "Cuprospinel":
+                    data = Oxides(impurity="pure", data_type=True).create_cuprospinel()
+                elif self.mineral == "Jacobsite":
+                    data = Oxides(impurity="pure", data_type=True).create_jacobsite()
+                elif self.mineral == "Magnesioferrite":
+                    data = Oxides(impurity="pure", data_type=True).create_magnesioferrite()
+                elif self.mineral == "Franklinite":
+                    data = Oxides(impurity="pure", data_type=True).create_franklinite()
+                elif self.mineral == "Ulvöspinel":
+                    data = Oxides(impurity="pure", data_type=True).create_ulvoespinel()
+                elif self.mineral == "Pyrite":
+                    data = Sulfides(impurity="pure", data_type=True).create_pyrite()
+                elif self.mineral == "Chalcopyrite":
+                    data = Sulfides(impurity="pure", data_type=True).create_chalcopyrite()
+                elif self.mineral == "Galena":
+                    data = Sulfides(impurity="pure", data_type=True).create_galena()
+                elif self.mineral == "Acanthite":
+                    data = Sulfides(impurity="pure", data_type=True).create_acanthite()
+                elif self.mineral == "Chalcocite":
+                    data = Sulfides(impurity="pure", data_type=True).create_chalcocite()
+                elif self.mineral == "Bornite":
+                    data = Sulfides(impurity="pure", data_type=True).create_bornite()
+                elif self.mineral == "Sphalerite":
+                    data = Sulfides(impurity="pure", data_type=True).create_sphalerite()
+                elif self.mineral == "Pyrrhotite":
+                    data = Sulfides(impurity="pure", data_type=True).create_pyrrhotite()
+                elif self.mineral == "Millerite":
+                    data = Sulfides(impurity="pure", data_type=True).create_millerite()
+                elif self.mineral == "Pentlandite":
+                    data = Sulfides(impurity="pure", data_type=True).create_pentlandite()
+                elif self.mineral == "Covellite":
+                    data = Sulfides(impurity="pure", data_type=True).create_covellite()
+                elif self.mineral == "Cinnabar":
+                    data = Sulfides(impurity="pure", data_type=True).create_cinnabar()
+                elif self.mineral == "Stibnite":
+                    data = Sulfides(impurity="pure", data_type=True).create_stibnite()
+                elif self.mineral == "Molybdenite":
+                    data = Sulfides(impurity="pure", data_type=True).create_molybdenite()
+                elif self.mineral == "Fahlore":
+                    data = Sulfides(impurity="pure", data_type=True).create_fahlore()
+                elif self.mineral == "Realgar":
+                    data = Sulfides(impurity="pure", data_type=True).create_realgar()
+                elif self.mineral == "Orpiment":
+                    data = Sulfides(impurity="pure", data_type=True).create_orpiment()
+                elif self.mineral == "Marcasite":
+                    data = Sulfides(impurity="pure", data_type=True).create_marcasite()
+                elif self.mineral == "Calcite":
+                    data = Carbonates(impurity="pure", data_type=True).create_calcite()
+                elif self.mineral == "Dolomite":
+                    data = Carbonates(impurity="pure", data_type=True).create_dolomite()
+                elif self.mineral == "Magnesite":
+                    data = Carbonates(impurity="pure", data_type=True).create_magnesite()
+                elif self.mineral == "Siderite":
+                    data = Carbonates(impurity="pure", data_type=True).create_siderite()
+                elif self.mineral == "Rhodochrosite":
+                    data = Carbonates(impurity="pure", data_type=True).create_rhodochrosite()
+                elif self.mineral == "Aragonite":
+                    data = Carbonates(impurity="pure", data_type=True).create_aragonite()
+                elif self.mineral == "Cerussite":
+                    data = Carbonates(impurity="pure", data_type=True).create_cerussite()
+                elif self.mineral == "Ankerite":
+                    data = Carbonates(impurity="pure", data_type=True).create_ankerite()
+                elif self.mineral == "Azurite":
+                    data = Carbonates(impurity="pure", data_type=True).create_azurite()
+                elif self.mineral == "Malachite":
+                    data = Carbonates(impurity="pure", data_type=True).create_malachite()
+                elif self.mineral == "Halite":
+                    data = Halogenes(impurity="pure", dict=True).create_halite()
+                elif self.mineral == "Fluorite":
+                    data = Halogenes(impurity="pure", dict=True).create_fluorite()
+                elif self.mineral == "Sylvite":
+                    data = Halogenes(impurity="pure", dict=True).create_sylvite()
+                # Phyllosilicates
+                elif self.mineral == "Illite":
+                    data = Phyllosilicates(impurity="pure", data_type=True).create_illite()
+                elif self.mineral == "Kaolinite":
+                    data = Phyllosilicates(impurity="pure", data_type=True).create_kaolinite()
+                elif self.mineral == "Montmorillonite":
+                    data = Phyllosilicates(impurity="pure", data_type=True).create_montmorillonite()
+                elif self.mineral == "Chamosite":
+                    data = Phyllosilicates(impurity="pure", data_type=True).create_chamosite()
+                elif self.mineral == "Clinochlore":
+                    data = Phyllosilicates(impurity="pure", data_type=True).create_clinochlore()
+                elif self.mineral == "Pennantite":
+                    data = Phyllosilicates(impurity="pure", data_type=True).create_pennantite()
+                elif self.mineral == "Nimite":
+                    data = Phyllosilicates(impurity="pure", data_type=True).create_nimite()
+                elif self.mineral == "Chlorite":
+                    data = Phyllosilicates(impurity="pure", data_type=True).create_chlorite()
+                elif self.mineral == "Vermiculite":
+                    data = Phyllosilicates(impurity="pure", data_type=True).create_vermiculite()
+                elif self.mineral == "Annite":
+                    data = Phyllosilicates(impurity="pure", data_type=True).create_annite()
+                elif self.mineral == "Phlogopite":
+                    data = Phyllosilicates(impurity="pure", data_type=True).create_phlogopite()
+                elif self.mineral == "Eastonite":
+                    data = Phyllosilicates(impurity="pure", data_type=True).create_eastonite()
+                elif self.mineral == "Siderophyllite":
+                    data = Phyllosilicates(impurity="pure", data_type=True).create_siderophyllite()
+                elif self.mineral == "Biotite":
+                    data = Phyllosilicates(impurity="pure", data_type=True).create_biotite()
+                elif self.mineral == "Muscovite":
+                    data = Phyllosilicates(impurity="pure", data_type=True).create_muscovite()
+                elif self.mineral == "Glauconite":
+                    data = Phyllosilicates(impurity="pure", data_type=True).create_glauconite()
+                # Tectosilicates
+                elif self.mineral == "Alkalifeldspar":
+                    data = Tectosilicates(impurity="pure", data_type=True).create_alkalifeldspar()
+                elif self.mineral == "Plagioclase":
+                    data = Tectosilicates(impurity="pure", data_type=True).create_plagioclase()
+                elif self.mineral == "Scapolite":
+                    data = Tectosilicates(impurity="pure", data_type=True).create_scapolite()
+                elif self.mineral == "Barite":
+                    data = Sulfates(impurity="pure", data_type=True).create_barite()
+                elif self.mineral == "Anhydrite":
+                    data = Sulfates(impurity="pure", data_type=True).create_anhydrite()
+                elif self.mineral == "Gypsum":
+                    data = Sulfates(impurity="pure", data_type=True).create_gypsum()
+                elif self.mineral == "Celestite":
+                    data = Sulfates(impurity="pure", data_type=True).create_celestine()
+                elif self.mineral == "Anglesite":
+                    data = Sulfates(impurity="pure", data_type=True).create_anglesite()
+                elif self.mineral == "Hanksite":
+                    data = Sulfates(impurity="pure", data_type=True).create_hanksite()
+                elif self.mineral == "Jarosite":
+                    data = Sulfates(impurity="pure", data_type=True).create_jarosite()
+                elif self.mineral == "Alunite":
+                    data = Sulfates(impurity="pure", data_type=True).create_alunite()
+                elif self.mineral == "Chalcanthite":
+                    data = Sulfates(impurity="pure", data_type=True).create_chalcanthite()
+                elif self.mineral == "Kieserite":
+                    data = Sulfates(impurity="pure", data_type=True).create_kieserite()
+                elif self.mineral == "Scheelite":
+                    data = Sulfates(impurity="pure", data_type=True).create_scheelite()
+                elif self.mineral == "Hexahydrite":
+                    data = Sulfates(impurity="pure", data_type=True).create_hexahydrite()
+                # Nesosilicates
+                elif self.mineral == "Zircon":
+                    data = Nesosilicates(data_type=True).create_zircon()
+                elif self.mineral == "Thorite":
+                    data = Nesosilicates(data_type=True).create_thorite()
+                elif self.mineral == "Andalusite":
+                    data = Nesosilicates(data_type=True).create_andalusite()
+                elif self.mineral == "Kyanite":
+                    data = Nesosilicates(data_type=True).create_kyanite()
+                elif self.mineral == "Sillimanite":
+                    data = Nesosilicates(data_type=True).create_sillimanite()
+                elif self.mineral == "Topaz":
+                    data = Nesosilicates(data_type=True).create_topaz()
+                elif self.mineral == "Staurolite":
+                    data = Nesosilicates(data_type=True).create_staurolite()
+                elif self.mineral == "Forsterite":
+                    data = Nesosilicates(data_type=True).create_forsterite()
+                elif self.mineral == "Fayalite":
+                    data = Nesosilicates(data_type=True).create_fayalite()
+                elif self.mineral == "Tephroite":
+                    data = Nesosilicates(data_type=True).create_tephroite()
+                elif self.mineral == "Calcio-Olivine":
+                    data = Nesosilicates(data_type=True).create_calcio_olivine()
+                elif self.mineral == "Liebenbergite":
+                    data = Nesosilicates(data_type=True).create_liebenbergite()
+                elif self.mineral == "Olivine":
+                    data = Nesosilicates(data_type=True).create_olivine()
+                elif self.mineral == "Pyrope":
+                    data = Nesosilicates(data_type=True).create_pyrope()
+                elif self.mineral == "Almandine":
+                    data = Nesosilicates(data_type=True).create_almandine()
+                elif self.mineral == "Grossular":
+                    data = Nesosilicates(data_type=True).create_grossular()
+                elif self.mineral == "Andradite":
+                    data = Nesosilicates(data_type=True).create_andradite()
+                elif self.mineral == "Uvarovite":
+                    data = Nesosilicates(data_type=True).create_uvarovite()
+                elif self.mineral == "Aluminium Garnet":
+                    data = Nesosilicates(data_type=True).create_aluminium_garnet()
+                elif self.mineral == "Calcium Garnet":
+                    data = Nesosilicates(data_type=True).create_calcium_garnet()
+                # Sorosilicates
+                elif self.mineral == "Epidote":
+                    data = Sorosilicates(data_type=True).create_epidote()
+                elif self.mineral == "Zoisite":
+                    data = Sorosilicates(data_type=True).create_zoisite()
+                elif self.mineral == "Gehlenite":
+                    data = Sorosilicates(data_type=True).create_gehlenite()
+                # Inosilicates
+                elif self.mineral == "Enstatite":
+                    data = Inosilicates(data_type=True).create_enstatite()
+                elif self.mineral == "Ferrosilite":
+                    data = Inosilicates(data_type=True).create_ferrosilite()
+                elif self.mineral == "Diopside":
+                    data = Inosilicates(data_type=True).create_diopside()
+                elif self.mineral == "Jadeite":
+                    data = Inosilicates(data_type=True).create_jadeite()
+                elif self.mineral == "Aegirine":
+                    data = Inosilicates(data_type=True).create_aegirine()
+                elif self.mineral == "Spodumene":
+                    data = Inosilicates(data_type=True).create_spodumene()
+                elif self.mineral == "Wollastonite":
+                    data = Inosilicates(data_type=True).create_wollastonite()
+                elif self.mineral == "Tremolite":
+                    data = Inosilicates(data_type=True).create_tremolite()
+                elif self.mineral == "Actinolite":
+                    data = Inosilicates(data_type=True).create_actinolite()
+                elif self.mineral == "Glaucophane":
+                    data = Inosilicates(data_type=True).create_glaucophane()
+                elif self.mineral == "Augite":
+                    data = Inosilicates(data_type=True).create_augite()
+                elif self.mineral == "Riebeckite":
+                    data = Inosilicates(data_type=True).create_riebeckite()
+                elif self.mineral == "Arfvedsonite":
+                    data = Inosilicates(data_type=True).create_arfvedsonite()
+                elif self.mineral == "Calcium Amphibole":
+                    data = Inosilicates(data_type=True).create_calcium_amphibole()
+                elif self.mineral == "Sodium Amphibole":
+                    data = Inosilicates(data_type=True).create_sodium_amphibole()
+                elif self.mineral == "Mg-Fe Pyroxene":
+                    data = Inosilicates(data_type=True).create_mg_fe_pyroxene()
+                elif self.mineral == "Calcium Pyroxene":
+                    data = Inosilicates(data_type=True).create_calium_pyroxene()
+                #
+                self.color_mineral = "#7C9097"
+                #
+                data_all.append(data)
+            #
+            if self.var_dict == False:
+                elements = np.array(data_all[0][-1])[:, 0]
+                self.element_list = []
+                for element in elements:
+                    self.element_list.append(DP(dataset=data_all).extract_element_amounts(type="mineral", element=element)*100)
+                #
+                self.rho_b = DP(dataset=data_all).extract_densities(type="mineral", keyword="bulk")
+                self.molar_mass = DP(dataset=data_all).extract_molar_mass()
+                self.bulk_mod = DP(dataset=data_all).extract_elastic_moduli(type="mineral", keyword="bulk")
+                self.shear_mod = DP(dataset=data_all).extract_elastic_moduli(type="mineral", keyword="shear")
+                self.poisson = DP(dataset=data_all).extract_elastic_moduli(type="mineral", keyword="poisson")
+                self.vP = DP(dataset=data_all).extract_seismic_velocities(type="mineral", keyword="vP")
+                self.vS = DP(dataset=data_all).extract_seismic_velocities(type="mineral", keyword="vS")
+                self.vPvS = DP(dataset=data_all).extract_seismic_velocities(type="mineral", keyword="vPvS")
+                self.gamma_ray = DP(dataset=data_all).extract_gamma_ray(type="mineral")
+                self.photoelectricity = DP(dataset=data_all).extract_photoelectricity(type="mineral")
+                #
+                if self.mineral == "Quartz":
+                    self.w_element = DP(dataset=data_all).extract_element_amounts(type="mineral", element="Si")*100
+                elif self.mineral == "Alkalifeldspar":
+                    self.w_element = DP(dataset=data_all).extract_element_amounts(type="mineral", element="K")*100
+                elif self.mineral == "Plagioclase":
+                    self.w_element = DP(dataset=data_all).extract_element_amounts(type="mineral", element="Ca")*100
+            else:
+                self.molar_mass = DP(dataset=data_all).extract_data(keyword="M")
+                self.volume = DP(dataset=data_all).extract_data(keyword="V")
+                self.rho_b = DP(dataset=data_all).extract_data(keyword="rho")
+                self.vP = DP(dataset=data_all).extract_data(keyword="vP")
+                self.vS = DP(dataset=data_all).extract_data(keyword="vS")
+                self.vPvS = DP(dataset=data_all).extract_data(keyword="vP/vS")
+                self.bulk_mod = DP(dataset=data_all).extract_data(keyword="K")
+                self.shear_mod = DP(dataset=data_all).extract_data(keyword="G")
+                self.youngs_mod = DP(dataset=data_all).extract_data(keyword="E")
+                self.poisson = DP(dataset=data_all).extract_data(keyword="nu")
+                self.gamma_ray = DP(dataset=data_all).extract_data(keyword="GR")
+                self.photoelectricity = DP(dataset=data_all).extract_data(keyword="PE")
+                self.chemistry = DP(dataset=data_all).extract_data(keyword="chemistry")
+                elements = np.array(list(data_all[0]["chemistry"].keys()))
+                self.element_list = {}
+                for element in elements:
+                    self.element_list[element] = []
+                    for index, chem_dict in enumerate(self.chemistry, start=0):
+                        self.element_list[element].append(abs(chem_dict[element]*100))
+                if self.mineral in ["Magnetite", "Hematite", "Pyrite", "Siderite"]:
+                    self.w_element = self.element_list["Fe"]
+                elif self.mineral in ["Quartz"]:
+                    self.w_element = self.element_list["Si"]
+                elif self.mineral in ["Galena"]:
+                    self.w_element = self.element_list["Pb"]
+                elif self.mineral in ["Chalcopyrite", "Cuprospinel"]:
+                    self.w_element = self.element_list["Cu"]
+                elif self.mineral in ["Cassiterite"]:
+                    self.w_element = self.element_list["Sn"]
+                elif self.mineral in ["Calcite", "Dolomite", "Fluorite", "Plagioclase"]:
+                    self.w_element = self.element_list["Ca"]
+                elif self.mineral in ["Magnesite", "Aluminium Spinels"]:
+                    self.w_element = self.element_list["Mg"]
+                elif self.mineral in ["Halite"]:
+                    self.w_element = self.element_list["Na"]
+                elif self.mineral in ["Chromite", "Magnesiochromite", "Zincochromite", "Chromium Spinels"]:
+                    self.w_element = self.element_list["Cr"]
+                elif self.mineral in ["Ilmenite", "Rutile"]:
+                    self.w_element = self.element_list["Ti"]
+                elif self.mineral in ["Sylvite", "Alkalifeldspar"]:
+                    self.w_element = self.element_list["K"]
+                elif self.mineral in ["Illite", "Corundum"]:
+                    self.w_element = self.element_list["Al"]
+                elif self.mineral in ["Pyrolusite"]:
+                    self.w_element = self.element_list["Mn"]
+            #
+            self.var_opt_chem.set("Select Element")
+            #
+            self.results = [self.molar_mass, self.rho_b, self.vP, self.vS, self.vPvS, self.bulk_mod, self.shear_mod,
+                            self.poisson, self.gamma_ray, self.photoelectricity]
+            #
+            self.entr_list_min = []
+            self.entr_list_max = []
+            self.entr_list_mean = []
+            self.entr_list_std = []
+            for i in range(10+len(elements)):
+                self.entr_list_min.append(tk.IntVar())
+                self.entr_list_max.append(tk.IntVar())
+                self.entr_list_mean.append(tk.IntVar())
+                self.entr_list_std.append(tk.IntVar())
+            #
+            print(elements)
+            i = 0
+            for element in elements:
+                lbl_w = SE(parent=self.parent_mineral, row_id=25+i, column_id=3, bg=self.color_bg,
+                   fg="black").create_label(text=str(element), relief=tk.RAISED)
+                self.lbl_w.append(lbl_w)
+                self.lbl_chem.append(lbl_w)
+                if self.var_dict == False:
+                    self.results.append(self.element_list[i])
+                else:
+                    self.results.append(self.element_list[element])
+                i += 1
+            ## Entry Table
+            for i in range(10+len(elements)):
+                if i < 10:
+                    entr_min = SE(parent=self.parent_mineral, row_id=4+2*i, column_id=4, n_rows=2, bg=self.color_bg,
+                       fg=self.color_fg).create_entry(var_entr=self.entr_list_min[i], var_entr_set=round(np.min(self.results[i]), 3))
+                    entr_max = SE(parent=self.parent_mineral, row_id=4+2*i, column_id=5, n_rows=2, bg=self.color_bg,
+                       fg=self.color_fg).create_entry(var_entr=self.entr_list_max[i], var_entr_set=round(np.max(self.results[i]), 3))
+                    entr_mean = SE(parent=self.parent_mineral, row_id=4+2*i, column_id=6, n_rows=2, bg=self.color_bg,
+                       fg=self.color_fg).create_entry(var_entr=self.entr_list_mean[i],
+                                                 var_entr_set=round(np.mean(self.results[i]), 3))
+                    entr_std = SE(parent=self.parent_mineral, row_id=4+2*i, column_id=7, n_rows=2, bg=self.color_bg,
+                       fg=self.color_fg).create_entry(var_entr=self.entr_list_std[i],
+                                                 var_entr_set=round(np.std(self.results[i], ddof=1), 3))
+                elif i >= 10:
+                    entr_min = SE(parent=self.parent_mineral, row_id=15+i, column_id=4, n_rows=1, bg=self.color_bg,
+                                  fg=self.color_fg).create_entry(var_entr=self.entr_list_min[i],
+                                                                 var_entr_set=round(np.min(self.results[i]), 2))
+                    entr_max = SE(parent=self.parent_mineral, row_id=15+i, column_id=5, n_rows=1, bg=self.color_bg,
+                                  fg=self.color_fg).create_entry(var_entr=self.entr_list_max[i],
+                                                                 var_entr_set=round(np.max(self.results[i]), 2))
+                    entr_mean = SE(parent=self.parent_mineral, row_id=15+i, column_id=6, n_rows=1, bg=self.color_bg,
+                                   fg=self.color_fg).create_entry(var_entr=self.entr_list_mean[i],
+                                                                  var_entr_set=round(np.mean(self.results[i]), 2))
+                    entr_std = SE(parent=self.parent_mineral, row_id=15+i, column_id=7, n_rows=1, bg=self.color_bg,
+                                  fg=self.color_fg).create_entry(var_entr=self.entr_list_std[i],
+                                                                 var_entr_set=round(np.std(self.results[i], ddof=1), 2))
+                    self.entr_w.append(entr_min)
+                    self.entr_w.append(entr_max)
+                    self.entr_w.append(entr_mean)
+                    self.entr_w.append(entr_std)
+                    self.entr_chem.append(entr_min)
+                    self.entr_chem.append(entr_max)
+                    self.entr_chem.append(entr_mean)
+                    self.entr_chem.append(entr_std)
+            #
+            self.create_plot(parent=self.parent_mineral, data=self.rho_b/1000, row_id=2, column_id=9, n_rows=15,
+                             n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)", color=self.color_mineral)
+            self.create_plot(parent=self.parent_mineral, data=self.vP/1000, row_id=2, column_id=12, n_rows=15,
+                             n_columns=3, xlabel="Seismic velocity $v_P$ (km/s)", color=self.color_mineral)
+            self.create_plot(parent=self.parent_mineral, data=self.vS/1000, row_id=2, column_id=15, n_rows=15,
+                             n_columns=3, xlabel="Seismic velocity $v_S$ (km/s)", color=self.color_mineral)
+            self.create_plot(parent=self.parent_mineral, data=self.bulk_mod, row_id=17, column_id=9, n_rows=15,
+                             n_columns=3, xlabel="Bulk modulus $K$ (GPa)", color=self.color_mineral)
+            self.create_plot(parent=self.parent_mineral, data=self.shear_mod, row_id=17, column_id=12, n_rows=15,
+                             n_columns=3, xlabel="Shear modulus $G$ (GPa)", color=self.color_mineral)
+            self.create_plot(parent=self.parent_mineral, data=self.poisson, row_id=17, column_id=15, n_rows=15,
+                             n_columns=3, xlabel="Poisson's ratio $\\mu$ (1)", color=self.color_mineral)
+            self.create_plot(parent=self.parent_mineral, data=self.molar_mass, row_id=32, column_id=9, n_rows=15,
+                             n_columns=3, xlabel="Molar mass $M$ (g/mol)", color=self.color_mineral)
+            self.create_plot(parent=self.parent_mineral, data=self.gamma_ray, row_id=32, column_id=12, n_rows=15,
+                             n_columns=3, xlabel="Gamma ray GR (API)", color=self.color_mineral)
+            self.create_plot(parent=self.parent_mineral, data=self.photoelectricity, row_id=32, column_id=15, n_rows=15,
+                             n_columns=3, xlabel="Photoelectricity PE (barns/electron)", color=self.color_mineral)
+            #
+            self.var_rb.set(0)
     #
     def select_opt(self, var_opt):
         try:

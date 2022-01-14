@@ -64,7 +64,10 @@ class Oxides():
                     self.traces_list.extend(selection_w)
                     self.traces_list.extend(selection_z)
                 if n_y > 0 and n_w > 0:
-                    n_z = rd.randint(1, (n_y + n_w))
+                    if n_y + n_w <= len(minors_z):
+                        n_z = rd.randint(1, (n_y + n_w))
+                    else:
+                        n_z = len(minors_z)
                     selection_y = rd.sample(minors_y, n_y)
                     selection_w = rd.sample(minors_w, n_w)
                     selection_z = rd.sample(minors_z, n_z)
