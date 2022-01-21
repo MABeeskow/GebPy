@@ -6,7 +6,7 @@
 # Name:		gui.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		21.12.2021
+# Date:		21.01.2022
 
 #-----------------------------------------------
 
@@ -19,7 +19,7 @@ from modules.sulfides import Sulfides
 from modules.carbonates import Carbonates
 from modules.halogenes import Halogenes
 from modules.silicates import Tectosilicates, Phyllosilicates, Nesosilicates, Sorosilicates, Inosilicates
-#from modules.pyllosilicates import Pyllosilicates
+from modules.phosphates import Phosphates
 from modules.minerals import feldspars
 from modules.siliciclastics import sandstone, shale
 from modules.carbonates import limestone, dolomite, CustomCarbonates
@@ -121,7 +121,7 @@ class GebPyGUI(tk.Frame):
         ## Option Menu
         var_opt_0_0 = tk.StringVar()
         opt_list_0_0 = ["Oxides", "Sulfides", "Carbonates", "Halogenes", "Tectosilicates", "Phyllosilicates",
-                        "Sulfates", "Nesosilicates", "Sorosilicates", "Inosilicates"]
+                        "Sulfates", "Nesosilicates", "Sorosilicates", "Inosilicates", "Phosphates"]
         opt_list_0_0.sort()
         self.opt_mingroup = SE(parent=self.parent, row_id=8, column_id=0, n_rows=2, n_columns=2, bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
             var_opt=var_opt_0_0, var_opt_set="Select Mineral Group", opt_list=opt_list_0_0,
@@ -192,6 +192,11 @@ class GebPyGUI(tk.Frame):
                      color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
                      entr_w=self.entr_w)
         elif var_opt in ["Alkalifeldspar", "Plagioclase", "Scapolite"]:
+            Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
+                     color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
+                     entr_w=self.entr_w)
+        # PHOSPHATES
+        elif var_opt in ["Apatite-F", "Apatite-Cl", "Apatite-OH", "Apatite"]:
             Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                      color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
                      entr_w=self.entr_w)
@@ -312,6 +317,7 @@ class GebPyGUI(tk.Frame):
                 self.opt_nesosilicate.grid_remove()
                 self.opt_sorosilicate.grid_remove()
                 self.opt_inosilicate.grid_remove()
+                self.opt_phosphates.grid_remove()
             except:
                 pass
             var_opt_0_1 = tk.StringVar()
@@ -336,6 +342,7 @@ class GebPyGUI(tk.Frame):
                 self.opt_nesosilicate.grid_remove()
                 self.opt_sorosilicate.grid_remove()
                 self.opt_inosilicate.grid_remove()
+                self.opt_phosphates.grid_remove()
             except:
                 pass
             var_opt_0_2 = tk.StringVar()
@@ -358,6 +365,7 @@ class GebPyGUI(tk.Frame):
                 self.opt_nesosilicate.grid_remove()
                 self.opt_sorosilicate.grid_remove()
                 self.opt_inosilicate.grid_remove()
+                self.opt_phosphates.grid_remove()
             except:
                 pass
             var_opt_0_3 = tk.StringVar()
@@ -379,6 +387,7 @@ class GebPyGUI(tk.Frame):
                 self.opt_nesosilicate.grid_remove()
                 self.opt_sorosilicate.grid_remove()
                 self.opt_inosilicate.grid_remove()
+                self.opt_phosphates.grid_remove()
             except:
                 pass
             var_opt_0_4 = tk.StringVar()
@@ -398,6 +407,7 @@ class GebPyGUI(tk.Frame):
                 self.opt_nesosilicate.grid_remove()
                 self.opt_sorosilicate.grid_remove()
                 self.opt_inosilicate.grid_remove()
+                self.opt_phosphates.grid_remove()
             except:
                 pass
             var_opt_0_5 = tk.StringVar()
@@ -417,6 +427,7 @@ class GebPyGUI(tk.Frame):
                 self.opt_nesosilicate.grid_remove()
                 self.opt_sorosilicate.grid_remove()
                 self.opt_inosilicate.grid_remove()
+                self.opt_phosphates.grid_remove()
             except:
                 pass
             var_opt_0_6 = tk.StringVar()
@@ -439,6 +450,7 @@ class GebPyGUI(tk.Frame):
                 self.opt_nesosilicate.grid_remove()
                 self.opt_sorosilicate.grid_remove()
                 self.opt_inosilicate.grid_remove()
+                self.opt_phosphates.grid_remove()
             except:
                 pass
             var_opt_0_7 = tk.StringVar()
@@ -461,6 +473,7 @@ class GebPyGUI(tk.Frame):
                 self.opt_sulfate.grid_remove()
                 self.opt_sorosilicate.grid_remove()
                 self.opt_inosilicate.grid_remove()
+                self.opt_phosphates.grid_remove()
             except:
                 pass
             var_opt_0_8 = tk.StringVar()
@@ -485,6 +498,7 @@ class GebPyGUI(tk.Frame):
                 self.opt_sulfate.grid_remove()
                 self.opt_nesosilicate.grid_remove()
                 self.opt_inosilicate.grid_remove()
+                self.opt_phosphates.grid_remove()
             except:
                 pass
             var_opt_0_9 = tk.StringVar()
@@ -506,6 +520,7 @@ class GebPyGUI(tk.Frame):
                 self.opt_sulfate.grid_remove()
                 self.opt_nesosilicate.grid_remove()
                 self.opt_sorosilicate.grid_remove()
+                self.opt_phosphates.grid_remove()
             except:
                 pass
             var_opt_0_10 = tk.StringVar()
@@ -517,6 +532,28 @@ class GebPyGUI(tk.Frame):
                                        bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
                 var_opt=var_opt_0_10, var_opt_set="Select Inosilicate Mineral", opt_list=opt_list_0_10,
                 command=lambda var_opt=var_opt_0_10: self.select_opt(var_opt))
+        # PHOSPHATES
+        elif var_opt == "Phosphates":
+            try:
+                self.opt_oxide.grid_remove()
+                self.opt_sulfide.grid_remove()
+                self.opt_carb.grid_remove()
+                self.opt_halogene.grid_remove()
+                self.opt_afs.grid_remove()
+                self.opt_clays.grid_remove()
+                self.opt_sulfate.grid_remove()
+                self.opt_nesosilicate.grid_remove()
+                self.opt_sorosilicate.grid_remove()
+                self.opt_inosilicate.grid_remove()
+            except:
+                pass
+            var_opt_0_11 = tk.StringVar()
+            opt_list_0_11 = ["Apatite", "Apatite-F", "Apatite-Cl", "Apatite-OH"]
+            opt_list_0_11.sort()
+            self.opt_phosphates = SE(parent=self.parent, row_id=10, column_id=0, n_rows=2, n_columns=2,
+                                       bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
+                var_opt=var_opt_0_11, var_opt_set="Select Inosilicate Mineral", opt_list=opt_list_0_11,
+                command=lambda var_opt=var_opt_0_11: self.select_opt(var_opt))
         elif var_opt == "Siliciclastic Rocks":
             var_opt_1_1 = tk.StringVar()
             opt_list_1_1 = ["Sandstone", "Shale"]
@@ -919,6 +956,15 @@ class Minerals:
                 data = Inosilicates(data_type=True).create_mg_fe_pyroxene()
             elif self.mineral == "Calcium Pyroxene":
                 data = Inosilicates(data_type=True).create_calium_pyroxene()
+            # Phosphates
+            elif self.mineral == "Apatite-F":
+                data = Phosphates(data_type=True).create_aptite_f()
+            elif self.mineral == "Apatite-Cl":
+                data = Phosphates(data_type=True).create_aptite_cl()
+            elif self.mineral == "Apatite-OH":
+                data = Phosphates(data_type=True).create_aptite_oh()
+            elif self.mineral == "Apatite":
+                data = Phosphates(data_type=True).create_aptite()
             #
             self.color_mineral = "#7C9097"
             #
@@ -1120,8 +1166,8 @@ class Minerals:
             cbar = self.fig.colorbar(plot, format="%.0f")
             cbar.set_label(self.var_opt_chem.get()+" (%)", rotation=90)
         self.ax.grid(True)
-        self.ax.set_xlim(float(0.95*min(data_x)), float(1.05*max(data_x)))
-        self.ax.set_xticks(np.around(np.linspace(float(0.95*min(data_x)), float(1.05*max(data_x)), 5), 2))
+        self.ax.set_xlim(float(0.99*min(data_x)), float(1.01*max(data_x)))
+        self.ax.set_xticks(np.around(np.linspace(float(0.99*min(data_x)), float(1.01*max(data_x)), 5), 2))
         self.ax.set_axisbelow(True)
         self.ax.set_xlabel(xlabel, fontsize="small")
         self.ax.set_ylabel(ylabel, labelpad=0.5, fontsize="small")
@@ -1411,6 +1457,15 @@ class Minerals:
                 data = Inosilicates(data_type=True).create_mg_fe_pyroxene()
             elif self.mineral == "Calcium Pyroxene":
                 data = Inosilicates(data_type=True).create_calium_pyroxene()
+            # Phosphates
+            elif self.mineral == "Apatite-F":
+                data = Phosphates(data_type=True).create_aptite_f()
+            elif self.mineral == "Apatite-Cl":
+                data = Phosphates(data_type=True).create_aptite_cl()
+            elif self.mineral == "Apatite-OH":
+                data = Phosphates(data_type=True).create_aptite_oh()
+            elif self.mineral == "Apatite":
+                data = Phosphates(data_type=True).create_aptite()
             #
             self.color_mineral = "#7C9097"
             #
@@ -1937,6 +1992,15 @@ class Minerals:
                         data = Inosilicates(data_type=True).create_mg_fe_pyroxene()
                     elif self.mineral == "Calcium Pyroxene":
                         data = Inosilicates(data_type=True).create_calium_pyroxene()
+                    # Phosphates
+                    elif self.mineral == "Apatite-F":
+                        data = Phosphates(data_type=True).create_aptite_f()
+                    elif self.mineral == "Apatite-Cl":
+                        data = Phosphates(data_type=True).create_aptite_cl()
+                    elif self.mineral == "Apatite-OH":
+                        data = Phosphates(data_type=True).create_aptite_oh()
+                    elif self.mineral == "Apatite":
+                        data = Phosphates(data_type=True).create_aptite()
                     #
                     self.color_mineral = "#7C9097"
                     #
@@ -2388,6 +2452,15 @@ class Minerals:
                     data = Inosilicates(data_type=True).create_mg_fe_pyroxene()
                 elif self.mineral == "Calcium Pyroxene":
                     data = Inosilicates(data_type=True).create_calium_pyroxene()
+                # Phosphates
+                elif self.mineral == "Apatite-F":
+                    data = Phosphates(data_type=True).create_aptite_f()
+                elif self.mineral == "Apatite-Cl":
+                    data = Phosphates(data_type=True).create_aptite_cl()
+                elif self.mineral == "Apatite-OH":
+                    data = Phosphates(data_type=True).create_aptite_oh()
+                elif self.mineral == "Apatite":
+                    data = Phosphates(data_type=True).create_aptite()
                 #
                 self.color_mineral = "#7C9097"
                 #
@@ -2559,51 +2632,93 @@ class Minerals:
         except AttributeError:
             pass
         #
-        self.var_rb.set(1)
-        #
-        data_c = []
-        for item in self.chemistry:
-            data_c.append(item[var_opt])
-        self.data_c = np.array(data_c)*100
-        element = var_opt
-        data_x = np.array(self.rho_b)/1000
-        #
-        self.create_scatter_plot(parent=self.parent_mineral, data_x=data_x, data_y=self.vP/1000, row_id=2,
-                                 column_id=9, n_rows=15, n_columns=3,
-                                 xlabel="Density $\\varrho$ g/ccm",
-                                 ylabel="Seismic velocity $v_P$ (km/s)", color=self.color_mineral)
-        self.create_scatter_plot(parent=self.parent_mineral, data_x=data_x, data_y=self.vS/1000, row_id=2,
-                                 column_id=12, n_rows=15, n_columns=3,
-                                 xlabel="Density $\\varrho$ g/ccm",
-                                 ylabel="Seismic velocity $v_S$ (km/s)", color=self.color_mineral)
-        self.create_scatter_plot(parent=self.parent_mineral, data_x=data_x, data_y=self.vP/self.vS,
-                                 row_id=2, column_id=15, n_rows=15, n_columns=3,
-                                 xlabel="Density $\\varrho$ g/ccm",
-                                 ylabel="Velocity ratio $v_P/v_S$ (1)", color=self.color_mineral)
-        self.create_scatter_plot(parent=self.parent_mineral, data_x=data_x, data_y=self.bulk_mod, row_id=17,
-                                 column_id=9, n_rows=15, n_columns=3,
-                                 xlabel="Density $\\varrho$ g/ccm",
-                                 ylabel="Bulk modulus $K$ (GPa)", color=self.color_mineral)
-        self.create_scatter_plot(parent=self.parent_mineral, data_x=data_x, data_y=self.shear_mod,
-                                 row_id=17, column_id=12, n_rows=15, n_columns=3,
-                                 xlabel="Density $\\varrho$ g/ccm",
-                                 ylabel="Shear modulus $G$ (GPa)", color=self.color_mineral)
-        self.create_scatter_plot(parent=self.parent_mineral, data_x=data_x, data_y=self.poisson, row_id=17,
-                                 column_id=15, n_rows=15, n_columns=3,
-                                 xlabel="Density $\\varrho$ g/ccm",
-                                 ylabel="Poisson's ratio $\\mu$ (1)", color=self.color_mineral)
-        self.create_scatter_plot(parent=self.parent_mineral, data_x=data_x, data_y=self.molar_mass,
-                                 row_id=32, column_id=9, n_rows=15, n_columns=3,
-                                 xlabel="Density $\\varrho$ g/ccm",
-                                 ylabel="Molar mass $M$ (g/mol)", color=self.color_mineral)
-        self.create_scatter_plot(parent=self.parent_mineral, data_x=data_x, data_y=self.gamma_ray,
-                                 row_id=32, column_id=12, n_rows=15, n_columns=3,
-                                 xlabel="Density $\\varrho$ g/ccm",
-                                 ylabel="Gamma ray GR (API)", color=self.color_mineral)
-        self.create_scatter_plot(parent=self.parent_mineral, data_x=data_x, data_y=self.photoelectricity,
-                                 row_id=32, column_id=15, n_rows=15, n_columns=3,
-                                 xlabel="Density $\\varrho$ g/ccm",
-                                 ylabel="Photoelectricity PE (barns/electron)", color=self.color_mineral)
+        if var_opt == "No Selection":
+            self.var_rb.set(1)
+            #
+            data_x = np.array(self.rho_b)/1000
+            #
+            self.create_scatter_plot(parent=self.parent_mineral, data_x=data_x, data_y=self.vP/1000, row_id=2,
+                                     column_id=9, n_rows=15, n_columns=3,
+                                     xlabel="Density $\\varrho$ g/ccm",
+                                     ylabel="Seismic velocity $v_P$ (km/s)", color=self.color_mineral)
+            self.create_scatter_plot(parent=self.parent_mineral, data_x=data_x, data_y=self.vS/1000, row_id=2,
+                                     column_id=12, n_rows=15, n_columns=3,
+                                     xlabel="Density $\\varrho$ g/ccm",
+                                     ylabel="Seismic velocity $v_S$ (km/s)", color=self.color_mineral)
+            self.create_scatter_plot(parent=self.parent_mineral, data_x=data_x, data_y=self.vP/self.vS,
+                                     row_id=2, column_id=15, n_rows=15, n_columns=3,
+                                     xlabel="Density $\\varrho$ g/ccm",
+                                     ylabel="Velocity ratio $v_P/v_S$ (1)", color=self.color_mineral)
+            self.create_scatter_plot(parent=self.parent_mineral, data_x=data_x, data_y=self.bulk_mod, row_id=17,
+                                     column_id=9, n_rows=15, n_columns=3,
+                                     xlabel="Density $\\varrho$ g/ccm",
+                                     ylabel="Bulk modulus $K$ (GPa)", color=self.color_mineral)
+            self.create_scatter_plot(parent=self.parent_mineral, data_x=data_x, data_y=self.shear_mod,
+                                     row_id=17, column_id=12, n_rows=15, n_columns=3,
+                                     xlabel="Density $\\varrho$ g/ccm",
+                                     ylabel="Shear modulus $G$ (GPa)", color=self.color_mineral)
+            self.create_scatter_plot(parent=self.parent_mineral, data_x=data_x, data_y=self.poisson, row_id=17,
+                                     column_id=15, n_rows=15, n_columns=3,
+                                     xlabel="Density $\\varrho$ g/ccm",
+                                     ylabel="Poisson's ratio $\\mu$ (1)", color=self.color_mineral)
+            self.create_scatter_plot(parent=self.parent_mineral, data_x=data_x, data_y=self.molar_mass,
+                                     row_id=32, column_id=9, n_rows=15, n_columns=3,
+                                     xlabel="Density $\\varrho$ g/ccm",
+                                     ylabel="Molar mass $M$ (g/mol)", color=self.color_mineral)
+            self.create_scatter_plot(parent=self.parent_mineral, data_x=data_x, data_y=self.gamma_ray,
+                                     row_id=32, column_id=12, n_rows=15, n_columns=3,
+                                     xlabel="Density $\\varrho$ g/ccm",
+                                     ylabel="Gamma ray GR (API)", color=self.color_mineral)
+            self.create_scatter_plot(parent=self.parent_mineral, data_x=data_x, data_y=self.photoelectricity,
+                                     row_id=32, column_id=15, n_rows=15, n_columns=3,
+                                     xlabel="Density $\\varrho$ g/ccm",
+                                     ylabel="Photoelectricity PE (barns/electron)", color=self.color_mineral)
+        else:
+            self.var_rb.set(1)
+            #
+            data_c = []
+            for item in self.chemistry:
+                data_c.append(item[var_opt])
+            self.data_c = np.array(data_c)*100
+            element = var_opt
+            data_x = np.array(self.rho_b)/1000
+            #
+            self.create_scatter_plot(parent=self.parent_mineral, data_x=data_x, data_y=self.vP/1000, row_id=2,
+                                     column_id=9, n_rows=15, n_columns=3,
+                                     xlabel="Density $\\varrho$ g/ccm",
+                                     ylabel="Seismic velocity $v_P$ (km/s)", color=self.color_mineral)
+            self.create_scatter_plot(parent=self.parent_mineral, data_x=data_x, data_y=self.vS/1000, row_id=2,
+                                     column_id=12, n_rows=15, n_columns=3,
+                                     xlabel="Density $\\varrho$ g/ccm",
+                                     ylabel="Seismic velocity $v_S$ (km/s)", color=self.color_mineral)
+            self.create_scatter_plot(parent=self.parent_mineral, data_x=data_x, data_y=self.vP/self.vS,
+                                     row_id=2, column_id=15, n_rows=15, n_columns=3,
+                                     xlabel="Density $\\varrho$ g/ccm",
+                                     ylabel="Velocity ratio $v_P/v_S$ (1)", color=self.color_mineral)
+            self.create_scatter_plot(parent=self.parent_mineral, data_x=data_x, data_y=self.bulk_mod, row_id=17,
+                                     column_id=9, n_rows=15, n_columns=3,
+                                     xlabel="Density $\\varrho$ g/ccm",
+                                     ylabel="Bulk modulus $K$ (GPa)", color=self.color_mineral)
+            self.create_scatter_plot(parent=self.parent_mineral, data_x=data_x, data_y=self.shear_mod,
+                                     row_id=17, column_id=12, n_rows=15, n_columns=3,
+                                     xlabel="Density $\\varrho$ g/ccm",
+                                     ylabel="Shear modulus $G$ (GPa)", color=self.color_mineral)
+            self.create_scatter_plot(parent=self.parent_mineral, data_x=data_x, data_y=self.poisson, row_id=17,
+                                     column_id=15, n_rows=15, n_columns=3,
+                                     xlabel="Density $\\varrho$ g/ccm",
+                                     ylabel="Poisson's ratio $\\mu$ (1)", color=self.color_mineral)
+            self.create_scatter_plot(parent=self.parent_mineral, data_x=data_x, data_y=self.molar_mass,
+                                     row_id=32, column_id=9, n_rows=15, n_columns=3,
+                                     xlabel="Density $\\varrho$ g/ccm",
+                                     ylabel="Molar mass $M$ (g/mol)", color=self.color_mineral)
+            self.create_scatter_plot(parent=self.parent_mineral, data_x=data_x, data_y=self.gamma_ray,
+                                     row_id=32, column_id=12, n_rows=15, n_columns=3,
+                                     xlabel="Density $\\varrho$ g/ccm",
+                                     ylabel="Gamma ray GR (API)", color=self.color_mineral)
+            self.create_scatter_plot(parent=self.parent_mineral, data_x=data_x, data_y=self.photoelectricity,
+                                     row_id=32, column_id=15, n_rows=15, n_columns=3,
+                                     xlabel="Density $\\varrho$ g/ccm",
+                                     ylabel="Photoelectricity PE (barns/electron)", color=self.color_mineral)
     #
     def __call__(self):
         return self.lbl_w, self.entr_w
