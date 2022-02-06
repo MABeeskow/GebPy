@@ -6,11 +6,12 @@
 # Name:		gui.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		21.01.2022
+# Date:		06.02.2022
 
 #-----------------------------------------------
 
 ## MODULES
+import os, sys
 import tkinter as tk
 from modules.gui_elements import SimpleElements as SE
 from modules.sulfates import Sulfates
@@ -1112,6 +1113,9 @@ class Minerals:
                 self.entr_chem.append(entr_max)
                 self.entr_chem.append(entr_mean)
                 self.entr_chem.append(entr_std)
+        # data_plot = [[self.rho_b/1000, self.vP/1000, self.vS/1000], [self.bulk_mod, self.shear_mod, self.poisson],
+        #              [self.molar_mass, self.gamma_ray, self.photoelectricity]]
+        # self.create_3x3_histo(parent=self.parent_mineral, data=data_plot, row_id=2, column_id=9, n_rows=45, n_columns=9, color=self.color_mineral)
         #
         self.create_plot(parent=self.parent_mineral, data=self.rho_b/1000, row_id=2, column_id=9, n_rows=15,
                          n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)", color=self.color_mineral)
@@ -1131,6 +1135,25 @@ class Minerals:
                          n_columns=3, xlabel="Gamma ray GR (API)", color=self.color_mineral)
         self.create_plot(parent=self.parent_mineral, data=self.photoelectricity, row_id=32, column_id=15, n_rows=15,
                          n_columns=3, xlabel="Photoelectricity PE (barns/electron)", color=self.color_mineral)
+    #
+    def create_3x3_histo(self, parent, data, row_id, column_id, n_rows, n_columns, color):
+        #
+        self.canvas_histo = None
+        #self.fig_histo = Figure(facecolor="#E9ECED")
+        self.fig_histo, self.ax_histo = plt.subplots(ncols=3, nrows=3, dpi=100, facecolor="#E9ECED")
+        #
+        for i in range(3):
+            for j in range(3):
+                self.ax_histo[i][j].axvline(x=np.mean(data[i][j]), color="#E76F51", linewidth=3, linestyle="dashed")
+                self.ax_histo[i][j].hist(data[i][j], bins=15, color=color, edgecolor="black")
+                #
+                self.ax_histo[i][j].set_ylabel("Frequency", labelpad=0.5, fontsize="small")
+                self.ax_histo[i][j].grid(True)
+                self.ax_histo[i][j].set_axisbelow(True)
+        self.fig_histo.tight_layout(pad=3.0)
+        #
+        self.canvas_histo = FigureCanvasTkAgg(self.fig_histo, master=parent)
+        self.canvas_histo.get_tk_widget().grid(row=row_id, column=column_id, rowspan=n_rows, columnspan=n_columns, sticky="nesw")
     #
     def create_plot(self, parent, data, row_id, column_id, n_rows, n_columns, xlabel, color):
         #
@@ -5406,6 +5429,18 @@ class Subsurface:
         print(data)
     #
 if __name__ == "__main__":
+    #
+    # SYSTEM CHECK
+    name_os = os.name
+    name_platform = sys.platform
+    if name_platform == "darwin":
+        color_background = "#FFFFFF"
+        button_color_bg = "lightgrey"
+    elif name_platform == "linux":
+        color_background = "#DADBD9"
+    elif name_platform == "win32":
+        color_background = "#F0F0EE"
+    #
     root = tk.Tk()
     GebPyGUI(root)
     root.mainloop()
