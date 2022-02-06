@@ -62,8 +62,13 @@ class GebPyGUI(tk.Frame):
         self.parent.resizable(False, False)
         self.parent["bg"] = self.color_bg
         #
-        self.lbl_w = []
-        self.entr_w = []
+        self.lbl_w = {}
+        self.lbl_w["physics"] = []
+        self.lbl_w["chemistry"] = []
+        self.entr_w = {}
+        self.entr_w["physics"] = []
+        self.entr_w["chemistry"] = []
+        self.gui_elements = []
         #
         for x in range(19):
             tk.Grid.columnconfigure(self.parent, x, weight=1)
@@ -165,67 +170,66 @@ class GebPyGUI(tk.Frame):
     #
     def select_opt(self, var_opt):
         # Minerals
-        if var_opt == "Quartz":
-            self.lbl_w, self.entr_w = Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
-                     color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
-                     entr_w=self.entr_w)()
-        elif var_opt in ["Magnetite", "Hematite", "Aluminium Spinels", "Ilmenite", "Cassiterite", "Chromite", "Corundum",
-                         "Rutile", "Pyrolusite", "Magnesiochromite", "Zincochromite", "Chromium Spinels", "Cuprospinel",
-                         "Jacobsite", "Magnesioferrite", "Trevorite", "Franklinite", "Ulvöspinel", "Iron Spinels",
-                         "Uraninite", "Litharge", "Massicot", "Minium", "Plattnerite", "Scrutinyite", "Zincite"]:
+        ## Oxides
+        if var_opt in ["Quartz", "Magnetite", "Hematite", "Aluminium Spinels", "Ilmenite", "Cassiterite", "Chromite",
+                       "Corundum", "Rutile", "Pyrolusite", "Magnesiochromite", "Zincochromite", "Chromium Spinels",
+                       "Cuprospinel", "Jacobsite", "Magnesioferrite", "Trevorite", "Franklinite", "Ulvöspinel",
+                       "Iron Spinels", "Uraninite", "Litharge", "Massicot", "Minium", "Plattnerite", "Scrutinyite",
+                       "Zincite"]:
             Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                      color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
-                     entr_w=self.entr_w)
+                     entr_w=self.entr_w, gui_elements=self.gui_elements)
+        ## Sulfides
         elif var_opt in ["Pyrite", "Chalcopyrite", "Galena", "Acanthite", "Chalcocite", "Bornite", "Sphalerite",
                          "Pyrrhotite", "Millerite", "Pentlandite", "Covellite", "Cinnabar", "Realgar", "Orpiment",
                          "Stibnite", "Marcasite", "Molybdenite", "Fahlore"]:
             Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                      color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
-                     entr_w=self.entr_w)
+                     entr_w=self.entr_w, gui_elements=self.gui_elements)
         elif var_opt in ["Calcite", "Dolomite", "Magnesite", "Halite", "Fluorite", "Sylvite", "Siderite",
                          "Rhodochrosite", "Aragonite", "Cerussite", "Ankerite", "Azurite", "Malachite"]:
             Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                      color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
-                     entr_w=self.entr_w)
+                     entr_w=self.entr_w, gui_elements=self.gui_elements)
         elif var_opt in ["Barite", "Celestite", "Anglesite", "Anhydrite", "Hanksite", "Gypsum", "Alunite", "Jarosite",
                          "Chalcanthite", "Kieserite", "Scheelite", "Hexahydrite"]:
             Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                      color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
-                     entr_w=self.entr_w)
+                     entr_w=self.entr_w, gui_elements=self.gui_elements)
         elif var_opt in ["Alkalifeldspar", "Plagioclase", "Scapolite"]:
             Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                      color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
-                     entr_w=self.entr_w)
+                     entr_w=self.entr_w, gui_elements=self.gui_elements)
         # PHOSPHATES
         elif var_opt in ["Apatite-F", "Apatite-Cl", "Apatite-OH", "Apatite"]:
             Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                      color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
-                     entr_w=self.entr_w)
+                     entr_w=self.entr_w, gui_elements=self.gui_elements)
         elif var_opt in ["Illite", "Kaolinite", "Montmorillonite", "Chamosite", "Clinochlore", "Pennantite", "Nimite",
                          "Chlorite", "Vermiculite", "Annite", "Phlogopite", "Eastonite", "Siderophyllite", "Biotite",
                          "Muscovite", "Glauconite"]:
             Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                      color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
-                     entr_w=self.entr_w)
+                     entr_w=self.entr_w, gui_elements=self.gui_elements)
         # NESOSILICATES
         elif var_opt in ["Zircon", "Thorite", "Andalusite", "Kyanite", "Sillimanite", "Topaz", "Staurolite",
                          "Fayalite", "Forsterite", "Tephroite", "Calcio-Olivine", "Liebenbergite", "Olivine", "Pyrope",
                          "Almandine", "Grossular", "Andradite", "Uvarovite", "Aluminium Garnet", "Calcium Garnet"]:
             Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                      color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
-                     entr_w=self.entr_w)
+                     entr_w=self.entr_w, gui_elements=self.gui_elements)
         # SOROSILICATES
         elif var_opt in ["Epidote", "Zoisite", "Gehlenite"]:
             Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                      color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
-                     entr_w=self.entr_w)
+                     entr_w=self.entr_w, gui_elements=self.gui_elements)
         # INOSILICATES
         elif var_opt in ["Enstatite", "Ferrosilite", "Diopside", "Jadeite", "Aegirine", "Spodumene", "Wollastonite",
                          "Tremolite", "Actinolite", "Glaucophane", "Augite", "Riebeckite", "Arfvedsonite",
                          "Calcium Amphibole", "Sodium Amphibole", "Mg-Fe Pyroxene", "Calcium Pyroxene"]:
             Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                      color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
-                     entr_w=self.entr_w)
+                     entr_w=self.entr_w, gui_elements=self.gui_elements)
         # Rocks
         elif var_opt == "Sandstone":
             self.lbl_w, self.entr_w = Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
@@ -602,15 +606,37 @@ class GebPyGUI(tk.Frame):
 #
 class Minerals:
     #
-    def __init__(self, parent, color_bg, color_fg, color_acc, mineral, lbl_w, entr_w):
+    def __init__(self, parent, color_bg, color_fg, color_acc, mineral, lbl_w, entr_w, gui_elements):
         #
         try:
-            for lbl in lbl_w:
+            for lbl in lbl_w["physics"]:
                 lbl.grid_forget()
-            for entr in entr_w:
+            for entr in entr_w["physics"]:
                 entr.grid_forget()
-            lbl_w.clear()
-            entr_w.clear()
+            lbl_w["physics"].clear()
+            entr_w["physics"].clear()
+        except:
+            pass
+        #
+        try:
+            for lbl in lbl_w["chemistry"]:
+                lbl.grid_forget()
+            for entr in ["chemistry"]:
+                entr.grid_forget()
+            lbl_w["chemistry"].clear()
+            entr_w["chemistry"].clear()
+        except:
+            pass
+        #
+        try:
+            for gui_elmnt in gui_elements:
+                gui_elmnt.grid_forget()
+            gui_elmnt.clear()
+        except:
+            pass
+        #
+        try:
+            plt.close("all")
         except:
             pass
         #
@@ -631,6 +657,7 @@ class Minerals:
         self.entr_w = entr_w
         self.lbl_chem = []
         self.entr_chem = []
+        self.gui_elements = gui_elements
         #
         ## Labels
         lbl_01 = SE(parent=self.parent_mineral, row_id=4, column_id=3, n_rows=2, bg=self.color_bg,
@@ -660,13 +687,13 @@ class Minerals:
         lbl_12 = SE(parent=self.parent_mineral, row_id=24, column_id=3, n_columns=5, bg=self.color_bg,
                  fg="black").create_label(text="Chemical composition (weight amounts %)", relief=tk.RAISED)
         #
-        self.lbl_w.extend([lbl_01, lbl_02, lbl_03, lbl_04, lbl_05, lbl_06, lbl_07, lbl_08, lbl_09, lbl_10, lbl_11, lbl_12])
+        self.lbl_w["physics"].extend([lbl_01, lbl_02, lbl_03, lbl_04, lbl_05, lbl_06, lbl_07, lbl_08, lbl_09, lbl_10, lbl_11, lbl_12])
         #
         ## Entry
         entr_01 = SE(parent=self.parent_mineral, row_id=29, column_id=1, bg=self.color_acc_02,
            fg=color_fg).create_entry(var_entr=self.var_entr, var_entr_set=var_entr_start,
                                      command=lambda event, var_entr=self.var_entr: self.enter_samples(var_entr, event))
-        self.entr_w.append(entr_01)
+        self.entr_w["physics"].append(entr_01)
         #
         ## Radiobuttons
         rb_01 = SE(parent=self.parent_mineral, row_id=30, column_id=0, n_rows=1, n_columns=2, bg=self.color_acc_01,
@@ -687,7 +714,7 @@ class Minerals:
                                           text="With Trace Elements", color_bg=self.color_acc_01,
                                           command=lambda var_rb=self.var_rb_trace: self.change_radiobutton(var_rb))
         #
-        self.lbl_w.extend([rb_01, rb_02, rb_03, rb_04])
+        self.gui_elements.extend([rb_01, rb_02, rb_03, rb_04])
         #
         self.var_dict = True
         data_all = []
@@ -1052,8 +1079,7 @@ class Minerals:
                            fg="black").create_option_menu(var_opt=self.var_opt_chem, var_opt_set="Select Element",
                                                           opt_list=opt_list_chem, active_bg=self.color_acc_02,
                                                           command=lambda var_opt=self.var_opt_chem: self.select_opt(var_opt))
-        self.lbl_w.append(self.opt_chem)
-        self.lbl_chem.append(self.opt_chem)
+        self.gui_elements.append(self.opt_chem)
         #
         self.results = [self.molar_mass, self.rho_b, self.vP, self.vS, self.vPvS, self.bulk_mod, self.shear_mod,
                         self.poisson, self.gamma_ray, self.photoelectricity]
@@ -1072,8 +1098,7 @@ class Minerals:
         for element in elements:
             lbl_w = SE(parent=self.parent_mineral, row_id=25+i, column_id=3, bg=self.color_bg,
                fg="black").create_label(text=str(element), relief=tk.RAISED)
-            self.lbl_w.append(lbl_w)
-            self.lbl_chem.append(lbl_w)
+            self.lbl_w["chemistry"].append(lbl_w)
             if self.var_dict == False:
                 self.results.append(self.element_list[i])
             else:
@@ -1105,55 +1130,65 @@ class Minerals:
                 entr_std = SE(parent=self.parent_mineral, row_id=15+i, column_id=7, n_rows=1, bg=self.color_bg,
                               fg=self.color_fg).create_entry(var_entr=self.entr_list_std[i],
                                                              var_entr_set=round(np.std(self.results[i], ddof=1), 2))
-                self.entr_w.append(entr_min)
-                self.entr_w.append(entr_max)
-                self.entr_w.append(entr_mean)
-                self.entr_w.append(entr_std)
-                self.entr_chem.append(entr_min)
-                self.entr_chem.append(entr_max)
-                self.entr_chem.append(entr_mean)
-                self.entr_chem.append(entr_std)
-        # data_plot = [[self.rho_b/1000, self.vP/1000, self.vS/1000], [self.bulk_mod, self.shear_mod, self.poisson],
-        #              [self.molar_mass, self.gamma_ray, self.photoelectricity]]
-        # self.create_3x3_histo(parent=self.parent_mineral, data=data_plot, row_id=2, column_id=9, n_rows=45, n_columns=9, color=self.color_mineral)
+                self.entr_w["chemistry"].extend([entr_min, entr_max, entr_mean, entr_std])
         #
-        self.create_plot(parent=self.parent_mineral, data=self.rho_b/1000, row_id=2, column_id=9, n_rows=15,
-                         n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)", color=self.color_mineral)
-        self.create_plot(parent=self.parent_mineral, data=self.vP/1000, row_id=2, column_id=12, n_rows=15,
-                         n_columns=3, xlabel="Seismic velocity $v_P$ (km/s)", color=self.color_mineral)
-        self.create_plot(parent=self.parent_mineral, data=self.vS/1000, row_id=2, column_id=15, n_rows=15,
-                         n_columns=3, xlabel="Seismic velocity $v_S$ (km/s)", color=self.color_mineral)
-        self.create_plot(parent=self.parent_mineral, data=self.bulk_mod, row_id=17, column_id=9, n_rows=15,
-                         n_columns=3, xlabel="Bulk modulus $K$ (GPa)", color=self.color_mineral)
-        self.create_plot(parent=self.parent_mineral, data=self.shear_mod, row_id=17, column_id=12, n_rows=15,
-                         n_columns=3, xlabel="Shear modulus $G$ (GPa)", color=self.color_mineral)
-        self.create_plot(parent=self.parent_mineral, data=self.poisson, row_id=17, column_id=15, n_rows=15,
-                         n_columns=3, xlabel="Poisson's ratio $\\mu$ (1)", color=self.color_mineral)
-        self.create_plot(parent=self.parent_mineral, data=self.molar_mass, row_id=32, column_id=9, n_rows=15,
-                         n_columns=3, xlabel="Molar mass $M$ (g/mol)", color=self.color_mineral)
-        self.create_plot(parent=self.parent_mineral, data=self.gamma_ray, row_id=32, column_id=12, n_rows=15,
-                         n_columns=3, xlabel="Gamma ray GR (API)", color=self.color_mineral)
-        self.create_plot(parent=self.parent_mineral, data=self.photoelectricity, row_id=32, column_id=15, n_rows=15,
-                         n_columns=3, xlabel="Photoelectricity PE (barns/electron)", color=self.color_mineral)
+        self.labels = [["Densitiy $\\varrho$ (g/ccm)", "Seismic velocity $v_P$ (km/s)", "Seismic velocity $v_S$ (km/s)"],
+                  ["Bulk modulus $K$ (GPa)", "Shear modulus $G$ (GPa)", "Poisson's ratio $\\mu$ (1)"],
+                  ["Molar mass $M$ (g/mol)", "Gamma ray GR (API)", "Photoelectricity PE (barns/electron)"]]
+        self.data_plot = [[self.rho_b/1000, self.vP/1000, self.vS/1000], [self.bulk_mod, self.shear_mod, self.poisson],
+                     [self.molar_mass, self.gamma_ray, self.photoelectricity]]
+        self.create_3x3_histo(parent=self.parent_mineral, data=self.data_plot, row_id=2, column_id=9, n_rows=45, n_columns=9,
+                              color=self.color_mineral, labels=self.labels)
     #
-    def create_3x3_histo(self, parent, data, row_id, column_id, n_rows, n_columns, color):
+    def create_3x3_histo(self, parent, data, row_id, column_id, n_rows, n_columns, color, labels):
         #
-        self.canvas_histo = None
-        #self.fig_histo = Figure(facecolor="#E9ECED")
-        self.fig_histo, self.ax_histo = plt.subplots(ncols=3, nrows=3, dpi=100, facecolor="#E9ECED")
+        self.canvas = None
+        self.fig, self.ax = plt.subplots(ncols=3, nrows=3, figsize=(9, 9), facecolor="#E9ECED")
         #
         for i in range(3):
             for j in range(3):
-                self.ax_histo[i][j].axvline(x=np.mean(data[i][j]), color="#E76F51", linewidth=3, linestyle="dashed")
-                self.ax_histo[i][j].hist(data[i][j], bins=15, color=color, edgecolor="black")
+                self.ax[i][j].axvline(x=np.mean(data[i][j]), color="#E76F51", linewidth=3, linestyle="dashed")
+                self.ax[i][j].hist(data[i][j], bins=15, color=color, edgecolor="black")
                 #
-                self.ax_histo[i][j].set_ylabel("Frequency", labelpad=0.5, fontsize="small")
-                self.ax_histo[i][j].grid(True)
-                self.ax_histo[i][j].set_axisbelow(True)
-        self.fig_histo.tight_layout(pad=3.0)
+                self.ax[i][j].set_xlabel(labels[i][j], fontsize="small")
+                self.ax[i][j].set_ylabel("Frequency", labelpad=0.5, fontsize="small")
+                self.ax[i][j].grid(True)
+                self.ax[i][j].set_axisbelow(True)
+        self.fig.tight_layout()
         #
-        self.canvas_histo = FigureCanvasTkAgg(self.fig_histo, master=parent)
-        self.canvas_histo.get_tk_widget().grid(row=row_id, column=column_id, rowspan=n_rows, columnspan=n_columns, sticky="nesw")
+        self.canvas = FigureCanvasTkAgg(self.fig, master=parent)
+        self.canvas.get_tk_widget().grid(row=row_id, column=column_id, rowspan=n_rows, columnspan=n_columns,
+                                               sticky="nesw")
+    #
+    def create_3x3_scatter(self, parent, data_x, data, row_id, column_id, n_rows, n_columns, color, labels, xlabel):
+        #
+        self.canvas = None
+        self.fig, self.ax = plt.subplots(ncols=3, nrows=3, figsize=(9, 9), facecolor="#E9ECED")
+        #
+        for i in range(3):
+            for j in range(3):
+                if self.var_opt_chem.get() in ["No Selection", "Select Element"]:
+                    self.ax[i][j].scatter(data_x, data[i][j], color=color, edgecolor="black", alpha=0.5)
+                else:
+                    if self.var_opt_chem.get() in self.list_elements:
+                        plot = self.ax[i][j].scatter(data_x, data[i][j], c=self.data_c, cmap="viridis",
+                                                     edgecolor="black", alpha=1)
+                #
+                self.ax[i][j].set_xlabel(xlabel, fontsize="small")
+                self.ax[i][j].set_ylabel(labels[i][j], labelpad=0.5, fontsize="small")
+                self.ax[i][j].grid(True)
+                self.ax[i][j].set_axisbelow(True)
+        self.fig.tight_layout()
+        if self.var_opt_chem.get() not in ["No Selection", "Select Element"]:
+            self.fig.subplots_adjust(bottom=0.125)
+            cbar_ax = self.fig.add_axes([0.15, 0.05, 0.8, 0.01])
+            cbar = self.fig.colorbar(plot, format="%.3f", cax=cbar_ax, orientation="horizontal",
+                                     ticks=np.linspace(min(self.data_c), max(self.data_c), 10, endpoint=True))
+            cbar.set_label(self.var_opt_chem.get()+" (%)", rotation=0)
+        #
+        self.canvas = FigureCanvasTkAgg(self.fig, master=parent)
+        self.canvas.get_tk_widget().grid(row=row_id, column=column_id, rowspan=n_rows, columnspan=n_columns,
+                                         sticky="nesw")
     #
     def create_plot(self, parent, data, row_id, column_id, n_rows, n_columns, xlabel, color):
         #
@@ -1202,16 +1237,30 @@ class Minerals:
     #
     def enter_samples(self, var_entr, event):
         try:
-            self.fig_histo.clf()
-            self.ax_histo.cla()
-            self.canvas_histo.get_tk_widget().pack_forget()
+            for lbl in self.lbl_w["chemistry"]:
+                lbl.grid_forget()
+            for entr in self.entr_w["chemistry"]:
+                entr.grid_forget()
+            self.lbl_w["chemistry"].clear()
+            self.entr_w["chemistry"].clear()
+        except:
+            pass
+        try:
+            self.fig.clf()
+            self.ax.cla()
+            self.canvas.get_tk_widget().pack_forget()
         except AttributeError:
             pass
-
+        #
         try:
-            if self.canvas_histo:
-                self.canvas_histo.destroy()
+            if self.canvas:
+                self.canvas.destroy()
         except AttributeError:
+            pass
+        #
+        try:
+            plt.close("all")
+        except:
             pass
         #
         data_all = []
@@ -1564,6 +1613,15 @@ class Minerals:
             elif self.mineral in ["Pyrolusite"]:
                 self.w_element = self.element_list["Mn"]
         #
+        self.list_elements = list(self.chemistry[0].keys())
+        opt_list_chem = ["No Selection"]
+        opt_list_chem.extend(self.list_elements)
+        self.opt_chem = SE(parent=self.parent_mineral, row_id=34, column_id=0, n_rows=1, n_columns=2, bg=self.color_acc_01,
+                           fg="black").create_option_menu(var_opt=self.var_opt_chem, var_opt_set="Select Element",
+                                                          opt_list=opt_list_chem, active_bg=self.color_acc_02,
+                                                          command=lambda var_opt=self.var_opt_chem: self.select_opt(var_opt))
+        self.gui_elements.append(self.opt_chem)
+        #
         self.var_opt_chem.set("Select Element")
         #
         self.results = [self.molar_mass, self.rho_b, self.vP, self.vS, self.vPvS, self.bulk_mod, self.shear_mod,
@@ -1582,8 +1640,8 @@ class Minerals:
         i = 0
         for element in elements:
             lbl_w = SE(parent=self.parent_mineral, row_id=25+i, column_id=3, bg=self.color_bg,
-               fg="black").create_label(text=str(element), relief=tk.RAISED)
-            self.lbl_w.append(lbl_w)
+                       fg="black").create_label(text=str(element), relief=tk.RAISED)
+            self.lbl_w["chemistry"].append(lbl_w)
             if self.var_dict == False:
                 self.results.append(self.element_list[i])
             else:
@@ -1615,137 +1673,102 @@ class Minerals:
                 entr_std = SE(parent=self.parent_mineral, row_id=15+i, column_id=7, n_rows=1, bg=self.color_bg,
                               fg=self.color_fg).create_entry(var_entr=self.entr_list_std[i],
                                                              var_entr_set=round(np.std(self.results[i], ddof=1), 2))
-                self.entr_w.append(entr_min)
-                self.entr_w.append(entr_max)
-                self.entr_w.append(entr_mean)
-                self.entr_w.append(entr_std)
+                #
+                self.entr_w["chemistry"].extend([entr_min, entr_max, entr_mean, entr_std])
         #
-        self.create_plot(parent=self.parent_mineral, data=self.rho_b/1000, row_id=2, column_id=9, n_rows=15,
-                         n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)", color=self.color_mineral)
-        self.create_plot(parent=self.parent_mineral, data=self.vP/1000, row_id=2, column_id=12, n_rows=15,
-                         n_columns=3, xlabel="Seismic velocity $v_P$ (km/s)", color=self.color_mineral)
-        self.create_plot(parent=self.parent_mineral, data=self.vS/1000, row_id=2, column_id=15, n_rows=15,
-                         n_columns=3, xlabel="Seismic velocity $v_S$ (km/s)", color=self.color_mineral)
-        self.create_plot(parent=self.parent_mineral, data=self.bulk_mod, row_id=17, column_id=9, n_rows=15,
-                         n_columns=3, xlabel="Bulk modulus $K$ (GPa)", color=self.color_mineral)
-        self.create_plot(parent=self.parent_mineral, data=self.shear_mod, row_id=17, column_id=12, n_rows=15,
-                         n_columns=3, xlabel="Shear modulus $G$ (GPa)", color=self.color_mineral)
-        self.create_plot(parent=self.parent_mineral, data=self.poisson, row_id=17, column_id=15, n_rows=15,
-                         n_columns=3, xlabel="Poisson's ratio $\\mu$ (1)", color=self.color_mineral)
-        self.create_plot(parent=self.parent_mineral, data=self.molar_mass, row_id=32, column_id=9, n_rows=15,
-                         n_columns=3, xlabel="Molar mass $M$ (g/mol)", color=self.color_mineral)
-        self.create_plot(parent=self.parent_mineral, data=self.gamma_ray, row_id=32, column_id=12, n_rows=15,
-                         n_columns=3, xlabel="Gamma ray GR (API)", color=self.color_mineral)
-        self.create_plot(parent=self.parent_mineral, data=self.photoelectricity, row_id=32, column_id=15, n_rows=15,
-                         n_columns=3, xlabel="Photoelectricity PE (barns/electron)", color=self.color_mineral)
+        self.data_plot = [[self.rho_b/1000, self.vP/1000, self.vS/1000], [self.bulk_mod, self.shear_mod, self.poisson],
+                     [self.molar_mass, self.gamma_ray, self.photoelectricity]]
+        self.create_3x3_histo(parent=self.parent_mineral, data=self.data_plot, row_id=2, column_id=9, n_rows=45, n_columns=9,
+                              color=self.color_mineral, labels=self.labels)
         #
         self.var_rb.set(0)
     #
     def change_radiobutton(self, var_rb):
         if var_rb.get() == 0:
             try:
-                self.fig_histo.clf()
-                self.ax_histo.cla()
-                self.canvas_histo.get_tk_widget().pack_forget()
-            except AttributeError:
-                pass
-
-            try:
-                if self.canvas_histo:
-                    self.canvas_histo.destroy()
+                self.fig.clf()
+                self.ax.cla()
+                self.canvas.get_tk_widget().pack_forget()
+                for lbl in self.lbl_w["chemistry"]:
+                    lbl.grid_forget()
+                for entr in self.entr_w["chemistry"]:
+                    entr.grid_forget()
+                self.lbl_w["chemistry"].clear()
+                self.entr_w["chemistry"].clear()
             except AttributeError:
                 pass
             #
-            self.create_plot(parent=self.parent_mineral, data=self.rho_b/1000, row_id=2, column_id=9, n_rows=15,
-                             n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)", color=self.color_mineral)
-            self.create_plot(parent=self.parent_mineral, data=self.vP/1000, row_id=2, column_id=12, n_rows=15,
-                             n_columns=3, xlabel="Seismic velocity $v_P$ (km/s)", color=self.color_mineral)
-            self.create_plot(parent=self.parent_mineral, data=self.vS/1000, row_id=2, column_id=15, n_rows=15,
-                             n_columns=3, xlabel="Seismic velocity $v_S$ (km/s)", color=self.color_mineral)
-            self.create_plot(parent=self.parent_mineral, data=self.bulk_mod, row_id=17, column_id=9, n_rows=15,
-                             n_columns=3, xlabel="Bulk modulus $K$ (GPa)", color=self.color_mineral)
-            self.create_plot(parent=self.parent_mineral, data=self.shear_mod, row_id=17, column_id=12, n_rows=15,
-                             n_columns=3, xlabel="Shear modulus $G$ (GPa)", color=self.color_mineral)
-            self.create_plot(parent=self.parent_mineral, data=self.poisson, row_id=17, column_id=15, n_rows=15,
-                             n_columns=3, xlabel="Poisson's ratio $\\mu$ (1)", color=self.color_mineral)
-            self.create_plot(parent=self.parent_mineral, data=self.molar_mass, row_id=32, column_id=9, n_rows=15,
-                             n_columns=3, xlabel="Molar mass $M$ (g/mol)", color=self.color_mineral)
-            self.create_plot(parent=self.parent_mineral, data=self.gamma_ray, row_id=32, column_id=12, n_rows=15,
-                             n_columns=3, xlabel="Gamma ray GR (API)", color=self.color_mineral)
-            self.create_plot(parent=self.parent_mineral, data=self.photoelectricity, row_id=32, column_id=15, n_rows=15,
-                             n_columns=3, xlabel="Photoelectricity PE (barns/electron)", color=self.color_mineral)
-        elif var_rb.get() == 1:
             try:
-                self.fig_histo.clf()
-                self.ax_histo.cla()
-                self.canvas_histo.get_tk_widget().pack_forget()
+                if self.canvas:
+                    self.canvas.destroy()
             except AttributeError:
                 pass
-
+            #
             try:
-                if self.canvas_histo:
-                    self.canvas_histo.destroy()
+                plt.close("all")
+            except:
+                pass
+            #
+            self.data_plot = [[self.rho_b/1000, self.vP/1000, self.vS/1000], [self.bulk_mod, self.shear_mod, self.poisson],
+                     [self.molar_mass, self.gamma_ray, self.photoelectricity]]
+            self.create_3x3_histo(parent=self.parent_mineral, data=self.data_plot, row_id=2, column_id=9, n_rows=45, n_columns=9,
+                                  color=self.color_mineral, labels=self.labels)
+            #
+        elif var_rb.get() == 1:
+            try:
+                self.fig.clf()
+                self.ax.cla()
+                self.canvas.get_tk_widget().pack_forget()
+                for lbl in self.lbl_w["chemistry"]:
+                    lbl.grid_forget()
+                for entr in self.entr_w["chemistry"]:
+                    entr.grid_forget()
+                self.lbl_w["chemistry"].clear()
+                self.entr_w["chemistry"].clear()
             except AttributeError:
+                pass
+            #
+            try:
+                if self.canvas:
+                    self.canvas.destroy()
+            except AttributeError:
+                pass
+            #
+            try:
+                plt.close("all")
+            except:
                 pass
             #
             data_x = np.array(self.rho_b)/1000
+            xlabel = "Density $\\varrho$ g/ccm"
+            self.create_3x3_scatter(parent=self.parent_mineral, data_x=data_x, data=self.data_plot, row_id=2,
+                                    column_id=9, n_rows=45, n_columns=9, color=self.color_mineral, labels=self.labels,
+                                    xlabel=xlabel)
             #
-            self.create_scatter_plot(parent=self.parent_mineral, data_x=data_x, data_y=self.vP/1000, row_id=2,
-                                     column_id=9, n_rows=15, n_columns=3,
-                                     xlabel="Density $\\varrho$ g/ccm",
-                                     ylabel="Seismic velocity $v_P$ (km/s)", color=self.color_mineral)
-            self.create_scatter_plot(parent=self.parent_mineral, data_x=data_x, data_y=self.vS/1000, row_id=2,
-                                     column_id=12, n_rows=15, n_columns=3,
-                                     xlabel="Density $\\varrho$ g/ccm",
-                                     ylabel="Seismic velocity $v_S$ (km/s)", color=self.color_mineral)
-            self.create_scatter_plot(parent=self.parent_mineral, data_x=data_x, data_y=self.vP/self.vS,
-                                     row_id=2, column_id=15, n_rows=15, n_columns=3,
-                                     xlabel="Density $\\varrho$ g/ccm",
-                                     ylabel="Velocity ratio $v_P/v_S$ (1)", color=self.color_mineral)
-            self.create_scatter_plot(parent=self.parent_mineral, data_x=data_x, data_y=self.bulk_mod, row_id=17,
-                                     column_id=9, n_rows=15, n_columns=3,
-                                     xlabel="Density $\\varrho$ g/ccm",
-                                     ylabel="Bulk modulus $K$ (GPa)", color=self.color_mineral)
-            self.create_scatter_plot(parent=self.parent_mineral, data_x=data_x, data_y=self.shear_mod,
-                                     row_id=17, column_id=12, n_rows=15, n_columns=3,
-                                     xlabel="Density $\\varrho$ g/ccm",
-                                     ylabel="Shear modulus $G$ (GPa)", color=self.color_mineral)
-            self.create_scatter_plot(parent=self.parent_mineral, data_x=data_x, data_y=self.poisson, row_id=17,
-                                     column_id=15, n_rows=15, n_columns=3,
-                                     xlabel="Density $\\varrho$ g/ccm",
-                                     ylabel="Poisson's ratio $\\mu$ (1)", color=self.color_mineral)
-            self.create_scatter_plot(parent=self.parent_mineral, data_x=data_x, data_y=self.molar_mass,
-                                     row_id=32, column_id=9, n_rows=15, n_columns=3,
-                                     xlabel="Density $\\varrho$ g/ccm",
-                                     ylabel="Molar mass $M$ (g/mol)", color=self.color_mineral)
-            self.create_scatter_plot(parent=self.parent_mineral, data_x=data_x, data_y=self.gamma_ray,
-                                     row_id=32, column_id=12, n_rows=15, n_columns=3,
-                                     xlabel="Density $\\varrho$ g/ccm",
-                                     ylabel="Gamma ray GR (API)", color=self.color_mineral)
-            self.create_scatter_plot(parent=self.parent_mineral, data_x=data_x, data_y=self.photoelectricity,
-                                     row_id=32, column_id=15, n_rows=15, n_columns=3,
-                                     xlabel="Density $\\varrho$ g/ccm",
-                                     ylabel="Photoelectricity PE (barns/electron)", color=self.color_mineral)
         elif var_rb.get() == 2:
-            print(var_rb.get(), self.var_actual_trace)
             if var_rb.get() != self.var_actual_trace:
                 try:
-                    self.fig_histo.clf()
-                    self.ax_histo.cla()
-                    self.canvas_histo.get_tk_widget().pack_forget()
-                    for lbl in self.lbl_chem:
+                    self.fig.clf()
+                    self.ax.cla()
+                    self.canvas.get_tk_widget().pack_forget()
+                    for lbl in self.lbl_w["chemistry"]:
                         lbl.grid_forget()
-                    for entr in self.entr_chem:
+                    for entr in self.entr_w["chemistry"]:
                         entr.grid_forget()
-                    self.lbl_chem.clear()
-                    self.entr_chem.clear()
+                    self.lbl_w["chemistry"].clear()
+                    self.entr_w["chemistry"].clear()
                 except AttributeError:
                     pass
-
+                #
                 try:
-                    if self.canvas_histo:
-                        self.canvas_histo.destroy()
+                    if self.canvas:
+                        self.canvas.destroy()
                 except AttributeError:
+                    pass
+                #
+                try:
+                    plt.close("all")
+                except:
                     pass
                 #
                 self.var_actual_trace = var_rb.get()
@@ -2099,6 +2122,15 @@ class Minerals:
                     elif self.mineral in ["Pyrolusite"]:
                         self.w_element = self.element_list["Mn"]
                 #
+                self.list_elements = list(self.chemistry[0].keys())
+                opt_list_chem = ["No Selection"]
+                opt_list_chem.extend(self.list_elements)
+                self.opt_chem = SE(parent=self.parent_mineral, row_id=34, column_id=0, n_rows=1, n_columns=2, bg=self.color_acc_01,
+                                   fg="black").create_option_menu(var_opt=self.var_opt_chem, var_opt_set="Select Element",
+                                                                  opt_list=opt_list_chem, active_bg=self.color_acc_02,
+                                                                  command=lambda var_opt=self.var_opt_chem: self.select_opt(var_opt))
+                self.gui_elements.append(self.opt_chem)
+                #
                 self.var_opt_chem.set("Select Element")
                 #
                 self.results = [self.molar_mass, self.rho_b, self.vP, self.vS, self.vPvS, self.bulk_mod, self.shear_mod,
@@ -2151,56 +2183,45 @@ class Minerals:
                         entr_std = SE(parent=self.parent_mineral, row_id=15+i, column_id=7, n_rows=1, bg=self.color_bg,
                                       fg=self.color_fg).create_entry(var_entr=self.entr_list_std[i],
                                                                      var_entr_set=round(np.std(self.results[i], ddof=1), 2))
-                        self.entr_w.append(entr_min)
-                        self.entr_w.append(entr_max)
-                        self.entr_w.append(entr_mean)
-                        self.entr_w.append(entr_std)
-                        self.entr_chem.append(entr_min)
-                        self.entr_chem.append(entr_max)
-                        self.entr_chem.append(entr_mean)
-                        self.entr_chem.append(entr_std)
+                        #
+                        self.entr_w["chemistry"].extend([entr_min, entr_max, entr_mean, entr_std])
                 #
-                self.create_plot(parent=self.parent_mineral, data=self.rho_b/1000, row_id=2, column_id=9, n_rows=15,
-                                 n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)", color=self.color_mineral)
-                self.create_plot(parent=self.parent_mineral, data=self.vP/1000, row_id=2, column_id=12, n_rows=15,
-                                 n_columns=3, xlabel="Seismic velocity $v_P$ (km/s)", color=self.color_mineral)
-                self.create_plot(parent=self.parent_mineral, data=self.vS/1000, row_id=2, column_id=15, n_rows=15,
-                                 n_columns=3, xlabel="Seismic velocity $v_S$ (km/s)", color=self.color_mineral)
-                self.create_plot(parent=self.parent_mineral, data=self.bulk_mod, row_id=17, column_id=9, n_rows=15,
-                                 n_columns=3, xlabel="Bulk modulus $K$ (GPa)", color=self.color_mineral)
-                self.create_plot(parent=self.parent_mineral, data=self.shear_mod, row_id=17, column_id=12, n_rows=15,
-                                 n_columns=3, xlabel="Shear modulus $G$ (GPa)", color=self.color_mineral)
-                self.create_plot(parent=self.parent_mineral, data=self.poisson, row_id=17, column_id=15, n_rows=15,
-                                 n_columns=3, xlabel="Poisson's ratio $\\mu$ (1)", color=self.color_mineral)
-                self.create_plot(parent=self.parent_mineral, data=self.molar_mass, row_id=32, column_id=9, n_rows=15,
-                                 n_columns=3, xlabel="Molar mass $M$ (g/mol)", color=self.color_mineral)
-                self.create_plot(parent=self.parent_mineral, data=self.gamma_ray, row_id=32, column_id=12, n_rows=15,
-                                 n_columns=3, xlabel="Gamma ray GR (API)", color=self.color_mineral)
-                self.create_plot(parent=self.parent_mineral, data=self.photoelectricity, row_id=32, column_id=15, n_rows=15,
-                                 n_columns=3, xlabel="Photoelectricity PE (barns/electron)", color=self.color_mineral)
+                self.data_plot = [[self.rho_b/1000, self.vP/1000, self.vS/1000], [self.bulk_mod, self.shear_mod, self.poisson],
+                             [self.molar_mass, self.gamma_ray, self.photoelectricity]]
+                self.create_3x3_histo(parent=self.parent_mineral, data=self.data_plot, row_id=2, column_id=9, n_rows=45, n_columns=9,
+                                      color=self.color_mineral, labels=self.labels)
                 #
                 self.var_rb.set(0)
             else:
                 print("Nothing to do!")
         elif var_rb.get() == 3:
-            print(var_rb.get(), self.var_actual_trace)
+            #
             try:
-                self.fig_histo.clf()
-                self.ax_histo.cla()
-                self.canvas_histo.get_tk_widget().pack_forget()
-                for lbl in self.lbl_chem:
+                for lbl in self.lbl_w["chemistry"]:
                     lbl.grid_forget()
-                for entr in self.entr_chem:
+                for entr in self.entr_w["chemistry"]:
                     entr.grid_forget()
-                self.lbl_chem.clear()
-                self.entr_chem.clear()
+                self.lbl_w["chemistry"].clear()
+                self.entr_w["chemistry"].clear()
+            except:
+                pass
+            #
+            try:
+                self.fig.clf()
+                self.ax.cla()
+                self.canvas.get_tk_widget().pack_forget()
             except AttributeError:
                 pass
-
+            #
             try:
-                if self.canvas_histo:
-                    self.canvas_histo.destroy()
+                if self.canvas:
+                    self.canvas.destroy()
             except AttributeError:
+                pass
+            #
+            try:
+                plt.close("all")
+            except:
                 pass
             #
             self.var_actual_trace = var_rb.get()
@@ -2559,6 +2580,15 @@ class Minerals:
                 elif self.mineral in ["Pyrolusite"]:
                     self.w_element = self.element_list["Mn"]
             #
+            self.list_elements = list(self.chemistry[0].keys())
+            opt_list_chem = ["No Selection"]
+            opt_list_chem.extend(self.list_elements)
+            self.opt_chem = SE(parent=self.parent_mineral, row_id=34, column_id=0, n_rows=1, n_columns=2, bg=self.color_acc_01,
+                               fg="black").create_option_menu(var_opt=self.var_opt_chem, var_opt_set="Select Element",
+                                                              opt_list=opt_list_chem, active_bg=self.color_acc_02,
+                                                              command=lambda var_opt=self.var_opt_chem: self.select_opt(var_opt))
+            self.gui_elements.append(self.opt_chem)
+            #
             self.var_opt_chem.set("Select Element")
             #
             self.results = [self.molar_mass, self.rho_b, self.vP, self.vS, self.vPvS, self.bulk_mod, self.shear_mod,
@@ -2574,13 +2604,11 @@ class Minerals:
                 self.entr_list_mean.append(tk.IntVar())
                 self.entr_list_std.append(tk.IntVar())
             #
-            print(elements)
             i = 0
             for element in elements:
                 lbl_w = SE(parent=self.parent_mineral, row_id=25+i, column_id=3, bg=self.color_bg,
-                   fg="black").create_label(text=str(element), relief=tk.RAISED)
-                self.lbl_w.append(lbl_w)
-                self.lbl_chem.append(lbl_w)
+                           fg="black").create_label(text=str(element), relief=tk.RAISED)
+                self.lbl_w["chemistry"].append(lbl_w)
                 if self.var_dict == False:
                     self.results.append(self.element_list[i])
                 else:
@@ -2590,15 +2618,18 @@ class Minerals:
             for i in range(10+len(elements)):
                 if i < 10:
                     entr_min = SE(parent=self.parent_mineral, row_id=4+2*i, column_id=4, n_rows=2, bg=self.color_bg,
-                       fg=self.color_fg).create_entry(var_entr=self.entr_list_min[i], var_entr_set=round(np.min(self.results[i]), 3))
+                                  fg=self.color_fg).create_entry(var_entr=self.entr_list_min[i],
+                                                                 var_entr_set=round(np.min(self.results[i]), 3))
                     entr_max = SE(parent=self.parent_mineral, row_id=4+2*i, column_id=5, n_rows=2, bg=self.color_bg,
-                       fg=self.color_fg).create_entry(var_entr=self.entr_list_max[i], var_entr_set=round(np.max(self.results[i]), 3))
+                                  fg=self.color_fg).create_entry(var_entr=self.entr_list_max[i],
+                                                                 var_entr_set=round(np.max(self.results[i]), 3))
                     entr_mean = SE(parent=self.parent_mineral, row_id=4+2*i, column_id=6, n_rows=2, bg=self.color_bg,
-                       fg=self.color_fg).create_entry(var_entr=self.entr_list_mean[i],
-                                                 var_entr_set=round(np.mean(self.results[i]), 3))
+                                   fg=self.color_fg).create_entry(var_entr=self.entr_list_mean[i],
+                                                                  var_entr_set=round(np.mean(self.results[i]), 3))
                     entr_std = SE(parent=self.parent_mineral, row_id=4+2*i, column_id=7, n_rows=2, bg=self.color_bg,
-                       fg=self.color_fg).create_entry(var_entr=self.entr_list_std[i],
-                                                 var_entr_set=round(np.std(self.results[i], ddof=1), 3))
+                                  fg=self.color_fg).create_entry(var_entr=self.entr_list_std[i],
+                                                                 var_entr_set=round(np.std(self.results[i], ddof=1), 3))
+                    self.entr_w["chemistry"].extend([entr_min, entr_max, entr_mean, entr_std])
                 elif i >= 10:
                     entr_min = SE(parent=self.parent_mineral, row_id=15+i, column_id=4, n_rows=1, bg=self.color_bg,
                                   fg=self.color_fg).create_entry(var_entr=self.entr_list_min[i],
@@ -2612,90 +2643,43 @@ class Minerals:
                     entr_std = SE(parent=self.parent_mineral, row_id=15+i, column_id=7, n_rows=1, bg=self.color_bg,
                                   fg=self.color_fg).create_entry(var_entr=self.entr_list_std[i],
                                                                  var_entr_set=round(np.std(self.results[i], ddof=1), 2))
-                    self.entr_w.append(entr_min)
-                    self.entr_w.append(entr_max)
-                    self.entr_w.append(entr_mean)
-                    self.entr_w.append(entr_std)
-                    self.entr_chem.append(entr_min)
-                    self.entr_chem.append(entr_max)
-                    self.entr_chem.append(entr_mean)
-                    self.entr_chem.append(entr_std)
+                    self.entr_w["chemistry"].extend([entr_min, entr_max, entr_mean, entr_std])
             #
-            self.create_plot(parent=self.parent_mineral, data=self.rho_b/1000, row_id=2, column_id=9, n_rows=15,
-                             n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)", color=self.color_mineral)
-            self.create_plot(parent=self.parent_mineral, data=self.vP/1000, row_id=2, column_id=12, n_rows=15,
-                             n_columns=3, xlabel="Seismic velocity $v_P$ (km/s)", color=self.color_mineral)
-            self.create_plot(parent=self.parent_mineral, data=self.vS/1000, row_id=2, column_id=15, n_rows=15,
-                             n_columns=3, xlabel="Seismic velocity $v_S$ (km/s)", color=self.color_mineral)
-            self.create_plot(parent=self.parent_mineral, data=self.bulk_mod, row_id=17, column_id=9, n_rows=15,
-                             n_columns=3, xlabel="Bulk modulus $K$ (GPa)", color=self.color_mineral)
-            self.create_plot(parent=self.parent_mineral, data=self.shear_mod, row_id=17, column_id=12, n_rows=15,
-                             n_columns=3, xlabel="Shear modulus $G$ (GPa)", color=self.color_mineral)
-            self.create_plot(parent=self.parent_mineral, data=self.poisson, row_id=17, column_id=15, n_rows=15,
-                             n_columns=3, xlabel="Poisson's ratio $\\mu$ (1)", color=self.color_mineral)
-            self.create_plot(parent=self.parent_mineral, data=self.molar_mass, row_id=32, column_id=9, n_rows=15,
-                             n_columns=3, xlabel="Molar mass $M$ (g/mol)", color=self.color_mineral)
-            self.create_plot(parent=self.parent_mineral, data=self.gamma_ray, row_id=32, column_id=12, n_rows=15,
-                             n_columns=3, xlabel="Gamma ray GR (API)", color=self.color_mineral)
-            self.create_plot(parent=self.parent_mineral, data=self.photoelectricity, row_id=32, column_id=15, n_rows=15,
-                             n_columns=3, xlabel="Photoelectricity PE (barns/electron)", color=self.color_mineral)
+            self.data_plot = [[self.rho_b/1000, self.vP/1000, self.vS/1000], [self.bulk_mod, self.shear_mod, self.poisson],
+                         [self.molar_mass, self.gamma_ray, self.photoelectricity]]
+            self.create_3x3_histo(parent=self.parent_mineral, data=self.data_plot, row_id=2, column_id=9, n_rows=45, n_columns=9,
+                                  color=self.color_mineral, labels=self.labels)
             #
             self.var_rb.set(0)
     #
     def select_opt(self, var_opt):
         try:
-            self.fig_histo.clf()
-            self.ax_histo.cla()
-            self.canvas_histo.get_tk_widget().pack_forget()
+            self.fig.clf()
+            self.ax.cla()
+            self.canvas.get_tk_widget().pack_forget()
         except AttributeError:
             pass
+        #
         try:
-            if self.canvas_histo:
-                self.canvas_histo.destroy()
+            if self.canvas:
+                self.canvas.destroy()
         except AttributeError:
+            pass
+        #
+        try:
+            plt.close("all")
+        except:
             pass
         #
         if var_opt == "No Selection":
             self.var_rb.set(1)
             #
             data_x = np.array(self.rho_b)/1000
+            xlabel = "Density $\\varrho$ g/ccm"
+            self.create_3x3_scatter(parent=self.parent_mineral, data_x=data_x, data=self.data_plot, row_id=2,
+                                    column_id=9, n_rows=45, n_columns=9, color=self.color_mineral, labels=self.labels,
+                                    xlabel=xlabel)
             #
-            self.create_scatter_plot(parent=self.parent_mineral, data_x=data_x, data_y=self.vP/1000, row_id=2,
-                                     column_id=9, n_rows=15, n_columns=3,
-                                     xlabel="Density $\\varrho$ g/ccm",
-                                     ylabel="Seismic velocity $v_P$ (km/s)", color=self.color_mineral)
-            self.create_scatter_plot(parent=self.parent_mineral, data_x=data_x, data_y=self.vS/1000, row_id=2,
-                                     column_id=12, n_rows=15, n_columns=3,
-                                     xlabel="Density $\\varrho$ g/ccm",
-                                     ylabel="Seismic velocity $v_S$ (km/s)", color=self.color_mineral)
-            self.create_scatter_plot(parent=self.parent_mineral, data_x=data_x, data_y=self.vP/self.vS,
-                                     row_id=2, column_id=15, n_rows=15, n_columns=3,
-                                     xlabel="Density $\\varrho$ g/ccm",
-                                     ylabel="Velocity ratio $v_P/v_S$ (1)", color=self.color_mineral)
-            self.create_scatter_plot(parent=self.parent_mineral, data_x=data_x, data_y=self.bulk_mod, row_id=17,
-                                     column_id=9, n_rows=15, n_columns=3,
-                                     xlabel="Density $\\varrho$ g/ccm",
-                                     ylabel="Bulk modulus $K$ (GPa)", color=self.color_mineral)
-            self.create_scatter_plot(parent=self.parent_mineral, data_x=data_x, data_y=self.shear_mod,
-                                     row_id=17, column_id=12, n_rows=15, n_columns=3,
-                                     xlabel="Density $\\varrho$ g/ccm",
-                                     ylabel="Shear modulus $G$ (GPa)", color=self.color_mineral)
-            self.create_scatter_plot(parent=self.parent_mineral, data_x=data_x, data_y=self.poisson, row_id=17,
-                                     column_id=15, n_rows=15, n_columns=3,
-                                     xlabel="Density $\\varrho$ g/ccm",
-                                     ylabel="Poisson's ratio $\\mu$ (1)", color=self.color_mineral)
-            self.create_scatter_plot(parent=self.parent_mineral, data_x=data_x, data_y=self.molar_mass,
-                                     row_id=32, column_id=9, n_rows=15, n_columns=3,
-                                     xlabel="Density $\\varrho$ g/ccm",
-                                     ylabel="Molar mass $M$ (g/mol)", color=self.color_mineral)
-            self.create_scatter_plot(parent=self.parent_mineral, data_x=data_x, data_y=self.gamma_ray,
-                                     row_id=32, column_id=12, n_rows=15, n_columns=3,
-                                     xlabel="Density $\\varrho$ g/ccm",
-                                     ylabel="Gamma ray GR (API)", color=self.color_mineral)
-            self.create_scatter_plot(parent=self.parent_mineral, data_x=data_x, data_y=self.photoelectricity,
-                                     row_id=32, column_id=15, n_rows=15, n_columns=3,
-                                     xlabel="Density $\\varrho$ g/ccm",
-                                     ylabel="Photoelectricity PE (barns/electron)", color=self.color_mineral)
         else:
             self.var_rb.set(1)
             #
@@ -2705,43 +2689,11 @@ class Minerals:
             self.data_c = np.array(data_c)*100
             element = var_opt
             data_x = np.array(self.rho_b)/1000
+            xlabel = "Density $\\varrho$ g/ccm"
+            self.create_3x3_scatter(parent=self.parent_mineral, data_x=data_x, data=self.data_plot, row_id=2,
+                                    column_id=9, n_rows=45, n_columns=9, color=self.color_mineral, labels=self.labels,
+                                    xlabel=xlabel)
             #
-            self.create_scatter_plot(parent=self.parent_mineral, data_x=data_x, data_y=self.vP/1000, row_id=2,
-                                     column_id=9, n_rows=15, n_columns=3,
-                                     xlabel="Density $\\varrho$ g/ccm",
-                                     ylabel="Seismic velocity $v_P$ (km/s)", color=self.color_mineral)
-            self.create_scatter_plot(parent=self.parent_mineral, data_x=data_x, data_y=self.vS/1000, row_id=2,
-                                     column_id=12, n_rows=15, n_columns=3,
-                                     xlabel="Density $\\varrho$ g/ccm",
-                                     ylabel="Seismic velocity $v_S$ (km/s)", color=self.color_mineral)
-            self.create_scatter_plot(parent=self.parent_mineral, data_x=data_x, data_y=self.vP/self.vS,
-                                     row_id=2, column_id=15, n_rows=15, n_columns=3,
-                                     xlabel="Density $\\varrho$ g/ccm",
-                                     ylabel="Velocity ratio $v_P/v_S$ (1)", color=self.color_mineral)
-            self.create_scatter_plot(parent=self.parent_mineral, data_x=data_x, data_y=self.bulk_mod, row_id=17,
-                                     column_id=9, n_rows=15, n_columns=3,
-                                     xlabel="Density $\\varrho$ g/ccm",
-                                     ylabel="Bulk modulus $K$ (GPa)", color=self.color_mineral)
-            self.create_scatter_plot(parent=self.parent_mineral, data_x=data_x, data_y=self.shear_mod,
-                                     row_id=17, column_id=12, n_rows=15, n_columns=3,
-                                     xlabel="Density $\\varrho$ g/ccm",
-                                     ylabel="Shear modulus $G$ (GPa)", color=self.color_mineral)
-            self.create_scatter_plot(parent=self.parent_mineral, data_x=data_x, data_y=self.poisson, row_id=17,
-                                     column_id=15, n_rows=15, n_columns=3,
-                                     xlabel="Density $\\varrho$ g/ccm",
-                                     ylabel="Poisson's ratio $\\mu$ (1)", color=self.color_mineral)
-            self.create_scatter_plot(parent=self.parent_mineral, data_x=data_x, data_y=self.molar_mass,
-                                     row_id=32, column_id=9, n_rows=15, n_columns=3,
-                                     xlabel="Density $\\varrho$ g/ccm",
-                                     ylabel="Molar mass $M$ (g/mol)", color=self.color_mineral)
-            self.create_scatter_plot(parent=self.parent_mineral, data_x=data_x, data_y=self.gamma_ray,
-                                     row_id=32, column_id=12, n_rows=15, n_columns=3,
-                                     xlabel="Density $\\varrho$ g/ccm",
-                                     ylabel="Gamma ray GR (API)", color=self.color_mineral)
-            self.create_scatter_plot(parent=self.parent_mineral, data_x=data_x, data_y=self.photoelectricity,
-                                     row_id=32, column_id=15, n_rows=15, n_columns=3,
-                                     xlabel="Density $\\varrho$ g/ccm",
-                                     ylabel="Photoelectricity PE (barns/electron)", color=self.color_mineral)
     #
     def __call__(self):
         return self.lbl_w, self.entr_w
@@ -2751,12 +2703,18 @@ class Rocks:
     def __init__(self, parent, color_bg, color_fg, color_acc, rock, lbl_w, entr_w):
         #
         try:
-            for lbl in lbl_w:
+            for lbl in lbl_w["physics"]:
                 lbl.grid_forget()
-            for entr in entr_w:
+            for lbl in lbl_w["chemistry"]:
+                lbl.grid_forget()
+            for entr in entr_w["physics"]:
                 entr.grid_forget()
-            lbl_w.clear()
-            entr_w.clear()
+            for entr in entr_w["chemistry"]:
+                entr.grid_forget()
+            lbl_w["physics"].clear()
+            entr_w["physics"].clear()
+            lbl_w["chemistry"].clear()
+            entr_w["chemistry"].clear()
         except:
             pass
         #
@@ -2803,7 +2761,7 @@ class Rocks:
         lbl_10 = SE(parent=self.parent_rock, row_id=22, column_id=3, n_rows=2, bg=self.color_bg,
            fg="black").create_label(text="Photoelectricity\n (barns/electron)", relief=tk.RAISED)
         #
-        self.lbl_w.extend([lbl_01, lbl_02, lbl_03, lbl_04, lbl_05, lbl_06, lbl_07, lbl_08, lbl_09, lbl_10])
+        self.lbl_w["physics"].extend([lbl_01, lbl_02, lbl_03, lbl_04, lbl_05, lbl_06, lbl_07, lbl_08, lbl_09, lbl_10])
         #
         if self.rock == "Sandstone":
             var_phi0_start = 5
@@ -2846,9 +2804,9 @@ class Rocks:
                                            color_bg=self.color_acc_01,
                                            command=lambda var_rb=self.var_rb: self.change_radiobutton(var_rb))
         #
-        self.lbl_w.extend([lbl_11, lbl_12, lbl_13])
-        self.lbl_w.extend([rb_01, rb_02])
-        self.entr_w.extend([entr_01, entr_02])
+        self.lbl_w["physics"].extend([lbl_11, lbl_12, lbl_13])
+        self.lbl_w["physics"].extend([rb_01, rb_02])    # gui elements !!!
+        self.entr_w["physics"].extend([entr_01, entr_02])
         #
         rb_03 = SE(parent=self.parent_rock, row_id=34, column_id=0, n_rows=1, n_columns=2, bg=self.color_acc_01,
            fg="black").create_radiobutton(var_rb=self.var_rb_geochem, var_rb_set=var_rb_geochem_start, value_rb=2,
@@ -2859,7 +2817,7 @@ class Rocks:
                                           text="Minerals", color_bg=self.color_acc_01,
                                           command=lambda var_rb=self.var_rb_geochem: self.change_radiobutton(var_rb))
         #
-        self.lbl_w.extend([rb_03, rb_04])
+        self.lbl_w["physics"].extend([rb_03, rb_04])   # gui elements !!!
         #
         if self.rock == "Custom":
             self.create_custom_rock()
@@ -2957,7 +2915,7 @@ class Rocks:
                                fg="black").create_option_menu(var_opt=self.var_opt_chem, var_opt_set="Select Element/Mineral",
                                                               opt_list=opt_list_chem, active_bg=self.color_acc_02,
                                                               command=lambda var_opt=self.var_opt_chem: self.select_opt(var_opt))
-            self.lbl_w.append(self.opt_chem)
+            self.lbl_w["physics"].append(self.opt_chem)    # gui elements !!!
             #
             self.entr_list_min = []
             self.entr_list_max = []
@@ -3018,16 +2976,16 @@ class Rocks:
                                   fg=self.color_fg).create_entry(var_entr=self.entr_list_std[index],
                                                                  var_entr_set=round(np.std(ppm_amounts, ddof=1), 3))
                 #
-                self.entr_w.append(entr_min)
-                self.entr_w.append(entr_max)
-                self.entr_w.append(entr_mean)
-                self.entr_w.append(entr_std)
-                self.entr_chem.extend([entr_min, entr_max, entr_mean, entr_std])
+                # self.entr_w.append(entr_min)
+                # self.entr_w.append(entr_max)
+                # self.entr_w.append(entr_mean)
+                # self.entr_w.append(entr_std)
+                self.entr_w["physics"].extend([entr_min, entr_max, entr_mean, entr_std])
             #
             lbl = SE(parent=self.parent_rock, row_id=24, column_id=3, n_columns=5, bg=self.color_bg,
                      fg="black").create_label(text="Chemical composition (weight amounts %)", relief=tk.RAISED)
-            self.lbl_w.append(lbl)
-            self.lbl_chem.append(lbl)
+            self.lbl_w["chemistry"].append(lbl)
+            # self.lbl_chem.append(lbl)
             for index, element in enumerate(self.list_elements, start=0):
                 if element not in ["U"]:
                     lbl = SE(parent=self.parent_rock, row_id=25+index, column_id=3, bg=self.color_bg,
@@ -3035,8 +2993,8 @@ class Rocks:
                 else:
                     lbl = SE(parent=self.parent_rock, row_id=25+index, column_id=3, bg=self.color_bg,
                              fg="black").create_label(text=str(element)+" (ppm)", relief=tk.RAISED)
-                self.lbl_w.append(lbl)
-                self.lbl_chem.append(lbl)
+                self.lbl_w["chemistry"].append(lbl)
+                # self.lbl_chem.append(lbl)
             #
             self.color_rock = "#7C9097"
             #
