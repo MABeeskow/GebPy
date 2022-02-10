@@ -6,7 +6,7 @@
 # Name:		gui.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		08.02.2022
+# Date:		10.02.2022
 
 #-----------------------------------------------
 
@@ -158,7 +158,7 @@ class GebPyGUI(tk.Frame):
         if var_btn == "random":
             Subsurface(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                        color_acc=[self.color_accent_03, self.color_accent_04], subsurface=var_btn, lbl_w=self.lbl_w,
-                       entr_w=self.entr_w)
+                       entr_w=self.entr_w, gui_elements=self.gui_elements)
         elif var_btn == "custom rock":
             Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                   color_acc=[self.color_accent_03, self.color_accent_04], rock="Custom", lbl_w=self.lbl_w,
@@ -166,7 +166,7 @@ class GebPyGUI(tk.Frame):
         else:
             Subsurface(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                        color_acc=[self.color_accent_03, self.color_accent_04], subsurface=var_btn, lbl_w=self.lbl_w,
-                       entr_w=self.entr_w)
+                       entr_w=self.entr_w, gui_elements=self.gui_elements)
     #
     def select_opt(self, var_opt):
         # Minerals
@@ -3795,15 +3795,15 @@ class Rocks:
 #
 class Subsurface:
     #
-    def __init__(self, parent, color_bg, color_fg, color_acc, subsurface, lbl_w, entr_w):
+    def __init__(self, parent, color_bg, color_fg, color_acc, subsurface, lbl_w, entr_w, gui_elements):
         #
         try:
-            for lbl in lbl_w:
+            for lbl in lbl_w["chemistry"]:
                 lbl.grid_forget()
-            for entr in entr_w:
+            for entr in entr_w["chemistry"]:
                 entr.grid_forget()
-            lbl_w.clear()
-            entr_w.clear()
+            lbl_w["chemistry"].clear()
+            entr_w["chemistry"].clear()
         except:
             pass
         #
@@ -3825,8 +3825,7 @@ class Subsurface:
         self.subsurface = subsurface
         self.lbl_w = lbl_w
         self.entr_w = entr_w
-        self.lbl_chem = []
-        self.entr_chem = []
+        self.gui_elements = gui_elements
         #
         if self.subsurface == "random":
             self.create_random_sequences(thickness=1000, style="siliciclastic")
@@ -3856,7 +3855,7 @@ class Subsurface:
         lbl_10 = SE(parent=self.parent_subsurface, row_id=22, column_id=3, n_rows=2, bg=self.color_bg,
            fg="black").create_label(text="Photoelectricity\n (barns/electron)", relief=tk.RAISED)
         #
-        self.lbl_w.extend([lbl_01, lbl_02, lbl_03, lbl_04, lbl_05, lbl_06, lbl_07, lbl_08, lbl_09, lbl_10])
+        self.lbl_w["physics"].extend([lbl_01, lbl_02, lbl_03, lbl_04, lbl_05, lbl_06, lbl_07, lbl_08, lbl_09, lbl_10])
         #
     def create_random_sequences(self, thickness, style, n_parts=20):
         #
@@ -4191,13 +4190,13 @@ class Subsurface:
            fg="black").create_radiobutton(var_rb=self.var_rb_geochem, var_rb_set=var_rb_geochem_start, value_rb=4,
                                           text="Minerals", color_bg=self.color_acc_01,
                                           command=lambda var_rb=self.var_rb_geochem: self.change_radiobutton(var_rb))
-        self.lbl_w.extend([rb_01, rb_02, rb_03, rb_04, rb_05])
+        self.gui_elements.extend([rb_01, rb_02, rb_03, rb_04, rb_05])
         for index, rock in enumerate(self.list_rocks_short, start=0):
             rb = SE(parent=self.parent_subsurface, row_id=36+index, column_id=0, n_rows=1, n_columns=2, bg=self.color_acc_01,
                     fg="black").create_radiobutton(var_rb=self.var_rb_lith, var_rb_set=var_rb_lith_start, value_rb=var_rb_lith_start+index,
                                                    text=rock, color_bg=self.color_acc_01,
                                                    command=lambda var_rb=self.var_rb_lith: self.change_radiobutton(var_rb))
-            self.lbl_w.append(rb)
+            self.gui_elements.append(rb)
         #
         data_all = {}
         for rock in self.list_rocks_short:
@@ -4236,8 +4235,9 @@ class Subsurface:
                 for mineralogy_data in self.mineralogy_sst:
                     self.minerals_sst[mineral].append(abs(mineralogy_data[mineral]*100))
             #
-            self.results_sst = [self.rho_sst, self.vP_sst, self.vS_sst, self.vPvS_sst, self.bulk_mod_sst, self.shear_mod_sst,
-                            self.poisson_sst, self.phi_sst, self.gamma_ray_sst, self.photoelectricity_sst]
+            self.results_sst = [self.rho_sst, self.vP_sst, self.vS_sst, self.vPvS_sst, self.bulk_mod_sst,
+                                self.shear_mod_sst, self.poisson_sst, self.phi_sst, self.gamma_ray_sst,
+                                self.photoelectricity_sst]
         #
         if "Shale" in self.list_rocks_short:
             self.rho_sh = DP(dataset=data_all["Shale"]).extract_data(keyword="rho")
@@ -4268,7 +4268,7 @@ class Subsurface:
                     self.minerals_sh[mineral].append(abs(mineralogy_data[mineral]*100))
             #
             self.results_sh = [self.rho_sh, self.vP_sh, self.vS_sh, self.vPvS_sh, self.bulk_mod_sh, self.shear_mod_sh,
-                            self.poisson_sh, self.phi_sh, self.gamma_ray_sh, self.photoelectricity_sh]
+                               self.poisson_sh, self.phi_sh, self.gamma_ray_sh, self.photoelectricity_sh]
         #
         if "Granite" in self.list_rocks_short:
             self.rho_granite = DP(dataset=data_all["Granite"]).extract_data(keyword="rho")
@@ -4298,8 +4298,9 @@ class Subsurface:
                 for mineralogy_data in self.mineralogy_granite:
                     self.minerals_granite[mineral].append(abs(mineralogy_data[mineral]*100))
             #
-            self.results_granite = [self.rho_granite, self.vP_granite, self.vS_granite, self.vPvS_granite, self.bulk_mod_granite, self.shear_mod_granite,
-                            self.poisson_granite, self.phi_granite, self.gamma_ray_granite, self.photoelectricity_granite]
+            self.results_granite = [self.rho_granite, self.vP_granite, self.vS_granite, self.vPvS_granite,
+                                    self.bulk_mod_granite, self.shear_mod_granite, self.poisson_granite,
+                                    self.phi_granite, self.gamma_ray_granite, self.photoelectricity_granite]
             #
         elif "Gabbro" in self.list_rocks_short:
             self.rho_gabbro = DP(dataset=data_all["Gabbro"]).extract_data(keyword="rho")
@@ -4329,8 +4330,9 @@ class Subsurface:
                 for mineralogy_data in self.mineralogy_gabbro:
                     self.minerals_gabbro[mineral].append(abs(mineralogy_data[mineral]*100))
             #
-            self.results_gabbro = [self.rho_gabbro, self.vP_gabbro, self.vS_gabbro, self.vPvS_gabbro, self.bulk_mod_gabbro, self.shear_mod_gabbro,
-                            self.poisson_gabbro, self.phi_gabbro, self.gamma_ray_gabbro, self.photoelectricity_gabbro]
+            self.results_gabbro = [self.rho_gabbro, self.vP_gabbro, self.vS_gabbro, self.vPvS_gabbro,
+                                   self.bulk_mod_gabbro, self.shear_mod_gabbro, self.poisson_gabbro, self.phi_gabbro,
+                                   self.gamma_ray_gabbro, self.photoelectricity_gabbro]
             #
         elif "Diorite" in self.list_rocks_short:
             self.rho_diorite = DP(dataset=data_all["Diorite"]).extract_data(keyword="rho")
@@ -4360,8 +4362,9 @@ class Subsurface:
                 for mineralogy_data in self.mineralogy_diorite:
                     self.minerals_diorite[mineral].append(abs(mineralogy_data[mineral]*100))
             #
-            self.results_diorite = [self.rho_diorite, self.vP_diorite, self.vS_diorite, self.vPvS_diorite, self.bulk_mod_diorite, self.shear_mod_diorite,
-                            self.poisson_diorite, self.phi_diorite, self.gamma_ray_diorite, self.photoelectricity_diorite]
+            self.results_diorite = [self.rho_diorite, self.vP_diorite, self.vS_diorite, self.vPvS_diorite,
+                                    self.bulk_mod_diorite, self.shear_mod_diorite, self.poisson_diorite,
+                                    self.phi_diorite, self.gamma_ray_diorite, self.photoelectricity_diorite]
         #
         self.entr_list_min = []
         self.entr_list_max = []
@@ -4433,15 +4436,11 @@ class Subsurface:
                 entr_std = SE(parent=self.parent_subsurface, row_id=4+2*i, column_id=7, n_rows=2, bg=self.color_bg,
                               fg=self.color_fg).create_entry(var_entr=self.entr_list_std[i], var_entr_set=round(np.std(self.results_0[i], ddof=1), 3))
             #
-            self.entr_w.append(entr_min)
-            self.entr_w.append(entr_max)
-            self.entr_w.append(entr_mean)
-            self.entr_w.append(entr_std)
+            self.entr_w["physics"].extend([entr_min, entr_max, entr_mean, entr_std])
         #
         lbl = SE(parent=self.parent_subsurface, row_id=24, column_id=3, n_columns=5, bg=self.color_bg,
                fg="black").create_label(text="Chemical composition (weight amounts %)", relief=tk.RAISED)
-        self.lbl_w.append(lbl)
-        self.lbl_chem.append(lbl)
+        self.lbl_w["chemistry"].append(lbl)
         for index, element in enumerate(self.list_elements_0, start=0):
             if element not in ["U"]:
                 lbl = SE(parent=self.parent_subsurface, row_id=25+index, column_id=3, bg=self.color_bg,
@@ -4449,8 +4448,7 @@ class Subsurface:
             else:
                 lbl = SE(parent=self.parent_subsurface, row_id=25+index, column_id=3, bg=self.color_bg,
                          fg="black").create_label(text=str(element)+" (ppm)", relief=tk.RAISED)
-            self.lbl_w.append(lbl)
-            self.lbl_chem.append(lbl)
+            self.lbl_w["chemistry"].append(lbl)
         #
         for index, element in enumerate(self.list_elements_0, start=10):
             if element not in ["U"]:
@@ -4481,14 +4479,9 @@ class Subsurface:
                               fg=self.color_fg).create_entry(var_entr=self.entr_list_std[index],
                                                              var_entr_set=round(np.std(ppm_amounts, ddof=1), 3))
             #
-            self.entr_w.append(entr_min)
-            self.entr_w.append(entr_max)
-            self.entr_w.append(entr_mean)
-            self.entr_w.append(entr_std)
-            self.entr_chem.extend([entr_min, entr_max, entr_mean, entr_std])
+            self.entr_w["chemistry"].extend([entr_min, entr_max, entr_mean, entr_std])
         #
         self.create_well_log_plot(parent=self.parent_subsurface, data_x=self.results_sorted["GR"], data_y=self.results_sorted["Top"], row_id=2, column_id=9, n_rows=45, n_columns=9)
-        #
         #
     def change_radiobutton(self, var_rb):
         if var_rb.get() == 0:   # Well Log Plot
@@ -4514,12 +4507,6 @@ class Subsurface:
             #
         elif var_rb.get() == 1: # Histogram Plot
             try:
-                for rb in self.rb_prop:
-                    rb.grid_forget()
-                self.rb_prop.clear()
-            except:
-                pass
-            try:
                 self.fig.clf()
                 self.ax.cla()
                 self.canvas.get_tk_widget().pack_forget()
@@ -4530,6 +4517,40 @@ class Subsurface:
                     self.canvas.destroy()
             except AttributeError:
                 pass
+            #
+            data_rho = [np.array(self.results_plot["Sandstone"]["phi"])*100,
+                        np.array(self.results_plot["Shale"]["phi"])*100,
+                        np.array(self.results_plot[self.list_rocks_short[-1]]["phi"])*100]
+            data_vP = [self.results_plot["Sandstone"]["vP"], self.results_plot["Shale"]["vP"],
+                       self.results_plot[self.list_rocks_short[-1]]["vP"]]
+            data_vS = [self.results_plot["Sandstone"]["vS"], self.results_plot["Shale"]["vS"],
+                       self.results_plot[self.list_rocks_short[-1]]["vS"]]
+            data_vPvS = [self.results_plot["Sandstone"]["vPvS"], self.results_plot["Shale"]["vPvS"],
+                         self.results_plot[self.list_rocks_short[-1]]["vPvS"]]
+            data_K = [self.results_plot["Sandstone"]["K"], self.results_plot["Shale"]["K"],
+                      self.results_plot[self.list_rocks_short[-1]]["K"]]
+            data_G = [self.results_plot["Sandstone"]["G"], self.results_plot["Shale"]["G"],
+                      self.results_plot[self.list_rocks_short[-1]]["G"]]
+            data_nu = [self.results_plot["Sandstone"]["Poisson"], self.results_plot["Shale"]["Poisson"],
+                       self.results_plot[self.list_rocks_short[-1]]["Poisson"]]
+            data_phi = [np.array(self.results_plot["Sandstone"]["phi"])*100,
+                        np.array(self.results_plot["Shale"]["phi"])*100,
+                        np.array(self.results_plot[self.list_rocks_short[-1]]["phi"])*100]
+            data_gr = [self.results_plot["Sandstone"]["GR"], self.results_plot["Shale"]["GR"],
+                       self.results_plot[self.list_rocks_short[-1]]["GR"]]
+            data_pe = [self.results_plot["Sandstone"]["PE"], self.results_plot["Shale"]["PE"],
+                       self.results_plot[self.list_rocks_short[-1]]["PE"]]
+            data = [[data_vP, data_vS, data_vPvS], [data_K, data_G, data_nu], [data_rho, data_gr, data_pe]]
+            #
+            labels = [["Seismic velocity $v_P$ (m/s)", "Seismic velocity $v_S$ (m/s)",
+                      "Seismic velocity ratio $v_P/v_S$ (1)"], ["Bulk modulus $K$ (GPa)", "Shear modulus $G$ (GPa)",
+                      "Poisson's ratio $\\nu$ (1)"], ["Density $\\varrho$ (g/ccm)", "Gamma Ray $GR$ (API)",
+                      "Photoelectric Effect $PE$ (barns\electron)"]]
+            colors = ["tan", "olivedrab", "darkorange"]
+            litho_list = ["Sandstone", "Shale", self.list_rocks_short[-1]]
+            #
+            self.create_3x3_histo(parent=self.parent_subsurface, data=data, row_id=2, column_id=9, n_rows=45,
+                                  n_columns=9, colors=colors, labels=labels, lithos=litho_list)
             #
         elif var_rb.get() == 2: # Scatter Plot
             try:
@@ -4559,56 +4580,51 @@ class Subsurface:
                                                        command=lambda var_rb=self.var_prop: self.change_radiobutton(var_rb))
             self.rb_prop = [rb_rho, rb_phi]
             #
-            data_x_rho = [np.array(self.results_plot["Sandstone"]["rho"])/1000, np.array(self.results_plot["Shale"]["rho"])/1000,
+            data_x_rho = [np.array(self.results_plot["Sandstone"]["rho"])/1000,
+                          np.array(self.results_plot["Shale"]["rho"])/1000,
                           np.array(self.results_plot[self.list_rocks_short[-1]]["rho"])/1000]
             #
-            self.create_scatter_plot(parent=self.parent_subsurface, data_x=data_x_rho,
-                                     data_y=[self.results_plot["Sandstone"]["vP"], self.results_plot["Shale"]["vP"], self.results_plot[self.list_rocks_short[-1]]["vP"]],
-                                     row_id=2, column_id=9, n_rows=15, n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)",
-                                     ylabel="Seismic velocity $v_P$ (m/s)", rocks=self.list_rocks_short, colors=["tan", "olivedrab", "darkorange"])
-            self.create_scatter_plot(parent=self.parent_subsurface, data_x=data_x_rho,
-                                     data_y=[self.results_plot["Sandstone"]["vS"], self.results_plot["Shale"]["vS"], self.results_plot[self.list_rocks_short[-1]]["vS"]],
-                                     row_id=2, column_id=12, n_rows=15, n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)",
-                                     ylabel="Seismic velocity $v_P$ (m/s)", rocks=self.list_rocks_short, colors=["tan", "olivedrab", "darkorange"])
-            self.create_scatter_plot(parent=self.parent_subsurface, data_x=data_x_rho,
-                                     data_y=[self.results_plot["Sandstone"]["vPvS"], self.results_plot["Shale"]["vPvS"], self.results_plot[self.list_rocks_short[-1]]["vPvS"]],
-                                     row_id=2, column_id=15, n_rows=15, n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)",
-                                     ylabel="Seismic velocity ratio $v_P/v_S$ (1)", rocks=self.list_rocks_short, colors=["tan", "olivedrab", "darkorange"])
+            data_vP = [self.results_plot["Sandstone"]["vP"], self.results_plot["Shale"]["vP"],
+                       self.results_plot[self.list_rocks_short[-1]]["vP"]]
+            data_vS = [self.results_plot["Sandstone"]["vS"], self.results_plot["Shale"]["vS"],
+                       self.results_plot[self.list_rocks_short[-1]]["vS"]]
+            data_vPvS = [self.results_plot["Sandstone"]["vPvS"], self.results_plot["Shale"]["vPvS"],
+                         self.results_plot[self.list_rocks_short[-1]]["vPvS"]]
+            data_K = [self.results_plot["Sandstone"]["K"], self.results_plot["Shale"]["K"],
+                      self.results_plot[self.list_rocks_short[-1]]["K"]]
+            data_G = [self.results_plot["Sandstone"]["G"], self.results_plot["Shale"]["G"],
+                      self.results_plot[self.list_rocks_short[-1]]["G"]]
+            data_nu = [self.results_plot["Sandstone"]["Poisson"], self.results_plot["Shale"]["Poisson"],
+                       self.results_plot[self.list_rocks_short[-1]]["Poisson"]]
+            data_phi = [np.array(self.results_plot["Sandstone"]["phi"])*100,
+                        np.array(self.results_plot["Shale"]["phi"])*100,
+                        np.array(self.results_plot[self.list_rocks_short[-1]]["phi"])*100]
+            data_gr = [self.results_plot["Sandstone"]["GR"], self.results_plot["Shale"]["GR"],
+                       self.results_plot[self.list_rocks_short[-1]]["GR"]]
+            data_pe = [self.results_plot["Sandstone"]["PE"], self.results_plot["Shale"]["PE"],
+                       self.results_plot[self.list_rocks_short[-1]]["PE"]]
+            data = [[data_vP, data_vS, data_vPvS], [data_K, data_G, data_nu], [data_phi, data_gr, data_pe]]
             #
-            self.create_scatter_plot(parent=self.parent_subsurface, data_x=data_x_rho,
-                                     data_y=[self.results_plot["Sandstone"]["K"], self.results_plot["Shale"]["K"], self.results_plot[self.list_rocks_short[-1]]["K"]],
-                                     row_id=17, column_id=9, n_rows=15, n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)",
-                                     ylabel="Bulk modulus $K$ (GPa)", rocks=self.list_rocks_short, colors=["tan", "olivedrab", "darkorange"])
-            self.create_scatter_plot(parent=self.parent_subsurface, data_x=data_x_rho,
-                                     data_y=[self.results_plot["Sandstone"]["G"], self.results_plot["Shale"]["G"], self.results_plot[self.list_rocks_short[-1]]["G"]],
-                                     row_id=17, column_id=12, n_rows=15, n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)",
-                                     ylabel="Shear modulus $G$ (GPa)", rocks=self.list_rocks_short, colors=["tan", "olivedrab", "darkorange"])
-            self.create_scatter_plot(parent=self.parent_subsurface, data_x=data_x_rho,
-                                     data_y=[self.results_plot["Sandstone"]["Poisson"], self.results_plot["Shale"]["Poisson"], self.results_plot[self.list_rocks_short[-1]]["Poisson"]],
-                                     row_id=17, column_id=15, n_rows=15, n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)",
-                                     ylabel="Poisson's ratio $\\nu$ (1)", rocks=self.list_rocks_short, colors=["tan", "olivedrab", "darkorange"])
+            labels = [["Seismic velocity $v_P$ (m/s)", "Seismic velocity $v_S$ (m/s)",
+                      "Seismic velocity ratio $v_P/v_S$ (1)"], ["Bulk modulus $K$ (GPa)", "Shear modulus $G$ (GPa)",
+                      "Poisson's ratio $\\nu$ (1)"], ["Porosity $\\phi$ (%)", "Gamma Ray $GR$ (API)",
+                      "Photoelectric Effect $PE$ (barns\electron)"]]
+            colors = ["tan", "olivedrab", "darkorange"]
+            litho_list = ["Sandstone", "Shale", self.list_rocks_short[-1]]
             #
-            self.create_scatter_plot(parent=self.parent_subsurface, data_x=data_x_rho,
-                                     data_y=[self.results_plot["Sandstone"]["phi"], self.results_plot["Shale"]["phi"], self.results_plot[self.list_rocks_short[-1]]["phi"]],
-                                     row_id=32, column_id=9, n_rows=15, n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)",
-                                     ylabel="Porosity $\\phi$ (%)", rocks=self.list_rocks_short, colors=["tan", "olivedrab", "darkorange"])
-            self.create_scatter_plot(parent=self.parent_subsurface, data_x=data_x_rho,
-                                     data_y=[self.results_plot["Sandstone"]["GR"], self.results_plot["Shale"]["GR"], self.results_plot[self.list_rocks_short[-1]]["GR"]],
-                                     row_id=32, column_id=12, n_rows=15, n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)",
-                                     ylabel="Gamma Ray $GR$ (API)", rocks=self.list_rocks_short, colors=["tan", "olivedrab", "darkorange"])
-            self.create_scatter_plot(parent=self.parent_subsurface, data_x=data_x_rho,
-                                     data_y=[self.results_plot["Sandstone"]["PE"], self.results_plot["Shale"]["PE"], self.results_plot[self.list_rocks_short[-1]]["PE"]],
-                                     row_id=32, column_id=15, n_rows=15, n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)",
-                                     ylabel="Photoelectric Effect $PE$ (barns\electron)", rocks=self.list_rocks_short, colors=["tan", "olivedrab", "darkorange"])
+            self.create_3x3_scatter(parent=self.parent_subsurface, data_x=data_x_rho, data=data, row_id=2, column_id=9,
+                                    n_rows=45, n_columns=9, colors=colors, labels=labels,
+                                    xlabel="Densitiy $\\varrho$ (g/ccm)", lithos=litho_list)
+        #
         elif var_rb.get() == 3: # Elements
             #
             try:
-                for lbl in self.lbl_chem:
+                for lbl in self.lbl_w["chemistry"]:
                     lbl.grid_forget()
-                for entr in self.entr_chem:
+                for entr in self.entr_w["chemistry"]:
                     entr.grid_forget()
-                self.lbl_chem.clear()
-                self.entr_chem.clear()
+                self.lbl_w["chemistry"].clear()
+                self.entr_w["chemistry"].clear()
             except:
                 pass
             #
@@ -4621,8 +4637,7 @@ class Subsurface:
             #
             lbl = SE(parent=self.parent_subsurface, row_id=24, column_id=3, n_columns=5, bg=self.color_bg,
                    fg="black").create_label(text="Chemical composition (weight amounts %)", relief=tk.RAISED)
-            self.lbl_w.append(lbl)
-            self.lbl_chem.append(lbl)
+            self.lbl_w["chemistry"].append(lbl)
             for index, element in enumerate(self.list_elements_0, start=0):
                 if element not in ["U"]:
                     lbl = SE(parent=self.parent_subsurface, row_id=25+index, column_id=3, bg=self.color_bg,
@@ -4630,8 +4645,7 @@ class Subsurface:
                 else:
                     lbl = SE(parent=self.parent_subsurface, row_id=25+index, column_id=3, bg=self.color_bg,
                              fg="black").create_label(text=str(element)+" (ppm)", relief=tk.RAISED)
-                self.lbl_w.append(lbl)
-                self.lbl_chem.append(lbl)
+                self.lbl_w["chemistry"].append(lbl)
             #
             for index, element in enumerate(self.list_elements_0, start=10):
                 if element not in ["U"]:
@@ -4662,28 +4676,23 @@ class Subsurface:
                                   fg=self.color_fg).create_entry(var_entr=self.entr_list_std[index],
                                                                  var_entr_set=round(np.std(ppm_amounts, ddof=1), 3))
                 #
-                self.entr_w.append(entr_min)
-                self.entr_w.append(entr_max)
-                self.entr_w.append(entr_mean)
-                self.entr_w.append(entr_std)
-                self.entr_chem.extend([entr_min, entr_max, entr_mean, entr_std])
+                self.entr_w["chemistry"].extend([entr_min, entr_max, entr_mean, entr_std])
         #
         elif var_rb.get() == 4: # Minerals
             #
             try:
-                for lbl in self.lbl_chem:
+                for lbl in self.lbl_w["chemistry"]:
                     lbl.grid_forget()
-                for entr in self.entr_chem:
+                for entr in self.entr_w["chemistry"]:
                     entr.grid_forget()
-                self.lbl_chem.clear()
-                self.entr_chem.clear()
+                self.lbl_w["chemistry"].clear()
+                self.entr_w["chemistry"].clear()
             except:
                 pass
             #
             lbl = SE(parent=self.parent_subsurface, row_id=24, column_id=3, n_columns=5, bg=self.color_bg,
                    fg="black").create_label(text="Mineralogical composition (weight amounts %)", relief=tk.RAISED)
-            self.lbl_w.append(lbl)
-            self.lbl_chem.append(lbl)
+            self.lbl_w["chemistry"].append(lbl)
             for index, mineral in enumerate(self.list_minerals_0, start=0):
                 if mineral not in ["Urn"]:
                     lbl = SE(parent=self.parent_subsurface, row_id=25+index, column_id=3, bg=self.color_bg,
@@ -4691,8 +4700,7 @@ class Subsurface:
                 else:
                     lbl = SE(parent=self.parent_subsurface, row_id=25+index, column_id=3, bg=self.color_bg,
                              fg="black").create_label(text=str(mineral)+" (ppm)", relief=tk.RAISED)
-                self.lbl_w.append(lbl)
-                self.lbl_chem.append(lbl)
+                self.lbl_w["chemistry"].append(lbl)
             #
             for index, mineral in enumerate(self.list_minerals_0, start=10):
                 if mineral not in ["Urn"]:
@@ -4723,11 +4731,7 @@ class Subsurface:
                                   fg=self.color_fg).create_entry(var_entr=self.entr_list_std[index],
                                                                  var_entr_set=round(np.std(ppm_amounts, ddof=1), 3))
                 #
-                self.entr_w.append(entr_min)
-                self.entr_w.append(entr_max)
-                self.entr_w.append(entr_mean)
-                self.entr_w.append(entr_std)
-                self.entr_chem.extend([entr_min, entr_max, entr_mean, entr_std])
+                self.entr_w["chemistry"].extend([entr_min, entr_max, entr_mean, entr_std])
                 #
         elif var_rb.get() == 5:
             if self.current_rb_lith.get() == var_rb.get():
@@ -4735,12 +4739,12 @@ class Subsurface:
             else:
                 #
                 try:
-                    for lbl in self.lbl_chem:
+                    for lbl in self.lbl_w["chemistry"]:
                         lbl.grid_forget()
-                    for entr in self.entr_w:
+                    for entr in self.entr_w["chemistry"]:
                         entr.grid_forget()
-                    self.lbl_chem.clear()
-                    self.entr_w.clear()
+                    self.lbl_w["chemistry"].clear()
+                    self.entr_w["chemistry"].clear()
                 except:
                     pass
                 #
@@ -4779,16 +4783,12 @@ class Subsurface:
                         entr_std = SE(parent=self.parent_subsurface, row_id=4+2*i, column_id=7, n_rows=2, bg=self.color_bg,
                                       fg=self.color_fg).create_entry(var_entr=self.entr_list_std[i], var_entr_set=round(np.std(self.results_0[i], ddof=1), 3))
                     #
-                    self.entr_w.append(entr_min)
-                    self.entr_w.append(entr_max)
-                    self.entr_w.append(entr_mean)
-                    self.entr_w.append(entr_std)
+                    self.entr_w["physics"].extend([entr_min, entr_max, entr_mean, entr_std])
                 #
                 self.var_rb_geochem.set(3)
                 lbl = SE(parent=self.parent_subsurface, row_id=24, column_id=3, n_columns=5, bg=self.color_bg,
                        fg="black").create_label(text="Chemical composition (weight amounts %)", relief=tk.RAISED)
-                self.lbl_w.append(lbl)
-                self.lbl_chem.append(lbl)
+                self.lbl_w["chemistry"].append(lbl)
                 for index, element in enumerate(self.list_elements_0, start=0):
                     if element not in ["U"]:
                         lbl = SE(parent=self.parent_subsurface, row_id=25+index, column_id=3, bg=self.color_bg,
@@ -4796,8 +4796,7 @@ class Subsurface:
                     else:
                         lbl = SE(parent=self.parent_subsurface, row_id=25+index, column_id=3, bg=self.color_bg,
                                  fg="black").create_label(text=str(element)+" (ppm)", relief=tk.RAISED)
-                    self.lbl_w.append(lbl)
-                    self.lbl_chem.append(lbl)
+                    self.lbl_w["chemistry"].append(lbl)
                 #
                 for index, element in enumerate(self.list_elements_0, start=10):
                     if element not in ["U"]:
@@ -4828,11 +4827,7 @@ class Subsurface:
                                       fg=self.color_fg).create_entry(var_entr=self.entr_list_std[index],
                                                                      var_entr_set=round(np.std(ppm_amounts, ddof=1), 3))
                     #
-                    self.entr_w.append(entr_min)
-                    self.entr_w.append(entr_max)
-                    self.entr_w.append(entr_mean)
-                    self.entr_w.append(entr_std)
-                    self.entr_chem.extend([entr_min, entr_max, entr_mean, entr_std])
+                    self.entr_w["chemistry"].extend([entr_min, entr_max, entr_mean, entr_std])
                     #
         elif var_rb.get() == 6:
             if self.current_rb_lith.get() == var_rb.get():
@@ -4840,12 +4835,12 @@ class Subsurface:
             else:
                 #
                 try:
-                    for lbl in self.lbl_chem:
+                    for lbl in self.lbl_w["chemistry"]:
                         lbl.grid_forget()
-                    for entr in self.entr_w:
+                    for entr in self.entr_w["chemistry"]:
                         entr.grid_forget()
-                    self.lbl_chem.clear()
-                    self.entr_w.clear()
+                    self.lbl_w["chemistry"].clear()
+                    self.entr_w["chemistry"].clear()
                 except:
                     pass
                 #
@@ -4884,16 +4879,12 @@ class Subsurface:
                         entr_std = SE(parent=self.parent_subsurface, row_id=4+2*i, column_id=7, n_rows=2, bg=self.color_bg,
                                       fg=self.color_fg).create_entry(var_entr=self.entr_list_std[i], var_entr_set=round(np.std(self.results_0[i], ddof=1), 3))
                     #
-                    self.entr_w.append(entr_min)
-                    self.entr_w.append(entr_max)
-                    self.entr_w.append(entr_mean)
-                    self.entr_w.append(entr_std)
+                    self.entr_w["physics"].extend([entr_min, entr_max, entr_mean, entr_std])
                 #
                 self.var_rb_geochem.set(3)
                 lbl = SE(parent=self.parent_subsurface, row_id=24, column_id=3, n_columns=5, bg=self.color_bg,
                        fg="black").create_label(text="Chemical composition (weight amounts %)", relief=tk.RAISED)
-                self.lbl_w.append(lbl)
-                self.lbl_chem.append(lbl)
+                self.lbl_w["chemistry"].append(lbl)
                 for index, element in enumerate(self.list_elements_0, start=0):
                     if element not in ["U"]:
                         lbl = SE(parent=self.parent_subsurface, row_id=25+index, column_id=3, bg=self.color_bg,
@@ -4901,8 +4892,7 @@ class Subsurface:
                     else:
                         lbl = SE(parent=self.parent_subsurface, row_id=25+index, column_id=3, bg=self.color_bg,
                                  fg="black").create_label(text=str(element)+" (ppm)", relief=tk.RAISED)
-                    self.lbl_w.append(lbl)
-                    self.lbl_chem.append(lbl)
+                    self.lbl_w["chemistry"].append(lbl)
                 #
                 for index, element in enumerate(self.list_elements_0, start=10):
                     if element not in ["U"]:
@@ -4933,11 +4923,7 @@ class Subsurface:
                                       fg=self.color_fg).create_entry(var_entr=self.entr_list_std[index],
                                                                      var_entr_set=round(np.std(ppm_amounts, ddof=1), 3))
                     #
-                    self.entr_w.append(entr_min)
-                    self.entr_w.append(entr_max)
-                    self.entr_w.append(entr_mean)
-                    self.entr_w.append(entr_std)
-                    self.entr_chem.extend([entr_min, entr_max, entr_mean, entr_std])
+                    self.entr_w["chemistry"].extend([entr_min, entr_max, entr_mean, entr_std])
                     #
         elif var_rb.get() == 7:
             if self.current_rb_lith.get() == var_rb.get():
@@ -4945,12 +4931,12 @@ class Subsurface:
             else:
                 #
                 try:
-                    for lbl in self.lbl_chem:
+                    for lbl in self.lbl_w["chemistry"]:
                         lbl.grid_forget()
-                    for entr in self.entr_w:
+                    for entr in self.entr_w["chemistry"]:
                         entr.grid_forget()
-                    self.lbl_chem.clear()
-                    self.entr_w.clear()
+                    self.lbl_w["chemistry"].clear()
+                    self.entr_w["chemistry"].clear()
                 except:
                     pass
                 #
@@ -4995,16 +4981,12 @@ class Subsurface:
                         entr_std = SE(parent=self.parent_subsurface, row_id=4+2*i, column_id=7, n_rows=2, bg=self.color_bg,
                                       fg=self.color_fg).create_entry(var_entr=self.entr_list_std[i], var_entr_set=round(np.std(self.results_0[i], ddof=1), 3))
                     #
-                    self.entr_w.append(entr_min)
-                    self.entr_w.append(entr_max)
-                    self.entr_w.append(entr_mean)
-                    self.entr_w.append(entr_std)
+                    self.entr_w["physics"].extend([entr_min, entr_max, entr_mean, entr_std])
                 #
                 self.var_rb_geochem.set(3)
                 lbl = SE(parent=self.parent_subsurface, row_id=24, column_id=3, n_columns=5, bg=self.color_bg,
                        fg="black").create_label(text="Chemical composition (weight amounts %)", relief=tk.RAISED)
-                self.lbl_w.append(lbl)
-                self.lbl_chem.append(lbl)
+                self.lbl_w["chemistry"].append(lbl)
                 for index, element in enumerate(self.list_elements_0, start=0):
                     if element not in ["U"]:
                         lbl = SE(parent=self.parent_subsurface, row_id=25+index, column_id=3, bg=self.color_bg,
@@ -5012,8 +4994,7 @@ class Subsurface:
                     else:
                         lbl = SE(parent=self.parent_subsurface, row_id=25+index, column_id=3, bg=self.color_bg,
                                  fg="black").create_label(text=str(element)+" (ppm)", relief=tk.RAISED)
-                    self.lbl_w.append(lbl)
-                    self.lbl_chem.append(lbl)
+                    self.lbl_w["chemistry"].append(lbl)
                 #
                 for index, element in enumerate(self.list_elements_0, start=10):
                     if element not in ["U"]:
@@ -5044,20 +5025,13 @@ class Subsurface:
                                       fg=self.color_fg).create_entry(var_entr=self.entr_list_std[index],
                                                                      var_entr_set=round(np.std(ppm_amounts, ddof=1), 3))
                     #
-                    self.entr_w.append(entr_min)
-                    self.entr_w.append(entr_max)
-                    self.entr_w.append(entr_mean)
-                    self.entr_w.append(entr_std)
-                    self.entr_chem.extend([entr_min, entr_max, entr_mean, entr_std])
+                    self.entr_w["chemistry"].extend([entr_min, entr_max, entr_mean, entr_std])
                     #
         elif var_rb.get() == 8:
             try:
                 self.fig.clf()
                 self.ax.cla()
                 self.canvas.get_tk_widget().pack_forget()
-                # for rb in self.rb_prop:
-                #     rb.grid_forget()
-                # self.rb_prop.clear()
             except AttributeError:
                 pass
             try:
@@ -5066,59 +5040,42 @@ class Subsurface:
             except AttributeError:
                 pass
             #
-            # self.var_prop = tk.IntVar()
-            # var_prop_0 = 8
-            # rb_rho = SE(parent=self.parent_subsurface, row_id=39, column_id=0, n_rows=1, n_columns=2, bg=self.color_acc_01,
-            #             fg="black").create_radiobutton(var_rb=self.var_prop, var_rb_set=var_prop_0, value_rb=8,
-            #                                            text="Density $\\varrho$", color_bg=self.color_acc_01,
-            #                                            command=lambda var_rb=self.var_prop: self.change_radiobutton(var_rb))
-            # rb_phi = SE(parent=self.parent_subsurface, row_id=40, column_id=0, n_rows=1, n_columns=2, bg=self.color_acc_01,
-            #             fg="black").create_radiobutton(var_rb=self.var_prop, var_rb_set=var_prop_0, value_rb=9,
-            #                                            text="Porosity $\\phi", color_bg=self.color_acc_01,
-            #                                            command=lambda var_rb=self.var_prop: self.change_radiobutton(var_rb))
-            # self.rb_prop = [rb_rho, rb_phi]
-            #
-            data_x_rho = [np.array(self.results_plot["Sandstone"]["rho"])/1000, np.array(self.results_plot["Shale"]["rho"])/1000,
+            data_x_rho = [np.array(self.results_plot["Sandstone"]["rho"])/1000,
+                          np.array(self.results_plot["Shale"]["rho"])/1000,
                           np.array(self.results_plot[self.list_rocks_short[-1]]["rho"])/1000]
             #
-            self.create_scatter_plot(parent=self.parent_subsurface, data_x=data_x_rho,
-                                     data_y=[self.results_plot["Sandstone"]["vP"], self.results_plot["Shale"]["vP"], self.results_plot[self.list_rocks_short[-1]]["vP"]],
-                                     row_id=2, column_id=9, n_rows=15, n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)",
-                                     ylabel="Seismic velocity $v_P$ (m/s)", rocks=self.list_rocks_short, colors=["tan", "olivedrab", "darkorange"])
-            self.create_scatter_plot(parent=self.parent_subsurface, data_x=data_x_rho,
-                                     data_y=[self.results_plot["Sandstone"]["vS"], self.results_plot["Shale"]["vS"], self.results_plot[self.list_rocks_short[-1]]["vS"]],
-                                     row_id=2, column_id=12, n_rows=15, n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)",
-                                     ylabel="Seismic velocity $v_P$ (m/s)", rocks=self.list_rocks_short, colors=["tan", "olivedrab", "darkorange"])
-            self.create_scatter_plot(parent=self.parent_subsurface, data_x=data_x_rho,
-                                     data_y=[self.results_plot["Sandstone"]["vPvS"], self.results_plot["Shale"]["vPvS"], self.results_plot[self.list_rocks_short[-1]]["vPvS"]],
-                                     row_id=2, column_id=15, n_rows=15, n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)",
-                                     ylabel="Seismic velocity ratio $v_P/v_S$ (1)", rocks=self.list_rocks_short, colors=["tan", "olivedrab", "darkorange"])
+            data_vP = [self.results_plot["Sandstone"]["vP"], self.results_plot["Shale"]["vP"],
+                       self.results_plot[self.list_rocks_short[-1]]["vP"]]
+            data_vS = [self.results_plot["Sandstone"]["vS"], self.results_plot["Shale"]["vS"],
+                       self.results_plot[self.list_rocks_short[-1]]["vS"]]
+            data_vPvS = [self.results_plot["Sandstone"]["vPvS"], self.results_plot["Shale"]["vPvS"],
+                         self.results_plot[self.list_rocks_short[-1]]["vPvS"]]
+            data_K = [self.results_plot["Sandstone"]["K"], self.results_plot["Shale"]["K"],
+                      self.results_plot[self.list_rocks_short[-1]]["K"]]
+            data_G = [self.results_plot["Sandstone"]["G"], self.results_plot["Shale"]["G"],
+                      self.results_plot[self.list_rocks_short[-1]]["G"]]
+            data_nu = [self.results_plot["Sandstone"]["Poisson"], self.results_plot["Shale"]["Poisson"],
+                       self.results_plot[self.list_rocks_short[-1]]["Poisson"]]
+            data_phi = [np.array(self.results_plot["Sandstone"]["phi"])*100,
+                        np.array(self.results_plot["Shale"]["phi"])*100,
+                        np.array(self.results_plot[self.list_rocks_short[-1]]["phi"])*100]
+            data_gr = [self.results_plot["Sandstone"]["GR"], self.results_plot["Shale"]["GR"],
+                       self.results_plot[self.list_rocks_short[-1]]["GR"]]
+            data_pe = [self.results_plot["Sandstone"]["PE"], self.results_plot["Shale"]["PE"],
+                       self.results_plot[self.list_rocks_short[-1]]["PE"]]
+            data = [[data_vP, data_vS, data_vPvS], [data_K, data_G, data_nu], [data_phi, data_gr, data_pe]]
             #
-            self.create_scatter_plot(parent=self.parent_subsurface, data_x=data_x_rho,
-                                     data_y=[self.results_plot["Sandstone"]["K"], self.results_plot["Shale"]["K"], self.results_plot[self.list_rocks_short[-1]]["K"]],
-                                     row_id=17, column_id=9, n_rows=15, n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)",
-                                     ylabel="Bulk modulus $K$ (GPa)", rocks=self.list_rocks_short, colors=["tan", "olivedrab", "darkorange"])
-            self.create_scatter_plot(parent=self.parent_subsurface, data_x=data_x_rho,
-                                     data_y=[self.results_plot["Sandstone"]["G"], self.results_plot["Shale"]["G"], self.results_plot[self.list_rocks_short[-1]]["G"]],
-                                     row_id=17, column_id=12, n_rows=15, n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)",
-                                     ylabel="Shear modulus $G$ (GPa)", rocks=self.list_rocks_short, colors=["tan", "olivedrab", "darkorange"])
-            self.create_scatter_plot(parent=self.parent_subsurface, data_x=data_x_rho,
-                                     data_y=[self.results_plot["Sandstone"]["Poisson"], self.results_plot["Shale"]["Poisson"], self.results_plot[self.list_rocks_short[-1]]["Poisson"]],
-                                     row_id=17, column_id=15, n_rows=15, n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)",
-                                     ylabel="Poisson's ratio $\\nu$ (1)", rocks=self.list_rocks_short, colors=["tan", "olivedrab", "darkorange"])
+            labels = [["Seismic velocity $v_P$ (m/s)", "Seismic velocity $v_S$ (m/s)",
+                      "Seismic velocity ratio $v_P/v_S$ (1)"], ["Bulk modulus $K$ (GPa)", "Shear modulus $G$ (GPa)",
+                      "Poisson's ratio $\\nu$ (1)"], ["Porosity $\\phi$ (%)", "Gamma Ray $GR$ (API)",
+                      "Photoelectric Effect $PE$ (barns\electron)"]]
+            colors = ["tan", "olivedrab", "darkorange"]
+            litho_list = ["Sandstone", "Shale", self.list_rocks_short[-1]]
             #
-            self.create_scatter_plot(parent=self.parent_subsurface, data_x=data_x_rho,
-                                     data_y=[self.results_plot["Sandstone"]["phi"], self.results_plot["Shale"]["phi"], self.results_plot[self.list_rocks_short[-1]]["phi"]],
-                                     row_id=32, column_id=9, n_rows=15, n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)",
-                                     ylabel="Porosity $\\phi$ (%)", rocks=self.list_rocks_short, colors=["tan", "olivedrab", "darkorange"])
-            self.create_scatter_plot(parent=self.parent_subsurface, data_x=data_x_rho,
-                                     data_y=[self.results_plot["Sandstone"]["GR"], self.results_plot["Shale"]["GR"], self.results_plot[self.list_rocks_short[-1]]["GR"]],
-                                     row_id=32, column_id=12, n_rows=15, n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)",
-                                     ylabel="Gamma Ray $GR$ (API)", rocks=self.list_rocks_short, colors=["tan", "olivedrab", "darkorange"])
-            self.create_scatter_plot(parent=self.parent_subsurface, data_x=data_x_rho,
-                                     data_y=[self.results_plot["Sandstone"]["PE"], self.results_plot["Shale"]["PE"], self.results_plot[self.list_rocks_short[-1]]["PE"]],
-                                     row_id=32, column_id=15, n_rows=15, n_columns=3, xlabel="Densitiy $\\varrho$ (g/ccm)",
-                                     ylabel="Photoelectric Effect $PE$ (barns\electron)", rocks=self.list_rocks_short, colors=["tan", "olivedrab", "darkorange"])
+            self.create_3x3_scatter(parent=self.parent_subsurface, data_x=data_x_rho, data=data, row_id=2, column_id=9,
+                                    n_rows=45, n_columns=9, colors=colors, labels=labels,
+                                    xlabel="Densitiy $\\varrho$ (g/ccm)", lithos=litho_list)
+        #
         elif var_rb.get() == 9:
             try:
                 self.fig.clf()
@@ -5132,71 +5089,89 @@ class Subsurface:
             except AttributeError:
                 pass
             #
-            data_x = [np.array(self.results_plot["Sandstone"]["phi"])*100, np.array(self.results_plot["Shale"]["phi"])*100,
-                          np.array(self.results_plot[self.list_rocks_short[-1]]["phi"])*100]
+            data_x = [np.array(self.results_plot["Sandstone"]["phi"])*100,
+                      np.array(self.results_plot["Shale"]["phi"])*100,
+                      np.array(self.results_plot[self.list_rocks_short[-1]]["phi"])*100]
             #
-            self.create_scatter_plot(parent=self.parent_subsurface, data_x=data_x,
-                                     data_y=[self.results_plot["Sandstone"]["vP"], self.results_plot["Shale"]["vP"], self.results_plot[self.list_rocks_short[-1]]["vP"]],
-                                     row_id=2, column_id=9, n_rows=15, n_columns=3, xlabel="Porosity $\\phi$ (%)",
-                                     ylabel="Seismic velocity $v_P$ (m/s)", rocks=self.list_rocks_short, colors=["tan", "olivedrab", "darkorange"])
-            self.create_scatter_plot(parent=self.parent_subsurface, data_x=data_x,
-                                     data_y=[self.results_plot["Sandstone"]["vS"], self.results_plot["Shale"]["vS"], self.results_plot[self.list_rocks_short[-1]]["vS"]],
-                                     row_id=2, column_id=12, n_rows=15, n_columns=3, xlabel="Porosity $\\phi$ (%)",
-                                     ylabel="Seismic velocity $v_P$ (m/s)", rocks=self.list_rocks_short, colors=["tan", "olivedrab", "darkorange"])
-            self.create_scatter_plot(parent=self.parent_subsurface, data_x=data_x,
-                                     data_y=[self.results_plot["Sandstone"]["vPvS"], self.results_plot["Shale"]["vPvS"], self.results_plot[self.list_rocks_short[-1]]["vPvS"]],
-                                     row_id=2, column_id=15, n_rows=15, n_columns=3, xlabel="Porosity $\\phi$ (%)",
-                                     ylabel="Seismic velocity ratio $v_P/v_S$ (1)", rocks=self.list_rocks_short, colors=["tan", "olivedrab", "darkorange"])
+            data_vP = [self.results_plot["Sandstone"]["vP"], self.results_plot["Shale"]["vP"],
+                       self.results_plot[self.list_rocks_short[-1]]["vP"]]
+            data_vS = [self.results_plot["Sandstone"]["vS"], self.results_plot["Shale"]["vS"],
+                       self.results_plot[self.list_rocks_short[-1]]["vS"]]
+            data_vPvS = [self.results_plot["Sandstone"]["vPvS"], self.results_plot["Shale"]["vPvS"],
+                         self.results_plot[self.list_rocks_short[-1]]["vPvS"]]
+            data_K = [self.results_plot["Sandstone"]["K"], self.results_plot["Shale"]["K"],
+                      self.results_plot[self.list_rocks_short[-1]]["K"]]
+            data_G = [self.results_plot["Sandstone"]["G"], self.results_plot["Shale"]["G"],
+                      self.results_plot[self.list_rocks_short[-1]]["G"]]
+            data_nu = [self.results_plot["Sandstone"]["Poisson"], self.results_plot["Shale"]["Poisson"],
+                       self.results_plot[self.list_rocks_short[-1]]["Poisson"]]
+            data_rho = [np.array(self.results_plot["Sandstone"]["rho"])/1000,
+                        np.array(self.results_plot["Shale"]["rho"])/1000,
+                        np.array(self.results_plot[self.list_rocks_short[-1]]["rho"])/1000]
+            data_gr = [self.results_plot["Sandstone"]["GR"], self.results_plot["Shale"]["GR"],
+                       self.results_plot[self.list_rocks_short[-1]]["GR"]]
+            data_pe = [self.results_plot["Sandstone"]["PE"], self.results_plot["Shale"]["PE"],
+                       self.results_plot[self.list_rocks_short[-1]]["PE"]]
+            data = [[data_vP, data_vS, data_vPvS], [data_K, data_G, data_nu], [data_rho, data_gr, data_pe]]
             #
-            self.create_scatter_plot(parent=self.parent_subsurface, data_x=data_x,
-                                     data_y=[self.results_plot["Sandstone"]["K"], self.results_plot["Shale"]["K"], self.results_plot[self.list_rocks_short[-1]]["K"]],
-                                     row_id=17, column_id=9, n_rows=15, n_columns=3, xlabel="Porosity $\\phi$ (%)",
-                                     ylabel="Bulk modulus $K$ (GPa)", rocks=self.list_rocks_short, colors=["tan", "olivedrab", "darkorange"])
-            self.create_scatter_plot(parent=self.parent_subsurface, data_x=data_x,
-                                     data_y=[self.results_plot["Sandstone"]["G"], self.results_plot["Shale"]["G"], self.results_plot[self.list_rocks_short[-1]]["G"]],
-                                     row_id=17, column_id=12, n_rows=15, n_columns=3, xlabel="Porosity $\\phi$ (%)",
-                                     ylabel="Shear modulus $G$ (GPa)", rocks=self.list_rocks_short, colors=["tan", "olivedrab", "darkorange"])
-            self.create_scatter_plot(parent=self.parent_subsurface, data_x=data_x,
-                                     data_y=[self.results_plot["Sandstone"]["Poisson"], self.results_plot["Shale"]["Poisson"], self.results_plot[self.list_rocks_short[-1]]["Poisson"]],
-                                     row_id=17, column_id=15, n_rows=15, n_columns=3, xlabel="Porosity $\\phi$ (%)",
-                                     ylabel="Poisson's ratio $\\nu$ (1)", rocks=self.list_rocks_short, colors=["tan", "olivedrab", "darkorange"])
+            labels = [["Seismic velocity $v_P$ (m/s)", "Seismic velocity $v_S$ (m/s)",
+                      "Seismic velocity ratio $v_P/v_S$ (1)"], ["Bulk modulus $K$ (GPa)", "Shear modulus $G$ (GPa)",
+                      "Poisson's ratio $\\nu$ (1)"], ["Density $\\varrho$ (g/ccm)", "Gamma Ray $GR$ (API)",
+                      "Photoelectric Effect $PE$ (barns\electron)"]]
+            colors = ["tan", "olivedrab", "darkorange"]
+            litho_list = ["Sandstone", "Shale", self.list_rocks_short[-1]]
             #
-            self.create_scatter_plot(parent=self.parent_subsurface, data_x=data_x,
-                                     data_y=[np.array(self.results_plot["Sandstone"]["rho"])/1000, np.array(self.results_plot["Shale"]["rho"])/1000, np.array(self.results_plot[self.list_rocks_short[-1]]["rho"])/1000],
-                                     row_id=32, column_id=9, n_rows=15, n_columns=3, xlabel="Porosity $\\phi$ (%)",
-                                     ylabel="Density $\\varrho$ (g/ccm)", rocks=self.list_rocks_short, colors=["tan", "olivedrab", "darkorange"])
-            self.create_scatter_plot(parent=self.parent_subsurface, data_x=data_x,
-                                     data_y=[self.results_plot["Sandstone"]["GR"], self.results_plot["Shale"]["GR"], self.results_plot[self.list_rocks_short[-1]]["GR"]],
-                                     row_id=32, column_id=12, n_rows=15, n_columns=3, xlabel="Porosity $\\phi$ (%)",
-                                     ylabel="Gamma Ray $GR$ (API)", rocks=self.list_rocks_short, colors=["tan", "olivedrab", "darkorange"])
-            self.create_scatter_plot(parent=self.parent_subsurface, data_x=data_x,
-                                     data_y=[self.results_plot["Sandstone"]["PE"], self.results_plot["Shale"]["PE"], self.results_plot[self.list_rocks_short[-1]]["PE"]],
-                                     row_id=32, column_id=15, n_rows=15, n_columns=3, xlabel="Porosity $\\phi$ (%)",
-                                     ylabel="Photoelectric Effect $PE$ (barns\electron)", rocks=self.list_rocks_short, colors=["tan", "olivedrab", "darkorange"])
+            self.create_3x3_scatter(parent=self.parent_subsurface, data_x=data_x, data=data, row_id=2, column_id=9,
+                                    n_rows=45, n_columns=9, colors=colors, labels=labels, xlabel="Porosity $\\phi$ (%)",
+                                    lithos=litho_list)
         #
     def split_thickness(self, thickness, n_units):
         list_thickness = np.random.multinomial(thickness, np.ones(n_units)/n_units, size=1)[0]
         #
         return list_thickness
     #
-    def create_scatter_plot(self, parent, data_x, data_y, row_id, column_id, n_rows, n_columns, xlabel, ylabel, rocks, colors):
+    def create_3x3_scatter(self, parent, data_x, data, row_id, column_id, n_rows, n_columns, colors, labels, xlabel, lithos):
         #
         self.canvas = None
-        self.fig = Figure(facecolor="#E9ECED")
-        self.ax = self.fig.add_subplot()
+        self.fig, self.ax = plt.subplots(ncols=3, nrows=3, figsize=(9, 9), facecolor="#E9ECED")
         #
-        x_min = min([min(data_x[0]), min(data_x[1]), min(data_x[2])])
-        x_max = max([max(data_x[0]), max(data_x[1]), max(data_x[2])])
-        for index, rock in enumerate(rocks, start=0):
-            self.ax.scatter(data_x[index], np.array(data_y[index]), color=colors[index], edgecolor="black", alpha=1.0,
-                            label=rock)
-        self.ax.grid(True)
-        self.ax.set_axisbelow(True)
-        self.ax.set_xlim(0.9*x_min, 1.1*x_max)
-        self.ax.set_xlabel(xlabel, fontsize="small")
-        self.ax.set_ylabel(ylabel, labelpad=0.5, fontsize="small")
-        self.ax.legend(fontsize="xx-small", loc="best")
-        self.fig.subplots_adjust(bottom=0.15, left=0.22)
+        for i in range(3):
+            for j in range(3):
+                for k in range(3):
+                    self.ax[i][j].scatter(data_x[k], data[i][j][k], color=colors[k], edgecolor="black", alpha=1.0,
+                                          label=lithos[k])
+                #
+                self.ax[i][j].set_xlabel(xlabel, fontsize="small")
+                self.ax[i][j].set_ylabel(labels[i][j], labelpad=0.5, fontsize="small")
+                self.ax[i][j].grid(True)
+                self.ax[i][j].set_axisbelow(True)
+        #
+        self.ax[0][0].legend(bbox_to_anchor=(0.0, 1.025, 3.5, 0.15), loc=3, ncol=len(lithos), mode="expand",
+                             borderaxespad=0, fontsize="x-small")
+        self.fig.tight_layout()
+        #
+        self.canvas = FigureCanvasTkAgg(self.fig, master=parent)
+        self.canvas.get_tk_widget().grid(row=row_id, column=column_id, rowspan=n_rows, columnspan=n_columns,
+                                         sticky="nesw")
+    #
+    def create_3x3_histo(self, parent, data, row_id, column_id, n_rows, n_columns, colors, labels, lithos):
+        #
+        self.canvas = None
+        self.fig, self.ax = plt.subplots(ncols=3, nrows=3, figsize=(9, 9), facecolor="#E9ECED")
+        #
+        for i in range(3):
+            for j in range(3):
+                self.ax[i][j].hist(data[i][j], bins=16, color=colors, histtype="step", fill=True, linewidth=2,
+                                   alpha=0.25)
+                self.ax[i][j].hist(data[i][j], bins=16, color=colors, histtype="step", linewidth=2, label=lithos)
+                #
+                self.ax[i][j].set_xlabel(labels[i][j], fontsize="small")
+                self.ax[i][j].set_ylabel("Frequency", labelpad=0.5, fontsize="small")
+                self.ax[i][j].grid(True)
+                self.ax[i][j].set_axisbelow(True)
+        self.ax[0][0].legend(bbox_to_anchor=(0.0, 1.025, 3.5, 0.15), loc=3, ncol=len(lithos), mode="expand",
+                             borderaxespad=0, fontsize="x-small")
+        self.fig.tight_layout()
         #
         self.canvas = FigureCanvasTkAgg(self.fig, master=parent)
         self.canvas.get_tk_widget().grid(row=row_id, column=column_id, rowspan=n_rows, columnspan=n_columns,
@@ -5205,10 +5180,8 @@ class Subsurface:
     def create_well_log_plot(self, parent, data_x, data_y, row_id, column_id, n_rows, n_columns):
         #
         self.canvas = None
-        # self.fig = Figure(facecolor="#E9ECED")
-        # self.ax = self.fig.add_subplot()
         max_thickness = max(data_y)
-        self.fig, (self.ax1, self.ax2, self.ax3, self.ax4, self.ax5) = plt.subplots(1, 5, sharey='row', gridspec_kw={'wspace': 0.15}, figsize=(9, 12), facecolor="#E9ECED")
+        self.fig, (self.ax1, self.ax2, self.ax3, self.ax4, self.ax5) = plt.subplots(1, 5, sharey="row", gridspec_kw={"wspace": 0.15}, figsize=(12, 16), facecolor="#E9ECED")
         self.fig.subplots_adjust(wspace=0.25)
         # 1
         self.ax1.plot(self.results_sorted["GR"], self.results_sorted["Top"], color="#00549F", linewidth=2)
@@ -5220,7 +5193,7 @@ class Subsurface:
         self.ax1.set_yticks(np.arange(0, max_thickness+50, 50))
         self.ax1.grid(color="grey", linestyle="dashed")
         plt.gca().invert_yaxis()
-        plt.rc('axes', axisbelow=True)
+        plt.rc("axes", axisbelow=True)
         # 2
         vP_edit = np.array(self.results_sorted["vP"])/1000
         vS_edit = np.array(self.results_sorted["vS"])/1000
@@ -5241,7 +5214,7 @@ class Subsurface:
         self.ax2_2.xaxis.label.set_color("#CC071E")
         self.ax2_2.grid(color="grey", linestyle="dashed")
         plt.gca().invert_yaxis()
-        plt.rc('axes', axisbelow=True)
+        plt.rc("axes", axisbelow=True)
         # 3
         phi_edit = np.array(self.results_sorted["phi"])*100
         self.ax3.plot(np.array(self.results_sorted["rho"])/1000, self.results_sorted["Top"], color="#57AB27", linewidth=2)
@@ -5261,20 +5234,16 @@ class Subsurface:
         self.ax3_2.xaxis.label.set_color("#00549F")
         self.ax3_2.grid(color="grey", linestyle="dashed")
         plt.gca().invert_yaxis()
-        plt.rc('axes', axisbelow=True)
+        plt.rc("axes", axisbelow=True)
         # 4
         self.ax4.plot(self.results_sorted["PE"], self.results_sorted["Top"], color="#00549F", linewidth=2)
         self.ax4.set_xlabel("PE [barns/electron]")
-        #self.ax4.set_xscale("log")
-        #self.ax4.get_xaxis().set_major_formatter(mpl.ticker.ScalarFormatter())
-        #self.ax4.get_xaxis().set_minor_formatter(mpl.ticker.ScalarFormatter())
-        #self.ax4.xaxis.set_minor_formatter(NullFormatter())
         self.ax4.set_xlim(min(self.results_sorted["PE"]), max(self.results_sorted["PE"]))
         self.ax4.set_ylim(0, max_thickness)
         self.ax4.set_yticks(np.arange(0, max_thickness+50, 50))
         self.ax4.grid(color="grey", linestyle="dashed", which="both")
         plt.gca().invert_yaxis()
-        plt.rc('axes', axisbelow=True)
+        plt.rc("axes", axisbelow=True)
         # 5
         n_units = []
         units_sorted = []
@@ -5303,9 +5272,9 @@ class Subsurface:
         self.ax5.set_yticks(np.arange(0, max_thickness+50, 50))
         self.ax5.margins(0.3, 0.0)
         plt.gca().invert_yaxis()
-        plt.rc('axes', axisbelow=True)
+        plt.rc("axes", axisbelow=True)
         self.ax5.legend(handles=legend_lithology, loc="lower left", bbox_to_anchor=(0, -0.125), shadow=True, ncol=1, prop={'size': 8}, frameon=False)
-        plt.tight_layout()
+        #plt.tight_layout()
         #
         self.canvas = FigureCanvasTkAgg(self.fig, master=parent)
         self.canvas.get_tk_widget().grid(row=row_id, column=column_id, rowspan=n_rows, columnspan=n_columns,
