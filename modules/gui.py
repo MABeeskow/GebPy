@@ -109,8 +109,6 @@ class GebPyGUI(tk.Frame):
            fg=self.color_fg_dark).create_label(text="Rocks", relief=tk.RAISED)
         SE(parent=self.parent, row_id=20, column_id=0, n_rows=2, n_columns=2, bg=self.color_accent_01,
            fg=self.color_fg_dark).create_label(text="Subsurface", relief=tk.RAISED)
-        SE(parent=self.parent, row_id=0, column_id=3, n_rows=2, n_columns=5, bg=self.color_bg,
-           fg=self.color_fg_dark).create_label(text="Statistics", relief=tk.RAISED)
         SE(parent=self.parent, row_id=2, column_id=3, n_rows=2, bg=self.color_bg,
            fg=self.color_fg_dark).create_label(text="Parameter", relief=tk.RAISED)
         SE(parent=self.parent, row_id=2, column_id=4, n_rows=2, bg=self.color_bg,
@@ -121,8 +119,13 @@ class GebPyGUI(tk.Frame):
            fg=self.color_fg_dark).create_label(text="Mean", relief=tk.RAISED)
         SE(parent=self.parent, row_id=2, column_id=7, n_rows=2, bg=self.color_bg,
            fg=self.color_fg_dark).create_label(text="Standard\n Deviation", relief=tk.RAISED)
-        SE(parent=self.parent, row_id=0, column_id=9, n_rows=2, n_columns=9, bg=self.color_bg,
+        #
+        lbl_stat = SE(parent=self.parent, row_id=0, column_id=3, n_rows=2, n_columns=5, bg=self.color_bg,
+           fg=self.color_fg_dark).create_label(text="Statistics", relief=tk.RAISED)
+        lbl_plt = SE(parent=self.parent, row_id=0, column_id=9, n_rows=2, n_columns=9, bg=self.color_bg,
            fg=self.color_fg_dark).create_label(text="Plots", relief=tk.RAISED)
+        #
+        self.gui_elements.extend([lbl_stat, lbl_plt])
         #
         ## Option Menu
         var_opt_0_0 = tk.StringVar()
@@ -659,6 +662,14 @@ class Minerals:
         self.gui_elements = gui_elements
         #
         ## Labels
+        #
+        lbl_stat = SE(parent=self.parent_mineral, row_id=0, column_id=3, n_rows=2, n_columns=5, bg=self.color_bg,
+           fg="black").create_label(text="Statistics - "+str(self.mineral), relief=tk.RAISED)
+        lbl_plt = SE(parent=self.parent_mineral, row_id=0, column_id=9, n_rows=2, n_columns=9, bg=self.color_bg,
+           fg="black").create_label(text="Plots - "+str(self.mineral), relief=tk.RAISED)
+        #
+        self.gui_elements.extend([lbl_stat, lbl_plt])
+        #
         lbl_01 = SE(parent=self.parent_mineral, row_id=4, column_id=3, n_rows=2, bg=self.color_bg,
            fg="black").create_label(text="Molar mass\n (g/mol)", relief=tk.RAISED)
         lbl_02 = SE(parent=self.parent_mineral, row_id=6, column_id=3, n_rows=2, bg=self.color_bg,
@@ -2754,6 +2765,14 @@ class Rocks:
         self.gui_elements = gui_elements
         #
         ## Labels
+        #
+        lbl_stat = SE(parent=self.parent_rock, row_id=0, column_id=3, n_rows=2, n_columns=5, bg=self.color_bg,
+           fg="black").create_label(text="Statistics - "+str(self.rock), relief=tk.RAISED)
+        lbl_plt = SE(parent=self.parent_rock, row_id=0, column_id=9, n_rows=2, n_columns=9, bg=self.color_bg,
+           fg="black").create_label(text="Plots - "+str(self.rock), relief=tk.RAISED)
+        #
+        self.gui_elements.extend([lbl_stat, lbl_plt])
+        #
         lbl_01 = SE(parent=self.parent_rock, row_id=4, column_id=3, n_rows=2, bg=self.color_bg,
            fg="black").create_label(text="Density\n (g/ccm)", relief=tk.RAISED)
         lbl_02 = SE(parent=self.parent_rock, row_id=6, column_id=3, n_rows=2, bg=self.color_bg,

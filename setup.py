@@ -1,6 +1,15 @@
 from setuptools import setup
 
-setup(name="modules", packages=["modules"], data_files=["../documents/readme_images/GebPy_Logo.png"])
+setup(
+	name="modules", 
+	packages=["modules"]
+)
+
+setup(
+	name="GebPy", 
+	packages=["documents"],
+	package_data={"documents": ["*.png", "dir/*"]}
+)
 
 import modules
 from modules.gui_elements import SimpleElements as SE
