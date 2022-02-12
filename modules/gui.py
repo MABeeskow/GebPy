@@ -6,7 +6,7 @@
 # Name:		gui.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		10.02.2022
+# Date:		12.02.2022
 
 #-----------------------------------------------
 
@@ -165,7 +165,7 @@ class GebPyGUI(tk.Frame):
         elif var_btn == "custom rock":
             Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                   color_acc=[self.color_accent_03, self.color_accent_04], rock="Custom", lbl_w=self.lbl_w,
-                  entr_w=self.entr_w)
+                  entr_w=self.entr_w, gui_elements=self.gui_elements)
         else:
             Subsurface(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                        color_acc=[self.color_accent_03, self.color_accent_04], subsurface=var_btn, lbl_w=self.lbl_w,

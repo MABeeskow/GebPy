@@ -6,17 +6,23 @@
 # Name:		siliciclastics.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		21.02.2020
+# Date:		12.02.2022
 
 #-----------------------------------------------
 
 ## MODULES
+import datetime
 import numpy as np
 from numpy import round
 from random import *
 import random as rd
 from modules import minerals, oxides, fluids
 from modules.geophysics import Elasticity as elast
+from modules import oxides, carbonates, silicates
+from modules.oxides import Oxides
+from modules.carbonates import Carbonates
+from modules.silicates import Phyllosilicates
+from modules.silicates import Tectosilicates
 
 class Soil:
     #
@@ -516,24 +522,35 @@ class sandstone:
     
     def create_simple_sandstone(self, w_Fe=None, amounts=None, porosity=None, pure=False, dict_output=False):
         #
+        start_time = datetime.datetime.now()
         results = {}
         results["rock"] = "Sandstone"
-        #
-        # [symbol, atomic number, atomic mass, oxidation states, melting point, boiling point, density, electronegativity]
-        chemH = ["H", 1, 1.0078, 1, 13.99, 20.271, 0.084, 2.2]
-        chemC = ["C", 6, 12.009, 4, 0.0, 3915, 3510, 2.55]
-        chemN = ["N", 7, 14.006, -3, 63.15, 77.355, 1.170, 3.04]
-        chemO = ["O", 8, 15.999, -2, 54.3, 90.188, 1.33, 3.44]
-        chemMg = ["Mg", 12, 24.304, 2, 923, 1363, 1740, 1.31]
-        chemS = ["S", 16, 32.059, 6, 368.4, 717.8, 2060, 2.58]
-        chemAr = ["Ar", 18, 39.948, 0.0, 83.81, 87.302, 1.66, 0.0]
-        chemCa = ["Ca", 20, 40.078, 2, 1115, 1757, 1540, 1.0]
-        chemFe = ["Fe", 26, 55.845, 3, 1811, 3134, 7870, 1.83]
         #
         self.w_Fe = w_Fe
         self.amounts = amounts
         #
+        end_intro_1 = datetime.datetime.now()
+        #
         # [chemical formula, molar mass, density, bulk modulus, shear modulus, vP, vS]
+        data_quartz = Oxides(impurity="pure", data_type=True).create_quartz()
+        data_hematite = Oxides(impurity="pure", data_type=True).create_hematite()
+        data_alkalifeldspar = Tectosilicates(impurity="pure", data_type=True).create_alkalifeldspar()
+        data_plagioclase = Tectosilicates(impurity="pure", data_type=True).create_plagioclase()
+        data_chlorite = Phyllosilicates(impurity="pure", data_type=True).create_chlorite()
+        data_muscovite = Phyllosilicates(impurity="pure", data_type=True).create_muscovite()
+        data_calcite = Carbonates(impurity="pure", data_type=True).create_calcite()
+        minerals_list = [data_quartz, data_hematite, data_alkalifeldspar, data_plagioclase, data_chlorite,
+                         data_muscovite, data_calcite]
+        #
+        elements_list = []
+        for mineral in minerals_list:
+            elements_mineral = list(mineral["chemistry"].keys())
+            for element in elements_mineral:
+                if element not in elements_list:
+                    elements_list.append(element)
+        elements_list.sort()
+        print("Elements:", elements_list)
+
         chem_quartz = minerals.oxides.quartz("")
         chem_alkalifeldspar = minerals.feldspars.alkalifeldspar(self, "Alkalifeldspar")
         chem_plagioclase = minerals.feldspars.plagioclase(self, "Plagioclase")
@@ -542,13 +559,10 @@ class sandstone:
         chem_muscovite = minerals.phyllosilicates.muscovite("")
         chem_hematite = minerals.oxides.hematite("")
         #
-        w_OQz = chem_quartz[6][0]
-        w_SiQz = chem_quartz[6][1]
-        w_OAfs = chem_alkalifeldspar[6][0]
-        w_NaAfs = chem_alkalifeldspar[6][1]
-        #w_AlAfs
         w_FeChl = chem_chlorite[6][5]
         w_FeHem = chem_hematite[6][1]
+        #
+        end_intro_2 = datetime.datetime.now()
         #
         # [molar mass, density, bulk modulus, vP]
         air = fluids.Gas.air("")
@@ -557,6 +571,7 @@ class sandstone:
         gas = fluids.Hydrocarbons.natural_gas("")
         #
         data = []
+        end_time_intro = datetime.datetime.now()
         #
         cond = False
         composition = []
@@ -860,6 +875,9 @@ class sandstone:
             w_Mg = round(chem_chlorite[6][2]*w_Chl, 4)
             w_Al = round(chem_alkalifeldspar[6][2]*w_Afs + chem_plagioclase[6][2]*w_Pl + chem_chlorite[6][3]*w_Chl + chem_muscovite[6][3]*w_Ms, 4)
             w_Si = round(chem_quartz[6][1]*w_Qz + chem_alkalifeldspar[6][3]*w_Afs + chem_plagioclase[6][3]*w_Pl + chem_chlorite[6][4]*w_Chl + chem_muscovite[6][4]*w_Ms, 4)
+            w_Si_alt = round(data_quartz["chemistry"]["Si"]*w_Qz + data_alkalifeldspar["chemistry"]["Si"]*w_Afs
+                         + data_plagioclase["chemistry"]["Si"]*w_Pl + data_chlorite["chemistry"]["Si"]*w_Chl
+                         + data_muscovite["chemistry"]["Si"]*w_Ms, 4)
             w_K = round(chem_alkalifeldspar[6][4]*w_Afs + chem_muscovite[6][5]*w_Ms, 4)
             w_Ca = round(chem_plagioclase[6][4]*w_Pl + chem_calcite[6][2]*w_Cal, 4)
             w_Fe_calc = round(chem_chlorite[6][5]*w_Chl + chem_hematite[6][1]*w_Hem, 4)
@@ -885,6 +903,9 @@ class sandstone:
             results["mineralogy"][mineral] = amounts[index]
         #
         mineralogy = [chem_quartz, chem_alkalifeldspar, chem_plagioclase, chem_calcite, chem_chlorite, chem_muscovite, chem_hematite]
+        #
+        end_time_mineralogy = datetime.datetime.now()
+        start_time_rockphysics = datetime.datetime.now()
         #
         rhoSolid = (w_Qz*chem_quartz[2] + w_Afs*chem_alkalifeldspar[2] + w_Pl*chem_plagioclase[2] + w_Cal*chem_calcite[2] + w_Chl*chem_chlorite[2] + w_Ms*chem_muscovite[2] + w_Hem*chem_hematite[2]) / 1000
         X = [w_Qz, w_Afs, w_Pl, w_Cal, w_Chl, w_Ms, w_Hem]
@@ -917,6 +938,9 @@ class sandstone:
         phi = round(phi, 4)
         results["phi"] = phi
         results["fluid"] = self.fluid
+        #
+        end_time_rockphysics = datetime.datetime.now()
+        start_time_assigning = datetime.datetime.now()
         #
         if self.fluid == "water" or self.w_Fe != None:
             rho = (1 - phi) * rhoSolid + phi * water[2] / 1000
@@ -1059,6 +1083,25 @@ class sandstone:
             data.append([round(GR, 3), round(PE, 3)])
             data.append(concentrations)
             data.append(amounts)
+        #
+        end_time = datetime.datetime.now()
+        time_intro = (end_time_intro - start_time)
+        time_intro_1 = (end_intro_1 - start_time)
+        time_intro_2 = (end_intro_2 - end_intro_1)
+        time_intro_3 = (end_time_intro - end_intro_2)
+        time_mineralogy = (end_time_mineralogy - end_time_intro)
+        time_rockphysics = (end_time_rockphysics - end_time_mineralogy)
+        time_assigning = (end_time - end_time_rockphysics)
+        time_total = (end_time - start_time)
+        print("")
+        print("Total:", time_total.total_seconds(), "s")
+        print("Intro:", time_intro.total_seconds(), "s", round(time_intro.total_seconds()/time_total.total_seconds(), 4))
+        print("Intro 1:", time_intro_1.total_seconds(), "s", round(time_intro_1.total_seconds()/time_intro.total_seconds(), 4))
+        print("Intro 2:", time_intro_2.total_seconds(), "s", round(time_intro_2.total_seconds()/time_intro.total_seconds(), 4))
+        print("Intro 3:", time_intro_3.total_seconds(), "s", round(time_intro_3.total_seconds()/time_intro.total_seconds(), 4))
+        print("Mineralogy:", time_mineralogy.total_seconds(), "s", round(time_mineralogy.total_seconds()/time_total.total_seconds(), 4))
+        print("Rockphysics:", time_rockphysics.total_seconds(), "s", round(time_rockphysics.total_seconds()/time_total.total_seconds(), 4))
+        print("Assigning:", time_assigning.total_seconds(), "s", round(time_assigning.total_seconds()/time_total.total_seconds(), 4))
         #
         if dict_output == False:
             return data
