@@ -6,7 +6,7 @@
 # Name:		gui.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		12.02.2022
+# Date:		13.02.2022
 
 #-----------------------------------------------
 
@@ -178,7 +178,7 @@ class GebPyGUI(tk.Frame):
                        "Corundum", "Rutile", "Pyrolusite", "Magnesiochromite", "Zincochromite", "Chromium Spinels",
                        "Cuprospinel", "Jacobsite", "Magnesioferrite", "Trevorite", "Franklinite", "Ulvöspinel",
                        "Iron Spinels", "Uraninite", "Litharge", "Massicot", "Minium", "Plattnerite", "Scrutinyite",
-                       "Zincite"]:
+                       "Zincite", "Columbite", "Tantalite", "Coltan"]:
             Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                      color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
                      entr_w=self.entr_w, gui_elements=self.gui_elements)
@@ -334,7 +334,7 @@ class GebPyGUI(tk.Frame):
                             "Corundum", "Ilmenite", "Rutile", "Pyrolusite", "Cassiterite", "Chromite",
                             "Magnesiochromite", "Zincochromite", "Cuprospinel", "Jacobsite", "Magnesioferrite",
                             "Trevorite", "Franklinite", "Ulvöspinel", "Uraninite", "Litharge", "Massicot", "Minium",
-                            "Plattnerite", "Scrutinyite", "Zincite"]
+                            "Plattnerite", "Scrutinyite", "Zincite", "Columbite", "Tantalite", "Coltan"]
             opt_list_0_1.sort()
             self.opt_oxide = SE(parent=self.parent, row_id=10, column_id=0, n_rows=2, n_columns=2,
                                 bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
@@ -777,6 +777,12 @@ class Minerals:
                 data = Oxides(impurity="pure", data_type=True).create_chromium_spinel()
             elif self.mineral == "Iron Spinels":
                 data = Oxides(impurity="pure", data_type=True).create_iron_spinel()
+            elif self.mineral == "Columbite":
+                data = Oxides(impurity="pure", data_type=True).create_columbite()
+            elif self.mineral == "Tantalite":
+                data = Oxides(impurity="pure", data_type=True).create_tantalite()
+            elif self.mineral == "Coltan":
+                data = Oxides(impurity="pure", data_type=True).create_coltan()
             elif self.mineral == "Trevorite":
                 data = Oxides(impurity="pure", data_type=True).create_trevorite()
             elif self.mineral == "Franklinite":
@@ -1143,7 +1149,12 @@ class Minerals:
         self.labels = [["Densitiy $\\varrho$ (g/ccm)", "Seismic velocity $v_P$ (km/s)", "Seismic velocity $v_S$ (km/s)"],
                        ["Bulk modulus $K$ (GPa)", "Shear modulus $G$ (GPa)", "Poisson's ratio $\\mu$ (1)"],
                        ["Molar mass $M$ (g/mol)", "Gamma ray GR (API)", "Photoelectricity PE (barns/electron)"]]
+        self.labels_scatter = [["Seismic velocity $v_P$ (km/s)", "Seismic velocity $v_S$ (km/s)", "Velocity Ratio $v_P/v_S$ (1)"],
+                               ["Bulk modulus $K$ (GPa)", "Shear modulus $G$ (GPa)", "Poisson's ratio $\\mu$ (1)"],
+                               ["Molar mass $M$ (g/mol)", "Gamma ray GR (API)", "Photoelectricity PE (barns/electron)"]]
         self.data_plot = [[self.rho_b/1000, self.vP/1000, self.vS/1000], [self.bulk_mod, self.shear_mod, self.poisson],
+                          [self.molar_mass, self.gamma_ray, self.photoelectricity]]
+        self.data_plot_scatter = [[self.vP/1000, self.vS/1000, self.vP/self.vS], [self.bulk_mod, self.shear_mod, self.poisson],
                           [self.molar_mass, self.gamma_ray, self.photoelectricity]]
         self.create_3x3_histo(parent=self.parent_mineral, data=self.data_plot, row_id=2, column_id=9, n_rows=45,
                               n_columns=9, color=self.color_mineral, labels=self.labels)
@@ -1318,6 +1329,12 @@ class Minerals:
                 data = Oxides(impurity="pure", data_type=True).create_chromium_spinel()
             elif self.mineral == "Iron Spinels":
                 data = Oxides(impurity="pure", data_type=True).create_iron_spinel()
+            elif self.mineral == "Columbite":
+                data = Oxides(impurity="pure", data_type=True).create_columbite()
+            elif self.mineral == "Tantalite":
+                data = Oxides(impurity="pure", data_type=True).create_tantalite()
+            elif self.mineral == "Coltan":
+                data = Oxides(impurity="pure", data_type=True).create_coltan()
             elif self.mineral == "Cuprospinel":
                 data = Oxides(impurity="pure", data_type=True).create_cuprospinel()
             elif self.mineral == "Jacobsite":
@@ -1685,7 +1702,9 @@ class Minerals:
                 self.entr_w["chemistry"].extend([entr_min, entr_max, entr_mean, entr_std])
         #
         self.data_plot = [[self.rho_b/1000, self.vP/1000, self.vS/1000], [self.bulk_mod, self.shear_mod, self.poisson],
-                     [self.molar_mass, self.gamma_ray, self.photoelectricity]]
+                          [self.molar_mass, self.gamma_ray, self.photoelectricity]]
+        self.data_plot_scatter = [[self.vP/1000, self.vS/1000, self.vP/self.vS], [self.bulk_mod, self.shear_mod, self.poisson],
+                          [self.molar_mass, self.gamma_ray, self.photoelectricity]]
         self.create_3x3_histo(parent=self.parent_mineral, data=self.data_plot, row_id=2, column_id=9, n_rows=45, n_columns=9,
                               color=self.color_mineral, labels=self.labels)
         #
@@ -1717,8 +1736,7 @@ class Minerals:
             except:
                 pass
             #
-            self.data_plot = [[self.rho_b/1000, self.vP/1000, self.vS/1000], [self.bulk_mod, self.shear_mod, self.poisson],
-                     [self.molar_mass, self.gamma_ray, self.photoelectricity]]
+            #self.data_plot = [[self.rho_b/1000, self.vP/1000, self.vS/1000], [self.bulk_mod, self.shear_mod, self.poisson], [self.molar_mass, self.gamma_ray, self.photoelectricity]]
             self.create_3x3_histo(parent=self.parent_mineral, data=self.data_plot, row_id=2, column_id=9, n_rows=45, n_columns=9,
                                   color=self.color_mineral, labels=self.labels)
             #
@@ -1749,8 +1767,8 @@ class Minerals:
             #
             data_x = np.array(self.rho_b)/1000
             xlabel = "Density $\\varrho$ g/ccm"
-            self.create_3x3_scatter(parent=self.parent_mineral, data_x=data_x, data=self.data_plot, row_id=2,
-                                    column_id=9, n_rows=45, n_columns=9, color=self.color_mineral, labels=self.labels,
+            self.create_3x3_scatter(parent=self.parent_mineral, data_x=data_x, data=self.data_plot_scatter, row_id=2,
+                                    column_id=9, n_rows=45, n_columns=9, color=self.color_mineral, labels=self.labels_scatter,
                                     xlabel=xlabel)
             #
         elif var_rb.get() == 2:
@@ -2195,7 +2213,9 @@ class Minerals:
                         self.entr_w["chemistry"].extend([entr_min, entr_max, entr_mean, entr_std])
                 #
                 self.data_plot = [[self.rho_b/1000, self.vP/1000, self.vS/1000], [self.bulk_mod, self.shear_mod, self.poisson],
-                             [self.molar_mass, self.gamma_ray, self.photoelectricity]]
+                          [self.molar_mass, self.gamma_ray, self.photoelectricity]]
+                self.data_plot_scatter = [[self.vP/1000, self.vS/1000, self.vP/self.vS], [self.bulk_mod, self.shear_mod, self.poisson],
+                          [self.molar_mass, self.gamma_ray, self.photoelectricity]]
                 self.create_3x3_histo(parent=self.parent_mineral, data=self.data_plot, row_id=2, column_id=9, n_rows=45, n_columns=9,
                                       color=self.color_mineral, labels=self.labels)
                 #
@@ -2653,8 +2673,12 @@ class Minerals:
                                                                  var_entr_set=round(np.std(self.results[i], ddof=1), 2))
                     self.entr_w["chemistry"].extend([entr_min, entr_max, entr_mean, entr_std])
             #
-            self.data_plot = [[self.rho_b/1000, self.vP/1000, self.vS/1000], [self.bulk_mod, self.shear_mod, self.poisson],
-                         [self.molar_mass, self.gamma_ray, self.photoelectricity]]
+            self.data_plot = [[self.rho_b/1000, self.vP/1000, self.vS/1000],
+                              [self.bulk_mod, self.shear_mod, self.poisson],
+                              [self.molar_mass, self.gamma_ray, self.photoelectricity]]
+            self.data_plot_scatter = [[self.vP/1000, self.vS/1000, self.vP/self.vS],
+                                      [self.bulk_mod, self.shear_mod, self.poisson],
+                                      [self.molar_mass, self.gamma_ray, self.photoelectricity]]
             self.create_3x3_histo(parent=self.parent_mineral, data=self.data_plot, row_id=2, column_id=9, n_rows=45, n_columns=9,
                                   color=self.color_mineral, labels=self.labels)
             #
@@ -2684,8 +2708,8 @@ class Minerals:
             #
             data_x = np.array(self.rho_b)/1000
             xlabel = "Density $\\varrho$ g/ccm"
-            self.create_3x3_scatter(parent=self.parent_mineral, data_x=data_x, data=self.data_plot, row_id=2,
-                                    column_id=9, n_rows=45, n_columns=9, color=self.color_mineral, labels=self.labels,
+            self.create_3x3_scatter(parent=self.parent_mineral, data_x=data_x, data=self.data_plot_scatter, row_id=2,
+                                    column_id=9, n_rows=45, n_columns=9, color=self.color_mineral, labels=self.labels_scatter,
                                     xlabel=xlabel)
             #
         else:
@@ -2698,8 +2722,8 @@ class Minerals:
             element = var_opt
             data_x = np.array(self.rho_b)/1000
             xlabel = "Density $\\varrho$ g/ccm"
-            self.create_3x3_scatter(parent=self.parent_mineral, data_x=data_x, data=self.data_plot, row_id=2,
-                                    column_id=9, n_rows=45, n_columns=9, color=self.color_mineral, labels=self.labels,
+            self.create_3x3_scatter(parent=self.parent_mineral, data_x=data_x, data=self.data_plot_scatter, row_id=2,
+                                    column_id=9, n_rows=45, n_columns=9, color=self.color_mineral, labels=self.labels_scatter,
                                     xlabel=xlabel)
             #
     #
@@ -3825,12 +3849,29 @@ class Subsurface:
     def __init__(self, parent, color_bg, color_fg, color_acc, subsurface, lbl_w, entr_w, gui_elements):
         #
         try:
+            for lbl in lbl_w["physics"]:
+                lbl.grid_forget()
+            for entr in entr_w["physics"]:
+                entr.grid_forget()
+            lbl_w["physics"].clear()
+            entr_w["physics"].clear()
+        except:
+            pass
+        #
+        try:
             for lbl in lbl_w["chemistry"]:
                 lbl.grid_forget()
             for entr in entr_w["chemistry"]:
                 entr.grid_forget()
             lbl_w["chemistry"].clear()
             entr_w["chemistry"].clear()
+        except:
+            pass
+        #
+        try:
+            for gui_elmnt in gui_elements:
+                gui_elmnt.grid_forget()
+            gui_elmnt.clear()
         except:
             pass
         #
@@ -3856,10 +3897,14 @@ class Subsurface:
         #
         if self.subsurface == "random":
             self.create_random_sequences(thickness=1000, style="siliciclastic")
-            # data = SedimentaryBasin().create_sedimentary_basin()
-            # for item in data:
-            #     print(item)
-        #
+            #
+            lbl_stat = SE(parent=self.parent_subsurface, row_id=0, column_id=3, n_rows=2, n_columns=5, bg=self.color_bg,
+               fg="black").create_label(text="Statistics - Random Subsurface (siliciclastic)", relief=tk.RAISED)
+            lbl_plt = SE(parent=self.parent_subsurface, row_id=0, column_id=9, n_rows=2, n_columns=9, bg=self.color_bg,
+               fg="black").create_label(text="Statistics - Random Subsurface (siliciclastic)", relief=tk.RAISED)
+            #
+            self.gui_elements.extend([lbl_stat, lbl_plt])
+            #
         ## Labels
         lbl_01 = SE(parent=self.parent_subsurface, row_id=4, column_id=3, n_rows=2, bg=self.color_bg,
            fg="black").create_label(text="Density\n (g/ccm)", relief=tk.RAISED)
