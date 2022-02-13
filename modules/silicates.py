@@ -2185,18 +2185,21 @@ class Phyllosilicates:
             #
             return results
     #
-    def create_muscovite(self): # K Al3 Si3 O10 (OH)2
+    def create_muscovite(self): # K Al3 Si3 O10 (F,OH)2
         # Major elements
         hydrogen = PeriodicSystem(name="H").get_data()
         oxygen = PeriodicSystem(name="O").get_data()
+        fluorine = PeriodicSystem(name="F").get_data()
         aluminium = PeriodicSystem(name="Al").get_data()
         silicon = PeriodicSystem(name="Si").get_data()
         potassium = PeriodicSystem(name="K").get_data()
-        majors_name = ["H", "O", "Al", "Si", "K"]
+        majors_name = ["H", "O", "F", "Al", "Si", "K"]
         #
-        majors_data = np.array([["H", hydrogen[1], 2, hydrogen[2]], ["O", oxygen[1], 10+2, oxygen[2]],
-                                ["Al", aluminium[1], 3, aluminium[2]], ["Si", silicon[1], 3, silicon[2]],
-                                ["K", potassium[1], 1, potassium[2]]], dtype=object)
+        x = round(rd.uniform(0, 1), 2)
+        #
+        majors_data = np.array([["H", hydrogen[1], 2*(1-x), hydrogen[2]], ["O", oxygen[1], 10+2*(1-x), oxygen[2]],
+                                ["F", fluorine[1], 2*x, fluorine[2]], ["Al", aluminium[1], 3, aluminium[2]],
+                                ["Si", silicon[1], 3, silicon[2]], ["K", potassium[1], 1, potassium[2]]], dtype=object)
         # Minor elements
         traces_data = []
         if len(self.traces_list) > 0:
@@ -2221,8 +2224,9 @@ class Phyllosilicates:
         #
         mineral = "Ms"
         #
-        # Molar mass K Al3 Si3 O10 (OH)2
-        molar_mass_pure = potassium[2] + 3*aluminium[2] + 3*silicon[2] + 10*oxygen[2] + 2*(oxygen[2]+hydrogen[2])
+        # Molar mass K Al3 Si3 O10 (F,OH)2
+        molar_mass_pure = potassium[2] + 3*aluminium[2] + 3*silicon[2] + 10*oxygen[2] \
+                          + 2*(x*fluorine[2] + (1-x)*(oxygen[2]+hydrogen[2]))
         molar_mass, amounts = MineralChemistry(w_traces=traces_data, molar_mass_pure=molar_mass_pure,
                                                majors=majors_data).calculate_molar_mass()
         element = [PeriodicSystem(name=amounts[i][0]).get_data() for i in range(len(amounts))]

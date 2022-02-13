@@ -83,6 +83,20 @@ class Organics:
         molar_mass_pure = w_ch*carbohydrates["M"] + w_lg*lignin["M"] + w_lp*lipid["M"]
         molar_mass, amounts = MineralChemistry(w_traces=traces_data, molar_mass_pure=molar_mass_pure,
                                                majors=majors_data).calculate_molar_mass()
+        amounts2 = []
+        w_H = round((w_ch*carbohydrates["chemistry"]["H"] + w_lg*lignin["chemistry"]["H"] + w_lp*lipid["chemistry"]["H"])*hydrogen[2]/molar_mass_pure, 4)
+        w_C = round((w_ch*carbohydrates["chemistry"]["C"] + w_lg*lignin["chemistry"]["C"] + w_lp*lipid["chemistry"]["C"])*carbon[2]/molar_mass_pure, 4)
+        w_N = round((w_lg*lignin["chemistry"]["N"])*nitrogen[2]/molar_mass_pure, 4)
+        w_S = round((w_lg*lignin["chemistry"]["S"])*sulfur[2]/molar_mass_pure, 4)
+        w_O = round(1 - w_H - w_C - w_N - w_S, 4)
+        data_H = ["H", 1, w_H]
+        data_C = ["C", 6, w_C]
+        data_N = ["N", 7, w_N]
+        data_O = ["O", 8, w_O]
+        data_S = ["S", 16, w_S]
+        amounts2.extend([data_H, data_C, data_N, data_O, data_S])
+        amounts = amounts2
+
         element = [PeriodicSystem(name=amounts[i][0]).get_data() for i in range(len(amounts))]
         # Density
         rho = w_ch*carbohydrates["rho"] + w_lg*lignin["rho"] + w_lp*lipid["rho"]
@@ -283,10 +297,11 @@ class Organics:
         mineral = "lignin"
         #
         # Molar mass
-        molar_mass_pure = 0.06*hydrogen[2] + 0.63*carbon[2] + 0.003*nitrogen[2] + 0.31*oxygen[2] + 0.001*sulfur[2]
+        molar_mass_pure = 0.06*hydrogen[2] + 0.626*carbon[2] + 0.003*nitrogen[2] + 0.31*oxygen[2] + 0.001*sulfur[2]
         #
-        majors_data = np.array([["H", hydrogen[1], 0.06, hydrogen[2]], ["C", carbon[1], 0.63, carbon[2]], ["N", nitrogen[1], 0.003, nitrogen[2]],
-                                ["O", oxygen[1], 0.31, oxygen[2]], ["S", sulfur[1], 0.001, sulfur[2]]], dtype=object)
+        majors_data = np.array([["H", hydrogen[1], 0.06, hydrogen[2]], ["C", carbon[1], 0.626, carbon[2]],
+                                ["N", nitrogen[1], 0.003, nitrogen[2]], ["O", oxygen[1], 0.31, oxygen[2]],
+                                ["S", sulfur[1], 0.001, sulfur[2]]], dtype=object)
         #
         molar_mass, amounts = MineralChemistry(w_traces=traces_data, molar_mass_pure=molar_mass_pure,
                                                majors=majors_data).calculate_molar_mass()

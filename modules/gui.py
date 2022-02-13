@@ -748,7 +748,7 @@ class Minerals:
             elif self.mineral == "Rutile":
                 data = Oxides(impurity="pure", data_type=True).create_rutile()
             elif self.mineral == "Hematite":
-                data = Oxides(impurity="pure").create_hematite(dict=True)
+                data = Oxides(impurity="pure", data_type=True).create_hematite()
             elif self.mineral == "Ilmenite":
                 data = Oxides(impurity="pure", data_type=True).create_ilmenite()
             elif self.mineral == "Litharge":
@@ -3027,7 +3027,14 @@ class Rocks:
             self.labels = [["Densitiy $\\varrho$ (g/ccm)", "Seismic velocity $v_P$ (km/s)", "Seismic velocity $v_S$ (km/s)"],
                            ["Bulk modulus $K$ (GPa)", "Shear modulus $G$ (GPa)", "Poisson's ratio $\\mu$ (1)"],
                            ["Porosity $\\phi$ (%)", "Gamma ray GR (API)", "Photoelectricity PE (barns/electron)"]]
-            self.data_plot = [[self.rho/1000, self.vP/1000, self.vS/1000], [self.bulk_mod, self.shear_mod, self.poisson],
+            self.labels_scatter_rho = [["Seismic velocity $v_P$ (km/s)", "Seismic velocity $v_S$ (km/s)", "Velocity Ratio $v_P/v_S$ (1)"],
+                           ["Bulk modulus $K$ (GPa)", "Shear modulus $G$ (GPa)", "Poisson's ratio $\\mu$ (1)"],
+                           ["Porosity $\\phi$ (%)", "Gamma ray GR (API)", "Photoelectricity PE (barns/electron)"]]
+            self.labels_scatter_phi = [["Seismic velocity $v_P$ (km/s)", "Seismic velocity $v_S$ (km/s)", "Velocity Ratio $v_P/v_S$ (1)"],
+                           ["Bulk modulus $K$ (GPa)", "Shear modulus $G$ (GPa)", "Poisson's ratio $\\mu$ (1)"],
+                           ["Densitiy $\\varrho$ (g/ccm)", "Gamma ray GR (API)", "Photoelectricity PE (barns/electron)"]]
+            self.data_plot = [[self.rho/1000, self.vP/1000, self.vS/1000],
+                              [self.bulk_mod, self.shear_mod, self.poisson],
                               [self.phi*100, self.gamma_ray, self.photoelectricity]]
             self.data_plot_scatter_rho = [[self.vP/1000, self.vS/1000, self.vP/self.vS],
                                           [self.bulk_mod, self.shear_mod, self.poisson],
@@ -3326,7 +3333,8 @@ class Rocks:
         #
         self.color_rock = "#7C9097"
         #
-        self.data_plot = [[self.rho/1000, self.vP/1000, self.vS/1000], [self.bulk_mod, self.shear_mod, self.poisson],
+        self.data_plot = [[self.rho/1000, self.vP/1000, self.vS/1000],
+                          [self.bulk_mod, self.shear_mod, self.poisson],
                           [self.phi*100, self.gamma_ray, self.photoelectricity]]
         self.data_plot_scatter_rho = [[self.vP/1000, self.vS/1000, self.vP/self.vS],
                                       [self.bulk_mod, self.shear_mod, self.poisson],
@@ -3388,7 +3396,7 @@ class Rocks:
             xlabel="Densitiy $\\varrho$ (g/ccm)"
             #
             self.create_3x3_scatter(parent=self.parent_rock, data_x=data_x_rho, data=self.data_plot_scatter_rho, row_id=2,
-                                    column_id=9, n_rows=45, n_columns=9, color=self.color_rock, labels=self.labels,
+                                    column_id=9, n_rows=45, n_columns=9, color=self.color_rock, labels=self.labels_scatter_rho,
                                     xlabel=xlabel)
             #
         elif var_rb.get() == 2:
@@ -3518,7 +3526,7 @@ class Rocks:
             xlabel = "Densitiy $\\varrho$ (g/ccm)"
             #
             self.create_3x3_scatter(parent=self.parent_rock, data_x=data_x_rho, data=self.data_plot_scatter_rho, row_id=2,
-                                    column_id=9, n_rows=45, n_columns=9, color=self.color_rock, labels=self.labels,
+                                    column_id=9, n_rows=45, n_columns=9, color=self.color_rock, labels=self.labels_scatter_rho,
                                     xlabel=xlabel)
             #
         elif var_rb.get() == 9:
@@ -3538,7 +3546,7 @@ class Rocks:
             xlabel = "Porosity $\\phi$ (%)"
             #
             self.create_3x3_scatter(parent=self.parent_rock, data_x=data_x_phi, data=self.data_plot_scatter_phi, row_id=2,
-                                    column_id=9, n_rows=45, n_columns=9, color=self.color_rock, labels=self.labels,
+                                    column_id=9, n_rows=45, n_columns=9, color=self.color_rock, labels=self.labels_scatter_phi,
                                     xlabel=xlabel)
             #
     #

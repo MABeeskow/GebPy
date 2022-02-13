@@ -2100,6 +2100,7 @@ class Carbonates():
         #
         molar_mass, amounts = MineralChemistry(w_traces=traces_data, molar_mass_pure=molar_mass_pure,
                                                majors=majors_data).calculate_molar_mass()
+        print(amounts)
         element = [PeriodicSystem(name=amounts[i][0]).get_data() for i in range(len(amounts))]
         # Density
         rho = w_ch*carbohydrates[2] + w_lg*lignin[2] + w_lp*lipid[2]

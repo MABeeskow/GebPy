@@ -272,7 +272,8 @@ class Elasticity:
     def calc_geometric_mean(self, f, m):
         a = 1
         for i in range(len(f)):
-            a *= m[i]**f[i]
+            if m[i] > 0:
+                a *= m[i]**f[i]
         M = a**(1/np.sum(f))
         return M
     #
