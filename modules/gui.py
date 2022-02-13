@@ -13,6 +13,7 @@
 ## MODULES
 import os, sys
 import tkinter as tk
+import csv, re
 from modules.gui_elements import SimpleElements as SE
 from modules.sulfates import Sulfates
 from modules.oxides import Oxides
@@ -69,6 +70,9 @@ class GebPyGUI(tk.Frame):
         self.entr_w["physics"] = []
         self.entr_w["chemistry"] = []
         self.gui_elements = []
+        #
+        self.exp_data = []
+        self.filename = []
         #
         for x in range(19):
             tk.Grid.columnconfigure(self.parent, x, weight=1)
@@ -156,6 +160,14 @@ class GebPyGUI(tk.Frame):
         self.btn_custseq = SE(parent=self.parent, row_id=18, column_id=0, n_rows=2, n_columns=2, bg=self.color_accent_02,
                               fg=self.color_fg_dark).create_button(text="Create Custom Rock",
                                                                    command=lambda var_btn="custom rock": self.pressed_button(var_btn))
+        #
+        btn_advstat = SE(parent=self.parent, row_id=42, column_id=0, n_rows=2, n_columns=2, bg=self.color_accent_03,
+                         fg="black").create_button(text="Advanced Statistics")
+        btn_exp = SE(parent=self.parent, row_id=44, column_id=0, n_rows=2, n_columns=2, bg=self.color_accent_03,
+                     fg="black").create_button(text="Export Data",
+                                               command=lambda var_btn="export data": self.pressed_button(var_btn))
+        btn_exit = SE(parent=self.parent, row_id=46, column_id=0, n_rows=2, n_columns=2, bg=self.color_accent_01,
+                      fg=self.color_fg_dark).create_button(text="Quit", command=self.parent.quit)
     #
     def pressed_button(self, var_btn):
         if var_btn == "random":
@@ -166,6 +178,8 @@ class GebPyGUI(tk.Frame):
             Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                   color_acc=[self.color_accent_03, self.color_accent_04], rock="Custom", lbl_w=self.lbl_w,
                   entr_w=self.entr_w, gui_elements=self.gui_elements)
+        elif var_btn == "export data":
+            self.export_data(var_exp=self.exp_data)
         else:
             Subsurface(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                        color_acc=[self.color_accent_03, self.color_accent_04], subsurface=var_btn, lbl_w=self.lbl_w,
@@ -181,139 +195,139 @@ class GebPyGUI(tk.Frame):
                        "Zincite", "Columbite", "Tantalite", "Coltan"]:
             Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                      color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
-                     entr_w=self.entr_w, gui_elements=self.gui_elements)
+                     entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
         ## Sulfides
         elif var_opt in ["Pyrite", "Chalcopyrite", "Galena", "Acanthite", "Chalcocite", "Bornite", "Sphalerite",
                          "Pyrrhotite", "Millerite", "Pentlandite", "Covellite", "Cinnabar", "Realgar", "Orpiment",
                          "Stibnite", "Marcasite", "Molybdenite", "Fahlore"]:
             Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                      color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
-                     entr_w=self.entr_w, gui_elements=self.gui_elements)
+                     entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
         ## Carbonates
         elif var_opt in ["Calcite", "Dolomite", "Magnesite", "Halite", "Fluorite", "Sylvite", "Siderite",
                          "Rhodochrosite", "Aragonite", "Cerussite", "Ankerite", "Azurite", "Malachite"]:
             Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                      color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
-                     entr_w=self.entr_w, gui_elements=self.gui_elements)
+                     entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
         elif var_opt in ["Barite", "Celestite", "Anglesite", "Anhydrite", "Hanksite", "Gypsum", "Alunite", "Jarosite",
                          "Chalcanthite", "Kieserite", "Scheelite", "Hexahydrite"]:
             Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                      color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
-                     entr_w=self.entr_w, gui_elements=self.gui_elements)
+                     entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
         elif var_opt in ["Alkalifeldspar", "Plagioclase", "Scapolite"]:
             Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                      color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
-                     entr_w=self.entr_w, gui_elements=self.gui_elements)
+                     entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
         # PHOSPHATES
         elif var_opt in ["Apatite-F", "Apatite-Cl", "Apatite-OH", "Apatite"]:
             Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                      color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
-                     entr_w=self.entr_w, gui_elements=self.gui_elements)
+                     entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
         elif var_opt in ["Illite", "Kaolinite", "Montmorillonite", "Chamosite", "Clinochlore", "Pennantite", "Nimite",
                          "Chlorite", "Vermiculite", "Annite", "Phlogopite", "Eastonite", "Siderophyllite", "Biotite",
                          "Muscovite", "Glauconite"]:
             Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                      color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
-                     entr_w=self.entr_w, gui_elements=self.gui_elements)
+                     entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
         # NESOSILICATES
         elif var_opt in ["Zircon", "Thorite", "Andalusite", "Kyanite", "Sillimanite", "Topaz", "Staurolite",
                          "Fayalite", "Forsterite", "Tephroite", "Calcio-Olivine", "Liebenbergite", "Olivine", "Pyrope",
                          "Almandine", "Grossular", "Andradite", "Uvarovite", "Aluminium Garnet", "Calcium Garnet"]:
             Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                      color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
-                     entr_w=self.entr_w, gui_elements=self.gui_elements)
+                     entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
         # SOROSILICATES
         elif var_opt in ["Epidote", "Zoisite", "Gehlenite"]:
             Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                      color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
-                     entr_w=self.entr_w, gui_elements=self.gui_elements)
+                     entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
         # INOSILICATES
         elif var_opt in ["Enstatite", "Ferrosilite", "Diopside", "Jadeite", "Aegirine", "Spodumene", "Wollastonite",
                          "Tremolite", "Actinolite", "Glaucophane", "Augite", "Riebeckite", "Arfvedsonite",
                          "Calcium Amphibole", "Sodium Amphibole", "Mg-Fe Pyroxene", "Calcium Pyroxene"]:
             Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                      color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
-                     entr_w=self.entr_w, gui_elements=self.gui_elements)
+                     entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
         # Rocks
         elif var_opt == "Sandstone":
-            self.lbl_w, self.entr_w = Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
+            Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                   color_acc=[self.color_accent_03, self.color_accent_04], rock=var_opt, lbl_w=self.lbl_w,
-                  entr_w=self.entr_w, gui_elements=self.gui_elements)()
+                  entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
         elif var_opt == "Shale":
             Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                   color_acc=[self.color_accent_03, self.color_accent_04], rock=var_opt, lbl_w=self.lbl_w,
-                  entr_w=self.entr_w, gui_elements=self.gui_elements)
+                  entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
         #
         elif var_opt == "Limestone":
             Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                   color_acc=[self.color_accent_03, self.color_accent_04], rock=var_opt, lbl_w=self.lbl_w,
-                  entr_w=self.entr_w, gui_elements=self.gui_elements)
+                  entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
         elif var_opt == "Dolomite Rock":
             Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                   color_acc=[self.color_accent_03, self.color_accent_04], rock=var_opt, lbl_w=self.lbl_w,
-                  entr_w=self.entr_w, gui_elements=self.gui_elements)
+                  entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
         elif var_opt == "Custom Carbonate Rock":
             Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                   color_acc=[self.color_accent_03, self.color_accent_04], rock=var_opt, lbl_w=self.lbl_w,
-                  entr_w=self.entr_w, gui_elements=self.gui_elements)
+                  entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
         #
         elif var_opt == "Felsic Rock":
             Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                   color_acc=[self.color_accent_03, self.color_accent_04], rock=var_opt, lbl_w=self.lbl_w,
-                  entr_w=self.entr_w, gui_elements=self.gui_elements)
+                  entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
         elif var_opt == "Intermediate Rock":
             Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                   color_acc=[self.color_accent_03, self.color_accent_04], rock=var_opt, lbl_w=self.lbl_w,
-                  entr_w=self.entr_w, gui_elements=self.gui_elements)
+                  entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
         elif var_opt == "Granite":
             Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                   color_acc=[self.color_accent_03, self.color_accent_04], rock=var_opt, lbl_w=self.lbl_w,
-                  entr_w=self.entr_w, gui_elements=self.gui_elements)
+                  entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
         elif var_opt == "Gabbro":
             Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                   color_acc=[self.color_accent_03, self.color_accent_04], rock=var_opt, lbl_w=self.lbl_w,
-                  entr_w=self.entr_w, gui_elements=self.gui_elements)
+                  entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
         elif var_opt == "Diorite":
             Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                   color_acc=[self.color_accent_03, self.color_accent_04], rock=var_opt, lbl_w=self.lbl_w,
-                  entr_w=self.entr_w, gui_elements=self.gui_elements)
+                  entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
         elif var_opt == "Granodiorite":
             Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                   color_acc=[self.color_accent_03, self.color_accent_04], rock=var_opt, lbl_w=self.lbl_w,
-                  entr_w=self.entr_w, gui_elements=self.gui_elements)
+                  entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
         elif var_opt == "Syenite":
             Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                   color_acc=[self.color_accent_03, self.color_accent_04], rock=var_opt, lbl_w=self.lbl_w,
-                  entr_w=self.entr_w, gui_elements=self.gui_elements)
+                  entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
         elif var_opt == "Tonalite":
             Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                   color_acc=[self.color_accent_03, self.color_accent_04], rock=var_opt, lbl_w=self.lbl_w,
-                  entr_w=self.entr_w, gui_elements=self.gui_elements)
+                  entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
         elif var_opt == "Monzonite":
             Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                   color_acc=[self.color_accent_03, self.color_accent_04], rock=var_opt, lbl_w=self.lbl_w,
-                  entr_w=self.entr_w, gui_elements=self.gui_elements)
+                  entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
         elif var_opt == "Quartzolite":
             Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                   color_acc=[self.color_accent_03, self.color_accent_04], rock=var_opt, lbl_w=self.lbl_w,
-                  entr_w=self.entr_w, gui_elements=self.gui_elements)
+                  entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
         elif var_opt == "Qz-rich Granitoid":
             Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                   color_acc=[self.color_accent_03, self.color_accent_04], rock=var_opt, lbl_w=self.lbl_w,
-                  entr_w=self.entr_w, gui_elements=self.gui_elements)
+                  entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
         #
         elif var_opt == "Rock Salt":
             Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                   color_acc=[self.color_accent_03, self.color_accent_04], rock=var_opt, lbl_w=self.lbl_w,
-                  entr_w=self.entr_w, gui_elements=self.gui_elements)
+                  entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
         elif var_opt == "Anhydrite":
             Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                   color_acc=[self.color_accent_03, self.color_accent_04], rock=var_opt, lbl_w=self.lbl_w,
-                  entr_w=self.entr_w, gui_elements=self.gui_elements)
+                  entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
         elif var_opt in ["Kupferschiefer"]:
             Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                   color_acc=[self.color_accent_03, self.color_accent_04], rock=var_opt, lbl_w=self.lbl_w,
-                  entr_w=self.entr_w, gui_elements=self.gui_elements)
+                  entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
         #
         elif var_opt == "Oxides":
             try:
@@ -607,10 +621,65 @@ class GebPyGUI(tk.Frame):
             print(var_rb_mode.get())
         elif var_rb_mode.get() == 2:
             print(var_rb_mode.get())
+    #
+    def export_data(self, var_exp):
+        header = list(var_exp[0].keys())
+        header_bulk = list(var_exp[0].keys())
+        elements = list(var_exp[0]["chemistry"].keys())
+        n_elements = len(elements)
+        header.remove("chemistry")
+        header_bulk.remove("chemistry")
+        if header[0] == "rock":
+            minerals = list(var_exp[0]["mineralogy"].keys())
+            n_minerals = len(minerals)
+            header.remove("mineralogy")
+            header_bulk.remove("mineralogy")
+            header.extend(minerals)
+        else:
+            header.remove("rho_e")
+            header.remove("p")
+            header.remove("U")
+            header_bulk.remove("rho_e")
+            header_bulk.remove("p")
+            header_bulk.remove("U")
+        header.extend(elements)
+        #
+        keys = re.split("\s+", self.filename[0])
+        filename = "../outputs/Report_"
+        for item in keys:
+            filename = filename.__add__(str(item)+"_")
+        filename = filename.__add__(str(self.filename[1]))
+        filename = filename.__add__(".csv")
+        #
+        with open(filename, "w") as export_file:
+            writer = csv.DictWriter(export_file, fieldnames=header)
+            writer.writeheader()
+            #
+            if header[0] == "mineral":
+                for item in var_exp:
+                    row = ""
+                    for bulk_key in header_bulk:
+                        row = row.__add__(str(item[bulk_key])+";")
+                    for element in elements:
+                        row = row.__add__(str(item["chemistry"][element])+";")
+                    #
+                    export_file.write(row+"\n")
+            else:
+                for item in var_exp:
+                    row = ""
+                    for bulk_key in header_bulk:
+                        row = row.__add__(str(item[bulk_key])+";")
+                    for mineral in minerals:
+                        row = row.__add__(str(item["mineralogy"][mineral])+";")
+                    for element in elements:
+                        row = row.__add__(str(item["chemistry"][element])+";")
+                    #
+                    export_file.write(row+"\n")
+        export_file.close()
 #
 class Minerals:
     #
-    def __init__(self, parent, color_bg, color_fg, color_acc, mineral, lbl_w, entr_w, gui_elements):
+    def __init__(self, parent, color_bg, color_fg, color_acc, mineral, lbl_w, entr_w, gui_elements, exp_data, filename):
         #
         try:
             for lbl in lbl_w["physics"]:
@@ -644,6 +713,12 @@ class Minerals:
         except:
             pass
         #
+        try:
+            exp_data.clear()
+            filename.clear()
+        except:
+            pass
+        #
         self.parent_mineral = parent
         self.color_bg = color_bg
         self.color_fg = color_fg
@@ -660,6 +735,9 @@ class Minerals:
         self.lbl_w = lbl_w
         self.entr_w = entr_w
         self.gui_elements = gui_elements
+        self.exp_data = exp_data
+        self.filename = filename
+        self.filename.extend([self.mineral, var_entr_start])
         #
         ## Labels
         #
@@ -1013,6 +1091,7 @@ class Minerals:
             self.color_mineral = "#7C9097"
             #
             data_all.append(data)
+        self.exp_data.extend(data_all)
         #
         if self.var_dict == False:
             elements = np.array(data_all[0][-1])[:, 0]
@@ -1209,51 +1288,6 @@ class Minerals:
         self.canvas.get_tk_widget().grid(row=row_id, column=column_id, rowspan=n_rows, columnspan=n_columns,
                                          sticky="nesw")
     #
-    def create_plot(self, parent, data, row_id, column_id, n_rows, n_columns, xlabel, color):
-        #
-        self.canvas_histo = None
-        self.fig_histo = Figure(facecolor="#E9ECED")
-        self.ax_histo = self.fig_histo.add_subplot()
-        #
-        self.ax_histo.axvline(x=np.mean(data), color="#E76F51", linewidth=3, linestyle="dashed")
-        self.ax_histo.hist(data, bins=15, color=color, edgecolor="black")
-        self.ax_histo.grid(True)
-        self.ax_histo.set_axisbelow(True)
-        self.ax_histo.set_xlabel(xlabel, fontsize="small")
-        self.ax_histo.set_ylabel("Frequency", labelpad=0.5, fontsize="small")
-        self.fig_histo.subplots_adjust(bottom=0.15, left=0.18)
-        #
-        self.canvas_histo = FigureCanvasTkAgg(self.fig_histo, master=parent)
-        self.canvas_histo.get_tk_widget().grid(row=row_id, column=column_id, rowspan=n_rows, columnspan=n_columns,
-                                               sticky="nesw")
-    #
-    def create_scatter_plot(self, parent, data_x, data_y, row_id, column_id, n_rows, n_columns, xlabel, ylabel, color):
-        #
-        self.canvas = None
-        self.fig = Figure(facecolor=self.color_bg)
-        self.ax = self.fig.add_subplot()
-        data_x = np.array(data_x)
-        #
-        if self.var_opt_chem.get() in ["No Selection", "Select Element"]:
-            self.ax.scatter(data_x, data_y, color=color, edgecolor="black", alpha=0.5)
-        else:
-            if self.var_opt_chem.get() in self.list_elements:
-                plot = self.ax.scatter(data_x, data_y, c=self.data_c, cmap="viridis",
-                                       edgecolor="black", alpha=1)
-            cbar = self.fig.colorbar(plot, format="%.0f")
-            cbar.set_label(self.var_opt_chem.get()+" (%)", rotation=90)
-        self.ax.grid(True)
-        self.ax.set_xlim(float(0.99*min(data_x)), float(1.01*max(data_x)))
-        self.ax.set_xticks(np.around(np.linspace(float(0.99*min(data_x)), float(1.01*max(data_x)), 5), 2))
-        self.ax.set_axisbelow(True)
-        self.ax.set_xlabel(xlabel, fontsize="small")
-        self.ax.set_ylabel(ylabel, labelpad=0.5, fontsize="small")
-        self.fig.subplots_adjust(bottom=0.15, left=0.26)
-        #
-        self.canvas = FigureCanvasTkAgg(self.fig, master=parent)
-        self.canvas.get_tk_widget().grid(row=row_id, column=column_id, rowspan=n_rows, columnspan=n_columns,
-                                         sticky="nesw")
-    #
     def enter_samples(self, var_entr, event):
         try:
             for lbl in self.lbl_w["chemistry"]:
@@ -1281,6 +1315,14 @@ class Minerals:
             plt.close("all")
         except:
             pass
+        #
+        try:
+            self.exp_data.clear()
+        except:
+            pass
+        #
+        del self.filename[-1]
+        self.filename.append(var_entr.get())
         #
         data_all = []
         for i in range(var_entr.get()):
@@ -1567,6 +1609,7 @@ class Minerals:
             self.color_mineral = "#7C9097"
             #
             data_all.append(data)
+        self.exp_data.extend(data_all)
         #
         if self.var_dict == False:
             elements = np.array(data_all[0][-1])[:, 0]
@@ -2728,11 +2771,11 @@ class Minerals:
             #
     #
     def __call__(self):
-        return self.lbl_w, self.entr_w
+        return self.lbl_w, self.entr_w, self.exp_data, self.filename
 #
 class Rocks:
     #
-    def __init__(self, parent, color_bg, color_fg, color_acc, rock, lbl_w, entr_w, gui_elements):
+    def __init__(self, parent, color_bg, color_fg, color_acc, rock, lbl_w, entr_w, gui_elements, exp_data, filename):
         #
         try:
             for lbl in lbl_w["physics"]:
@@ -2766,6 +2809,12 @@ class Rocks:
         except:
             pass
         #
+        try:
+            exp_data.clear()
+            filename.clear()
+        except:
+            pass
+        #
         self.parent_rock = parent
         self.color_bg = color_bg
         self.color_fg = color_fg
@@ -2787,6 +2836,9 @@ class Rocks:
         self.lbl_chem = []
         self.entr_chem = []
         self.gui_elements = gui_elements
+        self.exp_data = exp_data
+        self.filename = filename
+        self.filename.extend([self.rock, var_entr_start])
         #
         ## Labels
         #
@@ -2924,6 +2976,7 @@ class Rocks:
                     data = Ores(fluid="water", actualThickness=0, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100), data_type=True).create_kupferschiefer()
                 #
                 data_all.append(data)
+            self.exp_data.extend(data_all)
             #
             if isinstance(data_all[0], dict):
                 self.rho = DP(dataset=data_all).extract_data(keyword="rho")
@@ -3197,6 +3250,9 @@ class Rocks:
         except:
             pass
         #
+        del self.filename[-1]
+        self.filename.append(var_entr.get())
+        #
         self.var_rb_geochem.set(2)
         lbl = SE(parent=self.parent_rock, row_id=24, column_id=3, n_columns=5, bg=self.color_bg,
                fg="black").create_label(text="Chemical composition (weight amounts %)", relief=tk.RAISED)
@@ -3252,6 +3308,7 @@ class Rocks:
                 data = Ores(fluid="water", actualThickness=0, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100), data_type=True).create_kupferschiefer()
             #
             data_all.append(data)
+        self.exp_data.extend(data_all)
         #
         if isinstance(data_all[0], dict):
             self.rho = DP(dataset=data_all).extract_data(keyword="rho")
@@ -3632,8 +3689,8 @@ class Rocks:
                                     column_id=9, n_rows=45, n_columns=9, color=self.color_rock, labels=self.labels,
                                     xlabel=xlabel)
     #
-    def __call__(self):
-        return self.lbl_w, self.entr_w
+    #def __call__(self):
+    #    return self.lbl_w, self.entr_w
     #
     def create_custom_rock(self):
         ## Variables
@@ -3843,6 +3900,9 @@ class Rocks:
     #
     def marked_checkbox(self, var_cb):
         print(var_cb.get())
+    #
+    def __call__(self):
+        return self.lbl_w, self.entr_w, self.exp_data, self.filename
 #
 class Subsurface:
     #
