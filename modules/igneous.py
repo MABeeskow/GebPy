@@ -6,7 +6,7 @@
 # Name:		igneous.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		12.01.2021
+# Date:		14.01.2021
 
 #-----------------------------------------------
 
@@ -18,6 +18,8 @@ import random as rd
 from modules import minerals, geochemistry, oxides
 from modules import fluids
 from modules.geophysics import Elasticity as elast
+from modules.oxides import Oxides
+from modules.silicates import Tectosilicates, Phyllosilicates, Inosilicates
 
 class plutonic:
     #
@@ -116,6 +118,8 @@ class Plutonic:
         self.actualThickness = actualThickness
         self.dict_output = dict_output
         self.porosity = porosity
+        #
+        self.data_qz = Oxides(impurity="pure", data_type=True).create_quartz()
     #
     def create_felsic(self, w_Na=None, w_Mg=None, w_K=None, w_Ca=None, w_Fe = None, amounts=None):
         #
@@ -310,31 +314,36 @@ class Plutonic:
             #
             return results
     #
-    def create_intermediate(self, w_Na=None, w_Mg=None, w_K=None, w_Ca=None, w_Fe = None, amounts=None):
+    def create_intermediate(self, amounts=None):
         #
-        self.w_Na = w_Na
-        self.w_Mg = w_Mg
-        self.w_K = w_K
-        self.w_Ca = w_Ca
-        self.w_Fe = w_Fe
         self.amounts = amounts
         #
+        results = {}
+        results["rock"] = "Intermediate Rock"
+        #
         # Mineralogy + Fluids
-        quartz = minerals.oxides.quartz("")
-        alkalifeldspar = minerals.feldspars.alkalifeldspar(self, "K")
-        plagioclase = minerals.feldspars.plagioclase(self, "Ca")
-        biotite = minerals.Biotites.biotite_group(self, "Biotite")
-        amphibole = minerals.inosilicates.amphibole_ca("")
-        pyroxene = minerals.inosilicates.pyroxene_ca("")
-        mineralogy = [quartz, alkalifeldspar, plagioclase, biotite, amphibole, pyroxene]
+        data_kfs = Tectosilicates(impurity="pure", data_type=True).create_alkalifeldspar()
+        data_pl = Tectosilicates(impurity="pure", data_type=True).create_plagioclase()
+        data_bt = Phyllosilicates(impurity="pure", data_type=True).create_biotite()
+        data_amph = Inosilicates(impurity="pure", data_type=True).create_calcium_amphibole()
+        data_px = Inosilicates(impurity="pure", data_type=True).create_calium_pyroxene()
+        #
+        minerals_list = [self.data_qz, data_kfs, data_pl, data_bt, data_amph, data_px]
         water = fluids.Water.water("")
+        #
+        elements_list = []
+        for mineral in minerals_list:
+            elements_mineral = list(mineral["chemistry"].keys())
+            for element in elements_mineral:
+                if element not in elements_list:
+                    elements_list.append(element)
+        elements_list.sort()
         #
         data = []
         #
         cond = False
-        composition = []
         while cond == False:
-            if self.w_Na == None and self.w_Mg == None and self.w_K == None and self.w_Ca == None and self.w_Fe == None and self.amounts == None:
+            if self.amounts == None:
                 x = rd.uniform(0.0, 1.0)
                 phi_qz = round(abs(100 - (17.97*x**3 - 32.67*x**2 + 26.71*x + 91 - 3*x))/100, 4)
                 phi_kfs = round(abs(17.97*x**3 - 32.67*x**2 + 26.71*x + 91 - 3*x - (121.55*x**5 - 358.74*x**4 + 402.63*x**3 - 224.97*x**2 + 77.15*x + 81.5))/100, 4)
@@ -342,53 +351,13 @@ class Plutonic:
                 phi_bt = round(abs(9.48*x**3 - 14.12*x**2 + 30.33*x + 31 - (-274.33*x**5 + 771.98*x**4 - 755.27*x**3 + 275.7*x**2 + 17.43*x + 20.9))/100, 4)
                 phi_amph = round(abs(-274.33*x**5 + 771.98*x**4 - 755.27*x**3 + 275.7*x**2 + 17.43*x + 20.9 - (-2.07*x**3 + 30.77*x**2 + 0.5*x))/100, 4)
                 phi_pyx = round(abs(-2.07*x**3 + 30.77*x**2 + 0.5*x)/100, 4)
-                m_total = phi_qz*quartz[2] + phi_kfs*alkalifeldspar[2] + phi_pl*plagioclase[2] + phi_bt*biotite[2] + phi_amph*amphibole[2] + phi_pyx*pyroxene[2]
-                w_qz = round(phi_qz*quartz[2]/m_total, 4)
-                w_kfs = round(phi_kfs*alkalifeldspar[2]/m_total, 4)
-                w_pl = round(phi_pl*plagioclase[2]/m_total, 4)
-                w_bt = round(phi_bt*biotite[2]/m_total, 4)
-                w_amph = round(phi_amph*amphibole[2]/m_total, 4)
-                w_pyx = round(phi_pyx*pyroxene[2]/m_total, 4)
-            elif self.w_Na != None:
-                x = rd.uniform(0.0, 1.0)
-                w_kfs = round(abs(17.97*x**3 - 32.67*x**2 + 26.71*x + 91 - 3*x - (121.55*x**5 - 358.74*x**4 + 402.63*x**3 - 224.97*x**2 + 77.15*x + 81.5))/100, 4)
-                w_pl = round((self.w_Na - w_kfs*alkalifeldspar[6][1])/(plagioclase[6][1]), 4)
-                w_qz = round(abs(100 - (17.97*x**3 - 32.67*x**2 + 26.71*x + 91 - 3*x))/100, 4)
-                w_bt = round(abs(9.48*x**3 - 14.12*x**2 + 30.33*x + 31 - (-274.33*x**5 + 771.98*x**4 - 755.27*x**3 + 275.7*x**2 + 17.43*x + 20.9))/100, 4)
-                w_amph = round(abs(-274.33*x**5 + 771.98*x**4 - 755.27*x**3 + 275.7*x**2 + 17.43*x + 20.9 - (-2.07*x**3 + 30.77*x**2 + 0.5*x))/100, 4)
-                w_pyx = round(1-w_qz-w_kfs-w_pl-w_bt-w_amph, 4)
-            elif self.w_Mg != None:
-                x = rd.uniform(0.0, 1.0)
-                w_bt = round(abs(9.48*x**3 - 14.12*x**2 + 30.33*x + 31 - (-274.33*x**5 + 771.98*x**4 - 755.27*x**3 + 275.7*x**2 + 17.43*x + 20.9))/100, 4)
-                w_pyx = round(abs(-2.07*x**3 + 30.77*x**2 + 0.5*x)/100, 4)
-                w_amph = round((self.w_Mg - w_bt*biotite[6][3] - w_pyx*pyroxene[6][1])/(amphibole[6][2]), 4)
-                w_qz = round(abs(100 - (17.97*x**3 - 32.67*x**2 + 26.71*x + 91 - 3*x))/100, 4)
-                w_kfs = round(abs(17.97*x**3 - 32.67*x**2 + 26.71*x + 91 - 3*x - (121.55*x**5 - 358.74*x**4 + 402.63*x**3 - 224.97*x**2 + 77.15*x + 81.5))/100, 4)
-                w_pl = round(1-w_bt-w_pyx-w_amph-w_qz-w_kfs, 4)
-            elif self.w_K != None:
-                x = rd.uniform(0.0, 1.0)
-                w_kfs = round(abs(17.97*x**3 - 32.67*x**2 + 26.71*x + 91 - 3*x - (121.55*x**5 - 358.74*x**4 + 402.63*x**3 - 224.97*x**2 + 77.15*x + 81.5))/100, 4)
-                w_bt = round((self.w_K - w_kfs*alkalifeldspar[6][3])/(biotite[6][6]), 4)
-                w_qz = round(abs(100 - (17.97*x**3 - 32.67*x**2 + 26.71*x + 91 - 3*x))/100, 4)
-                w_pl = round(abs(121.55*x**5 - 358.74*x**4 + 402.63*x**3 - 224.97*x**2 + 77.15*x + 81.5 - (9.48*x**3 - 14.12*x**2 + 30.33*x + 31))/100, 4)
-                w_amph = round(abs(-274.33*x**5 + 771.98*x**4 - 755.27*x**3 + 275.7*x**2 + 17.43*x + 20.9 - (-2.07*x**3 + 30.77*x**2 + 0.5*x))/100, 4)
-                w_pyx = round(1-w_kfs-w_bt-w_qz-w_pl-w_amph, 4)
-            elif self.w_Ca != None:
-                x = rd.uniform(0.0, 1.0)
-                w_amph = round(abs(-274.33*x**5 + 771.98*x**4 - 755.27*x**3 + 275.7*x**2 + 17.43*x + 20.9 - (-2.07*x**3 + 30.77*x**2 + 0.5*x))/100, 4)
-                w_pyx = round(abs(-2.07*x**3 + 30.77*x**2 + 0.5*x)/100, 4)
-                w_pl = round((self.w_Ca - w_amph*amphibole[6][4] - w_pyx*pyroxene[6][3])/(plagioclase[6][4]), 4)
-                w_qz = round(abs(100 - (17.97*x**3 - 32.67*x**2 + 26.71*x + 91 - 3*x))/100, 4)
-                w_kfs = round(abs(17.97*x**3 - 32.67*x**2 + 26.71*x + 91 - 3*x - (121.55*x**5 - 358.74*x**4 + 402.63*x**3 - 224.97*x**2 + 77.15*x + 81.5))/100, 4)
-                w_bt = round(1-w_amph-w_pyx-w_pl-w_qz-w_kfs, 4)
-            elif self.w_Fe != None:
-                x = rd.uniform(0.0, 1.0)
-                w_bt = round(abs(9.48*x**3 - 14.12*x**2 + 30.33*x + 31 - (-274.33*x**5 + 771.98*x**4 - 755.27*x**3 + 275.7*x**2 + 17.43*x + 20.9))/100, 4)
-                w_pyx = round(abs(-2.07*x**3 + 30.77*x**2 + 0.5*x)/100, 4)
-                w_amph = round((self.w_Fe - w_bt*biotite[6][7] - w_pyx*pyroxene[6][4])/(amphibole[6][5]), 4)
-                w_qz = round(abs(100 - (17.97*x**3 - 32.67*x**2 + 26.71*x + 91 - 3*x))/100, 4)
-                w_kfs = round(abs(17.97*x**3 - 32.67*x**2 + 26.71*x + 91 - 3*x - (121.55*x**5 - 358.74*x**4 + 402.63*x**3 - 224.97*x**2 + 77.15*x + 81.5))/100, 4)
-                w_pl = round(1-w_bt-w_pyx-w_amph-w_qz-w_kfs, 4)
+                m_total = phi_qz*self.data_qz["rho"] + phi_kfs*data_kfs["rho"] + phi_pl*data_pl["rho"] + phi_bt*data_bt["rho"] + phi_amph*data_amph["rho"] + phi_pyx*data_px["rho"]
+                w_qz = round(phi_qz*self.data_qz["rho"]/m_total, 4)
+                w_kfs = round(phi_kfs*data_kfs["rho"]/m_total, 4)
+                w_pl = round(phi_pl*data_pl["rho"]/m_total, 4)
+                w_bt = round(phi_bt*data_bt["rho"]/m_total, 4)
+                w_amph = round(phi_amph*data_amph["rho"]/m_total, 4)
+                w_pyx = round(phi_pyx*data_px["rho"]/m_total, 4)
             elif type(self.amounts) is list:
                 w_qz = round(abs(np.random.normal(self.amounts[0], 0.00025)), 4)
                 w_kfs = round(abs(np.random.normal(self.amounts[1], 0.0025)), 4)
@@ -397,54 +366,55 @@ class Plutonic:
                 w_amph = round(abs(np.random.normal(self.amounts[4], 0.0025)), 4)
                 w_pyx = round(1-w_qz-w_kfs-w_pl-w_bt-w_amph, 4)
             #
-            #print(w_qz, w_kfs, w_pl, w_bt, w_amph, w_pyx)
             if w_qz >= 0.0 and w_kfs >= 0.0 and w_pl >= 0.0 and w_bt >= 0.0 and w_amph >= 0.0 and w_pyx >= 0.0:
                 sumMin = round(w_qz + w_kfs + w_pl + w_bt + w_amph + w_pyx, 4)
             else:
                 sumMin = 0
             #
-            w_H = round(w_bt*biotite[6][0] + w_amph*amphibole[6][0], 4)
-            #w_O = round(w_qz*quartz[6][0] + w_kfs*alkalifeldspar[6][0] + w_pl*plagioclase[6][0] + w_bt*biotite[6][1] + w_amph*amphibole[6][1] + w_pyx*pyroxene[6][1], 4)
-            w_F = round(w_bt*biotite[6][2], 4)
-            w_Na = round(w_kfs*alkalifeldspar[6][1] + w_pl*plagioclase[6][1], 4)
-            w_Mg = round(w_bt*biotite[6][3] + w_amph*amphibole[6][2] + w_pyx*pyroxene[6][1], 4)
-            w_Al = round(w_kfs*alkalifeldspar[6][2] + w_pl*plagioclase[6][2] + w_bt*biotite[6][4], 4)
-            w_Si = round(w_qz*quartz[6][1] + w_kfs*alkalifeldspar[6][3] + w_pl*plagioclase[6][3] + w_bt*biotite[6][5] + w_amph*amphibole[6][3] + w_pyx*pyroxene[6][2], 4)
-            w_K = round(w_kfs*alkalifeldspar[6][4] + w_bt*biotite[6][6], 4)
-            w_Ca = round(w_pl*plagioclase[6][4] + w_amph*amphibole[6][4] + w_pyx*pyroxene[6][3], 4)
-            w_Fe = round(w_bt*biotite[6][7] + w_amph*amphibole[6][5] + w_pyx*pyroxene[6][4], 4)
-            w_O = round(1 - w_H - w_F - w_Na - w_Mg - w_Al - w_Si - w_K - w_Ca - w_Fe, 4)
-            sumConc = round(w_H + w_O + w_F + w_Na + w_Mg + w_Al + w_Si + w_K + w_Ca + w_Fe, 4)
-            #print("Amount:", sumMin, "C:", sumConc)
+            mineral_amounts = {}
+            mineral_amounts["Qz"] = w_qz
+            mineral_amounts["Kfs"] = w_kfs
+            mineral_amounts["Pl"] = w_pl
+            mineral_amounts["Bt"] = w_bt
+            mineral_amounts["Amph"] = w_amph
+            mineral_amounts["Px"] = w_pyx
             #
-            if sumMin == 1 and sumConc == 1:
-                composition.extend((["Qz", "Kfs", "Pl", "Bt", "Amph", "Pyx"]))
-                concentrations = [w_H, w_O, w_F, w_Na, w_Mg, w_Al, w_Si, w_K, w_Ca, w_Fe]
-                amounts = [w_qz, w_kfs, w_pl, w_bt, w_amph, w_pyx]
-                phi_V = geochemistry.Fractions.calculate_volume_fraction(self, mineralogy=mineralogy, w=amounts)
-                #print(np.around(phi_V[:3], 4))
-                if 0.0 <= phi_V[0] <= 0.2 and 0.0 <= phi_V[1] <= 0.35 and 0.52 <= phi_V[2] <= 1.0:
-                    cond = True
-                else:
-                    composition = []
-                    cond = False
-                #cond = True
+            element_amounts = {}
+            w_O = 1
+            w_sum = 0
+            for element in elements_list:
+                if element != "O":
+                    element_amounts[element] = 0
+                    for mineral in minerals_list:
+                        if element in mineral["chemistry"]:
+                            element_amounts[element] += round(mineral["chemistry"][element]*mineral_amounts[mineral["mineral"]], 4)
+                    element_amounts[element] = round(element_amounts[element], 4)
+                    w_sum += element_amounts[element]
+                    w_O -= element_amounts[element]
+            element_amounts["O"] = round(w_O, 4)
+            w_sum += element_amounts["O"]
+            if sumMin == 1 and w_sum == 1:
+                cond = True
             else:
                 cond = False
-        data.append(composition)
         #
-        rhoSolid = (w_qz*quartz[2] + w_kfs*alkalifeldspar[2] + w_pl*plagioclase[2] + w_bt*biotite[2] + w_amph*amphibole[2] + w_pyx*pyroxene[2]) / 1000
+        results["mineralogy"] = mineral_amounts
+        results["chemistry"] = element_amounts
+        #
+        rhoSolid = 0
+        K_list = []
+        G_list = []
+        for mineral in minerals_list:
+            rhoSolid += mineral["rho"]*mineral_amounts[mineral["mineral"]]/1000
+            K_list.append(round(mineral["K"]*mineral_amounts[mineral["mineral"]], 3))
+            G_list.append(round(mineral["G"]*mineral_amounts[mineral["mineral"]], 3))
         X = [w_qz, w_kfs, w_pl, w_bt, w_amph, w_pyx]
-        K_list = [mineralogy[i][3][0] for i in range(len(mineralogy))]
-        G_list = [mineralogy[i][3][1] for i in range(len(mineralogy))]
         K_geo = elast.calc_geometric_mean(self, X, K_list)
         G_geo = elast.calc_geometric_mean(self, X, G_list)
         K_solid = K_geo
         G_solid = G_geo
-        vP_solid = 0.85*np.sqrt((K_solid*10**9+4/3*G_solid*10**9)/(rhoSolid*10**3))
-        vS_solid = 0.85*np.sqrt((G_solid*10**9)/(rhoSolid*10**3))
-        E_solid = (9*K_solid*G_solid)/(3*K_solid+G_solid)
-        nu_solid = (3*K_solid-2*G_solid)/(2*(3*K_solid+G_solid))
+        vP_solid = np.sqrt((K_solid*10**9+4/3*G_solid*10**9)/(rhoSolid*10**3))
+        vS_solid = np.sqrt((G_solid*10**9)/(rhoSolid*10**3))
         #
         if self.porosity == None:
             if self.actualThickness <= 1000:
@@ -459,55 +429,45 @@ class Plutonic:
                 phi = rd.uniform(0.0, 0.025)
         else:
             phi = self.porosity
+        phi = round(phi, 4)
+        results["phi"] = phi
+        results["fluid"] = self.fluid
         #
-        rho = (1 - phi) * rhoSolid + phi * water[2] / 1000
-        vP = (1-phi)*vP_solid + phi*water[4][0]
-        vS = (1 - phi) * vS_solid
+        rho = (1 - phi)*rhoSolid + phi*water[2]/1000
+        vP = (1 - phi)*vP_solid + phi*water[4][0]
+        vS = (1 - phi)*vS_solid
+        #
         G_bulk = vS**2 * rho
         K_bulk = vP**2 * rho - 4/3*G_bulk
         E_bulk = (9*K_bulk*G_bulk)/(3*K_bulk+G_bulk)
         phiD = (rhoSolid - rho) / (rhoSolid - water[2] / 1000)
         phiN = (2 * phi ** 2 - phiD ** 2) ** (0.5)
-        GR = w_qz*quartz[5][0] + w_kfs*alkalifeldspar[5][0] + w_pl*plagioclase[5][0] + w_bt*biotite[5][0] + w_amph*amphibole[5][0] + w_pyx*pyroxene[5][0]
-        PE = w_qz*quartz[5][1] + w_kfs*alkalifeldspar[5][1] + w_pl*plagioclase[5][1] + w_bt*biotite[5][1] + w_amph*amphibole[5][1] + w_pyx*pyroxene[5][1]
-        poisson_seismic = 0.5*(vP**2 - 2*vS**2)/(vP**2 - vS**2)
-        poisson_elastic = (3*K_bulk - 2*G_bulk)/(6*K_bulk + 2*G_bulk)
-        poisson_mineralogical = w_qz*quartz[3][3] + w_kfs*alkalifeldspar[3][3] + w_pl*plagioclase[3][3] + w_bt*biotite[3][3] + w_amph*amphibole[3][3] + w_pyx*pyroxene[3][3]
+        #
+        GR = 0
+        PE = 0
+        poisson_mineralogical = 0
+        for mineral in minerals_list:
+            GR += mineral["GR"]*mineral_amounts[mineral["mineral"]]
+            PE += mineral["PE"]*mineral_amounts[mineral["mineral"]]
+            poisson_mineralogical += mineral["nu"]*mineral_amounts[mineral["mineral"]]
         #
         if self.dict_output == False:
-            data.append([round(rho, 3), round(rhoSolid, 3), round(water[2] / 1000, 6)])
+            data.append([round(rho, 3), round(rhoSolid, 3), round(water[2] / 1000, 3)])
             data.append([round(K_bulk*10**(-6), 2), round(G_bulk*10**(-6), 2), round(E_bulk*10**(-6), 2), round(poisson_mineralogical, 3)])
             data.append([round(vP, 2), round(vS, 2), round(vP_solid, 2), round(water[4][0], 2)])
             data.append([round(phi, 3), round(phiD, 3), round(phiN, 3)])
-            data.append("water")
+            data.append(self.fluid)
             data.append([round(GR, 3), round(PE, 3)])
-            data.append(concentrations)
             data.append(amounts)
             #
             return data
         else:
-            results = {}
-            results["rock"] = "Intermediate Rock"
-            #
-            element_list = ["H", "O", "F", "Na", "Mg", "Al", "Si", "K", "Ca", "Fe"]
-            mineral_list = ["Qz", "Kfs", "Pl", "Bt", "Ms", "Amph"]
-            data.append(composition)
-            results["chemistry"] = {}
-            results["mineralogy"] = {}
-            for index, element in enumerate(element_list, start=0):
-                results["chemistry"][element] = concentrations[index]
-            for index, mineral in enumerate(mineral_list, start=0):
-                results["mineralogy"][mineral] = amounts[index]
-            #
-            results["phi"] = round(phi, 4)
-            results["fluid"] = self.fluid
-            #
             results["rho"] = round(rho*1000, 4)
             results["vP"] = round(vP, 4)
             results["vS"] = round(vS, 4)
             results["vP/vS"] = round(vP/vS, 4)
-            results["G"] = round(G_bulk*10**(-6), 4)
             results["K"] = round(K_bulk*10**(-6), 4)
+            results["G"] = round(G_bulk*10**(-6), 4)
             results["E"] = round(E_bulk*10**(-6), 4)
             results["nu"] = round(poisson_mineralogical, 4)
             results["GR"] = round(GR, 4)
