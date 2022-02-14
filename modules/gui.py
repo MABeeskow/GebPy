@@ -177,7 +177,7 @@ class GebPyGUI(tk.Frame):
         elif var_btn == "custom rock":
             Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                   color_acc=[self.color_accent_03, self.color_accent_04], rock="Custom", lbl_w=self.lbl_w,
-                  entr_w=self.entr_w, gui_elements=self.gui_elements)
+                  entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
         elif var_btn == "export data":
             self.export_data(var_exp=self.exp_data)
         else:
