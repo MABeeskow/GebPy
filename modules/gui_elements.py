@@ -44,9 +44,12 @@ class SimpleElements:
         #
         return opt_menu
     #
-    def create_entry(self, var_entr, var_entr_set, command=None):
+    def create_entry(self, var_entr, var_entr_set, width=None, command=None):
         var_entr.set(var_entr_set)
-        entry = tk.Entry(self.parent, textvariable=var_entr, background=self.bg, highlightthickness=0)
+        if width == None:
+            entry = tk.Entry(self.parent, textvariable=var_entr, background=self.bg, highlightthickness=0)
+        else:
+            entry = tk.Entry(self.parent, textvariable=var_entr, background=self.bg, highlightthickness=0, width=width)
         entry.grid(row=self.row_id, column=self.column_id, rowspan=self.n_rows, columnspan=self.n_columns,
                    sticky="nesw")
         if command != None:

@@ -69,6 +69,7 @@ class GebPyGUI(tk.Frame):
         self.entr_w = {}
         self.entr_w["physics"] = []
         self.entr_w["chemistry"] = []
+        self.entr_w["custom"] = {}
         self.gui_elements = []
         #
         self.exp_data = []
@@ -773,15 +774,15 @@ class Minerals:
            fg="black").create_label(text="Number of samples", relief=tk.RAISED)
         #
         lbl_12 = SE(parent=self.parent_mineral, row_id=24, column_id=3, n_columns=5, bg=self.color_bg,
-                 fg="black").create_label(text="Chemical composition (weight amounts %)", relief=tk.RAISED)
+                    fg="black").create_label(text="Chemical composition (weight amounts %)", relief=tk.RAISED)
         #
         self.lbl_w["physics"].extend([lbl_01, lbl_02, lbl_03, lbl_04, lbl_05, lbl_06, lbl_07, lbl_08, lbl_09, lbl_10,
                                       lbl_11, lbl_12])
         #
         ## Entry
         entr_01 = SE(parent=self.parent_mineral, row_id=29, column_id=1, bg=self.color_acc_02,
-           fg=color_fg).create_entry(var_entr=self.var_entr, var_entr_set=var_entr_start,
-                                     command=lambda event, var_entr=self.var_entr: self.enter_samples(var_entr, event))
+                     fg=color_fg).create_entry(var_entr=self.var_entr, var_entr_set=var_entr_start,
+                                               command=lambda event, var_entr=self.var_entr: self.enter_samples(var_entr, event))
         self.entr_w["physics"].append(entr_01)
         #
         ## Radiobuttons
@@ -1210,6 +1211,7 @@ class Minerals:
                 entr_std = SE(parent=self.parent_mineral, row_id=4+2*i, column_id=7, n_rows=2, bg=self.color_bg,
                    fg=self.color_fg).create_entry(var_entr=self.entr_list_std[i],
                                              var_entr_set=round(np.std(self.results[i], ddof=1), 3))
+                self.entr_w["physics"].extend([entr_min, entr_max, entr_mean, entr_std])
             elif i >= 10:
                 entr_min = SE(parent=self.parent_mineral, row_id=15+i, column_id=4, n_rows=1, bg=self.color_bg,
                               fg=self.color_fg).create_entry(var_entr=self.entr_list_min[i],
@@ -1728,6 +1730,7 @@ class Minerals:
                 entr_std = SE(parent=self.parent_mineral, row_id=4+2*i, column_id=7, n_rows=2, bg=self.color_bg,
                    fg=self.color_fg).create_entry(var_entr=self.entr_list_std[i],
                                              var_entr_set=round(np.std(self.results[i], ddof=1), 3))
+                self.entr_w["physics"].extend([entr_min, entr_max, entr_mean, entr_std])
             elif i >= 10:
                 entr_min = SE(parent=self.parent_mineral, row_id=15+i, column_id=4, n_rows=1, bg=self.color_bg,
                               fg=self.color_fg).create_entry(var_entr=self.entr_list_min[i],
@@ -3693,6 +3696,47 @@ class Rocks:
     #    return self.lbl_w, self.entr_w
     #
     def create_custom_rock(self):
+        #
+        try:
+            for lbl in self.lbl_w["chemistry"]:
+                lbl.grid_forget()
+            for entr in self.entr_w["chemistry"]:
+                entr.grid_forget()
+            self.lbl_w["chemistry"].clear()
+            self.entr_w["chemistry"].clear()
+            for lbl in self.lbl_w["physics"]:
+                lbl.grid_forget()
+            for entr in self.entr_w["physics"]:
+                entr.grid_forget()
+            self.lbl_w["physics"].clear()
+            self.entr_w["physics"].clear()
+        except:
+            pass
+        #
+        try:
+            self.fig.clf()
+            self.ax.cla()
+            self.canvas.get_tk_widget().pack_forget()
+        except AttributeError:
+            pass
+        #
+        try:
+            if self.canvas:
+                self.canvas.destroy()
+        except AttributeError:
+            pass
+        #
+        try:
+            plt.close("all")
+        except:
+            pass
+        #
+        try:
+            self.exp_data.clear()
+            self.filename.clear()
+        except:
+            pass
+        #
         ## Variables
         self.custom_mineralogy = {}
         self.custom_porosities = {}
@@ -3720,32 +3764,52 @@ class Rocks:
             #
             self.window_custom_mineralogy = tk.Toplevel(self.parent_rock)
             self.window_custom_mineralogy.title("GebPy")
-            self.window_custom_mineralogy.geometry("1200x960")
+            self.window_custom_mineralogy.geometry("1400x960")
             self.window_custom_mineralogy.resizable(False, False)
             self.window_custom_mineralogy["bg"] = self.color_menu
             #
             self.var_custom_mineralogy = {}
             self.var_custom_mineralogy["checkbox"] = {}
+            self.gui_custom_rock = {}
+            list_mineral_classes = ["Oxides", "Carbonates", "Sulfates", "Sulfides", "Tectosilicates", "Phyllosilicates",
+                                    "Nesosilicates", "Inosilicates", "Sorosilicates"]
+            for mineral_class in list_mineral_classes:
+                self.gui_custom_rock[mineral_class] = {}
+                self.gui_custom_rock[mineral_class]["start line"] = 0
+                self.gui_custom_rock[mineral_class]["end line"] = 0
+                self.gui_custom_rock[mineral_class]["labels"] = []
+                self.gui_custom_rock[mineral_class]["entries"] = []
             #
             ## LABELS
             # Oxides
-            lbl_oxides = SE(parent=self.window_custom_mineralogy, row_id=0, column_id=0, n_columns=4,
+            lbl_title = SE(parent=self.window_custom_mineralogy, row_id=0, column_id=0, n_columns=4,
                             bg=self.color_accent_01, fg=self.color_fg_dark).create_label(text="Oxides", relief=tk.RAISED)
             lbl_name = SE(parent=self.window_custom_mineralogy, row_id=1, column_id=0, bg=self.color_accent_01,
                             fg=self.color_fg_dark).create_label(text="Name", relief=tk.RAISED)
-            lbl_name = SE(parent=self.window_custom_mineralogy, row_id=1, column_id=1, bg=self.color_accent_01,
+            lbl_part = SE(parent=self.window_custom_mineralogy, row_id=1, column_id=1, bg=self.color_accent_01,
                             fg=self.color_fg_dark).create_label(text="Part", relief=tk.RAISED)
-            lbl_name = SE(parent=self.window_custom_mineralogy, row_id=1, column_id=2, bg=self.color_accent_01,
+            lbl_min = SE(parent=self.window_custom_mineralogy, row_id=1, column_id=2, bg=self.color_accent_01,
                             fg=self.color_fg_dark).create_label(text="Min", relief=tk.RAISED)
-            lbl_name = SE(parent=self.window_custom_mineralogy, row_id=1, column_id=3, bg=self.color_accent_01,
+            lbl_max = SE(parent=self.window_custom_mineralogy, row_id=1, column_id=3, bg=self.color_accent_01,
                             fg=self.color_fg_dark).create_label(text="Max", relief=tk.RAISED)
-            list_oxides = ["Quartz", "Magnetite", "Hematite", "Corundum", "Ilmenite", "Rutile", "Pyrolusite", "Cassiterite", "Spinel", "Chromite"]
+            self.gui_custom_rock["Oxides"]["labels"].extend([lbl_title, lbl_name, lbl_part, lbl_min, lbl_max])
+            list_oxides = ["Quartz", "Magnetite", "Hematite", "Corundum", "Ilmenite", "Rutile", "Pyrolusite",
+                           "Cassiterite", "Spinel", "Chromite"]
+            self.gui_custom_rock["Oxides"]["start line"] = 2
+            self.gui_custom_rock["Oxides"]["end line"] = 2 + len(list_oxides) - 1
             for index, oxide in enumerate(list_oxides, start=0):
-                lbl = SE(parent=self.window_custom_mineralogy, row_id=2+index, column_id=0, bg=self.color_accent_02,
-                         fg=self.color_fg_dark).create_label(text=oxide, relief=tk.RAISED)
+                lbl = SE(parent=self.window_custom_mineralogy, row_id=self.gui_custom_rock["Oxides"]["start line"]+index,
+                         column_id=0, bg=self.color_accent_02, fg=self.color_fg_dark).create_label(text=oxide, relief=tk.RAISED)
                 self.var_custom_mineralogy["checkbox"][oxide] = tk.IntVar()
-                cb = SE(parent=self.window_custom_mineralogy, row_id=2+index, column_id=1, bg=self.color_accent_02,
-                         fg=self.color_fg_dark).create_checkbox(text="", var_cb=self.var_custom_mineralogy["checkbox"][oxide])
+                cb = SE(parent=self.window_custom_mineralogy, row_id=self.gui_custom_rock["Oxides"]["start line"]+index,
+                        column_id=1, bg=self.color_accent_02, fg=self.color_fg_dark).create_checkbox(text="", var_cb=self.var_custom_mineralogy["checkbox"][oxide])
+                self.entr_w["custom"][oxide] = [tk.StringVar(), tk.StringVar()]
+                entr = SE(parent=self.window_custom_mineralogy, row_id=self.gui_custom_rock["Oxides"]["start line"]+index,
+                          column_id=2, bg=self.color_accent_02, fg=self.color_fg_dark).create_entry(var_entr=self.entr_w["custom"][oxide][0],
+                                                                                                    var_entr_set=0.0, width=5)
+                entr = SE(parent=self.window_custom_mineralogy, row_id=self.gui_custom_rock["Oxides"]["start line"]+index,
+                          column_id=3, bg=self.color_accent_02, fg=self.color_fg_dark).create_entry(var_entr=self.entr_w["custom"][oxide][1],
+                                                                                                    var_entr_set=1.0, width=5)
             # Tectosilicates
             lbl_tectosilicates = SE(parent=self.window_custom_mineralogy, row_id=0, column_id=4, n_columns=4,
                             bg=self.color_accent_01, fg=self.color_fg_dark).create_label(text="Tectosilicates", relief=tk.RAISED)
@@ -3764,6 +3828,13 @@ class Rocks:
                 self.var_custom_mineralogy["checkbox"][tectosilicate] = tk.IntVar()
                 cb = SE(parent=self.window_custom_mineralogy, row_id=2+index, column_id=5, bg=self.color_accent_02,
                          fg=self.color_fg_dark).create_checkbox(text="", var_cb=self.var_custom_mineralogy["checkbox"][tectosilicate])
+                self.entr_w["custom"][tectosilicate] = [tk.StringVar(), tk.StringVar()]
+                entr = SE(parent=self.window_custom_mineralogy, row_id=2+index, column_id=6, bg=self.color_accent_02,
+                          fg=self.color_fg_dark).create_entry(var_entr=self.entr_w["custom"][tectosilicate][0],
+                                                              var_entr_set=0.0, width=5)
+                entr = SE(parent=self.window_custom_mineralogy, row_id=2+index, column_id=7, bg=self.color_accent_02,
+                          fg=self.color_fg_dark).create_entry(var_entr=self.entr_w["custom"][tectosilicate][1],
+                                                              var_entr_set=1.0, width=5)
             # Phyllosilicates
             lbl_phyllosilicates = SE(parent=self.window_custom_mineralogy, row_id=0, column_id=8, n_columns=4,
                             bg=self.color_accent_01, fg=self.color_fg_dark).create_label(text="Phyllosilicates", relief=tk.RAISED)
@@ -3782,6 +3853,13 @@ class Rocks:
                 self.var_custom_mineralogy["checkbox"][phyllosilicate] = tk.IntVar()
                 cb = SE(parent=self.window_custom_mineralogy, row_id=2+index, column_id=9, bg=self.color_accent_02,
                          fg=self.color_fg_dark).create_checkbox(text="", var_cb=self.var_custom_mineralogy["checkbox"][phyllosilicate])
+                self.entr_w["custom"][phyllosilicate] = [tk.StringVar(), tk.StringVar()]
+                entr = SE(parent=self.window_custom_mineralogy, row_id=2+index, column_id=10, bg=self.color_accent_02,
+                          fg=self.color_fg_dark).create_entry(var_entr=self.entr_w["custom"][phyllosilicate][0],
+                                                              var_entr_set=0.0, width=5)
+                entr = SE(parent=self.window_custom_mineralogy, row_id=2+index, column_id=11, bg=self.color_accent_02,
+                          fg=self.color_fg_dark).create_entry(var_entr=self.entr_w["custom"][phyllosilicate][1],
+                                                              var_entr_set=1.0, width=5)
             # Nesosilicates
             lbl_nesosilicates = SE(parent=self.window_custom_mineralogy, row_id=0, column_id=12, n_columns=4,
                             bg=self.color_accent_01, fg=self.color_fg_dark).create_label(text="Nesosilicates", relief=tk.RAISED)
@@ -3800,6 +3878,13 @@ class Rocks:
                 self.var_custom_mineralogy["checkbox"][nesosilicate] = tk.IntVar()
                 cb = SE(parent=self.window_custom_mineralogy, row_id=2+index, column_id=13, bg=self.color_accent_02,
                          fg=self.color_fg_dark).create_checkbox(text="", var_cb=self.var_custom_mineralogy["checkbox"][nesosilicate])
+                self.entr_w["custom"][nesosilicate] = [tk.StringVar(), tk.StringVar()]
+                entr = SE(parent=self.window_custom_mineralogy, row_id=2+index, column_id=14, bg=self.color_accent_02,
+                          fg=self.color_fg_dark).create_entry(var_entr=self.entr_w["custom"][nesosilicate][0],
+                                                              var_entr_set=0.0, width=5)
+                entr = SE(parent=self.window_custom_mineralogy, row_id=2+index, column_id=15, bg=self.color_accent_02,
+                          fg=self.color_fg_dark).create_entry(var_entr=self.entr_w["custom"][nesosilicate][1],
+                                                              var_entr_set=1.0, width=5)
             # Inosilicates
             lbl_inosilicates = SE(parent=self.window_custom_mineralogy, row_id=0, column_id=16, n_columns=4,
                             bg=self.color_accent_01, fg=self.color_fg_dark).create_label(text="Inosilicates", relief=tk.RAISED)
@@ -3820,6 +3905,13 @@ class Rocks:
                 self.var_custom_mineralogy["checkbox"][inosilicate] = tk.IntVar()
                 cb = SE(parent=self.window_custom_mineralogy, row_id=2+index, column_id=17, bg=self.color_accent_02,
                          fg=self.color_fg_dark).create_checkbox(text="", var_cb=self.var_custom_mineralogy["checkbox"][inosilicate])
+                self.entr_w["custom"][inosilicate] = [tk.StringVar(), tk.StringVar()]
+                entr = SE(parent=self.window_custom_mineralogy, row_id=2+index, column_id=18, bg=self.color_accent_02,
+                          fg=self.color_fg_dark).create_entry(var_entr=self.entr_w["custom"][inosilicate][0],
+                                                              var_entr_set=0.0, width=5)
+                entr = SE(parent=self.window_custom_mineralogy, row_id=2+index, column_id=19, bg=self.color_accent_02,
+                          fg=self.color_fg_dark).create_entry(var_entr=self.entr_w["custom"][inosilicate][1],
+                                                              var_entr_set=1.0, width=5)
             # Sorosilicates
             lbl_sorosilicates = SE(parent=self.window_custom_mineralogy, row_id=0, column_id=20, n_columns=4,
                             bg=self.color_accent_01, fg=self.color_fg_dark).create_label(text="Sorosilicates", relief=tk.RAISED)
@@ -3838,6 +3930,13 @@ class Rocks:
                 self.var_custom_mineralogy["checkbox"][sorosilicate] = tk.IntVar()
                 cb = SE(parent=self.window_custom_mineralogy, row_id=2+index, column_id=21, bg=self.color_accent_02,
                          fg=self.color_fg_dark).create_checkbox(text="", var_cb=self.var_custom_mineralogy["checkbox"][sorosilicate])
+                self.entr_w["custom"][sorosilicate] = [tk.StringVar(), tk.StringVar()]
+                entr = SE(parent=self.window_custom_mineralogy, row_id=2+index, column_id=22, bg=self.color_accent_02,
+                          fg=self.color_fg_dark).create_entry(var_entr=self.entr_w["custom"][sorosilicate][0],
+                                                              var_entr_set=0.0, width=5)
+                entr = SE(parent=self.window_custom_mineralogy, row_id=2+index, column_id=23, bg=self.color_accent_02,
+                          fg=self.color_fg_dark).create_entry(var_entr=self.entr_w["custom"][sorosilicate][1],
+                                                              var_entr_set=1.0, width=5)
             # Sulfides
             lbl_sulfides = SE(parent=self.window_custom_mineralogy, row_id=16, column_id=4, n_columns=4,
                             bg=self.color_accent_01, fg=self.color_fg_dark).create_label(text="Sulfides", relief=tk.RAISED)
@@ -3856,6 +3955,13 @@ class Rocks:
                 self.var_custom_mineralogy["checkbox"][sulfide] = tk.IntVar()
                 cb = SE(parent=self.window_custom_mineralogy, row_id=18+index, column_id=5, bg=self.color_accent_02,
                          fg=self.color_fg_dark).create_checkbox(text="", var_cb=self.var_custom_mineralogy["checkbox"][sulfide])
+                self.entr_w["custom"][sulfide] = [tk.StringVar(), tk.StringVar()]
+                entr = SE(parent=self.window_custom_mineralogy, row_id=18+index, column_id=6, bg=self.color_accent_02,
+                          fg=self.color_fg_dark).create_entry(var_entr=self.entr_w["custom"][sulfide][0],
+                                                              var_entr_set=0.0, width=5)
+                entr = SE(parent=self.window_custom_mineralogy, row_id=18+index, column_id=7, bg=self.color_accent_02,
+                          fg=self.color_fg_dark).create_entry(var_entr=self.entr_w["custom"][sulfide][1],
+                                                              var_entr_set=1.0, width=5)
             # Carbonates
             lbl_carbonates = SE(parent=self.window_custom_mineralogy, row_id=16, column_id=0, n_columns=4,
                             bg=self.color_accent_01, fg=self.color_fg_dark).create_label(text="Carbonates", relief=tk.RAISED)
@@ -3876,6 +3982,13 @@ class Rocks:
                 self.var_custom_mineralogy["checkbox"][carbonate] = tk.IntVar()
                 cb = SE(parent=self.window_custom_mineralogy, row_id=18+index, column_id=1, bg=self.color_accent_02,
                          fg=self.color_fg_dark).create_checkbox(text="", var_cb=self.var_custom_mineralogy["checkbox"][carbonate])
+                self.entr_w["custom"][carbonate] = [tk.StringVar(), tk.StringVar()]
+                entr = SE(parent=self.window_custom_mineralogy, row_id=18+index, column_id=2, bg=self.color_accent_02,
+                          fg=self.color_fg_dark).create_entry(var_entr=self.entr_w["custom"][carbonate][0],
+                                                              var_entr_set=0.0, width=5)
+                entr = SE(parent=self.window_custom_mineralogy, row_id=18+index, column_id=3, bg=self.color_accent_02,
+                          fg=self.color_fg_dark).create_entry(var_entr=self.entr_w["custom"][carbonate][1],
+                                                              var_entr_set=1.0, width=5)
             # Sulfates
             lbl_sulfates = SE(parent=self.window_custom_mineralogy, row_id=16, column_id=8, n_columns=4,
                             bg=self.color_accent_01, fg=self.color_fg_dark).create_label(text="Sulfates", relief=tk.RAISED)
@@ -3897,6 +4010,13 @@ class Rocks:
                 cb = SE(parent=self.window_custom_mineralogy, row_id=18+index, column_id=9, bg=self.color_accent_02,
                          fg=self.color_fg_dark).create_checkbox(text="", var_cb=self.var_custom_mineralogy["checkbox"][sulfate],
                                                                 command=lambda var_cb=self.var_custom_mineralogy["checkbox"][sulfate]: self.marked_checkbox(var_cb))
+                self.entr_w["custom"][sulfate] = [tk.StringVar(), tk.StringVar()]
+                entr = SE(parent=self.window_custom_mineralogy, row_id=18+index, column_id=10, bg=self.color_accent_02,
+                          fg=self.color_fg_dark).create_entry(var_entr=self.entr_w["custom"][sulfate][0],
+                                                              var_entr_set=0.0, width=5)
+                entr = SE(parent=self.window_custom_mineralogy, row_id=18+index, column_id=11, bg=self.color_accent_02,
+                          fg=self.color_fg_dark).create_entry(var_entr=self.entr_w["custom"][sulfate][1],
+                                                              var_entr_set=1.0, width=5)
     #
     def marked_checkbox(self, var_cb):
         print(var_cb.get())
