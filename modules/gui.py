@@ -6,7 +6,7 @@
 # Name:		gui.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		13.02.2022
+# Date:		18.02.2022
 
 #-----------------------------------------------
 
@@ -3739,6 +3739,7 @@ class Rocks:
         #
         ## Variables
         self.custom_mineralogy = {}
+        self.custom_mineralogy["mineralogy"] = []
         self.custom_porosities = {}
         #
         ## Buttons
@@ -4101,7 +4102,7 @@ class Rocks:
                 self.var_custom_mineralogy["checkbox"][sulfate] = tk.IntVar()
                 cb = SE(parent=self.window_custom_mineralogy, row_id=start_sulfates+index, column_id=9,
                         bg=self.color_accent_02, fg=self.color_fg_dark).create_checkbox(text="", var_cb=self.var_custom_mineralogy["checkbox"][sulfate],
-                                                                                        command=lambda var_cb=self.var_custom_mineralogy["checkbox"][sulfate]: self.marked_checkbox(var_cb))
+                                                                                        command=lambda var_cb=self.var_custom_mineralogy["checkbox"][sulfate], name=sulfate: self.marked_checkbox(var_cb, name))
                 self.entr_w["custom"][sulfate] = [tk.StringVar(), tk.StringVar()]
                 entr_min = SE(parent=self.window_custom_mineralogy, row_id=start_sulfates+index, column_id=10,
                           bg=self.color_accent_02, fg=self.color_fg_dark).create_entry(var_entr=self.entr_w["custom"][sulfate][0],
@@ -4115,8 +4116,12 @@ class Rocks:
                 self.gui_custom_rock["Sulfates"]["entries"][sulfate] = [entr_min, entr_max]
                 self.gui_custom_rock["Sulfates"]["end line"] = start_sulfides + index
     #
-    def marked_checkbox(self, var_cb):
-        print(var_cb.get())
+    def marked_checkbox(self, var_cb, name):
+        if var_cb.get() == 1:
+            self.custom_mineralogy["mineralogy"].append(name)
+        else:
+            self.custom_mineralogy["mineralogy"].remove(name)
+        print(self.custom_mineralogy)
     #
     def __call__(self):
         return self.lbl_w, self.entr_w, self.exp_data, self.filename
