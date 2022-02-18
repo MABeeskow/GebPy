@@ -716,9 +716,8 @@ class sandstone:
                     w_Chl = round(w_rf*w_Chl2, 4)
                     w_Ms = round(w_rf*w_Ms2, 4)
                 elif magicnumber == 5:    # Hem-rich
-                    w_ore = round(rd.randint(10, 20)/100, 4)
-                    w_Hem2 = rd.randint(0, 100)/100
-                    w_Hem = round(w_ore*w_Hem2, 4)
+                    w_ore = round(rd.uniform(0.1, 0.2), 4)
+                    w_Hem = w_ore
                     w_Qz = round(rd.randint(50, 80)/100, 4)
                     w_Fsp = round(rd.randint(0, int((1-w_ore-w_Qz)*100))/100, 4)
                     w_Afs2 = rd.randint(0, 100)/100

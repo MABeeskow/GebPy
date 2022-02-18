@@ -3777,246 +3777,343 @@ class Rocks:
                 self.gui_custom_rock[mineral_class] = {}
                 self.gui_custom_rock[mineral_class]["start line"] = 0
                 self.gui_custom_rock[mineral_class]["end line"] = 0
-                self.gui_custom_rock[mineral_class]["labels"] = []
-                self.gui_custom_rock[mineral_class]["entries"] = []
+                self.gui_custom_rock[mineral_class]["labels"] = {}
+                self.gui_custom_rock[mineral_class]["entries"] = {}
+                self.gui_custom_rock[mineral_class]["checkbuttons"] = {}
             #
             ## LABELS
             # Oxides
-            lbl_title = SE(parent=self.window_custom_mineralogy, row_id=0, column_id=0, n_columns=4,
+            start_oxides = 0
+            self.gui_custom_rock["Oxides"]["start line"] = start_oxides
+            lbl_title = SE(parent=self.window_custom_mineralogy, row_id=start_oxides, column_id=0, n_columns=4,
                             bg=self.color_accent_01, fg=self.color_fg_dark).create_label(text="Oxides", relief=tk.RAISED)
-            lbl_name = SE(parent=self.window_custom_mineralogy, row_id=1, column_id=0, bg=self.color_accent_01,
+            lbl_name = SE(parent=self.window_custom_mineralogy, row_id=start_oxides+1, column_id=0, bg=self.color_accent_01,
                             fg=self.color_fg_dark).create_label(text="Name", relief=tk.RAISED)
-            lbl_part = SE(parent=self.window_custom_mineralogy, row_id=1, column_id=1, bg=self.color_accent_01,
+            lbl_part = SE(parent=self.window_custom_mineralogy, row_id=start_oxides+1, column_id=1, bg=self.color_accent_01,
                             fg=self.color_fg_dark).create_label(text="Part", relief=tk.RAISED)
-            lbl_min = SE(parent=self.window_custom_mineralogy, row_id=1, column_id=2, bg=self.color_accent_01,
+            lbl_min = SE(parent=self.window_custom_mineralogy, row_id=start_oxides+1, column_id=2, bg=self.color_accent_01,
                             fg=self.color_fg_dark).create_label(text="Min", relief=tk.RAISED)
-            lbl_max = SE(parent=self.window_custom_mineralogy, row_id=1, column_id=3, bg=self.color_accent_01,
+            lbl_max = SE(parent=self.window_custom_mineralogy, row_id=start_oxides+1, column_id=3, bg=self.color_accent_01,
                             fg=self.color_fg_dark).create_label(text="Max", relief=tk.RAISED)
-            self.gui_custom_rock["Oxides"]["labels"].extend([lbl_title, lbl_name, lbl_part, lbl_min, lbl_max])
+            self.gui_custom_rock["Oxides"]["labels"]["header"] = [lbl_title, lbl_name, lbl_part, lbl_min, lbl_max]
             list_oxides = ["Quartz", "Magnetite", "Hematite", "Corundum", "Ilmenite", "Rutile", "Pyrolusite",
-                           "Cassiterite", "Spinel", "Chromite"]
-            self.gui_custom_rock["Oxides"]["start line"] = 2
-            self.gui_custom_rock["Oxides"]["end line"] = 2 + len(list_oxides) - 1
-            for index, oxide in enumerate(list_oxides, start=0):
-                lbl = SE(parent=self.window_custom_mineralogy, row_id=self.gui_custom_rock["Oxides"]["start line"]+index,
+                            "Cassiterite", "Spinel", "Chromite"]
+            list_oxides.sort()
+            for index, oxide in enumerate(list_oxides, start=2):
+                lbl = SE(parent=self.window_custom_mineralogy, row_id=start_oxides+index,
                          column_id=0, bg=self.color_accent_02, fg=self.color_fg_dark).create_label(text=oxide, relief=tk.RAISED)
+                self.gui_custom_rock["Oxides"]["labels"][oxide] = lbl
                 self.var_custom_mineralogy["checkbox"][oxide] = tk.IntVar()
-                cb = SE(parent=self.window_custom_mineralogy, row_id=self.gui_custom_rock["Oxides"]["start line"]+index,
+                cb = SE(parent=self.window_custom_mineralogy, row_id=start_oxides+index,
                         column_id=1, bg=self.color_accent_02, fg=self.color_fg_dark).create_checkbox(text="", var_cb=self.var_custom_mineralogy["checkbox"][oxide])
+                self.gui_custom_rock["Oxides"]["checkbuttons"][oxide] = cb
                 self.entr_w["custom"][oxide] = [tk.StringVar(), tk.StringVar()]
-                entr = SE(parent=self.window_custom_mineralogy, row_id=self.gui_custom_rock["Oxides"]["start line"]+index,
+                entr_min = SE(parent=self.window_custom_mineralogy, row_id=start_oxides+index,
                           column_id=2, bg=self.color_accent_02, fg=self.color_fg_dark).create_entry(var_entr=self.entr_w["custom"][oxide][0],
                                                                                                     var_entr_set=0.0, width=5)
-                entr = SE(parent=self.window_custom_mineralogy, row_id=self.gui_custom_rock["Oxides"]["start line"]+index,
+                entr_max = SE(parent=self.window_custom_mineralogy, row_id=start_oxides+index,
                           column_id=3, bg=self.color_accent_02, fg=self.color_fg_dark).create_entry(var_entr=self.entr_w["custom"][oxide][1],
                                                                                                     var_entr_set=1.0, width=5)
+                self.gui_custom_rock["Oxides"]["entries"][oxide] = [entr_min, entr_max]
+                self.gui_custom_rock["Oxides"]["end line"] = start_oxides + index
+            #
             # Tectosilicates
-            lbl_tectosilicates = SE(parent=self.window_custom_mineralogy, row_id=0, column_id=4, n_columns=4,
-                            bg=self.color_accent_01, fg=self.color_fg_dark).create_label(text="Tectosilicates", relief=tk.RAISED)
-            lbl_name = SE(parent=self.window_custom_mineralogy, row_id=1, column_id=4, bg=self.color_accent_01,
-                            fg=self.color_fg_dark).create_label(text="Name", relief=tk.RAISED)
-            lbl_name = SE(parent=self.window_custom_mineralogy, row_id=1, column_id=5, bg=self.color_accent_01,
-                            fg=self.color_fg_dark).create_label(text="Part", relief=tk.RAISED)
-            lbl_name = SE(parent=self.window_custom_mineralogy, row_id=1, column_id=6, bg=self.color_accent_01,
-                            fg=self.color_fg_dark).create_label(text="Min", relief=tk.RAISED)
-            lbl_name = SE(parent=self.window_custom_mineralogy, row_id=1, column_id=7, bg=self.color_accent_01,
-                            fg=self.color_fg_dark).create_label(text="Max", relief=tk.RAISED)
+            start_tectosilicates = self.gui_custom_rock["Oxides"]["end line"] + 1
+            self.gui_custom_rock["Tectosilicates"]["start line"] = start_tectosilicates
+            lbl_title = SE(parent=self.window_custom_mineralogy, row_id=start_tectosilicates, column_id=0, n_columns=4,
+                                    bg=self.color_accent_01, fg=self.color_fg_dark).create_label(text="Tectosilicates", relief=tk.RAISED)
+            lbl_name = SE(parent=self.window_custom_mineralogy, row_id=start_tectosilicates+1, column_id=0, bg=self.color_accent_01,
+                          fg=self.color_fg_dark).create_label(text="Name", relief=tk.RAISED)
+            lbl_part = SE(parent=self.window_custom_mineralogy, row_id=start_tectosilicates+1, column_id=1, bg=self.color_accent_01,
+                          fg=self.color_fg_dark).create_label(text="Part", relief=tk.RAISED)
+            lbl_min = SE(parent=self.window_custom_mineralogy, row_id=start_tectosilicates+1, column_id=2, bg=self.color_accent_01,
+                          fg=self.color_fg_dark).create_label(text="Min", relief=tk.RAISED)
+            lbl_max = SE(parent=self.window_custom_mineralogy, row_id=start_tectosilicates+1, column_id=3, bg=self.color_accent_01,
+                          fg=self.color_fg_dark).create_label(text="Max", relief=tk.RAISED)
+            self.gui_custom_rock["Tectosilicates"]["labels"]["header"] = [lbl_title, lbl_name, lbl_part, lbl_min,
+                                                                          lbl_max]
             list_tectosilicates = ["Alkali Feldspar", "Plagioclase", "Scapolite"]
-            for index, tectosilicate in enumerate(list_tectosilicates, start=0):
-                lbl = SE(parent=self.window_custom_mineralogy, row_id=2+index, column_id=4, bg=self.color_accent_02,
+            list_tectosilicates.sort()
+            for index, tectosilicate in enumerate(list_tectosilicates, start=2):
+                lbl = SE(parent=self.window_custom_mineralogy, row_id=start_tectosilicates+index, column_id=0, bg=self.color_accent_02,
                          fg=self.color_fg_dark).create_label(text=tectosilicate, relief=tk.RAISED)
+                self.gui_custom_rock["Tectosilicates"]["labels"][tectosilicate] = lbl
                 self.var_custom_mineralogy["checkbox"][tectosilicate] = tk.IntVar()
-                cb = SE(parent=self.window_custom_mineralogy, row_id=2+index, column_id=5, bg=self.color_accent_02,
+                cb = SE(parent=self.window_custom_mineralogy, row_id=start_tectosilicates+index, column_id=1, bg=self.color_accent_02,
                          fg=self.color_fg_dark).create_checkbox(text="", var_cb=self.var_custom_mineralogy["checkbox"][tectosilicate])
+                self.gui_custom_rock["Tectosilicates"]["checkbuttons"][tectosilicate] = cb
                 self.entr_w["custom"][tectosilicate] = [tk.StringVar(), tk.StringVar()]
-                entr = SE(parent=self.window_custom_mineralogy, row_id=2+index, column_id=6, bg=self.color_accent_02,
+                entr_min = SE(parent=self.window_custom_mineralogy, row_id=start_tectosilicates+index, column_id=2, bg=self.color_accent_02,
                           fg=self.color_fg_dark).create_entry(var_entr=self.entr_w["custom"][tectosilicate][0],
                                                               var_entr_set=0.0, width=5)
-                entr = SE(parent=self.window_custom_mineralogy, row_id=2+index, column_id=7, bg=self.color_accent_02,
+                entr_max = SE(parent=self.window_custom_mineralogy, row_id=start_tectosilicates+index, column_id=3, bg=self.color_accent_02,
                           fg=self.color_fg_dark).create_entry(var_entr=self.entr_w["custom"][tectosilicate][1],
                                                               var_entr_set=1.0, width=5)
+                self.gui_custom_rock["Tectosilicates"]["entries"][tectosilicate] = [entr_min, entr_max]
+                self.gui_custom_rock["Tectosilicates"]["end line"] = start_tectosilicates + index
+            #
             # Phyllosilicates
-            lbl_phyllosilicates = SE(parent=self.window_custom_mineralogy, row_id=0, column_id=8, n_columns=4,
-                            bg=self.color_accent_01, fg=self.color_fg_dark).create_label(text="Phyllosilicates", relief=tk.RAISED)
-            lbl_name = SE(parent=self.window_custom_mineralogy, row_id=1, column_id=8, bg=self.color_accent_01,
-                            fg=self.color_fg_dark).create_label(text="Name", relief=tk.RAISED)
-            lbl_name = SE(parent=self.window_custom_mineralogy, row_id=1, column_id=9, bg=self.color_accent_01,
-                            fg=self.color_fg_dark).create_label(text="Part", relief=tk.RAISED)
-            lbl_name = SE(parent=self.window_custom_mineralogy, row_id=1, column_id=10, bg=self.color_accent_01,
-                            fg=self.color_fg_dark).create_label(text="Min", relief=tk.RAISED)
-            lbl_name = SE(parent=self.window_custom_mineralogy, row_id=1, column_id=11, bg=self.color_accent_01,
-                            fg=self.color_fg_dark).create_label(text="Max", relief=tk.RAISED)
-            list_phyllosilicates = ["Illite", "Kaolinite", "Montmorillonite", "Chlorite", "Vermiculite", "Biotite", "Muscovite", "Glauconite"]
-            for index, phyllosilicate in enumerate(list_phyllosilicates, start=0):
-                lbl = SE(parent=self.window_custom_mineralogy, row_id=2+index, column_id=8, bg=self.color_accent_02,
-                         fg=self.color_fg_dark).create_label(text=phyllosilicate, relief=tk.RAISED)
+            start_phyllosilicates = self.gui_custom_rock["Tectosilicates"]["end line"] + 1
+            self.gui_custom_rock["Phyllosilicates"]["start line"] = start_phyllosilicates
+            lbl_title = SE(parent=self.window_custom_mineralogy, row_id=start_phyllosilicates, column_id=0, n_columns=4,
+                           bg=self.color_accent_01, fg=self.color_fg_dark).create_label(text="Phyllosilicates",
+                                                                                        relief=tk.RAISED)
+            lbl_name = SE(parent=self.window_custom_mineralogy, row_id=start_phyllosilicates+1, column_id=0,
+                          bg=self.color_accent_01, fg=self.color_fg_dark).create_label(text="Name", relief=tk.RAISED)
+            lbl_part = SE(parent=self.window_custom_mineralogy, row_id=start_phyllosilicates+1, column_id=1,
+                          bg=self.color_accent_01, fg=self.color_fg_dark).create_label(text="Part", relief=tk.RAISED)
+            lbl_min = SE(parent=self.window_custom_mineralogy, row_id=start_phyllosilicates+1, column_id=2,
+                         bg=self.color_accent_01, fg=self.color_fg_dark).create_label(text="Min", relief=tk.RAISED)
+            lbl_max = SE(parent=self.window_custom_mineralogy, row_id=start_phyllosilicates+1, column_id=3,
+                         bg=self.color_accent_01, fg=self.color_fg_dark).create_label(text="Max", relief=tk.RAISED)
+            self.gui_custom_rock["Phyllosilicates"]["labels"]["header"] = [lbl_title, lbl_name, lbl_part, lbl_min,
+                                                                           lbl_max]
+            list_phyllosilicates = ["Illite", "Kaolinite", "Montmorillonite", "Chlorite", "Vermiculite", "Biotite",
+                                    "Muscovite", "Glauconite"]
+            list_phyllosilicates.sort()
+            for index, phyllosilicate in enumerate(list_phyllosilicates, start=2):
+                lbl = SE(parent=self.window_custom_mineralogy, row_id=start_phyllosilicates+index, column_id=0,
+                         bg=self.color_accent_02, fg=self.color_fg_dark).create_label(text=phyllosilicate, relief=tk.RAISED)
+                self.gui_custom_rock["Phyllosilicates"]["labels"][phyllosilicate] = lbl
                 self.var_custom_mineralogy["checkbox"][phyllosilicate] = tk.IntVar()
-                cb = SE(parent=self.window_custom_mineralogy, row_id=2+index, column_id=9, bg=self.color_accent_02,
-                         fg=self.color_fg_dark).create_checkbox(text="", var_cb=self.var_custom_mineralogy["checkbox"][phyllosilicate])
+                cb = SE(parent=self.window_custom_mineralogy, row_id=start_phyllosilicates+index, column_id=1,
+                        bg=self.color_accent_02, fg=self.color_fg_dark).create_checkbox(text="", var_cb=self.var_custom_mineralogy["checkbox"][phyllosilicate])
+                self.gui_custom_rock["Phyllosilicates"]["checkbuttons"][phyllosilicate] = cb
                 self.entr_w["custom"][phyllosilicate] = [tk.StringVar(), tk.StringVar()]
-                entr = SE(parent=self.window_custom_mineralogy, row_id=2+index, column_id=10, bg=self.color_accent_02,
-                          fg=self.color_fg_dark).create_entry(var_entr=self.entr_w["custom"][phyllosilicate][0],
-                                                              var_entr_set=0.0, width=5)
-                entr = SE(parent=self.window_custom_mineralogy, row_id=2+index, column_id=11, bg=self.color_accent_02,
-                          fg=self.color_fg_dark).create_entry(var_entr=self.entr_w["custom"][phyllosilicate][1],
-                                                              var_entr_set=1.0, width=5)
+                entr_min = SE(parent=self.window_custom_mineralogy, row_id=start_phyllosilicates+index, column_id=2,
+                              bg=self.color_accent_02, fg=self.color_fg_dark).create_entry(var_entr=self.entr_w["custom"][phyllosilicate][0],
+                                                                                           var_entr_set=0.0, width=5)
+                entr_max = SE(parent=self.window_custom_mineralogy, row_id=start_phyllosilicates+index, column_id=3,
+                              bg=self.color_accent_02, fg=self.color_fg_dark).create_entry(var_entr=self.entr_w["custom"][phyllosilicate][1],
+                                                                                           var_entr_set=1.0, width=5)
+                self.gui_custom_rock["Phyllosilicates"]["entries"][phyllosilicate] = [entr_min, entr_max]
+                self.gui_custom_rock["Phyllosilicates"]["end line"] = start_phyllosilicates + index
+            #
             # Nesosilicates
-            lbl_nesosilicates = SE(parent=self.window_custom_mineralogy, row_id=0, column_id=12, n_columns=4,
-                            bg=self.color_accent_01, fg=self.color_fg_dark).create_label(text="Nesosilicates", relief=tk.RAISED)
-            lbl_name = SE(parent=self.window_custom_mineralogy, row_id=1, column_id=12, bg=self.color_accent_01,
-                            fg=self.color_fg_dark).create_label(text="Name", relief=tk.RAISED)
-            lbl_name = SE(parent=self.window_custom_mineralogy, row_id=1, column_id=13, bg=self.color_accent_01,
-                            fg=self.color_fg_dark).create_label(text="Part", relief=tk.RAISED)
-            lbl_name = SE(parent=self.window_custom_mineralogy, row_id=1, column_id=14, bg=self.color_accent_01,
-                            fg=self.color_fg_dark).create_label(text="Min", relief=tk.RAISED)
-            lbl_name = SE(parent=self.window_custom_mineralogy, row_id=1, column_id=15, bg=self.color_accent_01,
-                            fg=self.color_fg_dark).create_label(text="Max", relief=tk.RAISED)
-            list_nesosilicates = ["Olivine", "Garnet", "Zircon", "Thorite", "Andalusite", "Kyanite", "Sillimanite", "Topaz", "Staurolite"]
-            for index, nesosilicate in enumerate(list_nesosilicates, start=0):
-                lbl = SE(parent=self.window_custom_mineralogy, row_id=2+index, column_id=12, bg=self.color_accent_02,
-                         fg=self.color_fg_dark).create_label(text=nesosilicate, relief=tk.RAISED)
+            start_nesosilicates = self.gui_custom_rock["Phyllosilicates"]["end line"] + 1
+            self.gui_custom_rock["Nesosilicates"]["start line"] = start_nesosilicates
+            lbl_title = SE(parent=self.window_custom_mineralogy, row_id=start_nesosilicates, column_id=0, n_columns=4,
+                            bg=self.color_accent_01, fg=self.color_fg_dark).create_label(text="Nesosilicates",
+                                                                                         relief=tk.RAISED)
+            lbl_name = SE(parent=self.window_custom_mineralogy, row_id=start_nesosilicates+1, column_id=0,
+                          bg=self.color_accent_01, fg=self.color_fg_dark).create_label(text="Name", relief=tk.RAISED)
+            lbl_part = SE(parent=self.window_custom_mineralogy, row_id=start_nesosilicates+1, column_id=1,
+                          bg=self.color_accent_01, fg=self.color_fg_dark).create_label(text="Part", relief=tk.RAISED)
+            lbl_min = SE(parent=self.window_custom_mineralogy, row_id=start_nesosilicates+1, column_id=2,
+                         bg=self.color_accent_01, fg=self.color_fg_dark).create_label(text="Min", relief=tk.RAISED)
+            lbl_max = SE(parent=self.window_custom_mineralogy, row_id=start_nesosilicates+1, column_id=3,
+                         bg=self.color_accent_01, fg=self.color_fg_dark).create_label(text="Max", relief=tk.RAISED)
+            self.gui_custom_rock["Nesosilicates"]["labels"]["header"] = [lbl_title, lbl_name, lbl_part, lbl_min, lbl_max]
+            list_nesosilicates = ["Olivine", "Garnet", "Zircon", "Thorite", "Andalusite", "Kyanite", "Sillimanite",
+                                  "Topaz", "Staurolite"]
+            list_nesosilicates.sort()
+            for index, nesosilicate in enumerate(list_nesosilicates, start=2):
+                lbl = SE(parent=self.window_custom_mineralogy, row_id=start_nesosilicates+index, column_id=0,
+                         bg=self.color_accent_02, fg=self.color_fg_dark).create_label(text=nesosilicate,
+                                                                                      relief=tk.RAISED)
+                self.gui_custom_rock["Nesosilicates"]["labels"][nesosilicate] = lbl
                 self.var_custom_mineralogy["checkbox"][nesosilicate] = tk.IntVar()
-                cb = SE(parent=self.window_custom_mineralogy, row_id=2+index, column_id=13, bg=self.color_accent_02,
-                         fg=self.color_fg_dark).create_checkbox(text="", var_cb=self.var_custom_mineralogy["checkbox"][nesosilicate])
+                cb = SE(parent=self.window_custom_mineralogy, row_id=start_nesosilicates+index, column_id=1,
+                        bg=self.color_accent_02, fg=self.color_fg_dark).create_checkbox(text="", var_cb=self.var_custom_mineralogy["checkbox"][nesosilicate])
+                self.gui_custom_rock["Nesosilicates"]["checkbuttons"][nesosilicate] = cb
                 self.entr_w["custom"][nesosilicate] = [tk.StringVar(), tk.StringVar()]
-                entr = SE(parent=self.window_custom_mineralogy, row_id=2+index, column_id=14, bg=self.color_accent_02,
-                          fg=self.color_fg_dark).create_entry(var_entr=self.entr_w["custom"][nesosilicate][0],
-                                                              var_entr_set=0.0, width=5)
-                entr = SE(parent=self.window_custom_mineralogy, row_id=2+index, column_id=15, bg=self.color_accent_02,
-                          fg=self.color_fg_dark).create_entry(var_entr=self.entr_w["custom"][nesosilicate][1],
-                                                              var_entr_set=1.0, width=5)
+                entr_min = SE(parent=self.window_custom_mineralogy, row_id=start_nesosilicates+index, column_id=2,
+                              bg=self.color_accent_02, fg=self.color_fg_dark).create_entry(var_entr=self.entr_w["custom"][nesosilicate][0],
+                                                                                           var_entr_set=0.0, width=5)
+                entr_max = SE(parent=self.window_custom_mineralogy, row_id=start_nesosilicates+index, column_id=3,
+                              bg=self.color_accent_02, fg=self.color_fg_dark).create_entry(var_entr=self.entr_w["custom"][nesosilicate][1],
+                                                                                           var_entr_set=1.0, width=5)
+                self.gui_custom_rock["Nesosilicates"]["entries"][nesosilicate] = [entr_min, entr_max]
+                self.gui_custom_rock["Nesosilicates"]["end line"] = start_nesosilicates + index
+            #
             # Inosilicates
-            lbl_inosilicates = SE(parent=self.window_custom_mineralogy, row_id=0, column_id=16, n_columns=4,
-                            bg=self.color_accent_01, fg=self.color_fg_dark).create_label(text="Inosilicates", relief=tk.RAISED)
-            lbl_name = SE(parent=self.window_custom_mineralogy, row_id=1, column_id=16, bg=self.color_accent_01,
-                            fg=self.color_fg_dark).create_label(text="Name", relief=tk.RAISED)
-            lbl_name = SE(parent=self.window_custom_mineralogy, row_id=1, column_id=17, bg=self.color_accent_01,
-                            fg=self.color_fg_dark).create_label(text="Part", relief=tk.RAISED)
-            lbl_name = SE(parent=self.window_custom_mineralogy, row_id=1, column_id=18, bg=self.color_accent_01,
-                            fg=self.color_fg_dark).create_label(text="Min", relief=tk.RAISED)
-            lbl_name = SE(parent=self.window_custom_mineralogy, row_id=1, column_id=19, bg=self.color_accent_01,
-                            fg=self.color_fg_dark).create_label(text="Max", relief=tk.RAISED)
+            start_inosilicates = start_oxides
+            self.gui_custom_rock["Inosilicates"]["start line"] = start_inosilicates
+            lbl_title = SE(parent=self.window_custom_mineralogy, row_id=start_inosilicates, column_id=4, n_columns=4,
+                           bg=self.color_accent_01, fg=self.color_fg_dark).create_label(text="Inosilicates",
+                                                                                        relief=tk.RAISED)
+            lbl_name = SE(parent=self.window_custom_mineralogy, row_id=start_inosilicates+1, column_id=4, bg=self.color_accent_01,
+                          fg=self.color_fg_dark).create_label(text="Name", relief=tk.RAISED)
+            lbl_part = SE(parent=self.window_custom_mineralogy, row_id=start_inosilicates+1, column_id=5, bg=self.color_accent_01,
+                          fg=self.color_fg_dark).create_label(text="Part", relief=tk.RAISED)
+            lbl_min = SE(parent=self.window_custom_mineralogy, row_id=start_inosilicates+1, column_id=6, bg=self.color_accent_01,
+                         fg=self.color_fg_dark).create_label(text="Min", relief=tk.RAISED)
+            lbl_max = SE(parent=self.window_custom_mineralogy, row_id=start_inosilicates+1, column_id=7, bg=self.color_accent_01,
+                         fg=self.color_fg_dark).create_label(text="Max", relief=tk.RAISED)
+            self.gui_custom_rock["Inosilicates"]["labels"]["header"] = [lbl_title, lbl_name, lbl_part, lbl_min, lbl_max]
             list_inosilicates = ["Enstatite", "Ferrosilite", "Diopside", "Jadeite", "Aegirine", "Spodumene",
                                  "Wollastonite", "Pyroxene", "Amphibole", "Cummingtonite", "Tremolite", "Actinolite",
                                  "Hornblende", "Glaucophane"]
-            for index, inosilicate in enumerate(list_inosilicates, start=0):
-                lbl = SE(parent=self.window_custom_mineralogy, row_id=2+index, column_id=16, bg=self.color_accent_02,
+            list_inosilicates.sort()
+            for index, inosilicate in enumerate(list_inosilicates, start=2):
+                lbl = SE(parent=self.window_custom_mineralogy, row_id=start_inosilicates+index, column_id=4, bg=self.color_accent_02,
                          fg=self.color_fg_dark).create_label(text=inosilicate, relief=tk.RAISED)
+                self.gui_custom_rock["Inosilicates"]["labels"][inosilicate] = lbl
                 self.var_custom_mineralogy["checkbox"][inosilicate] = tk.IntVar()
-                cb = SE(parent=self.window_custom_mineralogy, row_id=2+index, column_id=17, bg=self.color_accent_02,
+                cb = SE(parent=self.window_custom_mineralogy, row_id=start_inosilicates+index, column_id=5, bg=self.color_accent_02,
                          fg=self.color_fg_dark).create_checkbox(text="", var_cb=self.var_custom_mineralogy["checkbox"][inosilicate])
                 self.entr_w["custom"][inosilicate] = [tk.StringVar(), tk.StringVar()]
-                entr = SE(parent=self.window_custom_mineralogy, row_id=2+index, column_id=18, bg=self.color_accent_02,
+                self.gui_custom_rock["Inosilicates"]["checkbuttons"][inosilicate] = cb
+                entr_min = SE(parent=self.window_custom_mineralogy, row_id=start_inosilicates+index, column_id=6, bg=self.color_accent_02,
                           fg=self.color_fg_dark).create_entry(var_entr=self.entr_w["custom"][inosilicate][0],
                                                               var_entr_set=0.0, width=5)
-                entr = SE(parent=self.window_custom_mineralogy, row_id=2+index, column_id=19, bg=self.color_accent_02,
+                entr_max = SE(parent=self.window_custom_mineralogy, row_id=start_inosilicates+index, column_id=7, bg=self.color_accent_02,
                           fg=self.color_fg_dark).create_entry(var_entr=self.entr_w["custom"][inosilicate][1],
                                                               var_entr_set=1.0, width=5)
+                self.gui_custom_rock["Inosilicates"]["entries"][inosilicate] = [entr_min, entr_max]
+                self.gui_custom_rock["Inosilicates"]["end line"] = start_inosilicates + index
+            #
             # Sorosilicates
-            lbl_sorosilicates = SE(parent=self.window_custom_mineralogy, row_id=0, column_id=20, n_columns=4,
-                            bg=self.color_accent_01, fg=self.color_fg_dark).create_label(text="Sorosilicates", relief=tk.RAISED)
-            lbl_name = SE(parent=self.window_custom_mineralogy, row_id=1, column_id=20, bg=self.color_accent_01,
-                            fg=self.color_fg_dark).create_label(text="Name", relief=tk.RAISED)
-            lbl_name = SE(parent=self.window_custom_mineralogy, row_id=1, column_id=21, bg=self.color_accent_01,
-                            fg=self.color_fg_dark).create_label(text="Part", relief=tk.RAISED)
-            lbl_name = SE(parent=self.window_custom_mineralogy, row_id=1, column_id=22, bg=self.color_accent_01,
-                            fg=self.color_fg_dark).create_label(text="Min", relief=tk.RAISED)
-            lbl_name = SE(parent=self.window_custom_mineralogy, row_id=1, column_id=23, bg=self.color_accent_01,
-                            fg=self.color_fg_dark).create_label(text="Max", relief=tk.RAISED)
+            start_sorosilicates = self.gui_custom_rock["Inosilicates"]["end line"] + 1
+            self.gui_custom_rock["Sorosilicates"]["start line"] = start_sorosilicates
+            lbl_title = SE(parent=self.window_custom_mineralogy, row_id=start_sorosilicates, column_id=4, n_columns=4,
+                           bg=self.color_accent_01, fg=self.color_fg_dark).create_label(text="Sorosilicates",
+                                                                                        relief=tk.RAISED)
+            lbl_name = SE(parent=self.window_custom_mineralogy, row_id=start_sorosilicates+1, column_id=4, bg=self.color_accent_01,
+                          fg=self.color_fg_dark).create_label(text="Name", relief=tk.RAISED)
+            lbl_part = SE(parent=self.window_custom_mineralogy, row_id=start_sorosilicates+1, column_id=5, bg=self.color_accent_01,
+                          fg=self.color_fg_dark).create_label(text="Part", relief=tk.RAISED)
+            lbl_min = SE(parent=self.window_custom_mineralogy, row_id=start_sorosilicates+1, column_id=6, bg=self.color_accent_01,
+                         fg=self.color_fg_dark).create_label(text="Min", relief=tk.RAISED)
+            lbl_max = SE(parent=self.window_custom_mineralogy, row_id=start_sorosilicates+1, column_id=7, bg=self.color_accent_01,
+                         fg=self.color_fg_dark).create_label(text="Max", relief=tk.RAISED)
+            self.gui_custom_rock["Sorosilicates"]["labels"]["header"] = [lbl_title, lbl_name, lbl_part, lbl_min, lbl_max]
             list_sorosilicates = ["Epidote", "Zoisite", "Gehlenite"]
-            for index, sorosilicate in enumerate(list_sorosilicates, start=0):
-                lbl = SE(parent=self.window_custom_mineralogy, row_id=2+index, column_id=20, bg=self.color_accent_02,
-                         fg=self.color_fg_dark).create_label(text=sorosilicate, relief=tk.RAISED)
+            list_sorosilicates.sort()
+            for index, sorosilicate in enumerate(list_sorosilicates, start=2):
                 self.var_custom_mineralogy["checkbox"][sorosilicate] = tk.IntVar()
-                cb = SE(parent=self.window_custom_mineralogy, row_id=2+index, column_id=21, bg=self.color_accent_02,
-                         fg=self.color_fg_dark).create_checkbox(text="", var_cb=self.var_custom_mineralogy["checkbox"][sorosilicate])
                 self.entr_w["custom"][sorosilicate] = [tk.StringVar(), tk.StringVar()]
-                entr = SE(parent=self.window_custom_mineralogy, row_id=2+index, column_id=22, bg=self.color_accent_02,
-                          fg=self.color_fg_dark).create_entry(var_entr=self.entr_w["custom"][sorosilicate][0],
-                                                              var_entr_set=0.0, width=5)
-                entr = SE(parent=self.window_custom_mineralogy, row_id=2+index, column_id=23, bg=self.color_accent_02,
-                          fg=self.color_fg_dark).create_entry(var_entr=self.entr_w["custom"][sorosilicate][1],
-                                                              var_entr_set=1.0, width=5)
-            # Sulfides
-            lbl_sulfides = SE(parent=self.window_custom_mineralogy, row_id=16, column_id=4, n_columns=4,
-                            bg=self.color_accent_01, fg=self.color_fg_dark).create_label(text="Sulfides", relief=tk.RAISED)
-            lbl_name = SE(parent=self.window_custom_mineralogy, row_id=17, column_id=4, bg=self.color_accent_01,
-                            fg=self.color_fg_dark).create_label(text="Name", relief=tk.RAISED)
-            lbl_name = SE(parent=self.window_custom_mineralogy, row_id=17, column_id=5, bg=self.color_accent_01,
-                            fg=self.color_fg_dark).create_label(text="Part", relief=tk.RAISED)
-            lbl_name = SE(parent=self.window_custom_mineralogy, row_id=17, column_id=6, bg=self.color_accent_01,
-                            fg=self.color_fg_dark).create_label(text="Min", relief=tk.RAISED)
-            lbl_name = SE(parent=self.window_custom_mineralogy, row_id=17, column_id=7, bg=self.color_accent_01,
-                            fg=self.color_fg_dark).create_label(text="Max", relief=tk.RAISED)
-            list_sulfides = ["Pyrite", "Chalcopyrite", "Bornite", "Covellite", "Molybdenite", "Sphalerite", "Galena", "Fahlore"]
-            for index, sulfide in enumerate(list_sulfides, start=0):
-                lbl = SE(parent=self.window_custom_mineralogy, row_id=18+index, column_id=4, bg=self.color_accent_02,
-                         fg=self.color_fg_dark).create_label(text=sulfide, relief=tk.RAISED)
-                self.var_custom_mineralogy["checkbox"][sulfide] = tk.IntVar()
-                cb = SE(parent=self.window_custom_mineralogy, row_id=18+index, column_id=5, bg=self.color_accent_02,
-                         fg=self.color_fg_dark).create_checkbox(text="", var_cb=self.var_custom_mineralogy["checkbox"][sulfide])
-                self.entr_w["custom"][sulfide] = [tk.StringVar(), tk.StringVar()]
-                entr = SE(parent=self.window_custom_mineralogy, row_id=18+index, column_id=6, bg=self.color_accent_02,
-                          fg=self.color_fg_dark).create_entry(var_entr=self.entr_w["custom"][sulfide][0],
-                                                              var_entr_set=0.0, width=5)
-                entr = SE(parent=self.window_custom_mineralogy, row_id=18+index, column_id=7, bg=self.color_accent_02,
-                          fg=self.color_fg_dark).create_entry(var_entr=self.entr_w["custom"][sulfide][1],
-                                                              var_entr_set=1.0, width=5)
+                #
+                lbl = SE(parent=self.window_custom_mineralogy, row_id=start_sorosilicates+index, column_id=4, bg=self.color_accent_02,
+                         fg=self.color_fg_dark).create_label(text=sorosilicate, relief=tk.RAISED)
+                cb = SE(parent=self.window_custom_mineralogy, row_id=start_sorosilicates+index, column_id=5,
+                        bg=self.color_accent_02, fg=self.color_fg_dark).create_checkbox(text="", var_cb=self.var_custom_mineralogy["checkbox"][sorosilicate])
+                entr_min = SE(parent=self.window_custom_mineralogy, row_id=start_sorosilicates+index, column_id=6,
+                          bg=self.color_accent_02, fg=self.color_fg_dark).create_entry(var_entr=self.entr_w["custom"][sorosilicate][0],
+                                                                                       var_entr_set=0.0, width=5)
+                entr_max = SE(parent=self.window_custom_mineralogy, row_id=start_sorosilicates+index, column_id=7,
+                          bg=self.color_accent_02, fg=self.color_fg_dark).create_entry(var_entr=self.entr_w["custom"][sorosilicate][1],
+                                                                                       var_entr_set=1.0, width=5)
+                #
+                self.gui_custom_rock["Sorosilicates"]["labels"][sorosilicate] = lbl
+                self.gui_custom_rock["Sorosilicates"]["checkbuttons"][sorosilicate] = cb
+                self.gui_custom_rock["Sorosilicates"]["entries"][sorosilicate] = [entr_min, entr_max]
+                self.gui_custom_rock["Sorosilicates"]["end line"] = start_sorosilicates + index
+            #
             # Carbonates
-            lbl_carbonates = SE(parent=self.window_custom_mineralogy, row_id=16, column_id=0, n_columns=4,
+            start_carbonates = self.gui_custom_rock["Sorosilicates"]["end line"] + 1
+            self.gui_custom_rock["Carbonates"]["start line"] = start_carbonates
+            lbl_title = SE(parent=self.window_custom_mineralogy, row_id=start_carbonates, column_id=4, n_columns=4,
                             bg=self.color_accent_01, fg=self.color_fg_dark).create_label(text="Carbonates", relief=tk.RAISED)
-            lbl_name = SE(parent=self.window_custom_mineralogy, row_id=17, column_id=0, bg=self.color_accent_01,
+            lbl_name = SE(parent=self.window_custom_mineralogy, row_id=start_carbonates+1, column_id=4, bg=self.color_accent_01,
                             fg=self.color_fg_dark).create_label(text="Name", relief=tk.RAISED)
-            lbl_name = SE(parent=self.window_custom_mineralogy, row_id=17, column_id=1, bg=self.color_accent_01,
+            lbl_part = SE(parent=self.window_custom_mineralogy, row_id=start_carbonates+1, column_id=5, bg=self.color_accent_01,
                             fg=self.color_fg_dark).create_label(text="Part", relief=tk.RAISED)
-            lbl_name = SE(parent=self.window_custom_mineralogy, row_id=17, column_id=2, bg=self.color_accent_01,
+            lbl_min = SE(parent=self.window_custom_mineralogy, row_id=start_carbonates+1, column_id=6, bg=self.color_accent_01,
                             fg=self.color_fg_dark).create_label(text="Min", relief=tk.RAISED)
-            lbl_name = SE(parent=self.window_custom_mineralogy, row_id=17, column_id=3, bg=self.color_accent_01,
+            lbl_max = SE(parent=self.window_custom_mineralogy, row_id=start_carbonates+1, column_id=7, bg=self.color_accent_01,
                             fg=self.color_fg_dark).create_label(text="Max", relief=tk.RAISED)
+            self.gui_custom_rock["Carbonates"]["labels"]["header"] = [lbl_title, lbl_name, lbl_part, lbl_min, lbl_max]
             list_carbonates = ["Calcite", "Dolomite", "Magnesite", "Rhodochrosite", "Siderite", "Aragonite",
                                "Cerussite", "Ankerite", "Azurite", "Malachite"]
             list_carbonates.sort()
-            for index, carbonate in enumerate(list_carbonates, start=0):
-                lbl = SE(parent=self.window_custom_mineralogy, row_id=18+index, column_id=0, bg=self.color_accent_02,
-                         fg=self.color_fg_dark).create_label(text=carbonate, relief=tk.RAISED)
+            for index, carbonate in enumerate(list_carbonates, start=2):
                 self.var_custom_mineralogy["checkbox"][carbonate] = tk.IntVar()
-                cb = SE(parent=self.window_custom_mineralogy, row_id=18+index, column_id=1, bg=self.color_accent_02,
-                         fg=self.color_fg_dark).create_checkbox(text="", var_cb=self.var_custom_mineralogy["checkbox"][carbonate])
                 self.entr_w["custom"][carbonate] = [tk.StringVar(), tk.StringVar()]
-                entr = SE(parent=self.window_custom_mineralogy, row_id=18+index, column_id=2, bg=self.color_accent_02,
-                          fg=self.color_fg_dark).create_entry(var_entr=self.entr_w["custom"][carbonate][0],
-                                                              var_entr_set=0.0, width=5)
-                entr = SE(parent=self.window_custom_mineralogy, row_id=18+index, column_id=3, bg=self.color_accent_02,
-                          fg=self.color_fg_dark).create_entry(var_entr=self.entr_w["custom"][carbonate][1],
-                                                              var_entr_set=1.0, width=5)
+                #
+                lbl = SE(parent=self.window_custom_mineralogy, row_id=start_carbonates+index, column_id=4,
+                         bg=self.color_accent_02, fg=self.color_fg_dark).create_label(text=carbonate, relief=tk.RAISED)
+                cb = SE(parent=self.window_custom_mineralogy, row_id=start_carbonates+index, column_id=5,
+                        bg=self.color_accent_02, fg=self.color_fg_dark).create_checkbox(text="", var_cb=self.var_custom_mineralogy["checkbox"][carbonate])
+                entr_min = SE(parent=self.window_custom_mineralogy, row_id=start_carbonates+index, column_id=6,
+                          bg=self.color_accent_02, fg=self.color_fg_dark).create_entry(var_entr=self.entr_w["custom"][carbonate][0],
+                                                                                       var_entr_set=0.0, width=5)
+                entr_max = SE(parent=self.window_custom_mineralogy, row_id=start_carbonates+index, column_id=7,
+                              bg=self.color_accent_02, fg=self.color_fg_dark).create_entry(var_entr=self.entr_w["custom"][carbonate][1],
+                                                                                           var_entr_set=1.0, width=5)
+                #
+                self.gui_custom_rock["Carbonates"]["labels"][carbonate] = lbl
+                self.gui_custom_rock["Carbonates"]["checkbuttons"][carbonate] = cb
+                self.gui_custom_rock["Carbonates"]["entries"][carbonate] = [entr_min, entr_max]
+                self.gui_custom_rock["Carbonates"]["end line"] = start_carbonates + index
+            #
+            # Sulfides
+            start_sulfides = start_oxides
+            self.gui_custom_rock["Sulfides"]["start line"] = start_sulfides
+            lbl_title = SE(parent=self.window_custom_mineralogy, row_id=start_sulfides, column_id=8, n_columns=4,
+                           bg=self.color_accent_01, fg=self.color_fg_dark).create_label(text="Sulfides", relief=tk.RAISED)
+            lbl_name = SE(parent=self.window_custom_mineralogy, row_id=start_sulfides+1, column_id=8,
+                          bg=self.color_accent_01, fg=self.color_fg_dark).create_label(text="Name", relief=tk.RAISED)
+            lbl_part = SE(parent=self.window_custom_mineralogy, row_id=start_sulfides+1, column_id=9,
+                          bg=self.color_accent_01, fg=self.color_fg_dark).create_label(text="Part", relief=tk.RAISED)
+            lbl_min = SE(parent=self.window_custom_mineralogy, row_id=start_sulfides+1, column_id=10,
+                         bg=self.color_accent_01, fg=self.color_fg_dark).create_label(text="Min", relief=tk.RAISED)
+            lbl_max = SE(parent=self.window_custom_mineralogy, row_id=start_sulfides+1, column_id=11,
+                         bg=self.color_accent_01, fg=self.color_fg_dark).create_label(text="Max", relief=tk.RAISED)
+            self.gui_custom_rock["Sulfides"]["labels"]["header"] = [lbl_title, lbl_name, lbl_part, lbl_min, lbl_max]
+            list_sulfides = ["Pyrite", "Chalcopyrite", "Bornite", "Covellite", "Molybdenite", "Sphalerite", "Galena",
+                             "Fahlore"]
+            list_sulfides.sort()
+            for index, sulfide in enumerate(list_sulfides, start=2):
+                self.var_custom_mineralogy["checkbox"][sulfide] = tk.IntVar()
+                self.entr_w["custom"][sulfide] = [tk.StringVar(), tk.StringVar()]
+                #
+                lbl = SE(parent=self.window_custom_mineralogy, row_id=start_sulfides+index, column_id=8,
+                         bg=self.color_accent_02, fg=self.color_fg_dark).create_label(text=sulfide, relief=tk.RAISED)
+                cb = SE(parent=self.window_custom_mineralogy, row_id=start_sulfides+index, column_id=9,
+                        bg=self.color_accent_02, fg=self.color_fg_dark).create_checkbox(text="", var_cb=self.var_custom_mineralogy["checkbox"][sulfide])
+                entr_min = SE(parent=self.window_custom_mineralogy, row_id=start_sulfides+index, column_id=10,
+                          bg=self.color_accent_02, fg=self.color_fg_dark).create_entry(var_entr=self.entr_w["custom"][sulfide][0],
+                                                                                       var_entr_set=0.0, width=5)
+                entr_max = SE(parent=self.window_custom_mineralogy, row_id=start_sulfides+index, column_id=11,
+                          bg=self.color_accent_02, fg=self.color_fg_dark).create_entry(var_entr=self.entr_w["custom"][sulfide][1],
+                                                                                       var_entr_set=1.0, width=5)
+                #
+                self.gui_custom_rock["Sulfides"]["labels"][sulfide] = lbl
+                self.gui_custom_rock["Sulfides"]["checkbuttons"][sulfide] = cb
+                self.gui_custom_rock["Sulfides"]["entries"][sulfide] = [entr_min, entr_max]
+                self.gui_custom_rock["Sulfides"]["end line"] = start_sulfides + index
+            #
             # Sulfates
-            lbl_sulfates = SE(parent=self.window_custom_mineralogy, row_id=16, column_id=8, n_columns=4,
-                            bg=self.color_accent_01, fg=self.color_fg_dark).create_label(text="Sulfates", relief=tk.RAISED)
-            lbl_name = SE(parent=self.window_custom_mineralogy, row_id=17, column_id=8, bg=self.color_accent_01,
-                            fg=self.color_fg_dark).create_label(text="Name", relief=tk.RAISED)
-            lbl_name = SE(parent=self.window_custom_mineralogy, row_id=17, column_id=9, bg=self.color_accent_01,
-                            fg=self.color_fg_dark).create_label(text="Part", relief=tk.RAISED)
-            lbl_name = SE(parent=self.window_custom_mineralogy, row_id=17, column_id=10, bg=self.color_accent_01,
-                            fg=self.color_fg_dark).create_label(text="Min", relief=tk.RAISED)
-            lbl_name = SE(parent=self.window_custom_mineralogy, row_id=17, column_id=11, bg=self.color_accent_01,
-                            fg=self.color_fg_dark).create_label(text="Max", relief=tk.RAISED)
+            start_sulfates = self.gui_custom_rock["Sulfides"]["end line"] + 1
+            self.gui_custom_rock["Sulfates"]["start line"] = start_sulfates
+            lbl_title = SE(parent=self.window_custom_mineralogy, row_id=start_sulfates, column_id=8, n_columns=4,
+                              bg=self.color_accent_01, fg=self.color_fg_dark).create_label(text="Sulfates",
+                                                                                           relief=tk.RAISED)
+            lbl_name = SE(parent=self.window_custom_mineralogy, row_id=start_sulfates+1, column_id=8,
+                          bg=self.color_accent_01, fg=self.color_fg_dark).create_label(text="Name", relief=tk.RAISED)
+            lbl_part = SE(parent=self.window_custom_mineralogy, row_id=start_sulfates+1, column_id=9,
+                          bg=self.color_accent_01, fg=self.color_fg_dark).create_label(text="Part", relief=tk.RAISED)
+            lbl_min = SE(parent=self.window_custom_mineralogy, row_id=start_sulfates+1, column_id=10,
+                          bg=self.color_accent_01, fg=self.color_fg_dark).create_label(text="Min", relief=tk.RAISED)
+            lbl_max = SE(parent=self.window_custom_mineralogy, row_id=start_sulfates+1, column_id=11,
+                          bg=self.color_accent_01, fg=self.color_fg_dark).create_label(text="Max", relief=tk.RAISED)
+            self.gui_custom_rock["Sulfates"]["labels"]["header"] = [lbl_title, lbl_name, lbl_part, lbl_min, lbl_max]
             list_sulfates = ["Barite", "Anhydrite", "Gypsum", "Alunite", "Jarosite", "Anglesite", "Hanksite",
                              "Celestite", "Kieserite", "Chalcanthite", "Scheelite"]
             list_sulfates.sort()
-            for index, sulfate in enumerate(list_sulfates, start=0):
-                lbl = SE(parent=self.window_custom_mineralogy, row_id=18+index, column_id=8, bg=self.color_accent_02,
-                         fg=self.color_fg_dark).create_label(text=sulfate, relief=tk.RAISED)
+            for index, sulfate in enumerate(list_sulfates, start=2):
                 self.var_custom_mineralogy["checkbox"][sulfate] = tk.IntVar()
-                cb = SE(parent=self.window_custom_mineralogy, row_id=18+index, column_id=9, bg=self.color_accent_02,
-                         fg=self.color_fg_dark).create_checkbox(text="", var_cb=self.var_custom_mineralogy["checkbox"][sulfate],
-                                                                command=lambda var_cb=self.var_custom_mineralogy["checkbox"][sulfate]: self.marked_checkbox(var_cb))
                 self.entr_w["custom"][sulfate] = [tk.StringVar(), tk.StringVar()]
-                entr = SE(parent=self.window_custom_mineralogy, row_id=18+index, column_id=10, bg=self.color_accent_02,
-                          fg=self.color_fg_dark).create_entry(var_entr=self.entr_w["custom"][sulfate][0],
-                                                              var_entr_set=0.0, width=5)
-                entr = SE(parent=self.window_custom_mineralogy, row_id=18+index, column_id=11, bg=self.color_accent_02,
-                          fg=self.color_fg_dark).create_entry(var_entr=self.entr_w["custom"][sulfate][1],
-                                                              var_entr_set=1.0, width=5)
+                #
+                lbl = SE(parent=self.window_custom_mineralogy, row_id=start_sulfates+index, column_id=8,
+                         bg=self.color_accent_02, fg=self.color_fg_dark).create_label(text=sulfate, relief=tk.RAISED)
+                self.var_custom_mineralogy["checkbox"][sulfate] = tk.IntVar()
+                cb = SE(parent=self.window_custom_mineralogy, row_id=start_sulfates+index, column_id=9,
+                        bg=self.color_accent_02, fg=self.color_fg_dark).create_checkbox(text="", var_cb=self.var_custom_mineralogy["checkbox"][sulfate],
+                                                                                        command=lambda var_cb=self.var_custom_mineralogy["checkbox"][sulfate]: self.marked_checkbox(var_cb))
+                self.entr_w["custom"][sulfate] = [tk.StringVar(), tk.StringVar()]
+                entr_min = SE(parent=self.window_custom_mineralogy, row_id=start_sulfates+index, column_id=10,
+                          bg=self.color_accent_02, fg=self.color_fg_dark).create_entry(var_entr=self.entr_w["custom"][sulfate][0],
+                                                                                       var_entr_set=0.0, width=5)
+                entr_max = SE(parent=self.window_custom_mineralogy, row_id=start_sulfates+index, column_id=11,
+                          bg=self.color_accent_02, fg=self.color_fg_dark).create_entry(var_entr=self.entr_w["custom"][sulfate][1],
+                                                                                       var_entr_set=1.0, width=5)
+                #
+                self.gui_custom_rock["Sulfates"]["labels"][sulfate] = lbl
+                self.gui_custom_rock["Sulfates"]["checkbuttons"][sulfate] = cb
+                self.gui_custom_rock["Sulfates"]["entries"][sulfate] = [entr_min, entr_max]
+                self.gui_custom_rock["Sulfates"]["end line"] = start_sulfides + index
     #
     def marked_checkbox(self, var_cb):
         print(var_cb.get())
