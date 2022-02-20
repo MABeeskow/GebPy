@@ -6,12 +6,12 @@
 # Name:		gui.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		18.02.2022
+# Date:		20.02.2022
 
 #-----------------------------------------------
 
 ## MODULES
-import os, sys
+import os, sys, datetime
 import tkinter as tk
 import csv, re
 from modules.gui_elements import SimpleElements as SE
@@ -84,8 +84,8 @@ class GebPyGUI(tk.Frame):
         for i in range(0, 48):
             self.parent.grid_rowconfigure(i, minsize=20)
         # Columns
-        self.parent.grid_columnconfigure(0, minsize=170)
-        self.parent.grid_columnconfigure(1, minsize=100)
+        self.parent.grid_columnconfigure(0, minsize=160)
+        self.parent.grid_columnconfigure(1, minsize=110)
         self.parent.grid_columnconfigure(2, minsize=15)
         self.parent.grid_columnconfigure(3, minsize=125)
         for i in range(4, 8):
@@ -651,6 +651,10 @@ class GebPyGUI(tk.Frame):
             header_bulk.remove("mineralogy")
             header.extend(minerals)
         else:
+            try:
+                header.remove("state")
+            except:
+                pass
             header.remove("rho_e")
             header.remove("p")
             header.remove("U")
@@ -827,7 +831,7 @@ class Minerals:
             if self.mineral == "Quartz":
                 data = Oxides(impurity="pure", data_type=True).create_quartz()
             elif self.mineral == "Magnetite":
-                data = Oxides(impurity="pure").create_magnetite(dict=True)
+                data = Oxides(impurity="pure", data_type=True).create_magnetite()
             elif self.mineral == "Cassiterite":
                 data = Oxides(impurity="pure", data_type=True).create_cassiterite()
             elif self.mineral == "Pyrolusite":
@@ -1870,7 +1874,7 @@ class Minerals:
                     if self.mineral == "Quartz":
                         data = Oxides(impurity="pure", data_type=True).create_quartz()
                     elif self.mineral == "Magnetite":
-                        data = Oxides(impurity="pure").create_magnetite(dict=True)
+                        data = Oxides(impurity="pure", data_type=True).create_magnetite()
                     elif self.mineral == "Cassiterite":
                         data = Oxides(impurity="pure", data_type=True).create_cassiterite()
                     elif self.mineral == "Chromite":
@@ -2330,7 +2334,7 @@ class Minerals:
                 if self.mineral == "Quartz":
                     data = Oxides(impurity=selection_trace, data_type=True).create_quartz()
                 elif self.mineral == "Magnetite":
-                    data = Oxides(impurity="pure").create_magnetite(dict=True)
+                    data = Oxides(impurity="pure", data_type=True).create_magnetite()
                 elif self.mineral == "Cassiterite":
                     data = Oxides(impurity="pure", data_type=True).create_cassiterite()
                 elif self.mineral == "Chromite":
@@ -2844,6 +2848,7 @@ class Rocks:
         self.color_acc_01 = color_acc[0]
         self.color_acc_02 = color_acc[1]
         self.var_entr = tk.IntVar()
+        self.var_rockname = tk.StringVar()
         var_entr_start = 100
         self.var_phi0 = tk.IntVar()
         var_phi0_start = 5
@@ -2861,7 +2866,7 @@ class Rocks:
         self.gui_elements = gui_elements
         self.exp_data = exp_data
         self.filename = filename
-        self.filename.extend([self.rock, var_entr_start])
+        self.filename.extend([self.rock, var_entr_start, self.var_rockname])
         self.porosities = [var_phi0_start, var_phi1_start]
         #
         ## Labels
@@ -3763,9 +3768,9 @@ class Rocks:
         self.custom_porosities = {}
         #
         ## Buttons
-        btn_defmin = SE(parent=self.parent_rock, row_id=36, column_id=0, n_rows=2, n_columns=2, bg=self.color_acc_01,
+        btn_defmin = SE(parent=self.parent_rock, row_id=37, column_id=0, n_rows=2, n_columns=1, bg=self.color_acc_01,
                         fg="black").create_button(text="Define Mineralogy", command=lambda var_btn="Define Mineralogy": self.press_button(var_btn))
-        btn_update = SE(parent=self.parent_rock, row_id=38, column_id=0, n_rows=2, n_columns=2, bg=self.color_acc_01,
+        btn_update = SE(parent=self.parent_rock, row_id=37, column_id=1, n_rows=2, n_columns=1, bg=self.color_acc_01,
                         fg="black").create_button(text="Generate Data", command=lambda var_btn="Generate Data": self.press_button(var_btn))
         #
         self.gui_elements.extend([btn_defmin, btn_update])
@@ -3786,9 +3791,26 @@ class Rocks:
         entr_03 = SE(parent=self.parent_rock, row_id=31, column_id=1, n_rows=1, n_columns=1, bg=self.color_acc_02,
                      fg="black").create_entry(var_entr=self.var_phi1, var_entr_set=self.porosities[1],
                                               command=lambda event, var_entr=self.var_entr: self.enter_samples(var_entr, event))
+        lbl_name = SE(parent=self.parent_rock, row_id=36, column_id=0, n_rows=1, n_columns=1, bg=self.color_acc_01,
+            fg="black").create_label(text="Rock name", relief=tk.RAISED)
+        entr_name = SE(parent=self.parent_rock, row_id=36, column_id=1, n_rows=1, n_columns=1, bg=self.color_acc_02,
+                     fg="black").create_entry(var_entr=self.filename[2], var_entr_set="Custom",
+                                              command=lambda event, var_entr=self.filename[2]: self.enter_samples(var_entr, event))
+        entr_name.bind("<Return>", lambda event, var_name=self.filename[2]: self.change_rockname(var_name, event))
         #
-        self.lbl_w["physics"].extend([lbl_11, lbl_12, lbl_13])
-        self.entr_w["physics"].extend([entr_01, entr_02, entr_03])
+        self.lbl_w["physics"].extend([lbl_11, lbl_12, lbl_13, lbl_name])
+        self.entr_w["physics"].extend([entr_01, entr_02, entr_03, entr_name])
+        #
+    def change_rockname(self, var_name, event):
+        var_name.set(var_name.get())
+        self.filename[0] = var_name.get()
+        #
+        lbl_stat = SE(parent=self.parent_rock, row_id=0, column_id=3, n_rows=2, n_columns=5, bg=self.color_bg,
+           fg="black").create_label(text="Statistics - "+str(var_name.get()), relief=tk.RAISED)
+        lbl_plt = SE(parent=self.parent_rock, row_id=0, column_id=9, n_rows=2, n_columns=9, bg=self.color_bg,
+           fg="black").create_label(text="Plots - "+str(var_name.get()), relief=tk.RAISED)
+        #
+        self.gui_elements.extend([lbl_stat, lbl_plt])
         #
     #
     def press_button(self, var_btn):
@@ -3839,7 +3861,7 @@ class Rocks:
                             fg=self.color_fg_dark).create_label(text="Max", relief=tk.RAISED)
             self.gui_custom_rock["Oxides"]["labels"]["header"] = [lbl_title, lbl_name, lbl_part, lbl_min, lbl_max]
             list_oxides = ["Quartz", "Magnetite", "Hematite", "Corundum", "Ilmenite", "Rutile", "Pyrolusite",
-                            "Cassiterite", "Spinel", "Chromite"]
+                            "Cassiterite", "Coltan", "Chromite"]
             list_oxides.sort()
             for index, oxide in enumerate(list_oxides, start=2):
                 self.var_custom_mineralogy["checkbox"][oxide] = tk.IntVar()
@@ -4212,10 +4234,7 @@ class Rocks:
                 self.gui_custom_rock[sulfate]["entries"][1].bind("<Return>", lambda event, var_entr=self.entr_w["custom"][sulfate][1], name=sulfate, pos=1: self.set_entry(var_entr, name, pos, event))
         #
         elif var_btn == "Generate Data":
-            print("Selected Mineralogy:", self.custom_mineralogy["mineralogy"])
-            print("Number of Samples:", self.var_entr.get())
-            print("Minimum Porosity:", self.var_phi0.get())
-            print("Maximum Porosity:", self.var_phi1.get())
+            self.generate_custom_rock_data()
     #
     def marked_checkbox(self, var_cb, name):
         if var_cb.get() == 1:
@@ -4241,6 +4260,31 @@ class Rocks:
             self.custom_mineralogy["mineralogy"][name] = [self.gui_custom_rock[name]["entries"][0].get(),
                                                           self.gui_custom_rock[name]["entries"][1].get()]
             self.var_custom_mineralogy["checkbox"][name].set(1)
+    #
+    def generate_custom_rock_data(self):
+        n_samples = self.var_entr.get()
+        phi_min = self.var_phi0.get()
+        phi_max = self.var_phi1.get()
+        assemblage = list(self.custom_mineralogy["mineralogy"].keys())
+        data_minerals = {}
+        print("Selected Mineralogy:", self.custom_mineralogy["mineralogy"])
+        print("Mineral Assemblage:", assemblage)
+        print("Number of Samples:", n_samples)
+        print("Minimum Porosity:", phi_min)
+        print("Maximum Porosity:", phi_max)
+        for mineral in assemblage:
+            data = Oxides(data_type=True, mineral=mineral).get_data()
+            if data["state"] == "variable":
+                dataset = Oxides(data_type=True, mineral=mineral).get_data(number=n_samples)
+                data_minerals[mineral] = dataset
+            else:
+                data_minerals[mineral] = data
+        for key, value in data_minerals.items():
+            print(key, value)
+            try:
+                print(key, value["rho"])
+            except:
+                print(key, value[0]["rho"])
     #
     def __call__(self):
         return self.lbl_w, self.entr_w, self.exp_data, self.filename
