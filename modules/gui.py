@@ -30,6 +30,8 @@ from modules.ore import Ores
 from modules.igneous import Plutonic
 from modules.evaporites import Evaporites
 from modules.sequences import DataProcessing as DP
+from modules.geophysics import Elasticity as elast
+from modules import fluids
 import numpy as np
 import random as rd
 import matplotlib as mpl
@@ -4262,29 +4264,128 @@ class Rocks:
             self.var_custom_mineralogy["checkbox"][name].set(1)
     #
     def generate_custom_rock_data(self):
+        #
+        water = fluids.Water.water("")
         n_samples = self.var_entr.get()
-        phi_min = self.var_phi0.get()
-        phi_max = self.var_phi1.get()
+        phi_min = round(self.var_phi0.get()/100, 4)
+        phi_max = round(self.var_phi1.get()/100, 4)
+        self.phi = [round(rd.uniform(phi_min, phi_max), 4) for i in range(n_samples)]
         assemblage = list(self.custom_mineralogy["mineralogy"].keys())
+        self.amounts = {}
         data_minerals = {}
+        #
         print("Selected Mineralogy:", self.custom_mineralogy["mineralogy"])
         print("Mineral Assemblage:", assemblage)
         print("Number of Samples:", n_samples)
         print("Minimum Porosity:", phi_min)
         print("Maximum Porosity:", phi_max)
+        print(self.phi)
         for mineral in assemblage:
             data = Oxides(data_type=True, mineral=mineral).get_data()
+            self.amounts[mineral] = []
             if data["state"] == "variable":
                 dataset = Oxides(data_type=True, mineral=mineral).get_data(number=n_samples)
                 data_minerals[mineral] = dataset
             else:
                 data_minerals[mineral] = data
-        for key, value in data_minerals.items():
-            print(key, value)
-            try:
-                print(key, value["rho"])
-            except:
-                print(key, value[0]["rho"])
+        #
+        for i in range(n_samples):
+            w_total = 0
+            for j, mineral in enumerate(assemblage):
+                if j < len(assemblage)-1:
+                    w = round(rd.uniform(float(self.custom_mineralogy["mineralogy"][mineral][0]),
+                                          float(self.custom_mineralogy["mineralogy"][mineral][1])), 4)
+                    self.amounts[mineral].append(w)
+                    w_total += w
+                else:
+                    w = round(1-w_total, 4)
+                    self.amounts[mineral].append(w)
+                    w_total += w
+        self.rho = []
+        self.bulk_mod = []
+        self.shear_mod = []
+        self.poisson = []
+        self.GR = []
+        self.PE = []
+        self.vP = []
+        self.vS = []
+        self.vPvS = []
+        for i in range(n_samples):
+            rho_value = 0
+            K_list = []
+            G_list = []
+            w = []
+            gr_value = 0
+            pe_value = 0
+            poisson_value = 0
+            for mineral in assemblage:
+                try:
+                    rho_value += self.amounts[mineral][i]*data_minerals[mineral]["rho"]
+                    gr_value += self.amounts[mineral][i]*data_minerals[mineral]["GR"]
+                    pe_value += self.amounts[mineral][i]*data_minerals[mineral]["PE"]
+                    w.append(self.amounts[mineral][i])
+                    K_list.append(round(data_minerals[mineral]["K"]*self.amounts[mineral][i], 3))
+                    G_list.append(round(data_minerals[mineral]["G"]*self.amounts[mineral][i], 3))
+                    poisson_value += self.amounts[mineral][i]*data_minerals[mineral]["nu"]
+                except:
+                    rho_value += self.amounts[mineral][i]*data_minerals[mineral][i]["rho"]
+                    gr_value += self.amounts[mineral][i]*data_minerals[mineral][i]["GR"]
+                    pe_value += self.amounts[mineral][i]*data_minerals[mineral][i]["PE"]
+                    w.append(self.amounts[mineral][i])
+                    K_list.append(round(data_minerals[mineral][i]["K"]*self.amounts[mineral][i], 3))
+                    G_list.append(round(data_minerals[mineral][i]["G"]*self.amounts[mineral][i], 3))
+                    poisson_value += self.amounts[mineral][i]*data_minerals[mineral][i]["nu"]
+            self.GR.append(round(gr_value, 2))
+            self.PE.append(round(pe_value, 2))
+            K_geo = elast.calc_geometric_mean(self, w, K_list)
+            G_geo = elast.calc_geometric_mean(self, w, G_list)
+            self.bulk_mod.append(round(K_geo, 2))
+            self.shear_mod.append(round(G_geo, 2))
+            self.poisson.append(round(poisson_value, 3))
+            vP_solid = np.sqrt((K_geo*10**9+4/3*G_geo*10**9)/(rho_value))
+            vS_solid = np.sqrt((G_geo*10**9)/(rho_value))
+            rho = (1 - self.phi[i])*rho_value + self.phi[i]*water[2]/1000
+            vP = (1 - self.phi[i])*vP_solid + self.phi[i]*water[4][0]
+            vS = (1 - self.phi[i])*vS_solid
+            self.rho.append(round(rho, 3))
+            self.vP.append(round(vP, 2))
+            self.vS.append(round(vS, 2))
+            self.vPvS.append(round(vP/vS, 3))
+        #
+        print("rho:", self.rho)
+        print("K:", self.bulk_mod)
+        print("G:", self.shear_mod)
+        print("Poisson:", self.poisson)
+        print("vP:", self.vP)
+        print("vS:", self.vS)
+        print("vP/vS:", self.vPvS)
+        print("GR:", self.GR)
+        print("PE:", self.PE)
+        # for key, value in data_minerals.items():
+        #     self.amounts[key].append(round(rd.uniform(float(self.custom_mineralogy["mineralogy"][key][0]), float(self.custom_mineralogy["mineralogy"][key][1])), 4))
+        #     rho_raw = 0
+        #     print(key, value)
+        #     try:
+        #         print(key, value["rho"])
+        #     except:
+        #         print(key, value[0]["rho"])
+        # print(self.amounts)
+        #
+        # #
+        # self.rho = 0
+
+        # self.vP = DP(dataset=data_all).extract_data(keyword="vP")
+        # self.vS = DP(dataset=data_all).extract_data(keyword="vS")
+        # self.vPvS = DP(dataset=data_all).extract_data(keyword="vP/vS")
+        # self.bulk_mod = DP(dataset=data_all).extract_data(keyword="K")
+        # self.shear_mod = DP(dataset=data_all).extract_data(keyword="G")
+        # self.youngs_mod = DP(dataset=data_all).extract_data(keyword="E")
+        # self.poisson = DP(dataset=data_all).extract_data(keyword="nu")
+        # self.phi = DP(dataset=data_all).extract_data(keyword="phi")
+        # self.gamma_ray = DP(dataset=data_all).extract_data(keyword="GR")
+        # self.photoelectricity = DP(dataset=data_all).extract_data(keyword="PE")
+        # self.chemistry = DP(dataset=data_all).extract_data(keyword="chemistry")
+        # self.mineralogy = DP(dataset=data_all).extract_data(keyword="mineralogy")
     #
     def __call__(self):
         return self.lbl_w, self.entr_w, self.exp_data, self.filename
