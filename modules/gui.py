@@ -37,6 +37,7 @@ import random as rd
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
+from matplotlib.colors import LinearSegmentedColormap
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.ticker import NullFormatter
 import matplotlib.patches as mpatches
@@ -3177,6 +3178,8 @@ class Rocks:
         #
         self.canvas = None
         self.fig, self.ax = plt.subplots(ncols=3, nrows=3, figsize=(9, 9), facecolor="#E9ECED")
+        colors_ukraine = ["#0057b8", "#99C9FF", "#FFF099", "#ffd700"]
+        cm_ukraine = LinearSegmentedColormap.from_list("Ukraine", colors_ukraine)
         #
         for i in range(3):
             for j in range(3):
