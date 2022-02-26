@@ -4275,6 +4275,8 @@ class Rocks:
         self.phi = [round(rd.uniform(phi_min, phi_max), 4) for i in range(n_samples)]
         assemblage = list(self.custom_mineralogy["mineralogy"].keys())
         self.amounts = {}
+        self.elements = {}
+        elements_list = []
         data_minerals = {}
         #
         print("Selected Mineralogy:", self.custom_mineralogy["mineralogy"])
@@ -4282,16 +4284,18 @@ class Rocks:
         print("Number of Samples:", n_samples)
         print("Minimum Porosity:", phi_min)
         print("Maximum Porosity:", phi_max)
-        print(self.phi)
         for mineral in assemblage:
             data = Oxides(data_type=True, mineral=mineral).get_data()
             self.amounts[mineral] = []
+            elements_list.extend(list(data["chemistry"].keys()))
             if data["state"] == "variable":
                 dataset = Oxides(data_type=True, mineral=mineral).get_data(number=n_samples)
                 data_minerals[mineral] = dataset
             else:
                 data_minerals[mineral] = data
         #
+        elements_list = list(dict.fromkeys(elements_list))
+        elements_list.sort()
         for i in range(n_samples):
             w_total = 0
             for j, mineral in enumerate(assemblage):
@@ -4304,6 +4308,40 @@ class Rocks:
                     w = round(1-w_total, 4)
                     self.amounts[mineral].append(w)
                     w_total += w
+        for element in elements_list:
+            self.elements[element] = []
+        for index in range(n_samples):
+            for n, element in enumerate(elements_list):
+                result_helper = 0
+                for mineral in assemblage:
+                    if element in list(data_minerals[mineral]["chemistry"].keys()):
+                        if n < len(elements_list)-1:
+                            try:
+                                try:
+                                    result_helper += self.amounts[mineral][index]*data_minerals[mineral]["chemistry"][element]
+                                    w_total += result_helper
+                                except:
+                                    result_helper += 0
+                                    w_total += 0
+                            except:
+                                try:
+                                    result_helper += self.amounts[mineral][index]*data_minerals[mineral][index]["chemistry"][element]
+                                    w_total += result_helper
+                                except:
+                                    result_helper += 0
+                                    w_total += 0
+                        else:
+                            w_total = 0
+                            for element_2 in elements_list:
+                                if element_2 != element:
+                                    w_total += self.elements[element_2][-1]
+                                else:
+                                    w_total += 0
+                            result_helper = 1 - w_total
+                    else:
+                        result_helper += 0
+                        w_total += 0
+                self.elements[element].append(round(result_helper, 4))
         self.rho = []
         self.bulk_mod = []
         self.shear_mod = []
@@ -4354,6 +4392,8 @@ class Rocks:
             self.vP.append(round(vP, 2))
             self.vS.append(round(vS, 2))
             self.vPvS.append(round(vP/vS, 3))
+        self.mineralogy = self.amounts
+        self.chemistry = self.elements
         #
         print("rho:", self.rho)
         print("K:", self.bulk_mod)
@@ -4364,31 +4404,8 @@ class Rocks:
         print("vP/vS:", self.vPvS)
         print("GR:", self.GR)
         print("PE:", self.PE)
-        # for key, value in data_minerals.items():
-        #     self.amounts[key].append(round(rd.uniform(float(self.custom_mineralogy["mineralogy"][key][0]), float(self.custom_mineralogy["mineralogy"][key][1])), 4))
-        #     rho_raw = 0
-        #     print(key, value)
-        #     try:
-        #         print(key, value["rho"])
-        #     except:
-        #         print(key, value[0]["rho"])
-        # print(self.amounts)
-        #
-        # #
-        # self.rho = 0
-
-        # self.vP = DP(dataset=data_all).extract_data(keyword="vP")
-        # self.vS = DP(dataset=data_all).extract_data(keyword="vS")
-        # self.vPvS = DP(dataset=data_all).extract_data(keyword="vP/vS")
-        # self.bulk_mod = DP(dataset=data_all).extract_data(keyword="K")
-        # self.shear_mod = DP(dataset=data_all).extract_data(keyword="G")
-        # self.youngs_mod = DP(dataset=data_all).extract_data(keyword="E")
-        # self.poisson = DP(dataset=data_all).extract_data(keyword="nu")
-        # self.phi = DP(dataset=data_all).extract_data(keyword="phi")
-        # self.gamma_ray = DP(dataset=data_all).extract_data(keyword="GR")
-        # self.photoelectricity = DP(dataset=data_all).extract_data(keyword="PE")
-        # self.chemistry = DP(dataset=data_all).extract_data(keyword="chemistry")
-        # self.mineralogy = DP(dataset=data_all).extract_data(keyword="mineralogy")
+        print("Mineralogy:", self.mineralogy)
+        print("Chemistry:", self.chemistry)
     #
     def __call__(self):
         return self.lbl_w, self.entr_w, self.exp_data, self.filename
