@@ -3806,6 +3806,38 @@ class Rocks:
         self.lbl_w["physics"].extend([lbl_11, lbl_12, lbl_13, lbl_name])
         self.entr_w["physics"].extend([entr_01, entr_02, entr_03, entr_name])
         #
+        ## Labels
+        #
+        lbl_stat = SE(parent=self.parent_rock, row_id=0, column_id=3, n_rows=2, n_columns=5, bg=self.color_bg,
+           fg="black").create_label(text="Statistics - "+str(self.rock), relief=tk.RAISED)
+        lbl_plt = SE(parent=self.parent_rock, row_id=0, column_id=9, n_rows=2, n_columns=9, bg=self.color_bg,
+           fg="black").create_label(text="Plots - "+str(self.rock), relief=tk.RAISED)
+        #
+        self.gui_elements.extend([lbl_stat, lbl_plt])
+        #
+        lbl_01 = SE(parent=self.parent_rock, row_id=4, column_id=3, n_rows=2, bg=self.color_bg,
+           fg="black").create_label(text="Density\n (g/ccm)", relief=tk.RAISED)
+        lbl_02 = SE(parent=self.parent_rock, row_id=6, column_id=3, n_rows=2, bg=self.color_bg,
+           fg="black").create_label(text="P-wave velocity\n (km/s)", relief=tk.RAISED)
+        lbl_03 = SE(parent=self.parent_rock, row_id=8, column_id=3, n_rows=2, bg=self.color_bg,
+           fg="black").create_label(text="S-wave velocity\n (km/s)", relief=tk.RAISED)
+        lbl_04 = SE(parent=self.parent_rock, row_id=10, column_id=3, n_rows=2, bg=self.color_bg,
+           fg="black").create_label(text="Velocity ratio\n (1)", relief=tk.RAISED)
+        lbl_05 = SE(parent=self.parent_rock, row_id=12, column_id=3, n_rows=2, bg=self.color_bg,
+           fg="black").create_label(text="Bulk modulus\n (GPa)", relief=tk.RAISED)
+        lbl_06 = SE(parent=self.parent_rock, row_id=14, column_id=3, n_rows=2, bg=self.color_bg,
+           fg="black").create_label(text="Shear modulus\n (GPa)", relief=tk.RAISED)
+        lbl_07 = SE(parent=self.parent_rock, row_id=16, column_id=3, n_rows=2, bg=self.color_bg,
+           fg="black").create_label(text="Poisson's ratio\n (1)", relief=tk.RAISED)
+        lbl_08 = SE(parent=self.parent_rock, row_id=18, column_id=3, n_rows=2, bg=self.color_bg,
+           fg="black").create_label(text="Porosity\n (%)", relief=tk.RAISED)
+        lbl_09 = SE(parent=self.parent_rock, row_id=20, column_id=3, n_rows=2, bg=self.color_bg,
+           fg="black").create_label(text="Gamma ray\n (API)", relief=tk.RAISED)
+        lbl_10 = SE(parent=self.parent_rock, row_id=22, column_id=3, n_rows=2, bg=self.color_bg,
+           fg="black").create_label(text="Photoelectricity\n (barns/electron)", relief=tk.RAISED)
+        #
+        self.lbl_w["physics"].extend([lbl_01, lbl_02, lbl_03, lbl_04, lbl_05, lbl_06, lbl_07, lbl_08, lbl_09, lbl_10])
+        #
     def change_rockname(self, var_name, event):
         var_name.set(var_name.get())
         self.filename[0] = var_name.get()
@@ -4279,11 +4311,6 @@ class Rocks:
         elements_list = []
         data_minerals = {}
         #
-        print("Selected Mineralogy:", self.custom_mineralogy["mineralogy"])
-        print("Mineral Assemblage:", assemblage)
-        print("Number of Samples:", n_samples)
-        print("Minimum Porosity:", phi_min)
-        print("Maximum Porosity:", phi_max)
         for mineral in assemblage:
             data = Oxides(data_type=True, mineral=mineral).get_data()
             self.amounts[mineral] = []
@@ -4314,40 +4341,69 @@ class Rocks:
             for n, element in enumerate(elements_list):
                 result_helper = 0
                 for mineral in assemblage:
-                    if element in list(data_minerals[mineral]["chemistry"].keys()):
-                        if n < len(elements_list)-1:
-                            try:
+                    try:
+                        if element in list(data_minerals[mineral]["chemistry"].keys()):
+                            if n < len(elements_list)-1:
                                 try:
-                                    result_helper += self.amounts[mineral][index]*data_minerals[mineral]["chemistry"][element]
-                                    w_total += result_helper
+                                    try:
+                                        result_helper += self.amounts[mineral][index]*data_minerals[mineral]["chemistry"][element]
+                                        w_total += result_helper
+                                    except:
+                                        result_helper += 0
+                                        w_total += 0
                                 except:
-                                    result_helper += 0
-                                    w_total += 0
-                            except:
-                                try:
-                                    result_helper += self.amounts[mineral][index]*data_minerals[mineral][index]["chemistry"][element]
-                                    w_total += result_helper
-                                except:
-                                    result_helper += 0
-                                    w_total += 0
+                                    try:
+                                        result_helper += self.amounts[mineral][index]*data_minerals[mineral][index]["chemistry"][element]
+                                        w_total += result_helper
+                                    except:
+                                        result_helper += 0
+                                        w_total += 0
+                            else:
+                                w_total = 0
+                                for element_2 in elements_list:
+                                    if element_2 != element:
+                                        w_total += self.elements[element_2][-1]
+                                    else:
+                                        w_total += 0
+                                result_helper = 1 - w_total
                         else:
-                            w_total = 0
-                            for element_2 in elements_list:
-                                if element_2 != element:
-                                    w_total += self.elements[element_2][-1]
-                                else:
-                                    w_total += 0
-                            result_helper = 1 - w_total
-                    else:
-                        result_helper += 0
-                        w_total += 0
+                            result_helper += 0
+                            w_total += 0
+                    except:
+                        if element in list(data_minerals[mineral][index]["chemistry"].keys()):
+                            if n < len(elements_list)-1:
+                                try:
+                                    try:
+                                        result_helper += self.amounts[mineral][index]*data_minerals[mineral][index]["chemistry"][element]
+                                        w_total += result_helper
+                                    except:
+                                        result_helper += 0
+                                        w_total += 0
+                                except:
+                                    try:
+                                        result_helper += self.amounts[mineral][index]*data_minerals[mineral][index][index]["chemistry"][element]
+                                        w_total += result_helper
+                                    except:
+                                        result_helper += 0
+                                        w_total += 0
+                            else:
+                                w_total = 0
+                                for element_2 in elements_list:
+                                    if element_2 != element:
+                                        w_total += self.elements[element_2][-1]
+                                    else:
+                                        w_total += 0
+                                result_helper = 1 - w_total
+                        else:
+                            result_helper += 0
+                            w_total += 0
                 self.elements[element].append(round(result_helper, 4))
         self.rho = []
         self.bulk_mod = []
         self.shear_mod = []
         self.poisson = []
-        self.GR = []
-        self.PE = []
+        self.gamma_ray = []
+        self.photoelectricity = []
         self.vP = []
         self.vS = []
         self.vPvS = []
@@ -4376,8 +4432,8 @@ class Rocks:
                     K_list.append(round(data_minerals[mineral][i]["K"]*self.amounts[mineral][i], 3))
                     G_list.append(round(data_minerals[mineral][i]["G"]*self.amounts[mineral][i], 3))
                     poisson_value += self.amounts[mineral][i]*data_minerals[mineral][i]["nu"]
-            self.GR.append(round(gr_value, 2))
-            self.PE.append(round(pe_value, 2))
+            self.gamma_ray.append(round(gr_value, 2))
+            self.photoelectricity.append(round(pe_value, 2))
             K_geo = elast.calc_geometric_mean(self, w, K_list)
             G_geo = elast.calc_geometric_mean(self, w, G_list)
             self.bulk_mod.append(round(K_geo, 2))
@@ -4392,20 +4448,120 @@ class Rocks:
             self.vP.append(round(vP, 2))
             self.vS.append(round(vS, 2))
             self.vPvS.append(round(vP/vS, 3))
+        self.rho = np.array(self.rho)
+        self.vP = np.array(self.vP)
+        self.vS = np.array(self.vS)
         self.mineralogy = self.amounts
         self.chemistry = self.elements
         #
-        print("rho:", self.rho)
-        print("K:", self.bulk_mod)
-        print("G:", self.shear_mod)
-        print("Poisson:", self.poisson)
-        print("vP:", self.vP)
-        print("vS:", self.vS)
-        print("vP/vS:", self.vPvS)
-        print("GR:", self.GR)
-        print("PE:", self.PE)
-        print("Mineralogy:", self.mineralogy)
-        print("Chemistry:", self.chemistry)
+        self.list_elements = self.elements
+        self.list_minerals = assemblage
+        #
+        self.results = [self.rho, self.vP, self.vS, self.vPvS, self.bulk_mod, self.shear_mod, self.poisson, self.phi,
+                        self.gamma_ray, self.photoelectricity]
+        #
+        self.var_opt_chem = tk.StringVar()
+        opt_list_chem = ["No Selection"]
+        opt_list_chem.extend(self.list_elements)
+        opt_list_chem.extend(self.list_minerals)
+        self.opt_chem = SE(parent=self.parent_rock, row_id=36, column_id=0, n_rows=1, n_columns=2, bg=self.color_acc_01,
+                           fg="black").create_option_menu(var_opt=self.var_opt_chem, var_opt_set="Select Element/Mineral",
+                                                          opt_list=opt_list_chem, active_bg=self.color_acc_02,
+                                                          command=lambda var_opt=self.var_opt_chem: self.select_opt(var_opt))
+        self.gui_elements.append(self.opt_chem)
+        #
+        self.entr_list_min = []
+        self.entr_list_max = []
+        self.entr_list_mean = []
+        self.entr_list_std = []
+        for i in range(10+len(self.list_elements)):
+            self.entr_list_min.append(tk.IntVar())
+            self.entr_list_max.append(tk.IntVar())
+            self.entr_list_mean.append(tk.IntVar())
+            self.entr_list_std.append(tk.IntVar())
+        #
+        ## Entry Table
+        for i in range(10):
+            if i == 7:
+                entr_min = SE(parent=self.parent_rock, row_id=4+2*i, column_id=4, n_rows=2, bg=self.color_bg,
+                              fg=self.color_fg).create_entry(var_entr=self.entr_list_min[i], var_entr_set=round(np.min(self.results[i]*100), 3))
+                entr_max = SE(parent=self.parent_rock, row_id=4+2*i, column_id=5, n_rows=2, bg=self.color_bg,
+                              fg=self.color_fg).create_entry(var_entr=self.entr_list_max[i], var_entr_set=round(np.max(self.results[i]*100), 3))
+                entr_mean = SE(parent=self.parent_rock, row_id=4+2*i, column_id=6, n_rows=2, bg=self.color_bg,
+                               fg=self.color_fg).create_entry(var_entr=self.entr_list_mean[i], var_entr_set=round(np.mean(self.results[i]*100), 3))
+                entr_std = SE(parent=self.parent_rock, row_id=4+2*i, column_id=7, n_rows=2, bg=self.color_bg,
+                              fg=self.color_fg).create_entry(var_entr=self.entr_list_std[i], var_entr_set=round(np.std(self.results[i]*100, ddof=1), 3))
+            else:
+                entr_min = SE(parent=self.parent_rock, row_id=4+2*i, column_id=4, n_rows=2, bg=self.color_bg,
+                              fg=self.color_fg).create_entry(var_entr=self.entr_list_min[i], var_entr_set=round(np.min(self.results[i]), 3))
+                entr_max = SE(parent=self.parent_rock, row_id=4+2*i, column_id=5, n_rows=2, bg=self.color_bg,
+                              fg=self.color_fg).create_entry(var_entr=self.entr_list_max[i], var_entr_set=round(np.max(self.results[i]), 3))
+                entr_mean = SE(parent=self.parent_rock, row_id=4+2*i, column_id=6, n_rows=2, bg=self.color_bg,
+                               fg=self.color_fg).create_entry(var_entr=self.entr_list_mean[i], var_entr_set=round(np.mean(self.results[i]), 3))
+                entr_std = SE(parent=self.parent_rock, row_id=4+2*i, column_id=7, n_rows=2, bg=self.color_bg,
+                              fg=self.color_fg).create_entry(var_entr=self.entr_list_std[i], var_entr_set=round(np.std(self.results[i], ddof=1), 3))
+        for index, element in enumerate(self.list_elements, start=10):
+            if element not in ["U"]:
+                entr_min = SE(parent=self.parent_rock, row_id=15+index, column_id=4, bg=self.color_bg,
+                              fg=self.color_fg).create_entry(var_entr=self.entr_list_min[index],
+                                                             var_entr_set=round(np.min(self.elements[element]), 3))
+                entr_max = SE(parent=self.parent_rock, row_id=15+index, column_id=5, bg=self.color_bg,
+                              fg=self.color_fg).create_entry(var_entr=self.entr_list_max[index],
+                                                             var_entr_set=round(np.max(self.elements[element]), 3))
+                entr_mean = SE(parent=self.parent_rock, row_id=15+index, column_id=6, bg=self.color_bg,
+                               fg=self.color_fg).create_entry(var_entr=self.entr_list_mean[index],
+                                                              var_entr_set=round(np.mean(self.elements[element]), 3))
+                entr_std = SE(parent=self.parent_rock, row_id=15+index, column_id=7, bg=self.color_bg,
+                              fg=self.color_fg).create_entry(var_entr=self.entr_list_std[index],
+                                                             var_entr_set=round(np.std(self.elements[element], ddof=1), 3))
+            else:
+                ppm_amounts = np.array(self.elements[element])*10000
+                entr_min = SE(parent=self.parent_rock, row_id=15+index, column_id=4, bg=self.color_bg,
+                              fg=self.color_fg).create_entry(var_entr=self.entr_list_min[index],
+                                                             var_entr_set=round(np.min(ppm_amounts), 3))
+                entr_max = SE(parent=self.parent_rock, row_id=15+index, column_id=5, bg=self.color_bg,
+                              fg=self.color_fg).create_entry(var_entr=self.entr_list_max[index],
+                                                             var_entr_set=round(np.max(ppm_amounts), 3))
+                entr_mean = SE(parent=self.parent_rock, row_id=15+index, column_id=6, bg=self.color_bg,
+                               fg=self.color_fg).create_entry(var_entr=self.entr_list_mean[index],
+                                                              var_entr_set=round(np.mean(ppm_amounts), 3))
+                entr_std = SE(parent=self.parent_rock, row_id=15+index, column_id=7, bg=self.color_bg,
+                              fg=self.color_fg).create_entry(var_entr=self.entr_list_std[index],
+                                                             var_entr_set=round(np.std(ppm_amounts, ddof=1), 3))
+            #
+            self.entr_w["chemistry"].extend([entr_min, entr_max, entr_mean, entr_std])
+        #
+        for index, element in enumerate(self.list_elements, start=0):
+            if element not in ["U"]:
+                lbl = SE(parent=self.parent_rock, row_id=25+index, column_id=3, bg=self.color_bg,
+                         fg="black").create_label(text=str(element), relief=tk.RAISED)
+            else:
+                lbl = SE(parent=self.parent_rock, row_id=25+index, column_id=3, bg=self.color_bg,
+                         fg="black").create_label(text=str(element)+" (ppm)", relief=tk.RAISED)
+            self.lbl_w["chemistry"].append(lbl)
+        #
+        self.color_rock = "#7C9097"
+        #
+        self.labels = [["Densitiy $\\varrho$ (g/ccm)", "Seismic velocity $v_P$ (km/s)", "Seismic velocity $v_S$ (km/s)"],
+                       ["Bulk modulus $K$ (GPa)", "Shear modulus $G$ (GPa)", "Poisson's ratio $\\mu$ (1)"],
+                       ["Porosity $\\phi$ (%)", "Gamma ray GR (API)", "Photoelectricity PE (barns/electron)"]]
+        self.labels_scatter_rho = [["Seismic velocity $v_P$ (km/s)", "Seismic velocity $v_S$ (km/s)", "Velocity Ratio $v_P/v_S$ (1)"],
+                       ["Bulk modulus $K$ (GPa)", "Shear modulus $G$ (GPa)", "Poisson's ratio $\\mu$ (1)"],
+                       ["Porosity $\\phi$ (%)", "Gamma ray GR (API)", "Photoelectricity PE (barns/electron)"]]
+        self.labels_scatter_phi = [["Seismic velocity $v_P$ (km/s)", "Seismic velocity $v_S$ (km/s)", "Velocity Ratio $v_P/v_S$ (1)"],
+                       ["Bulk modulus $K$ (GPa)", "Shear modulus $G$ (GPa)", "Poisson's ratio $\\mu$ (1)"],
+                       ["Densitiy $\\varrho$ (g/ccm)", "Gamma ray GR (API)", "Photoelectricity PE (barns/electron)"]]
+        self.data_plot = [[self.rho/1000, self.vP/1000, self.vS/1000],
+                          [self.bulk_mod, self.shear_mod, self.poisson],
+                          [self.phi*100, self.gamma_ray, self.photoelectricity]]
+        self.data_plot_scatter_rho = [[self.vP/1000, self.vS/1000, self.vP/self.vS],
+                                      [self.bulk_mod, self.shear_mod, self.poisson],
+                                      [self.phi*100, self.gamma_ray, self.photoelectricity]]
+        self.data_plot_scatter_phi = [[self.vP/1000, self.vS/1000, self.vP/self.vS],
+                                      [self.bulk_mod, self.shear_mod, self.poisson],
+                                      [self.rho/1000, self.gamma_ray, self.photoelectricity]]
+        self.create_3x3_histo(parent=self.parent_rock, data=self.data_plot, row_id=2, column_id=9, n_rows=45,
+                              n_columns=9, color=self.color_rock, labels=self.labels)
     #
     def __call__(self):
         return self.lbl_w, self.entr_w, self.exp_data, self.filename
