@@ -3838,6 +3838,10 @@ class Rocks:
         #
         self.lbl_w["physics"].extend([lbl_01, lbl_02, lbl_03, lbl_04, lbl_05, lbl_06, lbl_07, lbl_08, lbl_09, lbl_10])
         #
+        lbl = SE(parent=self.parent_rock, row_id=24, column_id=3, n_columns=5, bg=self.color_bg,
+                 fg="black").create_label(text="Chemical composition (weight amounts %)", relief=tk.RAISED)
+        self.lbl_w["chemistry"].append(lbl)
+        #
     def change_rockname(self, var_name, event):
         var_name.set(var_name.get())
         self.filename[0] = var_name.get()
@@ -4306,54 +4310,61 @@ class Rocks:
         phi_max = round(self.var_phi1.get()/100, 4)
         self.phi = [round(rd.uniform(phi_min, phi_max), 4) for i in range(n_samples)]
         assemblage = list(self.custom_mineralogy["mineralogy"].keys())
-        self.amounts = {}
+        self.minerals = {}
         self.elements = {}
         elements_list = []
+        mineral_list = []
         data_minerals = {}
         #
         for mineral in assemblage:
             data = Oxides(data_type=True, mineral=mineral).get_data()
-            self.amounts[mineral] = []
+            self.minerals[data["mineral"]] = []
+            mineral_list.append(data["mineral"])
             elements_list.extend(list(data["chemistry"].keys()))
             if data["state"] == "variable":
                 dataset = Oxides(data_type=True, mineral=mineral).get_data(number=n_samples)
-                data_minerals[mineral] = dataset
+                data_minerals[data["mineral"]] = dataset
             else:
-                data_minerals[mineral] = data
+                data_minerals[data["mineral"]] = data
         #
         elements_list = list(dict.fromkeys(elements_list))
         elements_list.sort()
+        self.mineralogy = []
         for i in range(n_samples):
             w_total = 0
+            helper_dict = {}
             for j, mineral in enumerate(assemblage):
                 if j < len(assemblage)-1:
                     w = round(rd.uniform(float(self.custom_mineralogy["mineralogy"][mineral][0]),
                                           float(self.custom_mineralogy["mineralogy"][mineral][1])), 4)
-                    self.amounts[mineral].append(w)
+                    self.minerals[mineral_list[j]].append(w)
                     w_total += w
+                    helper_dict[mineral_list[j]] = w
                 else:
                     w = round(1-w_total, 4)
-                    self.amounts[mineral].append(w)
+                    self.minerals[mineral_list[j]].append(w)
                     w_total += w
+                    helper_dict[mineral_list[j]] = w
+            self.mineralogy.append(helper_dict)
         for element in elements_list:
             self.elements[element] = []
         for index in range(n_samples):
             for n, element in enumerate(elements_list):
                 result_helper = 0
-                for mineral in assemblage:
+                for mineral in mineral_list:
                     try:
                         if element in list(data_minerals[mineral]["chemistry"].keys()):
                             if n < len(elements_list)-1:
                                 try:
                                     try:
-                                        result_helper += self.amounts[mineral][index]*data_minerals[mineral]["chemistry"][element]
+                                        result_helper += self.minerals[mineral][index]*data_minerals[mineral]["chemistry"][element]
                                         w_total += result_helper
                                     except:
                                         result_helper += 0
                                         w_total += 0
                                 except:
                                     try:
-                                        result_helper += self.amounts[mineral][index]*data_minerals[mineral][index]["chemistry"][element]
+                                        result_helper += self.minerals[mineral][index]*data_minerals[mineral][index]["chemistry"][element]
                                         w_total += result_helper
                                     except:
                                         result_helper += 0
@@ -4374,14 +4385,14 @@ class Rocks:
                             if n < len(elements_list)-1:
                                 try:
                                     try:
-                                        result_helper += self.amounts[mineral][index]*data_minerals[mineral][index]["chemistry"][element]
+                                        result_helper += self.minerals[mineral][index]*data_minerals[mineral][index]["chemistry"][element]
                                         w_total += result_helper
                                     except:
                                         result_helper += 0
                                         w_total += 0
                                 except:
                                     try:
-                                        result_helper += self.amounts[mineral][index]*data_minerals[mineral][index][index]["chemistry"][element]
+                                        result_helper += self.minerals[mineral][index]*data_minerals[mineral][index][index]["chemistry"][element]
                                         w_total += result_helper
                                     except:
                                         result_helper += 0
@@ -4415,23 +4426,23 @@ class Rocks:
             gr_value = 0
             pe_value = 0
             poisson_value = 0
-            for mineral in assemblage:
+            for mineral in mineral_list:
                 try:
-                    rho_value += self.amounts[mineral][i]*data_minerals[mineral]["rho"]
-                    gr_value += self.amounts[mineral][i]*data_minerals[mineral]["GR"]
-                    pe_value += self.amounts[mineral][i]*data_minerals[mineral]["PE"]
-                    w.append(self.amounts[mineral][i])
-                    K_list.append(round(data_minerals[mineral]["K"]*self.amounts[mineral][i], 3))
-                    G_list.append(round(data_minerals[mineral]["G"]*self.amounts[mineral][i], 3))
-                    poisson_value += self.amounts[mineral][i]*data_minerals[mineral]["nu"]
+                    rho_value += self.minerals[mineral][i]*data_minerals[mineral]["rho"]
+                    gr_value += self.minerals[mineral][i]*data_minerals[mineral]["GR"]
+                    pe_value += self.minerals[mineral][i]*data_minerals[mineral]["PE"]
+                    w.append(self.minerals[mineral][i])
+                    K_list.append(round(data_minerals[mineral]["K"]*self.minerals[mineral][i], 3))
+                    G_list.append(round(data_minerals[mineral]["G"]*self.minerals[mineral][i], 3))
+                    poisson_value += self.minerals[mineral][i]*data_minerals[mineral]["nu"]
                 except:
-                    rho_value += self.amounts[mineral][i]*data_minerals[mineral][i]["rho"]
-                    gr_value += self.amounts[mineral][i]*data_minerals[mineral][i]["GR"]
-                    pe_value += self.amounts[mineral][i]*data_minerals[mineral][i]["PE"]
-                    w.append(self.amounts[mineral][i])
-                    K_list.append(round(data_minerals[mineral][i]["K"]*self.amounts[mineral][i], 3))
-                    G_list.append(round(data_minerals[mineral][i]["G"]*self.amounts[mineral][i], 3))
-                    poisson_value += self.amounts[mineral][i]*data_minerals[mineral][i]["nu"]
+                    rho_value += self.minerals[mineral][i]*data_minerals[mineral][i]["rho"]
+                    gr_value += self.minerals[mineral][i]*data_minerals[mineral][i]["GR"]
+                    pe_value += self.minerals[mineral][i]*data_minerals[mineral][i]["PE"]
+                    w.append(self.minerals[mineral][i])
+                    K_list.append(round(data_minerals[mineral][i]["K"]*self.minerals[mineral][i], 3))
+                    G_list.append(round(data_minerals[mineral][i]["G"]*self.minerals[mineral][i], 3))
+                    poisson_value += self.minerals[mineral][i]*data_minerals[mineral][i]["nu"]
             self.gamma_ray.append(round(gr_value, 2))
             self.photoelectricity.append(round(pe_value, 2))
             K_geo = elast.calc_geometric_mean(self, w, K_list)
@@ -4451,11 +4462,11 @@ class Rocks:
         self.rho = np.array(self.rho)
         self.vP = np.array(self.vP)
         self.vS = np.array(self.vS)
-        self.mineralogy = self.amounts
+        print(self.mineralogy)
         self.chemistry = self.elements
         #
         self.list_elements = self.elements
-        self.list_minerals = assemblage
+        self.list_minerals = mineral_list
         #
         self.results = [self.rho, self.vP, self.vS, self.vPvS, self.bulk_mod, self.shear_mod, self.poisson, self.phi,
                         self.gamma_ray, self.photoelectricity]
