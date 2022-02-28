@@ -6,7 +6,7 @@
 # Name:		gui.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		20.02.2022
+# Date:		28.02.2022
 
 #-----------------------------------------------
 
@@ -4317,12 +4317,18 @@ class Rocks:
         data_minerals = {}
         #
         for mineral in assemblage:
-            data = Oxides(data_type=True, mineral=mineral).get_data()
+            if mineral in ["Alkali Feldspar", "Plagioclase", "Scapolite", "Danburite"]:
+                data = Tectosilicates(data_type=True, mineral=mineral).get_data()
+            else:
+                data = Oxides(data_type=True, mineral=mineral).get_data()
             self.minerals[data["mineral"]] = []
             mineral_list.append(data["mineral"])
             elements_list.extend(list(data["chemistry"].keys()))
             if data["state"] == "variable":
-                dataset = Oxides(data_type=True, mineral=mineral).get_data(number=n_samples)
+                if mineral in ["Alkali Feldspar", "Plagioclase", "Scapolite", "Danburite"]:
+                    dataset = Tectosilicates(data_type=True, mineral=mineral).get_data(number=n_samples)
+                else:
+                    dataset = Oxides(data_type=True, mineral=mineral).get_data(number=n_samples)
                 data_minerals[data["mineral"]] = dataset
             else:
                 data_minerals[data["mineral"]] = data
@@ -4331,20 +4337,26 @@ class Rocks:
         elements_list.sort()
         self.mineralogy = []
         for i in range(n_samples):
-            w_total = 0
-            helper_dict = {}
-            for j, mineral in enumerate(assemblage):
-                if j < len(assemblage)-1:
-                    w = round(rd.uniform(float(self.custom_mineralogy["mineralogy"][mineral][0]),
-                                          float(self.custom_mineralogy["mineralogy"][mineral][1])), 4)
-                    self.minerals[mineral_list[j]].append(w)
-                    w_total += w
-                    helper_dict[mineral_list[j]] = w
-                else:
-                    w = round(1-w_total, 4)
-                    self.minerals[mineral_list[j]].append(w)
-                    w_total += w
-                    helper_dict[mineral_list[j]] = w
+            condition = False
+            while condition == False:
+                w_total = 0
+                helper_dict = {}
+                for j, mineral in enumerate(assemblage):
+                    if j < len(assemblage)-1:
+                        w = round(rd.uniform(float(self.custom_mineralogy["mineralogy"][mineral][0]),
+                                             float(self.custom_mineralogy["mineralogy"][mineral][1])), 4)
+                        self.minerals[mineral_list[j]].append(w)
+                        w_total += w
+                        helper_dict[mineral_list[j]] = w
+                    else:
+                        w = round(1-w_total, 4)
+                        if w >= 0.0:
+                            self.minerals[mineral_list[j]].append(w)
+                            w_total += w
+                            helper_dict[mineral_list[j]] = w
+                            condition = True
+                        else:
+                            condition = False
             self.mineralogy.append(helper_dict)
         for element in elements_list:
             self.elements[element] = []
@@ -4358,28 +4370,30 @@ class Rocks:
                                 try:
                                     try:
                                         result_helper += self.minerals[mineral][index]*data_minerals[mineral]["chemistry"][element]
-                                        w_total += result_helper
+                                        #w_total += result_helper
                                     except:
                                         result_helper += 0
-                                        w_total += 0
+                                        #w_total += 0
                                 except:
                                     try:
                                         result_helper += self.minerals[mineral][index]*data_minerals[mineral][index]["chemistry"][element]
-                                        w_total += result_helper
+                                        #w_total += result_helper
                                     except:
                                         result_helper += 0
-                                        w_total += 0
+                                        #w_total += 0
                             else:
+                                print(n, "von", len(elements_list), "minerals")
                                 w_total = 0
                                 for element_2 in elements_list:
                                     if element_2 != element:
                                         w_total += self.elements[element_2][-1]
                                     else:
                                         w_total += 0
+                                print(w_total)
                                 result_helper = 1 - w_total
                         else:
                             result_helper += 0
-                            w_total += 0
+                            #w_total += 0
                     except:
                         if element in list(data_minerals[mineral][index]["chemistry"].keys()):
                             if n < len(elements_list)-1:
@@ -4462,7 +4476,6 @@ class Rocks:
         self.rho = np.array(self.rho)
         self.vP = np.array(self.vP)
         self.vS = np.array(self.vS)
-        print(self.mineralogy)
         self.chemistry = self.elements
         #
         self.list_elements = self.elements
