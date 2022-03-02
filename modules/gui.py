@@ -4372,6 +4372,15 @@ class Rocks:
         for mineral in assemblage:
             if mineral in ["Alkali Feldspar", "Plagioclase", "Scapolite", "Danburite"]:
                 data = Tectosilicates(data_type=True, mineral=mineral).get_data()
+            elif mineral in ["Illite", "Kaolinite", "Montmorillonite", "Chlorite", "Vermiculite", "Biotite",
+                             "Muscovite", "Glauconite"]:
+                data = Phyllosilicates(data_type=True, mineral=mineral).get_data()
+            elif mineral in ["Calcite", "Dolomite", "Magnesite", "Rhodochrosite", "Siderite", "Aragonite", "Cerussite",
+                             "Ankerite", "Azurite", "Malachite"]:
+                data = Carbonates(data_type=True, mineral=mineral).get_data()
+            elif mineral in ["Pyrite", "Chalcopyrite", "Bornite", "Covellite", "Molybdenite", "Sphalerite", "Galena",
+                             "Fahlore"]:
+                data = Sulfides(data_type=True, mineral=mineral).get_data()
             else:
                 data = Oxides(data_type=True, mineral=mineral).get_data()
             self.minerals[data["mineral"]] = []
@@ -4380,6 +4389,15 @@ class Rocks:
             if data["state"] == "variable":
                 if mineral in ["Alkali Feldspar", "Plagioclase", "Scapolite", "Danburite"]:
                     dataset = Tectosilicates(data_type=True, mineral=mineral).get_data(number=n_samples)
+                elif mineral in ["Illite", "Kaolinite", "Montmorillonite", "Chlorite", "Vermiculite", "Biotite",
+                                 "Muscovite", "Glauconite"]:
+                    dataset = Phyllosilicates(data_type=True, mineral=mineral).get_data(number=n_samples)
+                elif mineral in ["Calcite", "Dolomite", "Magnesite", "Rhodochrosite", "Siderite", "Aragonite",
+                                 "Cerussite", "Ankerite", "Azurite", "Malachite"]:
+                    data = Carbonates(data_type=True, mineral=mineral).get_data()
+                elif mineral in ["Pyrite", "Chalcopyrite", "Bornite", "Covellite", "Molybdenite", "Sphalerite",
+                                 "Galena", "Fahlore"]:
+                    data = Sulfides(data_type=True, mineral=mineral).get_data()
                 else:
                     dataset = Oxides(data_type=True, mineral=mineral).get_data(number=n_samples)
                 data_minerals[data["mineral"]] = dataset

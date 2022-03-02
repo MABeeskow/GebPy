@@ -1610,10 +1610,70 @@ class dolomite:
 class Carbonates():
     """ Class that generates geophysical and geochemical data of carbonate minerals"""
     #
-    def __init__(self, traces_list=[], impurity="pure", data_type=False):
+    def __init__(self, traces_list=[], impurity="pure", data_type=False, mineral=None):
         self.traces_list = traces_list
         self.impurity = impurity
         self.data_type = data_type
+        self.mineral = mineral
+    #
+    def get_data(self, number=1):
+        if self.mineral in ["Cal", "Calcite"]:
+            if number > 1:
+                data = [self.create_calcite() for n in range(number)]
+            else:
+                data = self.create_calcite()
+        elif self.mineral in ["Dol", "Dolomite"]:
+            if number > 1:
+                data = [self.create_dolomite() for n in range(number)]
+            else:
+                data = self.create_dolomite()
+        elif self.mineral in ["Mgs", "Magnesite"]:
+            if number > 1:
+                data = [self.create_magnesite() for n in range(number)]
+            else:
+                data = self.create_magnesite()
+        elif self.mineral in ["Sd", "Siderite"]:
+            if number > 1:
+                data = [self.create_siderite() for n in range(number)]
+            else:
+                data = self.create_siderite()
+        elif self.mineral in ["Org", "Organic Matter"]:
+            if number > 1:
+                data = [self.create_organic_matter() for n in range(number)]
+            else:
+                data = self.create_organic_matter()
+        elif self.mineral in ["Rdc", "Rhodochrosite"]:
+            if number > 1:
+                data = [self.create_rhodochrosite() for n in range(number)]
+            else:
+                data = self.create_rhodochrosite()
+        elif self.mineral in ["Arg", "Aragonite"]:
+            if number > 1:
+                data = [self.create_aragonite() for n in range(number)]
+            else:
+                data = self.create_aragonite()
+        elif self.mineral in ["Cer", "Cerussite"]:
+            if number > 1:
+                data = [self.create_cerussite() for n in range(number)]
+            else:
+                data = self.create_cerussite()
+        elif self.mineral in ["Ank", "Ankerite"]:
+            if number > 1:
+                data = [self.create_ankerite() for n in range(number)]
+            else:
+                data = self.create_ankerite()
+        elif self.mineral in ["Az", "Azurite"]:
+            if number > 1:
+                data = [self.create_azurite() for n in range(number)]
+            else:
+                data = self.create_azurite()
+        elif self.mineral in ["Mal", "Malachite"]:
+            if number > 1:
+                data = [self.create_malachite() for n in range(number)]
+            else:
+                data = self.create_malachite()
+        #
+        return data
     #
     def create_calcite(self):   # CaCO3
         # Major elements
@@ -1627,23 +1687,27 @@ class Carbonates():
         traces_data = []
         if len(self.traces_list) > 0:
             self.impurity = "impure"
-        if self.impurity == "random":
-            self.traces_list = []
-            minors = ["Mn", "Fe", "Zn", "Co", "Ba", "Sr", "Pb", "Mg", "Cu", "Al", "Ni", "V", "Cr", "Mo"]
-            n = rd.randint(1, len(minors))
-            while len(self.traces_list) < n:
-                selection = rd.choice(minors)
-                if selection not in self.traces_list and selection not in majors_name:
-                    self.traces_list.append(selection)
-                else:
-                    continue
-        traces = [PeriodicSystem(name=i).get_data() for i in self.traces_list]
-        x_traces = [round(rd.uniform(0., 0.001), 6) for i in range(len(self.traces_list))]
-        for i in range(len(self.traces_list)):
-            traces_data.append([str(self.traces_list[i]), int(traces[i][1]), float(x_traces[i])])
-        if len(traces_data) > 0:
-            traces_data = np.array(traces_data, dtype=object)
-            traces_data = traces_data[traces_data[:, 1].argsort()]
+        if self.impurity == "pure":
+            var_state = "fixed"
+        else:
+            var_state = "variable"
+            if self.impurity == "random":
+                self.traces_list = []
+                minors = ["Mn", "Fe", "Zn", "Co", "Ba", "Sr", "Pb", "Mg", "Cu", "Al", "Ni", "V", "Cr", "Mo"]
+                n = rd.randint(1, len(minors))
+                while len(self.traces_list) < n:
+                    selection = rd.choice(minors)
+                    if selection not in self.traces_list and selection not in majors_name:
+                        self.traces_list.append(selection)
+                    else:
+                        continue
+            traces = [PeriodicSystem(name=i).get_data() for i in self.traces_list]
+            x_traces = [round(rd.uniform(0., 0.001), 6) for i in range(len(self.traces_list))]
+            for i in range(len(self.traces_list)):
+                traces_data.append([str(self.traces_list[i]), int(traces[i][1]), float(x_traces[i])])
+            if len(traces_data) > 0:
+                traces_data = np.array(traces_data, dtype=object)
+                traces_data = traces_data[traces_data[:, 1].argsort()]
         #
         data = []
         mineral = "Cal"
@@ -1697,6 +1761,7 @@ class Carbonates():
             #
             results = {}
             results["mineral"] = mineral
+            results["state"] = var_state
             results["M"] = molar_mass
             element_list = np.array(amounts)[:, 0]
             results["chemistry"] = {}
@@ -1735,23 +1800,27 @@ class Carbonates():
         traces_data = []
         if len(self.traces_list) > 0:
             self.impurity = "impure"
-        if self.impurity == "random":
-            self.traces_list = []
-            minors = ["Fe", "Mn", "Co", "Pb", "Zn"]
-            n = rd.randint(1, len(minors))
-            while len(self.traces_list) < n:
-                selection = rd.choice(minors)
-                if selection not in self.traces_list and selection not in majors_name:
-                    self.traces_list.append(selection)
-                else:
-                    continue
-        traces = [PeriodicSystem(name=i).get_data() for i in self.traces_list]
-        x_traces = [round(rd.uniform(0., 0.001), 6) for i in range(len(self.traces_list))]
-        for i in range(len(self.traces_list)):
-            traces_data.append([str(self.traces_list[i]), int(traces[i][1]), float(x_traces[i])])
-        if len(traces_data) > 0:
-            traces_data = np.array(traces_data, dtype=object)
-            traces_data = traces_data[traces_data[:, 1].argsort()]
+        if self.impurity == "pure":
+            var_state = "fixed"
+        else:
+            var_state = "variable"
+            if self.impurity == "random":
+                self.traces_list = []
+                minors = ["Fe", "Mn", "Co", "Pb", "Zn"]
+                n = rd.randint(1, len(minors))
+                while len(self.traces_list) < n:
+                    selection = rd.choice(minors)
+                    if selection not in self.traces_list and selection not in majors_name:
+                        self.traces_list.append(selection)
+                    else:
+                        continue
+            traces = [PeriodicSystem(name=i).get_data() for i in self.traces_list]
+            x_traces = [round(rd.uniform(0., 0.001), 6) for i in range(len(self.traces_list))]
+            for i in range(len(self.traces_list)):
+                traces_data.append([str(self.traces_list[i]), int(traces[i][1]), float(x_traces[i])])
+            if len(traces_data) > 0:
+                traces_data = np.array(traces_data, dtype=object)
+                traces_data = traces_data[traces_data[:, 1].argsort()]
         #
         data = []
         mineral = "Dol"
@@ -1805,6 +1874,7 @@ class Carbonates():
             #
             results = {}
             results["mineral"] = mineral
+            results["state"] = var_state
             results["M"] = molar_mass
             element_list = np.array(amounts)[:, 0]
             results["chemistry"] = {}
@@ -1842,23 +1912,27 @@ class Carbonates():
         traces_data = []
         if len(self.traces_list) > 0:
             self.impurity = "impure"
-        if self.impurity == "random":
-            self.traces_list = []
-            minors = ["Fe", "Mn", "Ca", "Co", "Ni"]
-            n = rd.randint(1, len(minors))
-            while len(self.traces_list) < n:
-                selection = rd.choice(minors)
-                if selection not in self.traces_list and selection not in majors_name:
-                    self.traces_list.append(selection)
-                else:
-                    continue
-        traces = [PeriodicSystem(name=i).get_data() for i in self.traces_list]
-        x_traces = [round(rd.uniform(0., 0.001), 6) for i in range(len(self.traces_list))]
-        for i in range(len(self.traces_list)):
-            traces_data.append([str(self.traces_list[i]), int(traces[i][1]), float(x_traces[i])])
-        if len(traces_data) > 0:
-            traces_data = np.array(traces_data, dtype=object)
-            traces_data = traces_data[traces_data[:, 1].argsort()]
+        if self.impurity == "pure":
+            var_state = "fixed"
+        else:
+            var_state = "variable"
+            if self.impurity == "random":
+                self.traces_list = []
+                minors = ["Fe", "Mn", "Ca", "Co", "Ni"]
+                n = rd.randint(1, len(minors))
+                while len(self.traces_list) < n:
+                    selection = rd.choice(minors)
+                    if selection not in self.traces_list and selection not in majors_name:
+                        self.traces_list.append(selection)
+                    else:
+                        continue
+            traces = [PeriodicSystem(name=i).get_data() for i in self.traces_list]
+            x_traces = [round(rd.uniform(0., 0.001), 6) for i in range(len(self.traces_list))]
+            for i in range(len(self.traces_list)):
+                traces_data.append([str(self.traces_list[i]), int(traces[i][1]), float(x_traces[i])])
+            if len(traces_data) > 0:
+                traces_data = np.array(traces_data, dtype=object)
+                traces_data = traces_data[traces_data[:, 1].argsort()]
         #
         data = []
         mineral = "Mgs"
@@ -1912,6 +1986,7 @@ class Carbonates():
             #
             results = {}
             results["mineral"] = mineral
+            results["state"] = var_state
             results["M"] = molar_mass
             element_list = np.array(amounts)[:, 0]
             results["chemistry"] = {}
@@ -1949,23 +2024,27 @@ class Carbonates():
         traces_data = []
         if len(self.traces_list) > 0:
             self.impurity = "impure"
-        if self.impurity == "random":
-            self.traces_list = []
-            minors = ["Mn", "Mg", "Ca", "Zn", "Co"]
-            n = rd.randint(1, len(minors))
-            while len(self.traces_list) < n:
-                selection = rd.choice(minors)
-                if selection not in self.traces_list and selection not in majors_name:
-                    self.traces_list.append(selection)
-                else:
-                    continue
-        traces = [PeriodicSystem(name=i).get_data() for i in self.traces_list]
-        x_traces = [round(rd.uniform(0., 0.001), 6) for i in range(len(self.traces_list))]
-        for i in range(len(self.traces_list)):
-            traces_data.append([str(self.traces_list[i]), int(traces[i][1]), float(x_traces[i])])
-        if len(traces_data) > 0:
-            traces_data = np.array(traces_data, dtype=object)
-            traces_data = traces_data[traces_data[:, 1].argsort()]
+        if self.impurity == "pure":
+            var_state = "fixed"
+        else:
+            var_state = "variable"
+            if self.impurity == "random":
+                self.traces_list = []
+                minors = ["Mn", "Mg", "Ca", "Zn", "Co"]
+                n = rd.randint(1, len(minors))
+                while len(self.traces_list) < n:
+                    selection = rd.choice(minors)
+                    if selection not in self.traces_list and selection not in majors_name:
+                        self.traces_list.append(selection)
+                    else:
+                        continue
+            traces = [PeriodicSystem(name=i).get_data() for i in self.traces_list]
+            x_traces = [round(rd.uniform(0., 0.001), 6) for i in range(len(self.traces_list))]
+            for i in range(len(self.traces_list)):
+                traces_data.append([str(self.traces_list[i]), int(traces[i][1]), float(x_traces[i])])
+            if len(traces_data) > 0:
+                traces_data = np.array(traces_data, dtype=object)
+                traces_data = traces_data[traces_data[:, 1].argsort()]
         #
         mineral = "Sd"
         #
@@ -2019,6 +2098,7 @@ class Carbonates():
             #
             results = {}
             results["mineral"] = mineral
+            results["state"] = var_state
             results["M"] = molar_mass
             element_list = np.array(amounts)[:, 0]
             results["chemistry"] = {}
@@ -2060,23 +2140,27 @@ class Carbonates():
         traces_data = []
         if len(self.traces_list) > 0:
             self.impurity = "impure"
-        if self.impurity == "random":
-            self.traces_list = []
-            minors = [None]
-            n = rd.randint(1, len(minors))
-            while len(self.traces_list) < n:
-                selection = rd.choice(minors)
-                if selection not in self.traces_list and selection not in majors_name:
-                    self.traces_list.append(selection)
-                else:
-                    continue
-        traces = [PeriodicSystem(name=i).get_data() for i in self.traces_list]
-        x_traces = [round(rd.uniform(0., 0.001), 6) for i in range(len(self.traces_list))]
-        for i in range(len(self.traces_list)):
-            traces_data.append([str(self.traces_list[i]), int(traces[i][1]), float(x_traces[i])])
-        if len(traces_data) > 0:
-            traces_data = np.array(traces_data, dtype=object)
-            traces_data = traces_data[traces_data[:, 1].argsort()]
+        if self.impurity == "pure":
+            var_state = "variable"
+        else:
+            var_state = "variable"
+            if self.impurity == "random":
+                self.traces_list = []
+                minors = [None]
+                n = rd.randint(1, len(minors))
+                while len(self.traces_list) < n:
+                    selection = rd.choice(minors)
+                    if selection not in self.traces_list and selection not in majors_name:
+                        self.traces_list.append(selection)
+                    else:
+                        continue
+            traces = [PeriodicSystem(name=i).get_data() for i in self.traces_list]
+            x_traces = [round(rd.uniform(0., 0.001), 6) for i in range(len(self.traces_list))]
+            for i in range(len(self.traces_list)):
+                traces_data.append([str(self.traces_list[i]), int(traces[i][1]), float(x_traces[i])])
+            if len(traces_data) > 0:
+                traces_data = np.array(traces_data, dtype=object)
+                traces_data = traces_data[traces_data[:, 1].argsort()]
         #
         mineral = "Org"
         #
@@ -2100,7 +2184,6 @@ class Carbonates():
         #
         molar_mass, amounts = MineralChemistry(w_traces=traces_data, molar_mass_pure=molar_mass_pure,
                                                majors=majors_data).calculate_molar_mass()
-        print(amounts)
         element = [PeriodicSystem(name=amounts[i][0]).get_data() for i in range(len(amounts))]
         # Density
         rho = w_ch*carbohydrates[2] + w_lg*lignin[2] + w_lp*lipid[2]
@@ -2140,6 +2223,7 @@ class Carbonates():
             #
             results = {}
             results["mineral"] = mineral
+            results["state"] = var_state
             results["M"] = round(molar_mass, 3)
             element_list = np.array(amounts)[:, 0]
             results["chemistry"] = {}
@@ -2177,23 +2261,27 @@ class Carbonates():
         traces_data = []
         if len(self.traces_list) > 0:
             self.impurity = "impure"
-        if self.impurity == "random":
-            self.traces_list = []
-            minors = ["Fe", "Ca", "Mg", "Zn", "Co", "Cd"]
-            n = rd.randint(1, len(minors))
-            while len(self.traces_list) < n:
-                selection = rd.choice(minors)
-                if selection not in self.traces_list and selection not in majors_name:
-                    self.traces_list.append(selection)
-                else:
-                    continue
-        traces = [PeriodicSystem(name=i).get_data() for i in self.traces_list]
-        x_traces = [round(rd.uniform(0., 0.001), 6) for i in range(len(self.traces_list))]
-        for i in range(len(self.traces_list)):
-            traces_data.append([str(self.traces_list[i]), int(traces[i][1]), float(x_traces[i])])
-        if len(traces_data) > 0:
-            traces_data = np.array(traces_data, dtype=object)
-            traces_data = traces_data[traces_data[:, 1].argsort()]
+        if self.impurity == "pure":
+            var_state = "fixed"
+        else:
+            var_state = "variable"
+            if self.impurity == "random":
+                self.traces_list = []
+                minors = ["Fe", "Ca", "Mg", "Zn", "Co", "Cd"]
+                n = rd.randint(1, len(minors))
+                while len(self.traces_list) < n:
+                    selection = rd.choice(minors)
+                    if selection not in self.traces_list and selection not in majors_name:
+                        self.traces_list.append(selection)
+                    else:
+                        continue
+            traces = [PeriodicSystem(name=i).get_data() for i in self.traces_list]
+            x_traces = [round(rd.uniform(0., 0.001), 6) for i in range(len(self.traces_list))]
+            for i in range(len(self.traces_list)):
+                traces_data.append([str(self.traces_list[i]), int(traces[i][1]), float(x_traces[i])])
+            if len(traces_data) > 0:
+                traces_data = np.array(traces_data, dtype=object)
+                traces_data = traces_data[traces_data[:, 1].argsort()]
         #
         # Molar mass
         molar_mass_pure = manganese[2] + (carbon[2] + 3*oxygen[2])
@@ -2245,6 +2333,7 @@ class Carbonates():
             #
             results = {}
             results["mineral"] = name
+            results["state"] = var_state
             results["M"] = molar_mass
             element_list = np.array(amounts)[:, 0]
             results["chemistry"] = {}
@@ -2285,23 +2374,27 @@ class Carbonates():
         traces_data = []
         if len(self.traces_list) > 0:
             self.impurity = "impure"
-        if self.impurity == "random":
-            self.traces_list = []
-            minors = ["Sr", "Pb", "Zn"]
-            n = rd.randint(1, len(minors))
-            while len(self.traces_list) < n:
-                selection = rd.choice(minors)
-                if selection not in self.traces_list and selection not in majors_name:
-                    self.traces_list.append(selection)
-                else:
-                    continue
-        traces = [PeriodicSystem(name=i).get_data() for i in self.traces_list]
-        x_traces = [round(rd.uniform(0., 0.001), 6) for i in range(len(self.traces_list))]
-        for i in range(len(self.traces_list)):
-            traces_data.append([str(self.traces_list[i]), int(traces[i][1]), float(x_traces[i])])
-        if len(traces_data) > 0:
-            traces_data = np.array(traces_data, dtype=object)
-            traces_data = traces_data[traces_data[:, 1].argsort()]
+        if self.impurity == "pure":
+            var_state = "fixed"
+        else:
+            var_state = "variable"
+            if self.impurity == "random":
+                self.traces_list = []
+                minors = ["Sr", "Pb", "Zn"]
+                n = rd.randint(1, len(minors))
+                while len(self.traces_list) < n:
+                    selection = rd.choice(minors)
+                    if selection not in self.traces_list and selection not in majors_name:
+                        self.traces_list.append(selection)
+                    else:
+                        continue
+            traces = [PeriodicSystem(name=i).get_data() for i in self.traces_list]
+            x_traces = [round(rd.uniform(0., 0.001), 6) for i in range(len(self.traces_list))]
+            for i in range(len(self.traces_list)):
+                traces_data.append([str(self.traces_list[i]), int(traces[i][1]), float(x_traces[i])])
+            if len(traces_data) > 0:
+                traces_data = np.array(traces_data, dtype=object)
+                traces_data = traces_data[traces_data[:, 1].argsort()]
         #
         # Molar mass
         molar_mass_pure = calcium[2] + (carbon[2] + 3*oxygen[2])
@@ -2353,6 +2446,7 @@ class Carbonates():
             #
             results = {}
             results["mineral"] = name
+            results["state"] = var_state
             results["M"] = molar_mass
             element_list = np.array(amounts)[:, 0]
             results["chemistry"] = {}
@@ -2393,23 +2487,27 @@ class Carbonates():
         traces_data = []
         if len(self.traces_list) > 0:
             self.impurity = "impure"
-        if self.impurity == "random":
-            self.traces_list = []
-            minors = [None]
-            n = rd.randint(1, len(minors))
-            while len(self.traces_list) < n:
-                selection = rd.choice(minors)
-                if selection not in self.traces_list and selection not in majors_name:
-                    self.traces_list.append(selection)
-                else:
-                    continue
-        traces = [PeriodicSystem(name=i).get_data() for i in self.traces_list]
-        x_traces = [round(rd.uniform(0., 0.001), 6) for i in range(len(self.traces_list))]
-        for i in range(len(self.traces_list)):
-            traces_data.append([str(self.traces_list[i]), int(traces[i][1]), float(x_traces[i])])
-        if len(traces_data) > 0:
-            traces_data = np.array(traces_data, dtype=object)
-            traces_data = traces_data[traces_data[:, 1].argsort()]
+        if self.impurity == "pure":
+            var_state = "fixed"
+        else:
+            var_state = "variable"
+            if self.impurity == "random":
+                self.traces_list = []
+                minors = [None]
+                n = rd.randint(1, len(minors))
+                while len(self.traces_list) < n:
+                    selection = rd.choice(minors)
+                    if selection not in self.traces_list and selection not in majors_name:
+                        self.traces_list.append(selection)
+                    else:
+                        continue
+            traces = [PeriodicSystem(name=i).get_data() for i in self.traces_list]
+            x_traces = [round(rd.uniform(0., 0.001), 6) for i in range(len(self.traces_list))]
+            for i in range(len(self.traces_list)):
+                traces_data.append([str(self.traces_list[i]), int(traces[i][1]), float(x_traces[i])])
+            if len(traces_data) > 0:
+                traces_data = np.array(traces_data, dtype=object)
+                traces_data = traces_data[traces_data[:, 1].argsort()]
         #
         # Molar mass
         molar_mass_pure = lead[2] + (carbon[2] + 3*oxygen[2])
@@ -2461,6 +2559,7 @@ class Carbonates():
             #
             results = {}
             results["mineral"] = name
+            results["state"] = var_state
             results["M"] = molar_mass
             element_list = np.array(amounts)[:, 0]
             results["chemistry"] = {}
@@ -2507,23 +2606,27 @@ class Carbonates():
         traces_data = []
         if len(self.traces_list) > 0:
             self.impurity = "impure"
-        if self.impurity == "random":
-            self.traces_list = []
-            minors = ["Mn"]
-            n = rd.randint(1, len(minors))
-            while len(self.traces_list) < n:
-                selection = rd.choice(minors)
-                if selection not in self.traces_list and selection not in majors_name:
-                    self.traces_list.append(selection)
-                else:
-                    continue
-        traces = [PeriodicSystem(name=i).get_data() for i in self.traces_list]
-        x_traces = [round(rd.uniform(0., 0.001), 6) for i in range(len(self.traces_list))]
-        for i in range(len(self.traces_list)):
-            traces_data.append([str(self.traces_list[i]), int(traces[i][1]), float(x_traces[i])])
-        if len(traces_data) > 0:
-            traces_data = np.array(traces_data, dtype=object)
-            traces_data = traces_data[traces_data[:, 1].argsort()]
+        if self.impurity == "pure":
+            var_state = "variable"
+        else:
+            var_state = "variable"
+            if self.impurity == "random":
+                self.traces_list = []
+                minors = ["Mn"]
+                n = rd.randint(1, len(minors))
+                while len(self.traces_list) < n:
+                    selection = rd.choice(minors)
+                    if selection not in self.traces_list and selection not in majors_name:
+                        self.traces_list.append(selection)
+                    else:
+                        continue
+            traces = [PeriodicSystem(name=i).get_data() for i in self.traces_list]
+            x_traces = [round(rd.uniform(0., 0.001), 6) for i in range(len(self.traces_list))]
+            for i in range(len(self.traces_list)):
+                traces_data.append([str(self.traces_list[i]), int(traces[i][1]), float(x_traces[i])])
+            if len(traces_data) > 0:
+                traces_data = np.array(traces_data, dtype=object)
+                traces_data = traces_data[traces_data[:, 1].argsort()]
         #
         # Molar mass
         molar_mass_pure = calcium[2] + (x*iron[2] + (1-x)*magnesium[2]) + 2*(carbon[2] + 3*oxygen[2])
@@ -2590,6 +2693,7 @@ class Carbonates():
             #
             results = {}
             results["mineral"] = name
+            results["state"] = var_state
             results["M"] = molar_mass
             element_list = np.array(amounts)[:, 0]
             results["chemistry"] = {}
@@ -2632,23 +2736,27 @@ class Carbonates():
         traces_data = []
         if len(self.traces_list) > 0:
             self.impurity = "impure"
-        if self.impurity == "random":
-            self.traces_list = []
-            minors = [None]
-            n = rd.randint(1, len(minors))
-            while len(self.traces_list) < n:
-                selection = rd.choice(minors)
-                if selection not in self.traces_list and selection not in majors_name:
-                    self.traces_list.append(selection)
-                else:
-                    continue
-        traces = [PeriodicSystem(name=i).get_data() for i in self.traces_list]
-        x_traces = [round(rd.uniform(0., 0.001), 6) for i in range(len(self.traces_list))]
-        for i in range(len(self.traces_list)):
-            traces_data.append([str(self.traces_list[i]), int(traces[i][1]), float(x_traces[i])])
-        if len(traces_data) > 0:
-            traces_data = np.array(traces_data, dtype=object)
-            traces_data = traces_data[traces_data[:, 1].argsort()]
+        if self.impurity == "pure":
+            var_state = "fixed"
+        else:
+            var_state = "variable"
+            if self.impurity == "random":
+                self.traces_list = []
+                minors = [None]
+                n = rd.randint(1, len(minors))
+                while len(self.traces_list) < n:
+                    selection = rd.choice(minors)
+                    if selection not in self.traces_list and selection not in majors_name:
+                        self.traces_list.append(selection)
+                    else:
+                        continue
+            traces = [PeriodicSystem(name=i).get_data() for i in self.traces_list]
+            x_traces = [round(rd.uniform(0., 0.001), 6) for i in range(len(self.traces_list))]
+            for i in range(len(self.traces_list)):
+                traces_data.append([str(self.traces_list[i]), int(traces[i][1]), float(x_traces[i])])
+            if len(traces_data) > 0:
+                traces_data = np.array(traces_data, dtype=object)
+                traces_data = traces_data[traces_data[:, 1].argsort()]
         #
         # Molar mass
         molar_mass_pure = 3*copper[2] + 2*(carbon[2] + 3*oxygen[2]) + 2*(oxygen[2] + hydrogen[2])
@@ -2700,6 +2808,7 @@ class Carbonates():
             #
             results = {}
             results["mineral"] = name
+            results["state"] = var_state
             results["M"] = molar_mass
             element_list = np.array(amounts)[:, 0]
             results["chemistry"] = {}
@@ -2742,23 +2851,27 @@ class Carbonates():
         traces_data = []
         if len(self.traces_list) > 0:
             self.impurity = "impure"
-        if self.impurity == "random":
-            self.traces_list = []
-            minors = ["Zn", "Co", "Ni"]
-            n = rd.randint(1, len(minors))
-            while len(self.traces_list) < n:
-                selection = rd.choice(minors)
-                if selection not in self.traces_list and selection not in majors_name:
-                    self.traces_list.append(selection)
-                else:
-                    continue
-        traces = [PeriodicSystem(name=i).get_data() for i in self.traces_list]
-        x_traces = [round(rd.uniform(0., 0.001), 6) for i in range(len(self.traces_list))]
-        for i in range(len(self.traces_list)):
-            traces_data.append([str(self.traces_list[i]), int(traces[i][1]), float(x_traces[i])])
-        if len(traces_data) > 0:
-            traces_data = np.array(traces_data, dtype=object)
-            traces_data = traces_data[traces_data[:, 1].argsort()]
+        if self.impurity == "pure":
+            var_state = "fixed"
+        else:
+            var_state = "variable"
+            if self.impurity == "random":
+                self.traces_list = []
+                minors = ["Zn", "Co", "Ni"]
+                n = rd.randint(1, len(minors))
+                while len(self.traces_list) < n:
+                    selection = rd.choice(minors)
+                    if selection not in self.traces_list and selection not in majors_name:
+                        self.traces_list.append(selection)
+                    else:
+                        continue
+            traces = [PeriodicSystem(name=i).get_data() for i in self.traces_list]
+            x_traces = [round(rd.uniform(0., 0.001), 6) for i in range(len(self.traces_list))]
+            for i in range(len(self.traces_list)):
+                traces_data.append([str(self.traces_list[i]), int(traces[i][1]), float(x_traces[i])])
+            if len(traces_data) > 0:
+                traces_data = np.array(traces_data, dtype=object)
+                traces_data = traces_data[traces_data[:, 1].argsort()]
         #
         # Molar mass
         molar_mass_pure = 2*copper[2] + (carbon[2] + 3*oxygen[2]) + 2*(oxygen[2] + hydrogen[2])
@@ -2810,6 +2923,7 @@ class Carbonates():
             #
             results = {}
             results["mineral"] = name
+            results["state"] = var_state
             results["M"] = molar_mass
             element_list = np.array(amounts)[:, 0]
             results["chemistry"] = {}
