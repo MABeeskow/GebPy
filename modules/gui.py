@@ -2871,6 +2871,7 @@ class Rocks:
         self.filename = filename
         self.filename.extend([self.rock, var_entr_start, self.var_rockname])
         self.porosities = [var_phi0_start, var_phi1_start]
+        self.opt_list_chem = ["No Selection"]
         #
         ## Labels
         #
@@ -3009,6 +3010,7 @@ class Rocks:
                 #
                 data_all.append(data)
             self.exp_data.extend(data_all)
+            print(self.exp_data)
             #
             if isinstance(data_all[0], dict):
                 self.rho = DP(dataset=data_all).extract_data(keyword="rho")
@@ -3052,12 +3054,12 @@ class Rocks:
                             self.gamma_ray, self.photoelectricity]
             #
             self.var_opt_chem = tk.StringVar()
-            opt_list_chem = ["No Selection"]
-            opt_list_chem.extend(self.list_elements)
-            opt_list_chem.extend(self.list_minerals)
+            self.opt_list_chem = ["No Selection"]
+            self.opt_list_chem.extend(self.list_elements)
+            self.opt_list_chem.extend(self.list_minerals)
             self.opt_chem = SE(parent=self.parent_rock, row_id=36, column_id=0, n_rows=1, n_columns=2, bg=self.color_acc_01,
                                fg="black").create_option_menu(var_opt=self.var_opt_chem, var_opt_set="Select Element/Mineral",
-                                                              opt_list=opt_list_chem, active_bg=self.color_acc_02,
+                                                              opt_list=self.opt_list_chem, active_bg=self.color_acc_02,
                                                               command=lambda var_opt=self.var_opt_chem: self.select_opt(var_opt))
             self.gui_elements.append(self.opt_chem)
             #
@@ -3201,7 +3203,6 @@ class Rocks:
         if self.var_opt_chem.get() not in ["No Selection", "Select Element/Mineral"]:
             self.fig.subplots_adjust(bottom=0.125)
             cbar_ax = self.fig.add_axes([0.15, 0.05, 0.8, 0.01])
-            print(self.data_c)
             cbar = self.fig.colorbar(plot, format="%.3f", cax=cbar_ax, orientation="horizontal",
                                      ticks=np.linspace(min(self.data_c), max(self.data_c), 10, endpoint=True))
             cbar.set_label(self.var_opt_chem.get()+" (%)", rotation=0)
@@ -3285,8 +3286,9 @@ class Rocks:
         except:
             pass
         #
-        del self.filename[-1]
-        self.filename.append(var_entr.get())
+        #del self.filename[-1]
+        #self.filename.append(var_entr.get())
+        self.filename[1] = var_entr.get()
         #
         self.var_rb_geochem.set(2)
         lbl = SE(parent=self.parent_rock, row_id=24, column_id=3, n_columns=5, bg=self.color_bg,
@@ -3301,87 +3303,90 @@ class Rocks:
                          fg="black").create_label(text=str(element)+" (ppm)", relief=tk.RAISED)
             self.lbl_w["chemistry"].append(lbl)
         #
-        data_all = []
-        for i in range(var_entr.get()):
-            if self.rock == "Sandstone":
-                data = sandstone(fluid="water", actualThickness=0).create_simple_sandstone(dict_output=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
-            elif self.rock == "Shale":
-                data = shale(fluid="water").create_simple_shale(dict_output=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
-            elif self.rock == "Limestone":
-                data = limestone(fluid="water", actualThickness=0).create_simple_limestone(dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
-            elif self.rock == "Dolomite Rock":
-                data = dolomite(fluid="water", actualThickness=0).create_simple_dolomite(dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
+        try:
+            data_all = []
+            for i in range(var_entr.get()):
+                if self.rock == "Sandstone":
+                    data = sandstone(fluid="water", actualThickness=0).create_simple_sandstone(dict_output=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
+                elif self.rock == "Shale":
+                    data = shale(fluid="water").create_simple_shale(dict_output=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
+                elif self.rock == "Limestone":
+                    data = limestone(fluid="water", actualThickness=0).create_simple_limestone(dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
+                elif self.rock == "Dolomite Rock":
+                    data = dolomite(fluid="water", actualThickness=0).create_simple_dolomite(dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
+                #
+                elif self.rock == "Felsic Rock":
+                    data = Plutonic(fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_felsic()
+                elif self.rock == "Intermediate Rock":
+                    data = Plutonic(fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_intermediate()
+                elif self.rock == "Granite":
+                    data = Plutonic(fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_simple_granite()
+                elif self.rock == "Gabbro":
+                    data = Plutonic(fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_simple_gabbro()
+                elif self.rock == "Diorite":
+                    data = Plutonic(fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_simple_diorite()
+                elif self.rock == "Granodiorite":
+                    data = Plutonic(fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_simple_granodiorite()
+                elif self.rock == "Monzonite":
+                    data = Plutonic(fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_simple_monzonite()
+                elif self.rock == "Quartzolite":
+                    data = Plutonic(fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_simple_quartzolite()
+                elif self.rock == "Qz-rich Granitoid":
+                    data = Plutonic(fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_simple_quartzrich_granitoid()
+                elif self.rock == "Syenite":
+                    data = Plutonic(fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_simple_syenite()
+                elif self.rock == "Tonalite":
+                    data = Plutonic(fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_simple_tonalite()
+                #
+                elif self.rock == "Rock Salt":
+                    data = Evaporites(fluid="water", actualThickness=0).create_simple_rocksalt(dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
+                elif self.rock == "Anhydrite":
+                    data = Evaporites(fluid="water", actualThickness=0).create_simple_anhydrite(dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
+                elif self.rock == "Kupferschiefer":
+                    data = Ores(fluid="water", actualThickness=0, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100), data_type=True).create_kupferschiefer()
+                #
+                data_all.append(data)
+            self.exp_data.extend(data_all)
             #
-            elif self.rock == "Felsic Rock":
-                data = Plutonic(fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_felsic()
-            elif self.rock == "Intermediate Rock":
-                data = Plutonic(fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_intermediate()
-            elif self.rock == "Granite":
-                data = Plutonic(fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_simple_granite()
-            elif self.rock == "Gabbro":
-                data = Plutonic(fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_simple_gabbro()
-            elif self.rock == "Diorite":
-                data = Plutonic(fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_simple_diorite()
-            elif self.rock == "Granodiorite":
-                data = Plutonic(fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_simple_granodiorite()
-            elif self.rock == "Monzonite":
-                data = Plutonic(fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_simple_monzonite()
-            elif self.rock == "Quartzolite":
-                data = Plutonic(fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_simple_quartzolite()
-            elif self.rock == "Qz-rich Granitoid":
-                data = Plutonic(fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_simple_quartzrich_granitoid()
-            elif self.rock == "Syenite":
-                data = Plutonic(fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_simple_syenite()
-            elif self.rock == "Tonalite":
-                data = Plutonic(fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_simple_tonalite()
+            if isinstance(data_all[0], dict):
+                self.rho = DP(dataset=data_all).extract_data(keyword="rho")
+                self.vP = DP(dataset=data_all).extract_data(keyword="vP")
+                self.vS = DP(dataset=data_all).extract_data(keyword="vS")
+                self.vPvS = DP(dataset=data_all).extract_data(keyword="vP/vS")
+                self.bulk_mod = DP(dataset=data_all).extract_data(keyword="K")
+                self.shear_mod = DP(dataset=data_all).extract_data(keyword="G")
+                self.youngs_mod = DP(dataset=data_all).extract_data(keyword="E")
+                self.poisson = DP(dataset=data_all).extract_data(keyword="nu")
+                self.phi = DP(dataset=data_all).extract_data(keyword="phi")
+                self.gamma_ray = DP(dataset=data_all).extract_data(keyword="GR")
+                self.photoelectricity = DP(dataset=data_all).extract_data(keyword="PE")
+                self.chemistry = DP(dataset=data_all).extract_data(keyword="chemistry")
+                self.mineralogy = DP(dataset=data_all).extract_data(keyword="mineralogy")
+            else:
+                self.rho = DP(dataset=data_all).extract_densities(type="random", keyword="bulk")
+                self.vP = DP(dataset=data_all).extract_seismic_velocities(type="random", keyword="vP")
+                self.vS = DP(dataset=data_all).extract_seismic_velocities(type="random", keyword="vS")
+                self.bulk_mod = DP(dataset=data_all).extract_elastic_moduli(type="random", keyword="bulk")
+                self.shear_mod = DP(dataset=data_all).extract_elastic_moduli(type="random", keyword="shear")
+                self.poisson = DP(dataset=data_all).extract_elastic_moduli(type="random", keyword="poisson")
+                self.phi = DP(dataset=data_all).extract_porosity(type="random")
+                self.gamma_ray = DP(dataset=data_all).extract_gamma_ray(type="random")
+                self.photoelectricity = DP(dataset=data_all).extract_photoelectricity(type="random")
             #
-            elif self.rock == "Rock Salt":
-                data = Evaporites(fluid="water", actualThickness=0).create_simple_rocksalt(dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
-            elif self.rock == "Anhydrite":
-                data = Evaporites(fluid="water", actualThickness=0).create_simple_anhydrite(dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
-            elif self.rock == "Kupferschiefer":
-                data = Ores(fluid="water", actualThickness=0, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100), data_type=True).create_kupferschiefer()
-            #
-            data_all.append(data)
-        self.exp_data.extend(data_all)
-        #
-        if isinstance(data_all[0], dict):
-            self.rho = DP(dataset=data_all).extract_data(keyword="rho")
-            self.vP = DP(dataset=data_all).extract_data(keyword="vP")
-            self.vS = DP(dataset=data_all).extract_data(keyword="vS")
-            self.vPvS = DP(dataset=data_all).extract_data(keyword="vP/vS")
-            self.bulk_mod = DP(dataset=data_all).extract_data(keyword="K")
-            self.shear_mod = DP(dataset=data_all).extract_data(keyword="G")
-            self.youngs_mod = DP(dataset=data_all).extract_data(keyword="E")
-            self.poisson = DP(dataset=data_all).extract_data(keyword="nu")
-            self.phi = DP(dataset=data_all).extract_data(keyword="phi")
-            self.gamma_ray = DP(dataset=data_all).extract_data(keyword="GR")
-            self.photoelectricity = DP(dataset=data_all).extract_data(keyword="PE")
-            self.chemistry = DP(dataset=data_all).extract_data(keyword="chemistry")
-            self.mineralogy = DP(dataset=data_all).extract_data(keyword="mineralogy")
-        else:
-            self.rho = DP(dataset=data_all).extract_densities(type="random", keyword="bulk")
-            self.vP = DP(dataset=data_all).extract_seismic_velocities(type="random", keyword="vP")
-            self.vS = DP(dataset=data_all).extract_seismic_velocities(type="random", keyword="vS")
-            self.bulk_mod = DP(dataset=data_all).extract_elastic_moduli(type="random", keyword="bulk")
-            self.shear_mod = DP(dataset=data_all).extract_elastic_moduli(type="random", keyword="shear")
-            self.poisson = DP(dataset=data_all).extract_elastic_moduli(type="random", keyword="poisson")
-            self.phi = DP(dataset=data_all).extract_porosity(type="random")
-            self.gamma_ray = DP(dataset=data_all).extract_gamma_ray(type="random")
-            self.photoelectricity = DP(dataset=data_all).extract_photoelectricity(type="random")
-        #
-        self.list_elements = list(self.chemistry[0].keys())
-        self.list_minerals = list(self.mineralogy[0].keys())
-        self.elements = {}
-        self.minerals = {}
-        for element in self.list_elements:
-            self.elements[element] = []
-            for chemistry_data in self.chemistry:
-                self.elements[element].append(abs(chemistry_data[element]*100))
-        for mineral in self.list_minerals:
-            self.minerals[mineral] = []
-            for mineralogy_data in self.mineralogy:
-                self.minerals[mineral].append(abs(mineralogy_data[mineral]*100))
+            self.list_elements = list(self.chemistry[0].keys())
+            self.list_minerals = list(self.mineralogy[0].keys())
+            self.elements = {}
+            self.minerals = {}
+            for element in self.list_elements:
+                self.elements[element] = []
+                for chemistry_data in self.chemistry:
+                    self.elements[element].append(abs(chemistry_data[element]*100))
+            for mineral in self.list_minerals:
+                self.minerals[mineral] = []
+                for mineralogy_data in self.mineralogy:
+                    self.minerals[mineral].append(abs(mineralogy_data[mineral]*100))
+        except:
+            self.generate_custom_rock_data()
         #
         self.results = [self.rho, self.vP, self.vS, self.vPvS, self.bulk_mod, self.shear_mod, self.poisson, self.phi,
                         self.gamma_ray, self.photoelectricity]
@@ -3824,11 +3829,11 @@ class Rocks:
         self.gui_elements.extend([lbl_stat, lbl_plt])
         #
         lbl_01 = SE(parent=self.parent_rock, row_id=4, column_id=3, n_rows=2, bg=self.color_bg,
-           fg="black").create_label(text="Density\n (g/ccm)", relief=tk.RAISED)
+           fg="black").create_label(text="Density\n (kg/m3)", relief=tk.RAISED)
         lbl_02 = SE(parent=self.parent_rock, row_id=6, column_id=3, n_rows=2, bg=self.color_bg,
-           fg="black").create_label(text="P-wave velocity\n (km/s)", relief=tk.RAISED)
+           fg="black").create_label(text="P-wave velocity\n (m/s)", relief=tk.RAISED)
         lbl_03 = SE(parent=self.parent_rock, row_id=8, column_id=3, n_rows=2, bg=self.color_bg,
-           fg="black").create_label(text="S-wave velocity\n (km/s)", relief=tk.RAISED)
+           fg="black").create_label(text="S-wave velocity\n (m/s)", relief=tk.RAISED)
         lbl_04 = SE(parent=self.parent_rock, row_id=10, column_id=3, n_rows=2, bg=self.color_bg,
            fg="black").create_label(text="Velocity ratio\n (1)", relief=tk.RAISED)
         lbl_05 = SE(parent=self.parent_rock, row_id=12, column_id=3, n_rows=2, bg=self.color_bg,
@@ -3864,6 +3869,8 @@ class Rocks:
     #
     def press_button(self, var_btn):
         if var_btn == "Define Mineralogy":
+            if len(self.custom_mineralogy["mineralogy"]) > 0:
+                self.custom_mineralogy["mineralogy"].clear()
             ## CONSTANTS
             self.color_menu = "#264653"
             self.color_border = "#7C9097"
@@ -3881,6 +3888,7 @@ class Rocks:
             self.window_custom_mineralogy.resizable(False, False)
             self.window_custom_mineralogy["bg"] = self.color_menu
             #
+
             self.var_custom_mineralogy = {}
             self.var_custom_mineralogy["checkbox"] = {}
             self.gui_custom_rock = {}
@@ -4283,6 +4291,13 @@ class Rocks:
                 self.gui_custom_rock[sulfate]["entries"][1].bind("<Return>", lambda event, var_entr=self.entr_w["custom"][sulfate][1], name=sulfate, pos=1: self.set_entry(var_entr, name, pos, event))
         #
         elif var_btn == "Generate Data":
+            try:
+                self.list_elements.clear()
+                self.list_minerals.clear()
+            except:
+                pass
+            #
+            self.var_rb.set(0)
             self.generate_custom_rock_data()
     #
     def marked_checkbox(self, var_cb, name):
@@ -4312,6 +4327,34 @@ class Rocks:
     #
     def generate_custom_rock_data(self):
         #
+        try:
+            for lbl in self.lbl_w["chemistry"]:
+                lbl.grid_forget()
+            for entr in self.entr_w["chemistry"]:
+                entr.grid_forget()
+            self.lbl_w["chemistry"].clear()
+            self.entr_w["chemistry"].clear()
+        except:
+            pass
+        #
+        try:
+            self.fig.clf()
+            self.ax.cla()
+            self.canvas.get_tk_widget().pack_forget()
+        except AttributeError:
+            pass
+        #
+        try:
+            if self.canvas:
+                self.canvas.destroy()
+        except AttributeError:
+            pass
+        #
+        try:
+            plt.close("all")
+        except:
+            pass
+        #
         water = fluids.Water.water("")
         n_samples = self.var_entr.get()
         phi_min = round(self.var_phi0.get()/100, 4)
@@ -4323,6 +4366,8 @@ class Rocks:
         elements_list = []
         mineral_list = []
         data_minerals = {}
+        self.mineralogy_custom = []
+        self.chemistry_custom = []
         #
         for mineral in assemblage:
             if mineral in ["Alkali Feldspar", "Plagioclase", "Scapolite", "Danburite"]:
@@ -4401,10 +4446,13 @@ class Rocks:
                                 amount_helper[element] = round(1 - amount_total, 4)
                     w_elements = list(amount_helper.values())
                     if sum(w_elements) == 1:
-                        for element, amount in amount_helper.items():
-                            self.element_helper[element].append(amount)
-                        index += 1
-                        condition_02 = True
+                        if all(w >= 0 for w in w_elements) == True:
+                            for element, amount in amount_helper.items():
+                                self.element_helper[element].append(abs(amount))
+                            index += 1
+                            condition_02 = True
+                        else:
+                            continue
                     else:
                         if len(self.mineral_helper[mineral_list[0]]) == len(self.element_helper[elements_list[0]]):
                             pass
@@ -4437,14 +4485,22 @@ class Rocks:
         self.list_minerals = mineral_list
         self.elements = {}
         self.minerals = {}
-        for element, values in self.element_helper.items():
-            self.elements[element] = list(np.around(np.array(values)*100, 2))
         for mineral, values in self.mineral_helper.items():
             self.minerals[mineral] = list(np.around(np.array(values)*100, 2))
+        for element, values in self.element_helper.items():
+            self.elements[element] = list(np.around(np.array(values)*100, 2))
+        for index in range(n_samples):
+            self.mineralogy_custom.append({})
+            for mineral, value in self.mineral_helper.items():
+                self.mineralogy_custom[index][mineral] = value[index]
+            self.chemistry_custom.append({})
+            for element, value in self.element_helper.items():
+                self.chemistry_custom[index][element] = value[index]
         #
         self.rho = []
         self.bulk_mod = []
         self.shear_mod = []
+        self.youngs_mod = []
         self.poisson = []
         self.gamma_ray = []
         self.photoelectricity = []
@@ -4482,6 +4538,7 @@ class Rocks:
             G_geo = elast.calc_geometric_mean(self, w, G_list)
             self.bulk_mod.append(round(K_geo, 2))
             self.shear_mod.append(round(G_geo, 2))
+            self.youngs_mod.append(round((9*K_geo*G_geo)/(3*K_geo - G_geo), 2))
             self.poisson.append(round(poisson_value, 3))
             vP_solid = np.sqrt((K_geo*10**9+4/3*G_geo*10**9)/(rho_value))
             vS_solid = np.sqrt((G_geo*10**9)/(rho_value))
@@ -4503,18 +4560,35 @@ class Rocks:
         self.gamma_ray = np.array(self.gamma_ray)
         self.photoelectricity = np.array(self.photoelectricity)
         #
+        for index in range(n_samples):
+            self.exp_data.append({"rock": self.filename[2].get(), "phi": self.phi[index], "fluid": "water",
+                                  "rho": self.rho[index], "vP": self.vP[index], "vS": self.vS[index],
+                                  "vP/vS": self.vPvS[index], "K": self.bulk_mod[index], "G": self.shear_mod[index],
+                                  "E": self.youngs_mod[index], "nu": self.poisson[index], "GR": self.gamma_ray[index],
+                                  "PE": self.photoelectricity[index], "mineralogy": self.mineralogy_custom[index],
+                                  "chemistry": self.chemistry_custom[index]})
+        #
         self.results = [self.rho, self.vP, self.vS, self.vPvS, self.bulk_mod, self.shear_mod, self.poisson, self.phi,
                         self.gamma_ray, self.photoelectricity]
         #
         self.var_opt_chem = tk.StringVar()
-        opt_list_chem = ["No Selection"]
-        opt_list_chem.extend(self.list_elements)
-        opt_list_chem.extend(self.list_minerals)
+        try:
+            if len(self.opt_list_chem) > 0:
+                self.opt_list_chem.clear()
+        except:
+            pass
+        self.opt_list_chem = ["No Selection"]
+        self.opt_list_chem.extend(self.list_elements)
+        self.opt_list_chem.extend(self.list_minerals)
         self.opt_chem = SE(parent=self.parent_rock, row_id=36, column_id=0, n_rows=1, n_columns=2, bg=self.color_acc_01,
                            fg="black").create_option_menu(var_opt=self.var_opt_chem, var_opt_set="Select Element/Mineral",
-                                                          opt_list=opt_list_chem, active_bg=self.color_acc_02,
+                                                          opt_list=self.opt_list_chem, active_bg=self.color_acc_02,
                                                           command=lambda var_opt=self.var_opt_chem: self.select_opt(var_opt))
         self.gui_elements.append(self.opt_chem)
+        #
+        lbl = SE(parent=self.parent_rock, row_id=24, column_id=3, n_columns=5, bg=self.color_bg,
+                 fg="black").create_label(text="Chemical composition (weight amounts %)", relief=tk.RAISED)
+        self.lbl_w["chemistry"].append(lbl)
         #
         self.entr_list_min = []
         self.entr_list_max = []
