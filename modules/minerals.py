@@ -73,8 +73,8 @@ class CrystalPhysics:
             V = a**2 * c
             return V
         elif crystalsystem == "hexagonal":
-            a = lenghts[0]*10**(-8)
-            c = lenghts[1]*10**(-8)
+            a = lenghts[0]*10**(-10)
+            c = lenghts[1]*10**(-10)
             angle = 60
             V = (a**2 * c)*np.sin(angle*np.pi/180)
             return V

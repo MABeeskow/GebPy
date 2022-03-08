@@ -6,7 +6,7 @@
 # Name:		sulfates.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		16.12.2021
+# Date:		03.03.2022
 
 # -----------------------------------------------
 
