@@ -6,7 +6,7 @@
 # Name:		gui.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		08.03.2022
+# Date:		11.03.2022
 
 #-----------------------------------------------
 
@@ -4092,7 +4092,7 @@ class Rocks:
             lbl_max = SE(parent=self.window_custom_mineralogy, row_id=start_nesosilicates+1, column_id=3,
                          bg=self.color_accent_01, fg=self.color_fg_dark).create_label(text="Max", relief=tk.RAISED)
             self.gui_custom_rock["Nesosilicates"]["labels"]["header"] = [lbl_title, lbl_name, lbl_part, lbl_min, lbl_max]
-            list_nesosilicates = ["Olivine", "Garnet", "Zircon", "Thorite", "Andalusite", "Kyanite", "Sillimanite",
+            list_nesosilicates = ["Olivine", "Ca-Garnet", "Al-Garnet", "Zircon", "Thorite", "Andalusite", "Kyanite", "Sillimanite",
                                   "Topaz", "Staurolite"]
             list_nesosilicates.sort()
             for index, nesosilicate in enumerate(list_nesosilicates, start=2):
@@ -4416,34 +4416,64 @@ class Rocks:
         self.chemistry_custom = []
         #
         for mineral in assemblage:
+            # Tectosilicates
             if mineral in ["Alkali Feldspar", "Plagioclase", "Scapolite", "Danburite"]:
                 data = Tectosilicates(data_type=True, mineral=mineral).get_data()
+            # Phyllosilicates
             elif mineral in ["Illite", "Kaolinite", "Montmorillonite", "Chlorite", "Vermiculite", "Biotite",
                              "Muscovite", "Glauconite"]:
                 data = Phyllosilicates(data_type=True, mineral=mineral).get_data()
+            # Nesosilicates
+            elif mineral in ["Zircon", "Thorite", "Topaz", "Pyrope", "Olivine", "Ca-Garnet", "Al-Garnet", "Uvarovite",
+                             "Andratite", "Grossular", "Almandine", "Liebenbergite", "Ca-Olivine", "Tephroite",
+                             "Fayalite", "Forsterite", "Staurolite", "Sillimanite", "Kyanite", "Andalusite",
+                             "Spessartine"]:
+                data = Nesosilicates(data_type=True, mineral=mineral).get_data()
+            # Carbonates
             elif mineral in ["Calcite", "Dolomite", "Magnesite", "Rhodochrosite", "Siderite", "Aragonite", "Cerussite",
                              "Ankerite", "Azurite", "Malachite"]:
                 data = Carbonates(data_type=True, mineral=mineral).get_data()
+            # Sulfides
             elif mineral in ["Pyrite", "Chalcopyrite", "Bornite", "Covellite", "Molybdenite", "Sphalerite", "Galena",
                              "Fahlore"]:
                 data = Sulfides(data_type=True, mineral=mineral).get_data()
+            # Sulfates
+            elif mineral in ["Alunite", "Anglesite", "Anhydrite", "Barite", "Celestite", "Chalcanthite", "Gypsum",
+                             "Hanksite", "Jarosite", "Kieserite", "Scheelite"]:
+                data = Sulfates(data_type=True, mineral=mineral).get_data()
+            # Oxides
             else:
                 data = Oxides(data_type=True, mineral=mineral).get_data()
             self.minerals[data["mineral"]] = []
             mineral_list.append(data["mineral"])
             elements_list.extend(list(data["chemistry"].keys()))
             if data["state"] == "variable":
+                # Tectosilicates
                 if mineral in ["Alkali Feldspar", "Plagioclase", "Scapolite", "Danburite"]:
                     dataset = Tectosilicates(data_type=True, mineral=mineral).get_data(number=n_samples)
+                # Phyllosilicates
                 elif mineral in ["Illite", "Kaolinite", "Montmorillonite", "Chlorite", "Vermiculite", "Biotite",
                                  "Muscovite", "Glauconite"]:
                     dataset = Phyllosilicates(data_type=True, mineral=mineral).get_data(number=n_samples)
+                # Nesosilicates
+                elif mineral in ["Zircon", "Thorite", "Topaz", "Pyrope", "Olivine", "Ca-Garnet", "Al-Garnet", "Uvarovite",
+                                 "Andratite", "Grossular", "Almandine", "Liebenbergite", "Ca-Olivine", "Tephroite",
+                                 "Fayalite", "Forsterite", "Staurolite", "Sillimanite", "Kyanite", "Andalusite",
+                                 "Spessartine"]:
+                    dataset = Nesosilicates(data_type=True, mineral=mineral).get_data(number=n_samples)
+                # Carbonates
                 elif mineral in ["Calcite", "Dolomite", "Magnesite", "Rhodochrosite", "Siderite", "Aragonite",
                                  "Cerussite", "Ankerite", "Azurite", "Malachite"]:
-                    data = Carbonates(data_type=True, mineral=mineral).get_data()
+                    dataset = Carbonates(data_type=True, mineral=mineral).get_data(number=n_samples)
+                # Sulfides
                 elif mineral in ["Pyrite", "Chalcopyrite", "Bornite", "Covellite", "Molybdenite", "Sphalerite",
                                  "Galena", "Fahlore"]:
-                    data = Sulfides(data_type=True, mineral=mineral).get_data()
+                    dataset = Sulfides(data_type=True, mineral=mineral).get_data(number=n_samples)
+                # Sulfates
+                elif mineral in ["Alunite", "Anglesite", "Anhydrite", "Barite", "Celestite", "Chalcanthite", "Gypsum",
+                                 "Hanksite", "Jarosite", "Kieserite", "Scheelite"]:
+                    dataset = Sulfates(data_type=True, mineral=mineral).get_data(number=n_samples)
+                # Oxides
                 else:
                     dataset = Oxides(data_type=True, mineral=mineral).get_data(number=n_samples)
                 data_minerals[data["mineral"]] = dataset

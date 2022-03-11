@@ -6,7 +6,7 @@
 # Name:		phosphates.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		21.01.2022
+# Date:		11.03.2022
 
 # -----------------------------------------------
 
@@ -73,7 +73,7 @@ class Phosphates:
         V = dataV.calculate_volume()
         Z = 2
         V_m = MineralChemistry().calculate_molar_volume(volume_cell=V, z=Z)
-        dataRho = CrystalPhysics([molar_mass, Z, V])
+        dataRho = CrystalPhysics([molar_mass, Z, V*10**(6)])
         rho = dataRho.calculate_bulk_density()
         rho_e = wg(amounts=amounts, elements=element, rho_b=rho).calculate_electron_density()
         # Bulk modulus
@@ -181,7 +181,7 @@ class Phosphates:
         V = dataV.calculate_volume()
         Z = 2
         V_m = MineralChemistry().calculate_molar_volume(volume_cell=V, z=Z)
-        dataRho = CrystalPhysics([molar_mass, Z, V])
+        dataRho = CrystalPhysics([molar_mass, Z, V*10**(6)])
         rho = dataRho.calculate_bulk_density()
         rho_e = wg(amounts=amounts, elements=element, rho_b=rho).calculate_electron_density()
         # Bulk modulus
@@ -289,7 +289,7 @@ class Phosphates:
         V = dataV.calculate_volume()
         Z = 2
         V_m = MineralChemistry().calculate_molar_volume(volume_cell=V, z=Z)
-        dataRho = CrystalPhysics([molar_mass, Z, V])
+        dataRho = CrystalPhysics([molar_mass, Z, V*10**(6)])
         rho = dataRho.calculate_bulk_density()
         rho_e = wg(amounts=amounts, elements=element, rho_b=rho).calculate_electron_density()
         # Bulk modulus
@@ -403,7 +403,7 @@ class Phosphates:
         V_F = dataV_F.calculate_volume()
         Z_F = 2
         V_m_F = MineralChemistry().calculate_molar_volume(volume_cell=V_F, z=Z_F)
-        dataRho_F = CrystalPhysics([molar_mass, Z_F, V_F])
+        dataRho_F = CrystalPhysics([molar_mass, Z_F, V_F*10**(6)])
         rho_F = dataRho_F.calculate_bulk_density()
         rho_e_F = wg(amounts=amounts, elements=element, rho_b=rho_F).calculate_electron_density()
         #
@@ -411,7 +411,7 @@ class Phosphates:
         V_Cl = dataV_Cl.calculate_volume()
         Z_Cl = 2
         V_m_Cl = MineralChemistry().calculate_molar_volume(volume_cell=V_Cl, z=Z_Cl)
-        dataRho_Cl = CrystalPhysics([molar_mass, Z_Cl, V_Cl])
+        dataRho_Cl = CrystalPhysics([molar_mass, Z_Cl, V_Cl*10**(6)])
         rho_Cl = dataRho_Cl.calculate_bulk_density()
         rho_e_Cl = wg(amounts=amounts, elements=element, rho_b=rho_Cl).calculate_electron_density()
         #
@@ -419,7 +419,7 @@ class Phosphates:
         V_OH = dataV_OH.calculate_volume()
         Z_OH = 2
         V_m_OH = MineralChemistry().calculate_molar_volume(volume_cell=V_OH, z=Z_OH)
-        dataRho_OH = CrystalPhysics([molar_mass, Z_OH, V_OH])
+        dataRho_OH = CrystalPhysics([molar_mass, Z_OH, V_OH*10**(6)])
         rho_OH = dataRho_OH.calculate_bulk_density()
         rho_e_OH = wg(amounts=amounts, elements=element, rho_b=rho_OH).calculate_electron_density()
         #

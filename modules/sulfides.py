@@ -6,7 +6,7 @@
 # Name:		sulfides.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		02.03.2022
+# Date:		11.03.2022
 
 # -----------------------------------------------
 
@@ -140,6 +140,12 @@ class Sulfides():
         U = pe*rho_e*10**(-3)
         # Electrical resistivity
         p = None
+        # Thermodynamics
+        thermodynamics = {}
+        thermodynamics["Gibbs Energy"] = -45734     # J/mol
+        thermodynamics["Enthalpy"] = -53346         # J/mol
+        thermodynamics["Entropy"] = 82.425          # J/(mol K)
+        thermodynamics["Heat Capacity"] = 48.41     # J/(mol K)
         #
         if self.data_type == False:
             data = []
@@ -174,6 +180,7 @@ class Sulfides():
             results["GR"] = round(gamma_ray, 4)
             results["PE"] = round(pe, 4)
             results["U"] = round(U, 4)
+            results["thermodynamics"] = thermodynamics
             if p != None:
                 results["p"] = round(p, 4)
             else:
@@ -248,6 +255,12 @@ class Sulfides():
         U = pe*rho_e*10**(-3)
         # Electrical resistivity
         p = 3*10**(-1)
+        # Thermodynamics
+        thermodynamics = {}
+        thermodynamics["Gibbs Energy"] = -159572     # J/mol
+        thermodynamics["Enthalpy"] = -171050         # J/mol
+        thermodynamics["Entropy"] = 52.930         # J/(mol K)
+        thermodynamics["Heat Capacity"] = 62.19    # J/(mol K)
         #
         if self.data_type == False:
             data.append(mineral)
@@ -282,6 +295,7 @@ class Sulfides():
             results["GR"] = round(gamma_ray, 4)
             results["PE"] = round(pe, 4)
             results["U"] = round(U, 4)
+            results["thermodynamics"] = thermodynamics
             if p != None:
                 results["p"] = round(p, 4)
             else:
@@ -358,6 +372,12 @@ class Sulfides():
         U = pe*rho_e*10**(-3)
         # Electrical resistivity
         p = None
+        # Thermodynamics
+        thermodynamics = {}
+        thermodynamics["Gibbs Energy"] = -394621    # J/mol
+        thermodynamics["Enthalpy"] = -371600        # J/mol
+        thermodynamics["Entropy"] = 398.500         # J/(mol K)
+        thermodynamics["Heat Capacity"] = 245.60    # J/(mol K)
         #
         if self.data_type == False:
             data.append(mineral)
@@ -392,6 +412,7 @@ class Sulfides():
             results["GR"] = round(gamma_ray, 4)
             results["PE"] = round(pe, 4)
             results["U"] = round(U, 4)
+            results["thermodynamics"] = thermodynamics
             if p != None:
                 results["p"] = round(p, 4)
             else:
@@ -466,6 +487,12 @@ class Sulfides():
         U = pe*rho_e*10**(-3)
         # Electrical resistivity
         p = None
+        # Thermodynamics
+        thermodynamics = {}
+        thermodynamics["Gibbs Energy"] = -96676     # J/mol
+        thermodynamics["Enthalpy"] = -98320         # J/mol
+        thermodynamics["Entropy"] = 91.340          # J/(mol K)
+        thermodynamics["Heat Capacity"] = 49.44     # J/(mol K)
         #
         if self.data_type == False:
             data.append(mineral)
@@ -500,6 +527,7 @@ class Sulfides():
             results["GR"] = round(gamma_ray, 4)
             results["PE"] = round(pe, 4)
             results["U"] = round(U, 4)
+            results["thermodynamics"] = thermodynamics
             if p != None:
                 results["p"] = round(p, 4)
             else:
@@ -576,6 +604,12 @@ class Sulfides():
         U = pe*rho_e*10**(-3)
         # Electrical resistivity
         p = None
+        # Thermodynamics
+        thermodynamics = {}
+        thermodynamics["Gibbs Energy"] = -194996    # J/mol
+        thermodynamics["Enthalpy"] = -194900        # J/mol
+        thermodynamics["Entropy"] = 124.900         # J/(mol K)
+        thermodynamics["Heat Capacity"] = 96.65     # J/(mol K)
         #
         if self.data_type == False:
             data.append(mineral)
@@ -610,6 +644,7 @@ class Sulfides():
             results["GR"] = round(gamma_ray, 4)
             results["PE"] = round(pe, 4)
             results["U"] = round(U, 4)
+            results["thermodynamics"] = thermodynamics
             if p != None:
                 results["p"] = round(p, 4)
             else:
@@ -659,7 +694,7 @@ class Sulfides():
         # Density
         dataV = CrystalPhysics([[3.16, 12.3], [], "hexagonal"])
         V = dataV.calculate_volume()
-        dataRho = CrystalPhysics([molar_mass, 2, V])
+        dataRho = CrystalPhysics([molar_mass, 2, V*10**(6)])
         rho = dataRho.calculate_bulk_density()
         rho_e = wg(amounts=amounts, elements=element, rho_b=rho).calculate_electron_density()
         # Bulk modulus
@@ -792,6 +827,12 @@ class Sulfides():
         U = pe*rho_e*10**(-3)
         # Electrical resistivity
         p = None
+        # Thermodynamics
+        thermodynamics = {}
+        thermodynamics["Gibbs Energy"] = -198600     # J/mol
+        thermodynamics["Enthalpy"] = -203107         # J/mol
+        thermodynamics["Entropy"] = 58.655         # J/(mol K)
+        thermodynamics["Heat Capacity"] = 45.76    # J/(mol K)
         #
         if self.data_type == False:
             data.append(mineral)
@@ -826,6 +867,7 @@ class Sulfides():
             results["GR"] = round(gamma_ray, 4)
             results["PE"] = round(pe, 4)
             results["U"] = round(U, 4)
+            results["thermodynamics"] = thermodynamics
             if p != None:
                 results["p"] = round(p, 4)
             else:
@@ -899,6 +941,12 @@ class Sulfides():
         U = pe*rho_e*10**(-3)
         # Electrical resistivity
         p = None
+        # Thermodynamics
+        thermodynamics = {}
+        thermodynamics["Gibbs Energy"] = -149980     # J/mol
+        thermodynamics["Enthalpy"] = -151529         # J/mol
+        thermodynamics["Entropy"] = 182.004         # J/(mol K)
+        thermodynamics["Heat Capacity"] = 225.19    # J/(mol K)
         #
         if self.data_type == False:
             data = []
@@ -933,6 +981,7 @@ class Sulfides():
             results["GR"] = round(gamma_ray, 4)
             results["PE"] = round(pe, 4)
             results["U"] = round(U, 4)
+            results["thermodynamics"] = thermodynamics
             if p != None:
                 results["p"] = round(p, 4)
             else:
@@ -974,8 +1023,7 @@ class Sulfides():
                 traces_data = np.array(traces_data, dtype=object)
                 traces_data = traces_data[traces_data[:, 1].argsort()]
         #
-        data = []
-        mineral = "Apy"
+        name = "Apy"
         #
         # Molar mass
         molar_mass_pure = iron[2] + arsenic[2] + sulfur[2]
@@ -1009,16 +1057,52 @@ class Sulfides():
         U = pe*rho_e*10**(-3)
         # Electrical resistivity
         p = None
+        # Thermodynamics
+        thermodynamics = {}
+        thermodynamics["Gibbs Energy"] = -136450   # J/mol
+        thermodynamics["Enthalpy"] = -144370       # J/mol
+        thermodynamics["Entropy"] = 68.500         # J/(mol K)
+        thermodynamics["Heat Capacity"] = 68.45    # J/(mol K)
         #
-        data.append(mineral)
-        data.append(round(molar_mass, 3))
-        data.append(round(rho, 2))
-        data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 4)])
-        data.append([round(vP, 2), round(vS, 2), round(vPvS, 2)])
-        data.append([round(gamma_ray, 2), round(pe, 2), round(U, 2), p])
-        data.append(amounts)
-        #
-        return data
+        if self.data_type == False:
+            data = []
+            data.append(name)
+            data.append(round(molar_mass, 2))
+            data.append(round(rho, 1))
+            data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 2), round(vPvS, 2)])
+            data.append([round(vP, 1), round(vS, 1)])
+            data.append([round(gamma_ray, 2), round(pe, 2), round(U, 2), p])
+            data.append(amounts)
+            #
+            return data
+        else:
+            results = {}
+            results["mineral"] = name
+            results["M"] = molar_mass
+            results["rho"] = round(rho, 4)
+            results["rho_e"] = round(rho_e, 4)
+            results["V"] = round(V, 4)
+            results["vP"] = round(vP, 4)
+            results["vS"] = round(vS, 4)
+            results["vP/vS"] = round(vPvS, 4)
+            results["G"] = round(G*10**(-9), 4)
+            results["K"] = round(K*10**(-9), 4)
+            results["E"] = round(E*10**(-9), 4)
+            results["nu"] = round(nu, 4)
+            results["GR"] = round(gamma_ray, 4)
+            results["PE"] = round(pe, 4)
+            results["U"] = round(U, 4)
+            results["thermodynamics"] = thermodynamics
+            try:
+                results["p"] = round(p, 4)
+            except:
+                results["p"] = p
+            element_list = np.array(amounts)[:, 0]
+            results["chemistry"] = {}
+            for index, element in enumerate(element_list, start=0):
+                results["chemistry"][element] = amounts[index][2]
+            #
+            return results
     #
     def create_acanthite(self):
         #
@@ -1087,6 +1171,12 @@ class Sulfides():
         U = pe*rho_e*10**(-3)
         # Electrical resistivity
         p = None
+        # Thermodynamics
+        thermodynamics = {}
+        thermodynamics["Gibbs Energy"] = -39448   # J/mol
+        thermodynamics["Enthalpy"] = -31589       # J/mol
+        thermodynamics["Entropy"] = 143.511       # J/(mol K)
+        thermodynamics["Heat Capacity"] = 76.12   # J/(mol K)
         #
         if self.data_type == False:
             data = []
@@ -1116,6 +1206,7 @@ class Sulfides():
             results["GR"] = round(gamma_ray, 4)
             results["PE"] = round(pe, 4)
             results["U"] = round(U, 4)
+            results["thermodynamics"] = thermodynamics
             try:
                 results["p"] = round(p, 4)
             except:
@@ -1237,8 +1328,7 @@ class Sulfides():
                 traces_data = np.array(traces_data, dtype=object)
                 traces_data = traces_data[traces_data[:, 1].argsort()]
         #
-        data = []
-        mineral = "Ab"
+        name = "Ab"
         #
         # Molar mass
         molar_mass_pure = manganese[2] + sulfur[2]
@@ -1272,16 +1362,52 @@ class Sulfides():
         U = pe*rho_e*10**(-3)
         # Electrical resistivity
         p = None
+        # Thermodynamics
+        thermodynamics = {}
+        thermodynamics["Gibbs Energy"] = -218313   # J/mol
+        thermodynamics["Enthalpy"] = -213462       # J/mol
+        thermodynamics["Entropy"] = 80.333         # J/(mol K)
+        thermodynamics["Heat Capacity"] = 49.94    # J/(mol K)
         #
-        data.append(mineral)
-        data.append(round(molar_mass, 3))
-        data.append(round(rho, 2))
-        data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 4)])
-        data.append([round(vP, 2), round(vS, 2), round(vPvS, 2)])
-        data.append([round(gamma_ray, 2), round(pe, 2), round(U, 2), p])
-        data.append(amounts)
-        #
-        return data
+        if self.data_type == False:
+            data = []
+            data.append(name)
+            data.append(round(molar_mass, 2))
+            data.append(round(rho, 1))
+            data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 2), round(vPvS, 2)])
+            data.append([round(vP, 1), round(vS, 1)])
+            data.append([round(gamma_ray, 2), round(pe, 2), round(U, 2), p])
+            data.append(amounts)
+            #
+            return data
+        else:
+            results = {}
+            results["mineral"] = name
+            results["M"] = molar_mass
+            results["rho"] = round(rho, 4)
+            results["rho_e"] = round(rho_e, 4)
+            results["V"] = round(V, 4)
+            results["vP"] = round(vP, 4)
+            results["vS"] = round(vS, 4)
+            results["vP/vS"] = round(vPvS, 4)
+            results["G"] = round(G*10**(-9), 4)
+            results["K"] = round(K*10**(-9), 4)
+            results["E"] = round(E*10**(-9), 4)
+            results["nu"] = round(nu, 4)
+            results["GR"] = round(gamma_ray, 4)
+            results["PE"] = round(pe, 4)
+            results["U"] = round(U, 4)
+            results["thermodynamics"] = thermodynamics
+            try:
+                results["p"] = round(p, 4)
+            except:
+                results["p"] = p
+            element_list = np.array(amounts)[:, 0]
+            results["chemistry"] = {}
+            for index, element in enumerate(element_list, start=0):
+                results["chemistry"][element] = amounts[index][2]
+            #
+            return results
     #
     def create_berthierite(self):
         # Major elements
@@ -1317,8 +1443,7 @@ class Sulfides():
                 traces_data = np.array(traces_data, dtype=object)
                 traces_data = traces_data[traces_data[:, 1].argsort()]
         #
-        data = []
-        mineral = "Brt"
+        name = "Brt"
         #
         # Molar mass
         molar_mass_pure = iron[2] + 2*antimony[2] + 4*sulfur[2]
@@ -1352,16 +1477,52 @@ class Sulfides():
         U = pe*rho_e*10**(-3)
         # Electrical resistivity
         p = None
+        # Thermodynamics
+        thermodynamics = {}
+        thermodynamics["Gibbs Energy"] = -255960   # J/mol
+        thermodynamics["Enthalpy"] = -256426       # J/mol
+        thermodynamics["Entropy"] = 245.015         # J/(mol K)
+        thermodynamics["Heat Capacity"] = 177.09    # J/(mol K)
         #
-        data.append(mineral)
-        data.append(round(molar_mass, 3))
-        data.append(round(rho, 2))
-        data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 4)])
-        data.append([round(vP, 2), round(vS, 2), round(vPvS, 2)])
-        data.append([round(gamma_ray, 2), round(pe, 2), round(U, 2), p])
-        data.append(amounts)
-        #
-        return data
+        if self.data_type == False:
+            data = []
+            data.append(name)
+            data.append(round(molar_mass, 2))
+            data.append(round(rho, 1))
+            data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 2), round(vPvS, 2)])
+            data.append([round(vP, 1), round(vS, 1)])
+            data.append([round(gamma_ray, 2), round(pe, 2), round(U, 2), p])
+            data.append(amounts)
+            #
+            return data
+        else:
+            results = {}
+            results["mineral"] = name
+            results["M"] = molar_mass
+            results["rho"] = round(rho, 4)
+            results["rho_e"] = round(rho_e, 4)
+            results["V"] = round(V, 4)
+            results["vP"] = round(vP, 4)
+            results["vS"] = round(vS, 4)
+            results["vP/vS"] = round(vPvS, 4)
+            results["G"] = round(G*10**(-9), 4)
+            results["K"] = round(K*10**(-9), 4)
+            results["E"] = round(E*10**(-9), 4)
+            results["nu"] = round(nu, 4)
+            results["GR"] = round(gamma_ray, 4)
+            results["PE"] = round(pe, 4)
+            results["U"] = round(U, 4)
+            results["thermodynamics"] = thermodynamics
+            try:
+                results["p"] = round(p, 4)
+            except:
+                results["p"] = p
+            element_list = np.array(amounts)[:, 0]
+            results["chemistry"] = {}
+            for index, element in enumerate(element_list, start=0):
+                results["chemistry"][element] = amounts[index][2]
+            #
+            return results
     #
     def create_pyrrhotite(self):
         # Major elements
@@ -1431,6 +1592,12 @@ class Sulfides():
         U = pe*rho_e*10**(-3)
         # Electrical resistivity
         p = None
+        # Thermodynamics
+        thermodynamics = {}
+        thermodynamics["Gibbs Energy"] = -99289     # J/mol
+        thermodynamics["Enthalpy"] = -96291         # J/mol
+        thermodynamics["Entropy"] = 69.429         # J/(mol K)
+        thermodynamics["Heat Capacity"] = 50.50    # J/(mol K)
         #
         if self.data_type == False:
             data.append(mineral)
@@ -1464,6 +1631,7 @@ class Sulfides():
             results["GR"] = round(gamma_ray, 4)
             results["PE"] = round(pe, 4)
             results["U"] = round(U, 4)
+            results["thermodynamics"] = thermodynamics
             if p != None:
                 results["p"] = round(p, 4)
             else:
@@ -1698,6 +1866,12 @@ class Sulfides():
         U = pe*rho_e*10**(-3)
         # Electrical resistivity
         p = None
+        # Thermodynamics
+        thermodynamics = {}
+        thermodynamics["Gibbs Energy"] = -84205    # J/mol
+        thermodynamics["Enthalpy"] = -78884        # J/mol
+        thermodynamics["Entropy"] = 116.200         # J/(mol K)
+        thermodynamics["Heat Capacity"] = 76.32    # J/(mol K)
         #
         if self.data_type == False:
             data = []
@@ -1727,6 +1901,7 @@ class Sulfides():
             results["GR"] = round(gamma_ray, 4)
             results["PE"] = round(pe, 4)
             results["U"] = round(U, 4)
+            results["thermodynamics"] = thermodynamics
             try:
                 results["p"] = round(p, 4)
             except:
@@ -2336,7 +2511,7 @@ class Sulfides():
         # Density
         dataV = CrystalPhysics([[3.792, 16.344], [], "hexagonal"])
         V = dataV.calculate_volume()
-        dataRho = CrystalPhysics([molar_mass_pure, 6, V])
+        dataRho = CrystalPhysics([molar_mass_pure, 6, V*10**(6)])
         rho = dataRho.calculate_bulk_density()
         rho_e = wg(amounts=amounts, elements=element, rho_b=rho).calculate_electron_density()
         # Bulk modulus
@@ -2360,6 +2535,12 @@ class Sulfides():
         U = pe*rho_e*10**(-3)
         # Electrical resistivity
         p = None
+        # Thermodynamics
+        thermodynamics = {}
+        thermodynamics["Gibbs Energy"] = -48636     # J/mol
+        thermodynamics["Enthalpy"] = -47982         # J/mol
+        thermodynamics["Entropy"] = 67.400          # J/(mol K)
+        thermodynamics["Heat Capacity"] = 47.54     # J/(mol K)
         #
         if self.data_type == False:
             data = []
@@ -2395,6 +2576,7 @@ class Sulfides():
             results["GR"] = round(gamma_ray, 4)
             results["PE"] = round(pe, 4)
             results["U"] = round(U, 4)
+            results["thermodynamics"] = thermodynamics
             if p != None:
                 results["p"] = round(p, 4)
             else:
@@ -2688,6 +2870,12 @@ class Sulfides():
         U = pe*rho_e*10**(-3)
         # Electrical resistivity
         p = None
+        # Thermodynamics
+        thermodynamics = {}
+        thermodynamics["Gibbs Energy"] = -30519     # J/mol
+        thermodynamics["Enthalpy"] = -32417         # J/mol
+        thermodynamics["Entropy"] = 61.379         # J/(mol K)
+        thermodynamics["Heat Capacity"] = 60.70    # J/(mol K)
         #
         if self.data_type == False:
             data = []
@@ -2722,6 +2910,7 @@ class Sulfides():
             results["GR"] = round(gamma_ray, 4)
             results["PE"] = round(pe, 4)
             results["U"] = round(U, 4)
+            results["thermodynamics"] = thermodynamics
             if p != None:
                 results["p"] = round(p, 4)
             else:
@@ -2796,6 +2985,12 @@ class Sulfides():
         U = pe*rho_e*10**(-3)
         # Electrical resistivity
         p = None
+        # Thermodynamics
+        thermodynamics = {}
+        thermodynamics["Gibbs Energy"] = -85981     # J/mol
+        thermodynamics["Enthalpy"] = -87158         # J/mol
+        thermodynamics["Entropy"] = 163.594         # J/(mol K)
+        thermodynamics["Heat Capacity"] = 115.19    # J/(mol K)
         #
         if self.data_type == False:
             data = []
@@ -2830,6 +3025,7 @@ class Sulfides():
             results["GR"] = round(gamma_ray, 4)
             results["PE"] = round(pe, 4)
             results["U"] = round(U, 4)
+            results["thermodynamics"] = thermodynamics
             if p != None:
                 results["p"] = round(p, 4)
             else:
@@ -2904,6 +3100,12 @@ class Sulfides():
         U = pe*rho_e*10**(-3)
         # Electrical resistivity
         p = None
+        # Thermodynamics
+        thermodynamics = {}
+        thermodynamics["Gibbs Energy"] = -155411     # J/mol
+        thermodynamics["Enthalpy"] = -166600         # J/mol
+        thermodynamics["Entropy"] = 53.900          # J/(mol K)
+        thermodynamics["Heat Capacity"] = 62.43     # J/(mol K)
         #
         if self.data_type == False:
             data = []
@@ -2938,6 +3140,7 @@ class Sulfides():
             results["GR"] = round(gamma_ray, 4)
             results["PE"] = round(pe, 4)
             results["U"] = round(U, 4)
+            results["thermodynamics"] = thermodynamics
             if p != None:
                 results["p"] = round(p, 4)
             else:

@@ -6,7 +6,7 @@
 # Name:		oxides.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		20.02.2022
+# Date:		11.03.2022
 
 # -----------------------------------------------
 
@@ -5077,7 +5077,7 @@ class Oxides():
         V = dataV.calculate_volume()
         Z = 2
         V_m = MineralChemistry().calculate_molar_volume(volume_cell=V, z=Z)
-        dataRho = CrystalPhysics([molar_mass, Z, V])
+        dataRho = CrystalPhysics([molar_mass, Z, V*10**(6)])
         rho = dataRho.calculate_bulk_density()
         rho_e = wg(amounts=amounts, elements=element, rho_b=rho).calculate_electron_density()
         # Bulk modulus
