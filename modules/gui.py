@@ -4307,7 +4307,7 @@ class Rocks:
                           bg=self.color_accent_01, fg=self.color_fg_dark).create_label(text="Max", relief=tk.RAISED)
             self.gui_custom_rock["Sulfates"]["labels"]["header"] = [lbl_title, lbl_name, lbl_part, lbl_min, lbl_max]
             list_sulfates = ["Barite", "Anhydrite", "Gypsum", "Alunite", "Jarosite", "Anglesite", "Hanksite",
-                             "Celestite", "Kieserite", "Chalcanthite", "Scheelite"]
+                             "Celestine", "Kieserite", "Chalcanthite", "Scheelite"]
             list_sulfates.sort()
             for index, sulfate in enumerate(list_sulfates, start=2):
                 self.var_custom_mineralogy["checkbox"][sulfate] = tk.IntVar()
@@ -4446,7 +4446,7 @@ class Rocks:
                              "Fahlore"]:
                 data = Sulfides(data_type=True, mineral=mineral).get_data()
             # Sulfates
-            elif mineral in ["Alunite", "Anglesite", "Anhydrite", "Barite", "Celestite", "Chalcanthite", "Gypsum",
+            elif mineral in ["Alunite", "Anglesite", "Anhydrite", "Barite", "Celestine", "Chalcanthite", "Gypsum",
                              "Hanksite", "Jarosite", "Kieserite", "Scheelite"]:
                 data = Sulfates(data_type=True, mineral=mineral).get_data()
             # Oxides
@@ -4486,7 +4486,7 @@ class Rocks:
                                  "Galena", "Fahlore"]:
                     dataset = Sulfides(data_type=True, mineral=mineral).get_data(number=n_samples)
                 # Sulfates
-                elif mineral in ["Alunite", "Anglesite", "Anhydrite", "Barite", "Celestite", "Chalcanthite", "Gypsum",
+                elif mineral in ["Alunite", "Anglesite", "Anhydrite", "Barite", "Celestine", "Chalcanthite", "Gypsum",
                                  "Hanksite", "Jarosite", "Kieserite", "Scheelite"]:
                     dataset = Sulfates(data_type=True, mineral=mineral).get_data(number=n_samples)
                 # Oxides
