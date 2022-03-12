@@ -4136,9 +4136,9 @@ class Rocks:
             lbl_max = SE(parent=self.window_custom_mineralogy, row_id=start_inosilicates+1, column_id=7, bg=self.color_accent_01,
                          fg=self.color_fg_dark).create_label(text="Max", relief=tk.RAISED)
             self.gui_custom_rock["Inosilicates"]["labels"]["header"] = [lbl_title, lbl_name, lbl_part, lbl_min, lbl_max]
-            list_inosilicates = ["Enstatite", "Ferrosilite", "Diopside", "Jadeite", "Aegirine", "Spodumene",
-                                 "Wollastonite", "Pyroxene", "Amphibole", "Cummingtonite", "Tremolite", "Actinolite",
-                                 "Hornblende", "Glaucophane"]
+            list_inosilicates = ["Enstatite", "Diopside", "Augite", "Jadeite", "Aegirine", "Actinolite", "Arfvedsonite",
+                                 "Ca-Amphibole", "Ca-Pyroxene", "Ferrosilite", "Glaucophane", "Mg-Fe-Pyroxene",
+                                 "Riebeckite", "Na-Amphibole", "Spodumene", "Tremolite", "Wollastonite"]
             list_inosilicates.sort()
             for index, inosilicate in enumerate(list_inosilicates, start=2):
                 self.var_custom_mineralogy["checkbox"][inosilicate] = tk.IntVar()
@@ -4429,6 +4429,14 @@ class Rocks:
                              "Fayalite", "Forsterite", "Staurolite", "Sillimanite", "Kyanite", "Andalusite",
                              "Spessartine"]:
                 data = Nesosilicates(data_type=True, mineral=mineral).get_data()
+            # Sorosilicates
+            elif mineral in ["Epidote", "Zoisite", "Gehlenite"]:
+                data = Sorosilicates(data_type=True, mineral=mineral).get_data()
+            # Inosilicates
+            elif mineral in ["Enstatite", "Diopside", "Augite", "Jadeite", "Aegirine", "Actinolite", "Arfvedsonite",
+                             "Ca-Amphibole", "Ca-Pyroxene", "Ferrosilite", "Glaucophane", "Mg-Fe-Pyroxene",
+                             "Riebeckite", "Na-Amphibole", "Spodumene", "Tremolite", "Wollastonite"]:
+                data = Inosilicates(data_type=True, mineral=mineral).get_data()
             # Carbonates
             elif mineral in ["Calcite", "Dolomite", "Magnesite", "Rhodochrosite", "Siderite", "Aragonite", "Cerussite",
                              "Ankerite", "Azurite", "Malachite"]:
@@ -4461,6 +4469,14 @@ class Rocks:
                                  "Fayalite", "Forsterite", "Staurolite", "Sillimanite", "Kyanite", "Andalusite",
                                  "Spessartine"]:
                     dataset = Nesosilicates(data_type=True, mineral=mineral).get_data(number=n_samples)
+                # Sorosilicates
+                elif mineral in ["Epidote", "Zoisite", "Gehlenite"]:
+                    dataset = Sorosilicates(data_type=True, mineral=mineral).get_data(number=n_samples)
+                # Inosilicates
+                elif mineral in ["Enstatite", "Diopside", "Augite", "Jadeite", "Aegirine", "Actinolite", "Arfvedsonite",
+                                 "Ca-Amphibole", "Ca-Pyroxene", "Ferrosilite", "Glaucophane", "Mg-Fe-Pyroxene",
+                                 "Riebeckite", "Na-Amphibole", "Spodumene", "Tremolite", "Wollastonite"]:
+                    dataset = Inosilicates(data_type=True, mineral=mineral).get_data(number=n_samples)
                 # Carbonates
                 elif mineral in ["Calcite", "Dolomite", "Magnesite", "Rhodochrosite", "Siderite", "Aragonite",
                                  "Cerussite", "Ankerite", "Azurite", "Malachite"]:
