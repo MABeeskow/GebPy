@@ -1201,3 +1201,118 @@ class TraceElements:
         #print("Final:", round(w_total, 6), round(x_total, 6))
         #
         return final_comp
+    #
+    def calculate_composition_apatite_f(self):
+        parts_ap = 1000000
+        oxides = ["CaO", "PO4"]
+        element_list = ["O", "Ca", "P", "F"]
+        #
+        cond_w = 0
+        cond_x = 0
+        while cond_w == False and cond_x == False:
+            w_total = 0
+            x_total = 0
+            #
+            element_list = ["O", "Ca", "P", "F"]
+            composition = {}
+            composition[oxides[0]] = parts_ap
+            #
+            trace_groups = {}
+            trace_groups["W"] = []
+            trace_groups["X"] = []
+            trace_groups["Y"] = []
+            trace_groups["Z"] = []
+            trace_combinations = {}
+            trace_combinations["singles"] = []
+            trace_combinations["couples"] = []
+            for tracer in self.tracer:
+                if tracer in ["Ti", "Zr", "Hf", "Th"]:  # 4+
+                    element_list.append(tracer)
+                    compound = tracer+str("O2")
+                    trace_groups["X"].append(compound)
+                    trace_combinations["singles"].append([compound])
+                elif tracer in ["La", "Ce", "Pr", "Nd", "Sm", "Eu", "Gd", "Dy", "Y", "Er", "Cr", "As"]:   # 3+
+                    element_list.append(tracer)
+                    compound = tracer+str("2O3")
+                    trace_groups["Y"].append(compound)
+                    trace_combinations["couples"].append([compound])
+                elif tracer in ["Cl", "H", "Rb"]:    # 1+
+                    element_list.append(tracer)
+                    compound = tracer+str("2O")
+                    trace_groups["Z"].append(compound)
+                elif tracer in ["Mn", "Co", "Sr", "Ba", "Pb"]:    # 2+
+                    element_list.append(tracer)
+                    compound = tracer+str("O")
+                    trace_groups["W"].append(compound)
+                    trace_combinations["couples"].append([compound])
+            for index_y, couple in enumerate(trace_combinations["couples"], start=0):
+                for index_z, item_z in enumerate(trace_groups["Z"], start=0):
+                    if item_z not in couple and index_y == index_z:
+                        if len(couple) == 2:
+                            del couple[-1]
+                        if couple[0] in trace_groups["W"]:
+                            key = re.search(r"([A-Z][a-z]?)(\d*)([A-Z][a-z]?)(\d*)?", item_z)
+                            couple.append(key.group(1)+key.group(2))
+                        else:
+                            couple.append(item_z)
+                    elif item_z not in couple and len(couple) == 1 and index_y-index_z != 1:
+                        if couple[0] in trace_groups["W"]:
+                            key = re.search(r"([A-Z][a-z]?)(\d*)([A-Z][a-z]?)(\d*)?", item_z)
+                            couple.append(key.group(1)+key.group(2))
+                        else:
+                            couple.append(item_z)
+            #
+            for key in trace_combinations:
+                for item in trace_combinations[key]:
+                    amount = rd.uniform(1*10**(-6), 0.1)
+                    amount_ppm = int(amount*10000)
+                    for compound in item:
+                        oxides.append(compound)
+                        composition[compound] = amount_ppm
+                        composition[oxides[0]] -= amount_ppm
+                    item.append(amount_ppm)
+            #
+            #print("Groups:", trace_groups)
+            #print("Families:", trace_combinations)
+            #
+            results = Compounds(formula=oxides).split_formula()
+            #print("Composition:", composition)
+            #print("Results:", results)
+            M = 0
+            for oxide in composition:
+                M += composition[oxide]*10**(-6) * results[oxide]["Total"]
+            element_list = np.sort(element_list)
+            final_comp = {}
+            for element in element_list:
+                final_comp[element] = {}
+                final_comp[element]["w"] = 0
+                final_comp[element]["x"] = 0
+            for oxide in composition:
+                for element in element_list:
+                    if element in results[oxide]:
+                        #final_comp[element]["w"] += composition[oxide]*10**(-6) * results[oxide][element][0]*results[oxide][element][1]/M
+                        final_comp[element]["w"] += round(composition[oxide]*10**(-6) * results[oxide][element][2], 6)
+                        final_comp[element]["x"] += round(composition[oxide]*10**(-6)*results[oxide][element][0], 6)
+            final_comp["O"]["w"] = 1
+            final_comp["O"]["x"] = 2
+            final_comp["Ca"]["x"] = 1
+            for element in final_comp:
+                if element != "O":
+                    final_comp["O"]["w"] -= final_comp[element]["w"]
+                    if element != "Ca":
+                        final_comp["Ca"]["x"] -= final_comp[element]["x"]
+            for element in final_comp:
+                final_comp[element]["w"] = round(final_comp[element]["w"], 6)
+                final_comp[element]["x"] = round(final_comp[element]["x"], 6)
+                w_total += final_comp[element]["w"]
+                x_total += final_comp[element]["x"]
+            #
+            if w_total == 1:
+                cond_w = True
+            if x_total == 3:
+                cond_x = True
+
+        #print("Final:", final_comp)
+        #print("Final:", round(w_total, 6), round(x_total, 6))
+        #
+        return final_comp

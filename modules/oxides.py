@@ -161,8 +161,8 @@ class Oxides():
         else:
             var_state = "variable"
             self.traces_list = []
-            minors_x = ["Ti", "Ge", "Sn"]               # mainly 4+
-            minors_y = ["Al", "Fe", "Ga", "As", "B"]    # mainly 3+
+            minors_x = ["Ti", "Ge", "Sn", "C"]               # mainly 4+
+            minors_y = ["Al", "Fe", "Ga", "As", "B", "P"]    # mainly 3+
             minors_z = ["H", "Li", "Na", "Ag", "K"]     # mainly 1+
             minors_w = ["Mg", "Cu", "Be", "Mn"]         # mainly 2+
             if self.impurity == "random":

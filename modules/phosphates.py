@@ -18,7 +18,7 @@ from modules.chemistry import PeriodicSystem, DataProcessing
 from modules.minerals import CrystalPhysics
 from modules.geophysics import BoreholeGeophysics as bg
 from modules.geophysics import WellLog as wg
-from modules.geochemistry import MineralChemistry
+from modules.geochemistry import MineralChemistry, TraceElements
 #
 # Phosphates
 class Phosphates:
@@ -42,32 +42,90 @@ class Phosphates:
         traces_data = []
         if len(self.traces_list) > 0:
             self.impurity = "impure"
-        if self.impurity == "random":
+        if self.impurity == "pure":
+            var_state = "fixed"
+        else:
+            var_state = "variable"
             self.traces_list = []
-            minors = ["Cl", "La", "Ce", "Pr", "Nd", "Sm", "Eu", "Gd", "Dy", "Y", "Er", "Mn", "H"]
-            n = rd.randint(1, len(minors))
-            while len(self.traces_list) < n:
-                selection = rd.choice(minors)
-                if selection not in self.traces_list and selection not in majors_name:
-                    self.traces_list.append(selection)
-                else:
-                    continue
-        traces = [PeriodicSystem(name=i).get_data() for i in self.traces_list]
-        x_traces = [round(rd.uniform(0., 0.001), 6) for i in range(len(self.traces_list))]
-        for i in range(len(self.traces_list)):
-            traces_data.append([str(self.traces_list[i]), int(traces[i][1]), float(x_traces[i])])
-        if len(traces_data) > 0:
-            traces_data = np.array(traces_data, dtype=object)
-            traces_data = traces_data[traces_data[:, 1].argsort()]
+            minors_x = ["Ti", "Zr", "Hf", "Th"]         # mainly 4+
+            minors_y = ["La", "Ce", "Pr", "Nd", "Sm", "Eu", "Gd", "Dy", "Y", "Er", "Cr", "As"]  # mainly 3+
+            minors_z = ["Cl", "H", "Rb"]                # mainly 1+
+            minors_w = ["Mn", "Co", "Sr", "Ba", "Pb"]   # mainly 2+
+            if self.impurity == "random":
+                n_x = rd.randint(0, len(minors_x))
+                n_y = rd.randint(0, len(minors_y))
+                n_w = rd.randint(0, len(minors_w))
+                if n_x > 0:
+                    selection_x = rd.sample(minors_x, n_x)
+                    self.traces_list.extend(selection_x)
+                if n_y > 0 and n_w == 0:
+                    n_z = rd.randint(1, n_y)
+                    selection_y = rd.sample(minors_y, n_y)
+                    selection_z = rd.sample(minors_z, n_z)
+                    self.traces_list.extend(selection_y)
+                    self.traces_list.extend(selection_z)
+                if n_w > 0 and n_y == 0:
+                    n_z = rd.randint(1, n_w)
+                    selection_w = rd.sample(minors_w, n_w)
+                    selection_z = rd.sample(minors_z, n_z)
+                    self.traces_list.extend(selection_w)
+                    self.traces_list.extend(selection_z)
+                if n_y > 0 and n_w > 0:
+                    if n_y + n_w <= len(minors_z):
+                        n_z = rd.randint(1, (n_y + n_w))
+                    else:
+                        n_z = len(minors_z)
+                    selection_y = rd.sample(minors_y, n_y)
+                    selection_w = rd.sample(minors_w, n_w)
+                    selection_z = rd.sample(minors_z, n_z)
+                    self.traces_list.extend(selection_y)
+                    self.traces_list.extend(selection_w)
+                    self.traces_list.extend(selection_z)
+            elif self.impurity != "random":
+                self.traces_list = []
+                for element in self.impurity:
+                    if element in minors_x:
+                        self.traces_list.append(element)
+                    elif element in minors_y:
+                        self.traces_list.append(element)
+                    elif element in minors_z:
+                        self.traces_list.append(element)
+                    elif element in minors_w:
+                        self.traces_list.append(element)
+                # minors = ["Cl", "La", "Ce", "Pr", "Nd", "Sm", "Eu", "Gd", "Dy", "Y", "Er", "Mn", "H"]
+                # n = rd.randint(1, len(minors))
+                # while len(self.traces_list) < n:
+                #     selection = rd.choice(minors)
+                #     if selection not in self.traces_list and selection not in majors_name:
+                #         self.traces_list.append(selection)
+                #     else:
+                #         continue
+            traces = [PeriodicSystem(name=i).get_data() for i in self.traces_list]
+            x_traces = [round(rd.uniform(0., 0.001), 6) for i in range(len(self.traces_list))]
+            for i in range(len(self.traces_list)):
+                traces_data.append([str(self.traces_list[i]), int(traces[i][1]), float(x_traces[i])])
+            if len(traces_data) > 0:
+                traces_data = np.array(traces_data, dtype=object)
+                traces_data = traces_data[traces_data[:, 1].argsort()]
         #
         data = []
         mineral = "Ap"
         #
         # Molar mass
-        molar_mass_pure = 5*calcium[2] + fluorine[2] + 3*(phosphorus[2] + 4*oxygen[2])
-        molar_mass, amounts = MineralChemistry(w_traces=traces_data, molar_mass_pure=molar_mass_pure,
-                                      majors=majors_data).calculate_molar_mass()
-        element = [PeriodicSystem(name=amounts[i][0]).get_data() for i in range(len(amounts))]
+        try:
+            molar_mass_pure = 5*calcium[2] + fluorine[2] + 3*(phosphorus[2] + 4*oxygen[2])
+            molar_mass, amounts = MineralChemistry(w_traces=traces_data, molar_mass_pure=molar_mass_pure,
+                                                   majors=majors_data).calculate_molar_mass()
+            element = [PeriodicSystem(name=amounts[i][0]).get_data() for i in range(len(amounts))]
+        except:
+            compositon_data = TraceElements(tracer=self.traces_list).calculate_composition_apatite_f()
+            molar_mass = 0
+            amounts = []
+            for element in compositon_data:
+                chem_data = PeriodicSystem(name=element).get_data()
+                molar_mass += compositon_data[element]["x"]*chem_data[2]
+                amounts.append([chem_data[0], chem_data[1], compositon_data[element]["w"]])
+            element = [PeriodicSystem(name=amounts[i][0]).get_data() for i in range(len(amounts))]
         # Density
         dataV = CrystalPhysics([[9.367, 6.884], [], "hexagonal"])
         V = dataV.calculate_volume()
@@ -113,6 +171,7 @@ class Phosphates:
             results = {}
             results["mineral"] = mineral
             results["M"] = molar_mass
+            results["state"] = var_state
             element_list = np.array(amounts)[:, 0]
             results["chemistry"] = {}
             for index, element in enumerate(element_list, start=0):

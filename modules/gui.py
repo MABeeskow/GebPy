@@ -6,7 +6,7 @@
 # Name:		gui.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		11.03.2022
+# Date:		12.03.2022
 
 #-----------------------------------------------
 
@@ -2375,7 +2375,13 @@ class Minerals:
             self.var_actual_trace = var_rb.get()
             #
             if self.mineral == "Quartz":
-                traces = ["Ti", "Ge", "Sn", "Al", "Fe", "Ga", "As", "B", "H", "Li", "Na", "Ag", "K", "Mg", "Cu", "Be", "Mn"]
+                traces = ["Ti", "Ge", "Sn", "Al", "Fe", "Ga", "As", "B", "H", "Li", "Na", "Ag", "K", "Mg", "Cu", "Be",
+                          "Mn"]
+                n_trace = rd.randint(1, len(traces))
+                selection_trace = rd.sample(traces, n_trace)
+            elif self.mineral == "Apatite-F":
+                traces = ["Ti", "Zr", "Hf", "Th", "La", "Ce", "Pr", "Nd", "Sm", "Eu", "Gd", "Dy", "Y", "Er", "Cr", "As",
+                          "Cl", "H", "Rb", "Mn", "Co", "Sr", "Ba", "Pb"]
                 n_trace = rd.randint(1, len(traces))
                 selection_trace = rd.sample(traces, n_trace)
             data_all = []
@@ -2646,7 +2652,7 @@ class Minerals:
                     data = Inosilicates(data_type=True).create_calium_pyroxene()
                 # Phosphates
                 elif self.mineral == "Apatite-F":
-                    data = Phosphates(data_type=True).create_aptite_f()
+                    data = Phosphates(impurity=selection_trace, data_type=True).create_aptite_f()
                 elif self.mineral == "Apatite-Cl":
                     data = Phosphates(data_type=True).create_aptite_cl()
                 elif self.mineral == "Apatite-OH":
