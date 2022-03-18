@@ -6,7 +6,7 @@
 # Name:		gui.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		12.03.2022
+# Date:		17.03.2022
 
 #-----------------------------------------------
 
@@ -23,6 +23,7 @@ from modules.halogenes import Halogenes
 from modules.silicates import Tectosilicates, Phyllosilicates, Nesosilicates, Sorosilicates, Inosilicates
 from modules.phospides import Phospides
 from modules.phosphates import Phosphates
+from modules.organics import Organics
 from modules.minerals import feldspars
 from modules.siliciclastics import sandstone, shale
 from modules.carbonates import limestone, dolomite, CustomCarbonates
@@ -139,7 +140,8 @@ class GebPyGUI(tk.Frame):
         ## Option Menu
         var_opt_0_0 = tk.StringVar()
         opt_list_0_0 = ["Oxides", "Sulfides", "Carbonates", "Halogenes", "Tectosilicates", "Phyllosilicates",
-                        "Sulfates", "Nesosilicates", "Sorosilicates", "Inosilicates", "Phosphates", "Phosphides"]
+                        "Sulfates", "Nesosilicates", "Sorosilicates", "Inosilicates", "Phosphates", "Phosphides",
+                        "Organics"]
         opt_list_0_0.sort()
         self.opt_mingroup = SE(parent=self.parent, row_id=8, column_id=0, n_rows=2, n_columns=2, bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
             var_opt=var_opt_0_0, var_opt_set="Select Mineral Group", opt_list=opt_list_0_0,
@@ -261,6 +263,11 @@ class GebPyGUI(tk.Frame):
             Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                      color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
                      entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
+        # ORGANICS
+        elif var_opt in ["Organic Matter"]:
+            Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
+                     color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
+                     entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
         # Rocks
         elif var_opt == "Sandstone":
             Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
@@ -356,6 +363,7 @@ class GebPyGUI(tk.Frame):
                 self.opt_inosilicate.grid_remove()
                 self.opt_phosphates.grid_remove()
                 self.opt_phosphides.grid_remove()
+                self.opt_orgmat.grid_remove()
             except:
                 pass
             var_opt_0_1 = tk.StringVar()
@@ -383,6 +391,7 @@ class GebPyGUI(tk.Frame):
                 self.opt_inosilicate.grid_remove()
                 self.opt_phosphates.grid_remove()
                 self.opt_phosphides.grid_remove()
+                self.opt_orgmat.grid_remove()
             except:
                 pass
             var_opt_0_2 = tk.StringVar()
@@ -408,6 +417,7 @@ class GebPyGUI(tk.Frame):
                 self.opt_inosilicate.grid_remove()
                 self.opt_phosphates.grid_remove()
                 self.opt_phosphides.grid_remove()
+                self.opt_orgmat.grid_remove()
             except:
                 pass
             var_opt_0_3 = tk.StringVar()
@@ -432,6 +442,7 @@ class GebPyGUI(tk.Frame):
                 self.opt_inosilicate.grid_remove()
                 self.opt_phosphates.grid_remove()
                 self.opt_phosphides.grid_remove()
+                self.opt_orgmat.grid_remove()
             except:
                 pass
             var_opt_0_4 = tk.StringVar()
@@ -455,6 +466,7 @@ class GebPyGUI(tk.Frame):
                 self.opt_inosilicate.grid_remove()
                 self.opt_phosphates.grid_remove()
                 self.opt_phosphides.grid_remove()
+                self.opt_orgmat.grid_remove()
             except:
                 pass
             var_opt_0_5 = tk.StringVar()
@@ -477,6 +489,7 @@ class GebPyGUI(tk.Frame):
                 self.opt_inosilicate.grid_remove()
                 self.opt_phosphates.grid_remove()
                 self.opt_phosphides.grid_remove()
+                self.opt_orgmat.grid_remove()
             except:
                 pass
             var_opt_0_6 = tk.StringVar()
@@ -501,6 +514,7 @@ class GebPyGUI(tk.Frame):
                 self.opt_inosilicate.grid_remove()
                 self.opt_phosphates.grid_remove()
                 self.opt_phosphides.grid_remove()
+                self.opt_orgmat.grid_remove()
             except:
                 pass
             var_opt_0_7 = tk.StringVar()
@@ -525,6 +539,7 @@ class GebPyGUI(tk.Frame):
                 self.opt_inosilicate.grid_remove()
                 self.opt_phosphates.grid_remove()
                 self.opt_phosphides.grid_remove()
+                self.opt_orgmat.grid_remove()
             except:
                 pass
             var_opt_0_8 = tk.StringVar()
@@ -551,6 +566,7 @@ class GebPyGUI(tk.Frame):
                 self.opt_inosilicate.grid_remove()
                 self.opt_phosphates.grid_remove()
                 self.opt_phosphides.grid_remove()
+                self.opt_orgmat.grid_remove()
             except:
                 pass
             var_opt_0_9 = tk.StringVar()
@@ -574,6 +590,7 @@ class GebPyGUI(tk.Frame):
                 self.opt_sorosilicate.grid_remove()
                 self.opt_phosphates.grid_remove()
                 self.opt_phosphides.grid_remove()
+                self.opt_orgmat.grid_remove()
             except:
                 pass
             var_opt_0_10 = tk.StringVar()
@@ -599,6 +616,7 @@ class GebPyGUI(tk.Frame):
                 self.opt_sorosilicate.grid_remove()
                 self.opt_inosilicate.grid_remove()
                 self.opt_phosphides.grid_remove()
+                self.opt_orgmat.grid_remove()
             except:
                 pass
             var_opt_0_11 = tk.StringVar()
@@ -622,6 +640,7 @@ class GebPyGUI(tk.Frame):
                 self.opt_sorosilicate.grid_remove()
                 self.opt_inosilicate.grid_remove()
                 self.opt_phosphates.grid_remove()
+                self.opt_orgmat.grid_remove()
             except:
                 pass
             var_opt_0_12 = tk.StringVar()
@@ -631,6 +650,30 @@ class GebPyGUI(tk.Frame):
                                        bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
                 var_opt=var_opt_0_12, var_opt_set="Select Phosphide Mineral", opt_list=opt_list_0_12,
                 command=lambda var_opt=var_opt_0_12: self.select_opt(var_opt))
+        # ORGANICS
+        elif var_opt == "Organics":
+            try:
+                self.opt_oxide.grid_remove()
+                self.opt_sulfide.grid_remove()
+                self.opt_carb.grid_remove()
+                self.opt_halogene.grid_remove()
+                self.opt_afs.grid_remove()
+                self.opt_clays.grid_remove()
+                self.opt_sulfate.grid_remove()
+                self.opt_nesosilicate.grid_remove()
+                self.opt_sorosilicate.grid_remove()
+                self.opt_inosilicate.grid_remove()
+                self.opt_phosphates.grid_remove()
+                self.opt_phosphides.grid_remove()
+            except:
+                pass
+            var_opt_0_13 = tk.StringVar()
+            opt_list_0_13 = ["Organic Matter"]
+            opt_list_0_13.sort()
+            self.opt_orgmat = SE(parent=self.parent, row_id=10, column_id=0, n_rows=2, n_columns=2,
+                                       bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
+                var_opt=var_opt_0_13, var_opt_set="Select Organic Material", opt_list=opt_list_0_13,
+                command=lambda var_opt=var_opt_0_13: self.select_opt(var_opt))
         elif var_opt == "Siliciclastic Rocks":
             var_opt_1_1 = tk.StringVar()
             opt_list_1_1 = ["Sandstone", "Shale"]
@@ -1156,6 +1199,9 @@ class Minerals:
             # Phosphides
             elif self.mineral == "Allabogdanite":
                 data = Phospides(data_type=True).create_allabogdanite()
+            # Organics
+            elif self.mineral == "Organic Matter":
+                data = Organics(data_type=True).create_organics_matter()
             #
             self.color_mineral = "#7C9097"
             #
@@ -1681,6 +1727,9 @@ class Minerals:
             # Phosphides
             elif self.mineral == "Allabogdanite":
                 data = Phospides(data_type=True).create_allabogdanite()
+            # Organics
+            elif self.mineral == "Organic Matter":
+                data = Organics(data_type=True).create_organics_matter()
             #
             self.color_mineral = "#7C9097"
             #
@@ -3945,7 +3994,7 @@ class Rocks:
             self.var_custom_mineralogy["checkbox"] = {}
             self.gui_custom_rock = {}
             list_mineral_classes = ["Oxides", "Carbonates", "Sulfates", "Sulfides", "Tectosilicates", "Phyllosilicates",
-                                    "Nesosilicates", "Inosilicates", "Sorosilicates"]
+                                    "Nesosilicates", "Inosilicates", "Sorosilicates", "Organics"]
             for mineral_class in list_mineral_classes:
                 self.gui_custom_rock[mineral_class] = {}
                 self.gui_custom_rock[mineral_class]["start line"] = 0
@@ -4337,10 +4386,54 @@ class Rocks:
                 self.gui_custom_rock[sulfate] = {}
                 self.gui_custom_rock[sulfate]["checkbuttons"] = cb
                 self.gui_custom_rock[sulfate]["entries"] = [entr_min, entr_max]
-                self.gui_custom_rock["Sulfates"]["end line"] = start_sulfides + index
+                self.gui_custom_rock["Sulfates"]["end line"] = start_sulfates + index
                 #
                 self.gui_custom_rock[sulfate]["entries"][0].bind("<Return>", lambda event, var_entr=self.entr_w["custom"][sulfate][0], name=sulfate, pos=0: self.set_entry(var_entr, name, pos, event))
                 self.gui_custom_rock[sulfate]["entries"][1].bind("<Return>", lambda event, var_entr=self.entr_w["custom"][sulfate][1], name=sulfate, pos=1: self.set_entry(var_entr, name, pos, event))
+            #
+            # Organics
+            start_organics = self.gui_custom_rock["Sulfates"]["end line"] + 1
+            self.gui_custom_rock["Organics"]["start line"] = start_organics
+            lbl_title = SE(parent=self.window_custom_mineralogy, row_id=start_organics, column_id=8, n_columns=4,
+                              bg=self.color_accent_01, fg=self.color_fg_dark).create_label(text="Organics",
+                                                                                           relief=tk.RAISED)
+            lbl_name = SE(parent=self.window_custom_mineralogy, row_id=start_organics+1, column_id=8,
+                          bg=self.color_accent_01, fg=self.color_fg_dark).create_label(text="Name", relief=tk.RAISED)
+            lbl_part = SE(parent=self.window_custom_mineralogy, row_id=start_organics+1, column_id=9,
+                          bg=self.color_accent_01, fg=self.color_fg_dark).create_label(text="Part", relief=tk.RAISED)
+            lbl_min = SE(parent=self.window_custom_mineralogy, row_id=start_organics+1, column_id=10,
+                          bg=self.color_accent_01, fg=self.color_fg_dark).create_label(text="Min", relief=tk.RAISED)
+            lbl_max = SE(parent=self.window_custom_mineralogy, row_id=start_organics+1, column_id=11,
+                          bg=self.color_accent_01, fg=self.color_fg_dark).create_label(text="Max", relief=tk.RAISED)
+            self.gui_custom_rock["Organics"]["labels"]["header"] = [lbl_title, lbl_name, lbl_part, lbl_min, lbl_max]
+            list_organics = ["Organic Matter"]
+            list_organics.sort()
+            for index, organic in enumerate(list_organics, start=2):
+                self.var_custom_mineralogy["checkbox"][organic] = tk.IntVar()
+                self.entr_w["custom"][organic] = [tk.StringVar(), tk.StringVar()]
+                #
+                lbl = SE(parent=self.window_custom_mineralogy, row_id=start_organics+index, column_id=8,
+                         bg=self.color_accent_02, fg=self.color_fg_dark).create_label(text=organic, relief=tk.RAISED)
+                self.var_custom_mineralogy["checkbox"][organic] = tk.IntVar()
+                cb = SE(parent=self.window_custom_mineralogy, row_id=start_organics+index, column_id=9,
+                        bg=self.color_accent_02, fg=self.color_fg_dark).create_checkbox(text="", var_cb=self.var_custom_mineralogy["checkbox"][organic],
+                                                                                        command=lambda var_cb=self.var_custom_mineralogy["checkbox"][organic], name=organic: self.marked_checkbox(var_cb, name))
+                self.entr_w["custom"][organic] = [tk.StringVar(), tk.StringVar()]
+                entr_min = SE(parent=self.window_custom_mineralogy, row_id=start_organics+index, column_id=10,
+                              bg=self.color_accent_02, fg=self.color_fg_dark).create_entry(var_entr=self.entr_w["custom"][organic][0],
+                                                                                           var_entr_set=0.0, width=5)
+                entr_max = SE(parent=self.window_custom_mineralogy, row_id=start_organics+index, column_id=11,
+                              bg=self.color_accent_02, fg=self.color_fg_dark).create_entry(var_entr=self.entr_w["custom"][organic][1],
+                                                                                           var_entr_set=1.0, width=5)
+                #
+                self.gui_custom_rock["Organics"]["labels"][organic] = lbl
+                self.gui_custom_rock[organic] = {}
+                self.gui_custom_rock[organic]["checkbuttons"] = cb
+                self.gui_custom_rock[organic]["entries"] = [entr_min, entr_max]
+                self.gui_custom_rock["Organics"]["end line"] = start_organics + index
+                #
+                self.gui_custom_rock[organic]["entries"][0].bind("<Return>", lambda event, var_entr=self.entr_w["custom"][organic][0], name=organic, pos=0: self.set_entry(var_entr, name, pos, event))
+                self.gui_custom_rock[organic]["entries"][1].bind("<Return>", lambda event, var_entr=self.entr_w["custom"][organic][1], name=organic, pos=1: self.set_entry(var_entr, name, pos, event))
         #
         elif var_btn == "Generate Data":
             try:
@@ -4455,6 +4548,9 @@ class Rocks:
             elif mineral in ["Alunite", "Anglesite", "Anhydrite", "Barite", "Celestine", "Chalcanthite", "Gypsum",
                              "Hanksite", "Jarosite", "Kieserite", "Scheelite"]:
                 data = Sulfates(data_type=True, mineral=mineral).get_data()
+            # Organics
+            elif mineral in ["Organic Matter"]:
+                data = Organics(data_type=True, compound=mineral).get_data()
             # Oxides
             else:
                 data = Oxides(data_type=True, mineral=mineral).get_data()
@@ -4495,6 +4591,9 @@ class Rocks:
                 elif mineral in ["Alunite", "Anglesite", "Anhydrite", "Barite", "Celestine", "Chalcanthite", "Gypsum",
                                  "Hanksite", "Jarosite", "Kieserite", "Scheelite"]:
                     dataset = Sulfates(data_type=True, mineral=mineral).get_data(number=n_samples)
+                # Organics
+                elif mineral in ["Organic Matter"]:
+                    dataset = Organics(data_type=True, compound=mineral).get_data(number=n_samples)
                 # Oxides
                 else:
                     dataset = Oxides(data_type=True, mineral=mineral).get_data(number=n_samples)

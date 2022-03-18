@@ -26,7 +26,7 @@ from modules.carbonates import Carbonates
 from modules.silicates import Phyllosilicates
 from modules.silicates import Tectosilicates
 from modules.sulfides import Sulfides
-from organics import Organics
+from modules.organics import Organics
 
 class Soil:
     #

@@ -36,16 +36,16 @@ class TESTING_MINERALS:
         ## TESTING ORGANICS
         print("TEST - ORGANICS")
         # Test Carbohydrates
-        data = Organics(dict=True).create_carbohydrates()
+        data = Organics(data_type=True).create_carbohydrates()
         print("Carbohydrates:\n", data)
         # Test Lignin
-        data = Organics(dict=True).create_lignin()
+        data = Organics(data_type=True).create_lignin()
         print("Lignin:\n", data)
         # Test Lipid
-        data = Organics(dict=True).create_lipid()
+        data = Organics(data_type=True).create_lipid()
         print("Lipid:\n", data)
         # Test Organic matter
-        data = Organics(dict=True).create_organics_matter()
+        data = Organics(data_type=True).create_organics_matter()
         print("Organic matter:\n", data)
 
         print("")
@@ -201,7 +201,7 @@ class TESTING_MINERALS:
         data = oxides.Oxides(impurity="pure").create_brucite()
         print("Brucite (incl. trace elements):\n", data)
         # Test Ulvöspinel (incl. trace elements)
-        data = oxides.Oxides(impurity="pure").create_ulvospinel()
+        data = oxides.Oxides(impurity="pure").create_ulvoespinel()
         print("Ulvöspinel (incl. trace elements):\n", data)
 
         print("")

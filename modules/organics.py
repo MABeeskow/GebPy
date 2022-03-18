@@ -6,7 +6,7 @@
 # Name:		organics.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		20.11.2021
+# Date:		17.03.2022
 
 # -----------------------------------------------
 
@@ -23,16 +23,34 @@ from modules.geochemistry import MineralChemistry
 class Organics:
     """ Class that generates geophysical and geochemical data of halogene minerals"""
     #
-    def __init__(self, traces_list=[], impurity="pure", dict=False):
+    def __init__(self, traces_list=[], impurity="pure", data_type=False, compound=None):
         self.traces_list = traces_list
         self.impurity = impurity
-        self.dict = dict
+        self.data_type = data_type
+        self.compound = compound
+    #
+    def get_data(self, number=1):
+        if self.compound == "Organic Matter":
+            if number > 1:
+                data = [self.create_organics_matter() for n in range(number)]
+            else:
+                data = self.create_organics_matter()
+        else:
+            data = "Nothing found!"
+        #
+        return data
+    #
+    def generate_dataset(self, number):
+        if self.compound == "Organic Matter":
+            dataset = [self.create_organics_matter() for n in range(number)]
+        #
+        return dataset
     #
     def create_organics_matter(self):
         # Major elements
-        carbohydrates = Organics(dict=True).create_carbohydrates()
-        lignin = Organics(dict=True).create_lignin()
-        lipid = Organics(dict=True).create_lipid()
+        carbohydrates = Organics(data_type=True).create_carbohydrates()
+        lignin = Organics(data_type=True).create_lignin()
+        lipid = Organics(data_type=True).create_lipid()
         hydrogen = PeriodicSystem(name="H").get_data()
         carbon = PeriodicSystem(name="C").get_data()
         nitrogen = PeriodicSystem(name="N").get_data()
@@ -43,23 +61,27 @@ class Organics:
         traces_data = []
         if len(self.traces_list) > 0:
             self.impurity = "impure"
-        if self.impurity == "random":
-            self.traces_list = []
-            minors = [None]
-            n = rd.randint(1, len(minors))
-            while len(self.traces_list) < n:
-                selection = rd.choice(minors)
-                if selection not in self.traces_list and selection not in majors_name:
-                    self.traces_list.append(selection)
-                else:
-                    continue
-        traces = [PeriodicSystem(name=i).get_data() for i in self.traces_list]
-        x_traces = [round(rd.uniform(0., 0.001), 6) for i in range(len(self.traces_list))]
-        for i in range(len(self.traces_list)):
-            traces_data.append([str(self.traces_list[i]), int(traces[i][1]), float(x_traces[i])])
-        if len(traces_data) > 0:
-            traces_data = np.array(traces_data, dtype=object)
-            traces_data = traces_data[traces_data[:, 1].argsort()]
+        if self.impurity == "pure":
+            var_state = "variable"
+        else:
+            var_state = "variable"
+            if self.impurity == "random":
+                self.traces_list = []
+                minors = [None]
+                n = rd.randint(1, len(minors))
+                while len(self.traces_list) < n:
+                    selection = rd.choice(minors)
+                    if selection not in self.traces_list and selection not in majors_name:
+                        self.traces_list.append(selection)
+                    else:
+                        continue
+            traces = [PeriodicSystem(name=i).get_data() for i in self.traces_list]
+            x_traces = [round(rd.uniform(0., 0.001), 6) for i in range(len(self.traces_list))]
+            for i in range(len(self.traces_list)):
+                traces_data.append([str(self.traces_list[i]), int(traces[i][1]), float(x_traces[i])])
+            if len(traces_data) > 0:
+                traces_data = np.array(traces_data, dtype=object)
+                traces_data = traces_data[traces_data[:, 1].argsort()]
         #
         data = []
         #
@@ -100,6 +122,7 @@ class Organics:
         element = [PeriodicSystem(name=amounts[i][0]).get_data() for i in range(len(amounts))]
         # Density
         rho = w_ch*carbohydrates["rho"] + w_lg*lignin["rho"] + w_lp*lipid["rho"]
+        V_m = molar_mass/rho
         rho_e = wg(amounts=amounts, elements=element, rho_b=rho).calculate_electron_density()
         # Bulk modulus
         K = w_ch*carbohydrates["K"] + w_lg*lignin["K"] + w_lp*lipid["K"]*10**9
@@ -123,7 +146,7 @@ class Organics:
         # Electrical resistivity
         p = None
         #
-        if self.dict == False:
+        if self.data_type == False:
             data.append(mineral)
             data.append(round(molar_mass, 3))
             data.append(round(rho, 2))
@@ -138,12 +161,14 @@ class Organics:
             results = {}
             results["mineral"] = mineral
             results["M"] = round(molar_mass, 3)
+            results["state"] = var_state
             element_list = np.array(amounts)[:, 0]
             results["chemistry"] = {}
             for index, element in enumerate(element_list, start=0):
                 results["chemistry"][element] = amounts[index][2]
             results["rho"] = round(rho, 4)
             results["rho_e"] = round(rho_e, 4)
+            results["V"] = round(V_m, 4)
             results["vP"] = round(vP, 4)
             results["vS"] = round(vS, 4)
             results["vP/vS"] = round(vPvS, 4)
@@ -225,7 +250,7 @@ class Organics:
         # Electrical resistivity
         p = None
         #
-        if self.dict == False:
+        if self.data_type == False:
             data = []
             data.append(mineral)
             data.append(round(molar_mass, 3))
@@ -331,7 +356,7 @@ class Organics:
         # Electrical resistivity
         p = None
         #
-        if self.dict == False:
+        if self.data_type == False:
             data = []
             data.append(mineral)
             data.append(round(molar_mass, 3))
@@ -433,7 +458,7 @@ class Organics:
         # Electrical resistivity
         p = None
         #
-        if self.dict == False:
+        if self.data_type == False:
             data = []
             data.append(mineral)
             data.append(round(molar_mass, 3))
