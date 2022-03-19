@@ -1463,7 +1463,7 @@ class shale:
         self.amounts = amounts
         #
         # mineralogy
-        data_org = Organics(dict=True).create_organics_matter()
+        data_org = Organics(data_type=True).create_organics_matter()
         data_ms = Phyllosilicates(impurity="pure", data_type=True).create_muscovite()
         data_bt = Phyllosilicates(impurity="pure", data_type=True).create_biotite()
         data_ilt = Phyllosilicates(impurity="pure", data_type=True).create_illite()

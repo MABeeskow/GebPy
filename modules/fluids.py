@@ -192,11 +192,11 @@ class Water:
         U = PE*rho*10**(-3)
         #
         data.append(mineral)
-        data.append(round(M,2))
-        data.append(round(rho,1))
-        data.append([round(K*10**(-9),2), round(G*10**(-9),2), round(E*10**(-9),2), round(nu,2), round(vPvS,2)])
-        data.append([round(vP,1), round(vS,1)])
-        data.append([round(GR,2), round(PE,2), round(U,2)])
+        data.append(round(M, 2))
+        data.append(round(rho, 1))
+        data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 2), round(vPvS, 2)])
+        data.append([round(vP, 1), round(vS, 1)])
+        data.append([round(GR, 2), round(PE, 2), round(U, 2)])
         #
         return data
     #
