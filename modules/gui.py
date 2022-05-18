@@ -4206,7 +4206,7 @@ class Rocks:
             self.gui_custom_rock["Phyllosilicates"]["labels"]["header"] = [lbl_title, lbl_name, lbl_part, lbl_min,
                                                                            lbl_max]
             list_phyllosilicates = ["Illite", "Kaolinite", "Montmorillonite", "Chlorite", "Vermiculite", "Biotite",
-                                    "Muscovite", "Glauconite"]
+                                    "Muscovite", "Glauconite", "Nontronite", "Saponite"]
             list_phyllosilicates.sort()
             for index, phyllosilicate in enumerate(list_phyllosilicates, start=2):
                 self.var_custom_mineralogy["checkbox"][phyllosilicate] = tk.IntVar()
