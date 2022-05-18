@@ -347,5 +347,11 @@ class TESTING_MINERALS:
         # Test Montmorillonite (incl. trace elements)
         data = Pyllosilicates(dict=True).create_montmorillonite()
         print("Montmorillonite (no preference):\n", data)
+        # Test Nontronite (incl. trace elements)
+        data = silicates.Phyllosilicates(impurity="pure", data_type=True).create_nontronite()
+        print("Nontronite (no preference):\n", data)
+        # Test Saponite (incl. trace elements)
+        data = silicates.Phyllosilicates(impurity="pure", data_type=True).create_saponite()
+        print("Saponite (no preference):\n", data)
 # RUN
 TESTING_MINERALS()
