@@ -207,7 +207,8 @@ class GebPyGUI(tk.Frame):
         ## SULFIDES
         elif var_opt in ["Pyrite", "Chalcopyrite", "Galena", "Acanthite", "Chalcocite", "Bornite", "Sphalerite",
                          "Pyrrhotite", "Millerite", "Pentlandite", "Covellite", "Cinnabar", "Realgar", "Orpiment",
-                         "Stibnite", "Marcasite", "Molybdenite", "Fahlore", "Chalcopyrite-Group"]:
+                         "Stibnite", "Marcasite", "Molybdenite", "Fahlore", "Chalcopyrite-Group", "Gallite",
+                         "Roquesite", "Lenaite", "Laforetite"]:
             Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                      color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
                      entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
@@ -410,7 +411,8 @@ class GebPyGUI(tk.Frame):
             var_opt_0_2 = tk.StringVar()
             opt_list_0_2 = ["Pyrite", "Chalcopyrite", "Galena", "Acanthite", "Chalcocite", "Bornite", "Sphalerite",
                             "Pyrrhotite", "Millerite", "Pentlandite", "Covellite", "Cinnabar", "Realgar", "Orpiment",
-                            "Stibnite", "Marcasite", "Molybdenite", "Fahlore", "Chalcopyrite-Group"]
+                            "Stibnite", "Marcasite", "Molybdenite", "Fahlore", "Chalcopyrite-Group", "Gallite",
+                            "Roquesite", "Lenaite", "Laforetite"]
             opt_list_0_2.sort()
             self.opt_sulfide = SE(parent=self.parent, row_id=10, column_id=0, n_rows=2, n_columns=2,
                                   bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
@@ -1068,6 +1070,15 @@ class Minerals:
                 data = Sulfides(impurity="pure", data_type=True).create_fahlore()
             elif self.mineral == "Chalcopyrite-Group":
                 data = Sulfides(impurity="pure", data_type=True).create_chalcopyrite_group()
+            elif self.mineral == "Gallite":
+                data = Sulfides(impurity="pure", data_type=True).create_gallite()
+            elif self.mineral == "Roquesite":
+                data = Sulfides(impurity="pure", data_type=True).create_roquesite()
+            elif self.mineral == "Lenaite":
+                data = Sulfides(impurity="pure", data_type=True).create_lenaite()
+            elif self.mineral == "Laforetite":
+                data = Sulfides(impurity="pure", data_type=True).create_laforetite()
+            # Carbonates
             elif self.mineral == "Calcite":
                 data = Carbonates(impurity="pure", data_type=True).create_calcite()
             elif self.mineral == "Corundum":
@@ -1613,6 +1624,15 @@ class Minerals:
                 data = Sulfides(impurity="pure", data_type=True).create_fahlore()
             elif self.mineral == "Chalcopyrite-Group":
                 data = Sulfides(impurity="pure", data_type=True).create_chalcopyrite_group()
+            elif self.mineral == "Gallite":
+                data = Sulfides(impurity="pure", data_type=True).create_gallite()
+            elif self.mineral == "Roquesite":
+                data = Sulfides(impurity="pure", data_type=True).create_roquesite()
+            elif self.mineral == "Lenaite":
+                data = Sulfides(impurity="pure", data_type=True).create_lenaite()
+            elif self.mineral == "Laforetite":
+                data = Sulfides(impurity="pure", data_type=True).create_laforetite()
+            # Carbonates
             elif self.mineral == "Realgar":
                 data = Sulfides(impurity="pure", data_type=True).create_realgar()
             elif self.mineral == "Orpiment":
