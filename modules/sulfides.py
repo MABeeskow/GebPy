@@ -6,7 +6,7 @@
 # Name:		sulfides.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		11.03.2022
+# Date:		21.05.2022
 
 # -----------------------------------------------
 
@@ -3106,6 +3106,170 @@ class Sulfides():
         thermodynamics["Enthalpy"] = -166600         # J/mol
         thermodynamics["Entropy"] = 53.900          # J/(mol K)
         thermodynamics["Heat Capacity"] = 62.43     # J/(mol K)
+        #
+        if self.data_type == False:
+            data = []
+            data.append(name)
+            data.append(round(molar_mass, 3))
+            data.append(round(rho, 2))
+            data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 4)])
+            data.append([round(vP, 2), round(vS, 2), round(vPvS, 2)])
+            data.append([round(gamma_ray, 2), round(pe, 2), round(U, 2), p])
+            data.append(amounts)
+            #
+            return data
+        else:
+            #
+            results = {}
+            results["mineral"] = name
+            results["M"] = molar_mass
+            element_list = np.array(amounts)[:, 0]
+            results["chemistry"] = {}
+            for index, element in enumerate(element_list, start=0):
+                results["chemistry"][element] = amounts[index][2]
+            results["rho"] = round(rho, 4)
+            results["rho_e"] = round(rho_e, 4)
+            results["V"] = round(V, 4)
+            results["vP"] = round(vP, 4)
+            results["vS"] = round(vS, 4)
+            results["vP/vS"] = round(vPvS, 4)
+            results["G"] = round(G*10**(-9), 4)
+            results["K"] = round(K*10**(-9), 4)
+            results["E"] = round(E*10**(-9), 4)
+            results["nu"] = round(nu, 4)
+            results["GR"] = round(gamma_ray, 4)
+            results["PE"] = round(pe, 4)
+            results["U"] = round(U, 4)
+            results["thermodynamics"] = thermodynamics
+            if p != None:
+                results["p"] = round(p, 4)
+            else:
+                results["p"] = p
+            #
+            return results
+    #
+    def create_chalcopyrite_group(self):
+        #
+        name = "Ccp"
+        #
+        # Major elements
+        sulfur = PeriodicSystem(name="S").get_data()
+        iron = PeriodicSystem(name="Fe").get_data()
+        copper = PeriodicSystem(name="Cu").get_data()
+        gallium = PeriodicSystem(name="Ga").get_data()
+        silver = PeriodicSystem(name="Ag").get_data()
+        indium = PeriodicSystem(name="In").get_data()
+        #
+        majors_name = ["S", "Fe", "Cu", "Ga", "Ag", "In"]
+        #
+        a = rd.uniform(0.0, 1.0)
+        b = rd.uniform(0.0, 1.0)
+        c = rd.uniform(0.0, 1.0-b)
+        #
+        majors_data = np.array(
+            [["S", sulfur[1], 2, sulfur[2]], ["Fe", iron[1], 1*b, iron[2]], ["Cu", copper[1], 1*a, copper[2]],
+             ["Ga", gallium[1], 1-b-c, gallium[2]], ["Ag", silver[1], 1*(1-a), silver[2]],
+             ["In", indium[1], 1*c, indium[2]]], dtype=object)
+        #
+        # Minor elements
+        traces_data = []
+        if len(self.traces_list) > 0:
+            self.impurity = "impure"
+        if self.impurity == "pure":
+            var_state = "fixed"
+        else:
+            var_state = "variable"
+            if self.impurity == "random":
+                self.traces_list = []
+                minors = ["Ni"]
+                n = rd.randint(1, len(minors))
+                while len(self.traces_list) < n:
+                    selection = rd.choice(minors)
+                    if selection not in self.traces_list and selection not in majors_name:
+                        self.traces_list.append(selection)
+                    else:
+                        continue
+            traces = [PeriodicSystem(name=i).get_data() for i in self.traces_list]
+            x_traces = [round(rd.uniform(0., 0.001), 6) for i in range(len(self.traces_list))]
+            for i in range(len(self.traces_list)):
+                traces_data.append([str(self.traces_list[i]), int(traces[i][1]), float(x_traces[i])])
+            if len(traces_data) > 0:
+                traces_data = np.array(traces_data, dtype=object)
+                traces_data = traces_data[traces_data[:, 1].argsort()]
+        #
+        # Molar mass
+        molar_mass_pure = a*copper[2] + (1-a)*silver[2] + b*iron[2] + c*indium[2] + (1-b-c)*gallium[2] + 2*sulfur[2]
+        molar_mass, amounts = MineralChemistry(w_traces=traces_data, molar_mass_pure=molar_mass_pure,
+                                               majors=majors_data).calculate_molar_mass()
+        element = [PeriodicSystem(name=amounts[i][0]).get_data() for i in range(len(amounts))]
+        # Density
+        dataV_Ccp = CrystalPhysics([[5.28, 10.41], [], "tetragonal"])
+        V_Ccp = dataV_Ccp.calculate_volume()
+        dataRho_Ccp = CrystalPhysics([molar_mass, 4, V_Ccp])
+        rho_Ccp = dataRho_Ccp.calculate_bulk_density()
+        rho_e_Ccp = wg(amounts=amounts, elements=element, rho_b=rho_Ccp).calculate_electron_density()
+        dataV_Glt = CrystalPhysics([[5.35, 10.48], [], "tetragonal"])
+        V_Glt = dataV_Glt.calculate_volume()
+        dataRho_Glt = CrystalPhysics([molar_mass, 4, V_Glt])
+        rho_Glt = dataRho_Glt.calculate_bulk_density()
+        rho_e_Glt = wg(amounts=amounts, elements=element, rho_b=rho_Glt).calculate_electron_density()
+        dataV_Rqt = CrystalPhysics([[5.51, 11.05], [], "tetragonal"])
+        V_Rqt = dataV_Rqt.calculate_volume()
+        dataRho_Rqt = CrystalPhysics([molar_mass, 4, V_Rqt])
+        rho_Rqt = dataRho_Rqt.calculate_bulk_density()
+        rho_e_Rqt = wg(amounts=amounts, elements=element, rho_b=rho_Rqt).calculate_electron_density()
+        dataV_Lft = CrystalPhysics([[5.88, 11.21], [], "tetragonal"])
+        V_Lft = dataV_Lft.calculate_volume()
+        dataRho_Lft = CrystalPhysics([molar_mass, 4, V_Lft])
+        rho_Lft = dataRho_Lft.calculate_bulk_density()
+        rho_e_Lft = wg(amounts=amounts, elements=element, rho_b=rho_Lft).calculate_electron_density()
+        dataV_Lnt = CrystalPhysics([[5.4371, 10.8479], [], "tetragonal"])
+        V_Lnt = dataV_Lnt.calculate_volume()
+        dataRho_Lnt = CrystalPhysics([molar_mass, 4, V_Lnt])
+        rho_Lnt = dataRho_Lnt.calculate_bulk_density()
+        rho_e_Lnt = wg(amounts=amounts, elements=element, rho_b=rho_Lnt).calculate_electron_density()
+        #
+        V = (a*b)*V_Ccp + ((1-a)*b)*V_Lnt + (a*c)*V_Rqt + (a*(1-b-c))*V_Glt + ((1-a)*c)*V_Lft
+        rho = (a*b)*rho_Ccp + ((1-a)*b)*rho_Lnt + (a*c)*rho_Rqt + (a*(1-b-c))*rho_Glt + ((1-a)*c)*rho_Lft
+        rho_e = (a*b)*rho_e_Ccp + ((1-a)*b)*rho_e_Lnt + (a*c)*rho_e_Rqt + (a*(1-b-c))*rho_e_Glt + ((1-a)*c)*rho_e_Lft
+        #
+        # Bulk modulus
+        K_Ccp = 56*10**9
+        K_Lnt = 58*10**9
+        K_Rqt = 64*10**9
+        K_Glt = 75*10**9
+        K_Lft = 52*10**9
+        K = (a*b)*K_Ccp + ((1-a)*b)*K_Lnt + (a*c)*K_Rqt + (a*(1-b-c))*K_Glt + ((1-a)*c)*K_Lft
+        # Shear modulus
+        G_Ccp = 19*10**9
+        G_Lnt = 15*10**9
+        G_Rqt = 25*10**9
+        G_Glt = 36*10**9
+        G_Lft = 16*10**9
+        G = (a*b)*G_Ccp + ((1-a)*b)*G_Lnt + (a*c)*G_Rqt + (a*(1-b-c))*G_Glt + ((1-a)*c)*G_Lft
+        # Young's modulus
+        E = (9*K*G)/(3*K + G)
+        # Poisson's ratio
+        nu = (3*K - 2*G)/(2*(3*K + G))
+        # vP/vS
+        vPvS = ((K + 4/3*G)/G)**0.5
+        # P-wave velocity
+        vP = ((K + 4/3*G)/rho)**0.5
+        # S-wave velocity
+        vS = (G/rho)**0.5
+        # Gamma ray
+        gamma_ray = wg(amounts=amounts, elements=element).calculate_gr()
+        # Photoelectricity
+        pe = wg(amounts=amounts, elements=element).calculate_pe()
+        U = pe*rho_e*10**(-3)
+        # Electrical resistivity
+        p = None
+        # Thermodynamics
+        thermodynamics = {}
+        thermodynamics["Gibbs Energy"] = None       # J/mol
+        thermodynamics["Enthalpy"] = None           # J/mol
+        thermodynamics["Entropy"] = None            # J/(mol K)
+        thermodynamics["Heat Capacity"] = None      # J/(mol K)
         #
         if self.data_type == False:
             data = []

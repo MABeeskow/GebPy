@@ -276,6 +276,9 @@ class TESTING_MINERALS:
         # Test Fahlore (incl. trace elements)
         data = sulfides.Sulfides(impurity="pure").create_fahlore()
         print("Fahlore:\n", data)
+        # Test Chalcopyrite-Group (incl. trace elements)
+        data = sulfides.Sulfides(impurity="pure").create_chalcopyrite_group()
+        print("Chalcopyrite-Group:\n", data)
 
         print("")
         ## TESTING SULFATES
