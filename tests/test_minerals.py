@@ -328,6 +328,8 @@ class TESTING_MINERALS:
         print("Alkalifeldspar (Na-enriched):\n", data)
         data = silicates.Tectosilicates(impurity="pure").create_alkalifeldspar(enrichment="K")
         print("Alkalifeldspar (K-enriched):\n", data)
+        data = silicates.Tectosilicates(impurity="pure").create_alkalifeldspar(x_value=0.95)
+        print("Alkalifeldspar (Na-enriched (x=0.95)):\n", data)
         # Test Plagioclase (incl. trace elements)
         data = silicates.Tectosilicates(impurity="pure").create_plagioclase()
         print("Plagioclase (no preference):\n", data)
@@ -337,6 +339,8 @@ class TESTING_MINERALS:
         print("Plagioclase (Na-enriched):\n", data)
         data = silicates.Tectosilicates(impurity="pure").create_plagioclase(enrichment="Ca")
         print("Plagioclase (Ca-enriched):\n", data)
+        data = silicates.Tectosilicates(impurity="pure").create_plagioclase(x_value=0.50)
+        print("Plagioclase (Na/Ca-ratio: 50/50):\n", data)
         #
         print("")
         ## TESTING PHYLLOSILICATES
