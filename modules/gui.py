@@ -356,7 +356,7 @@ class GebPyGUI(tk.Frame):
                   color_acc=[self.color_accent_03, self.color_accent_04], rock=var_opt, lbl_w=self.lbl_w,
                   entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
         ## Metamorphic Rocks
-        elif var_opt in ["Granulite", "Greenschist", "Greenschist (basaltic)"]:
+        elif var_opt in ["Granulite", "Greenschist", "Greenschist (basaltic)", "Greenschist (ultramafic)"]:
             Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                   color_acc=[self.color_accent_03, self.color_accent_04], rock=var_opt, lbl_w=self.lbl_w,
                   entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
@@ -769,7 +769,7 @@ class GebPyGUI(tk.Frame):
                 command=lambda var_opt=var_opt_1_5: self.select_opt(var_opt))
         elif var_opt == "Metamorphic Rocks":
             var_opt_1_6 = tk.StringVar()
-            opt_list_1_6 = ["Granulite", "Greenschist", "Greenschist (basaltic)"]
+            opt_list_1_6 = ["Granulite", "Greenschist", "Greenschist (basaltic)", "Greenschist (ultramafic)"]
             opt_list_1_6.sort()
             self.opt_metamorph = SE(parent=self.parent, row_id=16, column_id=0, n_rows=2, n_columns=2,
                               bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
@@ -3142,7 +3142,8 @@ class Rocks:
         if self.rock == "Sandstone":
             var_phi0_start = 5
             var_phi1_start = 30
-        elif self.rock in ["Shale", "Kupferschiefer", "Granulite", "Greenschist", "Greenschist (basaltic)"]:
+        elif self.rock in ["Shale", "Kupferschiefer", "Granulite", "Greenschist", "Greenschist (basaltic)",
+                           "Greenschist (ultramafic)"]:
             var_phi0_start = 0
             var_phi1_start = 10
         elif self.rock in ["Limestone", "Dolomite Rock"]:
@@ -3252,6 +3253,9 @@ class Rocks:
                         number=1, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
                 elif self.rock == "Greenschist (basaltic)":
                     data = MetamorphicRocks(fluid="water", actualThickness=0).create_greenschist_basaltic(
+                        number=1, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
+                elif self.rock == "Greenschist (ultramafic)":
+                    data = MetamorphicRocks(fluid="water", actualThickness=0).create_greenschist_ultramafic(
                         number=1, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
                 #
                 data_all.append(data)
@@ -3600,6 +3604,9 @@ class Rocks:
                         number=1, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
                 elif self.rock == "Greenschist (basaltic)":
                     data = MetamorphicRocks(fluid="water", actualThickness=0).create_greenschist_basaltic(
+                        number=1, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
+                elif self.rock == "Greenschist (ultramafic)":
+                    data = MetamorphicRocks(fluid="water", actualThickness=0).create_greenschist_ultramafic(
                         number=1, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
                 #
                 data_all.append(data)
