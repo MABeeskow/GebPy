@@ -6,7 +6,7 @@
 # Name:		gui.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		22.05.2022
+# Date:		23.05.2022
 
 #-----------------------------------------------
 
@@ -65,7 +65,7 @@ class GebPyGUI(tk.Frame):
         #
         self.parent = parent
         self.parent.title("GebPy")
-        self.parent.geometry("1700x960")
+        self.parent.geometry("1700x960+10+10")
         self.parent.resizable(False, False)
         self.parent["bg"] = self.color_bg
         #
