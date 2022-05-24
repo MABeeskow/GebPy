@@ -6,7 +6,7 @@
 # Name:		ore.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		20.11.2021
+# Date:		24.05.2022
 
 # -----------------------------------------------
 
@@ -17,6 +17,7 @@ from modules.oxides import Oxides
 from modules.carbonates import Carbonates
 from modules.sulfides import Sulfides
 from modules import fluids
+from modules.fluids import Water
 from modules.geophysics import Elasticity as elast
 from modules.chemistry import PeriodicSystem, DataProcessing
 from modules.minerals import CrystalPhysics
@@ -32,6 +33,7 @@ class Ores:
         self.actualThickness = actualThickness
         self.porosity = porosity
         self.data_type = data_type
+        self.data_water = Water.water("")
     #
     def create_kupferschiefer(self, w_Cu=None, amounts=None):
         #
@@ -296,3 +298,263 @@ class Ores:
             #
             return results
     #
+    def create_compact_hematite_ore(self, number, porosity=None):
+        #
+        data_quartz = Oxides(impurity="pure", data_type=True).create_quartz()           # fixed
+        data_hematite = Oxides(impurity="pure", data_type=True).create_hematite()       # fixed
+        data_magnetite = Oxides(impurity="pure", data_type=True).create_magnetite()     # fixed
+        data_pyrite = Sulfides(impurity="pure", data_type=True).create_pyrite()         # fixed
+        data_rutile = Oxides(impurity="pure", data_type=True).create_rutile()           # fixed
+        #
+        assemblage_minerals = [data_quartz, data_hematite, data_magnetite, data_pyrite, data_rutile]
+        #
+        amounts_mineralogy = {}
+        amounts_chemistry = {}
+        bulk_properties = {}
+        properties = ["rho_s", "rho", "K", "G", "E", "nu", "vP", "vS", "vPvS", "GR", "PE", "phi"]
+        for property in properties:
+            bulk_properties[property] = []
+        mineral_list = []
+        elements = []
+        for mineral in assemblage_minerals:
+            amounts_mineralogy[mineral["mineral"]] = []
+            mineral_list.append(mineral["mineral"])
+            elements_mineral = list(mineral["chemistry"].keys())
+            for element in elements_mineral:
+                if element not in elements:
+                    elements.append(element)
+                    amounts_chemistry[element] = []
+        mineral_list.sort()
+        elements.sort()
+        #
+        n = 0
+        amounts_helper = []
+        while n < number:
+            w_total = 0
+            n_minerals = 0
+            for mineral in mineral_list:
+                if mineral == "Qz":
+                    if n_minerals < len(mineral_list)-1:
+                        value = round(rd.uniform(0.10, 0.35), 4)
+                    else:
+                        value = round(1-w_total, 4)
+                    if value >= 0.0 and 0.10 <= value <= 0.35:
+                        amounts_helper.append(value)
+                        w_total += value
+                        n_minerals += 1
+                elif mineral == "Hem":
+                    if n_minerals < len(mineral_list)-1:
+                        value = round(rd.uniform(0.45, 0.80), 4)
+                    else:
+                        value = round(1-w_total, 4)
+                    if value >= 0.0 and 0.45 <= value <= 0.80:
+                        amounts_helper.append(value)
+                        w_total += value
+                        n_minerals += 1
+                elif mineral == "Mag":
+                    if n_minerals < len(mineral_list)-1:
+                        value = round(rd.uniform(0.10, 0.20), 4)
+                    else:
+                        value = round(1-w_total, 4)
+                    if value >= 0.0 and 0.10 <= value <= 0.20:
+                        amounts_helper.append(value)
+                        w_total += value
+                        n_minerals += 1
+                elif mineral == "Py":
+                    if n_minerals < len(mineral_list)-1:
+                        value = round(rd.uniform(0.0, 0.10), 4)
+                    else:
+                        value = round(1-w_total, 4)
+                    if value >= 0.0 and 0.0 <= value <= 0.10:
+                        amounts_helper.append(value)
+                        w_total += value
+                        n_minerals += 1
+                elif mineral == "Rt":
+                    if n_minerals < len(mineral_list)-1:
+                        value = round(1-w_total, 4)
+                    else:
+                        value = round(1-w_total, 4)
+                    if value >= 0.0 and 0.0 <= value <= 0.05:
+                        amounts_helper.append(value)
+                        w_total += value
+                        n_minerals += 1
+            #
+            if np.sum(amounts_helper) == 1.0 and n_minerals == len(mineral_list):
+                for index, mineral in enumerate(mineral_list):
+                    amounts_mineralogy[mineral].append(amounts_helper[index])
+                n += 1
+                amounts_helper.clear()
+            else:
+                n += 0
+                amounts_helper.clear()
+        #
+        n = 0
+        amounts_helper = {}
+        while n < number:
+            amounts_helper.clear()
+            w_total = 0
+            n_elements = 0
+            rho_s_helper = 0
+            bulkmod_helper = 0
+            shearmod_helper = 0
+            gr_helper = 0
+            pe_helper = 0
+            if porosity == None:
+                phi_helper = round(rd.uniform(0.0, 0.05), 4)
+            else:
+                phi_helper = porosity
+            #
+            for element in elements:
+                amounts_helper[element] = 0
+                if element in data_quartz["chemistry"]:
+                    if n_elements < len(elements)-1:
+                        value = amounts_mineralogy["Qz"][n]*data_quartz["chemistry"][element]
+                    else:
+                        value = 1-w_total
+                    amounts_helper[element] += round(value, 4)
+                    w_total += round(value, 4)
+                if element in data_hematite["chemistry"]:
+                    if n_elements < len(elements)-1:
+                        value = amounts_mineralogy["Hem"][n]*data_hematite["chemistry"][element]
+                    else:
+                        value = 1-w_total
+                    amounts_helper[element] += round(value, 4)
+                    w_total += round(value, 4)
+                if element in data_magnetite["chemistry"]:
+                    if n_elements < len(elements)-1:
+                        value = amounts_mineralogy["Mag"][n]*data_magnetite["chemistry"][element]
+                    else:
+                        value = 1-w_total
+                    amounts_helper[element] += round(value, 4)
+                    w_total += round(value, 4)
+                if element in data_pyrite["chemistry"]:
+                    if n_elements < len(elements)-1:
+                        value = amounts_mineralogy["Py"][n]*data_pyrite["chemistry"][element]
+                    else:
+                        value = 1-w_total
+                    amounts_helper[element] += round(value, 4)
+                    w_total += round(value, 4)
+                if element in data_rutile["chemistry"]:
+                    if n_elements < len(elements)-1:
+                        value = amounts_mineralogy["Rt"][n]*data_rutile["chemistry"][element]
+                    else:
+                        value = 1-w_total
+                    amounts_helper[element] += round(value, 4)
+                    w_total += round(value, 4)
+                #
+                n_elements += 1
+            #
+            value_total = 0
+            for element, value in amounts_helper.items():
+                amounts_helper[element] = round(value, 4)
+                value_total += int(round(amounts_helper[element]*10000, 4))
+            value_total = int(value_total)
+            if value_total == 10000:
+                condition_sum = True
+            else:
+                condition_sum = False
+            if sum(amounts_helper.values()) == 1.0 or condition_sum == True or w_total == 1.0:
+                for key, value in amounts_helper.items():
+                    amounts_chemistry[key].append(round(value, 4))
+                for mineral in mineral_list:
+                    if mineral == "Qz":
+                        rho_s_helper += round(amounts_mineralogy[mineral][n]*data_quartz["rho"], 3)
+                        bulkmod_helper += round(amounts_mineralogy[mineral][n]*data_quartz["K"], 3)
+                        shearmod_helper += round(0.67*amounts_mineralogy[mineral][n]*data_quartz["G"], 3)
+                        gr_helper += round(amounts_mineralogy[mineral][n]*data_quartz["GR"], 3)
+                        pe_helper += round(amounts_mineralogy[mineral][n]*data_quartz["PE"], 3)
+                    elif mineral == "Hem":
+                        rho_s_helper += round(amounts_mineralogy[mineral][n]*data_hematite["rho"], 3)
+                        bulkmod_helper += round(amounts_mineralogy[mineral][n]*data_hematite["K"], 3)
+                        shearmod_helper += round(0.67*amounts_mineralogy[mineral][n]*data_hematite["G"], 3)
+                        gr_helper += round(amounts_mineralogy[mineral][n]*data_hematite["GR"], 3)
+                        pe_helper += round(amounts_mineralogy[mineral][n]*data_hematite["PE"], 3)
+                    elif mineral == "Mag":
+                        rho_s_helper += round(amounts_mineralogy[mineral][n]*data_magnetite["rho"], 3)
+                        bulkmod_helper += round(amounts_mineralogy[mineral][n]*data_magnetite["K"], 3)
+                        shearmod_helper += round(0.67*amounts_mineralogy[mineral][n]*data_magnetite["G"], 3)
+                        gr_helper += round(amounts_mineralogy[mineral][n]*data_magnetite["GR"], 3)
+                        pe_helper += round(amounts_mineralogy[mineral][n]*data_magnetite["PE"], 3)
+                    elif mineral == "Py":
+                        rho_s_helper += round(amounts_mineralogy[mineral][n]*data_pyrite["rho"], 3)
+                        bulkmod_helper += round(amounts_mineralogy[mineral][n]*data_pyrite["K"], 3)
+                        shearmod_helper += round(0.67*amounts_mineralogy[mineral][n]*data_pyrite["G"], 3)
+                        gr_helper += round(amounts_mineralogy[mineral][n]*data_pyrite["GR"], 3)
+                        pe_helper += round(amounts_mineralogy[mineral][n]*data_pyrite["PE"], 3)
+                    elif mineral == "Rt":
+                        rho_s_helper += round(amounts_mineralogy[mineral][n]*data_rutile["rho"], 3)
+                        bulkmod_helper += round(amounts_mineralogy[mineral][n]*data_rutile["K"], 3)
+                        shearmod_helper += round(0.67*amounts_mineralogy[mineral][n]*data_rutile["G"], 3)
+                        gr_helper += round(amounts_mineralogy[mineral][n]*data_rutile["GR"], 3)
+                        pe_helper += round(amounts_mineralogy[mineral][n]*data_rutile["PE"], 3)
+                #
+                rho_helper = round((1-phi_helper)*rho_s_helper + phi_helper*self.data_water[2]/1000, 3)
+                youngsmod_helper = round((9*bulkmod_helper*shearmod_helper)/(3*bulkmod_helper + shearmod_helper), 3)
+                poisson_helper = round((3*bulkmod_helper - 2*shearmod_helper)/(6*bulkmod_helper + 2*shearmod_helper), 3)
+                vP_helper = round(((bulkmod_helper*10**9 + 4/3*shearmod_helper*10**9)/(rho_helper))**0.5, 3)
+                vS_helper = round(((shearmod_helper*10**9)/(rho_helper))**0.5, 3)
+                vPvS_helper_helper = round(vP_helper/vS_helper, 3)
+                #
+                bulk_properties["rho_s"].append(round(rho_s_helper, 3))
+                bulk_properties["rho"].append(rho_helper)
+                bulk_properties["K"].append(round(bulkmod_helper, 3))
+                bulk_properties["G"].append(round(shearmod_helper, 3))
+                bulk_properties["E"].append(youngsmod_helper)
+                bulk_properties["nu"].append(poisson_helper)
+                bulk_properties["vP"].append(vP_helper)
+                bulk_properties["vS"].append(vS_helper)
+                bulk_properties["vPvS"].append(vPvS_helper_helper)
+                bulk_properties["GR"].append(round(gr_helper, 3))
+                bulk_properties["PE"].append(round(pe_helper, 3))
+                bulk_properties["phi"].append(round(phi_helper, 3))
+                n += 1
+            #else:
+            #    break
+        #
+        results = {}
+        results["rock"] = "Compact Hematite Ore"
+        if number > 1:
+            results["mineralogy"] = amounts_mineralogy
+            results["chemistry"] = amounts_chemistry
+            results["phi"] = bulk_properties["phi"]
+            results["fluid"] = "water"
+            results["rho_s"] = bulk_properties["rho_s"]
+            results["rho"] = bulk_properties["rho"]
+            results["vP"] = bulk_properties["vP"]
+            results["vS"] = bulk_properties["vS"]
+            results["vP/vS"] = bulk_properties["vPvS"]
+            results["K"] = bulk_properties["K"]
+            results["G"] = bulk_properties["G"]
+            results["E"] = bulk_properties["E"]
+            results["nu"] = bulk_properties["nu"]
+            results["GR"] = bulk_properties["GR"]
+            results["PE"] = bulk_properties["PE"]
+        else:
+            single_amounts_mineralogy = {}
+            single_amounts_chemistry = {}
+            for mineral, value in amounts_mineralogy.items():
+                single_amounts_mineralogy[mineral] = value[0]
+            for element, value in amounts_chemistry.items():
+                single_amounts_chemistry[element] = value[0]
+            results["mineralogy"] = single_amounts_mineralogy
+            results["chemistry"] = single_amounts_chemistry
+            results["phi"] = bulk_properties["phi"][0]
+            results["fluid"] = "water"
+            results["rho_s"] = bulk_properties["rho_s"][0]
+            results["rho"] = bulk_properties["rho"][0]
+            results["vP"] = bulk_properties["vP"][0]
+            results["vS"] = bulk_properties["vS"][0]
+            results["vP/vS"] = bulk_properties["vPvS"][0]
+            results["K"] = bulk_properties["K"][0]
+            results["G"] = bulk_properties["G"][0]
+            results["E"] = bulk_properties["E"][0]
+            results["nu"] = bulk_properties["nu"][0]
+            results["GR"] = bulk_properties["GR"][0]
+            results["PE"] = bulk_properties["PE"][0]
+        #
+        return results
+    #
+## TEST
+# print("Test: Compact Hematite Ore")
+# print(Ores(fluid="water", actualThickness=0).create_compact_hematite_ore(number=1))
+# print(Ores(fluid="water", actualThickness=0).create_compact_hematite_ore(number=100))
