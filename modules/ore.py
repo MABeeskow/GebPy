@@ -593,7 +593,7 @@ class Ores:
             for mineral in mineral_list:
                 if mineral == "Qz":
                     if n_minerals < len(mineral_list) - 1:
-                        value = round(rd.uniform(0.10, 0.35), 4)
+                        value = round(1 - w_total, 4)
                     else:
                         value = round(1 - w_total, 4)
                     if value >= 0.0 and 0.10 <= value <= 0.35:
@@ -602,14 +602,23 @@ class Ores:
                         n_minerals += 1
                 elif mineral == "Hem":
                     if n_minerals < len(mineral_list) - 1:
-                        value = round(rd.uniform(0.45, 0.80), 4)
+                        value = round(rd.uniform(0.30, 0.60), 4)
                     else:
                         value = round(1 - w_total, 4)
-                    if value >= 0.0 and 0.45 <= value <= 0.80:
+                    if value >= 0.0 and 0.30 <= value <= 0.60:
                         amounts_helper.append(value)
                         w_total += value
                         n_minerals += 1
                 elif mineral == "Mag":
+                    if n_minerals < len(mineral_list) - 1:
+                        value = round(rd.uniform(0.10, 0.15), 4)
+                    else:
+                        value = round(1 - w_total, 4)
+                    if value >= 0.0 and 0.10 <= value <= 0.15:
+                        amounts_helper.append(value)
+                        w_total += value
+                        n_minerals += 1
+                elif mineral == "Kln":
                     if n_minerals < len(mineral_list) - 1:
                         value = round(rd.uniform(0.10, 0.20), 4)
                     else:
@@ -618,21 +627,12 @@ class Ores:
                         amounts_helper.append(value)
                         w_total += value
                         n_minerals += 1
-                elif mineral == "Py":
+                elif mineral == "Goe":
                     if n_minerals < len(mineral_list) - 1:
-                        value = round(rd.uniform(0.0, 0.10), 4)
+                        value = round(rd.uniform(0.05, 0.15), 4)
                     else:
                         value = round(1 - w_total, 4)
-                    if value >= 0.0 and 0.0 <= value <= 0.10:
-                        amounts_helper.append(value)
-                        w_total += value
-                        n_minerals += 1
-                elif mineral == "Rt":
-                    if n_minerals < len(mineral_list) - 1:
-                        value = round(1 - w_total, 4)
-                    else:
-                        value = round(1 - w_total, 4)
-                    if value >= 0.0 and 0.0 <= value <= 0.05:
+                    if value >= 0.0 and 0.05 <= value <= 0.15:
                         amounts_helper.append(value)
                         w_total += value
                         n_minerals += 1
@@ -685,16 +685,16 @@ class Ores:
                         value = 1 - w_total
                     amounts_helper[element] += round(value, 4)
                     w_total += round(value, 4)
-                if element in data_pyrite["chemistry"]:
+                if element in data_kaolinite["chemistry"]:
                     if n_elements < len(elements) - 1:
-                        value = amounts_mineralogy["Py"][n] * data_pyrite["chemistry"][element]
+                        value = amounts_mineralogy["Kln"][n] * data_kaolinite["chemistry"][element]
                     else:
                         value = 1 - w_total
                     amounts_helper[element] += round(value, 4)
                     w_total += round(value, 4)
-                if element in data_rutile["chemistry"]:
+                if element in data_goethite["chemistry"]:
                     if n_elements < len(elements) - 1:
-                        value = amounts_mineralogy["Rt"][n] * data_rutile["chemistry"][element]
+                        value = amounts_mineralogy["Goe"][n] * data_goethite["chemistry"][element]
                     else:
                         value = 1 - w_total
                     amounts_helper[element] += round(value, 4)
@@ -733,18 +733,18 @@ class Ores:
                         shearmod_helper += round(0.67 * amounts_mineralogy[mineral][n] * data_magnetite["G"], 3)
                         gr_helper += round(amounts_mineralogy[mineral][n] * data_magnetite["GR"], 3)
                         pe_helper += round(amounts_mineralogy[mineral][n] * data_magnetite["PE"], 3)
-                    elif mineral == "Py":
-                        rho_s_helper += round(amounts_mineralogy[mineral][n] * data_pyrite["rho"], 3)
-                        bulkmod_helper += round(amounts_mineralogy[mineral][n] * data_pyrite["K"], 3)
-                        shearmod_helper += round(0.67 * amounts_mineralogy[mineral][n] * data_pyrite["G"], 3)
-                        gr_helper += round(amounts_mineralogy[mineral][n] * data_pyrite["GR"], 3)
-                        pe_helper += round(amounts_mineralogy[mineral][n] * data_pyrite["PE"], 3)
-                    elif mineral == "Rt":
-                        rho_s_helper += round(amounts_mineralogy[mineral][n] * data_rutile["rho"], 3)
-                        bulkmod_helper += round(amounts_mineralogy[mineral][n] * data_rutile["K"], 3)
-                        shearmod_helper += round(0.67 * amounts_mineralogy[mineral][n] * data_rutile["G"], 3)
-                        gr_helper += round(amounts_mineralogy[mineral][n] * data_rutile["GR"], 3)
-                        pe_helper += round(amounts_mineralogy[mineral][n] * data_rutile["PE"], 3)
+                    elif mineral == "Kln":
+                        rho_s_helper += round(amounts_mineralogy[mineral][n] * data_kaolinite["rho"], 3)
+                        bulkmod_helper += round(amounts_mineralogy[mineral][n] * data_kaolinite["K"], 3)
+                        shearmod_helper += round(0.67 * amounts_mineralogy[mineral][n] * data_kaolinite["G"], 3)
+                        gr_helper += round(amounts_mineralogy[mineral][n] * data_kaolinite["GR"], 3)
+                        pe_helper += round(amounts_mineralogy[mineral][n] * data_kaolinite["PE"], 3)
+                    elif mineral == "Goe":
+                        rho_s_helper += round(amounts_mineralogy[mineral][n] * data_goethite["rho"], 3)
+                        bulkmod_helper += round(amounts_mineralogy[mineral][n] * data_goethite["K"], 3)
+                        shearmod_helper += round(0.67 * amounts_mineralogy[mineral][n] * data_goethite["G"], 3)
+                        gr_helper += round(amounts_mineralogy[mineral][n] * data_goethite["GR"], 3)
+                        pe_helper += round(amounts_mineralogy[mineral][n] * data_goethite["PE"], 3)
                 #
                 rho_helper = round((1 - phi_helper) * rho_s_helper + phi_helper * self.data_water[2] / 1000, 3)
                 youngsmod_helper = round(
@@ -773,7 +773,7 @@ class Ores:
             #    break
         #
         results = {}
-        results["rock"] = "Compact Hematite Ore"
+        results["rock"] = "Banded Iron Formation"
         if number > 1:
             results["mineralogy"] = amounts_mineralogy
             results["chemistry"] = amounts_chemistry

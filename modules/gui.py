@@ -6,7 +6,7 @@
 # Name:		gui.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		24.05.2022
+# Date:		25.05.2022
 
 #-----------------------------------------------
 
@@ -352,7 +352,7 @@ class GebPyGUI(tk.Frame):
             Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                   color_acc=[self.color_accent_03, self.color_accent_04], rock=var_opt, lbl_w=self.lbl_w,
                   entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
-        elif var_opt in ["Kupferschiefer", "Compact Hematite Ore"]:
+        elif var_opt in ["Kupferschiefer", "Compact Hematite Ore", "Banded Iron Formation"]:
             Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                   color_acc=[self.color_accent_03, self.color_accent_04], rock=var_opt, lbl_w=self.lbl_w,
                   entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
@@ -763,7 +763,7 @@ class GebPyGUI(tk.Frame):
                 command=lambda var_opt=var_opt_1_4: self.select_opt(var_opt))
         elif var_opt == "Ore Rocks":
             var_opt_1_5 = tk.StringVar()
-            opt_list_1_5 = ["Kupferschiefer", "Compact Hematite Ore"]
+            opt_list_1_5 = ["Kupferschiefer", "Compact Hematite Ore", "Banded Iron Formation"]
             opt_list_1_5.sort()
             self.opt_ore = SE(parent=self.parent, row_id=16, column_id=0, n_rows=2, n_columns=2,
                               bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
@@ -3150,7 +3150,8 @@ class Rocks:
             var_phi0_start = 5
             var_phi1_start = 30
         elif self.rock in ["Shale", "Kupferschiefer", "Granulite", "Greenschist", "Greenschist (basaltic)",
-                           "Greenschist (ultramafic)", "Greenschist (pelitic)", "Compact Hematite Ore"]:
+                           "Greenschist (ultramafic)", "Greenschist (pelitic)", "Compact Hematite Ore",
+                           "Banded Iron Formation"]:
             var_phi0_start = 0
             var_phi1_start = 10
         elif self.rock in ["Limestone", "Dolomite Rock"]:
@@ -3251,10 +3252,17 @@ class Rocks:
                         dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
                 ## Ore Rocks
                 elif self.rock == "Kupferschiefer":
-                    data = Ores(fluid="water", actualThickness=0, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100), data_type=True).create_kupferschiefer()
+                    data = Ores(
+                        fluid="water", actualThickness=0,
+                        porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100),
+                        data_type=True).create_kupferschiefer()
                 elif self.rock == "Compact Hematite Ore":
                     data = Ores(
                         fluid="water", actualThickness=0, data_type=True).create_compact_hematite_ore(
+                        number=1, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
+                elif self.rock == "Banded Iron Formation":
+                    data = Ores(
+                        fluid="water", actualThickness=0, data_type=True).create_banded_iron_formation(
                         number=1, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
                 ## Metamorphic Rocks
                 elif self.rock == "Granulite":
@@ -3617,6 +3625,10 @@ class Rocks:
                 elif self.rock == "Compact Hematite Ore":
                     data = Ores(
                         fluid="water", actualThickness=0).create_compact_hematite_ore(
+                        number=1, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
+                elif self.rock == "Banded Iron Formation":
+                    data = Ores(
+                        fluid="water", actualThickness=0, data_type=True).create_banded_iron_formation(
                         number=1, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
                 ## Metamorphic Rocks
                 elif self.rock == "Granulite":
