@@ -602,16 +602,16 @@ class Ores:
                         n_minerals += 1
                 elif mineral == "Hem":
                     if n_minerals < len(mineral_list) - 1:
-                        value = round(rd.uniform(0.30, 0.60), 4)
+                        value = round(rd.uniform(0.25, 0.70), 4)
                     else:
                         value = round(1 - w_total, 4)
-                    if value >= 0.0 and 0.30 <= value <= 0.60:
+                    if value >= 0.0 and 0.25 <= value <= 0.70:
                         amounts_helper.append(value)
                         w_total += value
                         n_minerals += 1
                 elif mineral == "Mag":
                     if n_minerals < len(mineral_list) - 1:
-                        value = round(rd.uniform(0.10, 0.15), 4)
+                        value = round(rd.uniform(0.10, 0.25), 4)
                     else:
                         value = round(1 - w_total, 4)
                     if value >= 0.0 and 0.10 <= value <= 0.15:
@@ -620,19 +620,19 @@ class Ores:
                         n_minerals += 1
                 elif mineral == "Kln":
                     if n_minerals < len(mineral_list) - 1:
-                        value = round(rd.uniform(0.10, 0.20), 4)
+                        value = round(rd.uniform(0.10, 0.25), 4)
                     else:
                         value = round(1 - w_total, 4)
-                    if value >= 0.0 and 0.10 <= value <= 0.20:
+                    if value >= 0.0 and 0.10 <= value <= 0.25:
                         amounts_helper.append(value)
                         w_total += value
                         n_minerals += 1
                 elif mineral == "Goe":
                     if n_minerals < len(mineral_list) - 1:
-                        value = round(rd.uniform(0.05, 0.15), 4)
+                        value = round(rd.uniform(0.05, 0.25), 4)
                     else:
                         value = round(1 - w_total, 4)
-                    if value >= 0.0 and 0.05 <= value <= 0.15:
+                    if value >= 0.0 and 0.05 <= value <= 0.25:
                         amounts_helper.append(value)
                         w_total += value
                         n_minerals += 1
