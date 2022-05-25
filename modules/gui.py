@@ -6,7 +6,7 @@
 # Name:		gui.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		25.05.2022
+# Date:		26.05.2022
 
 #-----------------------------------------------
 
@@ -25,7 +25,7 @@ from modules.phospides import Phospides
 from modules.phosphates import Phosphates
 from modules.organics import Organics
 from modules.minerals import feldspars
-from modules.siliciclastics import sandstone, shale
+from modules.siliciclastics import sandstone, shale, Sandstone
 from modules.metamorphics import MetamorphicRocks
 from modules.carbonates import limestone, dolomite, CustomCarbonates
 from modules.sequences import SedimentaryBasin
@@ -3213,7 +3213,9 @@ class Rocks:
             data_all = []
             for i in range(var_entr_start):
                 if self.rock == "Sandstone":
-                    data = sandstone(fluid="water", actualThickness=0).create_simple_sandstone(dict_output=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
+                    data = Sandstone(fluid="water", actualThickness=0).create_sandstone(
+                        number=1, porosity=rd.uniform(self.var_phi0.get() / 100, self.var_phi1.get() / 100))
+                    #data = sandstone(fluid="water", actualThickness=0).create_simple_sandstone(dict_output=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
                 elif self.rock == "Shale":
                     data = shale(fluid="water").create_simple_shale(dict_output=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
                 elif self.rock == "Limestone":
@@ -3579,7 +3581,9 @@ class Rocks:
             data_all = []
             for i in range(var_entr.get()):
                 if self.rock == "Sandstone":
-                    data = sandstone(fluid="water", actualThickness=0).create_simple_sandstone(dict_output=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
+                    data = Sandstone(fluid="water", actualThickness=0).create_sandstone(
+                        number=1, porosity=rd.uniform(self.var_phi0.get() / 100, self.var_phi1.get() / 100))
+                    #data = sandstone(fluid="water", actualThickness=0).create_simple_sandstone(dict_output=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
                 elif self.rock == "Shale":
                     data = shale(fluid="water").create_simple_shale(dict_output=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
                 elif self.rock == "Limestone":
