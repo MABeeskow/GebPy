@@ -6,7 +6,7 @@
 # Name:		sulfides.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		21.05.2022
+# Date:		05.06.2022
 
 # -----------------------------------------------
 
@@ -1521,6 +1521,166 @@ class Sulfides():
             results["chemistry"] = {}
             for index, element in enumerate(element_list, start=0):
                 results["chemistry"][element] = amounts[index][2]
+            #
+            return results
+    #
+    def create_pyrrhotite_group(self):
+        # Major elements
+        sulfur = PeriodicSystem(name="S").get_data()
+        iron = PeriodicSystem(name="Fe").get_data()
+        majors_name = ["S", "Fe"]
+        n_Fe = [1, 7, 11]
+        n_S = [1, 8, 12]
+        i = rd.randint(0, 2)
+        x = round(rd.uniform(0, 1), 4)
+        n_Fe = 1 + 10*x
+        n_S = 1 + 11*x
+        majors_data = np.array([["S", sulfur[1], n_S, sulfur[2]], ["Fe", iron[1], n_Fe, iron[2]]], dtype=object)
+        majors_data_low = np.array([["S", sulfur[1], 1, sulfur[2]], ["Fe", iron[1], 1, iron[2]]], dtype=object)
+        majors_data_med = np.array([["S", sulfur[1], 8, sulfur[2]], ["Fe", iron[1], 7, iron[2]]], dtype=object)
+        majors_data_high = np.array([["S", sulfur[1], 12, sulfur[2]], ["Fe", iron[1], 11, iron[2]]], dtype=object)
+        # Minor elements
+        traces_data = []
+        if len(self.traces_list) > 0:
+            self.impurity = "impure"
+        if self.impurity == "pure":
+            var_state = "fixed"
+        else:
+            var_state = "variable"
+            if self.impurity == "random":
+                self.traces_list = []
+                minors = ["Ni", "Co", "Cu"]
+                n = rd.randint(1, len(minors))
+                while len(self.traces_list) < n:
+                    selection = rd.choice(minors)
+                    if selection not in self.traces_list and selection not in majors_name:
+                        self.traces_list.append(selection)
+                    else:
+                        continue
+            traces = [PeriodicSystem(name=i).get_data() for i in self.traces_list]
+            x_traces = [round(rd.uniform(0., 0.001), 6) for i in range(len(self.traces_list))]
+            for i in range(len(self.traces_list)):
+                traces_data.append([str(self.traces_list[i]), int(traces[i][1]), float(x_traces[i])])
+            if len(traces_data) > 0:
+                traces_data = np.array(traces_data, dtype=object)
+                traces_data = traces_data[traces_data[:, 1].argsort()]
+        #
+        data = []
+        mineral = "Po"
+        #
+        # Molar mass
+        molar_mass_pure = n_Fe*iron[2] + n_S*sulfur[2]
+        molar_mass, amounts = MineralChemistry(
+            w_traces=traces_data, molar_mass_pure=molar_mass_pure, majors=majors_data).calculate_molar_mass()
+        element = [PeriodicSystem(name=amounts[i][0]).get_data() for i in range(len(amounts))]
+        #
+        molar_mass_pure_low = 1*iron[2] + 1*sulfur[2]
+        molar_mass_low, amounts_low = MineralChemistry(
+            w_traces=traces_data, molar_mass_pure=molar_mass_pure_low, majors=majors_data_low).calculate_molar_mass()
+        element_low = [PeriodicSystem(name=amounts_low[i][0]).get_data() for i in range(len(amounts_low))]
+        #
+        molar_mass_pure_med = 7*iron[2] + 8*sulfur[2]
+        molar_mass_med, amounts_med = MineralChemistry(
+            w_traces=traces_data, molar_mass_pure=molar_mass_pure_med, majors=majors_data_med).calculate_molar_mass()
+        element_med = [PeriodicSystem(name=amounts_med[i][0]).get_data() for i in range(len(amounts_med))]
+        #
+        molar_mass_pure_high = 11*iron[2] + 12*sulfur[2]
+        molar_mass_high, amounts_high = MineralChemistry(
+            w_traces=traces_data, molar_mass_pure=molar_mass_pure_high, majors=majors_data_high).calculate_molar_mass()
+        element_high = [PeriodicSystem(name=amounts_high[i][0]).get_data() for i in range(len(amounts_high))]
+        # Density
+        dataV_low = CrystalPhysics([[3.407, 5.727], [], "hexagonal"])
+        V_low = dataV_low.calculate_volume()
+        dataRho_low = CrystalPhysics([molar_mass_pure_low, 2, V_low*10**(6)])
+        rho_low = dataRho_low.calculate_bulk_density()
+        rho_e_low = wg(amounts=amounts_low, elements=element_low, rho_b=rho_low).calculate_electron_density()
+        #
+        dataV_med = CrystalPhysics([[5.740, 6.151, 11.172], [83.295], "monoclinic"])
+        V_med = dataV_med.calculate_volume()
+        dataRho_med = CrystalPhysics([molar_mass_pure_med, 2, V_med])
+        rho_med = dataRho_med.calculate_bulk_density()
+        rho_e_med = wg(amounts=amounts_med, elements=element_med, rho_b=rho_med).calculate_electron_density()
+        #
+        dataV_high = CrystalPhysics([[6.624, 6.579, 16.231], [57.314], "monoclinic"])
+        V_high = dataV_high.calculate_volume()
+        dataRho_high = CrystalPhysics([molar_mass_pure_high, 2, V_high])
+        rho_high = dataRho_high.calculate_bulk_density()
+        rho_e_high = wg(amounts=amounts_high, elements=element_high, rho_b=rho_high).calculate_electron_density()
+        #
+        V = -65.31*(2*x + 1)**2 + 530.08*(2*x + 1) - 407.21
+        rho = -166.29*(2*x + 1)**2 + 916.23*(2*x + 1) + 4320.97
+        rho_e = -166.67*(2*x + 1)**2 + 910.38*(2*x + 1) + 4101.98
+        # Bulk modulus
+        K_l = 118.93*10**9
+        K_m = 141.25*10**9
+        K_h = 144.00*10**9
+        K = (-9.785*(2*x + 1)**2 + 51.675*(2*x + 1) + 77.040)*10**9
+        # Shear modulus
+        G_l = 48.91*10**9
+        G_m = 58.33*10**9
+        G_h = 59.29*10**9
+        G = (-4.230*(2*x + 1)**2 + 22.110*(2*x + 1) + 31.030)*10**9
+        # Young's modulus
+        E = (9*K*G)/(3*K + G)
+        # Poisson's ratio
+        nu = (3*K - 2*G)/(2*(3*K + G))
+        # vP/vS
+        vPvS = ((K + 4/3*G)/G)**0.5
+        # P-wave velocity
+        vP = ((K + 4/3*G)/rho)**0.5
+        # S-wave velocity
+        vS = (G/rho)**0.5
+        # Gamma ray
+        gamma_ray = wg(amounts=amounts, elements=element).calculate_gr()
+        # Photoelectricity
+        pe = wg(amounts=amounts, elements=element).calculate_pe()
+        U = pe*rho_e*10**(-3)
+        # Electrical resistivity
+        p = None
+        # Thermodynamics
+        thermodynamics = {}
+        thermodynamics["Gibbs Energy"] = -99289     # J/mol
+        thermodynamics["Enthalpy"] = -96291         # J/mol
+        thermodynamics["Entropy"] = 69.429         # J/(mol K)
+        thermodynamics["Heat Capacity"] = 50.50    # J/(mol K)
+        #
+        if self.data_type == False:
+            data.append(mineral)
+            data.append(round(molar_mass, 3))
+            data.append(round(rho, 2))
+            data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 4)])
+            data.append([round(vP, 2), round(vS, 2), round(vPvS, 2)])
+            data.append([round(gamma_ray, 2), round(pe, 2), round(U, 2), p])
+            data.append(amounts)
+            #
+            return data
+        else:
+            #
+            results = {}
+            results["mineral"] = mineral
+            results["M"] = molar_mass
+            element_list = np.array(amounts)[:, 0]
+            results["chemistry"] = {}
+            for index, element in enumerate(element_list, start=0):
+                results["chemistry"][element] = amounts[index][2]
+            results["rho"] = round(rho, 4)
+            results["rho_e"] = round(rho_e, 4)
+            results["V"] = round(V, 4)
+            results["vP"] = round(vP, 4)
+            results["vS"] = round(vS, 4)
+            results["vP/vS"] = round(vPvS, 4)
+            results["G"] = round(G*10**(-9), 4)
+            results["K"] = round(K*10**(-9), 4)
+            results["E"] = round(E*10**(-9), 4)
+            results["nu"] = round(nu, 4)
+            results["GR"] = round(gamma_ray, 4)
+            results["PE"] = round(pe, 4)
+            results["U"] = round(U, 4)
+            results["thermodynamics"] = thermodynamics
+            if p != None:
+                results["p"] = round(p, 4)
+            else:
+                results["p"] = p
             #
             return results
     #

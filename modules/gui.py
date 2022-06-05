@@ -1051,7 +1051,8 @@ class Minerals:
             elif self.mineral == "Sphalerite":
                 data = Sulfides(impurity="pure", data_type=True).create_sphalerite()
             elif self.mineral == "Pyrrhotite":
-                data = Sulfides(impurity="pure", data_type=True).create_pyrrhotite()
+                # data = Sulfides(impurity="pure", data_type=True).create_pyrrhotite()
+                data = Sulfides(impurity="pure", data_type=True).create_pyrrhotite_group()
             elif self.mineral == "Millerite":
                 data = Sulfides(impurity="pure", data_type=True).create_millerite()
             elif self.mineral == "Pentlandite":
@@ -1619,7 +1620,8 @@ class Minerals:
             elif self.mineral == "Sphalerite":
                 data = Sulfides(impurity="pure", data_type=True).create_sphalerite()
             elif self.mineral == "Pyrrhotite":
-                data = Sulfides(impurity="pure", data_type=True).create_pyrrhotite()
+                # data = Sulfides(impurity="pure", data_type=True).create_pyrrhotite()
+                data = Sulfides(impurity="pure", data_type=True).create_pyrrhotite_group()
             elif self.mineral == "Millerite":
                 data = Sulfides(impurity="pure", data_type=True).create_millerite()
             elif self.mineral == "Pentlandite":
