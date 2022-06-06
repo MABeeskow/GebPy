@@ -6,7 +6,7 @@
 # Name:		gui.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		26.05.2022
+# Date:		06.06.2022
 
 #-----------------------------------------------
 
@@ -25,6 +25,7 @@ from modules.phospides import Phospides
 from modules.phosphates import Phosphates
 from modules.organics import Organics
 from modules.minerals import feldspars
+from modules.sedimentary_rocks import SedimentaryRocks
 from modules.siliciclastics import sandstone, shale, Sandstone
 from modules.metamorphics import MetamorphicRocks
 from modules.carbonates import limestone, dolomite, CustomCarbonates
@@ -291,6 +292,10 @@ class GebPyGUI(tk.Frame):
                   color_acc=[self.color_accent_03, self.color_accent_04], rock=var_opt, lbl_w=self.lbl_w,
                   entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
         elif var_opt == "Dolomite Rock":
+            Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
+                  color_acc=[self.color_accent_03, self.color_accent_04], rock=var_opt, lbl_w=self.lbl_w,
+                  entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
+        elif var_opt == "Marl":
             Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                   color_acc=[self.color_accent_03, self.color_accent_04], rock=var_opt, lbl_w=self.lbl_w,
                   entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
@@ -738,7 +743,7 @@ class GebPyGUI(tk.Frame):
                 command=lambda var_opt=var_opt_1_1: self.select_opt(var_opt))
         elif var_opt == "Carbonate Rocks":
             var_opt_1_2 = tk.StringVar()
-            opt_list_1_2 = ["Limestone", "Dolomite Rock"]
+            opt_list_1_2 = ["Limestone", "Dolomite Rock", "Marl"]
             opt_list_1_2.sort()
             self.opt_carb = SE(parent=self.parent, row_id=16, column_id=0, n_rows=2, n_columns=2,
                                bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
@@ -3148,7 +3153,7 @@ class Rocks:
         #
         self.lbl_w["physics"].extend([lbl_01, lbl_02, lbl_03, lbl_04, lbl_05, lbl_06, lbl_07, lbl_08, lbl_09, lbl_10])
         #
-        if self.rock == "Sandstone":
+        if self.rock in ["Sandstone", "Marl"]:
             var_phi0_start = 5
             var_phi1_start = 30
         elif self.rock in ["Shale", "Kupferschiefer", "Granulite", "Greenschist", "Greenschist (basaltic)",
@@ -3224,6 +3229,9 @@ class Rocks:
                     data = limestone(fluid="water", actualThickness=0).create_simple_limestone(dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
                 elif self.rock == "Dolomite Rock":
                     data = dolomite(fluid="water", actualThickness=0).create_simple_dolomite(dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
+                elif self.rock == "Marl":
+                    data = SedimentaryRocks(fluid="water", actualThickness=0).create_marl(
+                        number=1, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
                 #
                 elif self.rock == "Felsic Rock":
                     data = Plutonic(fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_felsic()
@@ -3592,6 +3600,9 @@ class Rocks:
                     data = limestone(fluid="water", actualThickness=0).create_simple_limestone(dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
                 elif self.rock == "Dolomite Rock":
                     data = dolomite(fluid="water", actualThickness=0).create_simple_dolomite(dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
+                elif self.rock == "Marl":
+                    data = SedimentaryRocks(fluid="water", actualThickness=0).create_marl(
+                        number=1, porosity=rd.uniform(self.var_phi0.get() / 100, self.var_phi1.get() / 100))
                 #
                 elif self.rock == "Felsic Rock":
                     data = Plutonic(fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_felsic()
