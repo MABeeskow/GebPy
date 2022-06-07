@@ -408,11 +408,6 @@ class SedimentaryRocks:
                                 amounts_helper.append(value)
                                 w_total_clay += value
                                 n_minerals += 1
-                                # if 0.0 <= value <= value_fract:
-                                #     amounts_helper_minerals[clay_mineral] = value
-                                #     amounts_helper.append(value)
-                                #     w_total_clay += value
-                                #     n_minerals += 1
                             elif clay_mineral == "Ilt":
                                 if n_minerals < len(mineral_list) - 1:
                                     value = round(value_fract*rd.uniform(0.0, 1.0), 4)
@@ -422,11 +417,6 @@ class SedimentaryRocks:
                                 amounts_helper.append(value)
                                 w_total_clay += value
                                 n_minerals += 1
-                                # if 0.50 <= value <= value_fract:
-                                #     amounts_helper_minerals[clay_mineral] = value
-                                #     amounts_helper.append(value)
-                                #     w_total_clay += value
-                                #     n_minerals += 1
                             elif clay_mineral == "Kln":
                                 if n_minerals < len(mineral_list) - 1:
                                     value = round(value_fract*rd.uniform(0.0, 1.0), 4)
@@ -436,11 +426,6 @@ class SedimentaryRocks:
                                 amounts_helper.append(value)
                                 w_total_clay += value
                                 n_minerals += 1
-                                # if 0.0 <= value <= value_fract:
-                                #     amounts_helper_minerals[clay_mineral] = value
-                                #     amounts_helper.append(value)
-                                #     w_total_clay += value
-                                #     n_minerals += 1
                             elif clay_mineral == "Mnt":
                                 if n_minerals < len(mineral_list) - 1:
                                     value = round(value_fract - w_total_clay, 4)
@@ -450,11 +435,6 @@ class SedimentaryRocks:
                                 amounts_helper.append(value)
                                 w_total_clay += value
                                 n_minerals += 1
-                                # if 0.0 <= value <= value_fract:
-                                #     amounts_helper_minerals[clay_mineral] = value
-                                #     amounts_helper.append(value)
-                                #     w_total_clay += value
-                                #     n_minerals += 1
                         #
                         amounts_fractions_helper[fraction] = value_fract
                         w_total_fractions += value_fract
@@ -475,11 +455,6 @@ class SedimentaryRocks:
                                 amounts_helper.append(value)
                                 w_total_acc += value
                                 n_minerals += 1
-                                # if 0.0 <= value <= value_fract:
-                                #     amounts_helper_minerals[accessory_mineral] = value
-                                #     amounts_helper.append(value)
-                                #     w_total_acc += value
-                                #     n_minerals += 1
                             elif accessory_mineral == "Pl":
                                 if n_minerals < len(mineral_list) - 1:
                                     value = round(value_fract*rd.uniform(0.0, value_fract), 4)
@@ -489,11 +464,6 @@ class SedimentaryRocks:
                                 amounts_helper.append(value)
                                 w_total_acc += value
                                 n_minerals += 1
-                                # if 0.0 <= value <= value_fract:
-                                #     amounts_helper_minerals[accessory_mineral] = value
-                                #     amounts_helper.append(value)
-                                #     w_total_acc += value
-                                #     n_minerals += 1
                             elif accessory_mineral == "Qz":
                                 if n_minerals < len(mineral_list) - 1:
                                     value = round(value_fract - w_total_acc, 4)
@@ -503,11 +473,6 @@ class SedimentaryRocks:
                                 amounts_helper.append(value)
                                 w_total_acc += value
                                 n_minerals += 1
-                                # if 0.0 <= value <= value_fract:
-                                #     amounts_helper_minerals[accessory_mineral] = value
-                                #     amounts_helper.append(value)
-                                #     w_total_acc += value
-                                #     n_minerals += 1
                         #
                         amounts_fractions_helper[fraction] = value_fract
                         w_total_fractions += value_fract

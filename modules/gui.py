@@ -4972,7 +4972,8 @@ class Rocks:
             self.bulk_mod.append(round(K_geo, 2))
             self.shear_mod.append(round(G_geo, 2))
             self.youngs_mod.append(round((9*K_geo*G_geo)/(3*K_geo - G_geo), 2))
-            self.poisson.append(round(poisson_value, 3))
+            #self.poisson.append(round(poisson_value, 3))
+            self.poisson.append(round((3*K_geo-2*G_geo)/(6*K_geo + 2*G_geo), 4))
             vP_solid = np.sqrt((K_geo*10**9+4/3*G_geo*10**9)/(rho_value))
             vS_solid = np.sqrt((G_geo*10**9)/(rho_value))
             rho = (1 - self.phi[i])*rho_value + self.phi[i]*water[2]/1000
