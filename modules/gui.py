@@ -363,7 +363,7 @@ class GebPyGUI(tk.Frame):
                   entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
         ## Metamorphic Rocks
         elif var_opt in ["Granulite", "Greenschist", "Greenschist (basaltic)", "Greenschist (ultramafic)",
-                         "Greenschist (pelitic)", "Amphibole (ortho)"]:
+                         "Greenschist (pelitic)", "Amphibolite (ortho)"]:
             Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                   color_acc=[self.color_accent_03, self.color_accent_04], rock=var_opt, lbl_w=self.lbl_w,
                   entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
@@ -777,7 +777,7 @@ class GebPyGUI(tk.Frame):
         elif var_opt == "Metamorphic Rocks":
             var_opt_1_6 = tk.StringVar()
             opt_list_1_6 = ["Granulite", "Greenschist", "Greenschist (basaltic)", "Greenschist (ultramafic)",
-                            "Greenschist (pelitic)", "Amphibole (ortho)"]
+                            "Greenschist (pelitic)", "Amphibolite (ortho)"]
             opt_list_1_6.sort()
             self.opt_metamorph = SE(parent=self.parent, row_id=16, column_id=0, n_rows=2, n_columns=2,
                               bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
@@ -3158,7 +3158,7 @@ class Rocks:
             var_phi1_start = 30
         elif self.rock in ["Shale", "Kupferschiefer", "Granulite", "Greenschist", "Greenschist (basaltic)",
                            "Greenschist (ultramafic)", "Greenschist (pelitic)", "Compact Hematite Ore",
-                           "Banded Iron Formation", "Amphibole (ortho)"]:
+                           "Banded Iron Formation", "Amphibolite (ortho)"]:
             var_phi0_start = 0
             var_phi1_start = 10
         elif self.rock in ["Limestone", "Dolomite Rock"]:
@@ -3292,7 +3292,7 @@ class Rocks:
                 elif self.rock == "Greenschist (pelitic)":
                     data = MetamorphicRocks(fluid="water", actualThickness=0).create_greenschist_pelitic(
                         number=1, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
-                elif self.rock == "Amphibole (ortho)":
+                elif self.rock == "Amphibolite (ortho)":
                     data = MetamorphicRocks(fluid="water", actualThickness=0).create_amphibolite_ortho(
                         number=1, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
                 #
@@ -3666,7 +3666,7 @@ class Rocks:
                 elif self.rock == "Greenschist (pelitic)":
                     data = MetamorphicRocks(fluid="water", actualThickness=0).create_greenschist_pelitic(
                         number=1, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
-                elif self.rock == "Amphibole (ortho)":
+                elif self.rock == "Amphibolite (ortho)":
                     data = MetamorphicRocks(fluid="water", actualThickness=0).create_amphibolite_ortho(
                         number=1, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
                 #
