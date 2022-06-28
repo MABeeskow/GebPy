@@ -6,7 +6,7 @@
 # Name:		gui.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		06.06.2022
+# Date:		28.06.2022
 
 #-----------------------------------------------
 
@@ -209,7 +209,7 @@ class GebPyGUI(tk.Frame):
         elif var_opt in ["Pyrite", "Chalcopyrite", "Galena", "Acanthite", "Chalcocite", "Bornite", "Sphalerite",
                          "Pyrrhotite", "Millerite", "Pentlandite", "Covellite", "Cinnabar", "Realgar", "Orpiment",
                          "Stibnite", "Marcasite", "Molybdenite", "Fahlore", "Chalcopyrite-Group", "Gallite",
-                         "Roquesite", "Lenaite", "Laforetite"]:
+                         "Roquesite", "Lenaite", "Laforetite", "Vaesite", "Cattierite", "Pyrite-Group"]:
             Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                      color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
                      entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
@@ -419,7 +419,7 @@ class GebPyGUI(tk.Frame):
             opt_list_0_2 = ["Pyrite", "Chalcopyrite", "Galena", "Acanthite", "Chalcocite", "Bornite", "Sphalerite",
                             "Pyrrhotite", "Millerite", "Pentlandite", "Covellite", "Cinnabar", "Realgar", "Orpiment",
                             "Stibnite", "Marcasite", "Molybdenite", "Fahlore", "Chalcopyrite-Group", "Gallite",
-                            "Roquesite", "Lenaite", "Laforetite"]
+                            "Roquesite", "Lenaite", "Laforetite", "Vaesite", "Cattierite", "Pyrite-Group"]
             opt_list_0_2.sort()
             self.opt_sulfide = SE(parent=self.parent, row_id=10, column_id=0, n_rows=2, n_columns=2,
                                   bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
@@ -1043,6 +1043,12 @@ class Minerals:
                 data = Oxides(impurity="pure", data_type=True).create_ulvoespinel()
             elif self.mineral == "Pyrite":
                 data = Sulfides(impurity="pure", data_type=True).create_pyrite()
+            elif self.mineral == "Vaesite":
+                data = Sulfides(impurity="pure", data_type=True).create_vaesite()
+            elif self.mineral == "Cattierite":
+                data = Sulfides(impurity="pure", data_type=True).create_cattierite()
+            elif self.mineral == "Pyrite-Group":
+                data = Sulfides(impurity="pure", data_type=True).create_pyrite_group()
             elif self.mineral == "Chalcopyrite":
                 data = Sulfides(impurity="pure", data_type=True).create_chalcopyrite()
             elif self.mineral == "Galena":
@@ -1612,6 +1618,12 @@ class Minerals:
                 data = Oxides(impurity="pure", data_type=True).create_ulvoespinel()
             elif self.mineral == "Pyrite":
                 data = Sulfides(impurity="pure", data_type=True).create_pyrite()
+            elif self.mineral == "Vaesite":
+                data = Sulfides(impurity="pure", data_type=True).create_vaesite()
+            elif self.mineral == "Cattierite":
+                data = Sulfides(impurity="pure", data_type=True).create_cattierite()
+            elif self.mineral == "Pyrite-Group":
+                data = Sulfides(impurity="pure", data_type=True).create_pyrite_group()
             elif self.mineral == "Chalcopyrite":
                 data = Sulfides(impurity="pure", data_type=True).create_chalcopyrite()
             elif self.mineral == "Galena":

@@ -6,7 +6,7 @@
 # Name:		sulfides.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		05.06.2022
+# Date:		28.06.2022
 
 # -----------------------------------------------
 
@@ -3323,13 +3323,45 @@ class Sulfides():
         majors_name = ["S", "Fe", "Cu", "Ga", "Ag", "In"]
         #
         a = rd.uniform(0.0, 1.0)
+        a1 = round(a, 4)
+        a2 = round(1 - a, 4)
         b = rd.uniform(0.0, 1.0)
         c = rd.uniform(0.0, 1.0-b)
+        b1 = round(b, 4)
+        b2 = round(c, 4)
+        b3 = round(1 - b1 - b2, 4)
+        c = rd.uniform(0.0, 1.0)
+        c1 = round(c, 4)
+        c2 = round(1 - c, 4)
         #
         majors_data = np.array(
-            [["S", sulfur[1], 2, sulfur[2]], ["Fe", iron[1], 1*b, iron[2]], ["Cu", copper[1], 1*a, copper[2]],
-             ["Ga", gallium[1], 1-b-c, gallium[2]], ["Ag", silver[1], 1*(1-a), silver[2]],
-             ["In", indium[1], 1*c, indium[2]]], dtype=object)
+            [["S", sulfur[1], 2, sulfur[2]], ["Fe", iron[1], b1, iron[2]], ["Cu", copper[1], a1, copper[2]],
+             ["Ga", gallium[1], b3, gallium[2]], ["Ag", silver[1], a2, silver[2]],
+             ["In", indium[1], b2, indium[2]]], dtype=object)
+        majors_data = np.array(
+            [["S", sulfur[1], 2, sulfur[2]], ["Fe", iron[1], a1*b1 + a2*c1, iron[2]], ["Cu", copper[1], a1, copper[2]],
+             ["Ga", gallium[1], b3, gallium[2]], ["Ag", silver[1], a2, silver[2]],
+             ["In", indium[1], a1*b2 + a2*c2, indium[2]]], dtype=object)
+        majors_data_Ccp = np.array(
+            [["S", sulfur[1], 2, sulfur[2]], ["Fe", iron[1], 1, iron[2]], ["Cu", copper[1], 1, copper[2]],
+             ["Ga", gallium[1], 0, gallium[2]], ["Ag", silver[1], 0, silver[2]],
+             ["In", indium[1], 0, indium[2]]], dtype=object)
+        majors_data_Rqt = np.array(
+            [["S", sulfur[1], 2, sulfur[2]], ["Fe", iron[1], 0, iron[2]], ["Cu", copper[1], 1, copper[2]],
+             ["Ga", gallium[1], 0, gallium[2]], ["Ag", silver[1], 0, silver[2]],
+             ["In", indium[1], 1, indium[2]]], dtype=object)
+        majors_data_Glt = np.array(
+            [["S", sulfur[1], 2, sulfur[2]], ["Fe", iron[1], 0, iron[2]], ["Cu", copper[1], 1, copper[2]],
+             ["Ga", gallium[1], 1, gallium[2]], ["Ag", silver[1], 0, silver[2]],
+             ["In", indium[1], 0, indium[2]]], dtype=object)
+        majors_data_Lnt = np.array(
+            [["S", sulfur[1], 2, sulfur[2]], ["Fe", iron[1], 1, iron[2]], ["Cu", copper[1], 0, copper[2]],
+             ["Ga", gallium[1], 0, gallium[2]], ["Ag", silver[1], 1, silver[2]],
+             ["In", indium[1], 0, indium[2]]], dtype=object)
+        majors_data_Lft = np.array(
+            [["S", sulfur[1], 2, sulfur[2]], ["Fe", iron[1], 0, iron[2]], ["Cu", copper[1], 0, copper[2]],
+             ["Ga", gallium[1], 0, gallium[2]], ["Ag", silver[1], 1, silver[2]],
+             ["In", indium[1], 1, indium[2]]], dtype=object)
         #
         # Minor elements
         traces_data = []
@@ -3358,39 +3390,69 @@ class Sulfides():
                 traces_data = traces_data[traces_data[:, 1].argsort()]
         #
         # Molar mass
-        molar_mass_pure = a*copper[2] + (1-a)*silver[2] + b*iron[2] + c*indium[2] + (1-b-c)*gallium[2] + 2*sulfur[2]
-        molar_mass, amounts = MineralChemistry(w_traces=traces_data, molar_mass_pure=molar_mass_pure,
-                                               majors=majors_data).calculate_molar_mass()
+        molar_mass_pure = a1*copper[2] + a2*silver[2] + (b1 + c1)*iron[2] + (b2 + c2)*indium[2] + b3*gallium[2] + 2*sulfur[2]
+        molar_mass, amounts = MineralChemistry(
+            w_traces=traces_data, molar_mass_pure=molar_mass_pure, majors=majors_data).calculate_molar_mass()
         element = [PeriodicSystem(name=amounts[i][0]).get_data() for i in range(len(amounts))]
+        #
+        molar_mass_pure_Ccp = copper[2] + iron[2] + 2*sulfur[2]
+        molar_mass_Ccp, amounts_Ccp = MineralChemistry(
+            w_traces=traces_data, molar_mass_pure=molar_mass_pure_Ccp, majors=majors_data_Ccp).calculate_molar_mass()
+        element_Ccp = [PeriodicSystem(name=amounts_Ccp[i][0]).get_data() for i in range(len(amounts_Ccp))]
+        #
+        molar_mass_pure_Rqt = copper[2] + indium[2] + 2*sulfur[2]
+        molar_mass_Rqt, amounts_Rqt = MineralChemistry(
+            w_traces=traces_data, molar_mass_pure=molar_mass_pure_Rqt, majors=majors_data_Rqt).calculate_molar_mass()
+        element_Rqt = [PeriodicSystem(name=amounts_Rqt[i][0]).get_data() for i in range(len(amounts_Rqt))]
+        #
+        molar_mass_pure_Glt = copper[2] + gallium[2] + 2*sulfur[2]
+        molar_mass_Glt, amounts_Glt = MineralChemistry(
+            w_traces=traces_data, molar_mass_pure=molar_mass_pure_Glt, majors=majors_data_Glt).calculate_molar_mass()
+        element_Glt = [PeriodicSystem(name=amounts_Glt[i][0]).get_data() for i in range(len(amounts_Glt))]
+        #
+        molar_mass_pure_Lnt = silver[2] + iron[2] + 2*sulfur[2]
+        molar_mass_Lnt, amounts_Lnt = MineralChemistry(
+            w_traces=traces_data, molar_mass_pure=molar_mass_pure_Lnt, majors=majors_data_Lnt).calculate_molar_mass()
+        element_Lnt = [PeriodicSystem(name=amounts_Lnt[i][0]).get_data() for i in range(len(amounts_Lnt))]
+        #
+        molar_mass_pure_Lft = silver[2] + indium[2] + 2*sulfur[2]
+        molar_mass_Lft, amounts_Lft = MineralChemistry(
+            w_traces=traces_data, molar_mass_pure=molar_mass_pure_Lft, majors=majors_data_Lft).calculate_molar_mass()
+        element_Lft = [PeriodicSystem(name=amounts_Lft[i][0]).get_data() for i in range(len(amounts_Lft))]
+        #
         # Density
         dataV_Ccp = CrystalPhysics([[5.28, 10.41], [], "tetragonal"])
         V_Ccp = dataV_Ccp.calculate_volume()
-        dataRho_Ccp = CrystalPhysics([molar_mass, 4, V_Ccp])
+        dataRho_Ccp = CrystalPhysics([molar_mass_Ccp, 4, V_Ccp])
         rho_Ccp = dataRho_Ccp.calculate_bulk_density()
-        rho_e_Ccp = wg(amounts=amounts, elements=element, rho_b=rho_Ccp).calculate_electron_density()
+        rho_e_Ccp = wg(amounts=amounts_Ccp, elements=element_Ccp, rho_b=rho_Ccp).calculate_electron_density()
+        #
         dataV_Glt = CrystalPhysics([[5.35, 10.48], [], "tetragonal"])
         V_Glt = dataV_Glt.calculate_volume()
-        dataRho_Glt = CrystalPhysics([molar_mass, 4, V_Glt])
+        dataRho_Glt = CrystalPhysics([molar_mass_Glt, 4, V_Glt])
         rho_Glt = dataRho_Glt.calculate_bulk_density()
-        rho_e_Glt = wg(amounts=amounts, elements=element, rho_b=rho_Glt).calculate_electron_density()
+        rho_e_Glt = wg(amounts=amounts_Glt, elements=element_Glt, rho_b=rho_Glt).calculate_electron_density()
+        #
         dataV_Rqt = CrystalPhysics([[5.51, 11.05], [], "tetragonal"])
         V_Rqt = dataV_Rqt.calculate_volume()
-        dataRho_Rqt = CrystalPhysics([molar_mass, 4, V_Rqt])
+        dataRho_Rqt = CrystalPhysics([molar_mass_Rqt, 4, V_Rqt])
         rho_Rqt = dataRho_Rqt.calculate_bulk_density()
-        rho_e_Rqt = wg(amounts=amounts, elements=element, rho_b=rho_Rqt).calculate_electron_density()
+        rho_e_Rqt = wg(amounts=amounts_Rqt, elements=element_Rqt, rho_b=rho_Rqt).calculate_electron_density()
+        #
         dataV_Lft = CrystalPhysics([[5.88, 11.21], [], "tetragonal"])
         V_Lft = dataV_Lft.calculate_volume()
-        dataRho_Lft = CrystalPhysics([molar_mass, 4, V_Lft])
+        dataRho_Lft = CrystalPhysics([molar_mass_Lft, 4, V_Lft])
         rho_Lft = dataRho_Lft.calculate_bulk_density()
-        rho_e_Lft = wg(amounts=amounts, elements=element, rho_b=rho_Lft).calculate_electron_density()
+        rho_e_Lft = wg(amounts=amounts_Lft, elements=element_Lft, rho_b=rho_Lft).calculate_electron_density()
+        #
         dataV_Lnt = CrystalPhysics([[5.4371, 10.8479], [], "tetragonal"])
         V_Lnt = dataV_Lnt.calculate_volume()
-        dataRho_Lnt = CrystalPhysics([molar_mass, 4, V_Lnt])
+        dataRho_Lnt = CrystalPhysics([molar_mass_Lnt, 4, V_Lnt])
         rho_Lnt = dataRho_Lnt.calculate_bulk_density()
-        rho_e_Lnt = wg(amounts=amounts, elements=element, rho_b=rho_Lnt).calculate_electron_density()
+        rho_e_Lnt = wg(amounts=amounts_Lnt, elements=element_Lnt, rho_b=rho_Lnt).calculate_electron_density()
         #
         V = (a*b)*V_Ccp + ((1-a)*b)*V_Lnt + (a*c)*V_Rqt + (a*(1-b-c))*V_Glt + ((1-a)*c)*V_Lft
-        rho = (a*b)*rho_Ccp + ((1-a)*b)*rho_Lnt + (a*c)*rho_Rqt + (a*(1-b-c))*rho_Glt + ((1-a)*c)*rho_Lft
+        rho = a1*(b1*rho_Ccp + b2*rho_Rqt + b3*rho_Glt) + a2*(c1*rho_Lnt + c2*rho_Lft)
         rho_e = (a*b)*rho_e_Ccp + ((1-a)*b)*rho_e_Lnt + (a*c)*rho_e_Rqt + (a*(1-b-c))*rho_e_Glt + ((1-a)*c)*rho_e_Lft
         #
         # Bulk modulus
@@ -3399,14 +3461,14 @@ class Sulfides():
         K_Rqt = 64*10**9
         K_Glt = 75*10**9
         K_Lft = 52*10**9
-        K = (a*b)*K_Ccp + ((1-a)*b)*K_Lnt + (a*c)*K_Rqt + (a*(1-b-c))*K_Glt + ((1-a)*c)*K_Lft
+        K = a1*(b1*K_Ccp + b2*K_Rqt + b3*K_Glt) + a2*(c1*K_Lnt + c2*K_Lft)
         # Shear modulus
         G_Ccp = 19*10**9
         G_Lnt = 15*10**9
         G_Rqt = 25*10**9
         G_Glt = 36*10**9
         G_Lft = 16*10**9
-        G = (a*b)*G_Ccp + ((1-a)*b)*G_Lnt + (a*c)*G_Rqt + (a*(1-b-c))*G_Glt + ((1-a)*c)*G_Lft
+        G = a1*(b1*G_Ccp + b2*G_Rqt + b3*G_Glt) + a2*(c1*G_Lnt + c2*G_Lft)
         # Young's modulus
         E = (9*K*G)/(3*K + G)
         # Poisson's ratio
@@ -3939,4 +4001,345 @@ class Sulfides():
                 results["p"] = p
             #
             return results
+    #
+    def create_vaesite(self):   # Ni S2
+        #
+        name = "Vst"
+        #
+        # Major elements
+        sulfur = PeriodicSystem(name="S").get_data()
+        nickel = PeriodicSystem(name="Ni").get_data()
+        majors_name = ["S", "Ni"]
+        majors_data = np.array([["S", sulfur[1], 2, sulfur[2]], ["Ni", nickel[1], 1, nickel[2]]], dtype=object)
+        # Minor elements
+        traces_data = []
+        if len(self.traces_list) > 0:
+            self.impurity = "impure"
+        if self.impurity == "pure":
+            var_state = "fixed"
+        else:
+            var_state = "variable"
+            if self.impurity == "random":
+                self.traces_list = []
+                minors = ["Co", "Fe"]
+                n = rd.randint(1, len(minors))
+                while len(self.traces_list) < n:
+                    selection = rd.choice(minors)
+                    if selection not in self.traces_list and selection not in majors_name:
+                        self.traces_list.append(selection)
+                    else:
+                        continue
+            traces = [PeriodicSystem(name=i).get_data() for i in self.traces_list]
+            x_traces = [round(rd.uniform(0., 0.001), 6) for i in range(len(self.traces_list))]
+            for i in range(len(self.traces_list)):
+                traces_data.append([str(self.traces_list[i]), int(traces[i][1]), float(x_traces[i])])
+            if len(traces_data) > 0:
+                traces_data = np.array(traces_data, dtype=object)
+                traces_data = traces_data[traces_data[:, 1].argsort()]
+        #
+        # Molar mass
+        molar_mass_pure = nickel[2] + 2*sulfur[2]
+        molar_mass, amounts = MineralChemistry(w_traces=traces_data, molar_mass_pure=molar_mass_pure,
+                                               majors=majors_data).calculate_molar_mass()
+        element = [PeriodicSystem(name=amounts[i][0]).get_data() for i in range(len(amounts))]
+        # Density
+        dataV = CrystalPhysics([[5.6793], [], "cubic"])
+        V = dataV.calculate_volume()
+        dataRho = CrystalPhysics([molar_mass, 4, V])
+        rho = dataRho.calculate_bulk_density()
+        rho_e = wg(amounts=amounts, elements=element, rho_b=rho).calculate_electron_density()
+        # Bulk modulus
+        K = 101.63*10**9
+        # Shear modulus
+        G = 42.05*10**9
+        # Young's modulus
+        E = (9*K*G)/(3*K + G)
+        # Poisson's ratio
+        nu = (3*K - 2*G)/(2*(3*K + G))
+        # vP/vS
+        vPvS = ((K + 4/3*G)/G)**0.5
+        # P-wave velocity
+        vP = ((K + 4/3*G)/rho)**0.5
+        # S-wave velocity
+        vS = (G/rho)**0.5
+        # Gamma ray
+        gamma_ray = wg(amounts=amounts, elements=element).calculate_gr()
+        # Photoelectricity
+        pe = wg(amounts=amounts, elements=element).calculate_pe()
+        U = pe*rho_e*10**(-3)
+        # Electrical resistivity
+        p = None
+        # Thermodynamics
+        thermodynamics = {}
+        thermodynamics["Gibbs Energy"] = None     # J/mol
+        thermodynamics["Enthalpy"] = None         # J/mol
+        thermodynamics["Entropy"] = None          # J/(mol K)
+        thermodynamics["Heat Capacity"] = None    # J/(mol K)
+        #
+        # Output
+        results = {}
+        results["mineral"] = name
+        results["M"] = molar_mass
+        element_list = np.array(amounts)[:, 0]
+        results["chemistry"] = {}
+        for index, element in enumerate(element_list, start=0):
+            results["chemistry"][element] = amounts[index][2]
+        results["rho"] = round(rho, 4)
+        results["rho_e"] = round(rho_e, 4)
+        results["V"] = round(V, 4)
+        results["vP"] = round(vP, 4)
+        results["vS"] = round(vS, 4)
+        results["vP/vS"] = round(vPvS, 4)
+        results["G"] = round(G*10**(-9), 4)
+        results["K"] = round(K*10**(-9), 4)
+        results["E"] = round(E*10**(-9), 4)
+        results["nu"] = round(nu, 4)
+        results["GR"] = round(gamma_ray, 4)
+        results["PE"] = round(pe, 4)
+        results["U"] = round(U, 4)
+        results["thermodynamics"] = thermodynamics
+        if p != None:
+            results["p"] = round(p, 4)
+        else:
+            results["p"] = p
+        #
+        return results
+    #
+    def create_cattierite(self):   # Co S2
+        #
+        name = "Cat"
+        #
+        # Major elements
+        sulfur = PeriodicSystem(name="S").get_data()
+        cobalt = PeriodicSystem(name="Co").get_data()
+        majors_name = ["S", "Co"]
+        majors_data = np.array([["S", sulfur[1], 2, sulfur[2]], ["Co", cobalt[1], 1, cobalt[2]]], dtype=object)
+        # Minor elements
+        traces_data = []
+        if len(self.traces_list) > 0:
+            self.impurity = "impure"
+        if self.impurity == "pure":
+            var_state = "fixed"
+        else:
+            var_state = "variable"
+            if self.impurity == "random":
+                self.traces_list = []
+                minors = ["Fe", "Ni"]
+                n = rd.randint(1, len(minors))
+                while len(self.traces_list) < n:
+                    selection = rd.choice(minors)
+                    if selection not in self.traces_list and selection not in majors_name:
+                        self.traces_list.append(selection)
+                    else:
+                        continue
+            traces = [PeriodicSystem(name=i).get_data() for i in self.traces_list]
+            x_traces = [round(rd.uniform(0., 0.001), 6) for i in range(len(self.traces_list))]
+            for i in range(len(self.traces_list)):
+                traces_data.append([str(self.traces_list[i]), int(traces[i][1]), float(x_traces[i])])
+            if len(traces_data) > 0:
+                traces_data = np.array(traces_data, dtype=object)
+                traces_data = traces_data[traces_data[:, 1].argsort()]
+        #
+        # Molar mass
+        molar_mass_pure = cobalt[2] + 2*sulfur[2]
+        molar_mass, amounts = MineralChemistry(w_traces=traces_data, molar_mass_pure=molar_mass_pure,
+                                               majors=majors_data).calculate_molar_mass()
+        element = [PeriodicSystem(name=amounts[i][0]).get_data() for i in range(len(amounts))]
+        # Density
+        dataV = CrystalPhysics([[5.535], [], "cubic"])
+        V = dataV.calculate_volume()
+        dataRho = CrystalPhysics([molar_mass, 4, V])
+        rho = dataRho.calculate_bulk_density()
+        rho_e = wg(amounts=amounts, elements=element, rho_b=rho).calculate_electron_density()
+        # Bulk modulus
+        K = 124*10**9
+        # Shear modulus
+        G = 73*10**9
+        # Young's modulus
+        E = (9*K*G)/(3*K + G)
+        # Poisson's ratio
+        nu = (3*K - 2*G)/(2*(3*K + G))
+        # vP/vS
+        vPvS = ((K + 4/3*G)/G)**0.5
+        # P-wave velocity
+        vP = ((K + 4/3*G)/rho)**0.5
+        # S-wave velocity
+        vS = (G/rho)**0.5
+        # Gamma ray
+        gamma_ray = wg(amounts=amounts, elements=element).calculate_gr()
+        # Photoelectricity
+        pe = wg(amounts=amounts, elements=element).calculate_pe()
+        U = pe*rho_e*10**(-3)
+        # Electrical resistivity
+        p = None
+        # Thermodynamics
+        thermodynamics = {}
+        thermodynamics["Gibbs Energy"] = None     # J/mol
+        thermodynamics["Enthalpy"] = None         # J/mol
+        thermodynamics["Entropy"] = None          # J/(mol K)
+        thermodynamics["Heat Capacity"] = None    # J/(mol K)
+        #
+        # Output
+        results = {}
+        results["mineral"] = name
+        results["M"] = molar_mass
+        element_list = np.array(amounts)[:, 0]
+        results["chemistry"] = {}
+        for index, element in enumerate(element_list, start=0):
+            results["chemistry"][element] = amounts[index][2]
+        results["rho"] = round(rho, 4)
+        results["rho_e"] = round(rho_e, 4)
+        results["V"] = round(V, 4)
+        results["vP"] = round(vP, 4)
+        results["vS"] = round(vS, 4)
+        results["vP/vS"] = round(vPvS, 4)
+        results["G"] = round(G*10**(-9), 4)
+        results["K"] = round(K*10**(-9), 4)
+        results["E"] = round(E*10**(-9), 4)
+        results["nu"] = round(nu, 4)
+        results["GR"] = round(gamma_ray, 4)
+        results["PE"] = round(pe, 4)
+        results["U"] = round(U, 4)
+        results["thermodynamics"] = thermodynamics
+        if p != None:
+            results["p"] = round(p, 4)
+        else:
+            results["p"] = p
+        #
+        return results
+    #
+    def create_pyrite_group(self):   # (Fe,Ni,Co) S2
+        #
+        name = "Py"
+        #
+        # Major elements
+        sulfur = PeriodicSystem(name="S").get_data()
+        iron = PeriodicSystem(name="Ni").get_data()
+        cobalt = PeriodicSystem(name="Co").get_data()
+        nickel = PeriodicSystem(name="Ni").get_data()
+        majors_name = ["S", "Co"]
+        #
+        a = rd.uniform(0.5, 1.0)
+        b = rd.uniform(0.0, (1 - a))
+        c = 1 - a - b
+        #
+        majors_data = np.array(
+            [["S", sulfur[1], 2, sulfur[2]], ["Fe", iron[1], a, iron[2]], ["Co", cobalt[1], c, cobalt[2]],
+             ["Ni", nickel[1], b, nickel[2]]], dtype=object)
+        # Minor elements
+        traces_data = []
+        if len(self.traces_list) > 0:
+            self.impurity = "impure"
+        if self.impurity == "pure":
+            var_state = "fixed"
+        else:
+            var_state = "variable"
+            if self.impurity == "random":
+                self.traces_list = []
+                minors = ["Fe", "Ni", "Co"]
+                n = rd.randint(1, len(minors))
+                while len(self.traces_list) < n:
+                    selection = rd.choice(minors)
+                    if selection not in self.traces_list and selection not in majors_name:
+                        self.traces_list.append(selection)
+                    else:
+                        continue
+            traces = [PeriodicSystem(name=i).get_data() for i in self.traces_list]
+            x_traces = [round(rd.uniform(0., 0.001), 6) for i in range(len(self.traces_list))]
+            for i in range(len(self.traces_list)):
+                traces_data.append([str(self.traces_list[i]), int(traces[i][1]), float(x_traces[i])])
+            if len(traces_data) > 0:
+                traces_data = np.array(traces_data, dtype=object)
+                traces_data = traces_data[traces_data[:, 1].argsort()]
+        #
+        # Molar mass
+        molar_mass_pure = a*iron[2] + b*nickel[2] + c*cobalt[2] + 2*sulfur[2]
+        molar_mass, amounts = MineralChemistry(w_traces=traces_data, molar_mass_pure=molar_mass_pure,
+                                               majors=majors_data).calculate_molar_mass()
+        element = [PeriodicSystem(name=amounts[i][0]).get_data() for i in range(len(amounts))]
+        # Density
+        dataV_Fe = CrystalPhysics([[5.417], [], "cubic"])
+        V_Fe = dataV_Fe.calculate_volume()
+        dataRho_Fe = CrystalPhysics([molar_mass, 4, V_Fe])
+        rho_Fe = dataRho_Fe.calculate_bulk_density()
+        rho_e_Fe = wg(amounts=amounts, elements=element, rho_b=rho_Fe).calculate_electron_density()
+        #
+        dataV_Ni = CrystalPhysics([[5.535], [], "cubic"])
+        V_Ni = dataV_Ni.calculate_volume()
+        dataRho_Ni = CrystalPhysics([molar_mass, 4, V_Ni])
+        rho_Ni = dataRho_Ni.calculate_bulk_density()
+        rho_e_Ni = wg(amounts=amounts, elements=element, rho_b=rho_Ni).calculate_electron_density()
+        #
+        dataV_Co = CrystalPhysics([[5.535], [], "cubic"])
+        V_Co = dataV_Co.calculate_volume()
+        dataRho_Co = CrystalPhysics([molar_mass, 4, V_Co])
+        rho_Co = dataRho_Co.calculate_bulk_density()
+        rho_e_Co = wg(amounts=amounts, elements=element, rho_b=rho_Co).calculate_electron_density()
+        #
+        V = a*V_Fe + b*V_Ni + c*V_Co
+        rho = a*rho_Fe + b*rho_Ni + c*rho_Co
+        rho_e = a*rho_e_Fe + b*rho_e_Ni + c*rho_e_Co
+        #
+        # Bulk modulus
+        K_Fe = 146*10**9
+        K_Ni = 124*10**9
+        K_Co = 124*10**9
+        K = a*K_Fe + b*K_Ni + c*K_Co
+        # Shear modulus
+        G_Fe = 135*10**9
+        G_Ni = 73*10**9
+        G_Co = 73*10**9
+        G = a*G_Fe + b*G_Ni + c*G_Co
+        # Young's modulus
+        E = (9*K*G)/(3*K + G)
+        # Poisson's ratio
+        nu = (3*K - 2*G)/(2*(3*K + G))
+        # vP/vS
+        vPvS = ((K + 4/3*G)/G)**0.5
+        # P-wave velocity
+        vP = ((K + 4/3*G)/rho)**0.5
+        # S-wave velocity
+        vS = (G/rho)**0.5
+        # Gamma ray
+        gamma_ray = wg(amounts=amounts, elements=element).calculate_gr()
+        # Photoelectricity
+        pe = wg(amounts=amounts, elements=element).calculate_pe()
+        U = pe*rho_e*10**(-3)
+        # Electrical resistivity
+        p = None
+        # Thermodynamics
+        thermodynamics = {}
+        thermodynamics["Gibbs Energy"] = None     # J/mol
+        thermodynamics["Enthalpy"] = None         # J/mol
+        thermodynamics["Entropy"] = None          # J/(mol K)
+        thermodynamics["Heat Capacity"] = None    # J/(mol K)
+        #
+        # Output
+        results = {}
+        results["mineral"] = name
+        results["M"] = molar_mass
+        element_list = np.array(amounts)[:, 0]
+        results["chemistry"] = {}
+        for index, element in enumerate(element_list, start=0):
+            results["chemistry"][element] = amounts[index][2]
+        results["rho"] = round(rho, 4)
+        results["rho_e"] = round(rho_e, 4)
+        results["V"] = round(V, 4)
+        results["vP"] = round(vP, 4)
+        results["vS"] = round(vS, 4)
+        results["vP/vS"] = round(vPvS, 4)
+        results["G"] = round(G*10**(-9), 4)
+        results["K"] = round(K*10**(-9), 4)
+        results["E"] = round(E*10**(-9), 4)
+        results["nu"] = round(nu, 4)
+        results["GR"] = round(gamma_ray, 4)
+        results["PE"] = round(pe, 4)
+        results["U"] = round(U, 4)
+        results["thermodynamics"] = thermodynamics
+        if p != None:
+            results["p"] = round(p, 4)
+        else:
+            results["p"] = p
+        #
+        return results
     #
