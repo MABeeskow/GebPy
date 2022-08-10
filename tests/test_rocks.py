@@ -6,7 +6,7 @@
 # Name:		test_rocks.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		13.03.2021
+# Date:		10.08.2022
 
 # -----------------------------------------------
 
@@ -164,6 +164,9 @@ from modules import igneous
 #     data = igneous.Volcanic(fluid="water", actualThickness=100).create_rhyolite()
 #     print(i, data)
 # for i in range(10):
+#     data = igneous.Volcanic(fluid="water", actualThickness=100).create_alkaline_rhyolite()
+#     print(i, data)
+# for i in range(10):
 #     data = igneous.Volcanic(fluid="water", actualThickness=100).create_dacite()
 #     print(i, data)
 # for i in range(10):
@@ -172,6 +175,30 @@ from modules import igneous
 # for i in range(10):
 #     data = igneous.Volcanic(fluid="water", actualThickness=100).create_andesite()
 #     print(i, data)
+# for i in range(10):
+#     data = igneous.Volcanic(fluid="water", actualThickness=100).create_trachyte()
+#     print(i, data)
+# for i in range(10):
+#     data = igneous.Volcanic(fluid="water", actualThickness=100).create_alkaline_trachyte()
+#     print(i, data)
+# for i in range(10):
+#     data = igneous.Volcanic(fluid="water", actualThickness=100).create_quartzitic_trachyte()
+#     print(i, data)
+# for i in range(10):
+#     data = igneous.Volcanic(fluid="water", actualThickness=100).create_quartzitic_alkaline_trachyte()
+#     print(i, data)
+# for i in range(10):
+#     data = igneous.Volcanic(fluid="water", actualThickness=100).create_latite()
+#     print(i, data)
+# for i in range(10):
+#     data = igneous.Volcanic(fluid="water", actualThickness=100).create_quartzitic_latite()
+#     print(i, data)
 for i in range(10):
-    data = igneous.Volcanic(fluid="water", actualThickness=100).create_alkaline_rhyolite()
+    data = igneous.Volcanic(fluid="water", actualThickness=100).create_rhyolite_generalized()
+    print(i, data)
+for i in range(10):
+    data = igneous.Volcanic(fluid="water", actualThickness=100).create_trachyte_generalized()
+    print(i, data)
+for i in range(10):
+    data = igneous.Volcanic(fluid="water", actualThickness=100).create_latite_generalized()
     print(i, data)
