@@ -306,7 +306,7 @@ class GebPyGUI(tk.Frame):
         #
         # IGNEOUS ROCKS (Volcanic Rocks)
         elif var_opt in ["Rhyolite (simple)", "Trachyte (simple)", "Latite (simple)", "Andesite (simple)",
-                         "Basalt (simple)"]:
+                         "Basalt (simple)", "Dacite (simple)"]:
             Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                   color_acc=[self.color_accent_03, self.color_accent_04], rock=var_opt, lbl_w=self.lbl_w,
                   entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
@@ -761,7 +761,7 @@ class GebPyGUI(tk.Frame):
             opt_list_1_3 = [
                 "Felsic Rock", "Intermediate Rock", "Granite", "Gabbro", "Diorite", "Granodiorite", "Monzonite",
                 "Syenite", "Tonalite", "Quartzolite", "Qz-rich Granitoid", "Rhyolite (simple)", "Trachyte (simple)",
-                "Latite (simple)", "Andesite (simple)", "Basalt (simple)"]
+                "Latite (simple)", "Andesite (simple)", "Basalt (simple)", "Dacite (simple)"]
             opt_list_1_3.sort()
             self.opt_ign = SE(parent=self.parent, row_id=16, column_id=0, n_rows=2, n_columns=2,
                               bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
@@ -3180,7 +3180,8 @@ class Rocks:
         elif self.rock in [
             "Shale", "Kupferschiefer", "Granulite", "Greenschist", "Greenschist (basaltic)", "Greenschist (ultramafic)",
             "Greenschist (pelitic)", "Compact Hematite Ore", "Banded Iron Formation", "Amphibolite (ortho)",
-            "Rhyolite (simple)", "Trachyte (simple)", "Latite (simple)", "Andesite (simple)", "Basalt (simple)"]:
+            "Rhyolite (simple)", "Trachyte (simple)", "Latite (simple)", "Andesite (simple)", "Basalt (simple)",
+            "Dacite (simple)"]:
             var_phi0_start = 0
             var_phi1_start = 10
         elif self.rock in ["Limestone", "Dolomite Rock"]:

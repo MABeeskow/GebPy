@@ -2868,8 +2868,9 @@ class Volcanic:
     def create_dacite(self, number=1, composition=None, porosity=None):
         data_alkalifeldspar = Tectosilicates(impurity="pure", data_type=True).create_alkalifeldspar()
         data_plagioclase = Tectosilicates(impurity="pure", data_type=True).create_plagioclase()
+        data_biotite = Phyllosilicates(impurity="pure", data_type=True).create_biotite()
         #
-        mineralogy = {"Qz": self.data_quartz, "Kfs": data_alkalifeldspar, "Pl": data_plagioclase}
+        mineralogy = {"Qz": self.data_quartz, "Kfs": data_alkalifeldspar, "Pl": data_plagioclase, "Bt": data_biotite}
         #
         condition = False
         #
@@ -2883,25 +2884,29 @@ class Volcanic:
                 phi_qz = composition["Qz"]
                 phi_kfs = composition["Kfs"]
                 phi_pl = composition["Pl"]
+                phi_bt = composition["Bt"]
                 #
                 phi_minerals["Qz"] = phi_qz
                 phi_minerals["Kfs"] = phi_kfs
                 phi_minerals["Pl"] = phi_pl
+                phi_minerals["Bt"] = phi_bt
             else:
                 condition_2 = False
                 while condition_2 == False:
                     phi_qz = round(rd.uniform(0.2, 0.6), 4)
                     phi_kfs = round(rd.uniform(0.0, (1.0 - phi_qz)), 4)
-                    phi_pl = round(1 - phi_qz - phi_kfs, 4)
-                    phi_total = phi_qz + phi_kfs + phi_pl
+                    phi_pl = round(rd.uniform(0.25, (1.0 - phi_qz - phi_kfs)), 4)
+                    phi_bt = round(1 - phi_qz - phi_kfs - phi_pl, 4)
+                    phi_total = phi_qz + phi_kfs + phi_pl + phi_bt
                     #
                     if np.isclose(phi_total, 1.0000) == True:
-                        if 0.2 <= phi_qz <= 0.6 and 0.0 <= phi_kfs <= 0.28 and 0.25 <= phi_pl <= 0.8:
+                        if 0.2 <= phi_qz <= 0.6 and 0.0 <= phi_kfs <= 0.28 and 0.25 <= phi_pl <= 0.8 and 0.0 <= phi_bt <= 0.05:
                             condition_2 = True
                 #
                 phi_minerals["Qz"] = phi_qz
                 phi_minerals["Kfs"] = phi_kfs
                 phi_minerals["Pl"] = phi_pl
+                phi_minerals["Bt"] = phi_bt
             #
             rho_s = 0
             for key, value in phi_minerals.items():
@@ -3006,8 +3011,9 @@ class Volcanic:
     def create_basalt(self, number=1, composition=None, porosity=None):
         data_alkalifeldspar = Tectosilicates(impurity="pure", data_type=True).create_alkalifeldspar()
         data_plagioclase = Tectosilicates(impurity="pure", data_type=True).create_plagioclase()
+        data_biotite = Phyllosilicates(impurity="pure", data_type=True).create_biotite()
         #
-        mineralogy = {"Qz": self.data_quartz, "Kfs": data_alkalifeldspar, "Pl": data_plagioclase}
+        mineralogy = {"Qz": self.data_quartz, "Kfs": data_alkalifeldspar, "Pl": data_plagioclase, "Bt": data_biotite}
         #
         condition = False
         #
@@ -3021,25 +3027,29 @@ class Volcanic:
                 phi_qz = composition["Qz"]
                 phi_kfs = composition["Kfs"]
                 phi_pl = composition["Pl"]
+                phi_bt = composition["Bt"]
                 #
                 phi_minerals["Qz"] = phi_qz
                 phi_minerals["Kfs"] = phi_kfs
                 phi_minerals["Pl"] = phi_pl
+                phi_minerals["Bt"] = phi_bt
             else:
                 condition_2 = False
                 while condition_2 == False:
                     phi_qz = round(rd.uniform(0.0, 0.2), 4)
                     phi_kfs = round(rd.uniform(0.0, (1.0 - phi_qz)), 4)
-                    phi_pl = round(1 - phi_qz - phi_kfs, 4)
-                    phi_total = phi_qz + phi_kfs + phi_pl
+                    phi_pl = round(rd.uniform(0.52, (1.0 - phi_qz - phi_kfs)), 4)
+                    phi_bt = round(1 - phi_qz - phi_kfs - phi_pl, 4)
+                    phi_total = phi_qz + phi_kfs + phi_pl + phi_bt
                     #
                     if np.isclose(phi_total, 1.0000) == True:
-                        if 0.0 <= phi_qz <= 0.2 and 0.0 <= phi_kfs <= 0.35 and 0.52 <= phi_pl <= 1.0:
+                        if 0.0 <= phi_qz <= 0.2 and 0.0 <= phi_kfs <= 0.35 and 0.52 <= phi_pl <= 1.0 and 0.0 <= phi_bt <= 0.05:
                             condition_2 = True
                 #
                 phi_minerals["Qz"] = phi_qz
                 phi_minerals["Kfs"] = phi_kfs
                 phi_minerals["Pl"] = phi_pl
+                phi_minerals["Bt"] = phi_bt
             #
             rho_s = 0
             for key, value in phi_minerals.items():
@@ -3144,8 +3154,9 @@ class Volcanic:
     def create_andesite(self, number=1, composition=None, porosity=None):
         data_alkalifeldspar = Tectosilicates(impurity="pure", data_type=True).create_alkalifeldspar()
         data_plagioclase = Tectosilicates(impurity="pure", data_type=True).create_plagioclase()
+        data_biotite = Phyllosilicates(impurity="pure", data_type=True).create_biotite()
         #
-        mineralogy = {"Qz": self.data_quartz, "Kfs": data_alkalifeldspar, "Pl": data_plagioclase}
+        mineralogy = {"Qz": self.data_quartz, "Kfs": data_alkalifeldspar, "Pl": data_plagioclase, "Bt": data_biotite}
         #
         condition = False
         #
@@ -3158,26 +3169,29 @@ class Volcanic:
             if composition != None:
                 phi_qz = composition["Qz"]
                 phi_kfs = composition["Kfs"]
-                phi_pl = composition["Pl"]
+                phi_bt = composition["Bt"]
                 #
                 phi_minerals["Qz"] = phi_qz
                 phi_minerals["Kfs"] = phi_kfs
                 phi_minerals["Pl"] = phi_pl
+                phi_minerals["Bt"] = phi_bt
             else:
                 condition_2 = False
                 while condition_2 == False:
                     phi_qz = round(rd.uniform(0.0, 0.2), 4)
                     phi_kfs = round(rd.uniform(0.0, (1.0 - phi_qz)), 4)
-                    phi_pl = round(1 - phi_qz - phi_kfs, 4)
-                    phi_total = phi_qz + phi_kfs + phi_pl
+                    phi_pl = round(rd.uniform(0.52, (1.0 - phi_qz - phi_kfs)), 4)
+                    phi_bt = round(1 - phi_qz - phi_kfs - phi_pl, 4)
+                    phi_total = phi_qz + phi_kfs + phi_pl + phi_bt
                     #
                     if np.isclose(phi_total, 1.0000) == True:
-                        if 0.0 <= phi_qz <= 0.2 and 0.0 <= phi_kfs <= 0.35 and 0.52 <= phi_pl <= 1.0:
+                        if 0.0 <= phi_qz <= 0.2 and 0.0 <= phi_kfs <= 0.35 and 0.52 <= phi_pl <= 1.0 and 0.0 <= phi_bt <= 0.05:
                             condition_2 = True
-                #
+                    #
                 phi_minerals["Qz"] = phi_qz
                 phi_minerals["Kfs"] = phi_kfs
                 phi_minerals["Pl"] = phi_pl
+                phi_minerals["Bt"] = phi_bt
             #
             rho_s = 0
             for key, value in phi_minerals.items():
@@ -4110,8 +4124,9 @@ class Volcanic:
     def create_rhyolite_generalized(self, number=1, composition=None, porosity=None):
         data_alkalifeldspar = Tectosilicates(impurity="pure", data_type=True).create_alkalifeldspar()
         data_plagioclase = Tectosilicates(impurity="pure", data_type=True).create_plagioclase()
+        data_biotite = Phyllosilicates(impurity="pure", data_type=True).create_biotite()
         #
-        mineralogy = {"Qz": self.data_quartz, "Kfs": data_alkalifeldspar, "Pl": data_plagioclase}
+        mineralogy = {"Qz": self.data_quartz, "Kfs": data_alkalifeldspar, "Pl": data_plagioclase, "Bt": data_biotite}
         #
         condition = False
         #
@@ -4125,25 +4140,29 @@ class Volcanic:
                 phi_qz = composition["Qz"]
                 phi_kfs = composition["Kfs"]
                 phi_pl = composition["Pl"]
+                phi_bt = composition["Bt"]
                 #
                 phi_minerals["Qz"] = phi_qz
                 phi_minerals["Kfs"] = phi_kfs
                 phi_minerals["Pl"] = phi_pl
+                phi_minerals["Bt"] = phi_bt
             else:
                 condition_2 = False
                 while condition_2 == False:
                     phi_qz = round(rd.uniform(0.2, 0.6), 4)
                     phi_kfs = round(rd.uniform(0.15, (1.0 - phi_qz)), 4)
-                    phi_pl = round(1 - phi_qz - phi_kfs, 4)
-                    phi_total = phi_qz + phi_kfs + phi_pl
+                    phi_pl = round(rd.uniform(0.0, (1.0 - phi_qz - phi_kfs)), 4)
+                    phi_bt = round(1 - phi_qz - phi_kfs - phi_pl, 4)
+                    phi_total = phi_qz + phi_kfs + phi_pl + phi_bt
                     #
                     if np.isclose(phi_total, 1.0000) == True:
-                        if 0.2 <= phi_qz <= 0.6 and 0.15 <= phi_kfs <= 0.8 and 0.0 <= phi_pl <= 0.52:
+                        if 0.2 <= phi_qz <= 0.6 and 0.15 <= phi_kfs <= 0.8 and 0.0 <= phi_pl <= 0.52 and 0.0 <= phi_bt <= 0.05:
                             condition_2 = True
                 #
                 phi_minerals["Qz"] = phi_qz
                 phi_minerals["Kfs"] = phi_kfs
                 phi_minerals["Pl"] = phi_pl
+                phi_minerals["Bt"] = phi_bt
             #
             rho_s = 0
             for key, value in phi_minerals.items():
@@ -4248,8 +4267,9 @@ class Volcanic:
     def create_trachyte_generalized(self, number=1, composition=None, porosity=None):
         data_alkalifeldspar = Tectosilicates(impurity="pure", data_type=True).create_alkalifeldspar()
         data_plagioclase = Tectosilicates(impurity="pure", data_type=True).create_plagioclase()
+        data_biotite = Phyllosilicates(impurity="pure", data_type=True).create_biotite()
         #
-        mineralogy = {"Qz": self.data_quartz, "Kfs": data_alkalifeldspar, "Pl": data_plagioclase}
+        mineralogy = {"Qz": self.data_quartz, "Kfs": data_alkalifeldspar, "Pl": data_plagioclase, "Bt": data_biotite}
         #
         condition = False
         #
@@ -4263,25 +4283,29 @@ class Volcanic:
                 phi_qz = composition["Qz"]
                 phi_kfs = composition["Kfs"]
                 phi_pl = composition["Pl"]
+                phi_bt = composition["Bt"]
                 #
                 phi_minerals["Qz"] = phi_qz
                 phi_minerals["Kfs"] = phi_kfs
                 phi_minerals["Pl"] = phi_pl
+                phi_minerals["Bt"] = phi_bt
             else:
                 condition_2 = False
                 while condition_2 == False:
                     phi_qz = round(rd.uniform(0.0, 0.2), 4)
                     phi_kfs = round(rd.uniform(0.52, (1.0 - phi_qz)), 4)
-                    phi_pl = round(1 - phi_qz - phi_kfs, 4)
-                    phi_total = phi_qz + phi_kfs + phi_pl
+                    phi_pl = round(rd.uniform(0.0, (1.0 - phi_qz - phi_kfs)), 4)
+                    phi_bt = round(1 - phi_qz - phi_kfs - phi_pl, 4)
+                    phi_total = phi_qz + phi_kfs + phi_pl + phi_bt
                     #
                     if np.isclose(phi_total, 1.0000) == True:
-                        if 0.0 <= phi_qz <= 0.2 and 0.52 <= phi_kfs <= 1.0 and 0.0 <= phi_pl <= 0.35:
+                        if 0.0 <= phi_qz <= 0.2 and 0.52 <= phi_kfs <= 1.0 and 0.0 <= phi_pl <= 0.35 and 0.0 <= phi_bt <= 0.05:
                             condition_2 = True
                 #
                 phi_minerals["Qz"] = phi_qz
                 phi_minerals["Kfs"] = phi_kfs
                 phi_minerals["Pl"] = phi_pl
+                phi_minerals["Bt"] = phi_bt
             #
             rho_s = 0
             for key, value in phi_minerals.items():
@@ -4386,8 +4410,9 @@ class Volcanic:
     def create_latite_generalized(self, number=1, composition=None, porosity=None):
         data_alkalifeldspar = Tectosilicates(impurity="pure", data_type=True).create_alkalifeldspar()
         data_plagioclase = Tectosilicates(impurity="pure", data_type=True).create_plagioclase()
+        data_biotite = Phyllosilicates(impurity="pure", data_type=True).create_biotite()
         #
-        mineralogy = {"Qz": self.data_quartz, "Kfs": data_alkalifeldspar, "Pl": data_plagioclase}
+        mineralogy = {"Qz": self.data_quartz, "Kfs": data_alkalifeldspar, "Pl": data_plagioclase, "Bt": data_biotite}
         #
         condition = False
         #
@@ -4401,25 +4426,29 @@ class Volcanic:
                 phi_qz = composition["Qz"]
                 phi_kfs = composition["Kfs"]
                 phi_pl = composition["Pl"]
+                phi_bt = composition["Bt"]
                 #
                 phi_minerals["Qz"] = phi_qz
                 phi_minerals["Kfs"] = phi_kfs
                 phi_minerals["Pl"] = phi_pl
+                phi_minerals["Bt"] = phi_bt
             else:
                 condition_2 = False
                 while condition_2 == False:
                     phi_qz = round(rd.uniform(0.0, 0.2), 4)
                     phi_kfs = round(rd.uniform(0.28, (1.0 - phi_qz)), 4)
-                    phi_pl = round(1 - phi_qz - phi_kfs, 4)
-                    phi_total = phi_qz + phi_kfs + phi_pl
+                    phi_pl = round(rd.uniform(0.28, (1.0 - phi_qz - phi_kfs)), 4)
+                    phi_bt = round(1 - phi_qz - phi_kfs - phi_pl, 4)
+                    phi_total = phi_qz + phi_kfs + phi_pl + phi_bt
                     #
                     if np.isclose(phi_total, 1.0000) == True:
-                        if 0.0 <= phi_qz <= 0.2 and 0.28 <= phi_kfs <= 0.65 and 0.28 <= phi_pl <= 0.65:
+                        if 0.0 <= phi_qz <= 0.2 and 0.28 <= phi_kfs <= 0.65 and 0.28 <= phi_pl <= 0.65 and 0.0 <= phi_bt <= 0.05:
                             condition_2 = True
                 #
                 phi_minerals["Qz"] = phi_qz
                 phi_minerals["Kfs"] = phi_kfs
                 phi_minerals["Pl"] = phi_pl
+                phi_minerals["Bt"] = phi_bt
             #
             rho_s = 0
             for key, value in phi_minerals.items():
