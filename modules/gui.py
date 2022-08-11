@@ -287,6 +287,10 @@ class GebPyGUI(tk.Frame):
             Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                   color_acc=[self.color_accent_03, self.color_accent_04], rock=var_opt, lbl_w=self.lbl_w,
                   entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
+        elif var_opt == "Conglomerate":
+            Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
+                  color_acc=[self.color_accent_03, self.color_accent_04], rock=var_opt, lbl_w=self.lbl_w,
+                  entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
         #
         elif var_opt == "Limestone":
             Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
@@ -749,7 +753,7 @@ class GebPyGUI(tk.Frame):
                                                                           opt_list=opt_list_0_14, command=lambda var_opt=var_opt_0_14: self.select_opt(var_opt))
         elif var_opt == "Siliciclastic Rocks":
             var_opt_1_1 = tk.StringVar()
-            opt_list_1_1 = ["Sandstone", "Shale"]
+            opt_list_1_1 = ["Sandstone", "Shale", "Conglomerate"]
             opt_list_1_1.sort()
             self.opt_silic = SE(parent=self.parent, row_id=16, column_id=0, n_rows=2, n_columns=2,
                                 bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
@@ -3193,7 +3197,7 @@ class Rocks:
         #
         self.lbl_w["physics"].extend([lbl_01, lbl_02, lbl_03, lbl_04, lbl_05, lbl_06, lbl_07, lbl_08, lbl_09, lbl_10])
         #
-        if self.rock in ["Sandstone", "Marl"]:
+        if self.rock in ["Sandstone", "Marl", "Conglomerate"]:
             var_phi0_start = 5
             var_phi1_start = 30
         elif self.rock in [
@@ -3267,6 +3271,9 @@ class Rocks:
                     data = Sandstone(fluid="water", actualThickness=0).create_sandstone(
                         number=1, porosity=rd.uniform(self.var_phi0.get() / 100, self.var_phi1.get() / 100))
                     #data = sandstone(fluid="water", actualThickness=0).create_simple_sandstone(dict_output=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
+                elif self.rock == "Conglomerate":
+                    data = Sandstone(fluid="water", actualThickness=0).create_conglomerate(
+                        number=1, porosity=rd.uniform(self.var_phi0.get() / 100, self.var_phi1.get() / 100))
                 elif self.rock == "Shale":
                     data = shale(fluid="water").create_simple_shale(dict_output=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
                 elif self.rock == "Limestone":
@@ -3697,6 +3704,9 @@ class Rocks:
                     data = Sandstone(fluid="water", actualThickness=0).create_sandstone(
                         number=1, porosity=rd.uniform(self.var_phi0.get() / 100, self.var_phi1.get() / 100))
                     #data = sandstone(fluid="water", actualThickness=0).create_simple_sandstone(dict_output=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
+                elif self.rock == "Conglomerate":
+                    data = Sandstone(fluid="water", actualThickness=0).create_conglomerate(
+                        number=1, porosity=rd.uniform(self.var_phi0.get() / 100, self.var_phi1.get() / 100))
                 elif self.rock == "Shale":
                     data = shale(fluid="water").create_simple_shale(dict_output=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
                 elif self.rock == "Limestone":

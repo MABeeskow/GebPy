@@ -18,8 +18,9 @@ import  matplotlib as mpl
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 from matplotlib.ticker import NullFormatter
-from modules import sequences, geophysics, siliciclastics
+from modules import sequences, geophysics
 from modules import igneous
+from modules.siliciclastics import Sandstone
 
 # ## TESTING
 # # Test soil generation within SedimentaryBasin class
@@ -155,9 +156,15 @@ from modules import igneous
 # for i in range(len(data_rock)):
 #     print(data_rock[i])
 
+## SEDIMENTARY ROCKS ##
+## SILICICLASTICS
+for i in range(10):
+    data_conglomerate = Sandstone().create_conglomerate()
+    print(i, data_conglomerate)
+
 ## IGNEOUS ROCKS ##
 ## PLUTONICS
-for i in range(10):
+# for i in range(10):
     # data_granite = igneous.Plutonic(fluid="water", actualThickness=100).create_granite_streckeisen()
     # print(i, data_granite)
     # data_granodiorite = igneous.Plutonic(fluid="water", actualThickness=100).create_granodiorite_streckeisen()
@@ -174,8 +181,8 @@ for i in range(10):
     # print(i, data_syenite)
     # data_granitoid = igneous.Plutonic(fluid="water", actualThickness=100).create_granitoid_streckeisen()
     # print(i, data_granitoid)
-    data_quarzolite = igneous.Plutonic(fluid="water", actualThickness=100).create_quarzolite_streckeisen()
-    print(i, data_quarzolite)
+    # data_quarzolite = igneous.Plutonic(fluid="water", actualThickness=100).create_quarzolite_streckeisen()
+    # print(i, data_quarzolite)
 #
 ## VOLCANICS
 # for i in range(10):
