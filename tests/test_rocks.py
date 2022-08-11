@@ -6,7 +6,7 @@
 # Name:		test_rocks.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		10.08.2022
+# Date:		11.08.2022
 
 # -----------------------------------------------
 
@@ -156,6 +156,27 @@ from modules import igneous
 #     print(data_rock[i])
 
 ## IGNEOUS ROCKS ##
+## PLUTONICS
+for i in range(10):
+    # data_granite = igneous.Plutonic(fluid="water", actualThickness=100).create_granite_streckeisen()
+    # print(i, data_granite)
+    # data_granodiorite = igneous.Plutonic(fluid="water", actualThickness=100).create_granodiorite_streckeisen()
+    # print(i, data_granodiorite)
+    # data_tonalite = igneous.Plutonic(fluid="water", actualThickness=100).create_tonalite_streckeisen()
+    # print(i, data_tonalite)
+    # data_gabbro = igneous.Plutonic(fluid="water", actualThickness=100).create_gabbro_streckeisen()
+    # print(i, data_gabbro)
+    # data_diorite = igneous.Plutonic(fluid="water", actualThickness=100).create_diorite_streckeisen()
+    # print(i, data_diorite)
+    # data_monzonite = igneous.Plutonic(fluid="water", actualThickness=100).create_monzonite_streckeisen()
+    # print(i, data_monzonite)
+    # data_syenite = igneous.Plutonic(fluid="water", actualThickness=100).create_syenite_streckeisen()
+    # print(i, data_syenite)
+    # data_granitoid = igneous.Plutonic(fluid="water", actualThickness=100).create_granitoid_streckeisen()
+    # print(i, data_granitoid)
+    data_quarzolite = igneous.Plutonic(fluid="water", actualThickness=100).create_quarzolite_streckeisen()
+    print(i, data_quarzolite)
+#
 ## VOLCANICS
 # for i in range(10):
 #     data = igneous.Volcanic(fluid="water", actualThickness=100).create_volcanic_rock()
@@ -193,12 +214,12 @@ from modules import igneous
 # for i in range(10):
 #     data = igneous.Volcanic(fluid="water", actualThickness=100).create_quartzitic_latite()
 #     print(i, data)
-for i in range(10):
-    data = igneous.Volcanic(fluid="water", actualThickness=100).create_rhyolite_generalized()
-    print(i, data)
-for i in range(10):
-    data = igneous.Volcanic(fluid="water", actualThickness=100).create_trachyte_generalized()
-    print(i, data)
-for i in range(10):
-    data = igneous.Volcanic(fluid="water", actualThickness=100).create_latite_generalized()
-    print(i, data)
+# for i in range(10):
+#     data = igneous.Volcanic(fluid="water", actualThickness=100).create_rhyolite_generalized()
+#     print(i, data)
+# for i in range(10):
+#     data = igneous.Volcanic(fluid="water", actualThickness=100).create_trachyte_generalized()
+#     print(i, data)
+# for i in range(10):
+#     data = igneous.Volcanic(fluid="water", actualThickness=100).create_latite_generalized()
+#     print(i, data)

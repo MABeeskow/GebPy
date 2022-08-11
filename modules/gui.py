@@ -6,7 +6,7 @@
 # Name:		gui.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		10.08.2022
+# Date:		11.08.2022
 
 #-----------------------------------------------
 
@@ -149,8 +149,9 @@ class GebPyGUI(tk.Frame):
             var_opt=var_opt_0_0, var_opt_set="Select Mineral Group", opt_list=opt_list_0_0,
             command=lambda var_opt=var_opt_0_0: self.select_opt(var_opt))
         var_opt_1_0 = tk.StringVar()
-        opt_list_1_0 = ["Siliciclastic Rocks", "Carbonate Rocks", "Igneous Rocks", "Metamorphic Rocks",
+        opt_list_1_0 = ["Siliciclastic Rocks", "Carbonate Rocks", "Plutonic Rocks", "Volcanic Rocks", "Metamorphic Rocks",
                         "Evaporite Rocks", "Ore Rocks"]
+        opt_list_1_0.sort()
         self.opt_rocktype = SE(parent=self.parent, row_id=14, column_id=0, n_rows=2, n_columns=2, bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
             var_opt=var_opt_1_0, var_opt_set="Select Rock Type", opt_list=opt_list_1_0,
             command=lambda var_opt=var_opt_1_0: self.select_opt(var_opt))
@@ -305,12 +306,18 @@ class GebPyGUI(tk.Frame):
                   entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
         #
         # IGNEOUS ROCKS (Volcanic Rocks)
-        elif var_opt in ["Rhyolite (simple)", "Trachyte (simple)", "Latite (simple)", "Andesite (simple)",
-                         "Basalt (simple)", "Dacite (simple)"]:
+        elif var_opt in ["Rhyolite (Streckeisen)", "Trachyte (Streckeisen)", "Latite (Streckeisen)", 
+                         "Andesite (Streckeisen)", "Basalt (Streckeisen)", "Dacite (Streckeisen)"]:
             Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                   color_acc=[self.color_accent_03, self.color_accent_04], rock=var_opt, lbl_w=self.lbl_w,
                   entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
         # IGNEOUS ROCKS (Plutonic Rocks)
+        elif var_opt in ["Granite (Streckeisen)", "Granodiorite (Streckeisen)", "Tonalite (Streckeisen)",
+                         "Gabbro (Streckeisen)", "Diorite (Streckeisen)", "Monzonite (Streckeisen)",
+                         "Syenite (Streckeisen)", "Granitoid (Streckeisen)", "Quarzolite (Streckeisen)"]:
+            Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
+                  color_acc=[self.color_accent_03, self.color_accent_04], rock=var_opt, lbl_w=self.lbl_w,
+                  entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
         elif var_opt == "Felsic Rock":
             Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                   color_acc=[self.color_accent_03, self.color_accent_04], rock=var_opt, lbl_w=self.lbl_w,
@@ -756,17 +763,29 @@ class GebPyGUI(tk.Frame):
                                bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
                 var_opt=var_opt_1_2, var_opt_set="Select Rock", opt_list=opt_list_1_2,
                 command=lambda var_opt=var_opt_1_2: self.select_opt(var_opt))
-        elif var_opt == "Igneous Rocks":
+        elif var_opt == "Plutonic Rocks":
             var_opt_1_3 = tk.StringVar()
             opt_list_1_3 = [
                 "Felsic Rock", "Intermediate Rock", "Granite", "Gabbro", "Diorite", "Granodiorite", "Monzonite",
-                "Syenite", "Tonalite", "Quartzolite", "Qz-rich Granitoid", "Rhyolite (simple)", "Trachyte (simple)",
-                "Latite (simple)", "Andesite (simple)", "Basalt (simple)", "Dacite (simple)"]
+                "Syenite", "Tonalite", "Quartzolite", "Qz-rich Granitoid", "Granite (Streckeisen)",
+                "Granodiorite (Streckeisen)", "Tonalite (Streckeisen)", "Gabbro (Streckeisen)", "Diorite (Streckeisen)",
+                "Monzonite (Streckeisen)", "Syenite (Streckeisen)", "Granitoid (Streckeisen)",
+                "Quarzolite (Streckeisen)"]
             opt_list_1_3.sort()
             self.opt_ign = SE(parent=self.parent, row_id=16, column_id=0, n_rows=2, n_columns=2,
                               bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
                 var_opt=var_opt_1_3, var_opt_set="Select Rock", opt_list=opt_list_1_3,
                 command=lambda var_opt=var_opt_1_3: self.select_opt(var_opt))
+        elif var_opt == "Volcanic Rocks":
+            var_opt_1_7 = tk.StringVar()
+            opt_list_1_7 = [
+                "Rhyolite (Streckeisen)", "Trachyte (Streckeisen)", "Latite (Streckeisen)", "Andesite (Streckeisen)",
+                "Basalt (Streckeisen)", "Dacite (Streckeisen)"]
+            opt_list_1_7.sort()
+            self.opt_ign = SE(parent=self.parent, row_id=16, column_id=0, n_rows=2, n_columns=2,
+                              bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
+                var_opt=var_opt_1_7, var_opt_set="Select Rock", opt_list=opt_list_1_7,
+                command=lambda var_opt=var_opt_1_7: self.select_opt(var_opt))
         elif var_opt == "Evaporite Rocks":
             var_opt_1_4 = tk.StringVar()
             opt_list_1_4 = ["Rock Salt", "Anhydrite"]
@@ -3180,8 +3199,10 @@ class Rocks:
         elif self.rock in [
             "Shale", "Kupferschiefer", "Granulite", "Greenschist", "Greenschist (basaltic)", "Greenschist (ultramafic)",
             "Greenschist (pelitic)", "Compact Hematite Ore", "Banded Iron Formation", "Amphibolite (ortho)",
-            "Rhyolite (simple)", "Trachyte (simple)", "Latite (simple)", "Andesite (simple)", "Basalt (simple)",
-            "Dacite (simple)"]:
+            "Rhyolite (Streckeisen)", "Trachyte (Streckeisen)", "Latite (Streckeisen)", "Andesite (Streckeisen)",
+            "Basalt (Streckeisen)", "Dacite (Streckeisen)", "Granite (Streckeisen)", "Granodiorite (Streckeisen)",
+            "Tonalite (Streckeisen)", "Gabbro (Streckeisen)", "Diorite (Streckeisen)", "Monzonite (Streckeisen)",
+            "Syenite (Streckeisen)", "Granitoid (Streckeisen)", "Quarzolite (Streckeisen)"]:
             var_phi0_start = 0
             var_phi1_start = 10
         elif self.rock in ["Limestone", "Dolomite Rock"]:
@@ -3278,22 +3299,60 @@ class Rocks:
                     data = Plutonic(fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_simple_syenite()
                 elif self.rock == "Tonalite":
                     data = Plutonic(fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_simple_tonalite()
-                elif self.rock == "Rhyolite (simple)":
+                # Plutonic Rocks
+                elif self.rock == "Granite (Streckeisen)":
+                    data = Plutonic(
+                        fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(
+                            self.var_phi0.get()/100, self.var_phi1.get()/100)).create_granite_streckeisen()
+                elif self.rock == "Granodiorite (Streckeisen)":
+                    data = Plutonic(
+                        fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(
+                            self.var_phi0.get()/100, self.var_phi1.get()/100)).create_granodiorite_streckeisen()
+                elif self.rock == "Tonalite (Streckeisen)":
+                    data = Plutonic(
+                        fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(
+                            self.var_phi0.get()/100, self.var_phi1.get()/100)).create_tonalite_streckeisen()
+                elif self.rock == "Gabbro (Streckeisen)":
+                    data = Plutonic(
+                        fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(
+                            self.var_phi0.get()/100, self.var_phi1.get()/100)).create_gabbro_streckeisen()
+                elif self.rock == "Diorite (Streckeisen)":
+                    data = Plutonic(
+                        fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(
+                            self.var_phi0.get()/100, self.var_phi1.get()/100)).create_diorite_streckeisen()
+                elif self.rock == "Monzonite (Streckeisen)":
+                    data = Plutonic(
+                        fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(
+                            self.var_phi0.get()/100, self.var_phi1.get()/100)).create_monzonite_streckeisen()
+                elif self.rock == "Syenite (Streckeisen)":
+                    data = Plutonic(
+                        fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(
+                            self.var_phi0.get()/100, self.var_phi1.get()/100)).create_syenite_streckeisen()
+                elif self.rock == "Granitoid (Streckeisen)":
+                    data = Plutonic(
+                        fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(
+                            self.var_phi0.get()/100, self.var_phi1.get()/100)).create_granitoid_streckeisen()
+                elif self.rock == "Quarzolite (Streckeisen)":
+                    data = Plutonic(
+                        fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(
+                            self.var_phi0.get()/100, self.var_phi1.get()/100)).create_quarzolite_streckeisen()
+                # Volcanic Rocks
+                elif self.rock == "Rhyolite (Streckeisen)":
                     data = Volcanic(fluid="water", actualThickness=0).create_rhyolite_generalized(
                         porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
-                elif self.rock == "Dacite (simple)":
+                elif self.rock == "Dacite (Streckeisen)":
                     data = Volcanic(fluid="water", actualThickness=0).create_dacite(
                         porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
-                elif self.rock == "Trachyte (simple)":
+                elif self.rock == "Trachyte (Streckeisen)":
                     data = Volcanic(fluid="water", actualThickness=0).create_trachyte_generalized(
                         porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
-                elif self.rock == "Latite (simple)":
+                elif self.rock == "Latite (Streckeisen)":
                     data = Volcanic(fluid="water", actualThickness=0).create_latite_generalized(
                         porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
-                elif self.rock == "Andesite (simple)":
+                elif self.rock == "Andesite (Streckeisen)":
                     data = Volcanic(fluid="water", actualThickness=0).create_andesite(
                         porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
-                elif self.rock == "Basalt (simple)":
+                elif self.rock == "Basalt (Streckeisen)":
                     data = Volcanic(fluid="water", actualThickness=0).create_basalt(
                         porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
                 #
@@ -3670,22 +3729,60 @@ class Rocks:
                     data = Plutonic(fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_simple_syenite()
                 elif self.rock == "Tonalite":
                     data = Plutonic(fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100)).create_simple_tonalite()
-                elif self.rock == "Rhyolite (simple)":
+                # Plutonic Rocks
+                elif self.rock == "Granite (Streckeisen)":
+                    data = Plutonic(
+                        fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(
+                            self.var_phi0.get() / 100, self.var_phi1.get() / 100)).create_granite_streckeisen()
+                elif self.rock == "Granodiorite (Streckeisen)":
+                    data = Plutonic(
+                        fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(
+                            self.var_phi0.get()/100, self.var_phi1.get()/100)).create_granodiorite_streckeisen()
+                elif self.rock == "Tonalite (Streckeisen)":
+                    data = Plutonic(
+                        fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(
+                            self.var_phi0.get()/100, self.var_phi1.get()/100)).create_tonalite_streckeisen()
+                elif self.rock == "Gabbro (Streckeisen)":
+                    data = Plutonic(
+                        fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(
+                            self.var_phi0.get()/100, self.var_phi1.get()/100)).create_gabbro_streckeisen()
+                elif self.rock == "Diorite (Streckeisen)":
+                    data = Plutonic(
+                        fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(
+                            self.var_phi0.get()/100, self.var_phi1.get()/100)).create_diorite_streckeisen()
+                elif self.rock == "Monzonite (Streckeisen)":
+                    data = Plutonic(
+                        fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(
+                            self.var_phi0.get()/100, self.var_phi1.get()/100)).create_monzonite_streckeisen()
+                elif self.rock == "Syenite (Streckeisen)":
+                    data = Plutonic(
+                        fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(
+                            self.var_phi0.get()/100, self.var_phi1.get()/100)).create_syenite_streckeisen()
+                elif self.rock == "Granitoid (Streckeisen)":
+                    data = Plutonic(
+                        fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(
+                            self.var_phi0.get()/100, self.var_phi1.get()/100)).create_granitoid_streckeisen()
+                elif self.rock == "Quarzolite (Streckeisen)":
+                    data = Plutonic(
+                        fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(
+                            self.var_phi0.get()/100, self.var_phi1.get()/100)).create_quarzolite_streckeisen()
+                # Volcanic Rocks
+                elif self.rock == "Rhyolite (Streckeisen)":
                     data = Volcanic(fluid="water", actualThickness=0).create_rhyolite_generalized(
                         porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
-                elif self.rock == "Dacite (simple)":
+                elif self.rock == "Dacite (Streckeisen)":
                     data = Volcanic(fluid="water", actualThickness=0).create_dacite(
                         porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
-                elif self.rock == "Trachyte (simple)":
+                elif self.rock == "Trachyte (Streckeisen)":
                     data = Volcanic(fluid="water", actualThickness=0).create_trachyte_generalized(
                         porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
-                elif self.rock == "Latite (simple)":
+                elif self.rock == "Latite (Streckeisen)":
                     data = Volcanic(fluid="water", actualThickness=0).create_latite_generalized(
                         porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
-                elif self.rock == "Andesite (simple)":
+                elif self.rock == "Andesite (Streckeisen)":
                     data = Volcanic(fluid="water", actualThickness=0).create_andesite(
                         porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
-                elif self.rock == "Basalt (simple)":
+                elif self.rock == "Basalt (Streckeisen)":
                     data = Volcanic(fluid="water", actualThickness=0).create_basalt(
                         porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
                 #
