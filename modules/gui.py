@@ -31,10 +31,11 @@ from modules.metamorphics import MetamorphicRocks
 from modules.carbonates import limestone, dolomite, CustomCarbonates
 from modules.sequences import SedimentaryBasin
 from modules.ore import Ores
-from modules.igneous import Plutonic, Volcanic
+from modules.igneous import Plutonic, Volcanic, Pyroclastic
 from modules.evaporites import Evaporites
 from modules.sequences import DataProcessing as DP
 from modules.geophysics import Elasticity as elast
+from modules.series import Zechstein
 from modules import fluids
 import numpy as np
 import random as rd
@@ -149,8 +150,8 @@ class GebPyGUI(tk.Frame):
             var_opt=var_opt_0_0, var_opt_set="Select Mineral Group", opt_list=opt_list_0_0,
             command=lambda var_opt=var_opt_0_0: self.select_opt(var_opt))
         var_opt_1_0 = tk.StringVar()
-        opt_list_1_0 = ["Siliciclastic Rocks", "Carbonate Rocks", "Plutonic Rocks", "Volcanic Rocks", "Metamorphic Rocks",
-                        "Evaporite Rocks", "Ore Rocks"]
+        opt_list_1_0 = ["Siliciclastic Rocks", "Carbonate Rocks", "Plutonic Rocks", "Volcanic Rocks",
+                        "Pyroclastic Rocks", "Metamorphic Rocks", "Evaporite Rocks", "Ore Rocks"]
         opt_list_1_0.sort()
         self.opt_rocktype = SE(parent=self.parent, row_id=14, column_id=0, n_rows=2, n_columns=2, bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
             var_opt=var_opt_1_0, var_opt_set="Select Rock Type", opt_list=opt_list_1_0,
@@ -227,7 +228,7 @@ class GebPyGUI(tk.Frame):
                      color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
                      entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
         # TECTOSILICATES
-        elif var_opt in ["Alkalifeldspar", "Plagioclase", "Scapolite", "Danburite"]:
+        elif var_opt in ["Alkalifeldspar", "Plagioclase", "Scapolite", "Danburite", "Nepheline"]:
             Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                      color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
                      entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
@@ -264,7 +265,8 @@ class GebPyGUI(tk.Frame):
         # INOSILICATES
         elif var_opt in ["Enstatite", "Ferrosilite", "Diopside", "Jadeite", "Aegirine", "Spodumene", "Wollastonite",
                          "Tremolite", "Actinolite", "Glaucophane", "Augite", "Riebeckite", "Arfvedsonite",
-                         "Calcium Amphibole", "Sodium Amphibole", "Mg-Fe Pyroxene", "Calcium Pyroxene"]:
+                         "Calcium Amphibole", "Sodium Amphibole", "Mg-Fe Pyroxene", "Calcium Pyroxene", "Donpeacorite",
+                         "Orthopyroxene"]:
             Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                      color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
                      entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
@@ -322,6 +324,12 @@ class GebPyGUI(tk.Frame):
             Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                   color_acc=[self.color_accent_03, self.color_accent_04], rock=var_opt, lbl_w=self.lbl_w,
                   entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
+        # IGNEOUS ROCKS (Pyroclastic Rocks)
+        elif var_opt in ["Pyroclastic Rock"]:
+            Rocks(
+                parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
+                color_acc=[self.color_accent_03, self.color_accent_04], rock=var_opt, lbl_w=self.lbl_w,
+                entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
         elif var_opt == "Felsic Rock":
             Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                   color_acc=[self.color_accent_03, self.color_accent_04], rock=var_opt, lbl_w=self.lbl_w,
@@ -513,7 +521,7 @@ class GebPyGUI(tk.Frame):
             except:
                 pass
             var_opt_0_5 = tk.StringVar()
-            opt_list_0_5 = ["Alkalifeldspar", "Plagioclase", "Scapolite", "Danburite"]
+            opt_list_0_5 = ["Alkalifeldspar", "Plagioclase", "Scapolite", "Danburite", "Nepheline"]
             opt_list_0_5.sort()
             self.opt_afs = SE(parent=self.parent, row_id=10, column_id=0, n_rows=2, n_columns=2,
                               bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
@@ -645,7 +653,8 @@ class GebPyGUI(tk.Frame):
             var_opt_0_10 = tk.StringVar()
             opt_list_0_10 = ["Enstatite", "Ferrosilite", "Diopside", "Jadeite", "Aegirine", "Spodumene", "Wollastonite",
                              "Tremolite", "Actinolite", "Glaucophane", "Augite", "Riebeckite", "Arfvedsonite",
-                             "Calcium Amphibole", "Sodium Amphibole", "Mg-Fe Pyroxene", "Calcium Pyroxene"]
+                             "Calcium Amphibole", "Sodium Amphibole", "Mg-Fe Pyroxene", "Calcium Pyroxene",
+                             "Donpeacorite", "Orthopyroxene"]
             opt_list_0_10.sort()
             self.opt_inosilicate = SE(parent=self.parent, row_id=10, column_id=0, n_rows=2, n_columns=2,
                                        bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
@@ -790,6 +799,15 @@ class GebPyGUI(tk.Frame):
                               bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
                 var_opt=var_opt_1_7, var_opt_set="Select Rock", opt_list=opt_list_1_7,
                 command=lambda var_opt=var_opt_1_7: self.select_opt(var_opt))
+        elif var_opt == "Pyroclastic Rocks":
+            var_opt_1_8 = tk.StringVar()
+            opt_list_1_8 = [
+                "Pyroclastic Rock"]
+            opt_list_1_8.sort()
+            self.opt_ign = SE(parent=self.parent, row_id=16, column_id=0, n_rows=2, n_columns=2,
+                              bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
+                var_opt=var_opt_1_8, var_opt_set="Select Rock", opt_list=opt_list_1_8,
+                command=lambda var_opt=var_opt_1_8: self.select_opt(var_opt))
         elif var_opt == "Evaporite Rocks":
             var_opt_1_4 = tk.StringVar()
             opt_list_1_4 = ["Rock Salt", "Anhydrite"]
@@ -815,6 +833,8 @@ class GebPyGUI(tk.Frame):
                               bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
                 var_opt=var_opt_1_6, var_opt_set="Select Rock", opt_list=opt_list_1_6,
                 command=lambda var_opt=var_opt_1_6: self.select_opt(var_opt))
+        elif var_opt == "Zechstein":
+            Zechstein().create_zechstein_z1()
     #
     def change_radiobutton_mode(self, var_rb_mode):
         if var_rb_mode.get() == 0:
@@ -1209,6 +1229,8 @@ class Minerals:
                 data = Tectosilicates(impurity="pure", data_type=True).create_scapolite()
             elif self.mineral == "Danburite":
                 data = Tectosilicates(impurity="pure", data_type=True).create_danburite()
+            elif self.mineral == "Nepheline":
+                data = Tectosilicates(impurity="pure", data_type=True).create_nepheline()
             # Sulfates
             elif self.mineral == "Barite":
                 data = Sulfates(impurity="pure", data_type=True).create_barite()
@@ -1287,6 +1309,10 @@ class Minerals:
                 data = Inosilicates(data_type=True).create_enstatite()
             elif self.mineral == "Ferrosilite":
                 data = Inosilicates(data_type=True).create_ferrosilite()
+            elif self.mineral == "Donpeacorite":
+                data = Inosilicates(data_type=True).create_donpeacorite()
+            elif self.mineral == "Orthopyroxene":
+                data = Inosilicates(data_type=True).create_orthopyroxene()
             elif self.mineral == "Diopside":
                 data = Inosilicates(data_type=True).create_diopside()
             elif self.mineral == "Jadeite":
@@ -1782,6 +1808,8 @@ class Minerals:
                 data = Tectosilicates(impurity="pure", data_type=True).create_scapolite()
             elif self.mineral == "Danburite":
                 data = Tectosilicates(impurity="pure", data_type=True).create_danburite()
+            elif self.mineral == "Nepheline":
+                data = Tectosilicates(impurity="pure", data_type=True).create_nepheline()
             # Sulfates
             elif self.mineral == "Barite":
                 data = Sulfates(impurity="pure", data_type=True).create_barite()
@@ -1860,6 +1888,10 @@ class Minerals:
                 data = Inosilicates(data_type=True).create_enstatite()
             elif self.mineral == "Ferrosilite":
                 data = Inosilicates(data_type=True).create_ferrosilite()
+            elif self.mineral == "Donpeacorite":
+                data = Inosilicates(data_type=True).create_donpeacorite()
+            elif self.mineral == "Orthopyroxene":
+                data = Inosilicates(data_type=True).create_orthopyroxene()
             elif self.mineral == "Diopside":
                 data = Inosilicates(data_type=True).create_diopside()
             elif self.mineral == "Jadeite":
@@ -2393,6 +2425,10 @@ class Minerals:
                         data = Inosilicates(data_type=True).create_enstatite()
                     elif self.mineral == "Ferrosilite":
                         data = Inosilicates(data_type=True).create_ferrosilite()
+                    elif self.mineral == "Donpeacorite":
+                        data = Inosilicates(data_type=True).create_donpeacorite()
+                    elif self.mineral == "Orthopyroxene":
+                        data = Inosilicates(data_type=True).create_orthopyroxene()
                     elif self.mineral == "Diopside":
                         data = Inosilicates(data_type=True).create_diopside()
                     elif self.mineral == "Jadeite":
@@ -2859,6 +2895,10 @@ class Minerals:
                     data = Inosilicates(data_type=True).create_enstatite()
                 elif self.mineral == "Ferrosilite":
                     data = Inosilicates(data_type=True).create_ferrosilite()
+                elif self.mineral == "Donpeacorite":
+                    data = Inosilicates(data_type=True).create_donpeacorite()
+                elif self.mineral == "Orthopyroxene":
+                    data = Inosilicates(data_type=True).create_orthopyroxene()
                 elif self.mineral == "Diopside":
                     data = Inosilicates(data_type=True).create_diopside()
                 elif self.mineral == "Jadeite":
@@ -3209,7 +3249,7 @@ class Rocks:
             "Syenite (Streckeisen)", "Granitoid (Streckeisen)", "Quarzolite (Streckeisen)"]:
             var_phi0_start = 0
             var_phi1_start = 10
-        elif self.rock in ["Limestone", "Dolomite Rock"]:
+        elif self.rock in ["Limestone", "Dolomite Rock", "Pyroclastic Rock"]:
             var_phi0_start = 0
             var_phi1_start = 50
         elif self.rock in ["Rock Salt", "Anhydrite", "Felsic Rock", "Intermediate Rock", "Granite", "Gabbro", "Syenite",
@@ -3362,6 +3402,10 @@ class Rocks:
                 elif self.rock == "Basalt (Streckeisen)":
                     data = Volcanic(fluid="water", actualThickness=0).create_basalt(
                         porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
+                # Pyroclastic Rocks
+                elif self.rock == "Pyroclastic Rock":
+                    data = Pyroclastic(fluid="water", actualThickness=0).create_pyroclastic_rock(
+                        porosity=rd.uniform(self.var_phi0.get() / 100, self.var_phi1.get() / 100))
                 #
                 elif self.rock == "Rock Salt":
                     data = Evaporites(fluid="water", actualThickness=0).create_simple_rocksalt(
@@ -3795,6 +3839,10 @@ class Rocks:
                 elif self.rock == "Basalt (Streckeisen)":
                     data = Volcanic(fluid="water", actualThickness=0).create_basalt(
                         porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
+                # Pyroclastic Rocks
+                elif self.rock == "Pyroclastic Rock":
+                    data = Pyroclastic(fluid="water", actualThickness=0).create_pyroclastic_rock(
+                        porosity=rd.uniform(self.var_phi0.get() / 100, self.var_phi1.get() / 100))
                 #
                 elif self.rock == "Rock Salt":
                     data = Evaporites(fluid="water", actualThickness=0).create_simple_rocksalt(
@@ -4451,7 +4499,7 @@ class Rocks:
                           fg=self.color_fg_dark).create_label(text="Max", relief=tk.RAISED)
             self.gui_custom_rock["Tectosilicates"]["labels"]["header"] = [lbl_title, lbl_name, lbl_part, lbl_min,
                                                                           lbl_max]
-            list_tectosilicates = ["Alkali Feldspar", "Plagioclase", "Scapolite", "Danburite"]
+            list_tectosilicates = ["Alkali Feldspar", "Plagioclase", "Scapolite", "Danburite", "Nepheline"]
             list_tectosilicates.sort()
             for index, tectosilicate in enumerate(list_tectosilicates, start=2):
                 self.var_custom_mineralogy["checkbox"][tectosilicate] = tk.IntVar()
@@ -4583,7 +4631,8 @@ class Rocks:
             self.gui_custom_rock["Inosilicates"]["labels"]["header"] = [lbl_title, lbl_name, lbl_part, lbl_min, lbl_max]
             list_inosilicates = ["Enstatite", "Diopside", "Augite", "Jadeite", "Aegirine", "Actinolite", "Arfvedsonite",
                                  "Ca-Amphibole", "Ca-Pyroxene", "Ferrosilite", "Glaucophane", "Mg-Fe-Pyroxene",
-                                 "Riebeckite", "Na-Amphibole", "Spodumene", "Tremolite", "Wollastonite"]
+                                 "Riebeckite", "Na-Amphibole", "Spodumene", "Tremolite", "Wollastonite", "Donpeacorite",
+                                 "Orthopyroxene"]
             list_inosilicates.sort()
             for index, inosilicate in enumerate(list_inosilicates, start=2):
                 self.var_custom_mineralogy["checkbox"][inosilicate] = tk.IntVar()
@@ -4906,7 +4955,7 @@ class Rocks:
         #
         for mineral in assemblage:
             # Tectosilicates
-            if mineral in ["Alkali Feldspar", "Plagioclase", "Scapolite", "Danburite"]:
+            if mineral in ["Alkali Feldspar", "Plagioclase", "Scapolite", "Danburite", "Nepheline"]:
                 data = Tectosilicates(data_type=True, mineral=mineral).get_data()
             # Phyllosilicates
             elif mineral in ["Illite", "Kaolinite", "Montmorillonite", "Chlorite", "Vermiculite", "Biotite",
@@ -4924,7 +4973,8 @@ class Rocks:
             # Inosilicates
             elif mineral in ["Enstatite", "Diopside", "Augite", "Jadeite", "Aegirine", "Actinolite", "Arfvedsonite",
                              "Ca-Amphibole", "Ca-Pyroxene", "Ferrosilite", "Glaucophane", "Mg-Fe-Pyroxene",
-                             "Riebeckite", "Na-Amphibole", "Spodumene", "Tremolite", "Wollastonite"]:
+                             "Riebeckite", "Na-Amphibole", "Spodumene", "Tremolite", "Wollastonite", "Donpeacorite",
+                             "Orthopyroxene"]:
                 data = Inosilicates(data_type=True, mineral=mineral).get_data()
             # Carbonates
             elif mineral in ["Calcite", "Dolomite", "Magnesite", "Rhodochrosite", "Siderite", "Aragonite", "Cerussite",
@@ -4949,7 +4999,7 @@ class Rocks:
             elements_list.extend(list(data["chemistry"].keys()))
             if data["state"] == "variable":
                 # Tectosilicates
-                if mineral in ["Alkali Feldspar", "Plagioclase", "Scapolite", "Danburite"]:
+                if mineral in ["Alkali Feldspar", "Plagioclase", "Scapolite", "Danburite", "Nepheline"]:
                     dataset = Tectosilicates(data_type=True, mineral=mineral).get_data(number=n_samples)
                 # Phyllosilicates
                 elif mineral in ["Illite", "Kaolinite", "Montmorillonite", "Chlorite", "Vermiculite", "Biotite",
@@ -4967,7 +5017,8 @@ class Rocks:
                 # Inosilicates
                 elif mineral in ["Enstatite", "Diopside", "Augite", "Jadeite", "Aegirine", "Actinolite", "Arfvedsonite",
                                  "Ca-Amphibole", "Ca-Pyroxene", "Ferrosilite", "Glaucophane", "Mg-Fe-Pyroxene",
-                                 "Riebeckite", "Na-Amphibole", "Spodumene", "Tremolite", "Wollastonite"]:
+                                 "Riebeckite", "Na-Amphibole", "Spodumene", "Tremolite", "Wollastonite", "Donpeacorite",
+                                 "Orthopyroxene"]:
                     dataset = Inosilicates(data_type=True, mineral=mineral).get_data(number=n_samples)
                 # Carbonates
                 elif mineral in ["Calcite", "Dolomite", "Magnesite", "Rhodochrosite", "Siderite", "Aragonite",

@@ -6,7 +6,7 @@
 # Name:		igneous.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		10.08.2022
+# Date:		13.08.2022
 
 #-----------------------------------------------
 
@@ -19,7 +19,7 @@ from modules import minerals, geochemistry, oxides
 from modules import fluids
 from modules.geophysics import Elasticity as elast
 from modules.oxides import Oxides
-from modules.silicates import Tectosilicates, Phyllosilicates, Inosilicates
+from modules.silicates import Tectosilicates, Phyllosilicates, Inosilicates, Nesosilicates
 from modules.fluids import Water
 
 class plutonic:
@@ -7062,3 +7062,157 @@ class volcanic:
         #  basalt = [[mineralogical compositon], [densities], [elastic properties], [seismic velocities], [porosities], fluid name, GR]
         #
         return basalt
+#
+class Pyroclastic:
+    #
+    def __init__(self, fluid, actualThickness):
+        self.fluid = fluid
+        self.actualThickness = actualThickness
+        #
+        self.data_quartz = Oxides(impurity="pure", data_type=True).create_quartz()
+        self.data_water = Water.water("")
+    #
+    def create_pyroclastic_rock(self, number=1, composition=None, porosity=None):
+        data_olivine = Nesosilicates(impurity="pure", data_type=True).create_olivine()
+        data_orthopyroxene = Inosilicates(impurity="pure", data_type=True).create_orthopyroxene()
+        data_nepheline = Tectosilicates(impurity="pure", data_type=True).create_nepheline()
+        #
+        mineralogy = {"Qz": self.data_quartz, "Ol": data_olivine, "Opx": data_orthopyroxene, "Nph": data_nepheline}
+        #
+        condition = False
+        #
+        while condition == False:
+            elements_list = []
+            phi_minerals = {}
+            w_minerals = {}
+            w_elements = {}
+            #
+            if composition != None:
+                phi_qz = composition["Qz"]
+                phi_Ol = composition["Ol"]
+                phi_Opx = composition["Opx"]
+                phi_Nph = composition["Nph"]
+                #
+                phi_minerals["Qz"] = phi_qz
+                phi_minerals["Ol"] = phi_Ol
+                phi_minerals["Opx"] = phi_Opx
+                phi_minerals["Nph"] = phi_Nph
+            else:
+                condition_2 = False
+                while condition_2 == False:
+                    x = rd.randint(0, 1)
+                    phi_qz = round(x*rd.uniform(0.2, 0.6), 4)
+                    phi_nph = round((1 - x)*rd.uniform(0.2, 0.6), 4)
+                    phi_ol = round(rd.uniform(0.25, (1.0 - phi_qz)), 4)
+                    phi_opx = round(1 - phi_qz - phi_ol - phi_nph, 4)
+                    phi_total = phi_qz + phi_ol + phi_opx + phi_nph
+                    #
+                    if np.isclose(phi_total, 1.0000) == True:
+                        if 0.0 <= phi_qz <= 0.6 and 0.25 <= phi_ol <= 0.75 and 0.05 <= phi_opx <= 0.15 and 0.0 <= phi_nph <= 0.6:
+                            condition_2 = True
+                #
+                phi_minerals["Qz"] = phi_qz
+                phi_minerals["Ol"] = phi_ol
+                phi_minerals["Opx"] = phi_opx
+                phi_minerals["Nph"] = phi_nph
+            #
+            rho_s = 0
+            for key, value in phi_minerals.items():
+                rho_s += phi_minerals[key] * mineralogy[key]["rho"]
+                for element, value in mineralogy[key]["chemistry"].items():
+                    if element not in elements_list:
+                        elements_list.append(element)
+                        w_elements[element] = 0.0
+            rho_s = round(rho_s, 3)
+            for key, value in phi_minerals.items():
+                w_minerals[key] = round((phi_minerals[key] * mineralogy[key]["rho"]) / rho_s, 4)
+            #
+            if porosity == None:
+                porosity = round(rd.uniform(0.1, 0.5), 4)
+            rho = round((1 - porosity) * rho_s + porosity * self.data_water[2] / 1000, 3)
+            #
+            old_index = elements_list.index("O")
+            elements_list += [elements_list.pop(old_index)]
+            #
+            w_elements_total = 0.0
+            for element in elements_list:
+                if element != "O":
+                    for mineral, w_mineral in w_minerals.items():
+                        if element in mineralogy[mineral]["chemistry"]:
+                            value = round(w_mineral * mineralogy[mineral]["chemistry"][element], 4)
+                            w_elements[element] += value
+                            w_elements_total += value
+                            #
+                            w_elements[element] = round(w_elements[element], 4)
+                elif element == "O":
+                    w_elements[element] += round(1 - w_elements_total, 4)
+                    #
+                    w_elements[element] = round(w_elements[element], 4)
+            #
+            if sum(w_minerals.values()) == 1.0 and sum(w_elements.values()) == 1.0:
+                condition = True
+        #
+        bulk_mod = 0.0
+        shear_mod = 0.0
+        gamma_ray = 0.0
+        photoelectricity = 0.0
+        for key, value in phi_minerals.items():
+            bulk_mod += phi_minerals[key] * mineralogy[key]["K"]
+            shear_mod += phi_minerals[key] * mineralogy[key]["G"]
+            gamma_ray += phi_minerals[key] * mineralogy[key]["GR"]
+            photoelectricity += phi_minerals[key] * mineralogy[key]["PE"]
+            #
+            bulk_mod = round(bulk_mod, 3)
+            shear_mod = round(shear_mod, 3)
+            gamma_ray = round(gamma_ray, 3)
+            photoelectricity = round(photoelectricity, 3)
+        #
+        youngs_mod = round((9 * bulk_mod * shear_mod) / (3 * bulk_mod + shear_mod), 3)
+        poisson_rat = round((3 * bulk_mod - 2 * shear_mod) / (6 * bulk_mod + 2 * shear_mod), 4)
+        vP = round(((bulk_mod * 10 ** 9 + 4 / 3 * shear_mod * 10 ** 9) / (rho)) ** 0.5, 3)
+        vS = round(((shear_mod * 10 ** 9) / (rho)) ** 0.5, 3)
+        vPvS = round(vP / vS, 3)
+        #
+        results = {}
+        results["rock"] = "Pyroclastic Rock"
+        if number > 1:
+            results["mineralogy"] = w_minerals
+            results["chemistry"] = w_elements
+            results["phi"] = porosity
+            results["fluid"] = "water"
+            results["rho_s"] = rho_s
+            results["rho"] = rho
+            results["vP"] = vP
+            results["vS"] = vS
+            results["vP/vS"] = vPvS
+            results["K"] = bulk_mod
+            results["G"] = shear_mod
+            results["E"] = youngs_mod
+            results["nu"] = poisson_rat
+            results["GR"] = gamma_ray
+            results["PE"] = photoelectricity
+        else:
+            single_amounts_mineralogy = {}
+            single_amounts_chemistry = {}
+            for mineral, value in w_minerals.items():
+                single_amounts_mineralogy[mineral] = value
+            for element, value in w_elements.items():
+                single_amounts_chemistry[element] = value
+            results["mineralogy"] = single_amounts_mineralogy
+            results["chemistry"] = single_amounts_chemistry
+            results["phi"] = porosity
+            results["fluid"] = "water"
+            results["rho_s"] = rho_s
+            results["rho"] = rho
+            results["vP"] = vP
+            results["vS"] = vS
+            results["vP/vS"] = vPvS
+            results["K"] = bulk_mod
+            results["G"] = shear_mod
+            results["E"] = youngs_mod
+            results["nu"] = poisson_rat
+            results["GR"] = gamma_ray
+            results["PE"] = photoelectricity
+        #
+        return results
+    #

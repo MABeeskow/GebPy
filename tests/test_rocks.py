@@ -158,9 +158,9 @@ from modules.siliciclastics import Sandstone
 
 ## SEDIMENTARY ROCKS ##
 ## SILICICLASTICS
-for i in range(10):
-    data_conglomerate = Sandstone().create_conglomerate()
-    print(i, data_conglomerate)
+# for i in range(10):
+#     data_conglomerate = Sandstone().create_conglomerate()
+#     print(i, data_conglomerate)
 
 ## IGNEOUS ROCKS ##
 ## PLUTONICS
@@ -230,3 +230,7 @@ for i in range(10):
 # for i in range(10):
 #     data = igneous.Volcanic(fluid="water", actualThickness=100).create_latite_generalized()
 #     print(i, data)
+## PYROCLASTIC ROCKS ##
+for i in range(10):
+    data = igneous.Pyroclastic(fluid="water", actualThickness=100).create_pyroclastic_rock()
+    print(i, data)
