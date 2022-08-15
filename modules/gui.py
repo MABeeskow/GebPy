@@ -3204,6 +3204,11 @@ class Rocks:
         self.filename.extend([self.rock, var_entr_start, self.var_rockname])
         self.porosities = [var_phi0_start, var_phi1_start]
         self.opt_list_chem = ["No Selection"]
+        self.list_oxides = {
+            "Al": ["Al2O3", 1.8895], "C": ["CO2", 3.6644], "Ca": ["CaO", 1.3992], "Fe": ["Fe2O3", 1.4297],
+            "H": ["H2O", 8.9360], "K": ["K2O", 1.2046], "Mg": ["MgO", 1.6582], "Mn": ["MnO", 1.2912],
+            "Na": ["Na2O", 1.3480], "Ni": ["NiO", 1.2725], "S": ["SO3", 2.4972], "Si": ["SiO2", 2.1392],
+            "Ti": ["TiO2", 1.6681], "Zn": ["ZnO", 1.2448]}
         #
         ## Labels
         #
@@ -3290,7 +3295,7 @@ class Rocks:
            fg="black").create_radiobutton(var_rb=self.var_rb, var_rb_set=var_rb_start, value_rb=1, text="Scatter",
                                            color_bg=self.color_acc_01,
                                            command=lambda var_rb=self.var_rb: self.change_radiobutton(var_rb))
-        rb_03 = SE(parent=self.parent_rock, row_id=34, column_id=0, n_rows=1, n_columns=2, bg=self.color_acc_01,
+        rb_03 = SE(parent=self.parent_rock, row_id=34, column_id=0, n_rows=1, n_columns=1, bg=self.color_acc_01,
            fg="black").create_radiobutton(var_rb=self.var_rb_geochem, var_rb_set=var_rb_geochem_start, value_rb=2,
                                           text="Elements", color_bg=self.color_acc_01,
                                           command=lambda var_rb=self.var_rb_geochem: self.change_radiobutton(var_rb))
@@ -3310,6 +3315,13 @@ class Rocks:
                 if self.rock == "Sandstone":
                     data = Sandstone(fluid="water", actualThickness=0).create_sandstone(
                         number=1, porosity=rd.uniform(self.var_phi0.get() / 100, self.var_phi1.get() / 100))
+                    rb_oxides = SE(
+                        parent=self.parent_rock, row_id=34, column_id=1, n_rows=1, n_columns=1, bg=self.color_acc_01,
+                        fg="black").create_radiobutton(
+                        var_rb=self.var_rb_geochem, var_rb_set=var_rb_geochem_start, value_rb=4, text="Oxides",
+                        color_bg=self.color_acc_01, command=lambda var_rb=self.var_rb_geochem:
+                        self.change_radiobutton(var_rb))
+                    self.gui_elements.append(rb_oxides)
                     #data = sandstone(fluid="water", actualThickness=0).create_simple_sandstone(dict_output=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
                 elif self.rock == "Conglomerate":
                     data = Sandstone(fluid="water", actualThickness=0).create_conglomerate(
@@ -4208,7 +4220,48 @@ class Rocks:
             self.create_3x3_scatter(parent=self.parent_rock, data_x=data_x_phi, data=self.data_plot_scatter_phi, row_id=2,
                                     column_id=9, n_rows=45, n_columns=9, color=self.color_rock, labels=self.labels_scatter_phi,
                                     xlabel=xlabel)
+        #
+        elif var_rb.get() == 4:
             #
+            try:
+                for lbl in self.lbl_w["chemistry"]:
+                    lbl.grid_forget()
+                for entr in self.entr_w["chemistry"]:
+                    entr.grid_forget()
+                self.lbl_w["chemistry"].clear()
+                self.entr_w["chemistry"].clear()
+            except:
+                pass
+            #
+            lbl = SE(parent=self.parent_rock, row_id=24, column_id=3, n_columns=5, bg=self.color_bg,
+                     fg="black").create_label(text="Chemical composition (weight amounts %)", relief=tk.RAISED)
+            self.lbl_w["chemistry"].append(lbl)
+            self.list_elements.insert(0, self.list_elements.pop(self.list_elements.index("O")))
+            for index, element in enumerate(self.list_elements, start=1):
+                if element not in self.list_oxides:
+                    pass
+                else:
+                    lbl = SE(parent=self.parent_rock, row_id=23+index, column_id=3, bg=self.color_bg,
+                             fg="black").create_label(text=str(self.list_oxides[element][0]), relief=tk.RAISED)
+                self.lbl_w["chemistry"].append(lbl)
+            #
+            for index, element in enumerate(self.list_elements, start=10):
+                if element in self.list_oxides:
+                    entr_min = SE(parent=self.parent_rock, row_id=14+index, column_id=4, bg=self.color_bg,
+                                  fg=self.color_fg).create_entry(var_entr=self.entr_list_min[index],
+                                                                 var_entr_set=round(np.min(self.elements[element])*self.list_oxides[element][1], 3))
+                    entr_max = SE(parent=self.parent_rock, row_id=14+index, column_id=5, bg=self.color_bg,
+                                  fg=self.color_fg).create_entry(var_entr=self.entr_list_max[index],
+                                                                 var_entr_set=round(np.max(self.elements[element])*self.list_oxides[element][1], 3))
+                    entr_mean = SE(parent=self.parent_rock, row_id=14+index, column_id=6, bg=self.color_bg,
+                                   fg=self.color_fg).create_entry(var_entr=self.entr_list_mean[index],
+                                                                  var_entr_set=round(np.mean(self.elements[element])*self.list_oxides[element][1], 3))
+                    entr_std = SE(parent=self.parent_rock, row_id=14+index, column_id=7, bg=self.color_bg,
+                                  fg=self.color_fg).create_entry(var_entr=self.entr_list_std[index],
+                                                                 var_entr_set=round(np.std(self.elements[element], ddof=1)*self.list_oxides[element][1], 3))
+                    #
+                    self.entr_w["chemistry"].extend([entr_min, entr_max, entr_mean, entr_std])
+        #
     #
     def select_opt(self, var_opt):
         try:
