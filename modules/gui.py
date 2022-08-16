@@ -3848,8 +3848,11 @@ class Rocks:
         except:
             pass
         #
-        #del self.filename[-1]
-        #self.filename.append(var_entr.get())
+        try:
+            self.exp_data.clear()
+        except:
+            pass
+        #
         self.filename[1] = var_entr.get()
         #
         self.var_rb_geochem.set(2)
