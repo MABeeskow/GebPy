@@ -4352,14 +4352,13 @@ class Rocks:
                     "Na": ["Na2O", 1.3480], "Ni": ["NiO", 1.2725], "S": ["SO3", 2.4972], "Si": ["SiO2", 2.1392],
                     "Ti": ["TiO2", 1.6681], "Zn": ["ZnO", 1.2448]}
             elif self.rock in ["Conglomerate"]:
-                w_Bt = np.mean(self.minerals["Bt"])
-                w_Hem = np.mean(self.minerals["Hem"])
+                w_Bt = round(np.mean(self.minerals["Bt"]), 4)
+                w_Hem = round(np.mean(self.minerals["Hem"]), 4)
                 self.list_oxides = {
                     "Al": ["Al2O3", 1.8895], "C": ["CO2", 3.6644], "Ca": ["CaO", 1.3992],
-                    "Fe": ["FeO", w_Bt*1.2865, "Fe2O3", w_Hem*1.4297], "H": ["H2O", 8.9360], "K": ["K2O", 1.2046],
+                    "Fe": ["FeO", w_Bt, 1.2865, "Fe2O3", w_Hem, 1.4297], "H": ["H2O", 8.9360], "K": ["K2O", 1.2046],
                     "Mg": ["MgO", 1.6582], "Mn": ["MnO", 1.2912], "Na": ["Na2O", 1.3480], "Ni": ["NiO", 1.2725],
                     "S": ["SO3", 2.4972], "Si": ["SiO2", 2.1392], "Ti": ["TiO2", 1.6681], "Zn": ["ZnO", 1.2448]}
-                print(self.list_oxides["Fe"])
             elif self.rock in ["Granite (Streckeisen)", "Tonalite (Streckeisen)", "Diorite (Streckeisen)",
                                "Gabbro (Streckeisen)", "Syenite (Streckeisen)", "Quarzolite (Streckeisen)",
                                "Granodiorite (Streckeisen)", "Granitoid (Streckeisen)", "Monzonite (Streckeisen)",
@@ -4383,12 +4382,12 @@ class Rocks:
                     if len(self.list_oxides[element]) == 2:
                         lbl = SE(parent=self.parent_rock, row_id=23+index + self.additional_line, column_id=3, bg=self.color_bg,
                                  fg="black").create_label(text=str(self.list_oxides[element][0]), relief=tk.RAISED)
-                    elif len(self.list_oxides[element]) == 4:
+                    elif len(self.list_oxides[element]) == 6:
                         lbl = SE(parent=self.parent_rock, row_id=23+index, column_id=3, bg=self.color_bg,
                                  fg="black").create_label(text=str(self.list_oxides[element][0]), relief=tk.RAISED)
                         self.lbl_w["chemistry"].append(lbl)
                         lbl = SE(parent=self.parent_rock, row_id=24+index, column_id=3, bg=self.color_bg,
-                                 fg="black").create_label(text=str(self.list_oxides[element][2]), relief=tk.RAISED)
+                                 fg="black").create_label(text=str(self.list_oxides[element][3]), relief=tk.RAISED)
                         self.additional_line += 1
                 self.lbl_w["chemistry"].append(lbl)
             #
@@ -4397,30 +4396,30 @@ class Rocks:
                 if element in self.list_oxides:
                     if len(self.list_oxides[element]) == 2:
                         entr_min = SE(parent=self.parent_rock, row_id=14+index + self.additional_line, column_id=4, bg=self.color_bg,
-                                      fg=self.color_fg).create_entry(var_entr=self.entr_list_min[index],
+                                      fg=self.color_fg).create_entry(var_entr=self.entr_list_min[index+self.additional_line],
                                                                      var_entr_set=round(np.min(self.elements[element])*self.list_oxides[element][1], 3))
                         entr_max = SE(parent=self.parent_rock, row_id=14+index + self.additional_line, column_id=5, bg=self.color_bg,
-                                      fg=self.color_fg).create_entry(var_entr=self.entr_list_max[index],
+                                      fg=self.color_fg).create_entry(var_entr=self.entr_list_max[index+self.additional_line],
                                                                      var_entr_set=round(np.max(self.elements[element])*self.list_oxides[element][1], 3))
                         entr_mean = SE(parent=self.parent_rock, row_id=14+index + self.additional_line, column_id=6, bg=self.color_bg,
-                                       fg=self.color_fg).create_entry(var_entr=self.entr_list_mean[index],
+                                       fg=self.color_fg).create_entry(var_entr=self.entr_list_mean[index+self.additional_line],
                                                                       var_entr_set=round(np.mean(self.elements[element])*self.list_oxides[element][1], 3))
                         entr_std = SE(parent=self.parent_rock, row_id=14+index + self.additional_line, column_id=7, bg=self.color_bg,
-                                      fg=self.color_fg).create_entry(var_entr=self.entr_list_std[index],
+                                      fg=self.color_fg).create_entry(var_entr=self.entr_list_std[index+self.additional_line],
                                                                      var_entr_set=round(np.std(self.elements[element], ddof=1)*self.list_oxides[element][1], 3))
-                    elif len(self.list_oxides[element]) == 4:
+                    elif len(self.list_oxides[element]) == 6:
                         entr_min = SE(parent=self.parent_rock, row_id=14+index, column_id=4, bg=self.color_bg,
                                   fg=self.color_fg).create_entry(var_entr=self.entr_list_min[index],
-                                                                 var_entr_set=round(np.min(self.elements[element])*self.list_oxides[element][1], 3))
+                                                                 var_entr_set=round(np.min(np.array(self.elements[element])*np.array(self.list_oxides[element][1]))*self.list_oxides[element][2], 3))
                         entr_max = SE(parent=self.parent_rock, row_id=14+index, column_id=5, bg=self.color_bg,
                                   fg=self.color_fg).create_entry(var_entr=self.entr_list_max[index],
-                                                                 var_entr_set=round(np.max(self.elements[element])*self.list_oxides[element][1], 3))
+                                                                 var_entr_set=round(np.max(np.array(self.elements[element])*np.array(self.list_oxides[element][1]))*self.list_oxides[element][2], 3))
                         entr_mean = SE(parent=self.parent_rock, row_id=14+index, column_id=6, bg=self.color_bg,
                                    fg=self.color_fg).create_entry(var_entr=self.entr_list_mean[index],
-                                                                  var_entr_set=round(np.mean(self.elements[element])*self.list_oxides[element][1], 3))
+                                                                  var_entr_set=round(np.mean(np.array(self.elements[element])*np.array(self.list_oxides[element][1]))*self.list_oxides[element][2], 3))
                         entr_std = SE(parent=self.parent_rock, row_id=14+index, column_id=7, bg=self.color_bg,
                                   fg=self.color_fg).create_entry(var_entr=self.entr_list_std[index],
-                                                                 var_entr_set=round(np.std(self.elements[element], ddof=1)*self.list_oxides[element][1], 3))
+                                                                 var_entr_set=round(np.std(np.array(self.elements[element])*np.array(self.list_oxides[element][1]), ddof=1)*self.list_oxides[element][2], 3))
                         self.entr_w["chemistry"].extend([entr_min, entr_max, entr_mean, entr_std])
                         self.entr_list_min.append(tk.IntVar())
                         self.entr_list_max.append(tk.IntVar())
@@ -4428,16 +4427,16 @@ class Rocks:
                         self.entr_list_std.append(tk.IntVar())
                         entr_min = SE(parent=self.parent_rock, row_id=15+index, column_id=4, bg=self.color_bg,
                                   fg=self.color_fg).create_entry(var_entr=self.entr_list_min[index+1],
-                                                                 var_entr_set=round(np.min(self.elements[element])*self.list_oxides[element][3], 3))
+                                                                 var_entr_set=round(np.min(np.array(self.elements[element])*np.array(self.list_oxides[element][4]))*self.list_oxides[element][5], 3))
                         entr_max = SE(parent=self.parent_rock, row_id=15+index, column_id=5, bg=self.color_bg,
                                   fg=self.color_fg).create_entry(var_entr=self.entr_list_max[index+1],
-                                                                 var_entr_set=round(np.max(self.elements[element])*self.list_oxides[element][3], 3))
+                                                                 var_entr_set=round(np.max(np.array(self.elements[element])*np.array(self.list_oxides[element][4]))*self.list_oxides[element][5], 3))
                         entr_mean = SE(parent=self.parent_rock, row_id=15+index, column_id=6, bg=self.color_bg,
                                    fg=self.color_fg).create_entry(var_entr=self.entr_list_mean[index+1],
-                                                                  var_entr_set=round(np.mean(self.elements[element])*self.list_oxides[element][3], 3))
+                                                                  var_entr_set=round(np.mean(np.array(self.elements[element])*np.array(self.list_oxides[element][4]))*self.list_oxides[element][5], 3))
                         entr_std = SE(parent=self.parent_rock, row_id=15+index, column_id=7, bg=self.color_bg,
                                   fg=self.color_fg).create_entry(var_entr=self.entr_list_std[index+1],
-                                                                 var_entr_set=round(np.std(self.elements[element], ddof=1)*self.list_oxides[element][3], 3))
+                                                                 var_entr_set=round(np.std(np.array(self.elements[element])*np.array(self.list_oxides[element][4]), ddof=1)*self.list_oxides[element][5], 3))
                         self.additional_line += 1
                     #
                     self.entr_w["chemistry"].extend([entr_min, entr_max, entr_mean, entr_std])
