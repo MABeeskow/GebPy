@@ -11,6 +11,7 @@
 # -----------------------------------------------
 
 # MODULES
+import time
 import numpy as np
 import random as rd
 from modules.silicates import Phyllosilicates
@@ -817,5 +818,16 @@ class Ores:
     #
 ## TEST
 # print("Test: Compact Hematite Ore")
-# print(Ores(fluid="water", actualThickness=0).create_compact_hematite_ore(number=1))
+# start = time.process_time()
+# data = []
+# for i in range(100):
+#     data.append(Ores(fluid="water", actualThickness=0).create_compact_hematite_ore(number=1))
+# # print(Ores(fluid="water", actualThickness=0).create_compact_hematite_ore(number=1))
+# print(data)
+# end1 = time.process_time() - start
+# print(end1)
+# start = time.process_time()
 # print(Ores(fluid="water", actualThickness=0).create_compact_hematite_ore(number=100))
+# end2 = time.process_time() - start
+# print(end2)
+# print(end2/end1)
