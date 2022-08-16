@@ -2796,16 +2796,42 @@ class Phyllosilicates:
         silicon = PeriodicSystem(name="Si").get_data()
         potassium = PeriodicSystem(name="K").get_data()
         iron = PeriodicSystem(name="Fe").get_data()
-        majors_name = ["H", "O", "F", "Mg", "Al", "Si", "K", "Fe"]
+        # majors_name = ["H", "O", "F", "Mg", "Al", "Si", "K", "Fe"]
+        majors_name = ["H", "O", "Mg", "Al", "Si", "K", "Fe"]
         #
         x = round(rd.uniform(0, 1), 2)
         y = round(rd.uniform(0, 1), 2)
-        z = round(rd.uniform(0, 1), 2)
+        # z = round(rd.uniform(0, 1), 2)
         #
-        majors_data = np.array([["H", hydrogen[1], 2*(1-z), hydrogen[2]], ["O", oxygen[1], 10+2*(1-z), oxygen[2]],
-                                ["F", flourine[1], 2*z, flourine[2]], ["Mg", magnesium[1], (2+y)*(1-x), magnesium[2]],
-                                ["Al", aluminium[1], (-2*(y-1) + 1), aluminium[2]], ["Si", silicon[1], (2+y), silicon[2]],
-                                ["K", potassium[1], 1, potassium[2]], ["Fe", iron[1], (2+y)*x, iron[2]]], dtype=object)
+        # majors_data = np.array([["H", hydrogen[1], 2*(1-z), hydrogen[2]], ["O", oxygen[1], 10+2*(1-z), oxygen[2]],
+        #                         ["F", flourine[1], 2*z, flourine[2]], ["Mg", magnesium[1], (2+y)*(1-x), magnesium[2]],
+        #                         ["Al", aluminium[1], (-2*(y-1) + 1), aluminium[2]], ["Si", silicon[1], (2+y), silicon[2]],
+        #                         ["K", potassium[1], 1, potassium[2]], ["Fe", iron[1], (2+y)*x, iron[2]]], dtype=object)
+        majors_data = np.array(
+            [["H", hydrogen[1], 2, hydrogen[2]], ["O", oxygen[1], 12, oxygen[2]],
+             ["Mg", magnesium[1], (1 - x)*(2 + y), magnesium[2]], ["Al", aluminium[1], (3 - 2*y), aluminium[2]],
+             ["Si", silicon[1], (2 + y), silicon[2]], ["K", potassium[1], 1, potassium[2]],
+             ["Fe", iron[1], x*(2 + y), iron[2]]], dtype=object)
+        majors_data_Ann = np.array(
+            [["H", hydrogen[1], 2, hydrogen[2]], ["O", oxygen[1], 12, oxygen[2]],
+             ["Mg", magnesium[1], 0, magnesium[2]], ["Al", aluminium[1], 1, aluminium[2]],
+             ["Si", silicon[1], 3, silicon[2]], ["K", potassium[1], 1, potassium[2]],
+             ["Fe", iron[1], 3, iron[2]]], dtype=object)
+        majors_data_Phl = np.array(
+            [["H", hydrogen[1], 2, hydrogen[2]], ["O", oxygen[1], 12, oxygen[2]],
+             ["Mg", magnesium[1], 3, magnesium[2]], ["Al", aluminium[1], 1, aluminium[2]],
+             ["Si", silicon[1], 3, silicon[2]], ["K", potassium[1], 1, potassium[2]],
+             ["Fe", iron[1], 0, iron[2]]], dtype=object)
+        majors_data_Sdp = np.array(
+            [["H", hydrogen[1], 2, hydrogen[2]], ["O", oxygen[1], 12, oxygen[2]],
+             ["Mg", magnesium[1], 0, magnesium[2]], ["Al", aluminium[1], 3, aluminium[2]],
+             ["Si", silicon[1], 2, silicon[2]], ["K", potassium[1], 1, potassium[2]],
+             ["Fe", iron[1], 2, iron[2]]], dtype=object)
+        majors_data_Eas = np.array(
+            [["H", hydrogen[1], 2, hydrogen[2]], ["O", oxygen[1], 12, oxygen[2]],
+             ["Mg", magnesium[1], 2, magnesium[2]], ["Al", aluminium[1], 3, aluminium[2]],
+             ["Si", silicon[1], 2, silicon[2]], ["K", potassium[1], 1, potassium[2]],
+             ["Fe", iron[1], 0, iron[2]]], dtype=object)
         # Minor elements
         traces_data = []
         if len(self.traces_list) > 0:
@@ -2835,59 +2861,90 @@ class Phyllosilicates:
         mineral = "Bt"
         #
         # Molar mass
-        molar_mass_pure = potassium[2] + (2+y)*(x*iron[2] + (1-x)*magnesium[2]) + (-2*(y-1) + 1)*aluminium[2] \
-                          + (2+y)*silicon[2] + 10*oxygen[2] + 2*(z*flourine[2] + (1-z)*(oxygen[2]+hydrogen[2]))
-        molar_mass, amounts = MineralChemistry(w_traces=traces_data, molar_mass_pure=molar_mass_pure,
-                                               majors=majors_data).calculate_molar_mass()
+        # molar_mass_pure = potassium[2] + (2+y)*(x*iron[2] + (1-x)*magnesium[2]) + (-2*(y-1) + 1)*aluminium[2] \
+        #                   + (2+y)*silicon[2] + 10*oxygen[2] + 2*(z*flourine[2] + (1-z)*(oxygen[2]+hydrogen[2]))
+        molar_mass_pure = potassium[2] + (2 + y)*(x*iron[2] + (1 - x)*magnesium[2]) + (3 - 2*y)*aluminium[2] \
+                          + (2 + y)*silicon[2] + 10*oxygen[2] + 2*(oxygen[2] + hydrogen[2])
+        molar_mass_pure_Ann = potassium[2] + 3*iron[2] + aluminium[2] + 3*silicon[2] + 10*oxygen[2] \
+                              + 2*(oxygen[2] + hydrogen[2])
+        molar_mass_pure_Phl = potassium[2] + 3*magnesium[2] + aluminium[2] + 3*silicon[2] + 10*oxygen[2] \
+                              + 2*(oxygen[2] + hydrogen[2])
+        molar_mass_pure_Sdp = potassium[2] + 2*iron[2] + 3*aluminium[2] + 2*silicon[2] + 10*oxygen[2] \
+                              + 2*(oxygen[2] + hydrogen[2])
+        molar_mass_pure_Eas = potassium[2] + 2*magnesium[2] + 3*aluminium[2] + 2*silicon[2] + 10*oxygen[2] \
+                              + 2*(oxygen[2] + hydrogen[2])
+        molar_mass, amounts = MineralChemistry(
+            w_traces=traces_data, molar_mass_pure=molar_mass_pure, majors=majors_data).calculate_molar_mass()
         element = [PeriodicSystem(name=amounts[i][0]).get_data() for i in range(len(amounts))]
+        #
+        molar_mass_Ann, amounts_Ann = MineralChemistry(
+            w_traces=traces_data, molar_mass_pure=molar_mass_pure_Ann, majors=majors_data_Ann).calculate_molar_mass()
+        element_Ann = [PeriodicSystem(name=amounts_Ann[i][0]).get_data() for i in range(len(amounts_Ann))]
+        #
+        molar_mass_Phl, amounts_Phl = MineralChemistry(
+            w_traces=traces_data, molar_mass_pure=molar_mass_pure_Phl, majors=majors_data_Phl).calculate_molar_mass()
+        element_Phl = [PeriodicSystem(name=amounts_Phl[i][0]).get_data() for i in range(len(amounts_Phl))]
+        #
+        molar_mass_Sdp, amounts_Sdp = MineralChemistry(
+            w_traces=traces_data, molar_mass_pure=molar_mass_pure_Sdp, majors=majors_data_Sdp).calculate_molar_mass()
+        element_Sdp = [PeriodicSystem(name=amounts_Sdp[i][0]).get_data() for i in range(len(amounts_Sdp))]
+        #
+        molar_mass_Eas, amounts_Eas = MineralChemistry(
+            w_traces=traces_data, molar_mass_pure=molar_mass_pure_Eas, majors=majors_data_Eas).calculate_molar_mass()
+        element_Eas = [PeriodicSystem(name=amounts_Eas[i][0]).get_data() for i in range(len(amounts_Eas))]
         # Density
         dataV_Ann = CrystalPhysics([[5.39, 9.334, 10.29], [100], "monoclinic"])
         V_Ann = dataV_Ann.calculate_volume()
         Z_Ann = 2
         V_m_Ann = MineralChemistry().calculate_molar_volume(volume_cell=V_Ann, z=Z_Ann)
-        dataRho_Ann = CrystalPhysics([molar_mass, Z_Ann, V_Ann])
+        dataRho_Ann = CrystalPhysics([molar_mass_Ann, Z_Ann, V_Ann])
         rho_Ann = dataRho_Ann.calculate_bulk_density()
-        rho_e_Ann = wg(amounts=amounts, elements=element, rho_b=rho_Ann).calculate_electron_density()
+        rho_e_Ann = wg(amounts=amounts_Ann, elements=element_Ann, rho_b=rho_Ann).calculate_electron_density()
         #
         dataV_Phl = CrystalPhysics([[5.39, 9.334, 10.29], [100], "monoclinic"])
         V_Phl = dataV_Phl.calculate_volume()
         Z_Phl = 2
         V_m_Phl = MineralChemistry().calculate_molar_volume(volume_cell=V_Phl, z=Z_Phl)
-        dataRho_Phl = CrystalPhysics([molar_mass, Z_Phl, V_Phl])
+        dataRho_Phl = CrystalPhysics([molar_mass_Phl, Z_Phl, V_Phl])
         rho_Phl = dataRho_Phl.calculate_bulk_density()
-        rho_e_Phl = wg(amounts=amounts, elements=element, rho_b=rho_Phl).calculate_electron_density()
+        rho_e_Phl = wg(amounts=amounts_Phl, elements=element_Phl, rho_b=rho_Phl).calculate_electron_density()
         #
         dataV_Eas = CrystalPhysics([[5.27, 9.13, 10.15], [99.54], "monoclinic"])
         V_Eas = dataV_Eas.calculate_volume()
         Z_Eas = 2
         V_m_Eas = MineralChemistry().calculate_molar_volume(volume_cell=V_Eas, z=Z_Eas)
-        dataRho_Eas = CrystalPhysics([molar_mass, Z_Eas, V_Eas])
+        dataRho_Eas = CrystalPhysics([molar_mass_Eas, Z_Eas, V_Eas])
         rho_Eas = dataRho_Eas.calculate_bulk_density()
-        rho_e_Eas = wg(amounts=amounts, elements=element, rho_b=rho_Eas).calculate_electron_density()
+        rho_e_Eas = wg(amounts=amounts_Eas, elements=element_Eas, rho_b=rho_Eas).calculate_electron_density()
         #
         dataV_Sdp = CrystalPhysics([[5.369, 9.297, 10.268], [100.06], "monoclinic"])
         V_Sdp = dataV_Sdp.calculate_volume()
         Z_Sdp = 2
         V_m_Sdp = MineralChemistry().calculate_molar_volume(volume_cell=V_Sdp, z=Z_Sdp)
-        dataRho_Sdp = CrystalPhysics([molar_mass, Z_Sdp, V_Sdp])
+        dataRho_Sdp = CrystalPhysics([molar_mass_Sdp, Z_Sdp, V_Sdp])
         rho_Sdp = dataRho_Sdp.calculate_bulk_density()
-        rho_e_Sdp = wg(amounts=amounts, elements=element, rho_b=rho_Sdp).calculate_electron_density()
+        rho_e_Sdp = wg(amounts=amounts_Sdp, elements=element_Sdp, rho_b=rho_Sdp).calculate_electron_density()
         #
-        V_m = x*(y*V_m_Ann + (1-y)*V_m_Sdp) + (1-x)*(y*V_m_Phl + (1-y)*V_m_Eas)
-        rho = x*(y*rho_Ann + (1-y)*rho_Sdp) + (1-x)*(y*rho_Phl + (1-y)*rho_Eas)
-        rho_e = x*(y*rho_e_Ann + (1-y)*rho_e_Sdp) + (1-x)*(y*rho_e_Phl + (1-y)*rho_e_Eas)
+        # V_m = x*(y*V_m_Ann + (1-y)*V_m_Sdp) + (1-x)*(y*V_m_Phl + (1-y)*V_m_Eas)
+        # rho = x*(y*rho_Ann + (1-y)*rho_Sdp) + (1-x)*(y*rho_Phl + (1-y)*rho_Eas)
+        # rho_e = x*(y*rho_e_Ann + (1-y)*rho_e_Sdp) + (1-x)*(y*rho_e_Phl + (1-y)*rho_e_Eas)
+        V_m = x*(y*V_m_Ann + (1 - y)*V_m_Sdp) + (1 - x)*(y*V_m_Phl + (1 - y)*V_m_Eas)
+        rho = x*(y*rho_Ann + (1 - y)*rho_Sdp) + (1 - x)*(y*rho_Phl + (1 - y)*rho_Eas)
+        rho_e = x*(y*rho_e_Ann + (1 - y)*rho_e_Sdp) + (1 - x)*(y*rho_e_Phl + (1 - y)*rho_e_Eas)
         # Bulk modulu
         K_Ann = 114.72*10**9
         K_Phl = 103.78*10**9
         K_Sdp = 110.91*10**9
         K_Eas = 100.44*10**9
-        K = x*(y*K_Ann + (1-y)*K_Sdp) + (1-x)*(y*K_Phl + (1-y)*K_Eas)
+        # K = x*(y*K_Ann + (1-y)*K_Sdp) + (1-x)*(y*K_Phl + (1-y)*K_Eas)
+        K = x*(y*K_Ann + (1 - y)*K_Sdp) + (1 - x)*(y*K_Phl + (1 - y)*K_Eas)
         # Shear modulus
         G_Ann = 58.61*10**9
         G_Phl = 61.69*10**9
         G_Sdp = 59.61*10**9
         G_Eas = 62.77*10**9
-        G = x*(y*G_Ann + (1-y)*G_Sdp) + (1-x)*(y*G_Phl + (1-y)*G_Eas)
+        # G = x*(y*G_Ann + (1-y)*G_Sdp) + (1-x)*(y*G_Phl + (1-y)*G_Eas)
+        G = x*(y*G_Ann + (1 - y)*G_Sdp) + (1 - x)*(y*G_Phl + (1 - y)*G_Eas)
         # Young's modulus
         E = (9*K*G)/(3*K + G)
         # Poisson's ratio

@@ -3326,6 +3326,13 @@ class Rocks:
                 elif self.rock == "Conglomerate":
                     data = Sandstone(fluid="water", actualThickness=0).create_conglomerate(
                         number=1, porosity=rd.uniform(self.var_phi0.get() / 100, self.var_phi1.get() / 100))
+                    rb_oxides = SE(
+                        parent=self.parent_rock, row_id=34, column_id=1, n_rows=1, n_columns=1, bg=self.color_acc_01,
+                        fg="black").create_radiobutton(
+                        var_rb=self.var_rb_geochem, var_rb_set=var_rb_geochem_start, value_rb=4, text="Oxides",
+                        color_bg=self.color_acc_01, command=lambda var_rb=self.var_rb_geochem:
+                        self.change_radiobutton(var_rb))
+                    self.gui_elements.append(rb_oxides)
                 elif self.rock == "Shale":
                     data = shale(fluid="water").create_simple_shale(dict_output=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
                 elif self.rock == "Limestone":
@@ -3363,57 +3370,162 @@ class Rocks:
                     data = Plutonic(
                         fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(
                             self.var_phi0.get()/100, self.var_phi1.get()/100)).create_granite_streckeisen()
+                    rb_oxides = SE(
+                        parent=self.parent_rock, row_id=34, column_id=1, n_rows=1, n_columns=1, bg=self.color_acc_01,
+                        fg="black").create_radiobutton(
+                        var_rb=self.var_rb_geochem, var_rb_set=var_rb_geochem_start, value_rb=4, text="Oxides",
+                        color_bg=self.color_acc_01, command=lambda var_rb=self.var_rb_geochem:
+                        self.change_radiobutton(var_rb))
+                    self.gui_elements.append(rb_oxides)
                 elif self.rock == "Granodiorite (Streckeisen)":
                     data = Plutonic(
                         fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(
                             self.var_phi0.get()/100, self.var_phi1.get()/100)).create_granodiorite_streckeisen()
+                    rb_oxides = SE(
+                        parent=self.parent_rock, row_id=34, column_id=1, n_rows=1, n_columns=1, bg=self.color_acc_01,
+                        fg="black").create_radiobutton(
+                        var_rb=self.var_rb_geochem, var_rb_set=var_rb_geochem_start, value_rb=4, text="Oxides",
+                        color_bg=self.color_acc_01, command=lambda var_rb=self.var_rb_geochem:
+                        self.change_radiobutton(var_rb))
+                    self.gui_elements.append(rb_oxides)
                 elif self.rock == "Tonalite (Streckeisen)":
                     data = Plutonic(
                         fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(
                             self.var_phi0.get()/100, self.var_phi1.get()/100)).create_tonalite_streckeisen()
+                    rb_oxides = SE(
+                        parent=self.parent_rock, row_id=34, column_id=1, n_rows=1, n_columns=1, bg=self.color_acc_01,
+                        fg="black").create_radiobutton(
+                        var_rb=self.var_rb_geochem, var_rb_set=var_rb_geochem_start, value_rb=4, text="Oxides",
+                        color_bg=self.color_acc_01, command=lambda var_rb=self.var_rb_geochem:
+                        self.change_radiobutton(var_rb))
+                    self.gui_elements.append(rb_oxides)
                 elif self.rock == "Gabbro (Streckeisen)":
                     data = Plutonic(
                         fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(
                             self.var_phi0.get()/100, self.var_phi1.get()/100)).create_gabbro_streckeisen()
+                    rb_oxides = SE(
+                        parent=self.parent_rock, row_id=34, column_id=1, n_rows=1, n_columns=1, bg=self.color_acc_01,
+                        fg="black").create_radiobutton(
+                        var_rb=self.var_rb_geochem, var_rb_set=var_rb_geochem_start, value_rb=4, text="Oxides",
+                        color_bg=self.color_acc_01, command=lambda var_rb=self.var_rb_geochem:
+                        self.change_radiobutton(var_rb))
+                    self.gui_elements.append(rb_oxides)
                 elif self.rock == "Diorite (Streckeisen)":
                     data = Plutonic(
                         fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(
                             self.var_phi0.get()/100, self.var_phi1.get()/100)).create_diorite_streckeisen()
+                    rb_oxides = SE(
+                        parent=self.parent_rock, row_id=34, column_id=1, n_rows=1, n_columns=1, bg=self.color_acc_01,
+                        fg="black").create_radiobutton(
+                        var_rb=self.var_rb_geochem, var_rb_set=var_rb_geochem_start, value_rb=4, text="Oxides",
+                        color_bg=self.color_acc_01, command=lambda var_rb=self.var_rb_geochem:
+                        self.change_radiobutton(var_rb))
+                    self.gui_elements.append(rb_oxides)
                 elif self.rock == "Monzonite (Streckeisen)":
                     data = Plutonic(
                         fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(
                             self.var_phi0.get()/100, self.var_phi1.get()/100)).create_monzonite_streckeisen()
+                    rb_oxides = SE(
+                        parent=self.parent_rock, row_id=34, column_id=1, n_rows=1, n_columns=1, bg=self.color_acc_01,
+                        fg="black").create_radiobutton(
+                        var_rb=self.var_rb_geochem, var_rb_set=var_rb_geochem_start, value_rb=4, text="Oxides",
+                        color_bg=self.color_acc_01, command=lambda var_rb=self.var_rb_geochem:
+                        self.change_radiobutton(var_rb))
+                    self.gui_elements.append(rb_oxides)
                 elif self.rock == "Syenite (Streckeisen)":
                     data = Plutonic(
                         fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(
                             self.var_phi0.get()/100, self.var_phi1.get()/100)).create_syenite_streckeisen()
+                    rb_oxides = SE(
+                        parent=self.parent_rock, row_id=34, column_id=1, n_rows=1, n_columns=1, bg=self.color_acc_01,
+                        fg="black").create_radiobutton(
+                        var_rb=self.var_rb_geochem, var_rb_set=var_rb_geochem_start, value_rb=4, text="Oxides",
+                        color_bg=self.color_acc_01, command=lambda var_rb=self.var_rb_geochem:
+                        self.change_radiobutton(var_rb))
+                    self.gui_elements.append(rb_oxides)
                 elif self.rock == "Granitoid (Streckeisen)":
                     data = Plutonic(
                         fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(
                             self.var_phi0.get()/100, self.var_phi1.get()/100)).create_granitoid_streckeisen()
+                    rb_oxides = SE(
+                        parent=self.parent_rock, row_id=34, column_id=1, n_rows=1, n_columns=1, bg=self.color_acc_01,
+                        fg="black").create_radiobutton(
+                        var_rb=self.var_rb_geochem, var_rb_set=var_rb_geochem_start, value_rb=4, text="Oxides",
+                        color_bg=self.color_acc_01, command=lambda var_rb=self.var_rb_geochem:
+                        self.change_radiobutton(var_rb))
+                    self.gui_elements.append(rb_oxides)
                 elif self.rock == "Quarzolite (Streckeisen)":
                     data = Plutonic(
                         fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(
                             self.var_phi0.get()/100, self.var_phi1.get()/100)).create_quarzolite_streckeisen()
+                    rb_oxides = SE(
+                        parent=self.parent_rock, row_id=34, column_id=1, n_rows=1, n_columns=1, bg=self.color_acc_01,
+                        fg="black").create_radiobutton(
+                        var_rb=self.var_rb_geochem, var_rb_set=var_rb_geochem_start, value_rb=4, text="Oxides",
+                        color_bg=self.color_acc_01, command=lambda var_rb=self.var_rb_geochem:
+                        self.change_radiobutton(var_rb))
+                    self.gui_elements.append(rb_oxides)
                 # Volcanic Rocks
                 elif self.rock == "Rhyolite (Streckeisen)":
                     data = Volcanic(fluid="water", actualThickness=0).create_rhyolite_generalized(
                         porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
+                    rb_oxides = SE(
+                        parent=self.parent_rock, row_id=34, column_id=1, n_rows=1, n_columns=1, bg=self.color_acc_01,
+                        fg="black").create_radiobutton(
+                        var_rb=self.var_rb_geochem, var_rb_set=var_rb_geochem_start, value_rb=4, text="Oxides",
+                        color_bg=self.color_acc_01, command=lambda var_rb=self.var_rb_geochem:
+                        self.change_radiobutton(var_rb))
+                    self.gui_elements.append(rb_oxides)
                 elif self.rock == "Dacite (Streckeisen)":
                     data = Volcanic(fluid="water", actualThickness=0).create_dacite(
                         porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
+                    rb_oxides = SE(
+                        parent=self.parent_rock, row_id=34, column_id=1, n_rows=1, n_columns=1, bg=self.color_acc_01,
+                        fg="black").create_radiobutton(
+                        var_rb=self.var_rb_geochem, var_rb_set=var_rb_geochem_start, value_rb=4, text="Oxides",
+                        color_bg=self.color_acc_01, command=lambda var_rb=self.var_rb_geochem:
+                        self.change_radiobutton(var_rb))
+                    self.gui_elements.append(rb_oxides)
                 elif self.rock == "Trachyte (Streckeisen)":
                     data = Volcanic(fluid="water", actualThickness=0).create_trachyte_generalized(
                         porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
+                    rb_oxides = SE(
+                        parent=self.parent_rock, row_id=34, column_id=1, n_rows=1, n_columns=1, bg=self.color_acc_01,
+                        fg="black").create_radiobutton(
+                        var_rb=self.var_rb_geochem, var_rb_set=var_rb_geochem_start, value_rb=4, text="Oxides",
+                        color_bg=self.color_acc_01, command=lambda var_rb=self.var_rb_geochem:
+                        self.change_radiobutton(var_rb))
+                    self.gui_elements.append(rb_oxides)
                 elif self.rock == "Latite (Streckeisen)":
                     data = Volcanic(fluid="water", actualThickness=0).create_latite_generalized(
                         porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
+                    rb_oxides = SE(
+                        parent=self.parent_rock, row_id=34, column_id=1, n_rows=1, n_columns=1, bg=self.color_acc_01,
+                        fg="black").create_radiobutton(
+                        var_rb=self.var_rb_geochem, var_rb_set=var_rb_geochem_start, value_rb=4, text="Oxides",
+                        color_bg=self.color_acc_01, command=lambda var_rb=self.var_rb_geochem:
+                        self.change_radiobutton(var_rb))
+                    self.gui_elements.append(rb_oxides)
                 elif self.rock == "Andesite (Streckeisen)":
                     data = Volcanic(fluid="water", actualThickness=0).create_andesite(
                         porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
+                    rb_oxides = SE(
+                        parent=self.parent_rock, row_id=34, column_id=1, n_rows=1, n_columns=1, bg=self.color_acc_01,
+                        fg="black").create_radiobutton(
+                        var_rb=self.var_rb_geochem, var_rb_set=var_rb_geochem_start, value_rb=4, text="Oxides",
+                        color_bg=self.color_acc_01, command=lambda var_rb=self.var_rb_geochem:
+                        self.change_radiobutton(var_rb))
+                    self.gui_elements.append(rb_oxides)
                 elif self.rock == "Basalt (Streckeisen)":
                     data = Volcanic(fluid="water", actualThickness=0).create_basalt(
                         porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
+                    rb_oxides = SE(
+                        parent=self.parent_rock, row_id=34, column_id=1, n_rows=1, n_columns=1, bg=self.color_acc_01,
+                        fg="black").create_radiobutton(
+                        var_rb=self.var_rb_geochem, var_rb_set=var_rb_geochem_start, value_rb=4, text="Oxides",
+                        color_bg=self.color_acc_01, command=lambda var_rb=self.var_rb_geochem:
+                        self.change_radiobutton(var_rb))
+                    self.gui_elements.append(rb_oxides)
                 # Pyroclastic Rocks
                 elif self.rock == "Pyroclastic Rock":
                     data = Pyroclastic(fluid="water", actualThickness=0).create_pyroclastic_rock(
@@ -4233,32 +4345,100 @@ class Rocks:
             except:
                 pass
             #
+            if self.rock in ["Sandstone"]:
+                self.list_oxides = {
+                    "Al": ["Al2O3", 1.8895], "C": ["CO2", 3.6644], "Ca": ["CaO", 1.3992], "Fe": ["Fe2O3", 1.4297],
+                    "H": ["H2O", 8.9360], "K": ["K2O", 1.2046], "Mg": ["MgO", 1.6582], "Mn": ["MnO", 1.2912],
+                    "Na": ["Na2O", 1.3480], "Ni": ["NiO", 1.2725], "S": ["SO3", 2.4972], "Si": ["SiO2", 2.1392],
+                    "Ti": ["TiO2", 1.6681], "Zn": ["ZnO", 1.2448]}
+            elif self.rock in ["Conglomerate"]:
+                w_Bt = np.mean(self.minerals["Bt"])
+                w_Hem = np.mean(self.minerals["Hem"])
+                self.list_oxides = {
+                    "Al": ["Al2O3", 1.8895], "C": ["CO2", 3.6644], "Ca": ["CaO", 1.3992],
+                    "Fe": ["FeO", w_Bt*1.2865, "Fe2O3", w_Hem*1.4297], "H": ["H2O", 8.9360], "K": ["K2O", 1.2046],
+                    "Mg": ["MgO", 1.6582], "Mn": ["MnO", 1.2912], "Na": ["Na2O", 1.3480], "Ni": ["NiO", 1.2725],
+                    "S": ["SO3", 2.4972], "Si": ["SiO2", 2.1392], "Ti": ["TiO2", 1.6681], "Zn": ["ZnO", 1.2448]}
+                print(self.list_oxides["Fe"])
+            elif self.rock in ["Granite (Streckeisen)", "Tonalite (Streckeisen)", "Diorite (Streckeisen)",
+                               "Gabbro (Streckeisen)", "Syenite (Streckeisen)", "Quarzolite (Streckeisen)",
+                               "Granodiorite (Streckeisen)", "Granitoid (Streckeisen)", "Monzonite (Streckeisen)",
+                               "Rhyolite (Streckeisen)", "Dacite (Streckeisen)", "Latite (Streckeisen)",
+                               "Basalt (Streckeisen)", "Andesite (Streckeisen)", "Trachyte (Streckeisen)"]:
+                self.list_oxides = {
+                    "Al": ["Al2O3", 1.8895], "C": ["CO2", 3.6644], "Ca": ["CaO", 1.3992], "Fe": ["FeO", 1.2865],
+                    "H": ["H2O", 8.9360], "K": ["K2O", 1.2046], "Mg": ["MgO", 1.6582], "Mn": ["MnO", 1.2912],
+                    "Na": ["Na2O", 1.3480], "Ni": ["NiO", 1.2725], "S": ["SO3", 2.4972], "Si": ["SiO2", 2.1392],
+                    "Ti": ["TiO2", 1.6681], "Zn": ["ZnO", 1.2448]}
+            #
             lbl = SE(parent=self.parent_rock, row_id=24, column_id=3, n_columns=5, bg=self.color_bg,
                      fg="black").create_label(text="Chemical composition (weight amounts %)", relief=tk.RAISED)
             self.lbl_w["chemistry"].append(lbl)
             self.list_elements.insert(0, self.list_elements.pop(self.list_elements.index("O")))
+            self.additional_line = 0
             for index, element in enumerate(self.list_elements, start=1):
                 if element not in self.list_oxides:
                     pass
                 else:
-                    lbl = SE(parent=self.parent_rock, row_id=23+index, column_id=3, bg=self.color_bg,
-                             fg="black").create_label(text=str(self.list_oxides[element][0]), relief=tk.RAISED)
+                    if len(self.list_oxides[element]) == 2:
+                        lbl = SE(parent=self.parent_rock, row_id=23+index + self.additional_line, column_id=3, bg=self.color_bg,
+                                 fg="black").create_label(text=str(self.list_oxides[element][0]), relief=tk.RAISED)
+                    elif len(self.list_oxides[element]) == 4:
+                        lbl = SE(parent=self.parent_rock, row_id=23+index, column_id=3, bg=self.color_bg,
+                                 fg="black").create_label(text=str(self.list_oxides[element][0]), relief=tk.RAISED)
+                        self.lbl_w["chemistry"].append(lbl)
+                        lbl = SE(parent=self.parent_rock, row_id=24+index, column_id=3, bg=self.color_bg,
+                                 fg="black").create_label(text=str(self.list_oxides[element][2]), relief=tk.RAISED)
+                        self.additional_line += 1
                 self.lbl_w["chemistry"].append(lbl)
             #
+            self.additional_line = 0
             for index, element in enumerate(self.list_elements, start=10):
                 if element in self.list_oxides:
-                    entr_min = SE(parent=self.parent_rock, row_id=14+index, column_id=4, bg=self.color_bg,
+                    if len(self.list_oxides[element]) == 2:
+                        entr_min = SE(parent=self.parent_rock, row_id=14+index + self.additional_line, column_id=4, bg=self.color_bg,
+                                      fg=self.color_fg).create_entry(var_entr=self.entr_list_min[index],
+                                                                     var_entr_set=round(np.min(self.elements[element])*self.list_oxides[element][1], 3))
+                        entr_max = SE(parent=self.parent_rock, row_id=14+index + self.additional_line, column_id=5, bg=self.color_bg,
+                                      fg=self.color_fg).create_entry(var_entr=self.entr_list_max[index],
+                                                                     var_entr_set=round(np.max(self.elements[element])*self.list_oxides[element][1], 3))
+                        entr_mean = SE(parent=self.parent_rock, row_id=14+index + self.additional_line, column_id=6, bg=self.color_bg,
+                                       fg=self.color_fg).create_entry(var_entr=self.entr_list_mean[index],
+                                                                      var_entr_set=round(np.mean(self.elements[element])*self.list_oxides[element][1], 3))
+                        entr_std = SE(parent=self.parent_rock, row_id=14+index + self.additional_line, column_id=7, bg=self.color_bg,
+                                      fg=self.color_fg).create_entry(var_entr=self.entr_list_std[index],
+                                                                     var_entr_set=round(np.std(self.elements[element], ddof=1)*self.list_oxides[element][1], 3))
+                    elif len(self.list_oxides[element]) == 4:
+                        entr_min = SE(parent=self.parent_rock, row_id=14+index, column_id=4, bg=self.color_bg,
                                   fg=self.color_fg).create_entry(var_entr=self.entr_list_min[index],
                                                                  var_entr_set=round(np.min(self.elements[element])*self.list_oxides[element][1], 3))
-                    entr_max = SE(parent=self.parent_rock, row_id=14+index, column_id=5, bg=self.color_bg,
+                        entr_max = SE(parent=self.parent_rock, row_id=14+index, column_id=5, bg=self.color_bg,
                                   fg=self.color_fg).create_entry(var_entr=self.entr_list_max[index],
                                                                  var_entr_set=round(np.max(self.elements[element])*self.list_oxides[element][1], 3))
-                    entr_mean = SE(parent=self.parent_rock, row_id=14+index, column_id=6, bg=self.color_bg,
+                        entr_mean = SE(parent=self.parent_rock, row_id=14+index, column_id=6, bg=self.color_bg,
                                    fg=self.color_fg).create_entry(var_entr=self.entr_list_mean[index],
                                                                   var_entr_set=round(np.mean(self.elements[element])*self.list_oxides[element][1], 3))
-                    entr_std = SE(parent=self.parent_rock, row_id=14+index, column_id=7, bg=self.color_bg,
+                        entr_std = SE(parent=self.parent_rock, row_id=14+index, column_id=7, bg=self.color_bg,
                                   fg=self.color_fg).create_entry(var_entr=self.entr_list_std[index],
                                                                  var_entr_set=round(np.std(self.elements[element], ddof=1)*self.list_oxides[element][1], 3))
+                        self.entr_w["chemistry"].extend([entr_min, entr_max, entr_mean, entr_std])
+                        self.entr_list_min.append(tk.IntVar())
+                        self.entr_list_max.append(tk.IntVar())
+                        self.entr_list_mean.append(tk.IntVar())
+                        self.entr_list_std.append(tk.IntVar())
+                        entr_min = SE(parent=self.parent_rock, row_id=15+index, column_id=4, bg=self.color_bg,
+                                  fg=self.color_fg).create_entry(var_entr=self.entr_list_min[index+1],
+                                                                 var_entr_set=round(np.min(self.elements[element])*self.list_oxides[element][3], 3))
+                        entr_max = SE(parent=self.parent_rock, row_id=15+index, column_id=5, bg=self.color_bg,
+                                  fg=self.color_fg).create_entry(var_entr=self.entr_list_max[index+1],
+                                                                 var_entr_set=round(np.max(self.elements[element])*self.list_oxides[element][3], 3))
+                        entr_mean = SE(parent=self.parent_rock, row_id=15+index, column_id=6, bg=self.color_bg,
+                                   fg=self.color_fg).create_entry(var_entr=self.entr_list_mean[index+1],
+                                                                  var_entr_set=round(np.mean(self.elements[element])*self.list_oxides[element][3], 3))
+                        entr_std = SE(parent=self.parent_rock, row_id=15+index, column_id=7, bg=self.color_bg,
+                                  fg=self.color_fg).create_entry(var_entr=self.entr_list_std[index+1],
+                                                                 var_entr_set=round(np.std(self.elements[element], ddof=1)*self.list_oxides[element][3], 3))
+                        self.additional_line += 1
                     #
                     self.entr_w["chemistry"].extend([entr_min, entr_max, entr_mean, entr_std])
         #
