@@ -834,7 +834,12 @@ class GebPyGUI(tk.Frame):
                 var_opt=var_opt_1_6, var_opt_set="Select Rock", opt_list=opt_list_1_6,
                 command=lambda var_opt=var_opt_1_6: self.select_opt(var_opt))
         elif var_opt == "Zechstein":
-            Zechstein().create_zechstein_z1()
+            data_z1 = Zechstein().create_zechstein_z1()
+            Subsurface(
+                parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
+                color_acc=[self.color_accent_03, self.color_accent_04], subsurface=var_opt, lbl_w=self.lbl_w,
+                entr_w=self.entr_w, gui_elements=self.gui_elements).create_real_world_sequences(
+                name=var_opt, data_units=data_z1)
     #
     def change_radiobutton_mode(self, var_rb_mode):
         if var_rb_mode.get() == 0:
@@ -5767,6 +5772,213 @@ class Subsurface:
            fg="black").create_label(text="Photoelectricity\n (barns/electron)", relief=tk.RAISED)
         #
         self.lbl_w["physics"].extend([lbl_01, lbl_02, lbl_03, lbl_04, lbl_05, lbl_06, lbl_07, lbl_08, lbl_09, lbl_10])
+    #
+    def create_real_world_sequences(self, name, data_units):
+        #
+        lbl_stat = SE(parent=self.parent_subsurface, row_id=0, column_id=3, n_rows=2, n_columns=5, bg=self.color_bg,
+                      fg="black").create_label(text="Statistics - "+str(name), relief=tk.RAISED)
+        lbl_plt = SE(parent=self.parent_subsurface, row_id=0, column_id=9, n_rows=2, n_columns=9, bg=self.color_bg,
+                     fg="black").create_label(text="Statistics - "+str(name), relief=tk.RAISED)
+        #
+        self.gui_elements.extend([lbl_stat, lbl_plt])
+        #
+        self.results_sorted = {}
+        self.results_units = {}
+        self.list_rocks_short = []
+        properties = ["thickness", "rock", "rho", "vP", "vS", "vPvS", "phi", "K", "G", "Poisson", "GR", "PE", "Top",
+                      "Bottom"]
+        for prop in properties:
+            self.results_sorted[prop] = []
+        #
+        self.results_sorted["Bottom"].append(100.0)
+        for unit in data_units:
+            for key, value in unit.items():
+                rock = value["rock"]
+                break
+            if rock not in self.list_rocks_short:
+                self.list_rocks_short.append(rock)
+        for rock in self.list_rocks_short:
+            self.results_units[rock] = {}
+            for property in properties:
+                self.results_units[rock][property] = []
+        n_units = []
+        for unit in data_units:
+            n_unit = len(unit)
+            n_units.append(n_unit)
+            for key, value in unit.items():
+                self.results_sorted["Top"].append(key)
+                self.results_sorted["Bottom"].append(key)
+                self.results_sorted["rho"].append(value["rho"])
+                self.results_sorted["vP"].append(value["vP"])
+                self.results_sorted["vS"].append(value["vS"])
+                self.results_sorted["vPvS"].append(value["vP/vS"])
+                self.results_sorted["phi"].append(value["phi"])
+                self.results_sorted["K"].append(value["K"])
+                self.results_sorted["G"].append(value["G"])
+                self.results_sorted["Poisson"].append(value["nu"])
+                self.results_sorted["GR"].append(value["GR"])
+                self.results_sorted["PE"].append(value["PE"])
+                self.results_sorted["rock"].append(value["rock"])
+        #
+        del self.results_sorted["Bottom"][-1]
+        self.results_sorted["thickness"] = list(np.around(np.array(self.results_sorted["Bottom"]) - np.array(self.results_sorted["Top"]), 2))
+        #
+        start = 0
+        end = n_units[0]
+        for index, rock in enumerate(self.list_rocks_short):
+            for property in properties:
+                self.results_units[rock][property].extend(self.results_sorted[property][start:end])
+            start += n_units[index]
+            end += n_units[index]
+        #
+        # print("Rocks:", self.list_rocks_short)
+        # print("Top:", self.results_sorted["Top"], len(self.results_sorted["Top"]))
+        # print("Bottom:", self.results_sorted["Bottom"], len(self.results_sorted["Bottom"]))
+        # print("Thickness:", self.results_sorted["thickness"], len(self.results_sorted["thickness"]))
+        # print("rho:", self.results_sorted["rho"], len(self.results_sorted["rho"]))
+        # print("vP:", self.results_sorted["vP"], len(self.results_sorted["vP"]))
+        # print("vS:", self.results_sorted["vS"], len(self.results_sorted["vS"]))
+        # print("vP/vS:", self.results_sorted["vPvS"], len(self.results_sorted["vPvS"]))
+        # print("phi:", self.results_sorted["phi"], len(self.results_sorted["phi"]))
+        # print("K:", self.results_sorted["K"], len(self.results_sorted["K"]))
+        # print("G:", self.results_sorted["G"], len(self.results_sorted["G"]))
+        # print("Poisson:", self.results_sorted["Poisson"], len(self.results_sorted["Poisson"]))
+        # print("GR:", self.results_sorted["GR"], len(self.results_sorted["GR"]))
+        # print("PE:", self.results_sorted["PE"], len(self.results_sorted["PE"]))
+        # print(self.results_units)
+        #
+        self.var_rb_stat = tk.IntVar()
+        var_rb_stat_start = 0
+        self.var_rb_geochem = tk.IntVar()
+        var_rb_geochem_start = 3
+        self.var_rb_lith = tk.IntVar()
+        var_rb_lith_start = 5
+        self.current_rb_lith = tk.IntVar()
+        #
+        self.results_plot = {}
+        for rock in self.list_rocks_short:
+            self.results_plot[rock] = {}
+            for prop in properties:
+                self.results_plot[rock][prop] = []
+        for index, value in enumerate(self.results_sorted["thickness"], start=0):
+            self.results_plot[self.results_sorted["rock"][index]]["thickness"].append(value)
+        for index, value in enumerate(self.results_sorted["Top"], start=0):
+            self.results_plot[self.results_sorted["rock"][index]]["Top"].append(value)
+        for index, value in enumerate(self.results_sorted["Bottom"], start=0):
+            self.results_plot[self.results_sorted["rock"][index]]["Bottom"].append(value)
+        for index, value in enumerate(self.results_sorted["rho"], start=0):
+            self.results_plot[self.results_sorted["rock"][index]]["rho"].append(value)
+        for index, value in enumerate(self.results_sorted["vP"], start=0):
+            self.results_plot[self.results_sorted["rock"][index]]["vP"].append(value)
+        for index, value in enumerate(self.results_sorted["vS"], start=0):
+            self.results_plot[self.results_sorted["rock"][index]]["vS"].append(value)
+        for index, value in enumerate(self.results_sorted["vPvS"], start=0):
+            self.results_plot[self.results_sorted["rock"][index]]["vPvS"].append(value)
+        for index, value in enumerate(self.results_sorted["phi"], start=0):
+            self.results_plot[self.results_sorted["rock"][index]]["phi"].append(value)
+        for index, value in enumerate(self.results_sorted["K"], start=0):
+            self.results_plot[self.results_sorted["rock"][index]]["K"].append(value)
+        for index, value in enumerate(self.results_sorted["G"], start=0):
+            self.results_plot[self.results_sorted["rock"][index]]["G"].append(value)
+        for index, value in enumerate(self.results_sorted["Poisson"], start=0):
+            self.results_plot[self.results_sorted["rock"][index]]["Poisson"].append(value)
+        for index, value in enumerate(self.results_sorted["GR"], start=0):
+            self.results_plot[self.results_sorted["rock"][index]]["GR"].append(value)
+        for index, value in enumerate(self.results_sorted["PE"], start=0):
+            self.results_plot[self.results_sorted["rock"][index]]["PE"].append(value)
+        #
+        rb_01 = SE(parent=self.parent_subsurface, row_id=29, column_id=0, n_rows=1, n_columns=2, bg=self.color_acc_01,
+                   fg="black").create_radiobutton(var_rb=self.var_rb_stat, var_rb_set=var_rb_stat_start, value_rb=0,
+                                                  text="Well Log Plot", color_bg=self.color_acc_01,
+                                                  command=lambda var_rb=self.var_rb_stat: self.change_radiobutton(
+                                                      var_rb))
+        rb_02 = SE(parent=self.parent_subsurface, row_id=30, column_id=0, n_rows=1, n_columns=2, bg=self.color_acc_01,
+                   fg="black").create_radiobutton(var_rb=self.var_rb_stat, var_rb_set=var_rb_stat_start, value_rb=1,
+                                                  text="Histogram Plot", color_bg=self.color_acc_01,
+                                                  command=lambda var_rb=self.var_rb_stat: self.change_radiobutton(
+                                                      var_rb))
+        rb_03 = SE(parent=self.parent_subsurface, row_id=31, column_id=0, n_rows=1, n_columns=2, bg=self.color_acc_01,
+                   fg="black").create_radiobutton(var_rb=self.var_rb_stat, var_rb_set=var_rb_stat_start, value_rb=2,
+                                                  text="Scatter Plot", color_bg=self.color_acc_01,
+                                                  command=lambda var_rb=self.var_rb_stat: self.change_radiobutton(
+                                                      var_rb))
+        rb_04 = SE(parent=self.parent_subsurface, row_id=33, column_id=0, n_rows=1, n_columns=2, bg=self.color_acc_01,
+                   fg="black").create_radiobutton(var_rb=self.var_rb_geochem, var_rb_set=var_rb_geochem_start,
+                                                  value_rb=3,
+                                                  text="Elements", color_bg=self.color_acc_01,
+                                                  command=lambda var_rb=self.var_rb_geochem: self.change_radiobutton(
+                                                      var_rb))
+        rb_05 = SE(parent=self.parent_subsurface, row_id=34, column_id=0, n_rows=1, n_columns=2, bg=self.color_acc_01,
+                   fg="black").create_radiobutton(var_rb=self.var_rb_geochem, var_rb_set=var_rb_geochem_start,
+                                                  value_rb=4,
+                                                  text="Minerals", color_bg=self.color_acc_01,
+                                                  command=lambda var_rb=self.var_rb_geochem: self.change_radiobutton(
+                                                      var_rb))
+        self.gui_elements.extend([rb_01, rb_02, rb_03, rb_04, rb_05])
+        for index, rock in enumerate(self.list_rocks_short, start=0):
+            rb = SE(parent=self.parent_subsurface, row_id=36 + index, column_id=0, n_rows=1, n_columns=2,
+                    bg=self.color_acc_01,
+                    fg="black").create_radiobutton(var_rb=self.var_rb_lith, var_rb_set=var_rb_lith_start,
+                                                   value_rb=var_rb_lith_start + index,
+                                                   text=rock, color_bg=self.color_acc_01,
+                                                   command=lambda var_rb=self.var_rb_lith: self.change_radiobutton(
+                                                       var_rb))
+            self.gui_elements.append(rb)
+        #
+        self.entr_list_min = []
+        self.entr_list_max = []
+        self.entr_list_mean = []
+        self.entr_list_std = []
+        #
+        for i in range(10):
+            self.entr_list_min.append(tk.IntVar())
+            self.entr_list_max.append(tk.IntVar())
+            self.entr_list_mean.append(tk.IntVar())
+            self.entr_list_std.append(tk.IntVar())
+        #
+        self.results_0 = self.results_units[self.list_rocks_short[0]]
+        #
+        ## Entry Table
+        categories = ["rho", "vP", "vS", "vPvS", "K", "G", "Poisson", "phi", "GR", "PE"]
+        for i, category in enumerate(categories):
+            if i == 7:
+                entr_min = SE(parent=self.parent_subsurface, row_id=4 + 2 * i, column_id=4, n_rows=2, bg=self.color_bg,
+                              fg=self.color_fg).create_entry(var_entr=self.entr_list_min[i],
+                                                             var_entr_set=round(np.min(self.results_0[category] * 100), 3))
+                entr_max = SE(parent=self.parent_subsurface, row_id=4 + 2 * i, column_id=5, n_rows=2, bg=self.color_bg,
+                              fg=self.color_fg).create_entry(var_entr=self.entr_list_max[i],
+                                                             var_entr_set=round(np.max(self.results_0[category] * 100), 3))
+                entr_mean = SE(parent=self.parent_subsurface, row_id=4 + 2 * i, column_id=6, n_rows=2, bg=self.color_bg,
+                               fg=self.color_fg).create_entry(var_entr=self.entr_list_mean[i],
+                                                              var_entr_set=round(np.mean(self.results_0[category] * 100), 3))
+                entr_std = SE(parent=self.parent_subsurface, row_id=4 + 2 * i, column_id=7, n_rows=2, bg=self.color_bg,
+                              fg=self.color_fg).create_entry(var_entr=self.entr_list_std[i],
+                                                             var_entr_set=round(np.std(self.results_0[category] * 100, ddof=1),
+                                                                                3))
+            else:
+                entr_min = SE(parent=self.parent_subsurface, row_id=4 + 2 * i, column_id=4, n_rows=2, bg=self.color_bg,
+                              fg=self.color_fg).create_entry(var_entr=self.entr_list_min[i],
+                                                             var_entr_set=round(np.min(self.results_0[category]), 3))
+                entr_max = SE(parent=self.parent_subsurface, row_id=4 + 2 * i, column_id=5, n_rows=2, bg=self.color_bg,
+                              fg=self.color_fg).create_entry(var_entr=self.entr_list_max[i],
+                                                             var_entr_set=round(np.max(self.results_0[category]), 3))
+                entr_mean = SE(parent=self.parent_subsurface, row_id=4 + 2 * i, column_id=6, n_rows=2, bg=self.color_bg,
+                               fg=self.color_fg).create_entry(var_entr=self.entr_list_mean[i],
+                                                              var_entr_set=round(np.mean(self.results_0[category]), 3))
+                entr_std = SE(parent=self.parent_subsurface, row_id=4 + 2 * i, column_id=7, n_rows=2, bg=self.color_bg,
+                              fg=self.color_fg).create_entry(var_entr=self.entr_list_std[i],
+                                                             var_entr_set=round(np.std(self.results_0[category], ddof=1), 3))
+            #
+            self.entr_w["physics"].extend([entr_min, entr_max, entr_mean, entr_std])
+        #
+        lbl = SE(parent=self.parent_subsurface, row_id=24, column_id=3, n_columns=5, bg=self.color_bg,
+                 fg="black").create_label(text="Chemical composition (weight amounts %)", relief=tk.RAISED)
+        self.lbl_w["chemistry"].append(lbl)
+        #
+        self.create_well_log_plot(
+            parent=self.parent_subsurface, data_x=self.results_sorted["GR"], data_y=self.results_sorted["Top"],
+            row_id=2, column_id=9, n_rows=45, n_columns=9)
+        #
         #
     def create_random_sequences(self, thickness, style, n_parts=20):
         #
@@ -5780,7 +5992,8 @@ class Subsurface:
         #
         results_subsurface = {}
         self.results_sorted = {}
-        properties = ["thickness", "rock", "rho", "vP", "vS", "vPvS", "phi", "K", "G", "Poisson", "GR", "PE", "Top", "Bottom"]
+        properties = ["thickness", "rock", "rho", "vP", "vS", "vPvS", "phi", "K", "G", "Poisson", "GR", "PE", "Top",
+                      "Bottom"]
         for prop in properties:
             self.results_sorted[prop] = []
         #
@@ -7098,8 +7311,9 @@ class Subsurface:
         self.ax1.plot(self.results_sorted["GR"], self.results_sorted["Top"], color="#00549F", linewidth=2)
         self.ax1.set_xlabel("GR [API]")
         self.ax1.set_ylabel("Depth [m]")
-        self.ax1.set_xlim(0, 200)
-        self.ax1.set_xticks(np.arange(0, 250, 50))
+        self.ax1.set_xlim(-1, max(self.results_sorted["GR"]))
+        self.ax1.set_xticks(np.arange(0, max(self.results_sorted["GR"])+25, 25))
+        #self.ax1.set_xscale("log")
         self.ax1.set_ylim(0, max_thickness)
         self.ax1.set_yticks(np.arange(0, max_thickness+50, 50))
         self.ax1.grid(color="grey", linestyle="dashed")
@@ -7150,6 +7364,7 @@ class Subsurface:
         self.ax4.plot(self.results_sorted["PE"], self.results_sorted["Top"], color="#00549F", linewidth=2)
         self.ax4.set_xlabel("PE [barns/electron]")
         self.ax4.set_xlim(min(self.results_sorted["PE"]), max(self.results_sorted["PE"]))
+        self.ax4.set_xscale("log")
         self.ax4.set_ylim(0, max_thickness)
         self.ax4.set_yticks(np.arange(0, max_thickness+50, 50))
         self.ax4.grid(color="grey", linestyle="dashed", which="both")
@@ -7169,6 +7384,12 @@ class Subsurface:
                 units_sorted[-1].append("olivedrab")
             elif rock in ["Granite", "Gabbro", "Diorite"]:
                 units_sorted[-1].append("darkorange")
+            elif rock == "Kupferschiefer":
+                units_sorted[-1].append("gray")
+            elif rock == "limestone":
+                units_sorted[-1].append("skyblue")
+            elif rock == "Anhydrite":
+                units_sorted[-1].append("orchid")
         legend_lithology = []
         for i in range(len(units_sorted)):
             legend_lithology.append(mpatches.Patch(facecolor=units_sorted[i][-1], hatch="", label=units_sorted[i][0]))
