@@ -3311,7 +3311,7 @@ class Rocks:
         else:
             #
             data_all = []
-            if self.rock not in ["Conglomerate"]:
+            if self.rock not in ["Conglomerate", "Sandstone"]:
                 for i in range(var_entr_start):
                     if self.rock == "Sandstone":
                         data = Sandstone(fluid="water", actualThickness=0).create_sandstone(
@@ -3577,13 +3577,17 @@ class Rocks:
                 if self.rock == "Conglomerate":
                     data = Sandstone(fluid="water", actualThickness=0).create_conglomerate(
                         number=var_entr_start, porosity=[self.var_phi0.get()/100, self.var_phi1.get()/100])
-                    rb_oxides = SE(
-                        parent=self.parent_rock, row_id=34, column_id=1, n_rows=1, n_columns=1, bg=self.color_acc_01,
-                        fg="black").create_radiobutton(
-                        var_rb=self.var_rb_geochem, var_rb_set=var_rb_geochem_start, value_rb=4, text="Oxides",
-                        color_bg=self.color_acc_01, command=lambda var_rb=self.var_rb_geochem:
-                        self.change_radiobutton(var_rb))
-                    self.gui_elements.append(rb_oxides)
+                elif self.rock == "Sandstone":
+                    data = Sandstone(fluid="water", actualThickness=0).create_sandstone(
+                        number=var_entr_start, porosity=[self.var_phi0.get()/100, self.var_phi1.get()/100])
+                #
+                rb_oxides = SE(
+                    parent=self.parent_rock, row_id=34, column_id=1, n_rows=1, n_columns=1, bg=self.color_acc_01,
+                    fg="black").create_radiobutton(
+                    var_rb=self.var_rb_geochem, var_rb_set=var_rb_geochem_start, value_rb=4, text="Oxides",
+                    color_bg=self.color_acc_01, command=lambda var_rb=self.var_rb_geochem:
+                    self.change_radiobutton(var_rb))
+                self.gui_elements.append(rb_oxides)
                 for i in range(var_entr_start):
                     mineral_data = {}
                     for key, value in data["mineralogy"].items():
@@ -3921,7 +3925,7 @@ class Rocks:
         #
         try:
             data_all = []
-            if self.rock not in ["Conglomerate"]:
+            if self.rock not in ["Conglomerate", "Sandstone"]:
                 for i in range(var_entr.get()):
                     if self.rock == "Sandstone":
                         data = Sandstone(fluid="water", actualThickness=0).create_sandstone(
@@ -4067,6 +4071,9 @@ class Rocks:
             else:
                 if self.rock == "Conglomerate":
                     data = Sandstone(fluid="water", actualThickness=0).create_conglomerate(
+                        number=var_entr.get(), porosity=[self.var_phi0.get()/100, self.var_phi1.get()/100])
+                elif self.rock == "Sandstone":
+                    data = Sandstone(fluid="water", actualThickness=0).create_sandstone(
                         number=var_entr.get(), porosity=[self.var_phi0.get()/100, self.var_phi1.get()/100])
                 for i in range(var_entr.get()):
                     mineral_data = {}
@@ -4445,11 +4452,13 @@ class Rocks:
                 pass
             #
             if self.rock in ["Sandstone"]:
+                w_Chl = round(np.mean(self.minerals["Chl"]), 4)
+                w_Hem = round(np.mean(self.minerals["Hem"]), 4)
                 self.list_oxides = {
-                    "Al": ["Al2O3", 1.8895], "C": ["CO2", 3.6644], "Ca": ["CaO", 1.3992], "Fe": ["Fe2O3", 1.4297],
-                    "H": ["H2O", 8.9360], "K": ["K2O", 1.2046], "Mg": ["MgO", 1.6582], "Mn": ["MnO", 1.2912],
-                    "Na": ["Na2O", 1.3480], "Ni": ["NiO", 1.2725], "S": ["SO3", 2.4972], "Si": ["SiO2", 2.1392],
-                    "Ti": ["TiO2", 1.6681], "Zn": ["ZnO", 1.2448]}
+                    "Al": ["Al2O3", 1.8895], "C": ["CO2", 3.6644], "Ca": ["CaO", 1.3992],
+                    "Fe": ["FeO", w_Chl, 1.2865, "Fe2O3", w_Hem, 1.4297], "H": ["H2O", 8.9360], "K": ["K2O", 1.2046],
+                    "Mg": ["MgO", 1.6582], "Mn": ["MnO", 1.2912], "Na": ["Na2O", 1.3480], "Ni": ["NiO", 1.2725],
+                    "S": ["SO3", 2.4972], "Si": ["SiO2", 2.1392], "Ti": ["TiO2", 1.6681], "Zn": ["ZnO", 1.2448]}
             elif self.rock in ["Conglomerate"]:
                 w_Bt = round(np.mean(self.minerals["Bt"]), 4)
                 w_Hem = round(np.mean(self.minerals["Hem"]), 4)
