@@ -18,7 +18,7 @@ from modules.gui_elements import SimpleElements as SE
 from modules.sulfates import Sulfates
 from modules.oxides import Oxides
 from modules.sulfides import Sulfides
-from modules.carbonates import Carbonates
+from modules.carbonates import Carbonates, CarbonateRocks
 from modules.halogenes import Halogenes
 from modules.silicates import Tectosilicates, Phyllosilicates, Nesosilicates, Sorosilicates, Inosilicates, Cyclosilicates
 from modules.phospides import Phospides
@@ -379,7 +379,7 @@ class GebPyGUI(tk.Frame):
             Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                   color_acc=[self.color_accent_03, self.color_accent_04], rock=var_opt, lbl_w=self.lbl_w,
                   entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
-        elif var_opt == "Anhydrite":
+        elif var_opt == "Anhydrite (Rock)":
             Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                   color_acc=[self.color_accent_03, self.color_accent_04], rock=var_opt, lbl_w=self.lbl_w,
                   entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
@@ -810,7 +810,7 @@ class GebPyGUI(tk.Frame):
                 command=lambda var_opt=var_opt_1_8: self.select_opt(var_opt))
         elif var_opt == "Evaporite Rocks":
             var_opt_1_4 = tk.StringVar()
-            opt_list_1_4 = ["Rock Salt", "Anhydrite"]
+            opt_list_1_4 = ["Rock Salt", "Anhydrite (Rock)"]
             opt_list_1_4.sort()
             self.opt_evapr = SE(parent=self.parent, row_id=16, column_id=0, n_rows=2, n_columns=2,
                               bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
@@ -834,12 +834,14 @@ class GebPyGUI(tk.Frame):
                 var_opt=var_opt_1_6, var_opt_set="Select Rock", opt_list=opt_list_1_6,
                 command=lambda var_opt=var_opt_1_6: self.select_opt(var_opt))
         elif var_opt == "Zechstein":
-            data_z1 = Zechstein().create_zechstein_z1()
+            data_z2 = Zechstein(actual_thickness=0).create_zechstein_z2(top_z=0, thickness_z2=300)
+            data_z1 = Zechstein(actual_thickness=300).create_zechstein_z1(top_z=300, thickness_z1=100)
+            data_zechstein = data_z2 + data_z1
             Subsurface(
                 parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                 color_acc=[self.color_accent_03, self.color_accent_04], subsurface=var_opt, lbl_w=self.lbl_w,
                 entr_w=self.entr_w, gui_elements=self.gui_elements).create_real_world_sequences(
-                name=var_opt, data_units=data_z1)
+                name=var_opt, data_units=data_zechstein)
     #
     def change_radiobutton_mode(self, var_rb_mode):
         if var_rb_mode.get() == 0:
@@ -3262,8 +3264,9 @@ class Rocks:
         elif self.rock in ["Limestone", "Dolomite Rock", "Pyroclastic Rock"]:
             var_phi0_start = 0
             var_phi1_start = 50
-        elif self.rock in ["Rock Salt", "Anhydrite", "Felsic Rock", "Intermediate Rock", "Granite", "Gabbro", "Syenite",
-                           "Diorite", "Granodiorite", "Tonalite", "Monzonite", "Quartzolite", "Qz-rich Granitoid"]:
+        elif self.rock in ["Rock Salt", "Anhydrite (Rock)", "Felsic Rock", "Intermediate Rock", "Granite", "Gabbro",
+                           "Syenite", "Diorite", "Granodiorite", "Tonalite", "Monzonite", "Quartzolite",
+                           "Qz-rich Granitoid"]:
             var_phi0_start = 0
             var_phi1_start = 2.5
         else:
@@ -3341,7 +3344,8 @@ class Rocks:
                     elif self.rock == "Shale":
                         data = shale(fluid="water").create_simple_shale(dict_output=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
                     elif self.rock == "Limestone":
-                        data = limestone(fluid="water", actualThickness=0).create_simple_limestone(dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
+                        data = CarbonateRocks(fluid="water", actualThickness=0).create_limestone(
+                            number=1, porosity=[self.var_phi0.get() / 100, self.var_phi1.get() / 100])
                     elif self.rock == "Dolomite Rock":
                         data = dolomite(fluid="water", actualThickness=0).create_simple_dolomite(dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
                     elif self.rock == "Marl":
@@ -3536,12 +3540,13 @@ class Rocks:
                         data = Pyroclastic(fluid="water", actualThickness=0).create_pyroclastic_rock(
                             porosity=rd.uniform(self.var_phi0.get() / 100, self.var_phi1.get() / 100))
                     #
+                    ## Evaporite Rocks
                     elif self.rock == "Rock Salt":
                         data = Evaporites(fluid="water", actualThickness=0).create_simple_rocksalt(
                             dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
-                    elif self.rock == "Anhydrite":
-                        data = Evaporites(fluid="water", actualThickness=0).create_simple_anhydrite(
-                            dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
+                    elif self.rock == "Anhydrite (Rock)":
+                        data = Evaporites(fluid="water", actualThickness=0).create_anhydrite_rock(number=1,
+                            porosity=[self.var_phi0.get()/100, self.var_phi1.get()/100])
                     ## Ore Rocks
                     elif self.rock == "Kupferschiefer":
                         data = Ores(
@@ -3584,6 +3589,9 @@ class Rocks:
                         number=var_entr_start, porosity=[self.var_phi0.get()/100, self.var_phi1.get()/100])
                 elif self.rock == "Sandstone":
                     data = Sandstone(fluid="water", actualThickness=0).create_sandstone(
+                        number=var_entr_start, porosity=[self.var_phi0.get()/100, self.var_phi1.get()/100])
+                elif self.rock == "Anhydrite (Rock)":
+                    data = Evaporites(fluid="water", actualThickness=0).create_anhydrite_rock(
                         number=var_entr_start, porosity=[self.var_phi0.get()/100, self.var_phi1.get()/100])
                 #
                 rb_oxides = SE(
@@ -3941,7 +3949,8 @@ class Rocks:
                     elif self.rock == "Shale":
                         data = shale(fluid="water").create_simple_shale(dict_output=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
                     elif self.rock == "Limestone":
-                        data = limestone(fluid="water", actualThickness=0).create_simple_limestone(dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
+                        data = CarbonateRocks(fluid="water", actualThickness=0).create_limestone(
+                            number=1, porosity=[self.var_phi0.get() / 100, self.var_phi1.get() / 100])
                     elif self.rock == "Dolomite Rock":
                         data = dolomite(fluid="water", actualThickness=0).create_simple_dolomite(dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
                     elif self.rock == "Marl":
@@ -4034,9 +4043,9 @@ class Rocks:
                     elif self.rock == "Rock Salt":
                         data = Evaporites(fluid="water", actualThickness=0).create_simple_rocksalt(
                             dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
-                    elif self.rock == "Anhydrite":
-                        data = Evaporites(fluid="water", actualThickness=0).create_simple_anhydrite(
-                            dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
+                    elif self.rock == "Anhydrite (Rock)":
+                        data = Evaporites(fluid="water", actualThickness=0).create_anhydrite_rock(
+                            porosity=[self.var_phi0.get()/100, self.var_phi1.get()/100])
                     ## Ore Rocks
                     elif self.rock == "Kupferschiefer":
                         data = Ores(
@@ -5790,7 +5799,7 @@ class Subsurface:
         for prop in properties:
             self.results_sorted[prop] = []
         #
-        self.results_sorted["Bottom"].append(100.0)
+        #self.results_sorted["Bottom"].append(100.0)
         for unit in data_units:
             for key, value in unit.items():
                 rock = value["rock"]
@@ -5802,12 +5811,17 @@ class Subsurface:
             for property in properties:
                 self.results_units[rock][property] = []
         n_units = []
+        self.results_sorted["Top"].append(0.0)
+        i = 0
         for unit in data_units:
             n_unit = len(unit)
             n_units.append(n_unit)
             for key, value in unit.items():
-                self.results_sorted["Top"].append(key)
-                self.results_sorted["Bottom"].append(key)
+                if i == 0:
+                    self.results_sorted["Bottom"].append(key)
+                else:
+                    self.results_sorted["Top"].append(key)
+                    self.results_sorted["Bottom"].append(key)
                 self.results_sorted["rho"].append(value["rho"])
                 self.results_sorted["vP"].append(value["vP"])
                 self.results_sorted["vS"].append(value["vS"])
@@ -5819,9 +5833,17 @@ class Subsurface:
                 self.results_sorted["GR"].append(value["GR"])
                 self.results_sorted["PE"].append(value["PE"])
                 self.results_sorted["rock"].append(value["rock"])
+                i += 1
         #
-        del self.results_sorted["Bottom"][-1]
-        self.results_sorted["thickness"] = list(np.around(np.array(self.results_sorted["Bottom"]) - np.array(self.results_sorted["Top"]), 2))
+        self.results_sorted["Bottom"][-1]
+        np.sort(np.array(self.results_sorted["Bottom"]))
+        np.sort(np.array(self.results_sorted["Top"]))
+        self.results_sorted["thickness"].append(self.results_sorted["Bottom"][0])
+        for index, item in enumerate(self.results_sorted["Bottom"][1:]):
+            self.results_sorted["thickness"].append(item - self.results_sorted["thickness"][-1])
+        a = np.around([j - i for i, j in zip(self.results_sorted["Bottom"][:-1], self.results_sorted["Bottom"][1:])], 4)
+        a = np.insert(a, 0, a[0])
+        self.results_sorted["thickness"] = list(a)
         #
         start = 0
         end = n_units[0]
@@ -5830,11 +5852,50 @@ class Subsurface:
                 self.results_units[rock][property].extend(self.results_sorted[property][start:end])
             start += n_units[index]
             end += n_units[index]
+        # for index, value in enumerate(self.results_sorted["Top"]):
+        #     print(value, self.results_sorted["Bottom"][index])
         #
         # print("Rocks:", self.list_rocks_short)
+        # print("Rocks:", self.results_sorted["rock"], len(self.results_sorted["rock"]))
         # print("Top:", self.results_sorted["Top"], len(self.results_sorted["Top"]))
         # print("Bottom:", self.results_sorted["Bottom"], len(self.results_sorted["Bottom"]))
         # print("Thickness:", self.results_sorted["thickness"], len(self.results_sorted["thickness"]))
+        #
+        unit_sections = {}
+        for rock in self.list_rocks_short:
+            if rock == "Sandstone":
+                unit_sections[rock] = {"Intervals": [], "Color": "tan"}
+            elif rock == "Shale":
+                unit_sections[rock] = {"Intervals": [], "Color": "olivedrab"}
+            elif rock in ["Granite", "Gabbro", "Diorite"]:
+                unit_sections[rock] = {"Intervals": [], "Color": "darkorange"}
+            elif rock == "Kupferschiefer":
+                unit_sections[rock] = {"Intervals": [], "Color": "gray"}
+            elif rock in ["limestone", "Limestone"]:
+                unit_sections[rock] = {"Intervals": [], "Color": "skyblue"}
+            elif rock == "Anhydrite":
+                unit_sections[rock] = {"Intervals": [], "Color": "orchid"}
+            elif rock == "Dolomite":
+                unit_sections[rock] = {"Intervals": [], "Color": "lightcyan"}
+            elif rock == "Rock Salt":
+                unit_sections[rock] = {"Intervals": [], "Color": "cornflowerblue"}
+            elif rock == "Potash":
+                unit_sections[rock] = {"Intervals": [], "Color": "yellowgreen"}
+        for index, rock in enumerate(self.results_sorted["rock"]):
+            if index > 1:
+                top = round(self.results_sorted["Bottom"][index - 1], 4)
+                bottom = round(self.results_sorted["Top"][index], 4)
+            else:
+                if index == 0:
+                    top = round(self.results_sorted["Top"][index], 4)
+                    bottom = round(self.results_sorted["Bottom"][index], 4)
+                else:
+                    top = round(self.results_sorted["Bottom"][index - 1], 4)
+                    bottom = round(self.results_sorted["Top"][index], 4)
+            unit_sections[rock]["Intervals"].append(
+                [round(self.results_sorted["Top"][index], 4),
+                 round(self.results_sorted["Top"][index] + self.results_sorted["thickness"][index], 4)])
+            unit_sections[rock]["Intervals"].append([top, bottom])
         # print("rho:", self.results_sorted["rho"], len(self.results_sorted["rho"]))
         # print("vP:", self.results_sorted["vP"], len(self.results_sorted["vP"]))
         # print("vS:", self.results_sorted["vS"], len(self.results_sorted["vS"]))
@@ -5977,7 +6038,7 @@ class Subsurface:
         #
         self.create_well_log_plot(
             parent=self.parent_subsurface, data_x=self.results_sorted["GR"], data_y=self.results_sorted["Top"],
-            row_id=2, column_id=9, n_rows=45, n_columns=9)
+            row_id=2, column_id=9, n_rows=45, n_columns=9, unit_sections=unit_sections)
         #
         #
     def create_random_sequences(self, thickness, style, n_parts=20):
@@ -7301,21 +7362,30 @@ class Subsurface:
         self.canvas.get_tk_widget().grid(row=row_id, column=column_id, rowspan=n_rows, columnspan=n_columns,
                                          sticky="nesw")
     #
-    def create_well_log_plot(self, parent, data_x, data_y, row_id, column_id, n_rows, n_columns):
+    def create_well_log_plot(self, parent, data_x, data_y, row_id, column_id, n_rows, n_columns, unit_sections=None):
         #
         self.canvas = None
         max_thickness = max(data_y)
-        self.fig, (self.ax1, self.ax2, self.ax3, self.ax4, self.ax5) = plt.subplots(1, 5, sharey="row", gridspec_kw={"wspace": 0.15}, figsize=(12, 16), facecolor="#E9ECED")
+        if max_thickness <= 100:
+            step_depth = 10
+        elif 100 < max_thickness <= 500:
+            step_depth = 50
+        elif 500 < max_thickness <= 1000:
+            step_depth = 100
+        self.fig, (self.ax1, self.ax2, self.ax3, self.ax4, self.ax5) = plt.subplots(
+            1, 5, sharey="row", gridspec_kw={"wspace": 0.25}, figsize=(12, 24), facecolor="#E9ECED")
         self.fig.subplots_adjust(wspace=0.25)
         # 1
         self.ax1.plot(self.results_sorted["GR"], self.results_sorted["Top"], color="#00549F", linewidth=2)
         self.ax1.set_xlabel("GR [API]")
         self.ax1.set_ylabel("Depth [m]")
-        self.ax1.set_xlim(-1, max(self.results_sorted["GR"]))
-        self.ax1.set_xticks(np.arange(0, max(self.results_sorted["GR"])+25, 25))
-        #self.ax1.set_xscale("log")
+        if max(self.results_sorted["GR"]) > 500:
+            self.ax1.set_xscale("log")
+        else:
+            self.ax1.set_xlim(-1, max(self.results_sorted["GR"]))
+            self.ax1.set_xticks(np.arange(0, max(self.results_sorted["GR"])+50, 50))
         self.ax1.set_ylim(0, max_thickness)
-        self.ax1.set_yticks(np.arange(0, max_thickness+50, 50))
+        self.ax1.set_yticks(np.arange(0, max_thickness+step_depth, step_depth))
         self.ax1.grid(color="grey", linestyle="dashed")
         plt.gca().invert_yaxis()
         plt.rc("axes", axisbelow=True)
@@ -7328,7 +7398,7 @@ class Subsurface:
         self.ax2.set_xticks(np.arange(0, 8.5, 2.0))
         self.ax2.xaxis.label.set_color("#00549F")
         self.ax2.set_ylim(0, max_thickness)
-        self.ax2.set_yticks(np.arange(0, max_thickness+50, 50))
+        self.ax2.set_yticks(np.arange(0, max_thickness+step_depth, step_depth))
         self.ax2.grid(color="grey", linestyle="dashed")
         self.ax2_2 = self.ax2.twiny()
         self.ax2_2.plot(vS_edit, self.results_sorted["Top"], color="#CC071E", linewidth=2)
@@ -7348,7 +7418,7 @@ class Subsurface:
         self.ax3.set_xticks(np.around(np.linspace(1.6, 3.2, 4, endpoint=True), decimals=1))
         self.ax3.xaxis.label.set_color("#57AB27")
         self.ax3.set_ylim(0, max_thickness)
-        self.ax3.set_yticks(np.arange(0, max_thickness+50, 50))
+        self.ax3.set_yticks(np.arange(0, max_thickness+step_depth, step_depth))
         self.ax3.grid(color="grey", linestyle="dashed")
         self.ax3_2 = self.ax3.twiny()
         self.ax3_2.plot(phi_edit, self.results_sorted["Top"], color="#00549F", linewidth=2)
@@ -7366,46 +7436,69 @@ class Subsurface:
         self.ax4.set_xlim(min(self.results_sorted["PE"]), max(self.results_sorted["PE"]))
         self.ax4.set_xscale("log")
         self.ax4.set_ylim(0, max_thickness)
-        self.ax4.set_yticks(np.arange(0, max_thickness+50, 50))
+        self.ax4.set_yticks(np.arange(0, max_thickness+step_depth, step_depth))
         self.ax4.grid(color="grey", linestyle="dashed", which="both")
         plt.gca().invert_yaxis()
         plt.rc("axes", axisbelow=True)
         # 5
-        n_units = []
-        units_sorted = []
-        for rock in self.list_rocks_short:
-            units_sorted.append([rock])
-            n_units.append(sum(self.results_plot[rock]["thickness"]))
-            for index, value in enumerate(self.results_plot[rock]["thickness"], start=0):
-                units_sorted[-1].append([self.results_plot[rock]["Top"][index], self.results_plot[rock]["Bottom"][index]])
-            if rock == "Sandstone":
-                units_sorted[-1].append("tan")
-            elif rock == "Shale":
-                units_sorted[-1].append("olivedrab")
-            elif rock in ["Granite", "Gabbro", "Diorite"]:
-                units_sorted[-1].append("darkorange")
-            elif rock == "Kupferschiefer":
-                units_sorted[-1].append("gray")
-            elif rock == "limestone":
-                units_sorted[-1].append("skyblue")
-            elif rock == "Anhydrite":
-                units_sorted[-1].append("orchid")
-        legend_lithology = []
-        for i in range(len(units_sorted)):
-            legend_lithology.append(mpatches.Patch(facecolor=units_sorted[i][-1], hatch="", label=units_sorted[i][0]))
-        for i in range(len(n_units)):
-            for j in range(1, len(units_sorted[i])-1):
-                self.ax5.hist(x=np.linspace(units_sorted[i][j][0], units_sorted[i][j][1]), bins=len(n_units),
-                              color=units_sorted[i][-1], orientation="horizontal")
+        if unit_sections == None:
+            n_units = []
+            units_sorted = []
+            for rock in self.list_rocks_short:
+                units_sorted.append([rock])
+                n_units.append(sum(self.results_plot[rock]["thickness"]))
+                for index, value in enumerate(self.results_plot[rock]["thickness"], start=0):
+                    if self.results_plot[rock]["Top"][index] != self.results_plot[rock]["Bottom"][index]:
+                        units_sorted[-1].append(
+                            [self.results_plot[rock]["Top"][index], self.results_plot[rock]["Bottom"][index]])
+                    else:
+                        units_sorted[-1].append(
+                            [self.results_plot[rock]["Bottom"][index-1], self.results_plot[rock]["Bottom"][index]])
+                if rock == "Sandstone":
+                    units_sorted[-1].append("tan")
+                elif rock == "Shale":
+                    units_sorted[-1].append("olivedrab")
+                elif rock in ["Granite", "Gabbro", "Diorite"]:
+                    units_sorted[-1].append("darkorange")
+                elif rock == "Kupferschiefer":
+                    units_sorted[-1].append("gray")
+                elif rock in ["limestone", "Limestone"]:
+                    units_sorted[-1].append("skyblue")
+                elif rock == "Anhydrite":
+                    units_sorted[-1].append("orchid")
+                elif rock == "Dolomite":
+                    units_sorted[-1].append("lightcyan")
+                elif rock == "Rock Salt":
+                    units_sorted[-1].append("cornflowerblue")
+                elif rock == "Potash":
+                    units_sorted[-1].append("yellowgreen")
+            legend_lithology = []
+            for i in range(len(units_sorted)):
+                legend_lithology.append(mpatches.Patch(facecolor=units_sorted[i][-1], hatch="", label=units_sorted[i][0]))
+            for i in range(len(n_units)):
+                for j in range(1, len(units_sorted[i])-1):
+                    self.ax5.hist(x=np.linspace(units_sorted[i][j][0], units_sorted[i][j][1]), bins=len(n_units),
+                                  color=units_sorted[i][-1], orientation="horizontal")
+        else:
+            n_units = len(unit_sections)
+            legend_lithology = []
+            for key, value in unit_sections.items():
+                legend_lithology.append(
+                    mpatches.Patch(facecolor=value["Color"], hatch="", label=key))
+            for key, value in unit_sections.items():
+                for interval in value["Intervals"]:
+                    self.ax5.hist(x=np.linspace(interval[0], interval[1]), bins=n_units,
+                                  color=value["Color"], orientation="horizontal")
         self.ax5.set_xlabel("Lithology")
         self.ax5.set_xlim(0, 5)
         self.ax5.set_xticks([])
         self.ax5.set_ylim(0, max_thickness)
-        self.ax5.set_yticks(np.arange(0, max_thickness+50, 50))
+        self.ax5.set_yticks(np.arange(0, max_thickness+step_depth, step_depth))
         self.ax5.margins(0.3, 0.0)
         plt.gca().invert_yaxis()
         plt.rc("axes", axisbelow=True)
-        self.ax5.legend(handles=legend_lithology, loc="lower left", bbox_to_anchor=(0, -0.125), shadow=True, ncol=1, prop={'size': 8}, frameon=False)
+        self.ax5.legend(handles=legend_lithology, loc="lower left", bbox_to_anchor=(0, -0.125), shadow=True, ncol=2,
+                        prop={'size': 7}, frameon=False)
         #plt.tight_layout()
         #
         self.canvas = FigureCanvasTkAgg(self.fig, master=parent)

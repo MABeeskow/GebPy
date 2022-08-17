@@ -21,6 +21,8 @@ from matplotlib.ticker import NullFormatter
 from modules import sequences, geophysics
 from modules import igneous
 from modules.siliciclastics import Sandstone
+from modules.evaporites import Evaporites
+from modules.carbonates import CarbonateRocks
 
 # ## TESTING
 # # Test soil generation within SedimentaryBasin class
@@ -161,6 +163,19 @@ from modules.siliciclastics import Sandstone
 # for i in range(10):
 #     data_conglomerate = Sandstone().create_conglomerate()
 #     print(i, data_conglomerate)
+## CARBONATES
+# for i in range(10):
+#     data_limestone = CarbonateRocks().create_limestone(number=1)
+#     print(i, data_limestone)
+#     data_dolomite = CarbonateRocks().create_dolomite(number=1)
+#     print(i, data_dolomite)
+
+## EVAPORITE ROCKS ##
+# for i in range(10):
+#     data_anhydrite = Evaporites(fluid="water", actualThickness=0).create_anhydrite_rock(number=1)
+#     print(i, data_anhydrite)
+#     data_rocksalt = Evaporites(fluid="water", actualThickness=0).create_rocksalt(number=1)
+#     print(i, data_rocksalt)
 
 ## IGNEOUS ROCKS ##
 ## PLUTONICS
@@ -231,6 +246,6 @@ from modules.siliciclastics import Sandstone
 #     data = igneous.Volcanic(fluid="water", actualThickness=100).create_latite_generalized()
 #     print(i, data)
 ## PYROCLASTIC ROCKS ##
-for i in range(10):
-    data = igneous.Pyroclastic(fluid="water", actualThickness=100).create_pyroclastic_rock()
-    print(i, data)
+# for i in range(10):
+#     data = igneous.Pyroclastic(fluid="water", actualThickness=100).create_pyroclastic_rock()
+#     print(i, data)
