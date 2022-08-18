@@ -397,9 +397,9 @@ class Zechstein:
             if counter == len(list_thickness) and np.sum(list_thickness) == thickness_z4:
                 condition = True
         #
-        for index, unit in enumerate(list_units):
-            print(unit, list_thickness[index])
-        print("Total Thickness:", np.sum(list_thickness))
+        # for index, unit in enumerate(list_units):
+        #     print(unit, list_thickness[index])
+        # print("Total Thickness:", np.sum(list_thickness))
         # self.actual_thickness += thickness_dolomite / self.resolution
         actual_top = top_z
         actual_bottom = top_z + thickness_anhydrite_upper
