@@ -836,10 +836,10 @@ class GebPyGUI(tk.Frame):
                 var_opt=var_opt_1_6, var_opt_set="Select Rock", opt_list=opt_list_1_6,
                 command=lambda var_opt=var_opt_1_6: self.select_opt(var_opt))
         elif var_opt == "Zechstein":
-            data_z4 = Zechstein(actual_thickness=0).create_zechstein_z4(top_z=0, thickness_z4=300)
-            data_z3 = Zechstein(actual_thickness=0).create_zechstein_z3(top_z=300, thickness_z3=300)
-            data_z2 = Zechstein(actual_thickness=0).create_zechstein_z2(top_z=600, thickness_z2=300)
-            data_z1 = Zechstein(actual_thickness=300).create_zechstein_z1(top_z=900, thickness_z1=100)
+            data_z4 = Zechstein(actual_thickness=0).create_zechstein_z4(top_z=0, thickness_z4=300)      # Aller
+            data_z3 = Zechstein(actual_thickness=0).create_zechstein_z3(top_z=300, thickness_z3=300)    # Leine
+            data_z2 = Zechstein(actual_thickness=0).create_zechstein_z2(top_z=600, thickness_z2=300)    # Straßfurt
+            data_z1 = Zechstein(actual_thickness=300).create_zechstein_z1(top_z=900, thickness_z1=100)  # Werra
             data_zechstein = data_z4 + data_z3 + data_z2 + data_z1
             Subsurface(
                 parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
