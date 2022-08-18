@@ -171,11 +171,13 @@ from modules.carbonates import CarbonateRocks
 #     print(i, data_dolomite)
 
 ## EVAPORITE ROCKS ##
-# for i in range(10):
+for i in range(10):
 #     data_anhydrite = Evaporites(fluid="water", actualThickness=0).create_anhydrite_rock(number=1)
 #     print(i, data_anhydrite)
 #     data_rocksalt = Evaporites(fluid="water", actualThickness=0).create_rocksalt(number=1)
 #     print(i, data_rocksalt)
+    data_potash = Evaporites(fluid="water", actualThickness=0).create_potash(number=1)
+    print(i, data_potash)
 
 ## IGNEOUS ROCKS ##
 ## PLUTONICS

@@ -6,7 +6,7 @@
 # Name:		evaporites.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		17.08.2022
+# Date:		18.08.2022
 
 #-----------------------------------------------
 
@@ -218,12 +218,15 @@ class Evaporites:
         #
         self.data_anhydrite = Sulfates(data_type=True).create_anhydrite()
         self.data_gypsum = Sulfates(data_type=True).create_gypsum()
+        self.data_kainite = Sulfates(data_type=True).create_kainite()
+        self.data_kieserite = Sulfates(data_type=True).create_kieserite()
         self.data_celestine = Sulfates(data_type=True).create_celestine()
         self.data_calcite = Carbonates(data_type=True).create_calcite()
         self.data_dolomite = Carbonates(data_type=True).create_dolomite()
         self.data_magnesite = Carbonates(data_type=True).create_magnesite()
         self.data_halite = Halogenes(dict=True).create_halite()
         self.data_sylvite = Halogenes(dict=True).create_sylvite()
+        self.data_carnallite = Halogenes(dict=True).create_carnallite()
         self.data_water = Water.water("")
     #
     def create_simple_rocksalt(self, w_Na=None, w_Cl=None, amounts=None, porosity=None, dict=False):
@@ -1109,10 +1112,10 @@ class Evaporites:
         #
         return results
     #
-    def create_potash(self, number=1, composition=None, porosity=None):
+    def create_potash(self, number=1, composition=None, porosity=None, dominance=None):
         #
-        mineralogy = {"Anh": self.data_anhydrite, "Cal": self.data_calcite, "Dol": self.data_dolomite,
-                      "Mgs": self.data_magnesite, "Hl": self.data_halite, "Syl": self.data_sylvite}
+        mineralogy = {"Hl": self.data_halite, "Syl": self.data_sylvite, "Car": self.data_carnallite,
+                      "Ka": self.data_kainite, "Kie": self.data_kieserite}
         #
         condition = False
         #
@@ -1123,41 +1126,74 @@ class Evaporites:
             w_elements = {}
             #
             if composition != None:
-                phi_anh = composition["Anh"]
-                phi_cal = composition["Cal"]
-                phi_dol = composition["Dol"]
-                phi_mgs = composition["Mgs"]
                 phi_hl = composition["Hl"]
                 phi_syl = composition["Syl"]
+                phi_car = composition["Car"]
+                phi_Ka = composition["Ka"]
+                phi_Kie = composition["Kie"]
                 #
-                phi_minerals["Anh"] = phi_anh
-                phi_minerals["Cal"] = phi_cal
-                phi_minerals["Dol"] = phi_dol
-                phi_minerals["Mgs"] = phi_mgs
                 phi_minerals["Hl"] = phi_hl
                 phi_minerals["Syl"] = phi_syl
+                phi_minerals["Car"] = phi_car
+                phi_minerals["Ka"] = phi_Ka
+                phi_minerals["Kie"] = phi_Kie
             else:
                 condition_2 = False
                 while condition_2 == False:
-                    phi_syl = round(rd.uniform(0.75, 1.0), 4)
-                    phi_hl = round(rd.uniform(0.0, (1.0 - phi_syl)), 4)
-                    phi_cal = round(rd.uniform(0.0, (1.0 - phi_syl - phi_hl)), 4)
-                    phi_mgs = round(rd.uniform(0.0, (1.0 - phi_syl - phi_hl - phi_cal)), 4)
-                    phi_anh = round(rd.uniform(0.0, (1.0 - phi_syl - phi_hl - phi_cal - phi_mgs)), 4)
-                    phi_dol = round(1 - phi_syl - phi_hl - phi_cal - phi_mgs - phi_anh, 4)
-                    phi_total = phi_syl + phi_hl + phi_cal + phi_mgs + phi_anh + phi_dol
-                    #
-                    if np.isclose(phi_total, 1.0000) == True:
-                        if 0.67 <= phi_syl <= 1.0 and 0.0 <= phi_cal <= 0.2 and 0.0 <= phi_dol <= 0.2 \
-                                and 0.0 <= phi_mgs <= 0.1 and 0.0 <= phi_anh <= 0.05 and 0.0 <= phi_hl <= 0.25:
-                            condition_2 = True
+                    if dominance == None:
+                        phi_hl = round(rd.uniform(0.35, 0.7), 4)
+                        phi_syl = round(rd.uniform(0.2, (1.0 - phi_hl)), 4)
+                        phi_car = round(rd.uniform(0.0, (1.0 - phi_hl - phi_syl)), 4)
+                        phi_Ka = round(rd.uniform(0.0, (1.0 - phi_hl - phi_syl - phi_car)), 4)
+                        phi_Kie = round(1 - phi_hl - phi_syl - phi_car - phi_Ka, 4)
+                        phi_total = phi_hl + phi_syl + phi_car + phi_Ka + phi_Kie
+                        #
+                        if np.isclose(phi_total, 1.0000) == True:
+                            if 0.35 <= phi_hl <= 0.7 and 0.2 <= phi_syl <= 0.4 and 0.0 <= phi_car <= 0.2 \
+                                    and 0.0 <= phi_Ka <= 0.2 and 0.0 <= phi_Kie <= 0.2:
+                                condition_2 = True
+                    elif dominance == "Syl":
+                        phi_hl = round(rd.uniform(0.3, 0.6), 4)
+                        phi_syl = round(rd.uniform(0.3, (1.0 - phi_hl)), 4)
+                        phi_car = round(rd.uniform(0.0, (1.0 - phi_hl - phi_syl)), 4)
+                        phi_Ka = round(rd.uniform(0.0, (1.0 - phi_hl - phi_syl - phi_car)), 4)
+                        phi_Kie = round(1 - phi_hl - phi_syl - phi_car - phi_Ka, 4)
+                        phi_total = phi_hl + phi_syl + phi_car + phi_Ka + phi_Kie
+                        #
+                        if np.isclose(phi_total, 1.0000) == True:
+                            if 0.3 <= phi_hl <= 0.6 and 0.3 <= phi_syl <= 0.6 and 0.0 <= phi_car <= 0.2 \
+                                    and 0.0 <= phi_Ka <= 0.2 and 0.0 <= phi_Kie <= 0.2:
+                                condition_2 = True
+                    elif dominance == "Kie":
+                        phi_hl = round(rd.uniform(0.3, 0.6), 4)
+                        phi_syl = round(rd.uniform(0.0, (1.0 - phi_hl)), 4)
+                        phi_car = round(rd.uniform(0.0, (1.0 - phi_hl - phi_syl)), 4)
+                        phi_Ka = round(rd.uniform(0.0, (1.0 - phi_hl - phi_syl - phi_car)), 4)
+                        phi_Kie = round(1 - phi_hl - phi_syl - phi_car - phi_Ka, 4)
+                        phi_total = phi_hl + phi_syl + phi_car + phi_Ka + phi_Kie
+                        #
+                        if np.isclose(phi_total, 1.0000) == True:
+                            if 0.3 <= phi_hl <= 0.6 and 0.0 <= phi_syl <= 0.2 and 0.0 <= phi_car <= 0.2 \
+                                    and 0.0 <= phi_Ka <= 0.2 and 0.3 <= phi_Kie <= 0.6:
+                                condition_2 = True
+                    elif dominance == "Car":
+                        phi_hl = round(rd.uniform(0.3, 0.6), 4)
+                        phi_syl = round(rd.uniform(0.0, (1.0 - phi_hl)), 4)
+                        phi_car = round(rd.uniform(0.3, (1.0 - phi_hl - phi_syl)), 4)
+                        phi_Ka = round(rd.uniform(0.0, (1.0 - phi_hl - phi_syl - phi_car)), 4)
+                        phi_Kie = round(1 - phi_hl - phi_syl - phi_car - phi_Ka, 4)
+                        phi_total = phi_hl + phi_syl + phi_car + phi_Ka + phi_Kie
+                        #
+                        if np.isclose(phi_total, 1.0000) == True:
+                            if 0.3 <= phi_hl <= 0.6 and 0.0 <= phi_syl <= 0.2 and 0.3 <= phi_car <= 0.6 \
+                                    and 0.0 <= phi_Ka <= 0.2 and 0.3 <= phi_Kie <= 0.2:
+                                condition_2 = True
                 #
-                phi_minerals["Anh"] = phi_anh
-                phi_minerals["Cal"] = phi_cal
-                phi_minerals["Dol"] = phi_dol
-                phi_minerals["Mgs"] = phi_mgs
                 phi_minerals["Hl"] = phi_hl
                 phi_minerals["Syl"] = phi_syl
+                phi_minerals["Car"] = phi_car
+                phi_minerals["Ka"] = phi_Ka
+                phi_minerals["Kie"] = phi_Kie
             #
             rho_s = 0
             for key, value in phi_minerals.items():
