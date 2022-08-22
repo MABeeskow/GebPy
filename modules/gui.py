@@ -6799,49 +6799,49 @@ class Subsurface:
                             np.array(self.results_plot["Limestone"]["phi"]) * 100,
                             np.array(self.results_plot["Kupferschiefer"]["phi"]) * 100,
                             np.array(self.results_plot["Potash"]["phi"]) * 100,
-                            np.array(self.results_plot["Shale"]["phi"]) * 100]
+                            np.array(self.results_plot["Mudstone"]["phi"]) * 100]
                 data_vP = [self.results_plot["Anhydrite"]["vP"], self.results_plot["Dolomite"]["vP"],
                            self.results_plot["Rock Salt"]["vP"], self.results_plot["Limestone"]["vP"],
                            self.results_plot["Kupferschiefer"]["vP"], self.results_plot["Potash"]["vP"],
-                           self.results_plot["Shale"]["vP"]]
+                           self.results_plot["Mudstone"]["vP"]]
                 data_vS = [self.results_plot["Anhydrite"]["vS"], self.results_plot["Dolomite"]["vS"],
                            self.results_plot["Rock Salt"]["vS"], self.results_plot["Limestone"]["vS"],
                            self.results_plot["Kupferschiefer"]["vS"], self.results_plot["Potash"]["vS"],
-                           self.results_plot["Shale"]["vS"]]
+                           self.results_plot["Mudstone"]["vS"]]
                 data_vPvS = [self.results_plot["Anhydrite"]["vPvS"], self.results_plot["Dolomite"]["vPvS"],
                            self.results_plot["Rock Salt"]["vPvS"], self.results_plot["Limestone"]["vPvS"],
                            self.results_plot["Kupferschiefer"]["vPvS"], self.results_plot["Potash"]["vPvS"],
-                             self.results_plot["Shale"]["vPvS"]]
+                             self.results_plot["Mudstone"]["vPvS"]]
                 data_K = [self.results_plot["Anhydrite"]["K"], self.results_plot["Dolomite"]["K"],
                            self.results_plot["Rock Salt"]["K"], self.results_plot["Limestone"]["K"],
                            self.results_plot["Kupferschiefer"]["K"], self.results_plot["Potash"]["K"],
-                          self.results_plot["Shale"]["K"]]
+                          self.results_plot["Mudstone"]["K"]]
                 data_G = [self.results_plot["Anhydrite"]["G"], self.results_plot["Dolomite"]["G"],
                            self.results_plot["Rock Salt"]["G"], self.results_plot["Limestone"]["G"],
                            self.results_plot["Kupferschiefer"]["G"], self.results_plot["Potash"]["G"],
-                          self.results_plot["Shale"]["G"]]
+                          self.results_plot["Mudstone"]["G"]]
                 data_nu = [self.results_plot["Anhydrite"]["Poisson"], self.results_plot["Dolomite"]["Poisson"],
                            self.results_plot["Rock Salt"]["Poisson"], self.results_plot["Limestone"]["Poisson"],
                            self.results_plot["Kupferschiefer"]["Poisson"], self.results_plot["Potash"]["Poisson"],
-                           self.results_plot["Shale"]["Poisson"]]
+                           self.results_plot["Mudstone"]["Poisson"]]
                 data_phi = [np.array(self.results_plot["Anhydrite"]["phi"]) * 100,
                             np.array(self.results_plot["Dolomite"]["phi"]) * 100,
                             np.array(self.results_plot["Rock Salt"]["phi"]) * 100,
                             np.array(self.results_plot["Limestone"]["phi"]) * 100,
                             np.array(self.results_plot["Kupferschiefer"]["phi"]) * 100,
                             np.array(self.results_plot["Potash"]["phi"]) * 100,
-                            np.array(self.results_plot["Shale"]["phi"]) * 100]
+                            np.array(self.results_plot["Mudstone"]["phi"]) * 100]
                 data_gr = [self.results_plot["Anhydrite"]["GR"], self.results_plot["Dolomite"]["GR"],
                            self.results_plot["Rock Salt"]["GR"], self.results_plot["Limestone"]["GR"],
                            self.results_plot["Kupferschiefer"]["GR"], self.results_plot["Potash"]["GR"],
-                           self.results_plot["Shale"]["GR"]]
+                           self.results_plot["Mudstone"]["GR"]]
                 data_pe = [self.results_plot["Anhydrite"]["PE"], self.results_plot["Dolomite"]["PE"],
                            self.results_plot["Rock Salt"]["PE"], self.results_plot["Limestone"]["PE"],
                            self.results_plot["Kupferschiefer"]["PE"], self.results_plot["Potash"]["PE"],
-                           self.results_plot["Shale"]["PE"]]
+                           self.results_plot["Mudstone"]["PE"]]
                 #
                 colors = ["orchid", "lightcyan", "lavender", "skyblue", "gray", "yellowgreen", "olivedrab"]
-                litho_list = ["Anhydrite", "Dolomite", "Rock Salt", "Limestone", "Kupferschiefer", "Potash", "Shale"]
+                litho_list = ["Anhydrite", "Dolomite", "Rock Salt", "Limestone", "Kupferschiefer", "Potash", "Mudstone"]
                 #
             data = [[data_vP, data_vS, data_vPvS], [data_K, data_G, data_nu], [data_rho, data_gr, data_pe]]
             #
@@ -6915,50 +6915,50 @@ class Subsurface:
                               np.array(self.results_plot["Limestone"]["rho"]) / 1000,
                               np.array(self.results_plot["Kupferschiefer"]["rho"]) / 1000,
                               np.array(self.results_plot["Potash"]["rho"]) / 1000,
-                              np.array(self.results_plot["Shale"]["rho"]) / 1000]
+                              np.array(self.results_plot["Mudstone"]["rho"]) / 1000]
                 #
                 data_vP = [self.results_plot["Anhydrite"]["vP"], self.results_plot["Dolomite"]["vP"],
                            self.results_plot["Rock Salt"]["vP"], self.results_plot["Limestone"]["vP"],
                            self.results_plot["Kupferschiefer"]["vP"], self.results_plot["Potash"]["vP"],
-                           self.results_plot["Shale"]["vP"]]
+                           self.results_plot["Mudstone"]["vP"]]
                 data_vS = [self.results_plot["Anhydrite"]["vS"], self.results_plot["Dolomite"]["vS"],
                            self.results_plot["Rock Salt"]["vS"], self.results_plot["Limestone"]["vS"],
                            self.results_plot["Kupferschiefer"]["vS"], self.results_plot["Potash"]["vS"],
-                           self.results_plot["Shale"]["vS"]]
+                           self.results_plot["Mudstone"]["vS"]]
                 data_vPvS = [self.results_plot["Anhydrite"]["vPvS"], self.results_plot["Dolomite"]["vPvS"],
                              self.results_plot["Rock Salt"]["vPvS"], self.results_plot["Limestone"]["vPvS"],
                              self.results_plot["Kupferschiefer"]["vPvS"], self.results_plot["Potash"]["vPvS"],
-                             self.results_plot["Shale"]["vPvS"]]
+                             self.results_plot["Mudstone"]["vPvS"]]
                 data_K = [self.results_plot["Anhydrite"]["K"], self.results_plot["Dolomite"]["K"],
                           self.results_plot["Rock Salt"]["K"], self.results_plot["Limestone"]["K"],
                           self.results_plot["Kupferschiefer"]["K"], self.results_plot["Potash"]["K"],
-                          self.results_plot["Shale"]["K"]]
+                          self.results_plot["Mudstone"]["K"]]
                 data_G = [self.results_plot["Anhydrite"]["G"], self.results_plot["Dolomite"]["G"],
                           self.results_plot["Rock Salt"]["G"], self.results_plot["Limestone"]["G"],
                           self.results_plot["Kupferschiefer"]["G"], self.results_plot["Potash"]["G"],
-                          self.results_plot["Shale"]["G"]]
+                          self.results_plot["Mudstone"]["G"]]
                 data_nu = [self.results_plot["Anhydrite"]["Poisson"], self.results_plot["Dolomite"]["Poisson"],
                            self.results_plot["Rock Salt"]["Poisson"], self.results_plot["Limestone"]["Poisson"],
                            self.results_plot["Kupferschiefer"]["Poisson"], self.results_plot["Potash"]["Poisson"],
-                           self.results_plot["Shale"]["Poisson"]]
+                           self.results_plot["Mudstone"]["Poisson"]]
                 data_phi = [np.array(self.results_plot["Anhydrite"]["phi"]) * 100,
                             np.array(self.results_plot["Dolomite"]["phi"]) * 100,
                             np.array(self.results_plot["Rock Salt"]["phi"]) * 100,
                             np.array(self.results_plot["Limestone"]["phi"]) * 100,
                             np.array(self.results_plot["Kupferschiefer"]["phi"]) * 100,
                             np.array(self.results_plot["Potash"]["phi"]) * 100,
-                            np.array(self.results_plot["Shale"]["phi"]) * 100]
+                            np.array(self.results_plot["Mudstone"]["phi"]) * 100]
                 data_gr = [self.results_plot["Anhydrite"]["GR"], self.results_plot["Dolomite"]["GR"],
                            self.results_plot["Rock Salt"]["GR"], self.results_plot["Limestone"]["GR"],
                            self.results_plot["Kupferschiefer"]["GR"], self.results_plot["Potash"]["GR"],
-                           self.results_plot["Shale"]["GR"]]
+                           self.results_plot["Mudstone"]["GR"]]
                 data_pe = [self.results_plot["Anhydrite"]["PE"], self.results_plot["Dolomite"]["PE"],
                            self.results_plot["Rock Salt"]["PE"], self.results_plot["Limestone"]["PE"],
                            self.results_plot["Kupferschiefer"]["PE"], self.results_plot["Potash"]["PE"],
-                           self.results_plot["Shale"]["PE"]]
+                           self.results_plot["Mudstone"]["PE"]]
                 #
                 colors = ["orchid", "lightcyan", "lavender", "skyblue", "gray", "yellowgreen", "olivedrab"]
-                litho_list = ["Anhydrite", "Dolomite", "Rock Salt", "Limestone", "Kupferschiefer", "Potash", "Shale"]
+                litho_list = ["Anhydrite", "Dolomite", "Rock Salt", "Limestone", "Kupferschiefer", "Potash", "Mudstone"]
                 #
             data = [[data_vP, data_vS, data_vPvS], [data_K, data_G, data_nu], [data_phi, data_gr, data_pe]]
             #
@@ -7429,50 +7429,50 @@ class Subsurface:
                               np.array(self.results_plot["Limestone"]["rho"]) / 1000,
                               np.array(self.results_plot["Kupferschiefer"]["rho"]) / 1000,
                               np.array(self.results_plot["Potash"]["rho"]) / 1000,
-                              np.array(self.results_plot["Shale"]["rho"]) / 1000]
+                              np.array(self.results_plot["Mudstone"]["rho"]) / 1000]
                 #
                 data_vP = [self.results_plot["Anhydrite"]["vP"], self.results_plot["Dolomite"]["vP"],
                            self.results_plot["Rock Salt"]["vP"], self.results_plot["Limestone"]["vP"],
                            self.results_plot["Kupferschiefer"]["vP"], self.results_plot["Potash"]["vP"],
-                           self.results_plot["Shale"]["vP"]]
+                           self.results_plot["Mudstone"]["vP"]]
                 data_vS = [self.results_plot["Anhydrite"]["vS"], self.results_plot["Dolomite"]["vS"],
                            self.results_plot["Rock Salt"]["vS"], self.results_plot["Limestone"]["vS"],
                            self.results_plot["Kupferschiefer"]["vS"], self.results_plot["Potash"]["vS"],
-                           self.results_plot["Shale"]["vS"]]
+                           self.results_plot["Mudstone"]["vS"]]
                 data_vPvS = [self.results_plot["Anhydrite"]["vPvS"], self.results_plot["Dolomite"]["vPvS"],
                              self.results_plot["Rock Salt"]["vPvS"], self.results_plot["Limestone"]["vPvS"],
                              self.results_plot["Kupferschiefer"]["vPvS"], self.results_plot["Potash"]["vPvS"],
-                             self.results_plot["Shale"]["vPvS"]]
+                             self.results_plot["Mudstone"]["vPvS"]]
                 data_K = [self.results_plot["Anhydrite"]["K"], self.results_plot["Dolomite"]["K"],
                           self.results_plot["Rock Salt"]["K"], self.results_plot["Limestone"]["K"],
                           self.results_plot["Kupferschiefer"]["K"], self.results_plot["Potash"]["K"],
-                          self.results_plot["Shale"]["K"]]
+                          self.results_plot["Mudstone"]["K"]]
                 data_G = [self.results_plot["Anhydrite"]["G"], self.results_plot["Dolomite"]["G"],
                           self.results_plot["Rock Salt"]["G"], self.results_plot["Limestone"]["G"],
                           self.results_plot["Kupferschiefer"]["G"], self.results_plot["Potash"]["G"],
-                          self.results_plot["Shale"]["G"]]
+                          self.results_plot["Mudstone"]["G"]]
                 data_nu = [self.results_plot["Anhydrite"]["Poisson"], self.results_plot["Dolomite"]["Poisson"],
                            self.results_plot["Rock Salt"]["Poisson"], self.results_plot["Limestone"]["Poisson"],
                            self.results_plot["Kupferschiefer"]["Poisson"], self.results_plot["Potash"]["Poisson"],
-                           self.results_plot["Shale"]["Poisson"]]
+                           self.results_plot["Mudstone"]["Poisson"]]
                 data_phi = [np.array(self.results_plot["Anhydrite"]["phi"]) * 100,
                             np.array(self.results_plot["Dolomite"]["phi"]) * 100,
                             np.array(self.results_plot["Rock Salt"]["phi"]) * 100,
                             np.array(self.results_plot["Limestone"]["phi"]) * 100,
                             np.array(self.results_plot["Kupferschiefer"]["phi"]) * 100,
                             np.array(self.results_plot["Potash"]["phi"]) * 100,
-                            np.array(self.results_plot["Shale"]["phi"]) * 100]
+                            np.array(self.results_plot["Mudstone"]["phi"]) * 100]
                 data_gr = [self.results_plot["Anhydrite"]["GR"], self.results_plot["Dolomite"]["GR"],
                            self.results_plot["Rock Salt"]["GR"], self.results_plot["Limestone"]["GR"],
                            self.results_plot["Kupferschiefer"]["GR"], self.results_plot["Potash"]["GR"],
-                           self.results_plot["Shale"]["GR"]]
+                           self.results_plot["Mudstone"]["GR"]]
                 data_pe = [self.results_plot["Anhydrite"]["PE"], self.results_plot["Dolomite"]["PE"],
                            self.results_plot["Rock Salt"]["PE"], self.results_plot["Limestone"]["PE"],
                            self.results_plot["Kupferschiefer"]["PE"], self.results_plot["Potash"]["PE"],
-                           self.results_plot["Shale"]["PE"]]
+                           self.results_plot["Mudstone"]["PE"]]
                 #
                 colors = ["orchid", "lightcyan", "lavender", "skyblue", "gray", "yellowgreen", "olivedrab"]
-                litho_list = ["Anhydrite", "Dolomite", "Rock Salt", "Limestone", "Kupferschiefer", "Potash", "Shale"]
+                litho_list = ["Anhydrite", "Dolomite", "Rock Salt", "Limestone", "Kupferschiefer", "Potash", "Mudstone"]
                 #
             data = [[data_vP, data_vS, data_vPvS], [data_K, data_G, data_nu], [data_phi, data_gr, data_pe]]
             #
@@ -7532,50 +7532,50 @@ class Subsurface:
                           np.array(self.results_plot["Limestone"]["phi"]) * 100,
                           np.array(self.results_plot["Kupferschiefer"]["phi"]) * 100,
                           np.array(self.results_plot["Potash"]["phi"]) * 100,
-                          np.array(self.results_plot["Shale"]["phi"]) * 100]
+                          np.array(self.results_plot["Mudstone"]["phi"]) * 100]
                 #
                 data_vP = [self.results_plot["Anhydrite"]["vP"], self.results_plot["Dolomite"]["vP"],
                            self.results_plot["Rock Salt"]["vP"], self.results_plot["Limestone"]["vP"],
                            self.results_plot["Kupferschiefer"]["vP"], self.results_plot["Potash"]["vP"],
-                           self.results_plot["Shale"]["vP"]]
+                           self.results_plot["Mudstone"]["vP"]]
                 data_vS = [self.results_plot["Anhydrite"]["vS"], self.results_plot["Dolomite"]["vS"],
                            self.results_plot["Rock Salt"]["vS"], self.results_plot["Limestone"]["vS"],
                            self.results_plot["Kupferschiefer"]["vS"], self.results_plot["Potash"]["vS"],
-                           self.results_plot["Shale"]["vS"]]
+                           self.results_plot["Mudstone"]["vS"]]
                 data_vPvS = [self.results_plot["Anhydrite"]["vPvS"], self.results_plot["Dolomite"]["vPvS"],
                              self.results_plot["Rock Salt"]["vPvS"], self.results_plot["Limestone"]["vPvS"],
                              self.results_plot["Kupferschiefer"]["vPvS"], self.results_plot["Potash"]["vPvS"],
-                             self.results_plot["Shale"]["vPvS"]]
+                             self.results_plot["Mudstone"]["vPvS"]]
                 data_K = [self.results_plot["Anhydrite"]["K"], self.results_plot["Dolomite"]["K"],
                           self.results_plot["Rock Salt"]["K"], self.results_plot["Limestone"]["K"],
                           self.results_plot["Kupferschiefer"]["K"], self.results_plot["Potash"]["K"],
-                          self.results_plot["Shale"]["K"]]
+                          self.results_plot["Mudstone"]["K"]]
                 data_G = [self.results_plot["Anhydrite"]["G"], self.results_plot["Dolomite"]["G"],
                           self.results_plot["Rock Salt"]["G"], self.results_plot["Limestone"]["G"],
                           self.results_plot["Kupferschiefer"]["G"], self.results_plot["Potash"]["G"],
-                          self.results_plot["Shale"]["G"]]
+                          self.results_plot["Mudstone"]["G"]]
                 data_nu = [self.results_plot["Anhydrite"]["Poisson"], self.results_plot["Dolomite"]["Poisson"],
                            self.results_plot["Rock Salt"]["Poisson"], self.results_plot["Limestone"]["Poisson"],
                            self.results_plot["Kupferschiefer"]["Poisson"], self.results_plot["Potash"]["Poisson"],
-                           self.results_plot["Shale"]["Poisson"]]
+                           self.results_plot["Mudstone"]["Poisson"]]
                 data_rho = [np.array(self.results_plot["Anhydrite"]["rho"]) / 1000,
                               np.array(self.results_plot["Dolomite"]["rho"]) / 1000,
                               np.array(self.results_plot["Rock Salt"]["rho"]) / 1000,
                               np.array(self.results_plot["Limestone"]["rho"]) / 1000,
                               np.array(self.results_plot["Kupferschiefer"]["rho"]) / 1000,
                               np.array(self.results_plot["Potash"]["rho"]) / 1000,
-                              np.array(self.results_plot["Shale"]["rho"]) / 1000]
+                              np.array(self.results_plot["Mudstone"]["rho"]) / 1000]
                 data_gr = [self.results_plot["Anhydrite"]["GR"], self.results_plot["Dolomite"]["GR"],
                            self.results_plot["Rock Salt"]["GR"], self.results_plot["Limestone"]["GR"],
                            self.results_plot["Kupferschiefer"]["GR"], self.results_plot["Potash"]["GR"],
-                           self.results_plot["Shale"]["GR"]]
+                           self.results_plot["Mudstone"]["GR"]]
                 data_pe = [self.results_plot["Anhydrite"]["PE"], self.results_plot["Dolomite"]["PE"],
                            self.results_plot["Rock Salt"]["PE"], self.results_plot["Limestone"]["PE"],
                            self.results_plot["Kupferschiefer"]["PE"], self.results_plot["Potash"]["PE"],
-                           self.results_plot["Shale"]["PE"]]
+                           self.results_plot["Mudstone"]["PE"]]
                 #
                 colors = ["orchid", "lightcyan", "lavender", "skyblue", "gray", "yellowgreen", "olivedrab"]
-                litho_list = ["Anhydrite", "Dolomite", "Rock Salt", "Limestone", "Kupferschiefer", "Potash", "Shale"]
+                litho_list = ["Anhydrite", "Dolomite", "Rock Salt", "Limestone", "Kupferschiefer", "Potash", "Mudstone"]
                 #
             data = [[data_vP, data_vS, data_vPvS], [data_K, data_G, data_nu], [data_rho, data_gr, data_pe]]
             #
@@ -7734,7 +7734,7 @@ class Subsurface:
                             [self.results_plot[rock]["Bottom"][index-1], self.results_plot[rock]["Bottom"][index]])
                 if rock == "Sandstone":
                     units_sorted[-1].append("tan")
-                elif rock == "Shale":
+                elif rock in ["Shale", "Mudstone"]:
                     units_sorted[-1].append("olivedrab")
                 elif rock in ["Granite", "Gabbro", "Diorite"]:
                     units_sorted[-1].append("darkorange")
