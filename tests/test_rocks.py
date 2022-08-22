@@ -160,13 +160,15 @@ from modules.carbonates import CarbonateRocks
 
 ## SEDIMENTARY ROCKS ##
 ## SILICICLASTICS
-# for i in range(10):
-#     data_conglomerate = Sandstone().create_conglomerate()
-#     print(i, data_conglomerate)
-## CARBONATES
 for i in range(10):
-    data_limestone = CarbonateRocks().create_limestone(number=1)
-    print(i, data_limestone)
+    # data_conglomerate = Sandstone().create_conglomerate()
+    # print(i, data_conglomerate)
+    data_mudstone = Sandstone().create_mudstone(number=1)
+    print(i, data_mudstone)
+## CARBONATES
+# for i in range(10):
+#     data_limestone = CarbonateRocks().create_limestone(number=1)
+#     print(i, data_limestone)
 #     data_dolomite = CarbonateRocks().create_dolomite(number=1)
 #     print(i, data_dolomite)
 

@@ -18,7 +18,7 @@ import scipy
 from ore import Ores
 from carbonates import limestone, CarbonateRocks
 from evaporites import Evaporites
-from modules.siliciclastics import shale
+from modules.siliciclastics import shale, Sandstone
 
 #######################
 ## SERIES GENERATION ##
@@ -345,8 +345,9 @@ class Zechstein:
         steps_shale = np.linspace(actual_bottom, actual_top, self.resolution, endpoint=False)[::-1]
         for i in steps_shale:
             depth = round(i, 4)
-            container_shale[depth] = shale(fluid="water").create_simple_shale(dict_output=True,
-                                                                              porosity=rd.uniform(0, 0.1))
+            container_shale[depth] = Sandstone().create_mudstone(number=1, porosity=[0.0, 0.1])
+            # container_shale[depth] = shale(fluid="water").create_simple_shale(dict_output=True,
+            #                                                                   porosity=rd.uniform(0, 0.1))
         # actual_top += thickness_shale
         # actual_bottom += thickness_shale
         #
@@ -447,8 +448,9 @@ class Zechstein:
         steps_shale = np.linspace(actual_bottom, actual_top, self.resolution, endpoint=False)[::-1]
         for i in steps_shale:
             depth = round(i, 4)
-            container_shale[depth] = shale(fluid="water").create_simple_shale(dict_output=True,
-                                                                              porosity=rd.uniform(0, 0.1))
+            container_shale[depth] = Sandstone().create_mudstone(number=1, porosity=[0.0, 0.1])
+            # container_shale[depth] = shale(fluid="water").create_simple_shale(dict_output=True,
+            #                                                                   porosity=rd.uniform(0, 0.1))
         # actual_top += thickness_shale
         # actual_bottom += thickness_shale
         #

@@ -6,7 +6,7 @@
 # Name:		gui.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		18.08.2022
+# Date:		22.08.2022
 
 #-----------------------------------------------
 
@@ -286,18 +286,22 @@ class GebPyGUI(tk.Frame):
                      color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
                      entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
         ## ROCKS
-        elif var_opt == "Sandstone":
+        elif var_opt in ["Sandstone", "Shale", "Mudstone", "Conglomerate"]:
             Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                   color_acc=[self.color_accent_03, self.color_accent_04], rock=var_opt, lbl_w=self.lbl_w,
                   entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
-        elif var_opt == "Shale":
-            Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
-                  color_acc=[self.color_accent_03, self.color_accent_04], rock=var_opt, lbl_w=self.lbl_w,
-                  entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
-        elif var_opt == "Conglomerate":
-            Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
-                  color_acc=[self.color_accent_03, self.color_accent_04], rock=var_opt, lbl_w=self.lbl_w,
-                  entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
+        # elif var_opt == "Sandstone":
+        #     Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
+        #           color_acc=[self.color_accent_03, self.color_accent_04], rock=var_opt, lbl_w=self.lbl_w,
+        #           entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
+        # elif var_opt == "Shale":
+        #     Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
+        #           color_acc=[self.color_accent_03, self.color_accent_04], rock=var_opt, lbl_w=self.lbl_w,
+        #           entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
+        # elif var_opt == "Conglomerate":
+        #     Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
+        #           color_acc=[self.color_accent_03, self.color_accent_04], rock=var_opt, lbl_w=self.lbl_w,
+        #           entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
         #
         elif var_opt == "Limestone":
             Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
@@ -764,7 +768,7 @@ class GebPyGUI(tk.Frame):
                                                                           opt_list=opt_list_0_14, command=lambda var_opt=var_opt_0_14: self.select_opt(var_opt))
         elif var_opt == "Siliciclastic Rocks":
             var_opt_1_1 = tk.StringVar()
-            opt_list_1_1 = ["Sandstone", "Shale", "Conglomerate"]
+            opt_list_1_1 = ["Sandstone", "Shale", "Conglomerate", "Mudstone"]
             opt_list_1_1.sort()
             self.opt_silic = SE(parent=self.parent, row_id=16, column_id=0, n_rows=2, n_columns=2,
                                 bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
@@ -3282,7 +3286,7 @@ class Rocks:
             "Rhyolite (Streckeisen)", "Trachyte (Streckeisen)", "Latite (Streckeisen)", "Andesite (Streckeisen)",
             "Basalt (Streckeisen)", "Dacite (Streckeisen)", "Granite (Streckeisen)", "Granodiorite (Streckeisen)",
             "Tonalite (Streckeisen)", "Gabbro (Streckeisen)", "Diorite (Streckeisen)", "Monzonite (Streckeisen)",
-            "Syenite (Streckeisen)", "Granitoid (Streckeisen)", "Quarzolite (Streckeisen)"]:
+            "Syenite (Streckeisen)", "Granitoid (Streckeisen)", "Quarzolite (Streckeisen)", "Mudstone"]:
             var_phi0_start = 0
             var_phi1_start = 10
         elif self.rock in ["Limestone", "Dolomite Rock", "Pyroclastic Rock"]:
@@ -3367,6 +3371,9 @@ class Rocks:
                         self.gui_elements.append(rb_oxides)
                     elif self.rock == "Shale":
                         data = shale(fluid="water").create_simple_shale(dict_output=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
+                    elif self.rock == "Mudstone":
+                        data = Sandstone(fluid="water", actualThickness=0).create_mudstone(
+                            number=1, porosity=[self.var_phi0.get()/100, self.var_phi1.get()/100])
                     elif self.rock == "Limestone":
                         data = CarbonateRocks(fluid="water", actualThickness=0).create_limestone(
                             number=1, porosity=[self.var_phi0.get() / 100, self.var_phi1.get() / 100])
@@ -3982,7 +3989,11 @@ class Rocks:
                         data = Sandstone(fluid="water", actualThickness=0).create_conglomerate(
                             number=1, porosity=[self.var_phi0.get()/100, self.var_phi1.get()/100])
                     elif self.rock == "Shale":
-                        data = shale(fluid="water").create_simple_shale(dict_output=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
+                        data = shale(fluid="water").create_simple_shale(
+                            dict_output=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
+                    elif self.rock == "Mudstone":
+                        data = Sandstone(fluid="water", actualThickness=0).create_mudstone(
+                            number=1, porosity=[self.var_phi0.get()/100, self.var_phi1.get()/100])
                     elif self.rock == "Limestone":
                         data = CarbonateRocks(fluid="water", actualThickness=0).create_limestone(
                             number=1, porosity=[self.var_phi0.get() / 100, self.var_phi1.get() / 100])
@@ -5914,7 +5925,7 @@ class Subsurface:
         for rock in self.list_rocks_short:
             if rock == "Sandstone":
                 unit_sections[rock] = {"Intervals": [], "Color": "tan"}
-            elif rock == "Shale":
+            elif rock in ["Shale", "Mudstone"]:
                 unit_sections[rock] = {"Intervals": [], "Color": "olivedrab"}
             elif rock in ["Granite", "Gabbro", "Diorite"]:
                 unit_sections[rock] = {"Intervals": [], "Color": "darkorange"}

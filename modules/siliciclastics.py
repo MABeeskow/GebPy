@@ -6,7 +6,7 @@
 # Name:		siliciclastics.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		26.05.2022
+# Date:		22.08.2022
 
 #-----------------------------------------------
 
@@ -2505,6 +2505,442 @@ class Sandstone:
         #
         results = {}
         results["rock"] = "Conglomerate"
+        if number > 1:
+            results["mineralogy"] = amounts_mineralogy
+            results["chemistry"] = amounts_chemistry
+            results["phi"] = bulk_properties["phi"]
+            results["fluid"] = "water"
+            results["rho_s"] = bulk_properties["rho_s"]
+            results["rho"] = bulk_properties["rho"]
+            results["vP"] = bulk_properties["vP"]
+            results["vS"] = bulk_properties["vS"]
+            results["vP/vS"] = bulk_properties["vPvS"]
+            results["K"] = bulk_properties["K"]
+            results["G"] = bulk_properties["G"]
+            results["E"] = bulk_properties["E"]
+            results["nu"] = bulk_properties["nu"]
+            results["GR"] = bulk_properties["GR"]
+            results["PE"] = bulk_properties["PE"]
+        else:
+            single_amounts_mineralogy = {}
+            single_amounts_chemistry = {}
+            for mineral, value in amounts_mineralogy.items():
+                single_amounts_mineralogy[mineral] = value[0]
+            for element, value in amounts_chemistry.items():
+                single_amounts_chemistry[element] = value[0]
+            results["mineralogy"] = single_amounts_mineralogy
+            results["chemistry"] = single_amounts_chemistry
+            results["phi"] = bulk_properties["phi"][0]
+            results["fluid"] = "water"
+            results["rho_s"] = bulk_properties["rho_s"][0]
+            results["rho"] = bulk_properties["rho"][0]
+            results["vP"] = bulk_properties["vP"][0]
+            results["vS"] = bulk_properties["vS"][0]
+            results["vP/vS"] = bulk_properties["vPvS"][0]
+            results["K"] = bulk_properties["K"][0]
+            results["G"] = bulk_properties["G"][0]
+            results["E"] = bulk_properties["E"][0]
+            results["nu"] = bulk_properties["nu"][0]
+            results["GR"] = bulk_properties["GR"][0]
+            results["PE"] = bulk_properties["PE"][0]
+        #
+        return results
+    #
+    def create_mudstone(self, number, porosity=None, dominance="Mnt", dominant_group="Clays"):
+        #
+        data_montmorillonite = Phyllosilicates(impurity="pure", data_type=True).create_montmorillonite()
+        data_illite = Phyllosilicates(impurity="pure", data_type=True).create_illite()
+        data_kaolinite = Phyllosilicates(impurity="pure", data_type=True).create_kaolinite()
+        data_alkalifeldspar = Tectosilicates(impurity="pure", data_type=True).create_alkalifeldspar()
+        data_plagioclase = Tectosilicates(impurity="pure", data_type=True).create_plagioclase()
+        data_organics = Organics(data_type=True).create_organics_matter()
+        #
+        assemblage = [data_montmorillonite, data_illite, data_kaolinite, self.data_quartz, data_alkalifeldspar,
+                      data_plagioclase, self.data_calcite]
+        #
+        amounts_mineralogy = {}
+        amounts_chemistry = {}
+        bulk_properties = {}
+        properties = ["rho_s", "rho", "K", "G", "E", "nu", "vP", "vS", "vPvS", "GR", "PE", "phi"]
+        for property in properties:
+            bulk_properties[property] = []
+        mineral_list = []
+        elements = []
+        for mineral in assemblage:
+            amounts_mineralogy[mineral["mineral"]] = []
+            mineral_list.append(mineral["mineral"])
+            elements_mineral = list(mineral["chemistry"].keys())
+            for element in elements_mineral:
+                if element not in elements:
+                    elements.append(element)
+                    amounts_chemistry[element] = []
+        mineral_list.sort()
+        mineral_list_clays = ["Ilt", "Kln", "Mnt"]
+        mineral_list_silic = ["Kfs", "Pl", "Qz"]
+        mineral_list_carb = ["Cal"]
+        elements.sort()
+        #
+        n = 0
+        amounts_helper = []
+        while n < number:
+            if dominant_group == "Clays":
+                w_clay = round(rd.uniform(0.4, 0.7), 4)
+                w_silic = round(rd.uniform(0.0, (1 - w_clay)), 4)
+                w_carb = round(1 - w_clay - w_silic, 4)
+            elif dominant_group == "Siliciclastics":
+                w_silic = round(rd.uniform(0.4, 0.7), 4)
+                w_clay = round(rd.uniform(0.0, (1 - w_silic)), 4)
+                w_carb = round(1 - w_silic - w_clay, 4)
+            elif dominant_group == "Carbonates":
+                w_carb = round(rd.uniform(0.4, 0.7), 4)
+                w_clay = round(rd.uniform(0.0, (1 - w_carb)), 4)
+                w_silic = round(1 - w_carb - w_clay, 4)
+            mineral_fractions = {"Clays": w_clay, "Siliciclastics": w_silic, "Carbonates": w_carb}
+            w_total = 0
+            w_total_carb = 0
+            w_total_silic = 0
+            w_total_clay = 0
+            n_minerals = 0
+            n_carb = 0
+            n_silic = 0
+            n_clay = 0
+            #
+            for group, fraction in mineral_fractions.items():
+                if group == "Clays":
+                    for mineral in mineral_list_clays:
+                        if dominance == "Mnt" and n_minerals < 3:
+                            if mineral == "Mnt":
+                                if n_minerals < len(mineral_list) - 1:
+                                    value = round(fraction * rd.uniform(0.8, 1.0), 4)
+                                else:
+                                    value = round(1 - w_total, 4)
+                                if value >= 0.0 and 0.6 <= value <= 1.0:
+                                    amounts_helper.append(value)
+                                    w_total += value
+                                    w_total_clay += value
+                                    n_minerals += 1
+                                    n_clay += 1
+                            elif mineral == "Ilt":
+                                if n_minerals < len(mineral_list) - 1:
+                                    value = round(fraction * rd.uniform(0.0, 0.05), 4)
+                                else:
+                                    value = round(1 - w_total, 4)
+                                if value >= 0.0 and 0.0 <= value <= 0.05:
+                                    amounts_helper.append(value)
+                                    w_total += value
+                                    w_total_clay += value
+                                    n_minerals += 1
+                                    n_clay += 1
+                            elif mineral == "Kln":
+                                if n_minerals < len(mineral_list) - 1:
+                                    value = round(fraction * rd.uniform(0.0, 0.05), 4)
+                                else:
+                                    value = round(1 - w_total, 4)
+                                if value >= 0.0 and 0.0 <= value <= 0.05:
+                                    amounts_helper.append(value)
+                                    w_total += value
+                                    w_total_clay += value
+                                    n_minerals += 1
+                                    n_clay += 1
+                        elif dominance == "Ilt" and n_minerals < 3:
+                            if mineral == "Ilt":
+                                if n_minerals < len(mineral_list) - 1:
+                                    value = round(fraction * rd.uniform(0.8, 1.0), 4)
+                                else:
+                                    value = round(1 - w_total, 4)
+                                if value >= 0.0 and 0.6 <= value <= 1.0:
+                                    amounts_helper.append(value)
+                                    w_total += value
+                                    w_total_clay += value
+                                    n_minerals += 1
+                                    n_clay += 1
+                            elif mineral == "Mnt":
+                                if n_minerals < len(mineral_list) - 1:
+                                    value = round(fraction * rd.uniform(0.0, 0.05), 4)
+                                else:
+                                    value = round(1 - w_total, 4)
+                                if value >= 0.0 and 0.0 <= value <= 0.05:
+                                    amounts_helper.append(value)
+                                    w_total += value
+                                    w_total_clay += value
+                                    n_minerals += 1
+                                    n_clay += 1
+                            elif mineral == "Kln":
+                                if n_minerals < len(mineral_list) - 1:
+                                    value = round(fraction * rd.uniform(0.0, 0.05), 4)
+                                else:
+                                    value = round(1 - w_total, 4)
+                                if value >= 0.0 and 0.0 <= value <= 0.05:
+                                    amounts_helper.append(value)
+                                    w_total += value
+                                    w_total_clay += value
+                                    n_minerals += 1
+                                    n_clay += 1
+                        elif dominance == "Kln" and n_minerals < 3:
+                            if mineral == "Kln":
+                                if n_minerals < len(mineral_list) - 1:
+                                    value = round(fraction * rd.uniform(0.8, 1.0), 4)
+                                else:
+                                    value = round(1 - w_total, 4)
+                                if value >= 0.0 and 0.6 <= value <= 1.0:
+                                    amounts_helper.append(value)
+                                    w_total += value
+                                    w_total_clay += value
+                                    n_minerals += 1
+                                    n_clay += 1
+                            elif mineral == "Mnt":
+                                if n_minerals < len(mineral_list) - 1:
+                                    value = round(fraction * rd.uniform(0.0, 0.05), 4)
+                                else:
+                                    value = round(1 - w_total, 4)
+                                if value >= 0.0 and 0.0 <= value <= 0.05:
+                                    amounts_helper.append(value)
+                                    w_total += value
+                                    w_total_clay += value
+                                    n_minerals += 1
+                                    n_clay += 1
+                            elif mineral == "Ilt":
+                                if n_minerals < len(mineral_list) - 1:
+                                    value = round(fraction * rd.uniform(0.0, 0.05), 4)
+                                else:
+                                    value = round(1 - w_total, 4)
+                                if value >= 0.0 and 0.0 <= value <= 0.05:
+                                    amounts_helper.append(value)
+                                    w_total += value
+                                    w_total_clay += value
+                                    n_minerals += 1
+                                    n_clay += 1
+                #
+                elif group == "Siliciclastics":
+                    for mineral in mineral_list_silic:
+                        if mineral == "Qz":
+                            if n_minerals < len(mineral_list) - 1:
+                                value = round(fraction * rd.uniform(0.0, 1.0), 4)
+                            elif n_silic == 2:
+                                value = round(w_silic - w_total_silic, 4)
+                            else:
+                                value = round(1 - w_total, 4)
+                            if value >= 0.0 and 0.0 <= value <= fraction:
+                                amounts_helper.append(value)
+                                w_total += value
+                                w_total_silic += value
+                                n_minerals += 1
+                                n_silic += 1
+                        elif mineral == "Kfs":
+                            if n_minerals < len(mineral_list) - 1:
+                                value = round(fraction * rd.uniform(0.0, 1.0), 4)
+                            else:
+                                value = round(1 - w_total, 4)
+                            if value >= 0.0 and 0.0 <= value <= fraction:
+                                amounts_helper.append(value)
+                                w_total += value
+                                w_total_silic += value
+                                n_minerals += 1
+                                n_silic += 1
+                        elif mineral == "Pl":
+                            if n_minerals < len(mineral_list) - 1:
+                                value = round(fraction * rd.uniform(0.0, 1.0), 4)
+                            else:
+                                value = round(1 - w_total, 4)
+                            if value >= 0.0 and 0.0 <= value <= fraction:
+                                amounts_helper.append(value)
+                                w_total += value
+                                w_total_silic += value
+                                n_minerals += 1
+                                n_silic += 1
+                elif group == "Carbonates":
+                    for mineral in mineral_list_carb:
+                        if mineral == "Cal":
+                            if n_minerals < len(mineral_list) - 1:
+                                value = round(fraction * rd.uniform(0.0, 1.0), 4)
+                            elif n_silic == 2:
+                                value = round(w_carb - w_total_carb, 4)
+                            else:
+                                value = round(1 - w_total, 4)
+                            if value >= 0.0 and 0.0 <= value <= fraction:
+                                amounts_helper.append(value)
+                                w_total += value
+                                w_total_carb += value
+                                n_minerals += 1
+                                n_carb += 1
+            #
+            mineral_list_new = []
+            mineral_list_new.extend(mineral_list_clays)
+            mineral_list_new.extend(mineral_list_silic)
+            mineral_list_new.extend(mineral_list_carb)
+            if np.sum(amounts_helper) == 1.0 and n_minerals == len(mineral_list_new):
+                for index, mineral in enumerate(mineral_list_new):
+                    amounts_mineralogy[mineral].append(amounts_helper[index])
+                n += 1
+                amounts_helper.clear()
+            else:
+                n += 0
+                amounts_helper.clear()
+        #
+        n = 0
+        amounts_helper = {}
+        while n < number:
+            w_total = 0
+            n_elements = 0
+            rho_s_helper = 0
+            bulkmod_helper = 0
+            shearmod_helper = 0
+            gr_helper = 0
+            pe_helper = 0
+            if porosity == None:
+                phi_helper = round(rd.uniform(0.0, 0.4), 4)
+            else:
+                phi_helper = round(rd.uniform(porosity[0], porosity[1]), 4)
+            #
+            data_montmorillonite = Phyllosilicates(impurity="pure", data_type=True).create_montmorillonite()
+            data_illite = Phyllosilicates(impurity="pure", data_type=True).create_illite()
+            data_kaolinite = Phyllosilicates(impurity="pure", data_type=True).create_kaolinite()
+            data_alkalifeldspar = Tectosilicates(impurity="pure", data_type=True).create_alkalifeldspar()
+            data_plagioclase = Tectosilicates(impurity="pure", data_type=True).create_plagioclase()
+            #
+            old_index = elements.index("O")
+            elements += [elements.pop(old_index)]
+            #
+            for element in elements:
+                amounts_helper[element] = 0
+                if element in data_montmorillonite["chemistry"]:
+                    if n_elements < len(elements) - 1:
+                        value = round(amounts_mineralogy["Mnt"][n] * data_montmorillonite["chemistry"][element], 4)
+                    else:
+                        value = round(1 - w_total, 4)
+                    amounts_helper[element] += value
+                    w_total += value
+                if element in data_illite["chemistry"]:
+                    if n_elements < len(elements) - 1:
+                        value = round(amounts_mineralogy["Ilt"][n] * data_illite["chemistry"][element], 4)
+                    else:
+                        value = round(1 - w_total, 4)
+                    amounts_helper[element] += value
+                    w_total += value
+                if element in data_kaolinite["chemistry"]:
+                    if n_elements < len(elements) - 1:
+                        value = round(amounts_mineralogy["Kln"][n] * data_kaolinite["chemistry"][element], 4)
+                    else:
+                        value = round(1 - w_total, 4)
+                    amounts_helper[element] += value
+                    w_total += value
+                if element in self.data_quartz["chemistry"]:
+                    if n_elements < len(elements) - 1:
+                        value = round(amounts_mineralogy["Qz"][n] * self.data_quartz["chemistry"][element], 4)
+                    else:
+                        value = round(1 - w_total, 4)
+                    amounts_helper[element] += value
+                    w_total += value
+                if element in data_alkalifeldspar["chemistry"]:
+                    if n_elements < len(elements) - 1:
+                        value = round(amounts_mineralogy["Kfs"][n] * data_alkalifeldspar["chemistry"][element], 4)
+                    else:
+                        value = round(1 - w_total, 4)
+                    amounts_helper[element] += value
+                    w_total += value
+                if element in data_plagioclase["chemistry"]:
+                    if n_elements < len(elements) - 1:
+                        value = round(amounts_mineralogy["Pl"][n] * data_plagioclase["chemistry"][element], 4)
+                    else:
+                        value = round(1 - w_total, 4)
+                    amounts_helper[element] += value
+                    w_total += value
+                if element in self.data_calcite["chemistry"]:
+                    if n_elements < len(elements) - 1:
+                        value = round(amounts_mineralogy["Cal"][n] * self.data_calcite["chemistry"][element], 4)
+                    else:
+                        value = round(1 - w_total, 4)
+                    amounts_helper[element] += value
+                    w_total += value
+                #
+                n_elements += 1
+            #
+            shear_factor = 1.0
+            #
+            if sum(amounts_helper.values()) == 1.0:
+                for key, value in amounts_helper.items():
+                    amounts_chemistry[key].append(round(value, 4))
+                for mineral in mineral_list:
+                    if mineral == "Mnt":
+                        rho_s_helper += round(amounts_mineralogy[mineral][n] * data_montmorillonite["rho"], 3)
+                        bulkmod_helper += round(amounts_mineralogy[mineral][n] * data_montmorillonite["K"], 3)
+                        shearmod_helper += round(
+                            shear_factor * amounts_mineralogy[mineral][n] * data_montmorillonite["G"], 3)
+                        gr_helper += round(amounts_mineralogy[mineral][n] * data_montmorillonite["GR"], 3)
+                        pe_helper += round(amounts_mineralogy[mineral][n] * data_montmorillonite["PE"], 3)
+                    elif mineral == "Ilt":
+                        rho_s_helper += round(amounts_mineralogy[mineral][n] * data_illite["rho"], 3)
+                        bulkmod_helper += round(amounts_mineralogy[mineral][n] * data_illite["K"], 3)
+                        shearmod_helper += round(shear_factor * amounts_mineralogy[mineral][n] * data_illite["G"],
+                                                 3)
+                        gr_helper += round(amounts_mineralogy[mineral][n] * data_illite["GR"], 3)
+                        pe_helper += round(amounts_mineralogy[mineral][n] * data_illite["PE"], 3)
+                    elif mineral == "Kln":
+                        rho_s_helper += round(amounts_mineralogy[mineral][n] * data_kaolinite["rho"], 3)
+                        bulkmod_helper += round(amounts_mineralogy[mineral][n] * data_kaolinite["K"], 3)
+                        shearmod_helper += round(shear_factor * amounts_mineralogy[mineral][n] * data_kaolinite["G"],
+                                                 3)
+                        gr_helper += round(amounts_mineralogy[mineral][n] * data_kaolinite["GR"], 3)
+                        pe_helper += round(amounts_mineralogy[mineral][n] * data_kaolinite["PE"], 3)
+                    elif mineral == "Cal":
+                        rho_s_helper += round(amounts_mineralogy[mineral][n] * self.data_calcite["rho"], 3)
+                        bulkmod_helper += round(amounts_mineralogy[mineral][n] * self.data_calcite["K"], 3)
+                        shearmod_helper += round(
+                            shear_factor * amounts_mineralogy[mineral][n] * self.data_calcite["G"], 3)
+                        gr_helper += round(amounts_mineralogy[mineral][n] * self.data_calcite["GR"], 3)
+                        pe_helper += round(amounts_mineralogy[mineral][n] * self.data_calcite["PE"], 3)
+                    elif mineral == "Qz":
+                        rho_s_helper += round(amounts_mineralogy[mineral][n] * self.data_quartz["rho"], 3)
+                        bulkmod_helper += round(amounts_mineralogy[mineral][n] * self.data_quartz["K"], 3)
+                        shearmod_helper += round(
+                            shear_factor * amounts_mineralogy[mineral][n] * self.data_quartz["G"], 3)
+                        gr_helper += round(amounts_mineralogy[mineral][n] * self.data_quartz["GR"], 3)
+                        pe_helper += round(amounts_mineralogy[mineral][n] * self.data_quartz["PE"], 3)
+                    elif mineral == "Kfs":
+                        rho_s_helper += round(amounts_mineralogy[mineral][n] * data_alkalifeldspar["rho"], 3)
+                        bulkmod_helper += round(amounts_mineralogy[mineral][n] * data_alkalifeldspar["K"], 3)
+                        shearmod_helper += round(
+                            shear_factor * amounts_mineralogy[mineral][n] * data_alkalifeldspar["G"], 3)
+                        gr_helper += round(amounts_mineralogy[mineral][n] * data_alkalifeldspar["GR"], 3)
+                        pe_helper += round(amounts_mineralogy[mineral][n] * data_alkalifeldspar["PE"], 3)
+                    elif mineral == "Pl":
+                        rho_s_helper += round(amounts_mineralogy[mineral][n] * data_plagioclase["rho"], 3)
+                        bulkmod_helper += round(amounts_mineralogy[mineral][n] * data_plagioclase["K"], 3)
+                        shearmod_helper += round(
+                            shear_factor * amounts_mineralogy[mineral][n] * data_plagioclase["G"], 3)
+                        gr_helper += round(amounts_mineralogy[mineral][n] * data_plagioclase["GR"], 3)
+                        pe_helper += round(amounts_mineralogy[mineral][n] * data_plagioclase["PE"], 3)
+                #
+                anisotropic_factor = round(rd.uniform(1.0, 2.0), 2)
+                bulkmod_helper = bulkmod_helper/anisotropic_factor
+                shearmod_helper = shearmod_helper / anisotropic_factor
+                #
+                rho_helper = round((1 - phi_helper) * rho_s_helper + phi_helper * self.data_water[2] / 1000, 3)
+                youngsmod_helper = round(
+                    (9 * bulkmod_helper * shearmod_helper) / (3 * bulkmod_helper + shearmod_helper), 3)
+                poisson_helper = round(
+                    (3 * bulkmod_helper - 2 * shearmod_helper) / (6 * bulkmod_helper + 2 * shearmod_helper), 3)
+                vP_helper = round(
+                    ((bulkmod_helper * 10 ** 9 + 4 / 3 * shearmod_helper * 10 ** 9) / (rho_helper)) ** 0.5, 3)
+                vS_helper = round(((shearmod_helper * 10 ** 9) / (rho_helper)) ** 0.5, 3)
+                vPvS_helper_helper = round(vP_helper / vS_helper, 3)
+                #
+                bulk_properties["rho_s"].append(round(rho_s_helper, 3))
+                bulk_properties["rho"].append(rho_helper)
+                bulk_properties["K"].append(round(bulkmod_helper, 3))
+                bulk_properties["G"].append(round(shearmod_helper, 3))
+                bulk_properties["E"].append(youngsmod_helper)
+                bulk_properties["nu"].append(poisson_helper)
+                bulk_properties["vP"].append(vP_helper)
+                bulk_properties["vS"].append(vS_helper)
+                bulk_properties["vPvS"].append(vPvS_helper_helper)
+                bulk_properties["GR"].append(round(gr_helper, 3))
+                bulk_properties["PE"].append(round(pe_helper, 3))
+                bulk_properties["phi"].append(round(phi_helper, 3))
+                n += 1
+        #
+        results = {}
+        results["rock"] = "Mudstone"
         if number > 1:
             results["mineralogy"] = amounts_mineralogy
             results["chemistry"] = amounts_chemistry
