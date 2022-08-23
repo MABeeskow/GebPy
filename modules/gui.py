@@ -840,11 +840,36 @@ class GebPyGUI(tk.Frame):
                 var_opt=var_opt_1_6, var_opt_set="Select Rock", opt_list=opt_list_1_6,
                 command=lambda var_opt=var_opt_1_6: self.select_opt(var_opt))
         elif var_opt == "Zechstein":
-            data_z4 = Zechstein(actual_thickness=0).create_zechstein_z4(top_z=0, thickness_z4=200)      # Aller
-            data_z3 = Zechstein(actual_thickness=0).create_zechstein_z3(top_z=200, thickness_z3=300)    # Leine
-            data_z2 = Zechstein(actual_thickness=0).create_zechstein_z2(top_z=500, thickness_z2=300)    # Straßfurt
-            data_z1 = Zechstein(actual_thickness=300).create_zechstein_z1(top_z=800, thickness_z1=200)  # Werra
-            data_zechstein = data_z4 + data_z3 + data_z2 + data_z1
+            thickness_complete = rd.randrange(900, 1500, 100)
+            thickness_z5_random = int(rd.uniform(0.02, 0.06)*thickness_complete)
+            thickness_z4_random = int(rd.uniform(0.18, 0.22)*thickness_complete)
+            thickness_z3_random = int(rd.uniform(0.31, 0.35)*thickness_complete)
+            thickness_z2_random = int(rd.uniform(0.30, 0.34)*thickness_complete)
+            thickness_z1_random = int(thickness_complete - thickness_z5_random- thickness_z4_random
+                                      - thickness_z3_random- thickness_z2_random)
+            #
+            # data_z5 = Zechstein(actual_thickness=0).create_zechstein_z5(top_z=0, thickness_z5=100)      # Ohre
+            # data_z4 = Zechstein(actual_thickness=0).create_zechstein_z4(top_z=100, thickness_z4=200)    # Aller
+            # data_z3 = Zechstein(actual_thickness=0).create_zechstein_z3(top_z=300, thickness_z3=300)    # Leine
+            # data_z2 = Zechstein(actual_thickness=0).create_zechstein_z2(top_z=600, thickness_z2=300)    # Straßfurt
+            # data_z1 = Zechstein(actual_thickness=300).create_zechstein_z1(top_z=900, thickness_z1=200)  # Werra
+            data_z5 = Zechstein(actual_thickness=0).create_zechstein_z5(
+                top_z=0,
+                thickness_z5=thickness_z5_random)   # Ohre
+            data_z4 = Zechstein(actual_thickness=0).create_zechstein_z4(
+                top_z=thickness_z5_random,
+                thickness_z4=thickness_z4_random)   # Aller
+            data_z3 = Zechstein(actual_thickness=0).create_zechstein_z3(
+                top_z=thickness_z5_random+thickness_z4_random,
+                thickness_z3=thickness_z3_random)   # Leine
+            data_z2 = Zechstein(actual_thickness=0).create_zechstein_z2(
+                top_z=thickness_z5_random+thickness_z4_random+thickness_z3_random,
+                thickness_z2=thickness_z2_random)   # Straßfurt
+            data_z1 = Zechstein(actual_thickness=300).create_zechstein_z1(
+                top_z=thickness_z5_random+thickness_z4_random+thickness_z3_random+thickness_z2_random,
+                thickness_z1=thickness_z1_random)   # Werra
+            #
+            data_zechstein = data_z5 + data_z4 + data_z3 + data_z2 + data_z1
             Subsurface(
                 parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                 color_acc=[self.color_accent_03, self.color_accent_04], subsurface=var_opt, lbl_w=self.lbl_w,
@@ -3370,10 +3395,25 @@ class Rocks:
                             self.change_radiobutton(var_rb))
                         self.gui_elements.append(rb_oxides)
                     elif self.rock == "Shale":
-                        data = shale(fluid="water").create_simple_shale(dict_output=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
+                        data = shale(fluid="water").create_simple_shale(
+                            dict_output=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
+                        rb_oxides = SE(
+                            parent=self.parent_rock, row_id=34, column_id=1, n_rows=1, n_columns=1, bg=self.color_acc_01,
+                            fg="black").create_radiobutton(
+                            var_rb=self.var_rb_geochem, var_rb_set=var_rb_geochem_start, value_rb=4, text="Oxides",
+                            color_bg=self.color_acc_01, command=lambda var_rb=self.var_rb_geochem:
+                            self.change_radiobutton(var_rb))
+                        self.gui_elements.append(rb_oxides)
                     elif self.rock == "Mudstone":
                         data = Sandstone(fluid="water", actualThickness=0).create_mudstone(
                             number=1, porosity=[self.var_phi0.get()/100, self.var_phi1.get()/100])
+                        rb_oxides = SE(
+                            parent=self.parent_rock, row_id=34, column_id=1, n_rows=1, n_columns=1, bg=self.color_acc_01,
+                            fg="black").create_radiobutton(
+                            var_rb=self.var_rb_geochem, var_rb_set=var_rb_geochem_start, value_rb=4, text="Oxides",
+                            color_bg=self.color_acc_01, command=lambda var_rb=self.var_rb_geochem:
+                            self.change_radiobutton(var_rb))
+                        self.gui_elements.append(rb_oxides)
                     elif self.rock == "Limestone":
                         data = CarbonateRocks(fluid="water", actualThickness=0).create_limestone(
                             number=1, porosity=[self.var_phi0.get() / 100, self.var_phi1.get() / 100])
@@ -4539,6 +4579,19 @@ class Rocks:
                     "Fe": ["FeO", 1.2865], "H": ["H2O", 8.9360], "K": ["K2O", 1.2046],
                     "Mg": ["MgO", 1.6582], "Mn": ["MnO", 1.2912], "Na": ["Na2O", 1.3480], "Ni": ["NiO", 1.2725],
                     "Si": ["SiO2", 2.1392]}
+            elif self.rock in ["Mudstone"]:
+                self.list_oxides = {
+                    "Al": ["Al2O3", 1.8895], "C": ["CO2", 3.6644], "Ca": ["CaO", 1.3992],
+                    "Fe": ["FeO", 1.2865], "H": ["H2O", 8.9360], "K": ["K2O", 1.2046],
+                    "Mg": ["MgO", 1.6582], "Mn": ["MnO", 1.2912], "Na": ["Na2O", 1.3480], "Ni": ["NiO", 1.2725],
+                    "Si": ["SiO2", 2.1392]}
+            elif self.rock in ["Shale"]:
+                self.list_oxides = {
+                    "Al": ["Al2O3", 1.8895], "C": ["CO2", 3.6644], "Ca": ["CaO", 1.3992],
+                    "Fe": ["FeO", 1.2865], "H": ["H2O", 8.9360], "K": ["K2O", 1.2046],
+                    "Mg": ["MgO", 1.6582], "Mn": ["MnO", 1.2912], "Na": ["Na2O", 1.3480], "Ni": ["NiO", 1.2725],
+                    "Si": ["SiO2", 2.1392], "U": ["UO2", 1.1344], "N": ["NO", 2.1422], "F": ["F", 1.0],
+                    "S": ["SO2", 1.9981]}
             elif self.rock in ["Granite (Streckeisen)", "Tonalite (Streckeisen)", "Diorite (Streckeisen)",
                                "Gabbro (Streckeisen)", "Syenite (Streckeisen)", "Quarzolite (Streckeisen)",
                                "Granodiorite (Streckeisen)", "Granitoid (Streckeisen)", "Monzonite (Streckeisen)",
@@ -4575,18 +4628,50 @@ class Rocks:
             for index, element in enumerate(self.list_elements, start=10):
                 if element in self.list_oxides:
                     if len(self.list_oxides[element]) == 2:
-                        entr_min = SE(parent=self.parent_rock, row_id=14+index + self.additional_line, column_id=4, bg=self.color_bg,
-                                      fg=self.color_fg).create_entry(var_entr=self.entr_list_min[index+self.additional_line],
-                                                                     var_entr_set=round(np.min(self.elements[element])*self.list_oxides[element][1], 3))
-                        entr_max = SE(parent=self.parent_rock, row_id=14+index + self.additional_line, column_id=5, bg=self.color_bg,
-                                      fg=self.color_fg).create_entry(var_entr=self.entr_list_max[index+self.additional_line],
-                                                                     var_entr_set=round(np.max(self.elements[element])*self.list_oxides[element][1], 3))
-                        entr_mean = SE(parent=self.parent_rock, row_id=14+index + self.additional_line, column_id=6, bg=self.color_bg,
-                                       fg=self.color_fg).create_entry(var_entr=self.entr_list_mean[index+self.additional_line],
-                                                                      var_entr_set=round(np.mean(self.elements[element])*self.list_oxides[element][1], 3))
-                        entr_std = SE(parent=self.parent_rock, row_id=14+index + self.additional_line, column_id=7, bg=self.color_bg,
-                                      fg=self.color_fg).create_entry(var_entr=self.entr_list_std[index+self.additional_line],
-                                                                     var_entr_set=round(np.std(self.elements[element], ddof=1)*self.list_oxides[element][1], 3))
+                        if element != "U":
+                            entr_min = SE(
+                                parent=self.parent_rock, row_id=14+index + self.additional_line, column_id=4,
+                                bg=self.color_bg, fg=self.color_fg).create_entry(
+                                var_entr=self.entr_list_min[index+self.additional_line],
+                                var_entr_set=round(np.min(self.elements[element])*self.list_oxides[element][1], 3))
+                            entr_max = SE(
+                                parent=self.parent_rock, row_id=14+index + self.additional_line, column_id=5,
+                                bg=self.color_bg, fg=self.color_fg).create_entry(
+                                var_entr=self.entr_list_max[index+self.additional_line],
+                                var_entr_set=round(np.max(self.elements[element])*self.list_oxides[element][1], 3))
+                            entr_mean = SE(
+                                parent=self.parent_rock, row_id=14+index + self.additional_line, column_id=6,
+                                bg=self.color_bg, fg=self.color_fg).create_entry(
+                                var_entr=self.entr_list_mean[index+self.additional_line],
+                                var_entr_set=round(np.mean(self.elements[element])*self.list_oxides[element][1], 3))
+                            entr_std = SE(
+                                parent=self.parent_rock, row_id=14+index + self.additional_line, column_id=7,
+                                bg=self.color_bg, fg=self.color_fg).create_entry(
+                                var_entr=self.entr_list_std[index+self.additional_line],
+                                var_entr_set=round(
+                                    np.std(self.elements[element], ddof=1)*self.list_oxides[element][1], 3))
+                        else:
+                            entr_min = SE(
+                                parent=self.parent_rock, row_id=14+index + self.additional_line, column_id=4,
+                                bg=self.color_bg, fg=self.color_fg).create_entry(
+                                var_entr=self.entr_list_min[index+self.additional_line],
+                                var_entr_set=round(np.min(self.elements[element])*self.list_oxides[element][1], 6))
+                            entr_max = SE(
+                                parent=self.parent_rock, row_id=14+index + self.additional_line, column_id=5,
+                                bg=self.color_bg, fg=self.color_fg).create_entry(
+                                var_entr=self.entr_list_max[index+self.additional_line],
+                                var_entr_set=round(np.max(self.elements[element])*self.list_oxides[element][1], 6))
+                            entr_mean = SE(
+                                parent=self.parent_rock, row_id=14+index + self.additional_line, column_id=6,
+                                bg=self.color_bg, fg=self.color_fg).create_entry(
+                                var_entr=self.entr_list_mean[index+self.additional_line],
+                                var_entr_set=round(np.mean(self.elements[element])*self.list_oxides[element][1], 6))
+                            entr_std = SE(
+                                parent=self.parent_rock, row_id=14+index + self.additional_line, column_id=7,
+                                bg=self.color_bg, fg=self.color_fg).create_entry(
+                                var_entr=self.entr_list_std[index+self.additional_line],
+                                var_entr_set=round(
+                                    np.std(self.elements[element], ddof=1)*self.list_oxides[element][1], 6))
                     elif len(self.list_oxides[element]) == 6:
                         entr_min = SE(parent=self.parent_rock, row_id=14+index, column_id=4, bg=self.color_bg,
                                   fg=self.color_fg).create_entry(var_entr=self.entr_list_min[index],
@@ -4600,11 +4685,13 @@ class Rocks:
                         entr_std = SE(parent=self.parent_rock, row_id=14+index, column_id=7, bg=self.color_bg,
                                   fg=self.color_fg).create_entry(var_entr=self.entr_list_std[index],
                                                                  var_entr_set=round(np.std(np.array(self.elements[element])*np.array(self.list_oxides[element][1]), ddof=1)*self.list_oxides[element][2], 3))
+                        #
                         self.entr_w["chemistry"].extend([entr_min, entr_max, entr_mean, entr_std])
                         self.entr_list_min.append(tk.IntVar())
                         self.entr_list_max.append(tk.IntVar())
                         self.entr_list_mean.append(tk.IntVar())
                         self.entr_list_std.append(tk.IntVar())
+                        #
                         entr_min = SE(parent=self.parent_rock, row_id=15+index, column_id=4, bg=self.color_bg,
                                   fg=self.color_fg).create_entry(var_entr=self.entr_list_min[index+1],
                                                                  var_entr_set=round(np.min(np.array(self.elements[element])*np.array(self.list_oxides[element][4]))*self.list_oxides[element][5], 3))
@@ -7648,8 +7735,10 @@ class Subsurface:
             step_depth = 10
         elif 100 < max_thickness <= 500:
             step_depth = 50
-        elif 500 < max_thickness <= 1000:
+        elif 500 < max_thickness <= 1500:
             step_depth = 100
+        elif max_thickness > 1500:
+            step_depth = 200
         self.fig, (self.ax1, self.ax2, self.ax3, self.ax4, self.ax5) = plt.subplots(
             1, 5, sharey="row", gridspec_kw={"wspace": 0.25}, figsize=(12, 24), facecolor="#E9ECED")
         self.fig.subplots_adjust(wspace=0.25)
@@ -7657,7 +7746,7 @@ class Subsurface:
         self.ax1.plot(self.results_sorted["GR"], self.results_sorted["Top"], color="#00549F", linewidth=2)
         self.ax1.set_xlabel("GR [API]")
         self.ax1.set_ylabel("Depth [m]")
-        if max(self.results_sorted["GR"]) > 300:
+        if max(self.results_sorted["GR"]) > 250:
             self.ax1.set_xscale("log")
         else:
             self.ax1.set_xlim(-1, max(self.results_sorted["GR"]))

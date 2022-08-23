@@ -6,7 +6,7 @@
 # Name:		series.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		18.08.2020
+# Date:		23.08.2020
 
 #-----------------------------------------------
 
@@ -35,9 +35,9 @@ class Zechstein:
         self.actual_thickness = actual_thickness
     #
     def create_zechstein_z1(self, thickness_z1=100, top_z=0):  # Z1 - Werra Series
-        fraction_kupferschiefer_pre = round(rd.uniform(2.5, 15), 4)
+        fraction_kupferschiefer_pre = round(rd.uniform(11, 18), 4)
         fraction_kupferschiefer = round(round(fraction_kupferschiefer_pre*2)/2/100, 4)
-        fraction_limestone_pre = round(rd.uniform(15, 30), 4)
+        fraction_limestone_pre = round(rd.uniform(21, 36), 4)
         fraction_limestone = round(round(fraction_limestone_pre*2)/2/100, 4)
         fraction_anhydrite = round(1 - fraction_kupferschiefer - fraction_limestone, 4)
         #
@@ -93,15 +93,15 @@ class Zechstein:
         while condition == False:
             counter = 0
             #
-            fraction_dolomite_pre = round(rd.uniform(5, 15), 4)
+            fraction_dolomite_pre = round(rd.uniform(6, 10), 4)
             fraction_dolomite = round(round(fraction_dolomite_pre * 2) / 2 / 100, 4)
-            fraction_anhydrite_lower_pre = round(rd.uniform(20, 30), 4)
+            fraction_anhydrite_lower_pre = round(rd.uniform(14, 24), 4)
             fraction_anhydrite_lower = round(round(fraction_anhydrite_lower_pre * 2) / 2 / 100, 4)
-            fraction_rocksalt_lower_pre = round(rd.uniform(50, 70), 4)
+            fraction_rocksalt_lower_pre = round(rd.uniform(42, 71), 4)
             fraction_rocksalt_lower = round(round(fraction_rocksalt_lower_pre * 2) / 2 / 100, 4)
-            fraction_potash_pre = round(rd.uniform(10, 20), 4)
+            fraction_potash_pre = round(rd.uniform(8, 13), 4)
             fraction_potash = round(round(fraction_potash_pre * 2) / 2 / 100, 4)
-            fraction_rocksalt_upper_pre = round(rd.uniform(1, 3), 4)
+            fraction_rocksalt_upper_pre = round(rd.uniform(3, 5), 4)
             fraction_rocksalt_upper = round(round(fraction_rocksalt_upper_pre * 2) / 2 / 100, 4)
             fraction_anhydrite_upper = round(1 - fraction_dolomite - fraction_anhydrite_lower - fraction_rocksalt_lower
                                              - fraction_potash - fraction_rocksalt_upper, 4)
@@ -227,17 +227,17 @@ class Zechstein:
         while condition == False:
             counter = 0
             #
-            fraction_shale_pre = round(rd.uniform(5, 10), 4)
+            fraction_shale_pre = round(rd.uniform(5, 8), 4)
             fraction_shale = round(round(fraction_shale_pre * 2) / 2 / 100, 4)
-            fraction_anhydrite_pre = round(rd.uniform(15, 25), 4)
+            fraction_anhydrite_pre = round(rd.uniform(14, 24), 4)
             fraction_anhydrite = round(round(fraction_anhydrite_pre * 2) / 2 / 100, 4)
-            fraction_rocksalt_lower_pre = round(rd.uniform(10, 20), 4)
+            fraction_rocksalt_lower_pre = round(rd.uniform(13, 22), 4)
             fraction_rocksalt_lower = round(round(fraction_rocksalt_lower_pre * 2) / 2 / 100, 4)
-            fraction_potash_lower_pre = round(rd.uniform(5, 10), 4)
+            fraction_potash_lower_pre = round(rd.uniform(4, 7), 4)
             fraction_potash_lower = round(round(fraction_potash_lower_pre * 2) / 2 / 100, 4)
-            fraction_rocksalt_medium_pre = round(rd.uniform(25, 35), 4)
+            fraction_rocksalt_medium_pre = round(rd.uniform(25, 42), 4)
             fraction_rocksalt_medium = round(round(fraction_rocksalt_medium_pre * 2) / 2 / 100, 4)
-            fraction_potash_upper_pre = round(rd.uniform(5, 10), 4)
+            fraction_potash_upper_pre = round(rd.uniform(4, 6), 4)
             fraction_potash_upper = round(round(fraction_potash_upper_pre * 2) / 2 / 100, 4)
             fraction_rocksalt_upper = round(
                 1 - fraction_shale - fraction_anhydrite - fraction_rocksalt_lower - fraction_potash_lower - fraction_rocksalt_medium - fraction_potash_upper, 4)
@@ -376,11 +376,11 @@ class Zechstein:
         while condition == False:
             counter = 0
             #
-            fraction_shale_pre = round(rd.uniform(7, 15), 4)
+            fraction_shale_pre = round(rd.uniform(10, 16), 4)
             fraction_shale = round(round(fraction_shale_pre * 2) / 2 / 100, 4)
-            fraction_anhydrite_lower_pre = round(rd.uniform(7, 15), 4)
+            fraction_anhydrite_lower_pre = round(rd.uniform(5, 9), 4)
             fraction_anhydrite_lower = round(round(fraction_anhydrite_lower_pre * 2) / 2 / 100, 4)
-            fraction_rocksalt_pre = round(rd.uniform(63, 71), 4)
+            fraction_rocksalt_pre = round(rd.uniform(55, 92), 4)
             fraction_rocksalt = round(round(fraction_rocksalt_pre * 2) / 2 / 100, 4)
             fraction_anhydrite_upper = round(1 - fraction_shale - fraction_anhydrite_lower - fraction_rocksalt, 4)
             #
@@ -472,3 +472,54 @@ class Zechstein:
         #     print(key, value)
         #
         return container_anhydrite_upper, container_rocksalt, container_anhydrite_lower, container_shale
+    #
+    def create_zechstein_z5(self, thickness_z5=100, top_z=0):  # 5 - Ohre Series
+        fraction_mudstone_lower_pre = round(rd.uniform(22, 36), 4)
+        fraction_mudstone_lower = round(round(fraction_mudstone_lower_pre*2)/2/100, 4)
+        fraction_anhydrite_pre = round(rd.uniform(11, 19), 4)
+        fraction_anhydrite = round(round(fraction_anhydrite_pre*2)/2/100, 4)
+        fraction_mudstone_upper = round(1 - fraction_mudstone_lower - fraction_anhydrite, 4)
+        #
+        thickness_mudstone_lower = round(thickness_z5*fraction_mudstone_lower, 4)
+        thickness_anhydrite = round(thickness_z5*fraction_anhydrite, 4)
+        thickness_mudstone_upper = round(thickness_z5*fraction_mudstone_upper, 4)
+        #
+        actual_top = top_z
+        actual_bottom = top_z + thickness_mudstone_upper
+        #
+        ## Create Mudstone Upper Unit
+        container_mudstone_upper = {}
+        steps_mudstone_upper = np.linspace(actual_bottom, actual_top, self.resolution, endpoint=False)[::-1]
+        for i in steps_mudstone_upper:
+            depth = round(i, 4)
+            container_mudstone_upper[depth] = Sandstone().create_mudstone(number=1, porosity=[0.0, 0.1])
+        actual_top += thickness_mudstone_upper
+        actual_bottom += thickness_anhydrite
+        #
+        ## Create Anhydrite Unit
+        container_anhydrite = {}
+        steps_anhydrite = np.linspace(actual_bottom, actual_top, self.resolution, endpoint=False)[::-1]
+        for i in steps_anhydrite:
+            depth = round(i, 4)
+            container_anhydrite[depth] = Evaporites(fluid="water", actualThickness=0).create_anhydrite_rock(
+                porosity=[0.05, 0.1])
+        actual_top += thickness_anhydrite
+        actual_bottom += thickness_mudstone_lower
+        #
+        ## Create Mudstone Lower Unit
+        container_mudstone_lower = {}
+        steps_mudstone_lower = np.linspace(actual_bottom, actual_top, self.resolution, endpoint=False)[::-1]
+        for i in steps_mudstone_lower:
+            depth = round(i, 4)
+            container_mudstone_lower[depth] = Sandstone().create_mudstone(number=1, porosity=[0.0, 0.1])
+        #
+        ## TEST
+        # for key, value in reversed(container_mudstone_upper.items()):
+        #     print(key, value)
+        # for key, value in reversed(container_anhydrite.items()):
+        #     print(key, value)
+        # for key, value in reversed(container_mudstone_lower.items()):
+        #     print(key, value)
+        #
+        return container_mudstone_upper, container_anhydrite, container_mudstone_lower
+    #

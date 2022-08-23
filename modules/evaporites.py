@@ -1141,15 +1141,15 @@ class Evaporites:
                 condition_2 = False
                 while condition_2 == False:
                     if dominance == None:
-                        phi_hl = round(rd.uniform(0.35, 0.7), 4)
-                        phi_syl = round(rd.uniform(0.2, (1.0 - phi_hl)), 4)
+                        phi_hl = round(rd.uniform(0.5, 0.8), 4)
+                        phi_syl = round(rd.uniform(0.15, (1.0 - phi_hl)), 4)
                         phi_car = round(rd.uniform(0.0, (1.0 - phi_hl - phi_syl)), 4)
                         phi_Ka = round(rd.uniform(0.0, (1.0 - phi_hl - phi_syl - phi_car)), 4)
                         phi_Kie = round(1 - phi_hl - phi_syl - phi_car - phi_Ka, 4)
                         phi_total = phi_hl + phi_syl + phi_car + phi_Ka + phi_Kie
                         #
                         if np.isclose(phi_total, 1.0000) == True:
-                            if 0.35 <= phi_hl <= 0.7 and 0.2 <= phi_syl <= 0.4 and 0.0 <= phi_car <= 0.2 \
+                            if 0.5 <= phi_hl <= 0.8 and 0.15 <= phi_syl <= 0.3 and 0.0 <= phi_car <= 0.2 \
                                     and 0.0 <= phi_Ka <= 0.2 and 0.0 <= phi_Kie <= 0.2:
                                 condition_2 = True
                     elif dominance == "Syl":
