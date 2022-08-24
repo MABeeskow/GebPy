@@ -5959,6 +5959,13 @@ class Subsurface:
                 self.results_units[rock][property] = []
         n_units = []
         self.results_sorted["Top"].append(0.0)
+        #
+        self.data_chemistry = {}
+        self.data_mineralogy = {}
+        for rock in self.list_rocks_short:
+            self.data_chemistry[rock] = {}
+            self.data_mineralogy[rock] = {}
+        #
         i = 0
         for unit in data_units:
             n_unit = len(unit)
@@ -5980,6 +5987,21 @@ class Subsurface:
                 self.results_sorted["GR"].append(value["GR"])
                 self.results_sorted["PE"].append(value["PE"])
                 self.results_sorted["rock"].append(value["rock"])
+                #
+                if len(self.data_chemistry[value["rock"]]) == 0:
+                    for element in value["chemistry"].keys():
+                       self.data_chemistry[value["rock"]][element] = []
+                #
+                for element, value_element in value["chemistry"].items():
+                    self.data_chemistry[value["rock"]][element].append(value_element)
+                #
+                if len(self.data_mineralogy[value["rock"]]) == 0:
+                    for mineral in value["mineralogy"].keys():
+                       self.data_mineralogy[value["rock"]][mineral] = []
+                #
+                for mineral, value_mineral in value["mineralogy"].items():
+                    self.data_mineralogy[value["rock"]][mineral].append(value_mineral)
+                #
                 i += 1
         #
         self.results_sorted["Bottom"][-1]
@@ -5999,6 +6021,7 @@ class Subsurface:
                 self.results_units[rock][property].extend(self.results_sorted[property][start:end])
             start += n_units[index]
             end += n_units[index]
+        #
         # for index, value in enumerate(self.results_sorted["Top"]):
         #     print(value, self.results_sorted["Bottom"][index])
         #
@@ -6008,26 +6031,26 @@ class Subsurface:
         # print("Bottom:", self.results_sorted["Bottom"], len(self.results_sorted["Bottom"]))
         # print("Thickness:", self.results_sorted["thickness"], len(self.results_sorted["thickness"]))
         #
-        unit_sections = {}
+        self.unit_sections = {}
         for rock in self.list_rocks_short:
             if rock == "Sandstone":
-                unit_sections[rock] = {"Intervals": [], "Color": "tan"}
+                self.unit_sections[rock] = {"Intervals": [], "Color": "tan"}
             elif rock in ["Shale", "Mudstone"]:
-                unit_sections[rock] = {"Intervals": [], "Color": "olivedrab"}
+                self.unit_sections[rock] = {"Intervals": [], "Color": "olivedrab"}
             elif rock in ["Granite", "Gabbro", "Diorite"]:
-                unit_sections[rock] = {"Intervals": [], "Color": "darkorange"}
+                self.unit_sections[rock] = {"Intervals": [], "Color": "darkorange"}
             elif rock == "Kupferschiefer":
-                unit_sections[rock] = {"Intervals": [], "Color": "gray"}
+                self.unit_sections[rock] = {"Intervals": [], "Color": "gray"}
             elif rock in ["limestone", "Limestone"]:
-                unit_sections[rock] = {"Intervals": [], "Color": "skyblue"}
+                self.unit_sections[rock] = {"Intervals": [], "Color": "skyblue"}
             elif rock == "Anhydrite":
-                unit_sections[rock] = {"Intervals": [], "Color": "orchid"}
+                self.unit_sections[rock] = {"Intervals": [], "Color": "orchid"}
             elif rock == "Dolomite":
-                unit_sections[rock] = {"Intervals": [], "Color": "lightcyan"}
+                self.unit_sections[rock] = {"Intervals": [], "Color": "lightcyan"}
             elif rock == "Rock Salt":
-                unit_sections[rock] = {"Intervals": [], "Color": "lavender"}
+                self.unit_sections[rock] = {"Intervals": [], "Color": "lavender"}
             elif rock == "Potash":
-                unit_sections[rock] = {"Intervals": [], "Color": "yellowgreen"}
+                self.unit_sections[rock] = {"Intervals": [], "Color": "yellowgreen"}
         for index, rock in enumerate(self.results_sorted["rock"]):
             if index > 1:
                 top = round(self.results_sorted["Bottom"][index - 1], 4)
@@ -6039,10 +6062,10 @@ class Subsurface:
                 else:
                     top = round(self.results_sorted["Bottom"][index - 1], 4)
                     bottom = round(self.results_sorted["Top"][index], 4)
-            unit_sections[rock]["Intervals"].append(
+            self.unit_sections[rock]["Intervals"].append(
                 [round(self.results_sorted["Top"][index], 4),
                  round(self.results_sorted["Top"][index] + self.results_sorted["thickness"][index], 4)])
-            unit_sections[rock]["Intervals"].append([top, bottom])
+            self.unit_sections[rock]["Intervals"].append([top, bottom])
         # print("rho:", self.results_sorted["rho"], len(self.results_sorted["rho"]))
         # print("vP:", self.results_sorted["vP"], len(self.results_sorted["vP"]))
         # print("vS:", self.results_sorted["vS"], len(self.results_sorted["vS"]))
@@ -6138,7 +6161,13 @@ class Subsurface:
         self.entr_list_mean = []
         self.entr_list_std = []
         #
-        for i in range(10):
+        n_elements = 0
+        for rock, element_data in self.data_chemistry.items():
+            n_element_rock = len(element_data.keys())
+            if n_element_rock > n_elements:
+                n_elements = n_element_rock
+        #
+        for i in range(10 + n_elements):
             self.entr_list_min.append(tk.IntVar())
             self.entr_list_max.append(tk.IntVar())
             self.entr_list_mean.append(tk.IntVar())
@@ -6181,12 +6210,56 @@ class Subsurface:
         #
         lbl = SE(parent=self.parent_subsurface, row_id=24, column_id=3, n_columns=5, bg=self.color_bg,
                  fg="black").create_label(text="Chemical composition (weight amounts %)", relief=tk.RAISED)
+        #
         self.lbl_w["chemistry"].append(lbl)
+        #
+        self.list_elements_0 = list(self.data_chemistry[self.list_rocks_short[0]].keys())
+        self.elements_0 = self.data_chemistry[self.list_rocks_short[0]]
+        #
+        for index, element in enumerate(self.list_elements_0, start=0):
+            if element not in ["U"]:
+                lbl = SE(parent=self.parent_subsurface, row_id=25+index, column_id=3, bg=self.color_bg,
+                         fg="black").create_label(text=str(element), relief=tk.RAISED)
+            else:
+                lbl = SE(parent=self.parent_subsurface, row_id=25+index, column_id=3, bg=self.color_bg,
+                         fg="black").create_label(text=str(element)+" (ppm)", relief=tk.RAISED)
+            #
+            self.lbl_w["chemistry"].append(lbl)
+        #
+        for index, element in enumerate(self.list_elements_0, start=10):
+            if element not in ["U"]:
+                entr_min = SE(parent=self.parent_subsurface, row_id=15+index, column_id=4, bg=self.color_bg,
+                              fg=self.color_fg).create_entry(var_entr=self.entr_list_min[index],
+                                                             var_entr_set=round(np.min(self.elements_0[element]), 3))
+                entr_max = SE(parent=self.parent_subsurface, row_id=15+index, column_id=5, bg=self.color_bg,
+                              fg=self.color_fg).create_entry(var_entr=self.entr_list_max[index],
+                                                             var_entr_set=round(np.max(self.elements_0[element]), 3))
+                entr_mean = SE(parent=self.parent_subsurface, row_id=15+index, column_id=6, bg=self.color_bg,
+                               fg=self.color_fg).create_entry(var_entr=self.entr_list_mean[index],
+                                                              var_entr_set=round(np.mean(self.elements_0[element]), 3))
+                entr_std = SE(parent=self.parent_subsurface, row_id=15+index, column_id=7, bg=self.color_bg,
+                              fg=self.color_fg).create_entry(var_entr=self.entr_list_std[index],
+                                                             var_entr_set=round(np.std(self.elements_0[element], ddof=1), 3))
+            else:
+                ppm_amounts = np.array(self.elements_0[element])*10000
+                entr_min = SE(parent=self.parent_subsurface, row_id=15+index, column_id=4, bg=self.color_bg,
+                              fg=self.color_fg).create_entry(var_entr=self.entr_list_min[index],
+                                                             var_entr_set=round(np.min(ppm_amounts), 3))
+                entr_max = SE(parent=self.parent_subsurface, row_id=15+index, column_id=5, bg=self.color_bg,
+                              fg=self.color_fg).create_entry(var_entr=self.entr_list_max[index],
+                                                             var_entr_set=round(np.max(ppm_amounts), 3))
+                entr_mean = SE(parent=self.parent_subsurface, row_id=15+index, column_id=6, bg=self.color_bg,
+                               fg=self.color_fg).create_entry(var_entr=self.entr_list_mean[index],
+                                                              var_entr_set=round(np.mean(ppm_amounts), 3))
+                entr_std = SE(parent=self.parent_subsurface, row_id=15+index, column_id=7, bg=self.color_bg,
+                              fg=self.color_fg).create_entry(var_entr=self.entr_list_std[index],
+                                                             var_entr_set=round(np.std(ppm_amounts, ddof=1), 3))
+            #
+            self.entr_w["chemistry"].extend([entr_min, entr_max, entr_mean, entr_std])
         #
         self.create_well_log_plot(
             parent=self.parent_subsurface, data_x=self.results_sorted["GR"], data_y=self.results_sorted["Top"],
-            row_id=2, column_id=9, n_rows=45, n_columns=9, unit_sections=unit_sections)
-        #
+            row_id=2, column_id=9, n_rows=45, n_columns=9, unit_sections=self.unit_sections)
         #
     def create_random_sequences(self, thickness, style, n_parts=20):
         #
@@ -6837,8 +6910,14 @@ class Subsurface:
             except AttributeError:
                 pass
             #
-            self.create_well_log_plot(parent=self.parent_subsurface, data_x=self.results_sorted["GR"],
-                                      data_y=self.results_sorted["Top"], row_id=2, column_id=9, n_rows=45, n_columns=9)
+            if self.name == "Random":
+                self.create_well_log_plot(
+                    parent=self.parent_subsurface, data_x=self.results_sorted["GR"], data_y=self.results_sorted["Top"],
+                    row_id=2, column_id=9, n_rows=45, n_columns=9)
+            elif self.name == "Zechstein":
+                self.create_well_log_plot(
+                    parent=self.parent_subsurface, data_x=self.results_sorted["GR"], data_y=self.results_sorted["Top"],
+                    row_id=2, column_id=9, n_rows=45, n_columns=9, unit_sections=self.unit_sections)
             #
         elif var_rb.get() == 1: # Histogram Plot
             try:
@@ -7070,12 +7149,35 @@ class Subsurface:
             except:
                 pass
             #
-            if "Sandstone" == self.list_rocks_short[0] or self.list_rocks_short[self.var_rb_lith.get() - 5] == "Sandstone":
-                self.list_elements_0 = self.list_elements_sst
-                self.elements_0 = self.elements_sst
-            elif "Shale" == self.list_rocks_short[0] or self.list_rocks_short[self.var_rb_lith.get() - 5] == "Shale":
-                self.list_elements_0 = self.list_elements_sh
-                self.elements_0 = self.elements_sh
+            if self.name == "Random":
+                if "Sandstone" == self.list_rocks_short[0] or self.list_rocks_short[self.var_rb_lith.get() - 5] == "Sandstone":
+                    self.list_elements_0 = self.list_elements_sst
+                    self.elements_0 = self.elements_sst
+                elif "Shale" == self.list_rocks_short[0] or self.list_rocks_short[self.var_rb_lith.get() - 5] == "Shale":
+                    self.list_elements_0 = self.list_elements_sh
+                    self.elements_0 = self.elements_sh
+            elif self.name == "Zechstein":
+                if "Mudstone" == self.list_rocks_short[0] or self.list_rocks_short[self.var_rb_lith.get() - 5] == "Mudstone":
+                    self.list_elements_0 = list(self.data_chemistry["Mudstone"].keys())
+                    self.elements_0 = self.data_chemistry["Mudstone"]
+                elif "Anhydrite" == self.list_rocks_short[0] or self.list_rocks_short[self.var_rb_lith.get() - 5] == "Anhydrite":
+                    self.list_elements_0 = list(self.data_chemistry["Anhydrite"].keys())
+                    self.elements_0 = self.data_chemistry["Anhydrite"]
+                elif "Rock Salt" == self.list_rocks_short[0] or self.list_rocks_short[self.var_rb_lith.get() - 5] == "Rock Salt":
+                    self.list_elements_0 = list(self.data_chemistry["Rock Salt"].keys())
+                    self.elements_0 = self.data_chemistry["Rock Salt"]
+                elif "Potash" == self.list_rocks_short[0] or self.list_rocks_short[self.var_rb_lith.get() - 5] == "Potash":
+                    self.list_elements_0 = list(self.data_chemistry["Potash"].keys())
+                    self.elements_0 = self.data_chemistry["Potash"]
+                elif "Dolomite" == self.list_rocks_short[0] or self.list_rocks_short[self.var_rb_lith.get() - 5] == "Dolomite":
+                    self.list_elements_0 = list(self.data_chemistry["Dolomite"].keys())
+                    self.elements_0 = self.data_chemistry["Dolomite"]
+                elif "Limestone" == self.list_rocks_short[0] or self.list_rocks_short[self.var_rb_lith.get() - 5] == "Limestone":
+                    self.list_elements_0 = list(self.data_chemistry["Limestone"].keys())
+                    self.elements_0 = self.data_chemistry["Limestone"]
+                elif "Kupferschiefer" == self.list_rocks_short[0] or self.list_rocks_short[self.var_rb_lith.get() - 5] == "Kupferschiefer":
+                    self.list_elements_0 = list(self.data_chemistry["Kupferschiefer"].keys())
+                    self.elements_0 = self.data_chemistry["Kupferschiefer"]
             #
             lbl = SE(parent=self.parent_subsurface, row_id=24, column_id=3, n_columns=5, bg=self.color_bg,
                    fg="black").create_label(text="Chemical composition (weight amounts %)", relief=tk.RAISED)
@@ -7287,18 +7389,32 @@ class Subsurface:
                     pass
                 #
                 self.current_rb_lith.set(var_rb.get())
-                if self.list_rocks_short[1] == "Sandstone":
-                    self.list_elements_0 = self.list_elements_sst
-                    self.list_minerals_0 = self.list_minerals_sst
-                    self.results_0 = self.results_sst
-                    self.elements_0 = self.elements_sst
-                    self.minerals_0 = self.minerals_sst
-                elif self.list_rocks_short[1] == "Shale":
-                    self.list_elements_0 = self.list_elements_sh
-                    self.list_minerals_0 = self.list_minerals_sh
-                    self.results_0 = self.results_sh
-                    self.elements_0 = self.elements_sh
-                    self.minerals_0 = self.minerals_sh
+                if self.name == "Random":
+                    if self.list_rocks_short[1] == "Sandstone":
+                        self.list_elements_0 = self.list_elements_sst
+                        self.list_minerals_0 = self.list_minerals_sst
+                        self.results_0 = self.results_sst
+                        self.elements_0 = self.elements_sst
+                        self.minerals_0 = self.minerals_sst
+                    elif self.list_rocks_short[1] == "Shale":
+                        self.list_elements_0 = self.list_elements_sh
+                        self.list_minerals_0 = self.list_minerals_sh
+                        self.results_0 = self.results_sh
+                        self.elements_0 = self.elements_sh
+                        self.minerals_0 = self.minerals_sh
+                elif self.name == "Zechstein":
+                    if self.list_rocks_short[1] == "Mudstone":
+                        self.list_elements_0 = list(self.data_chemistry["Mudstone"].keys())
+                        self.list_minerals_0 = list(self.data_mineralogy["Mudstone"].keys())
+                        self.results_0 = self.results_units["Mudstone"]
+                        self.elements_0 = self.data_chemistry["Mudstone"]
+                        self.minerals_0 = self.data_mineralogy["Mudstone"]
+                    elif self.list_rocks_short[1] == "Anhydrite":
+                        self.list_elements_0 = list(self.data_chemistry["Anhydrite"].keys())
+                        self.list_minerals_0 = list(self.data_mineralogy["Anhydrite"].keys())
+                        self.results_0 = self.results_units["Anhydrite"]
+                        self.elements_0 = self.data_chemistry["Anhydrite"]
+                        self.minerals_0 = self.data_mineralogy["Anhydrite"]
                 #
                 ## Entry Table
                 for i in range(10):
@@ -7383,24 +7499,25 @@ class Subsurface:
                     pass
                 #
                 self.current_rb_lith.set(var_rb.get())
-                if self.list_rocks_short[-1] == "Granite":
-                    self.list_elements_0 = self.list_elements_granite
-                    self.list_minerals_0 = self.list_minerals_granite
-                    self.results_0 = self.results_granite
-                    self.elements_0 = self.elements_granite
-                    self.minerals_0 = self.minerals_granite
-                elif self.list_rocks_short[-1] == "Gabbro":
-                    self.list_elements_0 = self.list_elements_gabbro
-                    self.list_minerals_0 = self.list_minerals_gabbro
-                    self.results_0 = self.results_gabbro
-                    self.elements_0 = self.elements_gabbro
-                    self.minerals_0 = self.minerals_gabbro
-                elif self.list_rocks_short[-1] == "Diorite":
-                    self.list_elements_0 = self.list_elements_diorite
-                    self.list_minerals_0 = self.list_minerals_diorite
-                    self.results_0 = self.results_diorite
-                    self.elements_0 = self.elements_diorite
-                    self.minerals_0 = self.minerals_diorite
+                if self.name == "Random":
+                    if self.list_rocks_short[-1] == "Granite":
+                        self.list_elements_0 = self.list_elements_granite
+                        self.list_minerals_0 = self.list_minerals_granite
+                        self.results_0 = self.results_granite
+                        self.elements_0 = self.elements_granite
+                        self.minerals_0 = self.minerals_granite
+                    elif self.list_rocks_short[-1] == "Gabbro":
+                        self.list_elements_0 = self.list_elements_gabbro
+                        self.list_minerals_0 = self.list_minerals_gabbro
+                        self.results_0 = self.results_gabbro
+                        self.elements_0 = self.elements_gabbro
+                        self.minerals_0 = self.minerals_gabbro
+                    elif self.list_rocks_short[-1] == "Diorite":
+                        self.list_elements_0 = self.list_elements_diorite
+                        self.list_minerals_0 = self.list_minerals_diorite
+                        self.results_0 = self.results_diorite
+                        self.elements_0 = self.elements_diorite
+                        self.minerals_0 = self.minerals_diorite
                 #
                 ## Entry Table
                 for i in range(10):
