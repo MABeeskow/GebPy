@@ -35,7 +35,7 @@ from modules.igneous import Plutonic, Volcanic, Pyroclastic
 from modules.evaporites import Evaporites
 from modules.sequences import DataProcessing as DP
 from modules.geophysics import Elasticity as elast
-from modules.series import Zechstein
+from modules.series import Zechstein, Muschelkalk
 from modules import fluids
 import numpy as np
 import random as rd
@@ -157,7 +157,7 @@ class GebPyGUI(tk.Frame):
             var_opt=var_opt_1_0, var_opt_set="Select Rock Type", opt_list=opt_list_1_0,
             command=lambda var_opt=var_opt_1_0: self.select_opt(var_opt))
         var_opt_2_0 = tk.StringVar()
-        opt_list_2_0 = ["Zechstein", "Buntsandstein"]
+        opt_list_2_0 = ["Zechstein", "Muschelkalk"]
         self.opt_realseq = SE(parent=self.parent, row_id=22, column_id=0, n_rows=2, n_columns=2, bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
             var_opt=var_opt_2_0, var_opt_set="Select Real Sequences", opt_list=opt_list_2_0,
             command=lambda var_opt=var_opt_2_0: self.select_opt(var_opt))
@@ -875,6 +875,21 @@ class GebPyGUI(tk.Frame):
                 color_acc=[self.color_accent_03, self.color_accent_04], subsurface=var_opt, lbl_w=self.lbl_w,
                 entr_w=self.entr_w, gui_elements=self.gui_elements).create_real_world_sequences(
                 name=var_opt, data_units=data_zechstein)
+        #
+        elif var_opt == "Muschelkalk":
+            thickness_complete = rd.randrange(900, 1500, 100)
+            thickness_muschelkalk_unterer_random = int(rd.uniform(0.02, 0.06) * thickness_complete)
+            #
+            data_muschelkalk_unterer = Muschelkalk(actual_thickness=0).create_muschelkalk_unterer(
+                top_unit=0,
+                thickness_unit=thickness_complete)  # Unterer Muschelkalk
+            #
+            data_muschelkalk = data_muschelkalk_unterer
+            Subsurface(
+                parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
+                color_acc=[self.color_accent_03, self.color_accent_04], subsurface=var_opt, lbl_w=self.lbl_w,
+                entr_w=self.entr_w, gui_elements=self.gui_elements).create_real_world_sequences(
+                name=var_opt, data_units=data_muschelkalk)
     #
     def change_radiobutton_mode(self, var_rb_mode):
         if var_rb_mode.get() == 0:
@@ -3779,11 +3794,18 @@ class Rocks:
             self.entr_list_max = []
             self.entr_list_mean = []
             self.entr_list_std = []
-            for i in range(10+len(self.list_elements)):
-                self.entr_list_min.append(tk.IntVar())
-                self.entr_list_max.append(tk.IntVar())
-                self.entr_list_mean.append(tk.IntVar())
-                self.entr_list_std.append(tk.IntVar())
+            if len(self.list_elements) >= len(self.list_minerals):
+                for i in range(10 + len(self.list_elements)):
+                    self.entr_list_min.append(tk.IntVar())
+                    self.entr_list_max.append(tk.IntVar())
+                    self.entr_list_mean.append(tk.IntVar())
+                    self.entr_list_std.append(tk.IntVar())
+            else:
+                for i in range(10 + len(self.list_minerals)):
+                    self.entr_list_min.append(tk.IntVar())
+                    self.entr_list_max.append(tk.IntVar())
+                    self.entr_list_mean.append(tk.IntVar())
+                    self.entr_list_std.append(tk.IntVar())
             #
             ## Entry Table
             for i in range(10):
@@ -4268,11 +4290,18 @@ class Rocks:
         self.entr_list_max = []
         self.entr_list_mean = []
         self.entr_list_std = []
-        for i in range(10+len(self.list_elements)):
-            self.entr_list_min.append(tk.IntVar())
-            self.entr_list_max.append(tk.IntVar())
-            self.entr_list_mean.append(tk.IntVar())
-            self.entr_list_std.append(tk.IntVar())
+        if len(self.list_elements) >= len(self.list_minerals):
+            for i in range(10+len(self.list_elements)):
+                self.entr_list_min.append(tk.IntVar())
+                self.entr_list_max.append(tk.IntVar())
+                self.entr_list_mean.append(tk.IntVar())
+                self.entr_list_std.append(tk.IntVar())
+        else:
+            for i in range(10+len(self.list_minerals)):
+                self.entr_list_min.append(tk.IntVar())
+                self.entr_list_max.append(tk.IntVar())
+                self.entr_list_mean.append(tk.IntVar())
+                self.entr_list_std.append(tk.IntVar())
         #
         ## Entry Table
         for i in range(10):
@@ -6051,6 +6080,8 @@ class Subsurface:
                 self.unit_sections[rock] = {"Intervals": [], "Color": "lavender"}
             elif rock == "Potash":
                 self.unit_sections[rock] = {"Intervals": [], "Color": "yellowgreen"}
+            elif rock == "Marl":
+                self.unit_sections[rock] = {"Intervals": [], "Color": "moccasin"}
         for index, rock in enumerate(self.results_sorted["rock"]):
             if index > 1:
                 top = round(self.results_sorted["Bottom"][index - 1], 4)
@@ -7956,6 +7987,8 @@ class Subsurface:
                     units_sorted[-1].append("lavender")
                 elif rock == "Potash":
                     units_sorted[-1].append("yellowgreen")
+                elif rock == "Marl":
+                    units_sorted[-1].append("moccasin")
             legend_lithology = []
             for i in range(len(units_sorted)):
                 legend_lithology.append(mpatches.Patch(facecolor=units_sorted[i][-1], edgecolor="black", hatch="",

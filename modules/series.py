@@ -19,6 +19,7 @@ from ore import Ores
 from carbonates import limestone, CarbonateRocks
 from evaporites import Evaporites
 from modules.siliciclastics import shale, Sandstone
+from modules.sedimentary_rocks import SedimentaryRocks
 
 #######################
 ## SERIES GENERATION ##
@@ -65,7 +66,9 @@ class Zechstein:
             depth = round(i, 4)
             # container_limestone[depth] = limestone(fluid="water", actualThickness=0).create_simple_limestone(
             #     dict=True, porosity=rd.uniform(0.1, 0.4))
-            container_limestone[depth] = CarbonateRocks(fluid="water", actualThickness=0).create_limestone(
+            # container_limestone[depth] = CarbonateRocks(fluid="water", actualThickness=0).create_limestone(
+            #     number=1, porosity=[0.1, 0.4])
+            container_limestone[depth] = CarbonateRocks(fluid="water", actualThickness=0).create_limestone_alternative(
                 number=1, porosity=[0.1, 0.4])
         actual_top += thickness_limestone
         actual_bottom += thickness_kupferschiefer
@@ -522,4 +525,66 @@ class Zechstein:
         #     print(key, value)
         #
         return container_mudstone_upper, container_anhydrite, container_mudstone_lower
+    #
+class Muschelkalk:
+    #
+    def __init__(self, actual_thickness=0, thickness=1000, resolution=25, composition=None):
+        self.thickness = thickness
+        self.resolution = resolution
+        self.composition = composition
+        #
+        self.actual_thickness = actual_thickness
+    #
+    def create_muschelkalk_unterer(self, thickness_unit=100, top_unit=0):  # Unterer Muschelkalk
+        fraction_marl_pre = round(rd.uniform(11, 18), 4)
+        fraction_marl = round(round(fraction_marl_pre * 2) / 2 / 100, 4)
+        fraction_dolomite_pre = round(rd.uniform(21, 36), 4)
+        fraction_dolomite = round(round(fraction_dolomite_pre * 2) / 2 / 100, 4)
+        fraction_limestone = round(1 - fraction_marl - fraction_dolomite, 4)
+        #
+        thickness_marl = round(thickness_unit * fraction_marl, 4)
+        thickness_dolomite = round(thickness_unit * fraction_dolomite, 4)
+        thickness_limestone = round(thickness_unit * fraction_limestone, 4)
+        #
+        actual_top = top_unit
+        actual_bottom = top_unit + thickness_limestone
+        #
+        ## Create Limestone Unit
+        container_limestone = {}
+        steps_limestone = np.linspace(actual_bottom, actual_top, self.resolution, endpoint=False)[::-1]
+        for i in steps_limestone:
+            depth = round(i, 4)
+            container_limestone[depth] = CarbonateRocks(
+                fluid="water", actualThickness=0).create_limestone_alternative(number=1, porosity=[0.1, 0.4])
+        actual_top += thickness_limestone
+        actual_bottom += thickness_dolomite
+        #
+        ## Create Dolomite Unit
+        container_dolomite = {}
+        steps_dolomite = np.linspace(actual_bottom, actual_top, self.resolution, endpoint=False)[::-1]
+        for i in steps_dolomite:
+            depth = round(i, 4)
+            container_dolomite[depth] = CarbonateRocks(
+                fluid="water", actualThickness=0).create_dolomite(number=1, porosity=[0.1, 0.2])
+        actual_top += thickness_dolomite
+        actual_bottom += thickness_marl
+        #
+        ## Create Marl Unit
+        container_marl = {}
+        steps_marl = np.linspace(actual_bottom, actual_top, self.resolution, endpoint=False)[::-1]
+        for i in steps_marl:
+            depth = round(i, 4)
+            container_marl[depth] = SedimentaryRocks(
+                fluid="water", actualThickness=0).create_marl(
+                number=1, porosity=rd.uniform(0.1, 0.3))
+        #
+        ## TEST
+        # for key, value in reversed(container_anhydrite.items()):
+        #     print(key, value)
+        # for key, value in reversed(container_limestone.items()):
+        #     print(key, value)
+        # for key, value in reversed(container_kupferschiefer.items()):
+        #     print(key, value)
+        #
+        return container_limestone, container_dolomite, container_marl
     #
