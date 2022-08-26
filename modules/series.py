@@ -69,7 +69,7 @@ class Zechstein:
             # container_limestone[depth] = CarbonateRocks(fluid="water", actualThickness=0).create_limestone(
             #     number=1, porosity=[0.1, 0.4])
             container_limestone[depth] = CarbonateRocks(fluid="water", actualThickness=0).create_limestone_alternative(
-                number=1, porosity=[0.1, 0.4])
+                number=1, porosity=[0.0, 0.4])
         actual_top += thickness_limestone
         actual_bottom += thickness_kupferschiefer
         #
@@ -536,9 +536,9 @@ class Muschelkalk:
         self.actual_thickness = actual_thickness
     #
     def create_muschelkalk_unterer(self, thickness_unit=100, top_unit=0):  # Unterer Muschelkalk
-        fraction_marl_pre = round(rd.uniform(11, 18), 4)
+        fraction_marl_pre = round(rd.uniform(10, 15), 4)
         fraction_marl = round(round(fraction_marl_pre * 2) / 2 / 100, 4)
-        fraction_dolomite_pre = round(rd.uniform(21, 36), 4)
+        fraction_dolomite_pre = round(rd.uniform(30, 40), 4)
         fraction_dolomite = round(round(fraction_dolomite_pre * 2) / 2 / 100, 4)
         fraction_limestone = round(1 - fraction_marl - fraction_dolomite, 4)
         #
@@ -554,8 +554,10 @@ class Muschelkalk:
         steps_limestone = np.linspace(actual_bottom, actual_top, self.resolution, endpoint=False)[::-1]
         for i in steps_limestone:
             depth = round(i, 4)
+            # container_limestone[depth] = limestone(fluid="water", actualThickness=0).create_simple_limestone(
+            #     dict=True, porosity=rd.uniform(0.15, 0.4))
             container_limestone[depth] = CarbonateRocks(
-                fluid="water", actualThickness=0).create_limestone_alternative(number=1, porosity=[0.1, 0.4])
+                fluid="water", actualThickness=0).create_limestone_alternative(number=1, porosity=[0.0, 0.4])
         actual_top += thickness_limestone
         actual_bottom += thickness_dolomite
         #
@@ -587,4 +589,218 @@ class Muschelkalk:
         #     print(key, value)
         #
         return container_limestone, container_dolomite, container_marl
+    #
+    def create_muschelkalk_mittlerer(self, thickness_unit=100, top_unit=0):  # Mittlerer Muschelkalk
+        fraction_dolomite_lower_pre = round(rd.uniform(10, 15), 4)
+        fraction_dolomite_lower = round(round(fraction_dolomite_lower_pre * 2) / 2 / 100, 4)
+        fraction_anhydrite_pre = round(rd.uniform(15, 25), 4)
+        fraction_anhydrite = round(round(fraction_anhydrite_pre * 2) / 2 / 100, 4)
+        fraction_dolomite_medium_pre = round(rd.uniform(30, 40), 4)
+        fraction_dolomite_medium = round(round(fraction_dolomite_medium_pre * 2) / 2 / 100, 4)
+        fraction_marl_pre = round(rd.uniform(5, 10), 4)
+        fraction_marl = round(round(fraction_marl_pre * 2) / 2 / 100, 4)
+        fraction_dolomite_upper = round(
+            1 - fraction_dolomite_lower - fraction_anhydrite - fraction_dolomite_medium - fraction_marl, 4)
+        #
+        thickness_dolomite_upper = round(thickness_unit * fraction_dolomite_upper, 4)
+        thickness_marl = round(thickness_unit * fraction_marl, 4)
+        thickness_dolomite_medium = round(thickness_unit * fraction_dolomite_medium, 4)
+        thickness_anhydrite = round(thickness_unit * fraction_anhydrite, 4)
+        thickness_dolomite_lower = round(thickness_unit * fraction_dolomite_lower, 4)
+        #
+        actual_top = top_unit
+        actual_bottom = top_unit + thickness_dolomite_upper
+        #
+        ## Create Dolomite upper Unit
+        container_dolomite_upper = {}
+        steps_unit = np.linspace(actual_bottom, actual_top, self.resolution, endpoint=False)[::-1]
+        for i in steps_unit:
+            depth = round(i, 4)
+            container_dolomite_upper[depth] = CarbonateRocks(
+                fluid="water", actualThickness=0).create_dolomite(number=1, porosity=[0.1, 0.2])
+        actual_top += thickness_dolomite_upper
+        actual_bottom += thickness_marl
+        #
+        ## Create Marl Unit
+        container_marl = {}
+        steps_unit = np.linspace(actual_bottom, actual_top, self.resolution, endpoint=False)[::-1]
+        for i in steps_unit:
+            depth = round(i, 4)
+            container_marl[depth] = SedimentaryRocks(
+                fluid="water", actualThickness=0).create_marl(
+                number=1, porosity=rd.uniform(0.1, 0.3))
+        actual_top += thickness_marl
+        actual_bottom += thickness_dolomite_medium
+        #
+        ## Create Dolomite medium Unit
+        container_dolomite_medium = {}
+        steps_unit = np.linspace(actual_bottom, actual_top, self.resolution, endpoint=False)[::-1]
+        for i in steps_unit:
+            depth = round(i, 4)
+            container_dolomite_medium[depth] = CarbonateRocks(
+                fluid="water", actualThickness=0).create_dolomite(number=1, porosity=[0.1, 0.2])
+        actual_top += thickness_dolomite_medium
+        actual_bottom += thickness_anhydrite
+        #
+        ## Create Anhydrite Unit
+        container_anhydrite = {}
+        steps_unit = np.linspace(actual_bottom, actual_top, self.resolution, endpoint=False)[::-1]
+        for i in steps_unit:
+            depth = round(i, 4)
+            container_anhydrite[depth] = Evaporites(fluid="water", actualThickness=0).create_anhydrite_rock(
+                porosity=[0.05, 0.1])
+        actual_top += thickness_anhydrite
+        actual_bottom += thickness_dolomite_lower
+        #
+        ## Create Dolomite lower Unit
+        container_dolomite_lower = {}
+        steps_unit = np.linspace(actual_bottom, actual_top, self.resolution, endpoint=False)[::-1]
+        for i in steps_unit:
+            depth = round(i, 4)
+            container_dolomite_lower[depth] = CarbonateRocks(
+                fluid="water", actualThickness=0).create_dolomite(number=1, porosity=[0.1, 0.2])
+        #
+        ## TEST
+        # for key, value in reversed(container_anhydrite.items()):
+        #     print(key, value)
+        # for key, value in reversed(container_limestone.items()):
+        #     print(key, value)
+        # for key, value in reversed(container_kupferschiefer.items()):
+        #     print(key, value)
+        #
+        return container_dolomite_upper, container_marl, container_dolomite_medium, container_anhydrite, \
+               container_dolomite_lower
+    #
+    def create_muschelkalk_oberer(self, thickness_unit=100, top_unit=0):  # Oberer Muschelkalk
+        fraction_limestone_upper_pre = round(rd.uniform(10, 15), 4)
+        fraction_limestone_upper = round(round(fraction_limestone_upper_pre * 2) / 2 / 100, 4)
+        fraction_mudstone_upper_pre = round(rd.uniform(5, 10), 4)
+        fraction_mudstone_upper = round(round(fraction_mudstone_upper_pre * 2) / 2 / 100, 4)
+        fraction_limestone_medium_upper_pre = round(rd.uniform(10, 15), 4)
+        fraction_limestone_medium_upper = round(round(fraction_limestone_medium_upper_pre * 2) / 2 / 100, 4)
+        fraction_marl_pre = round(rd.uniform(5, 10), 4)
+        fraction_marl = round(round(fraction_marl_pre * 2) / 2 / 100, 4)
+        fraction_limestone_medium_medium_pre = round(rd.uniform(10, 15), 4)
+        fraction_limestone_medium_medium = round(round(fraction_limestone_medium_medium_pre * 2) / 2 / 100, 4)
+        fraction_mudstone_medium_pre = round(rd.uniform(5, 10), 4)
+        fraction_mudstone_medium = round(round(fraction_mudstone_medium_pre * 2) / 2 / 100, 4)
+        fraction_limestone_medium_lower_pre = round(rd.uniform(10, 15), 4)
+        fraction_limestone_medium_lower = round(round(fraction_limestone_medium_lower_pre * 2) / 2 / 100, 4)
+        fraction_mudstone_lower_pre = round(rd.uniform(5, 10), 4)
+        fraction_mudstone_lower = round(round(fraction_mudstone_lower_pre * 2) / 2 / 100, 4)
+        fraction_limestone_lower = round(
+            1 - fraction_limestone_upper - fraction_mudstone_upper - fraction_limestone_medium_upper - fraction_marl
+            - fraction_limestone_medium_medium - fraction_mudstone_medium - fraction_limestone_medium_lower
+            - fraction_mudstone_lower, 4)
+        #
+        thickness_limestone_upper = round(thickness_unit * fraction_limestone_upper, 4)
+        thickness_mudstone_upper = round(thickness_unit * fraction_mudstone_upper, 4)
+        thickness_limestone_medium_upper = round(thickness_unit * fraction_limestone_medium_upper, 4)
+        thickness_marl = round(thickness_unit * fraction_marl, 4)
+        thickness_limestone_medium_medium = round(thickness_unit * fraction_limestone_medium_medium, 4)
+        thickness_mudstone_medium = round(thickness_unit * fraction_mudstone_medium, 4)
+        thickness_limestone_medium_lower = round(thickness_unit * fraction_limestone_medium_lower, 4)
+        thickness_mudstone_lower = round(thickness_unit * fraction_mudstone_lower, 4)
+        thickness_limestone_lower = round(thickness_unit * fraction_limestone_lower, 4)
+        #
+        actual_top = top_unit
+        actual_bottom = top_unit + thickness_limestone_upper
+        #
+        ## Create Limestone upper Unit
+        container_limestone_upper = {}
+        steps_unit = np.linspace(actual_bottom, actual_top, self.resolution, endpoint=False)[::-1]
+        for i in steps_unit:
+            depth = round(i, 4)
+            container_limestone_upper[depth] = CarbonateRocks(
+                fluid="water", actualThickness=0).create_limestone_alternative(number=1, porosity=[0.0, 0.4])
+        actual_top += thickness_limestone_upper
+        actual_bottom += thickness_mudstone_upper
+        #
+        ## Create Mudstone upper Unit
+        container_mudstone_upper = {}
+        steps_unit = np.linspace(actual_bottom, actual_top, self.resolution, endpoint=False)[::-1]
+        for i in steps_unit:
+            depth = round(i, 4)
+            container_mudstone_upper[depth] = Sandstone().create_mudstone(number=1, porosity=[0.0, 0.1])
+        actual_top += thickness_mudstone_upper
+        actual_bottom += thickness_limestone_medium_upper
+        #
+        ## Create Limestone medium upper Unit
+        container_limestone_medium_upper = {}
+        steps_unit = np.linspace(actual_bottom, actual_top, self.resolution, endpoint=False)[::-1]
+        for i in steps_unit:
+            depth = round(i, 4)
+            container_limestone_medium_upper[depth] = CarbonateRocks(
+                fluid="water", actualThickness=0).create_limestone_alternative(number=1, porosity=[0.0, 0.4])
+        actual_top += thickness_limestone_medium_upper
+        actual_bottom += thickness_marl
+        #
+        ## Create Marl Unit
+        container_marl = {}
+        steps_unit = np.linspace(actual_bottom, actual_top, self.resolution, endpoint=False)[::-1]
+        for i in steps_unit:
+            depth = round(i, 4)
+            container_marl[depth] = SedimentaryRocks(
+                fluid="water", actualThickness=0).create_marl(
+                number=1, porosity=rd.uniform(0.1, 0.3))
+        actual_top += thickness_marl
+        actual_bottom += thickness_limestone_medium_medium
+        #
+        ## Create Limestone medium medium Unit
+        container_limestone_medium_medium = {}
+        steps_unit = np.linspace(actual_bottom, actual_top, self.resolution, endpoint=False)[::-1]
+        for i in steps_unit:
+            depth = round(i, 4)
+            container_limestone_medium_medium[depth] = CarbonateRocks(
+                fluid="water", actualThickness=0).create_limestone_alternative(number=1, porosity=[0.0, 0.4])
+        actual_top += thickness_limestone_medium_medium
+        actual_bottom += thickness_mudstone_medium
+        #
+        ## Create Mudstone medium Unit
+        container_mudstone_medium = {}
+        steps_unit = np.linspace(actual_bottom, actual_top, self.resolution, endpoint=False)[::-1]
+        for i in steps_unit:
+            depth = round(i, 4)
+            container_mudstone_medium[depth] = Sandstone().create_mudstone(number=1, porosity=[0.0, 0.1])
+        actual_top += thickness_mudstone_medium
+        actual_bottom += thickness_limestone_medium_lower
+        #
+        ## Create Limestone medium lower Unit
+        container_limestone_medium_lower = {}
+        steps_unit = np.linspace(actual_bottom, actual_top, self.resolution, endpoint=False)[::-1]
+        for i in steps_unit:
+            depth = round(i, 4)
+            container_limestone_medium_lower[depth] = CarbonateRocks(
+                fluid="water", actualThickness=0).create_limestone_alternative(number=1, porosity=[0.0, 0.4])
+        actual_top += thickness_limestone_medium_lower
+        actual_bottom += thickness_mudstone_lower
+        #
+        ## Create Mudstone lower Unit
+        container_mudstone_lower = {}
+        steps_unit = np.linspace(actual_bottom, actual_top, self.resolution, endpoint=False)[::-1]
+        for i in steps_unit:
+            depth = round(i, 4)
+            container_mudstone_lower[depth] = Sandstone().create_mudstone(number=1, porosity=[0.0, 0.1])
+        actual_top += thickness_mudstone_lower
+        actual_bottom += thickness_limestone_lower
+        #
+        ## Create Limestone lower Unit
+        container_limestone_lower = {}
+        steps_unit = np.linspace(actual_bottom, actual_top, self.resolution, endpoint=False)[::-1]
+        for i in steps_unit:
+            depth = round(i, 4)
+            container_limestone_lower[depth] = CarbonateRocks(
+                fluid="water", actualThickness=0).create_limestone_alternative(number=1, porosity=[0.0, 0.4])
+        #
+        ## TEST
+        # for key, value in reversed(container_anhydrite.items()):
+        #     print(key, value)
+        # for key, value in reversed(container_limestone.items()):
+        #     print(key, value)
+        # for key, value in reversed(container_kupferschiefer.items()):
+        #     print(key, value)
+        #
+        return container_limestone_upper, container_mudstone_upper, container_limestone_medium_upper, container_marl, \
+               container_limestone_medium_medium, container_mudstone_medium, container_limestone_medium_lower, \
+               container_mudstone_lower, container_limestone_lower
     #

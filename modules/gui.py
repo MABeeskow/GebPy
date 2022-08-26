@@ -290,31 +290,19 @@ class GebPyGUI(tk.Frame):
             Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                   color_acc=[self.color_accent_03, self.color_accent_04], rock=var_opt, lbl_w=self.lbl_w,
                   entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
-        # elif var_opt == "Sandstone":
-        #     Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
-        #           color_acc=[self.color_accent_03, self.color_accent_04], rock=var_opt, lbl_w=self.lbl_w,
-        #           entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
-        # elif var_opt == "Shale":
-        #     Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
-        #           color_acc=[self.color_accent_03, self.color_accent_04], rock=var_opt, lbl_w=self.lbl_w,
-        #           entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
-        # elif var_opt == "Conglomerate":
-        #     Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
-        #           color_acc=[self.color_accent_03, self.color_accent_04], rock=var_opt, lbl_w=self.lbl_w,
-        #           entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
         #
-        elif var_opt == "Limestone":
+        elif var_opt in ["Limestone", "Limestone (old)", "Dolomite Rock", "Marl"]:
             Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                   color_acc=[self.color_accent_03, self.color_accent_04], rock=var_opt, lbl_w=self.lbl_w,
                   entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
-        elif var_opt == "Dolomite Rock":
-            Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
-                  color_acc=[self.color_accent_03, self.color_accent_04], rock=var_opt, lbl_w=self.lbl_w,
-                  entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
-        elif var_opt == "Marl":
-            Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
-                  color_acc=[self.color_accent_03, self.color_accent_04], rock=var_opt, lbl_w=self.lbl_w,
-                  entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
+        # elif var_opt == "Dolomite Rock":
+        #     Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
+        #           color_acc=[self.color_accent_03, self.color_accent_04], rock=var_opt, lbl_w=self.lbl_w,
+        #           entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
+        # elif var_opt == "Marl":
+        #     Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
+        #           color_acc=[self.color_accent_03, self.color_accent_04], rock=var_opt, lbl_w=self.lbl_w,
+        #           entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
         elif var_opt == "Custom Carbonate Rock":
             Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                   color_acc=[self.color_accent_03, self.color_accent_04], rock=var_opt, lbl_w=self.lbl_w,
@@ -776,7 +764,7 @@ class GebPyGUI(tk.Frame):
                 command=lambda var_opt=var_opt_1_1: self.select_opt(var_opt))
         elif var_opt == "Carbonate Rocks":
             var_opt_1_2 = tk.StringVar()
-            opt_list_1_2 = ["Limestone", "Dolomite Rock", "Marl"]
+            opt_list_1_2 = ["Limestone", "Limestone (old)", "Dolomite Rock", "Marl"]
             opt_list_1_2.sort()
             self.opt_carb = SE(parent=self.parent, row_id=16, column_id=0, n_rows=2, n_columns=2,
                                bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
@@ -878,13 +866,23 @@ class GebPyGUI(tk.Frame):
         #
         elif var_opt == "Muschelkalk":
             thickness_complete = rd.randrange(900, 1500, 100)
-            thickness_muschelkalk_unterer_random = int(rd.uniform(0.02, 0.06) * thickness_complete)
+            thickness_muschelkalk_oberer_random = int(rd.uniform(0.3, 0.4) * thickness_complete)
+            thickness_muschelkalk_mittlerer_random = int(rd.uniform(0.3, 0.4) * thickness_complete)
+            thickness_muschelkalk_unterer_random = int(thickness_complete - thickness_muschelkalk_oberer_random
+                                                       - thickness_muschelkalk_mittlerer_random)
             #
-            data_muschelkalk_unterer = Muschelkalk(actual_thickness=0).create_muschelkalk_unterer(
-                top_unit=0,
-                thickness_unit=thickness_complete)  # Unterer Muschelkalk
+            data_muschelkalk_oberer = Muschelkalk(
+                actual_thickness=0, resolution=10).create_muschelkalk_oberer(
+                top_unit=0, thickness_unit=thickness_muschelkalk_oberer_random)  # Oberer Muschelkalk
+            data_muschelkalk_mittlerer = Muschelkalk(
+                actual_thickness=0, resolution=10).create_muschelkalk_mittlerer(
+                top_unit=thickness_muschelkalk_oberer_random, thickness_unit=thickness_muschelkalk_mittlerer_random)  # Mittlerer Muschelkalk
+            data_muschelkalk_unterer = Muschelkalk(
+                actual_thickness=0).create_muschelkalk_unterer(
+                top_unit=thickness_muschelkalk_oberer_random+thickness_muschelkalk_mittlerer_random,
+                thickness_unit=thickness_muschelkalk_unterer_random)  # Unterer Muschelkalk
             #
-            data_muschelkalk = data_muschelkalk_unterer
+            data_muschelkalk = data_muschelkalk_oberer + data_muschelkalk_mittlerer + data_muschelkalk_unterer
             Subsurface(
                 parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                 color_acc=[self.color_accent_03, self.color_accent_04], subsurface=var_opt, lbl_w=self.lbl_w,
@@ -3329,9 +3327,9 @@ class Rocks:
             "Syenite (Streckeisen)", "Granitoid (Streckeisen)", "Quarzolite (Streckeisen)", "Mudstone"]:
             var_phi0_start = 0
             var_phi1_start = 10
-        elif self.rock in ["Limestone", "Dolomite Rock", "Pyroclastic Rock"]:
+        elif self.rock in ["Limestone", "Limestone (old)", "Dolomite Rock", "Pyroclastic Rock"]:
             var_phi0_start = 0
-            var_phi1_start = 50
+            var_phi1_start = 40
         elif self.rock in ["Rock Salt", "Anhydrite (Rock)", "Potash", "Felsic Rock", "Intermediate Rock", "Granite",
                            "Gabbro", "Syenite", "Diorite", "Granodiorite", "Tonalite", "Monzonite", "Quartzolite",
                            "Qz-rich Granitoid"]:
@@ -3429,8 +3427,19 @@ class Rocks:
                             color_bg=self.color_acc_01, command=lambda var_rb=self.var_rb_geochem:
                             self.change_radiobutton(var_rb))
                         self.gui_elements.append(rb_oxides)
+                    elif self.rock == "Limestone (old)":
+                        data = limestone(fluid="water", actualThickness=0).create_simple_limestone(
+                            dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
+                        rb_oxides = SE(
+                            parent=self.parent_rock, row_id=34, column_id=1, n_rows=1, n_columns=1,
+                            bg=self.color_acc_01,
+                            fg="black").create_radiobutton(
+                            var_rb=self.var_rb_geochem, var_rb_set=var_rb_geochem_start, value_rb=4, text="Oxides",
+                            color_bg=self.color_acc_01, command=lambda var_rb=self.var_rb_geochem:
+                            self.change_radiobutton(var_rb))
+                        self.gui_elements.append(rb_oxides)
                     elif self.rock == "Limestone":
-                        data = CarbonateRocks(fluid="water", actualThickness=0).create_limestone(
+                        data = CarbonateRocks(fluid="water", actualThickness=0).create_limestone_alternative(
                             number=1, porosity=[self.var_phi0.get() / 100, self.var_phi1.get() / 100])
                         rb_oxides = SE(
                             parent=self.parent_rock, row_id=34, column_id=1, n_rows=1, n_columns=1,
@@ -4057,8 +4066,11 @@ class Rocks:
                         data = Sandstone(fluid="water", actualThickness=0).create_mudstone(
                             number=1, porosity=[self.var_phi0.get()/100, self.var_phi1.get()/100])
                     elif self.rock == "Limestone":
-                        data = CarbonateRocks(fluid="water", actualThickness=0).create_limestone(
+                        data = CarbonateRocks(fluid="water", actualThickness=0).create_limestone_alternative(
                             number=1, porosity=[self.var_phi0.get() / 100, self.var_phi1.get() / 100])
+                    elif self.rock == "Limestone (old)":
+                        data = limestone(fluid="water", actualThickness=0).create_simple_limestone(
+                            dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
                     elif self.rock == "Dolomite Rock":
                         data = dolomite(fluid="water", actualThickness=0).create_simple_dolomite(dict=True, porosity=rd.uniform(self.var_phi0.get()/100, self.var_phi1.get()/100))
                     elif self.rock == "Marl":
@@ -6945,7 +6957,7 @@ class Subsurface:
                 self.create_well_log_plot(
                     parent=self.parent_subsurface, data_x=self.results_sorted["GR"], data_y=self.results_sorted["Top"],
                     row_id=2, column_id=9, n_rows=45, n_columns=9)
-            elif self.name == "Zechstein":
+            elif self.name in ["Zechstein", "Muschelkalk"]:
                 self.create_well_log_plot(
                     parent=self.parent_subsurface, data_x=self.results_sorted["GR"], data_y=self.results_sorted["Top"],
                     row_id=2, column_id=9, n_rows=45, n_columns=9, unit_sections=self.unit_sections)
@@ -7039,6 +7051,45 @@ class Subsurface:
                 #
                 colors = ["orchid", "lightcyan", "lavender", "skyblue", "gray", "yellowgreen", "olivedrab"]
                 litho_list = ["Anhydrite", "Dolomite", "Rock Salt", "Limestone", "Kupferschiefer", "Potash", "Mudstone"]
+                #
+            elif self.name == "Muschelkalk":
+                data_rho = [np.array(self.results_plot["Limestone"]["phi"]) * 100,
+                            np.array(self.results_plot["Dolomite"]["phi"]) * 100,
+                            np.array(self.results_plot["Anhydrite"]["phi"]) * 100,
+                            np.array(self.results_plot["Mudstone"]["phi"]) * 100,
+                            np.array(self.results_plot["Marl"]["phi"]) * 100]
+                data_vP = [self.results_plot["Limestone"]["vP"], self.results_plot["Dolomite"]["vP"],
+                           self.results_plot["Anhydrite"]["vP"], self.results_plot["Mudstone"]["vP"],
+                           self.results_plot["Marl"]["vP"]]
+                data_vS = [self.results_plot["Limestone"]["vS"], self.results_plot["Dolomite"]["vS"],
+                           self.results_plot["Anhydrite"]["vS"], self.results_plot["Mudstone"]["vS"],
+                           self.results_plot["Marl"]["vS"]]
+                data_vPvS = [self.results_plot["Limestone"]["vPvS"], self.results_plot["Dolomite"]["vPvS"],
+                           self.results_plot["Anhydrite"]["vPvS"], self.results_plot["Mudstone"]["vPvS"],
+                           self.results_plot["Marl"]["vPvS"]]
+                data_K = [self.results_plot["Limestone"]["K"], self.results_plot["Dolomite"]["K"],
+                           self.results_plot["Anhydrite"]["K"], self.results_plot["Mudstone"]["K"],
+                           self.results_plot["Marl"]["K"]]
+                data_G = [self.results_plot["Limestone"]["G"], self.results_plot["Dolomite"]["G"],
+                           self.results_plot["Anhydrite"]["G"], self.results_plot["Mudstone"]["G"],
+                           self.results_plot["Marl"]["G"]]
+                data_nu = [self.results_plot["Limestone"]["Poisson"], self.results_plot["Dolomite"]["Poisson"],
+                           self.results_plot["Anhydrite"]["Poisson"], self.results_plot["Mudstone"]["Poisson"],
+                           self.results_plot["Marl"]["Poisson"]]
+                data_phi = [np.array(self.results_plot["Limestone"]["phi"]) * 100,
+                            np.array(self.results_plot["Dolomite"]["phi"]) * 100,
+                            np.array(self.results_plot["Anhydrite"]["phi"]) * 100,
+                            np.array(self.results_plot["Mudstone"]["phi"]) * 100,
+                            np.array(self.results_plot["Marl"]["phi"]) * 100]
+                data_gr = [self.results_plot["Limestone"]["GR"], self.results_plot["Dolomite"]["GR"],
+                           self.results_plot["Anhydrite"]["GR"], self.results_plot["Mudstone"]["GR"],
+                           self.results_plot["Marl"]["GR"]]
+                data_pe = [self.results_plot["Limestone"]["PE"], self.results_plot["Dolomite"]["PE"],
+                           self.results_plot["Anhydrite"]["PE"], self.results_plot["Mudstone"]["PE"],
+                           self.results_plot["Marl"]["PE"]]
+                #
+                colors = ["skyblue", "lightcyan", "orchid", "olivedrab", "moccasin"]
+                litho_list = ["Limestone", "Dolomite", "Anhydrite", "Mudstone", "Marl"]
                 #
             data = [[data_vP, data_vS, data_vPvS], [data_K, data_G, data_nu], [data_rho, data_gr, data_pe]]
             #
@@ -7156,6 +7207,46 @@ class Subsurface:
                 #
                 colors = ["orchid", "lightcyan", "lavender", "skyblue", "gray", "yellowgreen", "olivedrab"]
                 litho_list = ["Anhydrite", "Dolomite", "Rock Salt", "Limestone", "Kupferschiefer", "Potash", "Mudstone"]
+                #
+            elif self.name == "Muschelkalk":
+                data_x_rho = [np.array(self.results_plot["Limestone"]["rho"]) / 1000,
+                              np.array(self.results_plot["Dolomite"]["rho"]) / 1000,
+                              np.array(self.results_plot["Anhydrite"]["rho"]) / 1000,
+                              np.array(self.results_plot["Mudstone"]["rho"]) / 1000,
+                              np.array(self.results_plot["Marl"]["rho"]) / 1000]
+                #
+                data_vP = [self.results_plot["Limestone"]["vP"], self.results_plot["Dolomite"]["vP"],
+                           self.results_plot["Anhydrite"]["vP"], self.results_plot["Mudstone"]["vP"],
+                           self.results_plot["Marl"]["vP"]]
+                data_vS = [self.results_plot["Limestone"]["vS"], self.results_plot["Dolomite"]["vS"],
+                           self.results_plot["Anhydrite"]["vS"], self.results_plot["Mudstone"]["vS"],
+                           self.results_plot["Marl"]["vS"]]
+                data_vPvS = [self.results_plot["Limestone"]["vPvS"], self.results_plot["Dolomite"]["vPvS"],
+                           self.results_plot["Anhydrite"]["vPvS"], self.results_plot["Mudstone"]["vPvS"],
+                           self.results_plot["Marl"]["vPvS"]]
+                data_K = [self.results_plot["Limestone"]["K"], self.results_plot["Dolomite"]["K"],
+                           self.results_plot["Anhydrite"]["K"], self.results_plot["Mudstone"]["K"],
+                           self.results_plot["Marl"]["K"]]
+                data_G = [self.results_plot["Limestone"]["G"], self.results_plot["Dolomite"]["G"],
+                           self.results_plot["Anhydrite"]["G"], self.results_plot["Mudstone"]["G"],
+                           self.results_plot["Marl"]["G"]]
+                data_nu = [self.results_plot["Limestone"]["Poisson"], self.results_plot["Dolomite"]["Poisson"],
+                           self.results_plot["Anhydrite"]["Poisson"], self.results_plot["Mudstone"]["Poisson"],
+                           self.results_plot["Marl"]["Poisson"]]
+                data_phi = [np.array(self.results_plot["Limestone"]["phi"]) * 100,
+                            np.array(self.results_plot["Dolomite"]["phi"]) * 100,
+                            np.array(self.results_plot["Anhydrite"]["phi"]) * 100,
+                            np.array(self.results_plot["Mudstone"]["phi"]) * 100,
+                            np.array(self.results_plot["Marl"]["phi"]) * 100]
+                data_gr = [self.results_plot["Limestone"]["GR"], self.results_plot["Dolomite"]["GR"],
+                           self.results_plot["Anhydrite"]["GR"], self.results_plot["Mudstone"]["GR"],
+                           self.results_plot["Marl"]["GR"]]
+                data_pe = [self.results_plot["Limestone"]["PE"], self.results_plot["Dolomite"]["PE"],
+                           self.results_plot["Anhydrite"]["PE"], self.results_plot["Mudstone"]["PE"],
+                           self.results_plot["Marl"]["PE"]]
+                #
+                colors = ["skyblue", "lightcyan", "orchid", "olivedrab", "moccasin"]
+                litho_list = ["Limestone", "Dolomite", "Anhydrite", "Mudstone", "Marl"]
                 #
             data = [[data_vP, data_vS, data_vPvS], [data_K, data_G, data_nu], [data_phi, data_gr, data_pe]]
             #

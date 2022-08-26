@@ -1325,10 +1325,12 @@ class CarbonateRocks:
     def create_limestone_alternative(self, number=1, composition=None, porosity=None):
         data_alkalifeldspar = Tectosilicates(impurity="pure", data_type=True).create_alkalifeldspar()
         data_plagioclase = Tectosilicates(impurity="pure", data_type=True).create_plagioclase()
+        data_montmorillonite = Phyllosilicates(impurity="pure", data_type=True).create_montmorillonite()
         data_illite = Phyllosilicates(impurity="pure", data_type=True).create_illite()
         #
-        mineralogy = {"Cal": self.data_calcite, "Dol": self.data_dolomite, "Qz": self.data_quartz,
-                      "Kfs": data_alkalifeldspar, "Pl": data_plagioclase, "Ilt": data_illite}
+        mineralogy = {"Cal": self.data_calcite, "Dol": self.data_dolomite, "Sd": self.data_siderite,
+                      "Qz": self.data_quartz, "Kfs": data_alkalifeldspar, "Pl": data_plagioclase,
+                      "Kln": self.data_kaolinite, "Mnt": data_montmorillonite, "Ilt": data_illite}
         #
         condition = False
         #
@@ -1341,43 +1343,101 @@ class CarbonateRocks:
             if composition != None:
                 phi_cal = composition["Cal"]
                 phi_dol = composition["Dol"]
+                phi_sd = composition["Sd"]
                 phi_qz = composition["Qz"]
                 phi_kfs = composition["Kfs"]
                 phi_pl = composition["Pl"]
+                phi_kln = composition["Kln"]
+                phi_mnt = composition["Mnt"]
                 phi_ilt = composition["Ilt"]
                 #
                 phi_minerals["Cal"] = phi_cal
                 phi_minerals["Dol"] = phi_dol
+                phi_minerals["Sd"] = phi_sd
                 phi_minerals["Qz"] = phi_qz
                 phi_minerals["Kfs"] = phi_kfs
                 phi_minerals["Pl"] = phi_pl
+                phi_minerals["Kln"] = phi_kln
+                phi_minerals["Mnt"] = phi_mnt
                 phi_minerals["Ilt"] = phi_ilt
             else:
                 condition_2 = False
                 while condition_2 == False:
-                    phi_cal = round(rd.uniform(0.8, 1.0), 4)
-                    phi_dol = round(rd.uniform(0.0, (1.0 - phi_cal)), 4)
-                    phi_qz = round(rd.uniform(0.0, (1.0 - phi_cal - phi_dol)), 4)
-                    phi_kfs = round(rd.uniform(0.0, (1.0 - phi_cal - phi_dol - phi_qz)), 4)
-                    phi_pl = round(rd.uniform(0.0, (1.0 - phi_cal - phi_dol - phi_qz - phi_kfs)), 4)
-                    phi_ilt = round(1 - phi_cal - phi_dol - phi_qz - phi_kfs - phi_pl, 4)
-                    phi_total = phi_cal + phi_dol + phi_qz + phi_kfs + phi_pl + phi_ilt
+                    magicnumber = rd.randint(0, 12)
+                    if 0 <= magicnumber <= 8:   # Carbonate-dominated
+                        w_carb = round(rd.uniform(0.75, 1.0), 4)
+                        w_clast = round(rd.uniform(0.0, (1.0 - w_carb)), 4)
+                        w_clay = round(1 - w_carb - w_clast, 4)
+                        #
+                        phi_cal = round(w_carb*rd.uniform(0.8, 1.0), 4)
+                        phi_dol = round(w_carb*rd.uniform(0.0, (1.0 - phi_cal)), 4)
+                        phi_sd = round(w_carb - phi_cal - phi_dol, 4)
+                        #
+                        phi_qz = round(w_clast*rd.uniform(0.0, 1.0), 4)
+                        phi_kfs = round(w_clast*rd.uniform(0.0, (1.0 - phi_qz)), 4)
+                        phi_pl = round(w_clast - phi_qz - phi_kfs, 4)
+                        #
+                        phi_kln = round(w_clay*rd.uniform(0.0, 1.0), 4)
+                        phi_mnt = round(w_clay*rd.uniform(0.0, (1.0 - phi_kln)), 4)
+                        phi_ilt = round(1 - phi_cal - phi_dol - phi_sd - phi_qz - phi_kfs - phi_pl - phi_kln - phi_mnt, 4)
+                        #
+                        phi_total = phi_cal + phi_dol + phi_sd + phi_qz + phi_kfs + phi_pl + phi_kln + phi_mnt + phi_ilt
+                    elif magicnumber in [9, 10]:   # Clastic-dominated
+                        w_clast = round(rd.uniform(0.1, 0.25), 4)
+                        w_carb = round(rd.uniform(0.7, (1.0 - w_clast)), 4)
+                        w_clay = round(1 - w_carb - w_clast, 4)
+                        #
+                        phi_qz = round(w_clast*rd.uniform(0.0, 1.0), 4)
+                        phi_kfs = round(w_clast*rd.uniform(0.0, (1.0 - phi_qz)), 4)
+                        phi_pl = round(w_clast - phi_qz - phi_kfs, 4)
+                        #
+                        phi_cal = round(w_carb*rd.uniform(0.8, 1.0), 4)
+                        phi_dol = round(w_carb*rd.uniform(0.0, (1.0 - phi_cal)), 4)
+                        phi_sd = round(w_carb - phi_cal - phi_dol, 4)
+                        #
+                        phi_kln = round(w_clay*rd.uniform(0.0, 1.0), 4)
+                        phi_mnt = round(w_clay*rd.uniform(0.0, (1.0 - phi_kln)), 4)
+                        phi_ilt = round(1 - phi_cal - phi_dol - phi_sd - phi_qz - phi_kfs - phi_pl - phi_kln - phi_mnt, 4)
+                        #
+                        phi_total = phi_cal + phi_dol + phi_sd + phi_qz + phi_kfs + phi_pl + phi_kln + phi_mnt + phi_ilt
+                    elif magicnumber in [11, 12]:   # Clay-dominated
+                        w_clay = round(rd.uniform(0.1, 0.25), 4)
+                        w_carb = round(rd.uniform(0.7, (1.0 - w_clay)), 4)
+                        w_clast = round(1 - w_carb - w_clay, 4)
+                        #
+                        phi_cal = round(w_carb*rd.uniform(0.8, 1.0), 4)
+                        phi_dol = round(w_carb*rd.uniform(0.0, (1.0 - phi_cal)), 4)
+                        phi_sd = round(w_carb - phi_cal - phi_dol, 4)
+                        #
+                        phi_qz = round(w_clast*rd.uniform(0.0, 1.0), 4)
+                        phi_kfs = round(w_clast*rd.uniform(0.0, (1.0 - phi_qz)), 4)
+                        phi_pl = round(w_clast - phi_qz - phi_kfs, 4)
+                        #
+                        phi_kln = round(w_clay*rd.uniform(0.0, 1.0), 4)
+                        phi_mnt = round(w_clay*rd.uniform(0.0, (1.0 - phi_kln)), 4)
+                        phi_ilt = round(1 - phi_cal - phi_dol - phi_sd - phi_qz - phi_kfs - phi_pl - phi_kln - phi_mnt, 4)
+                        #
+                        phi_total = phi_cal + phi_dol + phi_sd + phi_qz + phi_kfs + phi_pl + phi_kln + phi_mnt + phi_ilt
                     #
                     if np.isclose(phi_total, 1.0000) == True:
-                        if 0.8 <= phi_cal <= 1.0 and 0.0 <= phi_dol <= 0.2 and 0.0 <= phi_qz <= 0.2 \
-                                and 0.0 <= phi_kfs <= 0.2 and 0.0 <= phi_pl <= 0.2 and 0.0 <= phi_ilt <= 0.2:
+                        if 0.8 <= phi_cal <= 1.0 and 0.0 <= phi_dol <= 0.2 and 0.0 <= phi_sd <= 0.2 \
+                                and 0.0 <= phi_qz <= 0.2 and 0.0 <= phi_kfs <= 0.2 and 0.0 <= phi_pl <= 0.2 \
+                                and 0.0 <= phi_kln <= 0.2 and 0.0 <= phi_mnt <= 0.2 and 0.0 <= phi_ilt <= 0.2:
                             condition_2 = True
                     #
-                phi_minerals["Cal"] = phi_cal
-                phi_minerals["Dol"] = phi_dol
-                phi_minerals["Qz"] = phi_qz
-                phi_minerals["Kfs"] = phi_kfs
-                phi_minerals["Pl"] = phi_pl
-                phi_minerals["Ilt"] = phi_ilt
+                phi_minerals["Cal"] = abs(phi_cal)
+                phi_minerals["Dol"] = abs(phi_dol)
+                phi_minerals["Sd"] = abs(phi_sd)
+                phi_minerals["Qz"] = abs(phi_qz)
+                phi_minerals["Kfs"] = abs(phi_kfs)
+                phi_minerals["Pl"] = abs(phi_pl)
+                phi_minerals["Kln"] = abs(phi_kln)
+                phi_minerals["Mnt"] = abs(phi_mnt)
+                phi_minerals["Ilt"] = abs(phi_ilt)
             #
             rho_s = 0
             for key, value in phi_minerals.items():
-                rho_s += phi_minerals[key] * mineralogy[key]["rho"]
+                rho_s += value*mineralogy[key]["rho"]
                 for element, value in mineralogy[key]["chemistry"].items():
                     if element not in elements_list:
                         elements_list.append(element)
@@ -1390,7 +1450,8 @@ class CarbonateRocks:
                 phi_helper = round(rd.uniform(0.0, 0.4), 4)
             else:
                 phi_helper = round(rd.uniform(porosity[0], porosity[1]), 4)
-            rho = round((1 - phi_helper) * rho_s + phi_helper * self.data_water[2] / 1000, 3)
+            #
+            rho = round((1 - phi_helper)*rho_s + phi_helper*self.data_water[2], 3)
             #
             old_index = elements_list.index("O")
             elements_list += [elements_list.pop(old_index)]
@@ -1428,11 +1489,29 @@ class CarbonateRocks:
             gamma_ray = round(gamma_ray, 3)
             photoelectricity = round(photoelectricity, 3)
         #
+        w_list = []
+        K_list = []
+        G_list = []
+        for key, mineral in mineralogy.items():
+            w_list.append(w_minerals[key])
+            K_list.append(mineral["K"])
+            G_list.append(mineral["G"])
+        K_geo = elast.calc_geometric_mean(self, w_list, K_list)
+        G_geo = elast.calc_geometric_mean(self, w_list, G_list)
+        bulk_mod = K_geo
+        shear_mod = G_geo
+        #
+        vP_s = round(((bulk_mod*10**9 + 4/3*shear_mod*10**9)/(rho_s))**0.5, 3)
+        vS_s = round(((shear_mod * 10 ** 9) / (rho_s)) ** 0.5, 3)
+        #
+        vP = (1 - phi_helper)*vP_s + phi_helper*self.data_water[4][0]
+        vS = (1 - phi_helper)*vS_s
+        vPvS = round(vP / vS, 3)
+        #
+        shear_mod = (vS**2 * rho)*10**(-9)
+        bulk_mod = (vP**2 * rho - 4/3*shear_mod)*10**(-9)
         youngs_mod = round((9 * bulk_mod * shear_mod) / (3 * bulk_mod + shear_mod), 3)
         poisson_rat = round((3 * bulk_mod - 2 * shear_mod) / (6 * bulk_mod + 2 * shear_mod), 4)
-        vP = round(((bulk_mod * 10 ** 9 + 4 / 3 * shear_mod * 10 ** 9) / (rho)) ** 0.5, 3)
-        vS = round(((shear_mod * 10 ** 9) / (rho)) ** 0.5, 3)
-        vPvS = round(vP / vS, 3)
         #
         results = {}
         results["rock"] = "Limestone"
