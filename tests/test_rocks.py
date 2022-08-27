@@ -6,12 +6,12 @@
 # Name:		test_rocks.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		11.08.2022
+# Date:		27.08.2022
 
 # -----------------------------------------------
 
 ## MODULES
-import sys
+import sys, time
 import numpy as np
 import random as rd
 import  matplotlib as mpl
@@ -168,13 +168,20 @@ from modules.carbonates import CarbonateRocks
     # data_mudstone = Sandstone().create_mudstone(number=1)
     # print(i, data_mudstone)
 ## CARBONATES
+start = time.time()
+data_container = []
 for i in range(100):
-    # data_limestone = CarbonateRocks().create_limestone(number=1)
-    # print(i, data_limestone)
     data_limestone = CarbonateRocks().create_limestone_alternative(number=1)
-    print(i, data_limestone)
+    data_container.append(data_limestone)
+end1 = time.time()
+data_limestone = CarbonateRocks().create_limestone_alternative(number=100)
+end2 = time.time()
+print(end1 - start)
+print(end2 - end1)
 #     data_dolomite = CarbonateRocks().create_dolomite(number=1)
 #     print(i, data_dolomite)
+#     data_limestone = CarbonateRocks().create_limestone(number=1)
+#     print(i, data_limestone)
 
 ## EVAPORITE ROCKS ##
 # for i in range(10):

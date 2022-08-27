@@ -1332,205 +1332,251 @@ class CarbonateRocks:
                       "Qz": self.data_quartz, "Kfs": data_alkalifeldspar, "Pl": data_plagioclase,
                       "Kln": self.data_kaolinite, "Mnt": data_montmorillonite, "Ilt": data_illite}
         #
-        condition = False
+        amounts_mineralogy = {}
+        amounts_chemistry = {}
+        bulk_properties = {}
+        properties = ["rho_s", "rho", "K", "G", "E", "nu", "vP", "vS", "vPvS", "GR", "PE", "phi"]
+        for property in properties:
+            bulk_properties[property] = []
+        mineral_list = []
+        elements = []
+        for mineral, dataset in mineralogy.items():
+            amounts_mineralogy[dataset["mineral"]] = []
+            mineral_list.append(dataset["mineral"])
+            elements_mineral = list(dataset["chemistry"].keys())
+            for element in elements_mineral:
+                if element not in elements:
+                    elements.append(element)
+                    amounts_chemistry[element] = []
+        mineral_list.sort()
+        elements.sort()
         #
-        while condition == False:
-            elements_list = []
-            phi_minerals = {}
-            w_minerals = {}
-            w_elements = {}
-            #
-            if composition != None:
-                phi_cal = composition["Cal"]
-                phi_dol = composition["Dol"]
-                phi_sd = composition["Sd"]
-                phi_qz = composition["Qz"]
-                phi_kfs = composition["Kfs"]
-                phi_pl = composition["Pl"]
-                phi_kln = composition["Kln"]
-                phi_mnt = composition["Mnt"]
-                phi_ilt = composition["Ilt"]
+        n = 0
+        while n < number:
+            condition = False
+            while condition == False:
+                elements_list = []
+                phi_minerals = {}
+                w_minerals = {}
+                w_elements = {}
                 #
-                phi_minerals["Cal"] = phi_cal
-                phi_minerals["Dol"] = phi_dol
-                phi_minerals["Sd"] = phi_sd
-                phi_minerals["Qz"] = phi_qz
-                phi_minerals["Kfs"] = phi_kfs
-                phi_minerals["Pl"] = phi_pl
-                phi_minerals["Kln"] = phi_kln
-                phi_minerals["Mnt"] = phi_mnt
-                phi_minerals["Ilt"] = phi_ilt
-            else:
-                condition_2 = False
-                while condition_2 == False:
-                    magicnumber = rd.randint(0, 12)
-                    if 0 <= magicnumber <= 8:   # Carbonate-dominated
-                        w_carb = round(rd.uniform(0.75, 1.0), 4)
-                        w_clast = round(rd.uniform(0.0, (1.0 - w_carb)), 4)
-                        w_clay = round(1 - w_carb - w_clast, 4)
-                        #
-                        phi_cal = round(w_carb*rd.uniform(0.8, 1.0), 4)
-                        phi_dol = round(w_carb*rd.uniform(0.0, (1.0 - phi_cal)), 4)
-                        phi_sd = round(w_carb - phi_cal - phi_dol, 4)
-                        #
-                        phi_qz = round(w_clast*rd.uniform(0.0, 1.0), 4)
-                        phi_kfs = round(w_clast*rd.uniform(0.0, (1.0 - phi_qz)), 4)
-                        phi_pl = round(w_clast - phi_qz - phi_kfs, 4)
-                        #
-                        phi_kln = round(w_clay*rd.uniform(0.0, 1.0), 4)
-                        phi_mnt = round(w_clay*rd.uniform(0.0, (1.0 - phi_kln)), 4)
-                        phi_ilt = round(1 - phi_cal - phi_dol - phi_sd - phi_qz - phi_kfs - phi_pl - phi_kln - phi_mnt, 4)
-                        #
-                        phi_total = phi_cal + phi_dol + phi_sd + phi_qz + phi_kfs + phi_pl + phi_kln + phi_mnt + phi_ilt
-                    elif magicnumber in [9, 10]:   # Clastic-dominated
-                        w_clast = round(rd.uniform(0.1, 0.25), 4)
-                        w_carb = round(rd.uniform(0.7, (1.0 - w_clast)), 4)
-                        w_clay = round(1 - w_carb - w_clast, 4)
-                        #
-                        phi_qz = round(w_clast*rd.uniform(0.0, 1.0), 4)
-                        phi_kfs = round(w_clast*rd.uniform(0.0, (1.0 - phi_qz)), 4)
-                        phi_pl = round(w_clast - phi_qz - phi_kfs, 4)
-                        #
-                        phi_cal = round(w_carb*rd.uniform(0.8, 1.0), 4)
-                        phi_dol = round(w_carb*rd.uniform(0.0, (1.0 - phi_cal)), 4)
-                        phi_sd = round(w_carb - phi_cal - phi_dol, 4)
-                        #
-                        phi_kln = round(w_clay*rd.uniform(0.0, 1.0), 4)
-                        phi_mnt = round(w_clay*rd.uniform(0.0, (1.0 - phi_kln)), 4)
-                        phi_ilt = round(1 - phi_cal - phi_dol - phi_sd - phi_qz - phi_kfs - phi_pl - phi_kln - phi_mnt, 4)
-                        #
-                        phi_total = phi_cal + phi_dol + phi_sd + phi_qz + phi_kfs + phi_pl + phi_kln + phi_mnt + phi_ilt
-                    elif magicnumber in [11, 12]:   # Clay-dominated
-                        w_clay = round(rd.uniform(0.1, 0.25), 4)
-                        w_carb = round(rd.uniform(0.7, (1.0 - w_clay)), 4)
-                        w_clast = round(1 - w_carb - w_clay, 4)
-                        #
-                        phi_cal = round(w_carb*rd.uniform(0.8, 1.0), 4)
-                        phi_dol = round(w_carb*rd.uniform(0.0, (1.0 - phi_cal)), 4)
-                        phi_sd = round(w_carb - phi_cal - phi_dol, 4)
-                        #
-                        phi_qz = round(w_clast*rd.uniform(0.0, 1.0), 4)
-                        phi_kfs = round(w_clast*rd.uniform(0.0, (1.0 - phi_qz)), 4)
-                        phi_pl = round(w_clast - phi_qz - phi_kfs, 4)
-                        #
-                        phi_kln = round(w_clay*rd.uniform(0.0, 1.0), 4)
-                        phi_mnt = round(w_clay*rd.uniform(0.0, (1.0 - phi_kln)), 4)
-                        phi_ilt = round(1 - phi_cal - phi_dol - phi_sd - phi_qz - phi_kfs - phi_pl - phi_kln - phi_mnt, 4)
-                        #
-                        phi_total = phi_cal + phi_dol + phi_sd + phi_qz + phi_kfs + phi_pl + phi_kln + phi_mnt + phi_ilt
+                if composition != None:
+                    phi_cal = composition["Cal"]
+                    phi_dol = composition["Dol"]
+                    phi_sd = composition["Sd"]
+                    phi_qz = composition["Qz"]
+                    phi_kfs = composition["Kfs"]
+                    phi_pl = composition["Pl"]
+                    phi_kln = composition["Kln"]
+                    phi_mnt = composition["Mnt"]
+                    phi_ilt = composition["Ilt"]
                     #
-                    if np.isclose(phi_total, 1.0000) == True:
-                        if 0.8 <= phi_cal <= 1.0 and 0.0 <= phi_dol <= 0.2 and 0.0 <= phi_sd <= 0.2 \
-                                and 0.0 <= phi_qz <= 0.2 and 0.0 <= phi_kfs <= 0.2 and 0.0 <= phi_pl <= 0.2 \
-                                and 0.0 <= phi_kln <= 0.2 and 0.0 <= phi_mnt <= 0.2 and 0.0 <= phi_ilt <= 0.2:
-                            condition_2 = True
-                    #
-                phi_minerals["Cal"] = abs(phi_cal)
-                phi_minerals["Dol"] = abs(phi_dol)
-                phi_minerals["Sd"] = abs(phi_sd)
-                phi_minerals["Qz"] = abs(phi_qz)
-                phi_minerals["Kfs"] = abs(phi_kfs)
-                phi_minerals["Pl"] = abs(phi_pl)
-                phi_minerals["Kln"] = abs(phi_kln)
-                phi_minerals["Mnt"] = abs(phi_mnt)
-                phi_minerals["Ilt"] = abs(phi_ilt)
-            #
-            rho_s = 0
-            for key, value in phi_minerals.items():
-                rho_s += value*mineralogy[key]["rho"]
-                for element, value in mineralogy[key]["chemistry"].items():
-                    if element not in elements_list:
-                        elements_list.append(element)
-                        w_elements[element] = 0.0
-            rho_s = round(rho_s, 3)
-            for key, value in phi_minerals.items():
-                w_minerals[key] = round((phi_minerals[key] * mineralogy[key]["rho"]) / rho_s, 4)
-            #
-            if porosity == None:
-                phi_helper = round(rd.uniform(0.0, 0.4), 4)
-            else:
-                phi_helper = round(rd.uniform(porosity[0], porosity[1]), 4)
-            #
-            rho = round((1 - phi_helper)*rho_s + phi_helper*self.data_water[2], 3)
-            #
-            old_index = elements_list.index("O")
-            elements_list += [elements_list.pop(old_index)]
-            #
-            w_elements_total = 0.0
-            for element in elements_list:
-                if element != "O":
-                    for mineral, w_mineral in w_minerals.items():
-                        if element in mineralogy[mineral]["chemistry"]:
-                            value = round(w_mineral * mineralogy[mineral]["chemistry"][element], 4)
-                            w_elements[element] += value
-                            w_elements_total += value
+                    phi_minerals["Cal"] = phi_cal
+                    phi_minerals["Dol"] = phi_dol
+                    phi_minerals["Sd"] = phi_sd
+                    phi_minerals["Qz"] = phi_qz
+                    phi_minerals["Kfs"] = phi_kfs
+                    phi_minerals["Pl"] = phi_pl
+                    phi_minerals["Kln"] = phi_kln
+                    phi_minerals["Mnt"] = phi_mnt
+                    phi_minerals["Ilt"] = phi_ilt
+                else:
+                    condition_2 = False
+                    while condition_2 == False:
+                        magicnumber = rd.randint(0, 12)
+                        if 0 <= magicnumber <= 8:   # Carbonate-dominated
+                            w_carb = round(rd.uniform(0.85, 1.0), 4)
+                            w_clast = round(rd.uniform(0.0, (1.0 - w_carb)), 4)
+                            w_clay = round(1 - w_carb - w_clast, 4)
                             #
-                            w_elements[element] = round(w_elements[element], 4)
-                elif element == "O":
-                    w_elements[element] += round(1 - w_elements_total, 4)
+                            phi_cal = round(w_carb*rd.uniform(0.9, 1.0), 4)
+                            phi_dol = round(w_carb*rd.uniform(0.0, (1.0 - phi_cal)), 4)
+                            phi_sd = round(w_carb - phi_cal - phi_dol, 4)
+                            #
+                            phi_qz = round(w_clast*rd.uniform(0.0, 1.0), 4)
+                            phi_kfs = round(w_clast*rd.uniform(0.0, (1.0 - phi_qz)), 4)
+                            phi_pl = round(w_clast - phi_qz - phi_kfs, 4)
+                            #
+                            phi_kln = round(w_clay*rd.uniform(0.0, 1.0), 4)
+                            phi_mnt = round(w_clay*rd.uniform(0.0, (1.0 - phi_kln)), 4)
+                            phi_ilt = round(1 - phi_cal - phi_dol - phi_sd - phi_qz - phi_kfs - phi_pl - phi_kln - phi_mnt, 4)
+                            #
+                            phi_total = phi_cal + phi_dol + phi_sd + phi_qz + phi_kfs + phi_pl + phi_kln + phi_mnt + phi_ilt
+                        elif magicnumber in [9, 10]:   # Clastic-dominated
+                            w_clast = round(rd.uniform(0.1, 0.25), 4)
+                            w_carb = round(rd.uniform(0.7, (1.0 - w_clast)), 4)
+                            w_clay = round(1 - w_carb - w_clast, 4)
+                            #
+                            phi_qz = round(w_clast*rd.uniform(0.0, 1.0), 4)
+                            phi_kfs = round(w_clast*rd.uniform(0.0, (1.0 - phi_qz)), 4)
+                            phi_pl = round(w_clast - phi_qz - phi_kfs, 4)
+                            #
+                            phi_cal = round(w_carb*rd.uniform(0.8, 1.0), 4)
+                            phi_dol = round(w_carb*rd.uniform(0.0, (1.0 - phi_cal)), 4)
+                            phi_sd = round(w_carb - phi_cal - phi_dol, 4)
+                            #
+                            phi_kln = round(w_clay*rd.uniform(0.0, 1.0), 4)
+                            phi_mnt = round(w_clay*rd.uniform(0.0, (1.0 - phi_kln)), 4)
+                            phi_ilt = round(1 - phi_cal - phi_dol - phi_sd - phi_qz - phi_kfs - phi_pl - phi_kln - phi_mnt, 4)
+                            #
+                            phi_total = phi_cal + phi_dol + phi_sd + phi_qz + phi_kfs + phi_pl + phi_kln + phi_mnt + phi_ilt
+                        elif magicnumber in [11, 12]:   # Clay-dominated
+                            w_clay = round(rd.uniform(0.1, 0.25), 4)
+                            w_carb = round(rd.uniform(0.7, (1.0 - w_clay)), 4)
+                            w_clast = round(1 - w_carb - w_clay, 4)
+                            #
+                            phi_cal = round(w_carb*rd.uniform(0.8, 1.0), 4)
+                            phi_dol = round(w_carb*rd.uniform(0.0, (1.0 - phi_cal)), 4)
+                            phi_sd = round(w_carb - phi_cal - phi_dol, 4)
+                            #
+                            phi_qz = round(w_clast*rd.uniform(0.0, 1.0), 4)
+                            phi_kfs = round(w_clast*rd.uniform(0.0, (1.0 - phi_qz)), 4)
+                            phi_pl = round(w_clast - phi_qz - phi_kfs, 4)
+                            #
+                            phi_kln = round(w_clay*rd.uniform(0.0, 1.0), 4)
+                            phi_mnt = round(w_clay*rd.uniform(0.0, (1.0 - phi_kln)), 4)
+                            phi_ilt = round(1 - phi_cal - phi_dol - phi_sd - phi_qz - phi_kfs - phi_pl - phi_kln - phi_mnt, 4)
+                            #
+                            phi_total = phi_cal + phi_dol + phi_sd + phi_qz + phi_kfs + phi_pl + phi_kln + phi_mnt + phi_ilt
+                        #
+                        if np.isclose(phi_total, 1.0000) == True:
+                            if 0.8 <= phi_cal <= 1.0 and 0.0 <= phi_dol <= 0.2 and 0.0 <= phi_sd <= 0.2 \
+                                    and 0.0 <= phi_qz <= 0.2 and 0.0 <= phi_kfs <= 0.2 and 0.0 <= phi_pl <= 0.2 \
+                                    and 0.0 <= phi_kln <= 0.2 and 0.0 <= phi_mnt <= 0.2 and 0.0 <= phi_ilt <= 0.2:
+                                condition_2 = True
+                        #
+                    phi_minerals["Cal"] = abs(phi_cal)
+                    phi_minerals["Dol"] = abs(phi_dol)
+                    phi_minerals["Sd"] = abs(phi_sd)
+                    phi_minerals["Qz"] = abs(phi_qz)
+                    phi_minerals["Kfs"] = abs(phi_kfs)
+                    phi_minerals["Pl"] = abs(phi_pl)
+                    phi_minerals["Kln"] = abs(phi_kln)
+                    phi_minerals["Mnt"] = abs(phi_mnt)
+                    phi_minerals["Ilt"] = abs(phi_ilt)
+                #
+                rho_s = 0
+                for key, value in phi_minerals.items():
+                    rho_s += value*mineralogy[key]["rho"]
+                    for element, value in mineralogy[key]["chemistry"].items():
+                        if element not in elements_list:
+                            elements_list.append(element)
+                            w_elements[element] = 0.0
+                #
+                rho_s = round(rho_s, 3)
+                #
+                for key, value in phi_minerals.items():
+                    w_result = round((phi_minerals[key] * mineralogy[key]["rho"]) / rho_s, 4)
+                    w_minerals[key] = w_result
+                #
+                if porosity == None:
+                    phi_helper = round(rd.uniform(0.0, 0.4), 4)
+                else:
+                    phi_helper = round(rd.uniform(porosity[0], porosity[1]), 4)
+                #
+                rho = round((1 - phi_helper)*rho_s + phi_helper*self.data_water[2], 3)
+                #
+                old_index = elements_list.index("O")
+                elements_list += [elements_list.pop(old_index)]
+                #
+                w_elements_total = 0.0
+                for element in elements_list:
+                    if element != "O":
+                        for mineral, w_mineral in w_minerals.items():
+                            if element in mineralogy[mineral]["chemistry"]:
+                                value = round(w_mineral * mineralogy[mineral]["chemistry"][element], 4)
+                                w_elements[element] += value
+                                w_elements_total += value
+                                #
+                                w_elements[element] = round(w_elements[element], 4)
+                    elif element == "O":
+                        w_elements[element] += round(1 - w_elements_total, 4)
+                        #
+                        w_elements[element] = round(w_elements[element], 4)
+                #
+                if sum(w_minerals.values()) == 1.0 and sum(w_elements.values()) == 1.0:
                     #
-                    w_elements[element] = round(w_elements[element], 4)
+                    condition = True
+                #
+                bulk_mod = 0.0
+                shear_mod = 0.0
+                gamma_ray = 0.0
+                photoelectricity = 0.0
+                for key, value in phi_minerals.items():
+                    bulk_mod += phi_minerals[key] * mineralogy[key]["K"]
+                    shear_mod += phi_minerals[key] * mineralogy[key]["G"]
+                    gamma_ray += phi_minerals[key] * mineralogy[key]["GR"]
+                    photoelectricity += phi_minerals[key] * mineralogy[key]["PE"]
+                    #
+                    bulk_mod = round(bulk_mod, 3)
+                    shear_mod = round(shear_mod, 3)
+                    gamma_ray = round(gamma_ray, 3)
+                    photoelectricity = round(photoelectricity, 3)
+                #
+                w_list = []
+                K_list = []
+                G_list = []
+                for key, mineral in mineralogy.items():
+                    w_list.append(w_minerals[key])
+                    K_list.append(mineral["K"])
+                    G_list.append(mineral["G"])
+                K_geo = elast.calc_geometric_mean(self, w_list, K_list)
+                G_geo = elast.calc_geometric_mean(self, w_list, G_list)
+                bulk_mod = K_geo
+                shear_mod = G_geo
+                #
+                vP_s = round(((bulk_mod*10**9 + 4/3*shear_mod*10**9)/(rho_s))**0.5, 3)
+                vS_s = round(((shear_mod * 10 ** 9) / (rho_s)) ** 0.5, 3)
+                #
+                vP = (1 - phi_helper)*vP_s + phi_helper*self.data_water[4][0]
+                vS = (1 - phi_helper)*vS_s
+                vPvS = round(vP / vS, 3)
+                #
+                shear_mod = (vS**2 * rho)*10**(-9)
+                bulk_mod = (vP**2 * rho - 4/3*shear_mod)*10**(-9)
+                youngs_mod = round((9 * bulk_mod * shear_mod) / (3 * bulk_mod + shear_mod), 3)
+                poisson_rat = round((3 * bulk_mod - 2 * shear_mod) / (6 * bulk_mod + 2 * shear_mod), 4)
             #
-            if sum(w_minerals.values()) == 1.0 and sum(w_elements.values()) == 1.0:
-                condition = True
-        #
-        bulk_mod = 0.0
-        shear_mod = 0.0
-        gamma_ray = 0.0
-        photoelectricity = 0.0
-        for key, value in phi_minerals.items():
-            bulk_mod += phi_minerals[key] * mineralogy[key]["K"]
-            shear_mod += phi_minerals[key] * mineralogy[key]["G"]
-            gamma_ray += phi_minerals[key] * mineralogy[key]["GR"]
-            photoelectricity += phi_minerals[key] * mineralogy[key]["PE"]
+            for mineral, value in w_minerals.items():
+                amounts_mineralogy[mineral].append(value)
+            for element, value in w_elements.items():
+                amounts_chemistry[element].append(value)
             #
-            bulk_mod = round(bulk_mod, 3)
-            shear_mod = round(shear_mod, 3)
-            gamma_ray = round(gamma_ray, 3)
-            photoelectricity = round(photoelectricity, 3)
+            bulk_properties["rho_s"].append(rho_s)
+            bulk_properties["rho"].append(rho)
+            bulk_properties["phi"].append(phi_helper)
+            bulk_properties["K"].append(bulk_mod)
+            bulk_properties["G"].append(shear_mod)
+            bulk_properties["E"].append(youngs_mod)
+            bulk_properties["nu"].append(poisson_rat)
+            bulk_properties["vP"].append(vP)
+            bulk_properties["vS"].append(vS)
+            bulk_properties["vPvS"].append(vPvS)
+            bulk_properties["GR"].append(gamma_ray)
+            bulk_properties["PE"].append(photoelectricity)
+            #
+            n += 1
         #
-        w_list = []
-        K_list = []
-        G_list = []
-        for key, mineral in mineralogy.items():
-            w_list.append(w_minerals[key])
-            K_list.append(mineral["K"])
-            G_list.append(mineral["G"])
-        K_geo = elast.calc_geometric_mean(self, w_list, K_list)
-        G_geo = elast.calc_geometric_mean(self, w_list, G_list)
-        bulk_mod = K_geo
-        shear_mod = G_geo
-        #
-        vP_s = round(((bulk_mod*10**9 + 4/3*shear_mod*10**9)/(rho_s))**0.5, 3)
-        vS_s = round(((shear_mod * 10 ** 9) / (rho_s)) ** 0.5, 3)
-        #
-        vP = (1 - phi_helper)*vP_s + phi_helper*self.data_water[4][0]
-        vS = (1 - phi_helper)*vS_s
-        vPvS = round(vP / vS, 3)
-        #
-        shear_mod = (vS**2 * rho)*10**(-9)
-        bulk_mod = (vP**2 * rho - 4/3*shear_mod)*10**(-9)
-        youngs_mod = round((9 * bulk_mod * shear_mod) / (3 * bulk_mod + shear_mod), 3)
-        poisson_rat = round((3 * bulk_mod - 2 * shear_mod) / (6 * bulk_mod + 2 * shear_mod), 4)
+        ## EXPORT DATA
         #
         results = {}
         results["rock"] = "Limestone"
         if number > 1:
-            results["mineralogy"] = w_minerals
-            results["chemistry"] = w_elements
-            results["phi"] = phi_helper
+            results["mineralogy"] = amounts_mineralogy
+            results["chemistry"] = amounts_chemistry
+            results["phi"] = bulk_properties["phi"]
             results["fluid"] = "water"
-            results["rho_s"] = rho_s
-            results["rho"] = rho
-            results["vP"] = vP
-            results["vS"] = vS
-            results["vP/vS"] = vPvS
-            results["K"] = bulk_mod
-            results["G"] = shear_mod
-            results["E"] = youngs_mod
-            results["nu"] = poisson_rat
-            results["GR"] = gamma_ray
-            results["PE"] = photoelectricity
+            results["rho_s"] = bulk_properties["rho_s"]
+            results["rho"] = bulk_properties["rho"]
+            results["vP"] = bulk_properties["vP"]
+            results["vS"] = bulk_properties["vS"]
+            results["vP/vS"] = bulk_properties["vPvS"]
+            results["K"] = bulk_properties["K"]
+            results["G"] = bulk_properties["G"]
+            results["E"] = bulk_properties["E"]
+            results["nu"] = bulk_properties["nu"]
+            results["GR"] = bulk_properties["GR"]
+            results["PE"] = bulk_properties["PE"]
         else:
             single_amounts_mineralogy = {}
             single_amounts_chemistry = {}

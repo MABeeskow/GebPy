@@ -6,7 +6,7 @@
 # Name:		gui.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		22.08.2022
+# Date:		27.08.2022
 
 #-----------------------------------------------
 
@@ -79,6 +79,13 @@ class GebPyGUI(tk.Frame):
         self.entr_w["chemistry"] = []
         self.entr_w["custom"] = {}
         self.gui_elements = []
+        self.container_gui = {}
+        self.categories_sections = ["MINERALOGY", "PETROLOGY", "STRATIGRAPHY"]
+        self.sub_categories_gui = ["LABEL", "BUTTON", "RADIOBUTTON", "CHECKBOX", "OPTION MENU"]
+        for category in self.categories_sections:
+            self.container_gui[category] = {}
+            for sub_category in self.sub_categories_gui:
+                self.container_gui[category][sub_category] = []
         #
         self.exp_data = []
         self.filename = []
@@ -115,13 +122,31 @@ class GebPyGUI(tk.Frame):
         img.image = gebpy_logo
         img.grid(row=0, column=0, rowspan=4, columnspan=2, sticky="nesw")
         #
+        self.var_rb_main = tk.IntVar()
+        ## Radiobuttons
+        rb_01 = SE(
+            parent=self.parent, row_id=4, column_id=0, n_rows=1, n_columns=1, bg=self.color_menu,
+            fg=self.color_bg).create_radiobutton(
+            var_rb=self.var_rb_main, var_rb_set=0, value_rb=0, text="Mineralogy", color_bg=self.color_menu,
+            command=self.change_rb_main)
+        rb_02 = SE(
+            parent=self.parent, row_id=4, column_id=1, n_rows=1, n_columns=1, bg=self.color_menu,
+            fg=self.color_bg).create_radiobutton(
+            var_rb=self.var_rb_main, var_rb_set=0, value_rb=1, text="Petrology", color_bg=self.color_menu,
+            command=self.change_rb_main)
+        rb_03 = SE(
+            parent=self.parent, row_id=5, column_id=0, n_rows=1, n_columns=2, bg=self.color_menu,
+            fg=self.color_bg).create_radiobutton(
+            var_rb=self.var_rb_main, var_rb_set=0, value_rb=2, text="Sequence Stratigraphy",
+            color_bg=self.color_menu, command=self.change_rb_main)
+        #
         ## Labels
-        SE(parent=self.parent, row_id=6, column_id=0, n_rows=2, n_columns=2, bg=self.color_accent_01,
-           fg=self.color_fg_dark).create_label(text="Minerals", relief=tk.RAISED)
-        SE(parent=self.parent, row_id=12, column_id=0, n_rows=2, n_columns=2, bg=self.color_accent_01,
-           fg=self.color_fg_dark).create_label(text="Rocks", relief=tk.RAISED)
-        SE(parent=self.parent, row_id=20, column_id=0, n_rows=2, n_columns=2, bg=self.color_accent_01,
-           fg=self.color_fg_dark).create_label(text="Subsurface", relief=tk.RAISED)
+        # SE(parent=self.parent, row_id=6, column_id=0, n_rows=2, n_columns=2, bg=self.color_accent_01,
+        #    fg=self.color_fg_dark).create_label(text="Minerals", relief=tk.RAISED)
+        # SE(parent=self.parent, row_id=12, column_id=0, n_rows=2, n_columns=2, bg=self.color_accent_01,
+        #    fg=self.color_fg_dark).create_label(text="Rocks", relief=tk.RAISED)
+        # SE(parent=self.parent, row_id=20, column_id=0, n_rows=2, n_columns=2, bg=self.color_accent_01,
+        #    fg=self.color_fg_dark).create_label(text="Subsurface", relief=tk.RAISED)
         SE(parent=self.parent, row_id=2, column_id=3, n_rows=2, bg=self.color_bg,
            fg=self.color_fg_dark).create_label(text="Parameter", relief=tk.RAISED)
         SE(parent=self.parent, row_id=2, column_id=4, n_rows=2, bg=self.color_bg,
@@ -140,37 +165,36 @@ class GebPyGUI(tk.Frame):
         #
         self.gui_elements.extend([lbl_stat, lbl_plt])
         #
+        self.change_rb_main(first_start=True)
         ## Option Menu
-        var_opt_0_0 = tk.StringVar()
-        opt_list_0_0 = ["Oxides", "Sulfides", "Carbonates", "Halides", "Tectosilicates", "Phyllosilicates",
-                        "Sulfates", "Nesosilicates", "Sorosilicates", "Inosilicates", "Phosphates", "Phosphides",
-                        "Organics", "Cyclosilicates"]
-        opt_list_0_0.sort()
-        self.opt_mingroup = SE(parent=self.parent, row_id=8, column_id=0, n_rows=2, n_columns=2, bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
-            var_opt=var_opt_0_0, var_opt_set="Select Mineral Group", opt_list=opt_list_0_0,
-            command=lambda var_opt=var_opt_0_0: self.select_opt(var_opt))
-        var_opt_1_0 = tk.StringVar()
-        opt_list_1_0 = ["Siliciclastic Rocks", "Carbonate Rocks", "Plutonic Rocks", "Volcanic Rocks",
-                        "Pyroclastic Rocks", "Metamorphic Rocks", "Evaporite Rocks", "Ore Rocks"]
-        opt_list_1_0.sort()
-        self.opt_rocktype = SE(parent=self.parent, row_id=14, column_id=0, n_rows=2, n_columns=2, bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
-            var_opt=var_opt_1_0, var_opt_set="Select Rock Type", opt_list=opt_list_1_0,
-            command=lambda var_opt=var_opt_1_0: self.select_opt(var_opt))
-        var_opt_2_0 = tk.StringVar()
-        opt_list_2_0 = ["Zechstein", "Muschelkalk"]
-        self.opt_realseq = SE(parent=self.parent, row_id=22, column_id=0, n_rows=2, n_columns=2, bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
-            var_opt=var_opt_2_0, var_opt_set="Select Real Sequences", opt_list=opt_list_2_0,
-            command=lambda var_opt=var_opt_2_0: self.select_opt(var_opt))
+        # var_opt_0_0 = tk.StringVar()
+        # opt_list_0_0 = ["Oxides", "Sulfides", "Carbonates", "Halides", "Tectosilicates", "Phyllosilicates",
+        #                 "Sulfates", "Nesosilicates", "Sorosilicates", "Inosilicates", "Phosphates", "Phosphides",
+        #                 "Organics", "Cyclosilicates"]
+        # opt_list_0_0.sort()
+        # self.opt_mingroup = SE(parent=self.parent, row_id=8, column_id=0, n_rows=2, n_columns=2, bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
+        #     var_opt=var_opt_0_0, var_opt_set="Select Mineral Group", opt_list=opt_list_0_0,
+        #     command=lambda var_opt=var_opt_0_0: self.select_opt(var_opt))
+        # var_opt_1_0 = tk.StringVar()
+        # opt_list_1_0 = ["Siliciclastic Rocks", "Carbonate Rocks", "Plutonic Rocks", "Volcanic Rocks",
+        #                 "Pyroclastic Rocks", "Metamorphic Rocks", "Evaporite Rocks", "Ore Rocks"]
+        # opt_list_1_0.sort()
+        # self.opt_rocktype = SE(parent=self.parent, row_id=14, column_id=0, n_rows=2, n_columns=2, bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
+        #     var_opt=var_opt_1_0, var_opt_set="Select Rock Type", opt_list=opt_list_1_0,
+        #     command=lambda var_opt=var_opt_1_0: self.select_opt(var_opt))
+        # var_opt_2_0 = tk.StringVar()
+        # opt_list_2_0 = ["Zechstein", "Muschelkalk"]
+        # self.opt_realseq = SE(parent=self.parent, row_id=22, column_id=0, n_rows=2, n_columns=2, bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
+        #     var_opt=var_opt_2_0, var_opt_set="Select Real Sequences", opt_list=opt_list_2_0,
+        #     command=lambda var_opt=var_opt_2_0: self.select_opt(var_opt))
         #
         ## Button
-        self.btn_randseq = SE(parent=self.parent, row_id=24, column_id=0, n_rows=2, n_columns=2, bg=self.color_accent_02,
-                              fg=self.color_fg_dark).create_button(text="Create Random Sequence",
-                                                                   command=lambda var_btn="random": self.pressed_button(var_btn))
-        self.btn_custseq = SE(parent=self.parent, row_id=26, column_id=0, n_rows=2, n_columns=2, bg=self.color_accent_02,
-                              fg=self.color_fg_dark).create_button(text="Create Custom Sequence")
-        self.btn_custseq = SE(parent=self.parent, row_id=18, column_id=0, n_rows=2, n_columns=2, bg=self.color_accent_02,
-                              fg=self.color_fg_dark).create_button(text="Create Custom Rock",
-                                                                   command=lambda var_btn="custom rock": self.pressed_button(var_btn))
+        # self.btn_randseq = SE(parent=self.parent, row_id=24, column_id=0, n_rows=2, n_columns=2, bg=self.color_accent_02,
+        #                       fg=self.color_fg_dark).create_button(text="Create Random Sequence",
+        #                                                            command=lambda var_btn="random": self.pressed_button(var_btn))
+        # self.btn_custseq = SE(parent=self.parent, row_id=18, column_id=0, n_rows=2, n_columns=2, bg=self.color_accent_02,
+        #                       fg=self.color_fg_dark).create_button(text="Create Custom Rock",
+        #                                                            command=lambda var_btn="custom rock": self.pressed_button(var_btn))
         #
         btn_advstat = SE(parent=self.parent, row_id=42, column_id=0, n_rows=2, n_columns=2, bg=self.color_accent_03,
                          fg="black").create_button(text="Advanced Statistics")
@@ -179,6 +203,118 @@ class GebPyGUI(tk.Frame):
                                                command=lambda var_btn="export data": self.pressed_button(var_btn))
         btn_exit = SE(parent=self.parent, row_id=46, column_id=0, n_rows=2, n_columns=2, bg=self.color_accent_01,
                       fg=self.color_fg_dark).create_button(text="Quit", command=self.parent.quit)
+    #
+    def change_rb_main(self, first_start=False):
+        if first_start == False:
+            if self.var_rb_main.get() == 0:
+                ## MINERALOGY
+                ## CLEANING
+                for category in self.categories_sections:
+                    if category != "MINERALOGY":
+                        for sub_category in self.sub_categories_gui:
+                            for gui_item in self.container_gui[category][sub_category]:
+                                gui_item.grid_remove()
+                #
+                ## RECONSTRUCTION
+                for sub_category in self.sub_categories_gui:
+                    for gui_item in self.container_gui["MINERALOGY"][sub_category]:
+                        gui_item.grid()
+                #
+            elif self.var_rb_main.get() == 1:
+                # PETROLOGY
+                ## CLEANING
+                for category in self.categories_sections:
+                    if category != "PETROLOGY":
+                        for sub_category in self.sub_categories_gui:
+                            for gui_item in self.container_gui[category][sub_category]:
+                                gui_item.grid_remove()
+                #
+                ## RECONSTRUCTION
+                for sub_category in self.sub_categories_gui:
+                    for gui_item in self.container_gui["PETROLOGY"][sub_category]:
+                        gui_item.grid()
+                #
+                if len(self.container_gui["PETROLOGY"]["LABEL"]) == 0:
+                    lb_01 = SE(
+                        parent=self.parent, row_id=6, column_id=0, n_rows=2, n_columns=2, bg=self.color_accent_01,
+                        fg=self.color_fg_dark).create_label(text="Petrology", relief=tk.RAISED)
+                    #
+                    self.container_gui["PETROLOGY"]["LABEL"].append(lb_01)
+                    #
+                    var_opt_1_0 = tk.StringVar()
+                    opt_list_1_0 = ["Siliciclastic Rocks", "Carbonate Rocks", "Plutonic Rocks", "Volcanic Rocks",
+                                    "Pyroclastic Rocks", "Metamorphic Rocks", "Evaporite Rocks", "Ore Rocks"]
+                    opt_list_1_0.sort()
+                    self.opt_rocktype = SE(parent=self.parent, row_id=8, column_id=0, n_rows=2, n_columns=2,
+                                           bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
+                        var_opt=var_opt_1_0, var_opt_set="Select Rock Type", opt_list=opt_list_1_0,
+                        command=lambda var_opt=var_opt_1_0: self.select_opt(var_opt))
+                    #
+                    self.container_gui["PETROLOGY"]["OPTION MENU"].append(self.opt_rocktype)
+                    #
+                    self.btn_custseq = SE(
+                        parent=self.parent, row_id=12, column_id=0, n_rows=2, n_columns=2, bg=self.color_accent_02,
+                        fg=self.color_fg_dark).create_button(
+                        text="Create Custom Rock", command=lambda var_btn="custom rock": self.pressed_button(var_btn))
+                    #
+                    self.container_gui["PETROLOGY"]["BUTTON"].append(self.btn_custseq)
+                    #
+            elif self.var_rb_main.get() == 2:
+                ## STRATIGRAPHY
+                ## CLEANING
+                for category in self.categories_sections:
+                    if category != "STRATIGRAPHY":
+                        for sub_category in self.sub_categories_gui:
+                            for gui_item in self.container_gui[category][sub_category]:
+                                gui_item.grid_remove()
+                #
+                ## RECONSTRUCTION
+                for sub_category in self.sub_categories_gui:
+                    for gui_item in self.container_gui["STRATIGRAPHY"][sub_category]:
+                        gui_item.grid()
+                #
+                if len(self.container_gui["STRATIGRAPHY"]["LABEL"]) == 0:
+                    lb_01 = SE(
+                        parent=self.parent, row_id=6, column_id=0, n_rows=2, n_columns=2, bg=self.color_accent_01,
+                        fg=self.color_fg_dark).create_label(text="Sequence Stratigraphy", relief=tk.RAISED)
+                    #
+                    self.container_gui["STRATIGRAPHY"]["LABEL"].append(lb_01)
+                    #
+                    var_opt_2_0 = tk.StringVar()
+                    opt_list_2_0 = ["Zechstein", "Muschelkalk"]
+                    self.opt_realseq = SE(parent=self.parent, row_id=8, column_id=0, n_rows=2, n_columns=2,
+                                          bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
+                        var_opt=var_opt_2_0, var_opt_set="Select Real Sequences", opt_list=opt_list_2_0,
+                        command=lambda var_opt=var_opt_2_0: self.select_opt(var_opt))
+                    #
+                    self.container_gui["STRATIGRAPHY"]["OPTION MENU"].append(self.opt_realseq)
+                    #
+                    self.btn_randseq = SE(
+                        parent=self.parent, row_id=10, column_id=0, n_rows=2, n_columns=2, bg=self.color_accent_02,
+                        fg=self.color_fg_dark).create_button(
+                        text="Create Random Sequence", command=lambda var_btn="random": self.pressed_button(var_btn))
+                    #
+                    self.container_gui["STRATIGRAPHY"]["BUTTON"].append(self.btn_randseq)
+                    #
+        else:
+            ## MINERALOGY
+            lb_01 = SE(parent=self.parent, row_id=6, column_id=0, n_rows=2, n_columns=2, bg=self.color_accent_01,
+                       fg=self.color_fg_dark).create_label(text="Mineralogy", relief=tk.RAISED)
+            #
+            self.container_gui["MINERALOGY"]["LABEL"].append(lb_01)
+            #
+            var_opt_0_0 = tk.StringVar()
+            opt_list_0_0 = ["Oxides", "Sulfides", "Carbonates", "Halides", "Tectosilicates", "Phyllosilicates",
+                            "Sulfates", "Nesosilicates", "Sorosilicates", "Inosilicates", "Phosphates", "Phosphides",
+                            "Organics", "Cyclosilicates"]
+            opt_list_0_0.sort()
+            self.opt_mingroup = SE(parent=self.parent, row_id=8, column_id=0, n_rows=2, n_columns=2,
+                                   bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
+                var_opt=var_opt_0_0, var_opt_set="Select Mineral Group", opt_list=opt_list_0_0,
+                command=lambda var_opt=var_opt_0_0: self.select_opt(var_opt))
+            #
+            self.container_gui["MINERALOGY"]["OPTION MENU"].append(self.opt_mingroup)
+            #
     #
     def pressed_button(self, var_btn):
         if var_btn == "random":
@@ -295,14 +431,6 @@ class GebPyGUI(tk.Frame):
             Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                   color_acc=[self.color_accent_03, self.color_accent_04], rock=var_opt, lbl_w=self.lbl_w,
                   entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
-        # elif var_opt == "Dolomite Rock":
-        #     Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
-        #           color_acc=[self.color_accent_03, self.color_accent_04], rock=var_opt, lbl_w=self.lbl_w,
-        #           entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
-        # elif var_opt == "Marl":
-        #     Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
-        #           color_acc=[self.color_accent_03, self.color_accent_04], rock=var_opt, lbl_w=self.lbl_w,
-        #           entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
         elif var_opt == "Custom Carbonate Rock":
             Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                   color_acc=[self.color_accent_03, self.color_accent_04], rock=var_opt, lbl_w=self.lbl_w,
@@ -417,6 +545,9 @@ class GebPyGUI(tk.Frame):
                                 bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
                 var_opt=var_opt_0_1, var_opt_set="Select Oxide Mineral", opt_list=opt_list_0_1, active_bg=self.color_accent_02,
                 command=lambda var_opt=var_opt_0_1: self.select_opt(var_opt))
+            #
+            self.container_gui["MINERALOGY"]["OPTION MENU"].append(self.opt_oxide)
+            #
         # SULFIDES
         elif var_opt == "Sulfides":
             try:
@@ -445,6 +576,9 @@ class GebPyGUI(tk.Frame):
                                   bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
                 var_opt=var_opt_0_2, var_opt_set="Select Sulfide Mineral", opt_list=opt_list_0_2,
                 command=lambda var_opt=var_opt_0_2: self.select_opt(var_opt))
+            #
+            self.container_gui["MINERALOGY"]["OPTION MENU"].append(self.opt_sulfide)
+            #
         # CARBONATES
         elif var_opt == "Carbonates":
             try:
@@ -471,6 +605,9 @@ class GebPyGUI(tk.Frame):
                                bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
                 var_opt=var_opt_0_3, var_opt_set="Select Carbonate Mineral", opt_list=opt_list_0_3,
                 command=lambda var_opt=var_opt_0_3: self.select_opt(var_opt))
+            #
+            self.container_gui["MINERALOGY"]["OPTION MENU"].append(self.opt_carb)
+            #
         # HALOGENES
         elif var_opt == "Halides":
             try:
@@ -496,6 +633,9 @@ class GebPyGUI(tk.Frame):
                                    bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
                 var_opt=var_opt_0_4, var_opt_set="Select Halogene Mineral", opt_list=opt_list_0_4,
                 command=lambda var_opt=var_opt_0_4: self.select_opt(var_opt))
+            #
+            self.container_gui["MINERALOGY"]["OPTION MENU"].append(self.opt_halogene)
+            #
         # TECTOSILICATES
         elif var_opt == "Tectosilicates":
             try:
@@ -521,6 +661,9 @@ class GebPyGUI(tk.Frame):
                               bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
                 var_opt=var_opt_0_5, var_opt_set="Select Tectosilicate Mineral", opt_list=opt_list_0_5,
                 command=lambda var_opt=var_opt_0_5: self.select_opt(var_opt))
+            #
+            self.container_gui["MINERALOGY"]["OPTION MENU"].append(self.opt_afs)
+            #
         elif var_opt == "Phyllosilicates":
             try:
                 self.opt_oxide.grid_remove()
@@ -548,6 +691,9 @@ class GebPyGUI(tk.Frame):
                               bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
                 var_opt=var_opt_0_6, var_opt_set="Select Phyllosilicate Mineral", opt_list=opt_list_0_6,
                 command=lambda var_opt=var_opt_0_6: self.select_opt(var_opt))
+            #
+            self.container_gui["MINERALOGY"]["OPTION MENU"].append(self.opt_clays)
+            #
         elif var_opt == "Sulfates":
             try:
                 self.opt_oxide.grid_remove()
@@ -573,6 +719,9 @@ class GebPyGUI(tk.Frame):
                               bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
                 var_opt=var_opt_0_7, var_opt_set="Select Sulfate Mineral", opt_list=opt_list_0_7,
                 command=lambda var_opt=var_opt_0_7: self.select_opt(var_opt))
+            #
+            self.container_gui["MINERALOGY"]["OPTION MENU"].append(self.opt_sulfate)
+            #
         # NESOSILICATES
         elif var_opt == "Nesosilicates":
             try:
@@ -601,6 +750,9 @@ class GebPyGUI(tk.Frame):
                               bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
                 var_opt=var_opt_0_8, var_opt_set="Select Nesosilicate Mineral", opt_list=opt_list_0_8,
                 command=lambda var_opt=var_opt_0_8: self.select_opt(var_opt))
+            #
+            self.container_gui["MINERALOGY"]["OPTION MENU"].append(self.opt_nesosilicate)
+            #
         # SOROSILICATES
         elif var_opt == "Sorosilicates":
             try:
@@ -626,6 +778,9 @@ class GebPyGUI(tk.Frame):
                                        bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
                 var_opt=var_opt_0_9, var_opt_set="Select Sorosilicate Mineral", opt_list=opt_list_0_9,
                 command=lambda var_opt=var_opt_0_9: self.select_opt(var_opt))
+            #
+            self.container_gui["MINERALOGY"]["OPTION MENU"].append(self.opt_sorosilicate)
+            #
         # INOSILICATES
         elif var_opt == "Inosilicates":
             try:
@@ -654,6 +809,9 @@ class GebPyGUI(tk.Frame):
                                        bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
                 var_opt=var_opt_0_10, var_opt_set="Select Inosilicate Mineral", opt_list=opt_list_0_10,
                 command=lambda var_opt=var_opt_0_10: self.select_opt(var_opt))
+            #
+            self.container_gui["MINERALOGY"]["OPTION MENU"].append(self.opt_inosilicate)
+            #
         # PHOSPHATES
         elif var_opt == "Phosphates":
             try:
@@ -679,6 +837,9 @@ class GebPyGUI(tk.Frame):
                                        bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
                 var_opt=var_opt_0_11, var_opt_set="Select Phosphate Mineral", opt_list=opt_list_0_11,
                 command=lambda var_opt=var_opt_0_11: self.select_opt(var_opt))
+            #
+            self.container_gui["MINERALOGY"]["OPTION MENU"].append(self.opt_phosphates)
+            #
         # PHOSPHIDES
         elif var_opt == "Phosphides":
             try:
@@ -704,6 +865,9 @@ class GebPyGUI(tk.Frame):
                                        bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
                 var_opt=var_opt_0_12, var_opt_set="Select Phosphide Mineral", opt_list=opt_list_0_12,
                 command=lambda var_opt=var_opt_0_12: self.select_opt(var_opt))
+            #
+            self.container_gui["MINERALOGY"]["OPTION MENU"].append(self.opt_phosphides)
+            #
         # ORGANICS
         elif var_opt == "Organics":
             try:
@@ -729,6 +893,9 @@ class GebPyGUI(tk.Frame):
                                        bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
                 var_opt=var_opt_0_13, var_opt_set="Select Organic Material", opt_list=opt_list_0_13,
                 command=lambda var_opt=var_opt_0_13: self.select_opt(var_opt))
+            #
+            self.container_gui["MINERALOGY"]["OPTION MENU"].append(self.opt_orgmat)
+            #
         # CYCLOSILICATES
         elif var_opt == "Cyclosilicates":
             try:
@@ -754,22 +921,31 @@ class GebPyGUI(tk.Frame):
                                 bg=self.color_accent_02,
                                 fg=self.color_fg_dark).create_option_menu(var_opt=var_opt_0_14, var_opt_set="Select Cyclosilicate Mineral",
                                                                           opt_list=opt_list_0_14, command=lambda var_opt=var_opt_0_14: self.select_opt(var_opt))
+            #
+            self.container_gui["MINERALOGY"]["OPTION MENU"].append(self.opt_cyclo)
+            #
         elif var_opt == "Siliciclastic Rocks":
             var_opt_1_1 = tk.StringVar()
             opt_list_1_1 = ["Sandstone", "Shale", "Conglomerate", "Mudstone"]
             opt_list_1_1.sort()
-            self.opt_silic = SE(parent=self.parent, row_id=16, column_id=0, n_rows=2, n_columns=2,
+            self.opt_silic = SE(parent=self.parent, row_id=10, column_id=0, n_rows=2, n_columns=2,
                                 bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
                 var_opt=var_opt_1_1, var_opt_set="Select Rock", opt_list=opt_list_1_1,
                 command=lambda var_opt=var_opt_1_1: self.select_opt(var_opt))
+            #
+            self.container_gui["PETROLOGY"]["OPTION MENU"].append(self.opt_silic)
+            #
         elif var_opt == "Carbonate Rocks":
             var_opt_1_2 = tk.StringVar()
             opt_list_1_2 = ["Limestone", "Limestone (old)", "Dolomite Rock", "Marl"]
             opt_list_1_2.sort()
-            self.opt_carb = SE(parent=self.parent, row_id=16, column_id=0, n_rows=2, n_columns=2,
+            self.opt_carb = SE(parent=self.parent, row_id=10, column_id=0, n_rows=2, n_columns=2,
                                bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
                 var_opt=var_opt_1_2, var_opt_set="Select Rock", opt_list=opt_list_1_2,
                 command=lambda var_opt=var_opt_1_2: self.select_opt(var_opt))
+            #
+            self.container_gui["PETROLOGY"]["OPTION MENU"].append(self.opt_carb)
+            #
         elif var_opt == "Plutonic Rocks":
             var_opt_1_3 = tk.StringVar()
             opt_list_1_3 = [
@@ -779,54 +955,72 @@ class GebPyGUI(tk.Frame):
                 "Monzonite (Streckeisen)", "Syenite (Streckeisen)", "Granitoid (Streckeisen)",
                 "Quarzolite (Streckeisen)"]
             opt_list_1_3.sort()
-            self.opt_ign = SE(parent=self.parent, row_id=16, column_id=0, n_rows=2, n_columns=2,
+            self.opt_ign = SE(parent=self.parent, row_id=10, column_id=0, n_rows=2, n_columns=2,
                               bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
                 var_opt=var_opt_1_3, var_opt_set="Select Rock", opt_list=opt_list_1_3,
                 command=lambda var_opt=var_opt_1_3: self.select_opt(var_opt))
+            #
+            self.container_gui["PETROLOGY"]["OPTION MENU"].append(self.opt_ign)
+            #
         elif var_opt == "Volcanic Rocks":
             var_opt_1_7 = tk.StringVar()
             opt_list_1_7 = [
                 "Rhyolite (Streckeisen)", "Trachyte (Streckeisen)", "Latite (Streckeisen)", "Andesite (Streckeisen)",
                 "Basalt (Streckeisen)", "Dacite (Streckeisen)"]
             opt_list_1_7.sort()
-            self.opt_ign = SE(parent=self.parent, row_id=16, column_id=0, n_rows=2, n_columns=2,
+            self.opt_ign = SE(parent=self.parent, row_id=10, column_id=0, n_rows=2, n_columns=2,
                               bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
                 var_opt=var_opt_1_7, var_opt_set="Select Rock", opt_list=opt_list_1_7,
                 command=lambda var_opt=var_opt_1_7: self.select_opt(var_opt))
+            #
+            self.container_gui["PETROLOGY"]["OPTION MENU"].append(self.opt_ign)
+            #
         elif var_opt == "Pyroclastic Rocks":
             var_opt_1_8 = tk.StringVar()
             opt_list_1_8 = [
                 "Pyroclastic Rock"]
             opt_list_1_8.sort()
-            self.opt_ign = SE(parent=self.parent, row_id=16, column_id=0, n_rows=2, n_columns=2,
+            self.opt_ign = SE(parent=self.parent, row_id=10, column_id=0, n_rows=2, n_columns=2,
                               bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
                 var_opt=var_opt_1_8, var_opt_set="Select Rock", opt_list=opt_list_1_8,
                 command=lambda var_opt=var_opt_1_8: self.select_opt(var_opt))
+            #
+            self.container_gui["PETROLOGY"]["OPTION MENU"].append(self.opt_ign)
+            #
         elif var_opt == "Evaporite Rocks":
             var_opt_1_4 = tk.StringVar()
             opt_list_1_4 = ["Rock Salt", "Anhydrite (Rock)", "Potash"]
             opt_list_1_4.sort()
-            self.opt_evapr = SE(parent=self.parent, row_id=16, column_id=0, n_rows=2, n_columns=2,
+            self.opt_evapr = SE(parent=self.parent, row_id=10, column_id=0, n_rows=2, n_columns=2,
                               bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
                 var_opt=var_opt_1_4, var_opt_set="Select Rock", opt_list=opt_list_1_4,
                 command=lambda var_opt=var_opt_1_4: self.select_opt(var_opt))
+            #
+            self.container_gui["PETROLOGY"]["OPTION MENU"].append(self.opt_evapr)
+            #
         elif var_opt == "Ore Rocks":
             var_opt_1_5 = tk.StringVar()
             opt_list_1_5 = ["Kupferschiefer", "Compact Hematite Ore", "Banded Iron Formation"]
             opt_list_1_5.sort()
-            self.opt_ore = SE(parent=self.parent, row_id=16, column_id=0, n_rows=2, n_columns=2,
+            self.opt_ore = SE(parent=self.parent, row_id=10, column_id=0, n_rows=2, n_columns=2,
                               bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
                 var_opt=var_opt_1_5, var_opt_set="Select Rock", opt_list=opt_list_1_5,
                 command=lambda var_opt=var_opt_1_5: self.select_opt(var_opt))
+            #
+            self.container_gui["PETROLOGY"]["OPTION MENU"].append(self.opt_ore)
+            #
         elif var_opt == "Metamorphic Rocks":
             var_opt_1_6 = tk.StringVar()
             opt_list_1_6 = ["Granulite", "Greenschist", "Greenschist (basaltic)", "Greenschist (ultramafic)",
                             "Greenschist (pelitic)", "Amphibolite (ortho)"]
             opt_list_1_6.sort()
-            self.opt_metamorph = SE(parent=self.parent, row_id=16, column_id=0, n_rows=2, n_columns=2,
+            self.opt_metamorph = SE(parent=self.parent, row_id=10, column_id=0, n_rows=2, n_columns=2,
                               bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
                 var_opt=var_opt_1_6, var_opt_set="Select Rock", opt_list=opt_list_1_6,
                 command=lambda var_opt=var_opt_1_6: self.select_opt(var_opt))
+            #
+            self.container_gui["PETROLOGY"]["OPTION MENU"].append(self.opt_metamorph)
+            #
         elif var_opt == "Zechstein":
             thickness_complete = rd.randrange(900, 1500, 100)
             thickness_z5_random = int(rd.uniform(0.02, 0.06)*thickness_complete)
@@ -3385,7 +3579,7 @@ class Rocks:
         else:
             #
             data_all = []
-            if self.rock not in ["Conglomerate", "Sandstone"]:
+            if self.rock not in ["Conglomerate", "Sandstone", "Anhydrite (Rock)", "Limestone"]:
                 for i in range(var_entr_start):
                     if self.rock == "Sandstone":
                         data = Sandstone(fluid="water", actualThickness=0).create_sandstone(
@@ -3699,6 +3893,9 @@ class Rocks:
                 elif self.rock == "Anhydrite (Rock)":
                     data = Evaporites(fluid="water", actualThickness=0).create_anhydrite_rock(
                         number=var_entr_start, porosity=[self.var_phi0.get()/100, self.var_phi1.get()/100])
+                elif self.rock == "Limestone":
+                    data = CarbonateRocks(fluid="water", actualThickness=0).create_limestone_alternative(
+                        number=var_entr_start, porosity=[self.var_phi0.get() / 100, self.var_phi1.get() / 100])
                 #
                 rb_oxides = SE(
                     parent=self.parent_rock, row_id=34, column_id=1, n_rows=1, n_columns=1, bg=self.color_acc_01,
@@ -4051,7 +4248,7 @@ class Rocks:
         #
         try:
             data_all = []
-            if self.rock not in ["Conglomerate", "Sandstone"]:
+            if self.rock not in ["Conglomerate", "Sandstone", "Anhydrite (Rock)", "Limestone"]:
                 for i in range(var_entr.get()):
                     if self.rock == "Sandstone":
                         data = Sandstone(fluid="water", actualThickness=0).create_sandstone(
@@ -4213,6 +4410,12 @@ class Rocks:
                 elif self.rock == "Sandstone":
                     data = Sandstone(fluid="water", actualThickness=0).create_sandstone(
                         number=var_entr.get(), porosity=[self.var_phi0.get()/100, self.var_phi1.get()/100])
+                elif self.rock == "Anhydrite (Rock)":
+                    data = Evaporites(fluid="water", actualThickness=0).create_anhydrite_rock(
+                        number=var_entr.get(), porosity=[self.var_phi0.get() / 100, self.var_phi1.get() / 100])
+                elif self.rock == "Limestone":
+                    data = CarbonateRocks(fluid="water", actualThickness=0).create_limestone_alternative(
+                        number=var_entr.get(), porosity=[self.var_phi0.get() / 100, self.var_phi1.get() / 100])
                 for i in range(var_entr.get()):
                     mineral_data = {}
                     for key, value in data["mineralogy"].items():

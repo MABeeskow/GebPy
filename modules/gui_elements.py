@@ -61,10 +61,11 @@ class SimpleElements:
         var_rb.set(var_rb_set)
         if command == None:
             rb = tk.Radiobutton(self.parent, text=text, variable=var_rb, value=value_rb, bg=color_bg,
-                                activebackground=color_bg, highlightthickness=0, relief=relief)
+                                activebackground=color_bg, highlightthickness=0, relief=relief, selectcolor=color_bg)
         else:
             rb = tk.Radiobutton(self.parent, text=text, variable=var_rb, value=value_rb, bg=color_bg, fg=self.fg,
-                                activebackground=color_bg, highlightthickness=0, relief=relief, command=command)
+                                activebackground=color_bg, highlightthickness=0, relief=relief, selectcolor=color_bg,
+                                command=command)
         rb.grid(row=self.row_id, column=self.column_id, rowspan=self.n_rows, columnspan=self.n_columns, sticky="nesw")
         #
         return  rb
