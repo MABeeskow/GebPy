@@ -47,6 +47,8 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.ticker import NullFormatter
 import matplotlib.patches as mpatches
 import time
+from modules.mineralogy import Mineralogy
+import seaborn as sns
 
 ## GUI
 class GebPyGUI(tk.Frame):
@@ -81,11 +83,21 @@ class GebPyGUI(tk.Frame):
         self.gui_elements = []
         self.container_gui = {}
         self.categories_sections = ["MINERALOGY", "PETROLOGY", "STRATIGRAPHY"]
-        self.sub_categories_gui = ["LABEL", "BUTTON", "RADIOBUTTON", "CHECKBOX", "OPTION MENU"]
+        self.sub_categories_gui = ["LABEL", "BUTTON", "RADIOBUTTON", "CHECKBOX", "OPTION MENU", "ENTRY", "CANVAS_HISTO",
+                                   "CANVAS_SCATTER", "CANVAS_GEOCHEM"]
+        self.container_var = {}
+        #
         for category in self.categories_sections:
             self.container_gui[category] = {}
+            self.container_var[category] = {}
             for sub_category in self.sub_categories_gui:
                 self.container_gui[category][sub_category] = []
+                if sub_category == "ENTRY":
+                    self.container_var[category][sub_category] = {}
+                    self.container_var[category][sub_category]["MIN"] = {}
+                    self.container_var[category][sub_category]["MAX"] = {}
+                    self.container_var[category][sub_category]["MEAN"] = {}
+                    self.container_var[category][sub_category]["STD"] = {}
         #
         self.exp_data = []
         self.filename = []
@@ -123,6 +135,8 @@ class GebPyGUI(tk.Frame):
         img.grid(row=0, column=0, rowspan=4, columnspan=2, sticky="nesw")
         #
         self.var_rb_main = tk.IntVar()
+        self.var_rb_mineralogy_mineral = tk.IntVar()
+        self.var_rb_mineralogy_plot = tk.IntVar()
         ## Radiobuttons
         rb_01 = SE(
             parent=self.parent, row_id=4, column_id=0, n_rows=1, n_columns=1, bg=self.color_menu,
@@ -141,12 +155,6 @@ class GebPyGUI(tk.Frame):
             color_bg=self.color_menu, command=self.change_rb_main)
         #
         ## Labels
-        # SE(parent=self.parent, row_id=6, column_id=0, n_rows=2, n_columns=2, bg=self.color_accent_01,
-        #    fg=self.color_fg_dark).create_label(text="Minerals", relief=tk.RAISED)
-        # SE(parent=self.parent, row_id=12, column_id=0, n_rows=2, n_columns=2, bg=self.color_accent_01,
-        #    fg=self.color_fg_dark).create_label(text="Rocks", relief=tk.RAISED)
-        # SE(parent=self.parent, row_id=20, column_id=0, n_rows=2, n_columns=2, bg=self.color_accent_01,
-        #    fg=self.color_fg_dark).create_label(text="Subsurface", relief=tk.RAISED)
         SE(parent=self.parent, row_id=2, column_id=3, n_rows=2, bg=self.color_bg,
            fg=self.color_fg_dark).create_label(text="Parameter", relief=tk.RAISED)
         SE(parent=self.parent, row_id=2, column_id=4, n_rows=2, bg=self.color_bg,
@@ -166,35 +174,6 @@ class GebPyGUI(tk.Frame):
         self.gui_elements.extend([lbl_stat, lbl_plt])
         #
         self.change_rb_main(first_start=True)
-        ## Option Menu
-        # var_opt_0_0 = tk.StringVar()
-        # opt_list_0_0 = ["Oxides", "Sulfides", "Carbonates", "Halides", "Tectosilicates", "Phyllosilicates",
-        #                 "Sulfates", "Nesosilicates", "Sorosilicates", "Inosilicates", "Phosphates", "Phosphides",
-        #                 "Organics", "Cyclosilicates"]
-        # opt_list_0_0.sort()
-        # self.opt_mingroup = SE(parent=self.parent, row_id=8, column_id=0, n_rows=2, n_columns=2, bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
-        #     var_opt=var_opt_0_0, var_opt_set="Select Mineral Group", opt_list=opt_list_0_0,
-        #     command=lambda var_opt=var_opt_0_0: self.select_opt(var_opt))
-        # var_opt_1_0 = tk.StringVar()
-        # opt_list_1_0 = ["Siliciclastic Rocks", "Carbonate Rocks", "Plutonic Rocks", "Volcanic Rocks",
-        #                 "Pyroclastic Rocks", "Metamorphic Rocks", "Evaporite Rocks", "Ore Rocks"]
-        # opt_list_1_0.sort()
-        # self.opt_rocktype = SE(parent=self.parent, row_id=14, column_id=0, n_rows=2, n_columns=2, bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
-        #     var_opt=var_opt_1_0, var_opt_set="Select Rock Type", opt_list=opt_list_1_0,
-        #     command=lambda var_opt=var_opt_1_0: self.select_opt(var_opt))
-        # var_opt_2_0 = tk.StringVar()
-        # opt_list_2_0 = ["Zechstein", "Muschelkalk"]
-        # self.opt_realseq = SE(parent=self.parent, row_id=22, column_id=0, n_rows=2, n_columns=2, bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
-        #     var_opt=var_opt_2_0, var_opt_set="Select Real Sequences", opt_list=opt_list_2_0,
-        #     command=lambda var_opt=var_opt_2_0: self.select_opt(var_opt))
-        #
-        ## Button
-        # self.btn_randseq = SE(parent=self.parent, row_id=24, column_id=0, n_rows=2, n_columns=2, bg=self.color_accent_02,
-        #                       fg=self.color_fg_dark).create_button(text="Create Random Sequence",
-        #                                                            command=lambda var_btn="random": self.pressed_button(var_btn))
-        # self.btn_custseq = SE(parent=self.parent, row_id=18, column_id=0, n_rows=2, n_columns=2, bg=self.color_accent_02,
-        #                       fg=self.color_fg_dark).create_button(text="Create Custom Rock",
-        #                                                            command=lambda var_btn="custom rock": self.pressed_button(var_btn))
         #
         btn_advstat = SE(parent=self.parent, row_id=42, column_id=0, n_rows=2, n_columns=2, bg=self.color_accent_03,
                          fg="black").create_button(text="Advanced Statistics")
@@ -213,7 +192,10 @@ class GebPyGUI(tk.Frame):
                     if category != "MINERALOGY":
                         for sub_category in self.sub_categories_gui:
                             for gui_item in self.container_gui[category][sub_category]:
-                                gui_item.grid_remove()
+                                if sub_category not in ["CANVAS_HISTO", "CANVAS_SCATTER", "CANVAS_GEOCHEM"]:
+                                    gui_item.grid_remove()
+                                else:
+                                    gui_item.get_tk_widget().grid_remove()
                 #
                 ## RECONSTRUCTION
                 for sub_category in self.sub_categories_gui:
@@ -227,7 +209,10 @@ class GebPyGUI(tk.Frame):
                     if category != "PETROLOGY":
                         for sub_category in self.sub_categories_gui:
                             for gui_item in self.container_gui[category][sub_category]:
-                                gui_item.grid_remove()
+                                if sub_category not in ["CANVAS_HISTO", "CANVAS_SCATTER", "CANVAS_GEOCHEM"]:
+                                    gui_item.grid_remove()
+                                else:
+                                    gui_item.get_tk_widget().grid_remove()
                 #
                 ## RECONSTRUCTION
                 for sub_category in self.sub_categories_gui:
@@ -266,7 +251,10 @@ class GebPyGUI(tk.Frame):
                     if category != "STRATIGRAPHY":
                         for sub_category in self.sub_categories_gui:
                             for gui_item in self.container_gui[category][sub_category]:
-                                gui_item.grid_remove()
+                                if sub_category not in ["CANVAS_HISTO", "CANVAS_SCATTER", "CANVAS_GEOCHEM"]:
+                                    gui_item.grid_remove()
+                                else:
+                                    gui_item.get_tk_widget().grid_remove()
                 #
                 ## RECONSTRUCTION
                 for sub_category in self.sub_categories_gui:
@@ -332,6 +320,46 @@ class GebPyGUI(tk.Frame):
                        color_acc=[self.color_accent_03, self.color_accent_04], subsurface=var_btn, lbl_w=self.lbl_w,
                        entr_w=self.entr_w, gui_elements=self.gui_elements)
     #
+    def change_rb_comparison_plot(self, dataset):
+        n_plot_histo = len(self.container_gui["MINERALOGY"]["CANVAS_HISTO"])
+        n_plot_scatter = len(self.container_gui["MINERALOGY"]["CANVAS_SCATTER"])
+        #
+        if self.var_rb_mineralogy_plot.get() == 0:      # Histogram
+            if n_plot_histo == 0 and n_plot_scatter == 0:
+                self.plot_histogram_comparison(dataset=dataset)
+            elif n_plot_histo > 0 and n_plot_scatter == 0:
+                self.container_gui["MINERALOGY"]["CANVAS_HISTO"][-1].get_tk_widget().grid()
+            elif n_plot_histo > 0 and n_plot_scatter > 0:
+                self.container_gui["MINERALOGY"]["CANVAS_SCATTER"][-1].get_tk_widget().grid_remove()
+                self.container_gui["MINERALOGY"]["CANVAS_HISTO"][-1].get_tk_widget().grid()
+            elif n_plot_histo == 0 and n_plot_scatter > 0:
+                self.container_gui["MINERALOGY"]["CANVAS_SCATTER"][-1].get_tk_widget().grid_remove()
+                self.plot_histogram_comparison(dataset=dataset)
+        #
+        elif self.var_rb_mineralogy_plot.get() == 1:    # Scatter
+            if n_plot_histo == 0 and n_plot_scatter == 0:
+                self.plot_scatter_comparison(dataset=dataset)
+            elif n_plot_histo > 0 and n_plot_scatter == 0:
+                self.container_gui["MINERALOGY"]["CANVAS_HISTO"][-1].get_tk_widget().grid_remove()
+                self.plot_scatter_comparison(dataset=dataset)
+            elif n_plot_histo > 0 and n_plot_scatter > 0:
+                self.container_gui["MINERALOGY"]["CANVAS_HISTO"][-1].get_tk_widget().grid_remove()
+                self.container_gui["MINERALOGY"]["CANVAS_SCATTER"][-1].get_tk_widget().grid()
+            elif n_plot_histo == 0 and n_plot_scatter > 0:
+                self.container_gui["MINERALOGY"]["CANVAS_SCATTER"][-1].get_tk_widget().grid()
+    #
+    def change_rb_comparison_key(self, dataset):
+        dataset_keys = list(dataset.keys())
+        #
+        lbl_stat = SE(
+            parent=self.parent, row_id=0, column_id=3, n_rows=2, n_columns=5, bg=self.color_bg,
+            fg=self.color_fg_dark).create_label(
+            text="Statistics - "+str(dataset_keys[self.var_rb_mineralogy_mineral.get()]), relief=tk.RAISED)
+        #
+        self.container_gui["MINERALOGY"]["LABEL"].append(lbl_stat)
+        #
+        self.fill_table_comparison(dataset=dataset[dataset_keys[self.var_rb_mineralogy_mineral.get()]])
+    #
     def select_opt(self, var_opt):
         # Minerals
         ## OXIDES
@@ -343,6 +371,83 @@ class GebPyGUI(tk.Frame):
             Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                      color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
                      entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
+        #
+        elif var_opt in ["Spinel Minerals"]:
+            #
+            data_minerals = Mineralogy(keyword=var_opt).compare_minerals(number=100)
+            #
+            index = 0
+            for key, value in data_minerals.items():
+                rb_key = SE(
+                    parent=self.parent, row_id=15 + index, column_id=0, n_rows=1, n_columns=1, bg=self.color_menu,
+                    fg=self.color_bg).create_radiobutton(
+                    var_rb=self.var_rb_mineralogy_mineral, var_rb_set=0, value_rb=index, text=key,
+                    color_bg=self.color_menu, command=lambda dataset=data_minerals: self.change_rb_comparison_key(dataset))
+                #
+                if index == 0:
+                    start_key = key
+                #
+                self.container_gui["MINERALOGY"]["RADIOBUTTON"].append(rb_key)
+                #
+                index += 1
+            #
+            plot_categories = ["Histogram", "Scatter", "Geochemistry"]
+            for index, plot_category in enumerate(plot_categories):
+                rb_plot = SE(
+                    parent=self.parent, row_id=15 + index, column_id=1, n_rows=1, n_columns=1, bg=self.color_menu,
+                    fg=self.color_bg).create_radiobutton(
+                    var_rb=self.var_rb_mineralogy_plot, var_rb_set=0, value_rb=index, text=plot_category,
+                    color_bg=self.color_menu,
+                    command=lambda dataset=data_minerals: self.change_rb_comparison_plot(dataset))
+                #
+                self.container_gui["MINERALOGY"]["RADIOBUTTON"].append(rb_plot)
+                #
+            #
+            table_categories = ["Molar Mass", "Molar Volume", "Density", "vP", "vS", "vP/vS", "K", "G", "E", "Poisson",
+                                "GR", "PE"]
+            for index, table_category in enumerate(table_categories):
+                lb_01 = SE(
+                    parent=self.parent, row_id=4 + 2*index, column_id=3, n_rows=2, n_columns=1, bg=self.color_bg,
+                    fg=self.color_fg_dark).create_label(text=table_category, relief=tk.RAISED)
+                #
+                self.container_gui["MINERALOGY"]["LABEL"].append(lb_01)
+                #
+                self.container_var["MINERALOGY"]["ENTRY"]["MIN"][table_category] = tk.StringVar()
+                self.container_var["MINERALOGY"]["ENTRY"]["MAX"][table_category] = tk.StringVar()
+                self.container_var["MINERALOGY"]["ENTRY"]["MEAN"][table_category] = tk.StringVar()
+                self.container_var["MINERALOGY"]["ENTRY"]["STD"][table_category] = tk.StringVar()
+                #
+                entr_min = SE(
+                    parent=self.parent, row_id=4 + 2*index, column_id=4, bg=self.color_bg, n_rows=2,
+                    fg=self.color_fg_dark).create_entry(
+                    var_entr=self.container_var["MINERALOGY"]["ENTRY"]["MIN"][table_category], var_entr_set=0.0)
+                entr_max = SE(
+                    parent=self.parent, row_id=4 + 2 * index, column_id=5, bg=self.color_bg, n_rows=2,
+                    fg=self.color_fg_dark).create_entry(
+                    var_entr=self.container_var["MINERALOGY"]["ENTRY"]["MAX"][table_category], var_entr_set=0.0)
+                entr_mean = SE(
+                    parent=self.parent, row_id=4 + 2 * index, column_id=6, bg=self.color_bg, n_rows=2,
+                    fg=self.color_fg_dark).create_entry(
+                    var_entr=self.container_var["MINERALOGY"]["ENTRY"]["MEAN"][table_category], var_entr_set=0.0)
+                entr_std = SE(
+                    parent=self.parent, row_id=4 + 2 * index, column_id=7, bg=self.color_bg, n_rows=2,
+                    fg=self.color_fg_dark).create_entry(
+                    var_entr=self.container_var["MINERALOGY"]["ENTRY"]["STD"][table_category], var_entr_set=0.0)
+                #
+                self.container_gui["MINERALOGY"]["ENTRY"].extend([entr_min, entr_max, entr_mean, entr_std])
+                #
+            #
+            self.plot_histogram_comparison(dataset=data_minerals)
+            self.fill_table_comparison(dataset=data_minerals[start_key])
+            #
+            lbl_stat = SE(
+                parent=self.parent, row_id=0, column_id=3, n_rows=2, n_columns=5, bg=self.color_bg,
+                fg=self.color_fg_dark).create_label(
+                text="Statistics - " + str(start_key), relief=tk.RAISED)
+            #
+            self.container_gui["MINERALOGY"]["LABEL"].append(lbl_stat)
+            #
+        #
         ## SULFIDES
         elif var_opt in ["Pyrite", "Chalcopyrite", "Galena", "Acanthite", "Chalcocite", "Bornite", "Sphalerite",
                          "Pyrrhotite", "Millerite", "Pentlandite", "Covellite", "Cinnabar", "Realgar", "Orpiment",
@@ -534,19 +639,29 @@ class GebPyGUI(tk.Frame):
                 self.opt_cyclo.grid_remove()
             except:
                 pass
+            #
             var_opt_0_1 = tk.StringVar()
+            var_opt_0_2 = tk.StringVar()
             opt_list_0_1 = ["Quartz", "Magnetite", "Hematite", "Aluminium Spinels", "Iron Spinels", "Chromium Spinels",
                             "Corundum", "Ilmenite", "Rutile", "Pyrolusite", "Cassiterite", "Chromite",
                             "Magnesiochromite", "Zincochromite", "Cuprospinel", "Jacobsite", "Magnesioferrite",
                             "Trevorite", "Franklinite", "Ulvöspinel", "Uraninite", "Litharge", "Massicot", "Minium",
                             "Plattnerite", "Scrutinyite", "Zincite", "Columbite", "Tantalite", "Coltan"]
             opt_list_0_1.sort()
+            opt_oxide_comparison = ["Spinel Minerals", "Ore Minerals"]
+            opt_oxide_comparison.sort()
+            #
             self.opt_oxide = SE(parent=self.parent, row_id=10, column_id=0, n_rows=2, n_columns=2,
                                 bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
                 var_opt=var_opt_0_1, var_opt_set="Select Oxide Mineral", opt_list=opt_list_0_1, active_bg=self.color_accent_02,
                 command=lambda var_opt=var_opt_0_1: self.select_opt(var_opt))
+            self.opt_oxide_comp = SE(
+                parent=self.parent, row_id=12, column_id=0, n_rows=2, n_columns=2, bg=self.color_accent_02,
+                fg=self.color_fg_dark).create_option_menu(
+                var_opt=var_opt_0_2, var_opt_set="Compare Oxide Minerals", opt_list=opt_oxide_comparison,
+                active_bg=self.color_accent_02, command=lambda var_opt=var_opt_0_2: self.select_opt(var_opt))
             #
-            self.container_gui["MINERALOGY"]["OPTION MENU"].append(self.opt_oxide)
+            self.container_gui["MINERALOGY"]["OPTION MENU"].extend([self.opt_oxide, self.opt_oxide_comp])
             #
         # SULFIDES
         elif var_opt == "Sulfides":
@@ -1082,6 +1197,84 @@ class GebPyGUI(tk.Frame):
                 color_acc=[self.color_accent_03, self.color_accent_04], subsurface=var_opt, lbl_w=self.lbl_w,
                 entr_w=self.entr_w, gui_elements=self.gui_elements).create_real_world_sequences(
                 name=var_opt, data_units=data_muschelkalk)
+    #
+    def plot_histogram_comparison(self, dataset):
+        labels = [["Density - kg/m$^3$", "Gamma Ray - API", "Photoelectricity - barns/e$^-$"],
+                  ["vP - m/s", "vS - m/s", "vP/vS - 1"], ["K - GPa", "G - GPa", "Poisson - 1"]]
+        labels_key = [["rho", "GR", "PE"], ["vP", "vS", "vP/vS"], ["K", "G", "nu"]]
+        #
+        sns.set_theme(style="darkgrid")
+        fig_histo, ax_histo = plt.subplots(ncols=3, nrows=3, figsize=(11, 11), facecolor="#E9ECED")
+        #
+        for key, dataset_key in dataset.items():
+            for i in range(3):
+                for j in range(3):
+                    sns.histplot(
+                        data=dataset_key[labels_key[i][j]], ax=ax_histo[i][j], bins=10, color=dataset_key["color"],
+                        element="step", label=key, alpha=0.25, linewidth=2)
+                    #
+                    ax_histo[i][j].set_xlabel(labels[i][j], fontsize="small")
+                    ax_histo[i][j].set_ylabel("Frequency", labelpad=0.5, fontsize=9)
+                    ax_histo[i][j].grid(True)
+                    ax_histo[i][j].set_axisbelow(True)
+        #
+        fig_histo.suptitle("\n")
+        handles, labels = ax_histo[2][2].get_legend_handles_labels()
+        leg = fig_histo.legend(handles, labels, loc='upper center', ncol=3)
+        leg.set_in_layout(False)
+        fig_histo.tight_layout()
+        #
+        canvas_histo = FigureCanvasTkAgg(fig_histo, master=self.parent)
+        canvas_histo.get_tk_widget().grid(row=0, column=9, rowspan=47, columnspan=9, sticky="nesw")
+        #
+        self.container_gui["MINERALOGY"]["CANVAS_HISTO"].append(canvas_histo)
+    #
+    def plot_scatter_comparison(self, dataset):
+        labels = [["Density - kg/m$^3$", "Gamma Ray - API", "Photoelectricity - barns/e$^-$"],
+                  ["vP - m/s", "vS - m/s", "vP/vS - 1"], ["K - GPa", "G - GPa", "Poisson - 1"]]
+        labels_key = [["rho", "GR", "PE"], ["vP", "vS", "vP/vS"], ["K", "G", "nu"]]
+        #
+        sns.set_theme(style="darkgrid")
+        fig_scatter, ax_scatter = plt.subplots(ncols=3, nrows=3, figsize=(11, 11), facecolor="#E9ECED")
+        #
+        for key, dataset_key in dataset.items():
+            for i in range(3):
+                for j in range(3):
+                    sns.scatterplot(
+                        x=dataset_key["rho"], y=dataset_key[labels_key[i][j]], ax=ax_scatter[i][j],
+                        color=dataset_key["color"], label=key, legend=False)
+                    #
+                    ax_scatter[i][j].set_xlabel("Density - kg/m$^3$", fontsize=9)
+                    ax_scatter[i][j].set_ylabel(labels[i][j], labelpad=0.5, fontsize=9)
+                    ax_scatter[i][j].grid(True)
+                    ax_scatter[i][j].set_axisbelow(True)
+        #
+        fig_scatter.suptitle("\n")
+        handles, labels = ax_scatter[2][2].get_legend_handles_labels()
+        leg = fig_scatter.legend(handles, labels, loc='upper center', ncol=3)
+        leg.set_in_layout(False)
+        fig_scatter.tight_layout(w_pad=2)
+        #
+        canvas_histo = FigureCanvasTkAgg(fig_scatter, master=self.parent)
+        canvas_histo.get_tk_widget().grid(row=0, column=9, rowspan=47, columnspan=9, sticky="nesw")
+        #
+        self.container_gui["MINERALOGY"]["CANVAS_SCATTER"].append(canvas_histo)
+        #
+    #
+    def fill_table_comparison(self, dataset):
+        labels = ["M", "V", "rho", "vP", "vS", "vP/vS", "K", "G", "E", "nu", "GR", "PE"]
+        labels_key = ["Molar Mass", "Molar Volume", "Density", "vP", "vS", "vP/vS", "K", "G", "E", "Poisson", "GR",
+                      "PE"]
+        #
+        for index, label in enumerate(labels):
+            self.container_var["MINERALOGY"]["ENTRY"]["MIN"][labels_key[index]].set(
+                round(np.min(dataset[label]), 3))
+            self.container_var["MINERALOGY"]["ENTRY"]["MAX"][labels_key[index]].set(
+                round(np.max(dataset[label]), 3))
+            self.container_var["MINERALOGY"]["ENTRY"]["MEAN"][labels_key[index]].set(
+                round(np.mean(dataset[label]), 3))
+            self.container_var["MINERALOGY"]["ENTRY"]["STD"][labels_key[index]].set(
+                round(np.std(dataset[label], ddof=1), 3))
     #
     def change_radiobutton_mode(self, var_rb_mode):
         if var_rb_mode.get() == 0:
