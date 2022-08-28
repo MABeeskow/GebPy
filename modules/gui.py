@@ -98,6 +98,10 @@ class GebPyGUI(tk.Frame):
                     self.container_var[category][sub_category]["MAX"] = {}
                     self.container_var[category][sub_category]["MEAN"] = {}
                     self.container_var[category][sub_category]["STD"] = {}
+                elif sub_category == "OPTION MENU":
+                    self.container_var[category][sub_category] = {}
+                else:
+                    self.container_var[category][sub_category] = []
         #
         self.exp_data = []
         self.filename = []
@@ -155,23 +159,23 @@ class GebPyGUI(tk.Frame):
             color_bg=self.color_menu, command=self.change_rb_main)
         #
         ## Labels
-        SE(parent=self.parent, row_id=2, column_id=3, n_rows=2, bg=self.color_bg,
-           fg=self.color_fg_dark).create_label(text="Parameter", relief=tk.RAISED)
-        SE(parent=self.parent, row_id=2, column_id=4, n_rows=2, bg=self.color_bg,
-           fg=self.color_fg_dark).create_label(text="Minimum", relief=tk.RAISED)
-        SE(parent=self.parent, row_id=2, column_id=5, n_rows=2, bg=self.color_bg,
-           fg=self.color_fg_dark).create_label(text="Maximum", relief=tk.RAISED)
-        SE(parent=self.parent, row_id=2, column_id=6, n_rows=2, bg=self.color_bg,
-           fg=self.color_fg_dark).create_label(text="Mean", relief=tk.RAISED)
-        SE(parent=self.parent, row_id=2, column_id=7, n_rows=2, bg=self.color_bg,
-           fg=self.color_fg_dark).create_label(text="Standard\n Deviation", relief=tk.RAISED)
+        # SE(parent=self.parent, row_id=2, column_id=3, n_rows=2, bg=self.color_bg,
+        #    fg=self.color_fg_dark).create_label(text="Parameter", relief=tk.RAISED)
+        # SE(parent=self.parent, row_id=2, column_id=4, n_rows=2, bg=self.color_bg,
+        #    fg=self.color_fg_dark).create_label(text="Minimum", relief=tk.RAISED)
+        # SE(parent=self.parent, row_id=2, column_id=5, n_rows=2, bg=self.color_bg,
+        #    fg=self.color_fg_dark).create_label(text="Maximum", relief=tk.RAISED)
+        # SE(parent=self.parent, row_id=2, column_id=6, n_rows=2, bg=self.color_bg,
+        #    fg=self.color_fg_dark).create_label(text="Mean", relief=tk.RAISED)
+        # SE(parent=self.parent, row_id=2, column_id=7, n_rows=2, bg=self.color_bg,
+        #    fg=self.color_fg_dark).create_label(text="Standard\n Deviation", relief=tk.RAISED)
         #
-        lbl_stat = SE(parent=self.parent, row_id=0, column_id=3, n_rows=2, n_columns=5, bg=self.color_bg,
-           fg=self.color_fg_dark).create_label(text="Statistics", relief=tk.RAISED)
-        lbl_plt = SE(parent=self.parent, row_id=0, column_id=9, n_rows=2, n_columns=9, bg=self.color_bg,
-           fg=self.color_fg_dark).create_label(text="Plots", relief=tk.RAISED)
-        #
-        self.gui_elements.extend([lbl_stat, lbl_plt])
+        # lbl_stat = SE(parent=self.parent, row_id=0, column_id=3, n_rows=2, n_columns=5, bg=self.color_bg,
+        #    fg=self.color_fg_dark).create_label(text="Statistics", relief=tk.RAISED)
+        # lbl_plt = SE(parent=self.parent, row_id=0, column_id=9, n_rows=2, n_columns=9, bg=self.color_bg,
+        #    fg=self.color_fg_dark).create_label(text="Plots", relief=tk.RAISED)
+        # #
+        # self.gui_elements.extend([lbl_stat, lbl_plt])
         #
         self.change_rb_main(first_start=True)
         #
@@ -197,6 +201,11 @@ class GebPyGUI(tk.Frame):
                                 else:
                                     gui_item.get_tk_widget().grid_remove()
                 #
+                try:
+                    self.leg.remove()
+                except:
+                    pass
+                #
                 ## RECONSTRUCTION
                 for sub_category in self.sub_categories_gui:
                     for gui_item in self.container_gui["MINERALOGY"][sub_category]:
@@ -216,6 +225,11 @@ class GebPyGUI(tk.Frame):
                                     gui_item.grid_remove()
                                 else:
                                     gui_item.get_tk_widget().grid_remove()
+                #
+                try:
+                    self.leg.remove()
+                except:
+                    pass
                 #
                 ## RECONSTRUCTION
                 for sub_category in self.sub_categories_gui:
@@ -262,6 +276,11 @@ class GebPyGUI(tk.Frame):
                                 else:
                                     gui_item.get_tk_widget().grid_remove()
                 #
+                try:
+                    self.leg.remove()
+                except:
+                    pass
+                #
                 ## RECONSTRUCTION
                 for sub_category in self.sub_categories_gui:
                     for gui_item in self.container_gui["STRATIGRAPHY"][sub_category]:
@@ -295,6 +314,9 @@ class GebPyGUI(tk.Frame):
                     #
         else:
             ## MINERALOGY
+            #
+            self.container_var["MINERALOGY"]["OPTION MENU"]["GEOCHEM"] = tk.StringVar()
+            #
             lb_01 = SE(parent=self.parent, row_id=6, column_id=0, n_rows=2, n_columns=2, bg=self.color_accent_01,
                        fg=self.color_fg_dark).create_label(text="Mineralogy", relief=tk.RAISED)
             #
@@ -332,30 +354,66 @@ class GebPyGUI(tk.Frame):
     def change_rb_comparison_plot(self, dataset):
         n_plot_histo = len(self.container_gui["MINERALOGY"]["CANVAS_HISTO"])
         n_plot_scatter = len(self.container_gui["MINERALOGY"]["CANVAS_SCATTER"])
+        n_plot_geochem = len(self.container_gui["MINERALOGY"]["CANVAS_GEOCHEM"])
         #
         if self.var_rb_mineralogy_plot.get() == 0:      # Histogram
-            if n_plot_histo == 0 and n_plot_scatter == 0:
+            if (n_plot_histo + n_plot_scatter + n_plot_geochem) == 0:
                 self.plot_histogram_comparison(dataset=dataset)
-            elif n_plot_histo > 0 and n_plot_scatter == 0:
+            elif n_plot_histo > 0 and (n_plot_scatter + n_plot_geochem) == 0:
                 self.container_gui["MINERALOGY"]["CANVAS_HISTO"][-1].get_tk_widget().grid()
-            elif n_plot_histo > 0 and n_plot_scatter > 0:
+            elif n_plot_histo > 0 and n_plot_scatter > 0 and n_plot_geochem == 0:
                 self.container_gui["MINERALOGY"]["CANVAS_SCATTER"][-1].get_tk_widget().grid_remove()
                 self.container_gui["MINERALOGY"]["CANVAS_HISTO"][-1].get_tk_widget().grid()
-            elif n_plot_histo == 0 and n_plot_scatter > 0:
+            elif n_plot_histo > 0 and n_plot_scatter == 0 and n_plot_geochem > 0:
+                self.container_gui["MINERALOGY"]["CANVAS_GEOCHEM"][-1].get_tk_widget().grid_remove()
+                self.container_gui["MINERALOGY"]["CANVAS_HISTO"][-1].get_tk_widget().grid()
+            elif n_plot_histo > 0 and n_plot_scatter > 0 and n_plot_geochem > 0:
                 self.container_gui["MINERALOGY"]["CANVAS_SCATTER"][-1].get_tk_widget().grid_remove()
+                self.container_gui["MINERALOGY"]["CANVAS_GEOCHEM"][-1].get_tk_widget().grid_remove()
+                self.container_gui["MINERALOGY"]["CANVAS_HISTO"][-1].get_tk_widget().grid()
+            elif n_plot_histo == 0 and (n_plot_scatter + n_plot_geochem) > 0:
+                try:
+                    self.container_gui["MINERALOGY"]["CANVAS_SCATTER"][-1].get_tk_widget().grid_remove()
+                except:
+                    self.container_gui["MINERALOGY"]["CANVAS_GEOCHEM"][-1].get_tk_widget().grid_remove()
                 self.plot_histogram_comparison(dataset=dataset)
         #
         elif self.var_rb_mineralogy_plot.get() == 1:    # Scatter
-            if n_plot_histo == 0 and n_plot_scatter == 0:
+            if (n_plot_histo + n_plot_scatter + n_plot_geochem) == 0:
                 self.plot_scatter_comparison(dataset=dataset)
-            elif n_plot_histo > 0 and n_plot_scatter == 0:
-                self.container_gui["MINERALOGY"]["CANVAS_HISTO"][-1].get_tk_widget().grid_remove()
-                self.plot_scatter_comparison(dataset=dataset)
-            elif n_plot_histo > 0 and n_plot_scatter > 0:
+            elif n_plot_scatter > 0 and (n_plot_histo + n_plot_geochem) == 0:
+                self.container_gui["MINERALOGY"]["CANVAS_SCATTER"][-1].get_tk_widget().grid()
+            elif n_plot_scatter > 0 and n_plot_histo > 0 and n_plot_geochem == 0:
                 self.container_gui["MINERALOGY"]["CANVAS_HISTO"][-1].get_tk_widget().grid_remove()
                 self.container_gui["MINERALOGY"]["CANVAS_SCATTER"][-1].get_tk_widget().grid()
-            elif n_plot_histo == 0 and n_plot_scatter > 0:
+            elif n_plot_scatter > 0 and n_plot_histo > 0 and n_plot_geochem > 0:
+                self.container_gui["MINERALOGY"]["CANVAS_HISTO"][-1].get_tk_widget().grid_remove()
+                self.container_gui["MINERALOGY"]["CANVAS_GEOCHEM"][-1].get_tk_widget().grid_remove()
                 self.container_gui["MINERALOGY"]["CANVAS_SCATTER"][-1].get_tk_widget().grid()
+            elif n_plot_scatter == 0 and (n_plot_histo + n_plot_geochem) > 0:
+                try:
+                    self.container_gui["MINERALOGY"]["CANVAS_HISTO"][-1].get_tk_widget().grid_remove()
+                except:
+                    self.container_gui["MINERALOGY"]["CANVAS_GEOCHEM"][-1].get_tk_widget().grid_remove()
+                self.plot_scatter_comparison(dataset=dataset)
+        #
+        elif self.var_rb_mineralogy_plot.get() == 2:  # Geochemistry
+            if (n_plot_histo + n_plot_scatter + n_plot_geochem) == 0:
+                self.plot_geochem_comparison()
+            elif n_plot_geochem == 0 and n_plot_histo > 0 and n_plot_scatter == 0:
+                self.container_gui["MINERALOGY"]["CANVAS_HISTO"][-1].get_tk_widget().grid_remove()
+                self.plot_geochem_comparison()
+            elif n_plot_geochem == 0 and n_plot_histo > 0 and n_plot_scatter > 0:
+                self.container_gui["MINERALOGY"]["CANVAS_HISTO"][-1].get_tk_widget().grid_remove()
+                self.container_gui["MINERALOGY"]["CANVAS_SCATTER"][-1].get_tk_widget().grid_remove()
+                self.plot_geochem_comparison()
+            elif n_plot_geochem > 0 and n_plot_histo > 0 and n_plot_scatter > 0:
+                self.container_gui["MINERALOGY"]["CANVAS_HISTO"][-1].get_tk_widget().grid_remove()
+                self.container_gui["MINERALOGY"]["CANVAS_SCATTER"][-1].get_tk_widget().grid_remove()
+                self.container_gui["MINERALOGY"]["CANVAS_GEOCHEM"][-1].get_tk_widget().grid()
+    #
+    def change_opt_comparison_geochem(self, event):
+        self.plot_geochem_comparison()
     #
     def change_rb_comparison_key(self, dataset):
         dataset_keys = list(dataset.keys())
@@ -364,8 +422,18 @@ class GebPyGUI(tk.Frame):
             parent=self.parent, row_id=0, column_id=3, n_rows=2, n_columns=5, bg=self.color_bg,
             fg=self.color_fg_dark).create_label(
             text="Statistics - "+str(dataset_keys[self.var_rb_mineralogy_mineral.get()]), relief=tk.RAISED)
+        lb_param = SE(parent=self.parent, row_id=2, column_id=3, n_rows=2, bg=self.color_bg,
+           fg=self.color_fg_dark).create_label(text="Parameter", relief=tk.RAISED)
+        lb_min = SE(parent=self.parent, row_id=2, column_id=4, n_rows=2, bg=self.color_bg,
+           fg=self.color_fg_dark).create_label(text="Minimum", relief=tk.RAISED)
+        lb_max = SE(parent=self.parent, row_id=2, column_id=5, n_rows=2, bg=self.color_bg,
+           fg=self.color_fg_dark).create_label(text="Maximum", relief=tk.RAISED)
+        lb_mean = SE(parent=self.parent, row_id=2, column_id=6, n_rows=2, bg=self.color_bg,
+           fg=self.color_fg_dark).create_label(text="Mean", relief=tk.RAISED)
+        lb_std = SE(parent=self.parent, row_id=2, column_id=7, n_rows=2, bg=self.color_bg,
+           fg=self.color_fg_dark).create_label(text="Standard\n Deviation", relief=tk.RAISED)
         #
-        self.container_gui["MINERALOGY"]["LABEL"].append(lbl_stat)
+        self.container_gui["MINERALOGY"]["LABEL"].extend([lbl_stat, lb_param, lb_min, lb_max, lb_mean, lb_std])
         #
         self.fill_table_comparison(dataset=dataset[dataset_keys[self.var_rb_mineralogy_mineral.get()]])
     #
@@ -381,20 +449,43 @@ class GebPyGUI(tk.Frame):
                      color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
                      entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
         #
-        elif var_opt in ["Spinel Minerals"]:
+        elif var_opt in ["Spinel Group", "Hematite Group"]:
             #
-            data_minerals = Mineralogy(keyword=var_opt).compare_minerals(number=100)
+            ## CLEANING
+            try:
+                list_canvas = ["CANVAS_HISTO", "CANVAS_SCATTER", "CANVAS_GEOCHEM"]
+                for canvas in list_canvas:
+                    if len(self.container_gui["MINERALOGY"][canvas]) > 0:
+                        for canvas_item in self.container_gui["MINERALOGY"][canvas]:
+                            canvas_item.get_tk_widget().grid_remove()
+                        self.container_gui["MINERALOGY"][canvas].clear()
+            except:
+                pass
+            #
+            self.data_minerals = Mineralogy(keyword=var_opt).compare_minerals(number=100)
             #
             index = 0
-            for key, value in data_minerals.items():
+            for key, value in self.data_minerals.items():
                 rb_key = SE(
                     parent=self.parent, row_id=15 + index, column_id=0, n_rows=1, n_columns=1, bg=self.color_menu,
                     fg=self.color_bg).create_radiobutton(
                     var_rb=self.var_rb_mineralogy_mineral, var_rb_set=0, value_rb=index, text=key,
-                    color_bg=self.color_menu, command=lambda dataset=data_minerals: self.change_rb_comparison_key(dataset))
+                    color_bg=self.color_menu, command=lambda dataset=self.data_minerals: self.change_rb_comparison_key(dataset))
                 #
                 if index == 0:
                     start_key = key
+                    self.list_elements_geochem = list(value["chemistry"].keys())
+                    self.container_var["MINERALOGY"]["OPTION MENU"]["GEOCHEM"].set(self.list_elements_geochem[0])
+                    #
+                    opt_geochem = SE(
+                        parent=self.parent, row_id=19, column_id=1, n_rows=1, n_columns=1, bg=self.color_bg,
+                        fg="black").create_option_menu(
+                        var_opt=self.container_var["MINERALOGY"]["OPTION MENU"]["GEOCHEM"],
+                        var_opt_set=self.container_var["MINERALOGY"]["OPTION MENU"]["GEOCHEM"].get(),
+                        opt_list=self.list_elements_geochem,
+                        active_bg=self.color_bg, command=lambda event: self.change_opt_comparison_geochem(event))
+                    #
+                    self.container_gui["MINERALOGY"]["OPTION MENU"].append(opt_geochem)
                 #
                 self.container_gui["MINERALOGY"]["RADIOBUTTON"].append(rb_key)
                 #
@@ -407,7 +498,7 @@ class GebPyGUI(tk.Frame):
                     fg=self.color_bg).create_radiobutton(
                     var_rb=self.var_rb_mineralogy_plot, var_rb_set=0, value_rb=index, text=plot_category,
                     color_bg=self.color_menu,
-                    command=lambda dataset=data_minerals: self.change_rb_comparison_plot(dataset))
+                    command=lambda dataset=self.data_minerals: self.change_rb_comparison_plot(dataset))
                 #
                 self.container_gui["MINERALOGY"]["RADIOBUTTON"].append(rb_plot)
                 #
@@ -446,15 +537,25 @@ class GebPyGUI(tk.Frame):
                 self.container_gui["MINERALOGY"]["ENTRY"].extend([entr_min, entr_max, entr_mean, entr_std])
                 #
             #
-            self.plot_histogram_comparison(dataset=data_minerals)
-            self.fill_table_comparison(dataset=data_minerals[start_key])
+            self.plot_histogram_comparison(dataset=self.data_minerals)
+            self.fill_table_comparison(dataset=self.data_minerals[start_key])
             #
             lbl_stat = SE(
                 parent=self.parent, row_id=0, column_id=3, n_rows=2, n_columns=5, bg=self.color_bg,
                 fg=self.color_fg_dark).create_label(
                 text="Statistics - " + str(start_key), relief=tk.RAISED)
+            lb_param = SE(parent=self.parent, row_id=2, column_id=3, n_rows=2, bg=self.color_bg,
+                          fg=self.color_fg_dark).create_label(text="Parameter", relief=tk.RAISED)
+            lb_min = SE(parent=self.parent, row_id=2, column_id=4, n_rows=2, bg=self.color_bg,
+                        fg=self.color_fg_dark).create_label(text="Minimum", relief=tk.RAISED)
+            lb_max = SE(parent=self.parent, row_id=2, column_id=5, n_rows=2, bg=self.color_bg,
+                        fg=self.color_fg_dark).create_label(text="Maximum", relief=tk.RAISED)
+            lb_mean = SE(parent=self.parent, row_id=2, column_id=6, n_rows=2, bg=self.color_bg,
+                         fg=self.color_fg_dark).create_label(text="Mean", relief=tk.RAISED)
+            lb_std = SE(parent=self.parent, row_id=2, column_id=7, n_rows=2, bg=self.color_bg,
+                        fg=self.color_fg_dark).create_label(text="Standard\n Deviation", relief=tk.RAISED)
             #
-            self.container_gui["MINERALOGY"]["LABEL"].append(lbl_stat)
+            self.container_gui["MINERALOGY"]["LABEL"].extend([lbl_stat, lb_param, lb_min, lb_max, lb_mean, lb_std])
             #
         #
         ## SULFIDES
@@ -657,7 +758,7 @@ class GebPyGUI(tk.Frame):
                             "Trevorite", "Franklinite", "Ulvöspinel", "Uraninite", "Litharge", "Massicot", "Minium",
                             "Plattnerite", "Scrutinyite", "Zincite", "Columbite", "Tantalite", "Coltan"]
             opt_list_0_1.sort()
-            opt_oxide_comparison = ["Spinel Minerals", "Ore Minerals"]
+            opt_oxide_comparison = ["Spinel Group", "Hematite Group"]
             opt_oxide_comparison.sort()
             #
             self.opt_oxide = SE(parent=self.parent, row_id=10, column_id=0, n_rows=2, n_columns=2,
@@ -1229,8 +1330,8 @@ class GebPyGUI(tk.Frame):
         #
         self.fig_histo.suptitle("\n")
         handles, labels = ax_histo[2][2].get_legend_handles_labels()
-        leg = self.fig_histo.legend(handles, labels, loc='upper center', ncol=3)
-        leg.set_in_layout(False)
+        self.leg = self.fig_histo.legend(handles, labels, loc='upper center', ncol=3)
+        self.leg.set_in_layout(False)
         self.fig_histo.tight_layout()
         #
         canvas_histo = FigureCanvasTkAgg(self.fig_histo, master=self.parent)
@@ -1260,15 +1361,53 @@ class GebPyGUI(tk.Frame):
         #
         self.fig_scatter.suptitle("\n")
         handles, labels = ax_scatter[2][2].get_legend_handles_labels()
-        leg = self.fig_scatter.legend(handles, labels, loc='upper center', ncol=3)
-        leg.set_in_layout(False)
+        self.leg = self.fig_scatter.legend(handles, labels, loc='upper center', ncol=3)
+        self.leg.set_in_layout(False)
         self.fig_scatter.tight_layout()
         #
         canvas_histo = FigureCanvasTkAgg(self.fig_scatter, master=self.parent)
         canvas_histo.get_tk_widget().grid(row=0, column=9, rowspan=47, columnspan=9, sticky="nesw")
         #
         self.container_gui["MINERALOGY"]["CANVAS_SCATTER"].append(canvas_histo)
+    #
+    def plot_geochem_comparison(self):
+        labels = [["Density - kg/m$^3$", "Gamma Ray - API", "Photoelectricity - barns/e$^-$"],
+                  ["vP - m/s", "vS - m/s", "vP/vS - 1"], ["K - GPa", "G - GPa", "Poisson - 1"]]
+        labels_key = [["rho", "GR", "PE"], ["vP", "vS", "vP/vS"], ["K", "G", "nu"]]
         #
+        sns.set_theme(style="darkgrid")
+        fig_geochem, ax_scatter = plt.subplots(ncols=3, nrows=3, figsize=(11, 11), facecolor="#E9ECED")
+        #
+        for key, dataset_key in self.data_minerals.items():
+            for i in range(3):
+                for j in range(3):
+                    scatter_set = sns.scatterplot(
+                        x=dataset_key["chemistry"][self.container_var["MINERALOGY"]["OPTION MENU"]["GEOCHEM"].get()],
+                        y=dataset_key[labels_key[i][j]], ax=ax_scatter[i][j],
+                        color=dataset_key["color"], label=key, legend=False)
+                    #
+                    ax_scatter[i][j].set_xlabel(
+                        "w("+str(self.container_var["MINERALOGY"]["OPTION MENU"]["GEOCHEM"].get())+")", fontsize=9)
+                    ax_scatter[i][j].set_ylabel(labels[i][j], labelpad=0.5, fontsize=9)
+                    ax_scatter[i][j].grid(True)
+                    ax_scatter[i][j].set_axisbelow(True)
+        #
+        fig_geochem.suptitle("\n")
+        handles, labels = ax_scatter[2][2].get_legend_handles_labels()
+        self.leg = fig_geochem.legend(handles, labels, loc='upper center', ncol=3)
+        self.leg.set_in_layout(False)
+        fig_geochem.tight_layout()
+        #
+        canvas_geochem = FigureCanvasTkAgg(fig_geochem, master=self.parent)
+        canvas_geochem.get_tk_widget().grid(row=0, column=9, rowspan=47, columnspan=9, sticky="nesw")
+        #
+        try:
+            for canvas_item in self.container_gui["MINERALOGY"]["CANVAS_GEOCHEM"]:
+                canvas_item.get_tk_widget().grid_remove()
+        except:
+            pass
+        self.container_gui["MINERALOGY"]["CANVAS_GEOCHEM"].clear()
+        self.container_gui["MINERALOGY"]["CANVAS_GEOCHEM"].append(canvas_geochem)
     #
     def fill_table_comparison(self, dataset):
         labels = ["M", "V", "rho", "vP", "vS", "vP/vS", "K", "G", "E", "nu", "GR", "PE"]
