@@ -748,6 +748,326 @@ class Oxides():
             #
             return results
     #
+    def create_tistarite(self):   # Ti2O3
+        #
+        name = "Tta"
+        #
+        # Major elements
+        oxygen = PeriodicSystem(name="O").get_data()
+        titanium = PeriodicSystem(name="Ti").get_data()
+        majors_name = ["O", "Ti"]
+        majors_data = np.array([["O", oxygen[1], 3, oxygen[2]], ["Ti", titanium[1], 2, titanium[2]]], dtype=object)
+        # Minor elements
+        traces_data = []
+        if len(self.traces_list) > 0:
+            self.impurity = "impure"
+        if self.impurity == "pure":
+            var_state = "fixed"
+        else:
+            var_state = "variable"
+            if self.impurity == "random":
+                self.traces_list = []
+                minors = [None]
+                n = rd.randint(1, len(minors))
+                while len(self.traces_list) < n:
+                    selection = rd.choice(minors)
+                    if selection not in self.traces_list and selection not in majors_name:
+                        self.traces_list.append(selection)
+                    else:
+                        continue
+        traces = [PeriodicSystem(name=i).get_data() for i in self.traces_list]
+        x_traces = [round(rd.uniform(0., 0.001), 6) for i in range(len(self.traces_list))]
+        for i in range(len(self.traces_list)):
+            traces_data.append([str(self.traces_list[i]), int(traces[i][1]), float(x_traces[i])])
+        if len(traces_data) > 0:
+            traces_data = np.array(traces_data, dtype=object)
+            traces_data = traces_data[traces_data[:, 1].argsort()]
+        #
+        # Molar mass
+        molar_mass_pure = 2*titanium[2] + 3*oxygen[2]
+        molar_mass, amounts = MineralChemistry(w_traces=traces_data, molar_mass_pure=molar_mass_pure,
+                                      majors=majors_data).calculate_molar_mass()
+        element = [PeriodicSystem(name=amounts[i][0]).get_data() for i in range(len(amounts))]
+        # Density
+        dataV = CrystalPhysics([[5.158, 13.611], [], "trigonal"])
+        V = dataV.calculate_volume()
+        Z = 4
+        V_m = MineralChemistry().calculate_molar_volume(volume_cell=V, z=Z)
+        dataRho = CrystalPhysics([molar_mass, Z, V])
+        rho = dataRho.calculate_bulk_density()
+        rho_e = wg(amounts=amounts, elements=element, rho_b=rho).calculate_electron_density()
+        # Bulk modulus
+        K = 216*10**9
+        # Shear modulus
+        G = 87*10**9
+        # Young's modulus
+        E = (9*K*G)/(3*K + G)
+        # Poisson's ratio
+        nu = (3*K - 2*G)/(2*(3*K + G))
+        # vP/vS
+        vPvS = ((K + 4/3*G)/G)**0.5
+        # P-wave velocity
+        vP = ((K + 4/3*G)/rho)**0.5
+        # S-wave velocity
+        vS = (G/rho)**0.5
+        # Gamma ray
+        gamma_ray = wg(amounts=amounts, elements=element).calculate_gr()
+        # Photoelectricity
+        pe = wg(amounts=amounts, elements=element).calculate_pe()
+        U = pe*rho_e*10**(-3)
+        # Electrical resistivity
+        p = None
+        #
+        ## RESULTS
+        results = {}
+        results["mineral"] = name
+        results["state"] = var_state
+        results["M"] = molar_mass
+        results["rho"] = round(rho, 4)
+        results["rho_e"] = round(rho_e, 4)
+        results["V"] = round(V_m, 4)
+        results["vP"] = round(vP, 4)
+        results["vS"] = round(vS, 4)
+        results["vP/vS"] = round(vPvS, 4)
+        results["G"] = round(G*10**(-9), 4)
+        results["K"] = round(K*10**(-9), 4)
+        results["E"] = round(E*10**(-9), 4)
+        results["nu"] = round(nu, 4)
+        results["GR"] = round(gamma_ray, 4)
+        results["PE"] = round(pe, 4)
+        results["U"] = round(U, 4)
+        try:
+            results["p"] = round(p, 4)
+        except:
+            results["p"] = p
+        element_list = np.array(amounts)[:, 0]
+        results["chemistry"] = {}
+        for index, element in enumerate(element_list, start=0):
+            results["chemistry"][element] = amounts[index][2]
+        #
+        return results
+    #
+    def create_hematite_group(self):   # X2O3
+        #
+        name = "Hem-Group"
+        #
+        # Major elements
+        oxygen = PeriodicSystem(name="O").get_data()
+        aluminium = PeriodicSystem(name="Al").get_data()
+        titanium = PeriodicSystem(name="Ti").get_data()
+        vanadium = PeriodicSystem(name="V").get_data()
+        chromium = PeriodicSystem(name="Cr").get_data()
+        iron = PeriodicSystem(name="Fe").get_data()
+        #
+        propabilities = list(np.around(np.random.dirichlet(np.ones(5), size=1)[0], 4))
+        for index, value in enumerate(propabilities):
+            if index == 0:
+                v = value
+            elif index == 1:
+                w = value
+            elif index == 2:
+                x = value
+            elif index == 3:
+                y = value
+            elif index == 4:
+                z = value
+        majors_name = ["O", "Al", "Ti", "V", "Cr", "Fe"]
+        majors_data = np.array(
+            [["O", oxygen[1], 3, oxygen[2]], ["Al", aluminium[1], 2*v, aluminium[2]],
+             ["Ti", titanium[1], 2*w, titanium[2]], ["V", vanadium[1], 2*x, vanadium[2]],
+             ["Cr", chromium[1], 2*y, chromium[2]], ["Fe", iron[1], 2*z, iron[2]]], dtype=object)
+        majors_data_al = np.array(
+            [["O", oxygen[1], 3, oxygen[2]], ["Al", aluminium[1], 2, aluminium[2]],
+             ["Ti", titanium[1], 0, titanium[2]], ["V", vanadium[1], 0, vanadium[2]],
+             ["Cr", chromium[1], 0, chromium[2]], ["Fe", iron[1], 0, iron[2]]], dtype=object)
+        majors_data_ti = np.array(
+            [["O", oxygen[1], 3, oxygen[2]], ["Al", aluminium[1], 0, aluminium[2]],
+             ["Ti", titanium[1], 2, titanium[2]], ["V", vanadium[1], 0, vanadium[2]],
+             ["Cr", chromium[1], 0, chromium[2]], ["Fe", iron[1], 0, iron[2]]], dtype=object)
+        majors_data_v = np.array(
+            [["O", oxygen[1], 3, oxygen[2]], ["Al", aluminium[1], 0, aluminium[2]],
+             ["Ti", titanium[1], 0, titanium[2]], ["V", vanadium[1], 2, vanadium[2]],
+             ["Cr", chromium[1], 0, chromium[2]], ["Fe", iron[1], 0, iron[2]]], dtype=object)
+        majors_data_cr = np.array(
+            [["O", oxygen[1], 3, oxygen[2]], ["Al", aluminium[1], 0, aluminium[2]],
+             ["Ti", titanium[1], 0, titanium[2]], ["V", vanadium[1], 0, vanadium[2]],
+             ["Cr", chromium[1], 2, chromium[2]], ["Fe", iron[1], 0, iron[2]]], dtype=object)
+        majors_data_fe = np.array(
+            [["O", oxygen[1], 3, oxygen[2]], ["Al", aluminium[1], 0, aluminium[2]],
+             ["Ti", titanium[1], 0, titanium[2]], ["V", vanadium[1], 0, vanadium[2]],
+             ["Cr", chromium[1], 0, chromium[2]], ["Fe", iron[1], 2, iron[2]]], dtype=object)
+        #
+        # Minor elements
+        traces_data = []
+        if len(self.traces_list) > 0:
+            self.impurity = "impure"
+        if self.impurity == "pure":
+            var_state = "fixed"
+        else:
+            var_state = "variable"
+            if self.impurity == "random":
+                self.traces_list = []
+                minors = [None]
+                n = rd.randint(1, len(minors))
+                while len(self.traces_list) < n:
+                    selection = rd.choice(minors)
+                    if selection not in self.traces_list and selection not in majors_name:
+                        self.traces_list.append(selection)
+                    else:
+                        continue
+        traces = [PeriodicSystem(name=i).get_data() for i in self.traces_list]
+        x_traces = [round(rd.uniform(0., 0.001), 6) for i in range(len(self.traces_list))]
+        for i in range(len(self.traces_list)):
+            traces_data.append([str(self.traces_list[i]), int(traces[i][1]), float(x_traces[i])])
+        if len(traces_data) > 0:
+            traces_data = np.array(traces_data, dtype=object)
+            traces_data = traces_data[traces_data[:, 1].argsort()]
+        #
+        # Molar mass
+        molar_mass_pure = 2*(v*aluminium[2] + w*titanium[2] + x*vanadium[2] + y*chromium[2] + z*iron[2]) + 3*oxygen[2]
+        molar_mass, amounts = MineralChemistry(
+            w_traces=traces_data, molar_mass_pure=molar_mass_pure, majors=majors_data).calculate_molar_mass()
+        element = [PeriodicSystem(name=amounts[i][0]).get_data() for i in range(len(amounts))]
+        #
+        molar_mass_pure_al = 2*aluminium[2] + 3*oxygen[2]
+        molar_mass_al, amounts_al = MineralChemistry(
+            w_traces=traces_data, molar_mass_pure=molar_mass_pure_al, majors=majors_data_al).calculate_molar_mass()
+        element_al = [PeriodicSystem(name=amounts_al[i][0]).get_data() for i in range(len(amounts_al))]
+        #
+        molar_mass_pure_ti = 2*titanium[2] + 3*oxygen[2]
+        molar_mass_ti, amounts_ti = MineralChemistry(
+            w_traces=traces_data, molar_mass_pure=molar_mass_pure_ti, majors=majors_data_ti).calculate_molar_mass()
+        element_ti = [PeriodicSystem(name=amounts_ti[i][0]).get_data() for i in range(len(amounts_ti))]
+        #
+        molar_mass_pure_v = 2*vanadium[2] + 3*oxygen[2]
+        molar_mass_v, amounts_v = MineralChemistry(
+            w_traces=traces_data, molar_mass_pure=molar_mass_pure_v, majors=majors_data_v).calculate_molar_mass()
+        element_v = [PeriodicSystem(name=amounts_v[i][0]).get_data() for i in range(len(amounts_v))]
+        #
+        molar_mass_pure_cr = 2*chromium[2] + 3*oxygen[2]
+        molar_mass_cr, amounts_cr = MineralChemistry(
+            w_traces=traces_data, molar_mass_pure=molar_mass_pure_cr, majors=majors_data_cr).calculate_molar_mass()
+        element_cr = [PeriodicSystem(name=amounts_cr[i][0]).get_data() for i in range(len(amounts_cr))]
+        #
+        molar_mass_pure_fe = 2*iron[2] + 3*oxygen[2]
+        molar_mass_fe, amounts_fe = MineralChemistry(
+            w_traces=traces_data, molar_mass_pure=molar_mass_pure_fe, majors=majors_data_fe).calculate_molar_mass()
+        element_fe = [PeriodicSystem(name=amounts_fe[i][0]).get_data() for i in range(len(amounts_fe))]
+        #
+        # Density
+        dataV = CrystalPhysics([[5.158, 13.611], [], "trigonal"])
+        V = dataV.calculate_volume()
+        Z = 4
+        V_m = MineralChemistry().calculate_molar_volume(volume_cell=V, z=Z)
+        dataRho = CrystalPhysics([molar_mass, Z, V])
+        rho = dataRho.calculate_bulk_density()
+        rho_e = wg(amounts=amounts, elements=element, rho_b=rho).calculate_electron_density()
+        #
+        dataV_al = CrystalPhysics([[4.751, 12.97], [], "trigonal"])
+        V_al = dataV_al.calculate_volume()
+        Z_al = 6
+        V_m_al = MineralChemistry().calculate_molar_volume(volume_cell=V_al, z=Z_al)
+        dataRho_al = CrystalPhysics([molar_mass, Z_al, V_al])
+        rho_al = dataRho_al.calculate_bulk_density()
+        rho_e_al = wg(amounts=amounts_al, elements=element_al, rho_b=rho_al).calculate_electron_density()
+        #
+        dataV_ti = CrystalPhysics([[5.158, 13.611], [], "trigonal"])
+        V_ti = dataV_ti.calculate_volume()
+        Z_ti = 4
+        V_m_ti = MineralChemistry().calculate_molar_volume(volume_cell=V_ti, z=Z_ti)
+        dataRho_ti = CrystalPhysics([molar_mass, Z_ti, V_ti])
+        rho_ti = dataRho_ti.calculate_bulk_density()
+        rho_e_ti = wg(amounts=amounts_ti, elements=element_ti, rho_b=rho_ti).calculate_electron_density()
+        #
+        dataV_v = CrystalPhysics([[4.99, 13.98], [], "trigonal"])
+        V_v = dataV_v.calculate_volume()
+        Z_v = 6
+        V_m_v = MineralChemistry().calculate_molar_volume(volume_cell=V_v, z=Z_v)
+        dataRho_v = CrystalPhysics([molar_mass, Z_v, V_v])
+        rho_v = dataRho_v.calculate_bulk_density()
+        rho_e_v = wg(amounts=amounts_v, elements=element_v, rho_b=rho_v).calculate_electron_density()
+        #
+        dataV_cr = CrystalPhysics([[4.958, 13.6], [], "trigonal"])
+        V_cr = dataV_cr.calculate_volume()
+        Z_cr = 6
+        V_m_cr = MineralChemistry().calculate_molar_volume(volume_cell=V_cr, z=Z_cr)
+        dataRho_cr = CrystalPhysics([molar_mass, Z_cr, V_cr])
+        rho_cr = dataRho_cr.calculate_bulk_density()
+        rho_e_cr = wg(amounts=amounts_cr, elements=element_cr, rho_b=rho_cr).calculate_electron_density()
+        #
+        dataV_fe = CrystalPhysics([[5.0317, 13.737], [], "trigonal"])
+        V_fe = dataV_fe.calculate_volume()
+        Z_fe = 6
+        V_m_fe = MineralChemistry().calculate_molar_volume(volume_cell=V_fe, z=Z_fe)
+        dataRho_fe = CrystalPhysics([molar_mass, Z_fe, V_fe])
+        rho_fe = dataRho_fe.calculate_bulk_density()
+        rho_e_fe = wg(amounts=amounts_fe, elements=element_fe, rho_b=rho_fe).calculate_electron_density()
+        #
+        V_m = v*V_m_al + w*V_m_ti + x*V_m_v + y*V_m_cr + z*V_m_fe
+        rho = v*rho_al + w*rho_ti + x*rho_v + y*rho_cr + z*rho_fe
+        rho_e = v*rho_e_al + w*rho_e_ti + x*rho_e_v + y*rho_e_cr + z*rho_e_fe
+        #
+        # Bulk modulus
+        K_al = 232*10**9
+        K_ti = 216*10**9
+        K_v = 202*10**9
+        K_cr = 203*10**9
+        K_fe = 143.58*10**9
+        K = v*K_al + w*K_ti + x*K_v + y*K_cr + z*K_fe
+        # Shear modulus
+        G_al = 147*10**9
+        G_ti = 87*10**9
+        G_v = 80*10**9
+        G_cr = 113*10**9
+        G_fe = 53.43*10**9
+        G = v*G_al + w*G_ti + x*G_v + y*G_cr + z*G_fe
+        # Young's modulus
+        E = (9*K*G)/(3*K + G)
+        # Poisson's ratio
+        nu = (3*K - 2*G)/(2*(3*K + G))
+        # vP/vS
+        vPvS = ((K + 4/3*G)/G)**0.5
+        # P-wave velocity
+        vP = ((K + 4/3*G)/rho)**0.5
+        # S-wave velocity
+        vS = (G/rho)**0.5
+        # Gamma ray
+        gamma_ray = wg(amounts=amounts, elements=element).calculate_gr()
+        # Photoelectricity
+        pe = wg(amounts=amounts, elements=element).calculate_pe()
+        U = pe*rho_e*10**(-3)
+        # Electrical resistivity
+        p = None
+        #
+        ## RESULTS
+        results = {}
+        results["mineral"] = name
+        results["state"] = var_state
+        results["M"] = molar_mass
+        results["rho"] = round(rho, 4)
+        results["rho_e"] = round(rho_e, 4)
+        results["V"] = round(V_m, 4)
+        results["vP"] = round(vP, 4)
+        results["vS"] = round(vS, 4)
+        results["vP/vS"] = round(vPvS, 4)
+        results["G"] = round(G*10**(-9), 4)
+        results["K"] = round(K*10**(-9), 4)
+        results["E"] = round(E*10**(-9), 4)
+        results["nu"] = round(nu, 4)
+        results["GR"] = round(gamma_ray, 4)
+        results["PE"] = round(pe, 4)
+        results["U"] = round(U, 4)
+        try:
+            results["p"] = round(p, 4)
+        except:
+            results["p"] = p
+        element_list = np.array(amounts)[:, 0]
+        results["chemistry"] = {}
+        for index, element in enumerate(element_list, start=0):
+            results["chemistry"][element] = amounts[index][2]
+        #
+        return results
+    #
     def create_wustite(self):   # FeO
         # Major elements
         oxygen = PeriodicSystem(name="O").get_data()
@@ -2267,16 +2587,20 @@ class Oxides():
         traces_data = []
         if len(self.traces_list) > 0:
             self.impurity = "impure"
-        if self.impurity == "random":
-            self.traces_list = []
-            minors = ["V"]
-            n = rd.randint(1, len(minors))
-            while len(self.traces_list) < n:
-                selection = rd.choice(minors)
-                if selection not in self.traces_list and selection not in majors_name:
-                    self.traces_list.append(selection)
-                else:
-                    continue
+        if self.impurity == "pure":
+            var_state = "fixed"
+        else:
+            var_state = "variable"
+            if self.impurity == "random":
+                self.traces_list = []
+                minors = ["V"]
+                n = rd.randint(1, len(minors))
+                while len(self.traces_list) < n:
+                    selection = rd.choice(minors)
+                    if selection not in self.traces_list and selection not in majors_name:
+                        self.traces_list.append(selection)
+                    else:
+                        continue
         traces = [PeriodicSystem(name=i).get_data() for i in self.traces_list]
         x_traces = [round(rd.uniform(0., 0.001), 6) for i in range(len(self.traces_list))]
         for i in range(len(self.traces_list)):
@@ -2284,8 +2608,6 @@ class Oxides():
         if len(traces_data) > 0:
             traces_data = np.array(traces_data, dtype=object)
             traces_data = traces_data[traces_data[:, 1].argsort()]
-        #
-        data = []
         #
         mineral = "Esk"
         #
@@ -2323,16 +2645,34 @@ class Oxides():
         U = pe*rho_e*10**(-3)
         # Electrical resistivity
         p = None
+        ## RESULTS
+        results = {}
+        results["mineral"] = mineral
+        results["state"] = var_state
+        results["M"] = molar_mass
+        results["rho"] = round(rho, 4)
+        results["rho_e"] = round(rho_e, 4)
+        results["V"] = round(V_m, 4)
+        results["vP"] = round(vP, 4)
+        results["vS"] = round(vS, 4)
+        results["vP/vS"] = round(vPvS, 4)
+        results["G"] = round(G*10**(-9), 4)
+        results["K"] = round(K*10**(-9), 4)
+        results["E"] = round(E*10**(-9), 4)
+        results["nu"] = round(nu, 4)
+        results["GR"] = round(gamma_ray, 4)
+        results["PE"] = round(pe, 4)
+        results["U"] = round(U, 4)
+        try:
+            results["p"] = round(p, 4)
+        except:
+            results["p"] = p
+        element_list = np.array(amounts)[:, 0]
+        results["chemistry"] = {}
+        for index, element in enumerate(element_list, start=0):
+            results["chemistry"][element] = amounts[index][2]
         #
-        data.append(mineral)
-        data.append(round(molar_mass, 2))
-        data.append(round(rho, 1))
-        data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 2), round(vPvS, 2)])
-        data.append([round(vP, 1), round(vS, 1)])
-        data.append([round(gamma_ray, 2), round(pe, 2), round(U, 2), p])
-        data.append(amounts)
-        #
-        return data
+        return results
     #
     def create_karelianite(self):  # V2O3
         # Major elements
@@ -2344,16 +2684,20 @@ class Oxides():
         traces_data = []
         if len(self.traces_list) > 0:
             self.impurity = "impure"
-        if self.impurity == "random":
-            self.traces_list = []
-            minors = ["Fe", "Cr"]
-            n = rd.randint(1, len(minors))
-            while len(self.traces_list) < n:
-                selection = rd.choice(minors)
-                if selection not in self.traces_list and selection not in majors_name:
-                    self.traces_list.append(selection)
-                else:
-                    continue
+        if self.impurity == "pure":
+            var_state = "fixed"
+        else:
+            var_state = "variable"
+            if self.impurity == "random":
+                self.traces_list = []
+                minors = ["Fe", "Cr"]
+                n = rd.randint(1, len(minors))
+                while len(self.traces_list) < n:
+                    selection = rd.choice(minors)
+                    if selection not in self.traces_list and selection not in majors_name:
+                        self.traces_list.append(selection)
+                    else:
+                        continue
         traces = [PeriodicSystem(name=i).get_data() for i in self.traces_list]
         x_traces = [round(rd.uniform(0., 0.001), 6) for i in range(len(self.traces_list))]
         for i in range(len(self.traces_list)):
@@ -2400,16 +2744,34 @@ class Oxides():
         U = pe*rho_e*10**(-3)
         # Electrical resistivity
         p = None
+        ## RESULTS
+        results = {}
+        results["mineral"] = mineral
+        results["state"] = var_state
+        results["M"] = molar_mass
+        results["rho"] = round(rho, 4)
+        results["rho_e"] = round(rho_e, 4)
+        results["V"] = round(V_m, 4)
+        results["vP"] = round(vP, 4)
+        results["vS"] = round(vS, 4)
+        results["vP/vS"] = round(vPvS, 4)
+        results["G"] = round(G*10**(-9), 4)
+        results["K"] = round(K*10**(-9), 4)
+        results["E"] = round(E*10**(-9), 4)
+        results["nu"] = round(nu, 4)
+        results["GR"] = round(gamma_ray, 4)
+        results["PE"] = round(pe, 4)
+        results["U"] = round(U, 4)
+        try:
+            results["p"] = round(p, 4)
+        except:
+            results["p"] = p
+        element_list = np.array(amounts)[:, 0]
+        results["chemistry"] = {}
+        for index, element in enumerate(element_list, start=0):
+            results["chemistry"][element] = amounts[index][2]
         #
-        data.append(mineral)
-        data.append(round(molar_mass, 2))
-        data.append(round(rho, 1))
-        data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 2), round(vPvS, 2)])
-        data.append([round(vP, 1), round(vS, 1)])
-        data.append([round(gamma_ray, 2), round(pe, 2), round(U, 2), p])
-        data.append(amounts)
-        #
-        return data
+        return results
     #
     def create_claudetite(self):  # As2O3
         # Major elements

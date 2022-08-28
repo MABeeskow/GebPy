@@ -158,25 +158,6 @@ class GebPyGUI(tk.Frame):
             var_rb=self.var_rb_main, var_rb_set=0, value_rb=2, text="Sequence Stratigraphy",
             color_bg=self.color_menu, command=self.change_rb_main)
         #
-        ## Labels
-        # SE(parent=self.parent, row_id=2, column_id=3, n_rows=2, bg=self.color_bg,
-        #    fg=self.color_fg_dark).create_label(text="Parameter", relief=tk.RAISED)
-        # SE(parent=self.parent, row_id=2, column_id=4, n_rows=2, bg=self.color_bg,
-        #    fg=self.color_fg_dark).create_label(text="Minimum", relief=tk.RAISED)
-        # SE(parent=self.parent, row_id=2, column_id=5, n_rows=2, bg=self.color_bg,
-        #    fg=self.color_fg_dark).create_label(text="Maximum", relief=tk.RAISED)
-        # SE(parent=self.parent, row_id=2, column_id=6, n_rows=2, bg=self.color_bg,
-        #    fg=self.color_fg_dark).create_label(text="Mean", relief=tk.RAISED)
-        # SE(parent=self.parent, row_id=2, column_id=7, n_rows=2, bg=self.color_bg,
-        #    fg=self.color_fg_dark).create_label(text="Standard\n Deviation", relief=tk.RAISED)
-        #
-        # lbl_stat = SE(parent=self.parent, row_id=0, column_id=3, n_rows=2, n_columns=5, bg=self.color_bg,
-        #    fg=self.color_fg_dark).create_label(text="Statistics", relief=tk.RAISED)
-        # lbl_plt = SE(parent=self.parent, row_id=0, column_id=9, n_rows=2, n_columns=9, bg=self.color_bg,
-        #    fg=self.color_fg_dark).create_label(text="Plots", relief=tk.RAISED)
-        # #
-        # self.gui_elements.extend([lbl_stat, lbl_plt])
-        #
         self.change_rb_main(first_start=True)
         #
         btn_advstat = SE(parent=self.parent, row_id=42, column_id=0, n_rows=2, n_columns=2, bg=self.color_accent_03,
@@ -444,7 +425,7 @@ class GebPyGUI(tk.Frame):
                        "Corundum", "Rutile", "Pyrolusite", "Magnesiochromite", "Zincochromite", "Chromium Spinels",
                        "Cuprospinel", "Jacobsite", "Magnesioferrite", "Trevorite", "Franklinite", "Ulvöspinel",
                        "Iron Spinels", "Uraninite", "Litharge", "Massicot", "Minium", "Plattnerite", "Scrutinyite",
-                       "Zincite", "Columbite", "Tantalite", "Coltan"]:
+                       "Zincite", "Columbite", "Tantalite", "Coltan", "Hematite-Group"]:
             Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                      color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
                      entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
@@ -756,7 +737,8 @@ class GebPyGUI(tk.Frame):
                             "Corundum", "Ilmenite", "Rutile", "Pyrolusite", "Cassiterite", "Chromite",
                             "Magnesiochromite", "Zincochromite", "Cuprospinel", "Jacobsite", "Magnesioferrite",
                             "Trevorite", "Franklinite", "Ulvöspinel", "Uraninite", "Litharge", "Massicot", "Minium",
-                            "Plattnerite", "Scrutinyite", "Zincite", "Columbite", "Tantalite", "Coltan"]
+                            "Plattnerite", "Scrutinyite", "Zincite", "Columbite", "Tantalite", "Coltan",
+                            "Hematite-Group"]
             opt_list_0_1.sort()
             opt_oxide_comparison = ["Spinel Group", "Hematite Group"]
             opt_oxide_comparison.sort()
@@ -1323,6 +1305,7 @@ class GebPyGUI(tk.Frame):
                         data=dataset_key[labels_key[i][j]], ax=ax_histo[i][j], bins=10, color=dataset_key["color"],
                         element="step", label=key, alpha=0.25, linewidth=2)
                     #
+                    ax_histo[i][j].set_yscale("log")
                     ax_histo[i][j].set_xlabel(labels[i][j], fontsize="small")
                     ax_histo[i][j].set_ylabel("Frequency", labelpad=0.5, fontsize=9)
                     ax_histo[i][j].grid(True)
@@ -1340,9 +1323,9 @@ class GebPyGUI(tk.Frame):
         self.container_gui["MINERALOGY"]["CANVAS_HISTO"].append(canvas_histo)
     #
     def plot_scatter_comparison(self, dataset):
-        labels = [["Density - kg/m$^3$", "Gamma Ray - API", "Photoelectricity - barns/e$^-$"],
+        labels = [["Molar Mass - kg/mol", "Gamma Ray - API", "Photoelectricity - barns/e$^-$"],
                   ["vP - m/s", "vS - m/s", "vP/vS - 1"], ["K - GPa", "G - GPa", "Poisson - 1"]]
-        labels_key = [["rho", "GR", "PE"], ["vP", "vS", "vP/vS"], ["K", "G", "nu"]]
+        labels_key = [["M", "GR", "PE"], ["vP", "vS", "vP/vS"], ["K", "G", "nu"]]
         #
         sns.set_theme(style="darkgrid")
         self.fig_scatter, ax_scatter = plt.subplots(ncols=3, nrows=3, figsize=(11, 11), facecolor="#E9ECED")
@@ -1627,6 +1610,8 @@ class Minerals:
                 data = Oxides(impurity="pure", data_type=True).create_quartz()
             elif self.mineral == "Magnetite":
                 data = Oxides(impurity="pure", data_type=True).create_magnetite()
+            elif self.mineral == "Hematite-Group":
+                data = Oxides(impurity="pure", data_type=True).create_hematite_group()
             elif self.mineral == "Cassiterite":
                 data = Oxides(impurity="pure", data_type=True).create_cassiterite()
             elif self.mineral == "Pyrolusite":
@@ -2211,6 +2196,8 @@ class Minerals:
                 data = Oxides(impurity="pure", data_type=True).create_quartz()
             elif self.mineral == "Magnetite":
                 data = Oxides(impurity="pure").create_magnetite(dict=True)
+            elif self.mineral == "Hematite-Group":
+                data = Oxides(impurity="pure", data_type=True).create_hematite_group()
             elif self.mineral == "Cassiterite":
                 data = Oxides(impurity="pure", data_type=True).create_cassiterite()
             elif self.mineral == "Chromite":
