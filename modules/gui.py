@@ -200,7 +200,10 @@ class GebPyGUI(tk.Frame):
                 ## RECONSTRUCTION
                 for sub_category in self.sub_categories_gui:
                     for gui_item in self.container_gui["MINERALOGY"][sub_category]:
-                        gui_item.grid()
+                        if sub_category not in ["CANVAS_HISTO", "CANVAS_SCATTER", "CANVAS_GEOCHEM"]:
+                            gui_item.grid()
+                        else:
+                            gui_item.get_tk_widget().grid()
                 #
             elif self.var_rb_main.get() == 1:
                 # PETROLOGY
@@ -217,7 +220,10 @@ class GebPyGUI(tk.Frame):
                 ## RECONSTRUCTION
                 for sub_category in self.sub_categories_gui:
                     for gui_item in self.container_gui["PETROLOGY"][sub_category]:
-                        gui_item.grid()
+                        if sub_category not in ["CANVAS_HISTO", "CANVAS_SCATTER", "CANVAS_GEOCHEM"]:
+                            gui_item.grid()
+                        else:
+                            gui_item.get_tk_widget().grid()
                 #
                 if len(self.container_gui["PETROLOGY"]["LABEL"]) == 0:
                     lb_01 = SE(
@@ -259,7 +265,10 @@ class GebPyGUI(tk.Frame):
                 ## RECONSTRUCTION
                 for sub_category in self.sub_categories_gui:
                     for gui_item in self.container_gui["STRATIGRAPHY"][sub_category]:
-                        gui_item.grid()
+                        if sub_category not in ["CANVAS_HISTO", "CANVAS_SCATTER", "CANVAS_GEOCHEM"]:
+                            gui_item.grid()
+                        else:
+                            gui_item.get_tk_widget().grid()
                 #
                 if len(self.container_gui["STRATIGRAPHY"]["LABEL"]) == 0:
                     lb_01 = SE(
@@ -1204,7 +1213,7 @@ class GebPyGUI(tk.Frame):
         labels_key = [["rho", "GR", "PE"], ["vP", "vS", "vP/vS"], ["K", "G", "nu"]]
         #
         sns.set_theme(style="darkgrid")
-        fig_histo, ax_histo = plt.subplots(ncols=3, nrows=3, figsize=(11, 11), facecolor="#E9ECED")
+        self.fig_histo, ax_histo = plt.subplots(ncols=3, nrows=3, figsize=(11, 11), facecolor="#E9ECED")
         #
         for key, dataset_key in dataset.items():
             for i in range(3):
@@ -1218,13 +1227,13 @@ class GebPyGUI(tk.Frame):
                     ax_histo[i][j].grid(True)
                     ax_histo[i][j].set_axisbelow(True)
         #
-        fig_histo.suptitle("\n")
+        self.fig_histo.suptitle("\n")
         handles, labels = ax_histo[2][2].get_legend_handles_labels()
-        leg = fig_histo.legend(handles, labels, loc='upper center', ncol=3)
+        leg = self.fig_histo.legend(handles, labels, loc='upper center', ncol=3)
         leg.set_in_layout(False)
-        fig_histo.tight_layout()
+        self.fig_histo.tight_layout()
         #
-        canvas_histo = FigureCanvasTkAgg(fig_histo, master=self.parent)
+        canvas_histo = FigureCanvasTkAgg(self.fig_histo, master=self.parent)
         canvas_histo.get_tk_widget().grid(row=0, column=9, rowspan=47, columnspan=9, sticky="nesw")
         #
         self.container_gui["MINERALOGY"]["CANVAS_HISTO"].append(canvas_histo)
@@ -1235,7 +1244,7 @@ class GebPyGUI(tk.Frame):
         labels_key = [["rho", "GR", "PE"], ["vP", "vS", "vP/vS"], ["K", "G", "nu"]]
         #
         sns.set_theme(style="darkgrid")
-        fig_scatter, ax_scatter = plt.subplots(ncols=3, nrows=3, figsize=(11, 11), facecolor="#E9ECED")
+        self.fig_scatter, ax_scatter = plt.subplots(ncols=3, nrows=3, figsize=(11, 11), facecolor="#E9ECED")
         #
         for key, dataset_key in dataset.items():
             for i in range(3):
@@ -1249,13 +1258,13 @@ class GebPyGUI(tk.Frame):
                     ax_scatter[i][j].grid(True)
                     ax_scatter[i][j].set_axisbelow(True)
         #
-        fig_scatter.suptitle("\n")
+        self.fig_scatter.suptitle("\n")
         handles, labels = ax_scatter[2][2].get_legend_handles_labels()
-        leg = fig_scatter.legend(handles, labels, loc='upper center', ncol=3)
+        leg = self.fig_scatter.legend(handles, labels, loc='upper center', ncol=3)
         leg.set_in_layout(False)
-        fig_scatter.tight_layout(w_pad=2)
+        self.fig_scatter.tight_layout()
         #
-        canvas_histo = FigureCanvasTkAgg(fig_scatter, master=self.parent)
+        canvas_histo = FigureCanvasTkAgg(self.fig_scatter, master=self.parent)
         canvas_histo.get_tk_widget().grid(row=0, column=9, rowspan=47, columnspan=9, sticky="nesw")
         #
         self.container_gui["MINERALOGY"]["CANVAS_SCATTER"].append(canvas_histo)
