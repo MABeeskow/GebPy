@@ -6,7 +6,7 @@
 # Name:		gui.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		27.08.2022
+# Date:		29.08.2022
 
 #-----------------------------------------------
 
@@ -16,7 +16,7 @@ import tkinter as tk
 import csv, re
 from modules.gui_elements import SimpleElements as SE
 from modules.sulfates import Sulfates
-from modules.oxides import Oxides
+from modules.oxides import Oxides, RutileGroup
 from modules.sulfides import Sulfides
 from modules.carbonates import Carbonates, CarbonateRocks
 from modules.halogenes import Halogenes
@@ -425,7 +425,7 @@ class GebPyGUI(tk.Frame):
                        "Corundum", "Rutile", "Pyrolusite", "Magnesiochromite", "Zincochromite", "Chromium Spinels",
                        "Cuprospinel", "Jacobsite", "Magnesioferrite", "Trevorite", "Franklinite", "Ulvöspinel",
                        "Iron Spinels", "Uraninite", "Litharge", "Massicot", "Minium", "Plattnerite", "Scrutinyite",
-                       "Zincite", "Columbite", "Tantalite", "Coltan", "Hematite-Group"]:
+                       "Zincite", "Columbite", "Tantalite", "Coltan", "Hematite-Group", "Rutile-Group"]:
             Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                      color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
                      entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
@@ -738,7 +738,7 @@ class GebPyGUI(tk.Frame):
                             "Magnesiochromite", "Zincochromite", "Cuprospinel", "Jacobsite", "Magnesioferrite",
                             "Trevorite", "Franklinite", "Ulvöspinel", "Uraninite", "Litharge", "Massicot", "Minium",
                             "Plattnerite", "Scrutinyite", "Zincite", "Columbite", "Tantalite", "Coltan",
-                            "Hematite-Group"]
+                            "Hematite-Group", "Rutile-Group"]
             opt_list_0_1.sort()
             opt_oxide_comparison = ["Spinel Group", "Hematite Group", "Rutile Group"]
             opt_oxide_comparison.sort()
@@ -1545,6 +1545,24 @@ class Minerals:
         #
         self.gui_elements.extend([lbl_stat, lbl_plt])
         #
+        lb_param = SE(
+            parent=self.parent_mineral, row_id=2, column_id=3, n_rows=2, bg=self.color_bg,
+            fg="black").create_label(text="Parameter", relief=tk.RAISED)
+        lb_min = SE(
+            parent=self.parent_mineral, row_id=2, column_id=4, n_rows=2, bg=self.color_bg,
+            fg="black").create_label(text="Minimum", relief=tk.RAISED)
+        lb_max = SE(
+            parent=self.parent_mineral, row_id=2, column_id=5, n_rows=2, bg=self.color_bg,
+            fg="black").create_label(text="Maximum", relief=tk.RAISED)
+        lb_mean = SE(
+            parent=self.parent_mineral, row_id=2, column_id=6, n_rows=2, bg=self.color_bg,
+            fg="black").create_label(text="Mean", relief=tk.RAISED)
+        lb_std = SE(
+            parent=self.parent_mineral, row_id=2, column_id=7, n_rows=2, bg=self.color_bg,
+            fg="black").create_label(text="Standard\n Deviation", relief=tk.RAISED)
+        #
+        self.gui_elements.extend([lb_param, lb_min, lb_max, lb_mean, lb_std])
+        #
         lbl_01 = SE(parent=self.parent_mineral, row_id=4, column_id=3, n_rows=2, bg=self.color_bg,
            fg="black").create_label(text="Molar mass\n (g/mol)", relief=tk.RAISED)
         lbl_02 = SE(parent=self.parent_mineral, row_id=6, column_id=3, n_rows=2, bg=self.color_bg,
@@ -1612,6 +1630,8 @@ class Minerals:
                 data = Oxides(impurity="pure", data_type=True).create_magnetite()
             elif self.mineral == "Hematite-Group":
                 data = Oxides(impurity="pure", data_type=True).create_hematite_group()
+            elif self.mineral == "Rutile-Group":
+                data = RutileGroup().create_rutile_group()
             elif self.mineral == "Cassiterite":
                 data = Oxides(impurity="pure", data_type=True).create_cassiterite()
             elif self.mineral == "Pyrolusite":
@@ -2198,6 +2218,8 @@ class Minerals:
                 data = Oxides(impurity="pure").create_magnetite(dict=True)
             elif self.mineral == "Hematite-Group":
                 data = Oxides(impurity="pure", data_type=True).create_hematite_group()
+            elif self.mineral == "Rutile-Group":
+                data = RutileGroup().create_rutile_group()
             elif self.mineral == "Cassiterite":
                 data = Oxides(impurity="pure", data_type=True).create_cassiterite()
             elif self.mineral == "Chromite":
