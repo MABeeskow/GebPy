@@ -6,12 +6,12 @@
 # Name:		mineralogy.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		28.08.2020
+# Date:		29.08.2020
 
 #-----------------------------------------------
 
 ## MODULES
-from modules.oxides import Oxides
+from modules.oxides import Oxides, RutileGroup
 
 class Mineralogy:
     #
@@ -162,5 +162,114 @@ class Mineralogy:
             data_minerals["Tta"]["color"] = "tab:orange"
             data_minerals["Kar"]["color"] = "tab:purple"
             data_minerals["Hem-Group"]["color"] = "tab:gray"
+        #
+        elif self.keyword == "Rutile Group":
+            data_minerals = {"Argt": {}, "Cst": {}, "Prtl": {}, "Pltn": {}, "Prl": {}, "Rt": {}, "Stv": {},
+                             "Rt-Group": {}}
+            categories = ["M", "rho", "V", "vP", "vS", "vP/vS", "K", "G", "E", "nu", "GR", "PE", "U", "chemistry"]
+            for key, value in data_minerals.items():
+                for category in categories:
+                    if category != "chemistry":
+                        value[category] = []
+                    else:
+                        value[category] = {}
+            #
+            n = 0
+            list_elements = []
+            #
+            data_argt = Oxides(impurity="pure", data_type=True).create_argutite()
+            data_cst = Oxides(impurity="pure", data_type=True).create_cassiterite()
+            data_prtl = Oxides(impurity="pure", data_type=True).create_paratellurite()
+            data_pltn = Oxides(impurity="pure", data_type=True).create_plattnerite()
+            data_prl = Oxides(impurity="pure", data_type=True).create_pyrolusite()
+            data_rt = Oxides(impurity="pure", data_type=True).create_rutile()
+            data_stv = Oxides(impurity="pure", data_type=True).create_stishovite()
+            #
+            while n < number:
+                data_group = RutileGroup().create_rutile_group()
+                #
+                if n == 0:
+                    list_elements_argt = list(data_argt["chemistry"].keys())
+                    list_elements_cst = list(data_cst["chemistry"].keys())
+                    list_elements_prtl = list(data_prtl["chemistry"].keys())
+                    list_elements_pltn = list(data_pltn["chemistry"].keys())
+                    list_elements_prl = list(data_prl["chemistry"].keys())
+                    list_elements_rt = list(data_rt["chemistry"].keys())
+                    list_elements_stv = list(data_stv["chemistry"].keys())
+                    list_elements_group = list(data_group["chemistry"].keys())
+                    list_elements.extend(list_elements_argt)
+                    list_elements.extend(list_elements_cst)
+                    list_elements.extend(list_elements_prtl)
+                    list_elements.extend(list_elements_pltn)
+                    list_elements.extend(list_elements_prl)
+                    list_elements.extend(list_elements_rt)
+                    list_elements.extend(list_elements_stv)
+                    list_elements.extend(list_elements_group)
+                    list_elements = list(dict.fromkeys(list_elements))
+                    for element in list_elements:
+                        data_minerals["Argt"]["chemistry"][element] = []
+                        data_minerals["Cst"]["chemistry"][element] = []
+                        data_minerals["Prtl"]["chemistry"][element] = []
+                        data_minerals["Pltn"]["chemistry"][element] = []
+                        data_minerals["Prl"]["chemistry"][element] = []
+                        data_minerals["Rt"]["chemistry"][element] = []
+                        data_minerals["Stv"]["chemistry"][element] = []
+                        data_minerals["Rt-Group"]["chemistry"][element] = []
+                #
+                for category in categories:
+                    if category != "chemistry":
+                        data_minerals["Argt"][category].append(round(data_argt[category], 4))
+                        data_minerals["Cst"][category].append(round(data_cst[category], 4))
+                        data_minerals["Prtl"][category].append(round(data_prtl[category], 4))
+                        data_minerals["Pltn"][category].append(round(data_pltn[category], 4))
+                        data_minerals["Prl"][category].append(round(data_prl[category], 4))
+                        data_minerals["Rt"][category].append(round(data_rt[category], 4))
+                        data_minerals["Stv"][category].append(round(data_stv[category], 4))
+                        data_minerals["Rt-Group"][category].append(round(data_group[category], 4))
+                    else:
+                        for element in list_elements:
+                            if element in data_argt[category]:
+                                data_minerals["Argt"][category][element].append(round(data_argt[category][element], 4))
+                            else:
+                                data_minerals["Argt"][category][element].append(round(0.0, 4))
+                            if element in data_cst[category]:
+                                data_minerals["Cst"][category][element].append(round(data_cst[category][element], 4))
+                            else:
+                                data_minerals["Cst"][category][element].append(round(0.0, 4))
+                            if element in data_prtl[category]:
+                                data_minerals["Prtl"][category][element].append(round(data_prtl[category][element], 4))
+                            else:
+                                data_minerals["Prtl"][category][element].append(round(0.0, 4))
+                            if element in data_pltn[category]:
+                                data_minerals["Pltn"][category][element].append(round(data_pltn[category][element], 4))
+                            else:
+                                data_minerals["Pltn"][category][element].append(round(0.0, 4))
+                            if element in data_prl[category]:
+                                data_minerals["Prl"][category][element].append(round(data_prl[category][element], 4))
+                            else:
+                                data_minerals["Prl"][category][element].append(round(0.0, 4))
+                            if element in data_rt[category]:
+                                data_minerals["Rt"][category][element].append(round(data_rt[category][element], 4))
+                            else:
+                                data_minerals["Rt"][category][element].append(round(0.0, 4))
+                            if element in data_stv[category]:
+                                data_minerals["Stv"][category][element].append(round(data_stv[category][element], 4))
+                            else:
+                                data_minerals["Stv"][category][element].append(round(0.0, 4))
+                            if element in data_group[category]:
+                                data_minerals["Rt-Group"][category][element].append(round(data_group[category][element], 4))
+                            else:
+                                data_minerals["Rt-Group"][category][element].append(round(0.0, 4))
+                #
+                n += 1
+            #
+            data_minerals["Argt"]["color"] = "tab:blue"
+            data_minerals["Cst"]["color"] = "tab:red"
+            data_minerals["Prtl"]["color"] = "tab:green"
+            data_minerals["Pltn"]["color"] = "tab:orange"
+            data_minerals["Prl"]["color"] = "tab:purple"
+            data_minerals["Rt"]["color"] = "tab:brown"
+            data_minerals["Stv"]["color"] = "tab:olive"
+            data_minerals["Rt-Group"]["color"] = "tab:gray"
         #
         return data_minerals

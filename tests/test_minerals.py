@@ -22,6 +22,7 @@ from modules import sequences, geophysics, minerals, oxides, sulfides, sulfates,
 from modules.pyllosilicates import Pyllosilicates
 from modules.carbonates import Carbonates
 from modules.organics import Organics
+from modules.oxides import RutileGroup
 
 class TESTING_MINERALS:
     #
@@ -203,6 +204,9 @@ class TESTING_MINERALS:
         # Test Ulvöspinel (incl. trace elements)
         data = oxides.Oxides(impurity="pure").create_ulvoespinel()
         print("Ulvöspinel (incl. trace elements):\n", data)
+        # Test Rutile-Group
+        data = RutileGroup().create_rutile_group()
+        print("Rutile-Group:\n", data)
 
         print("")
         ## TESTING SULFIDES
@@ -363,5 +367,6 @@ class TESTING_MINERALS:
         # Test Saponite (incl. trace elements)
         data = silicates.Phyllosilicates(impurity="pure", data_type=True).create_saponite()
         print("Saponite (no preference):\n", data)
+#
 # RUN
 TESTING_MINERALS()

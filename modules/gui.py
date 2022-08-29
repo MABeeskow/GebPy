@@ -430,7 +430,7 @@ class GebPyGUI(tk.Frame):
                      color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
                      entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
         #
-        elif var_opt in ["Spinel Group", "Hematite Group"]:
+        elif var_opt in ["Spinel Group", "Hematite Group", "Rutile Group"]:
             #
             ## CLEANING
             try:
@@ -740,7 +740,7 @@ class GebPyGUI(tk.Frame):
                             "Plattnerite", "Scrutinyite", "Zincite", "Columbite", "Tantalite", "Coltan",
                             "Hematite-Group"]
             opt_list_0_1.sort()
-            opt_oxide_comparison = ["Spinel Group", "Hematite Group"]
+            opt_oxide_comparison = ["Spinel Group", "Hematite Group", "Rutile Group"]
             opt_oxide_comparison.sort()
             #
             self.opt_oxide = SE(parent=self.parent, row_id=10, column_id=0, n_rows=2, n_columns=2,
@@ -1313,7 +1313,7 @@ class GebPyGUI(tk.Frame):
         #
         self.fig_histo.suptitle("\n")
         handles, labels = ax_histo[2][2].get_legend_handles_labels()
-        self.leg = self.fig_histo.legend(handles, labels, loc='upper center', ncol=3)
+        self.leg = self.fig_histo.legend(handles, labels, loc='upper center', ncol=len(self.data_minerals))
         self.leg.set_in_layout(False)
         self.fig_histo.tight_layout()
         #
@@ -1344,7 +1344,7 @@ class GebPyGUI(tk.Frame):
         #
         self.fig_scatter.suptitle("\n")
         handles, labels = ax_scatter[2][2].get_legend_handles_labels()
-        self.leg = self.fig_scatter.legend(handles, labels, loc='upper center', ncol=3)
+        self.leg = self.fig_scatter.legend(handles, labels, loc='upper center', ncol=len(self.data_minerals))
         self.leg.set_in_layout(False)
         self.fig_scatter.tight_layout()
         #
@@ -1377,7 +1377,7 @@ class GebPyGUI(tk.Frame):
         #
         fig_geochem.suptitle("\n")
         handles, labels = ax_scatter[2][2].get_legend_handles_labels()
-        self.leg = fig_geochem.legend(handles, labels, loc='upper center', ncol=3)
+        self.leg = fig_geochem.legend(handles, labels, loc='upper center', ncol=len(self.data_minerals))
         self.leg.set_in_layout(False)
         fig_geochem.tight_layout()
         #
