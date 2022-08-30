@@ -6,7 +6,7 @@
 # Name:		gui.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		29.08.2022
+# Date:		31.08.2022
 
 #-----------------------------------------------
 
@@ -16,7 +16,7 @@ import tkinter as tk
 import csv, re
 from modules.gui_elements import SimpleElements as SE
 from modules.sulfates import Sulfates
-from modules.oxides import Oxides, RutileGroup
+from modules.oxides import Oxides, RutileGroup, PericlaseGroup
 from modules.sulfides import Sulfides
 from modules.carbonates import Carbonates, CarbonateRocks
 from modules.halogenes import Halogenes
@@ -425,12 +425,13 @@ class GebPyGUI(tk.Frame):
                        "Corundum", "Rutile", "Pyrolusite", "Magnesiochromite", "Zincochromite", "Chromium Spinels",
                        "Cuprospinel", "Jacobsite", "Magnesioferrite", "Trevorite", "Franklinite", "Ulvöspinel",
                        "Iron Spinels", "Uraninite", "Litharge", "Massicot", "Minium", "Plattnerite", "Scrutinyite",
-                       "Zincite", "Columbite", "Tantalite", "Coltan", "Hematite-Group", "Rutile-Group"]:
+                       "Zincite", "Columbite", "Tantalite", "Coltan", "Hematite-Group", "Rutile-Group",
+                       "Periclase-Group"]:
             Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                      color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
                      entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
         #
-        elif var_opt in ["Spinel Group", "Hematite Group", "Rutile Group"]:
+        elif var_opt in ["Spinel Group", "Hematite Group", "Rutile Group", "Periclase Group"]:
             #
             ## CLEANING
             try:
@@ -738,9 +739,9 @@ class GebPyGUI(tk.Frame):
                             "Magnesiochromite", "Zincochromite", "Cuprospinel", "Jacobsite", "Magnesioferrite",
                             "Trevorite", "Franklinite", "Ulvöspinel", "Uraninite", "Litharge", "Massicot", "Minium",
                             "Plattnerite", "Scrutinyite", "Zincite", "Columbite", "Tantalite", "Coltan",
-                            "Hematite-Group", "Rutile-Group"]
+                            "Hematite-Group", "Rutile-Group", "Periclase-Group"]
             opt_list_0_1.sort()
-            opt_oxide_comparison = ["Spinel Group", "Hematite Group", "Rutile Group"]
+            opt_oxide_comparison = ["Spinel Group", "Hematite Group", "Rutile Group", "Periclase Group"]
             opt_oxide_comparison.sort()
             #
             self.opt_oxide = SE(parent=self.parent, row_id=10, column_id=0, n_rows=2, n_columns=2,
@@ -1632,6 +1633,8 @@ class Minerals:
                 data = Oxides(impurity="pure", data_type=True).create_hematite_group()
             elif self.mineral == "Rutile-Group":
                 data = RutileGroup().create_rutile_group()
+            elif self.mineral == "Periclase-Group":
+                data = PericlaseGroup().create_periclase_group()
             elif self.mineral == "Cassiterite":
                 data = Oxides(impurity="pure", data_type=True).create_cassiterite()
             elif self.mineral == "Pyrolusite":
@@ -2220,6 +2223,8 @@ class Minerals:
                 data = Oxides(impurity="pure", data_type=True).create_hematite_group()
             elif self.mineral == "Rutile-Group":
                 data = RutileGroup().create_rutile_group()
+            elif self.mineral == "Periclase-Group":
+                data = PericlaseGroup().create_periclase_group()
             elif self.mineral == "Cassiterite":
                 data = Oxides(impurity="pure", data_type=True).create_cassiterite()
             elif self.mineral == "Chromite":

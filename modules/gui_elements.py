@@ -3,7 +3,7 @@
 # ----------------------
 # gui_elements.py
 # Maximilian Beeskow
-# 01.11.2021
+# 31.08.2022
 # ----------------------
 #
 ## MODULES
@@ -39,8 +39,8 @@ class SimpleElements:
         opt_menu.config(bg=self.bg)
         opt_menu.grid(row=self.row_id, column=self.column_id, rowspan=self.n_rows, columnspan=self.n_columns,
                       sticky="nesw")
-        opt_menu.config(bg=self.bg, activebackground=active_bg, highlightthickness=0)
-        opt_menu["menu"].config(bg=self.bg, activebackground=active_bg)
+        opt_menu.config(bg=self.bg, fg=self.fg, activebackground=active_bg, highlightthickness=0)
+        opt_menu["menu"].config(bg=self.bg, fg=self.fg, activebackground=active_bg)
         #
         return opt_menu
     #

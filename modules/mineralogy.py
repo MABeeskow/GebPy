@@ -6,12 +6,12 @@
 # Name:		mineralogy.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		29.08.2020
+# Date:		31.08.2020
 
 #-----------------------------------------------
 
 ## MODULES
-from modules.oxides import Oxides, RutileGroup
+from modules.oxides import Oxides, RutileGroup, PericlaseGroup
 
 class Mineralogy:
     #
@@ -271,5 +271,104 @@ class Mineralogy:
             data_minerals["Rt"]["color"] = "tab:brown"
             data_minerals["Stv"]["color"] = "tab:olive"
             data_minerals["Rt-Group"]["color"] = "tab:gray"
+        #
+        elif self.keyword == "Periclase Group":
+            data_minerals = {"Per": {}, "Wus": {}, "Mns": {}, "Bsn": {}, "Mntp": {}, "Lm": {},
+                             "Per-Group": {}}
+            categories = ["M", "rho", "V", "vP", "vS", "vP/vS", "K", "G", "E", "nu", "GR", "PE", "U", "chemistry"]
+            for key, value in data_minerals.items():
+                for category in categories:
+                    if category != "chemistry":
+                        value[category] = []
+                    else:
+                        value[category] = {}
+            #
+            n = 0
+            list_elements = []
+            #
+            data_per = Oxides(impurity="pure", data_type=True).create_periclase()
+            data_wus = Oxides(impurity="pure", data_type=True).create_wustite()
+            data_mns = Oxides(impurity="pure", data_type=True).create_manganosite()
+            data_bsn = Oxides(impurity="pure", data_type=True).create_bunsenite()
+            data_mntp = Oxides(impurity="pure", data_type=True).create_monteponite()
+            data_lm = Oxides(impurity="pure", data_type=True).create_lime()
+            #
+            while n < number:
+                data_group = PericlaseGroup().create_periclase_group()
+                #
+                if n == 0:
+                    list_elements_per = list(data_per["chemistry"].keys())
+                    list_elements_wus = list(data_wus["chemistry"].keys())
+                    list_elements_mns = list(data_mns["chemistry"].keys())
+                    list_elements_bsn = list(data_bsn["chemistry"].keys())
+                    list_elements_mntp = list(data_mntp["chemistry"].keys())
+                    list_elements_lm = list(data_lm["chemistry"].keys())
+                    list_elements_group = list(data_group["chemistry"].keys())
+                    list_elements.extend(list_elements_per)
+                    list_elements.extend(list_elements_wus)
+                    list_elements.extend(list_elements_mns)
+                    list_elements.extend(list_elements_bsn)
+                    list_elements.extend(list_elements_mntp)
+                    list_elements.extend(list_elements_lm)
+                    list_elements.extend(list_elements_group)
+                    list_elements = list(dict.fromkeys(list_elements))
+                    for element in list_elements:
+                        data_minerals["Per"]["chemistry"][element] = []
+                        data_minerals["Wus"]["chemistry"][element] = []
+                        data_minerals["Mns"]["chemistry"][element] = []
+                        data_minerals["Bsn"]["chemistry"][element] = []
+                        data_minerals["Mntp"]["chemistry"][element] = []
+                        data_minerals["Lm"]["chemistry"][element] = []
+                        data_minerals["Per-Group"]["chemistry"][element] = []
+                #
+                for category in categories:
+                    if category != "chemistry":
+                        data_minerals["Per"][category].append(round(data_per[category], 4))
+                        data_minerals["Wus"][category].append(round(data_wus[category], 4))
+                        data_minerals["Mns"][category].append(round(data_mns[category], 4))
+                        data_minerals["Bsn"][category].append(round(data_bsn[category], 4))
+                        data_minerals["Mntp"][category].append(round(data_mntp[category], 4))
+                        data_minerals["Lm"][category].append(round(data_lm[category], 4))
+                        data_minerals["Per-Group"][category].append(round(data_group[category], 4))
+                    else:
+                        for element in list_elements:
+                            if element in data_per[category]:
+                                data_minerals["Per"][category][element].append(round(data_per[category][element], 4))
+                            else:
+                                data_minerals["Per"][category][element].append(round(0.0, 4))
+                            if element in data_wus[category]:
+                                data_minerals["Wus"][category][element].append(round(data_wus[category][element], 4))
+                            else:
+                                data_minerals["Wus"][category][element].append(round(0.0, 4))
+                            if element in data_mns[category]:
+                                data_minerals["Mns"][category][element].append(round(data_mns[category][element], 4))
+                            else:
+                                data_minerals["Mns"][category][element].append(round(0.0, 4))
+                            if element in data_bsn[category]:
+                                data_minerals["Bsn"][category][element].append(round(data_bsn[category][element], 4))
+                            else:
+                                data_minerals["Bsn"][category][element].append(round(0.0, 4))
+                            if element in data_mntp[category]:
+                                data_minerals["Mntp"][category][element].append(round(data_mntp[category][element], 4))
+                            else:
+                                data_minerals["Mntp"][category][element].append(round(0.0, 4))
+                            if element in data_lm[category]:
+                                data_minerals["Lm"][category][element].append(round(data_lm[category][element], 4))
+                            else:
+                                data_minerals["Lm"][category][element].append(round(0.0, 4))
+                            if element in data_group[category]:
+                                data_minerals["Per-Group"][category][element].append(round(data_group[category][element], 4))
+                            else:
+                                data_minerals["Per-Group"][category][element].append(round(0.0, 4))
+                #
+                n += 1
+            #
+            data_minerals["Per"]["color"] = "tab:blue"
+            data_minerals["Wus"]["color"] = "tab:red"
+            data_minerals["Mns"]["color"] = "tab:green"
+            data_minerals["Bsn"]["color"] = "tab:orange"
+            data_minerals["Mntp"]["color"] = "tab:purple"
+            data_minerals["Lm"]["color"] = "tab:brown"
+            data_minerals["Per-Group"]["color"] = "tab:gray"
         #
         return data_minerals
