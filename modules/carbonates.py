@@ -6,7 +6,7 @@
 # Name:		carbonates.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		18.08.2022
+# Date:		08.09.2022
 
 #-----------------------------------------------
 
@@ -3897,6 +3897,108 @@ class Carbonates():
                 results["p"] = p
             #
             return results
+    #
+    def create_ikaite(self):   # CaCO3 * 6*H2O
+        #
+        name = "Ika"
+        #
+        # Major elements
+        hydrogen = PeriodicSystem(name="H").get_data()
+        carbon = PeriodicSystem(name="C").get_data()
+        oxygen = PeriodicSystem(name="O").get_data()
+        calcium = PeriodicSystem(name="Ca").get_data()
+        majors_name = ["H", "C", "O", "Ca"]
+        #
+        majors_data = np.array([["H", hydrogen[1], 2, hydrogen[2]], ["C", carbon[1], 2, carbon[2]],
+                                ["O", oxygen[1], 8, oxygen[2]], ["Ca", calcium[1], 3, calcium[2]]], dtype=object)
+        # Minor elements
+        traces_data = []
+        if len(self.traces_list) > 0:
+            self.impurity = "impure"
+        if self.impurity == "pure":
+            var_state = "fixed"
+        else:
+            var_state = "variable"
+            if self.impurity == "random":
+                self.traces_list = []
+                minors = [None]
+                n = rd.randint(1, len(minors))
+                while len(self.traces_list) < n:
+                    selection = rd.choice(minors)
+                    if selection not in self.traces_list and selection not in majors_name:
+                        self.traces_list.append(selection)
+                    else:
+                        continue
+            traces = [PeriodicSystem(name=i).get_data() for i in self.traces_list]
+            x_traces = [round(rd.uniform(0., 0.001), 6) for i in range(len(self.traces_list))]
+            for i in range(len(self.traces_list)):
+                traces_data.append([str(self.traces_list[i]), int(traces[i][1]), float(x_traces[i])])
+            if len(traces_data) > 0:
+                traces_data = np.array(traces_data, dtype=object)
+                traces_data = traces_data[traces_data[:, 1].argsort()]
+        #
+        # Molar mass
+        molar_mass_pure = calcium[2] + (carbon[2] + 3*oxygen[2]) + 6*(2*hydrogen[2] + oxygen[2])
+        molar_mass, amounts = MineralChemistry(
+            w_traces=traces_data, molar_mass_pure=molar_mass_pure, majors=majors_data).calculate_molar_mass()
+        element = [PeriodicSystem(name=amounts[i][0]).get_data() for i in range(len(amounts))]
+        # Density
+        dataV = CrystalPhysics([[8.87, 8.23, 11.02], [110.2], "monoclinic"])
+        V = dataV.calculate_volume()
+        Z = 4
+        V_m = MineralChemistry().calculate_molar_volume(volume_cell=V, z=Z)
+        dataRho = CrystalPhysics([molar_mass, Z, V])
+        rho = dataRho.calculate_bulk_density()
+        rho_e = wg(amounts=amounts, elements=element, rho_b=rho).calculate_electron_density()
+        # Bulk modulus
+        K = np.mean([30.9524, 40.3962])*10**9
+        # Shear modulus
+        G = np.mean([16.4415, 18.714])*10**9
+        # Young's modulus
+        E = (9*K*G)/(3*K + G)
+        # Poisson's ratio
+        nu = (3*K - 2*G)/(2*(3*K + G))
+        # vP/vS
+        vPvS = ((K + 4/3*G)/G)**0.5
+        # P-wave velocity
+        vP = ((K + 4/3*G)/rho)**0.5
+        # S-wave velocity
+        vS = (G/rho)**0.5
+        # Gamma ray
+        gamma_ray = wg(amounts=amounts, elements=element).calculate_gr()
+        # Photoelectricity
+        pe = wg(amounts=amounts, elements=element).calculate_pe()
+        U = pe*rho_e*10**(-3)
+        # Electrical resistivity
+        p = None
+        #
+        results = {}
+        results["mineral"] = name
+        results["state"] = var_state
+        results["M"] = molar_mass
+        element_list = np.array(amounts)[:, 0]
+        results["chemistry"] = {}
+        for index, element in enumerate(element_list, start=0):
+            results["chemistry"][element] = amounts[index][2]
+        results["rho"] = round(rho, 4)
+        results["rho_e"] = round(rho_e, 4)
+        results["V"] = round(V_m, 4)
+        results["vP"] = round(vP, 4)
+        results["vS"] = round(vS, 4)
+        results["vP/vS"] = round(vPvS, 4)
+        results["G"] = round(G*10**(-9), 4)
+        results["K"] = round(K*10**(-9), 4)
+        results["E"] = round(E*10**(-9), 4)
+        results["nu"] = round(nu, 4)
+        results["GR"] = round(gamma_ray, 4)
+        results["PE"] = round(pe, 4)
+        results["U"] = round(U, 4)
+        if p != None:
+            results["p"] = round(p, 4)
+        else:
+            results["p"] = p
+        #
+        return results
 #
 class CustomCarbonates:
     #

@@ -6,12 +6,12 @@
 # Name:		mineralogy.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		31.08.2020
+# Date:		08.09.2022
 
 #-----------------------------------------------
 
 ## MODULES
-from modules.oxides import Oxides, RutileGroup, PericlaseGroup
+from modules.oxides import Oxides, RutileGroup, PericlaseGroup, WulfeniteGroup
 
 class Mineralogy:
     #
@@ -370,5 +370,73 @@ class Mineralogy:
             data_minerals["Mntp"]["color"] = "tab:purple"
             data_minerals["Lm"]["color"] = "tab:brown"
             data_minerals["Per-Group"]["color"] = "tab:gray"
+        #
+        elif self.keyword == "Wulfenite Group":
+            data_minerals = {"Wul": {}, "Crc": {}, "Sz": {}, "Wul-Group": {}}
+            categories = ["M", "rho", "V", "vP", "vS", "vP/vS", "K", "G", "E", "nu", "GR", "PE", "U", "chemistry"]
+            for key, value in data_minerals.items():
+                for category in categories:
+                    if category != "chemistry":
+                        value[category] = []
+                    else:
+                        value[category] = {}
+            #
+            n = 0
+            list_elements = []
+            #
+            data_wul = Oxides(impurity="pure", data_type=True).create_wulfenite()
+            data_crc = Oxides(impurity="pure", data_type=True).create_crocoite()
+            data_sz = Oxides(impurity="pure", data_type=True).create_stolzite()
+            #
+            while n < number:
+                data_group = WulfeniteGroup().create_wulfenite_group()
+                #
+                if n == 0:
+                    list_elements_wul = list(data_wul["chemistry"].keys())
+                    list_elements_crc = list(data_crc["chemistry"].keys())
+                    list_elements_sz = list(data_sz["chemistry"].keys())
+                    list_elements_group = list(data_group["chemistry"].keys())
+                    list_elements.extend(list_elements_wul)
+                    list_elements.extend(list_elements_crc)
+                    list_elements.extend(list_elements_sz)
+                    list_elements.extend(list_elements_group)
+                    list_elements = list(dict.fromkeys(list_elements))
+                    for element in list_elements:
+                        data_minerals["Wul"]["chemistry"][element] = []
+                        data_minerals["Crc"]["chemistry"][element] = []
+                        data_minerals["Sz"]["chemistry"][element] = []
+                        data_minerals["Wul-Group"]["chemistry"][element] = []
+                #
+                for category in categories:
+                    if category != "chemistry":
+                        data_minerals["Wul"][category].append(round(data_wul[category], 4))
+                        data_minerals["Crc"][category].append(round(data_crc[category], 4))
+                        data_minerals["Sz"][category].append(round(data_sz[category], 4))
+                        data_minerals["Wul-Group"][category].append(round(data_group[category], 4))
+                    else:
+                        for element in list_elements:
+                            if element in data_wul[category]:
+                                data_minerals["Wul"][category][element].append(round(data_wul[category][element], 4))
+                            else:
+                                data_minerals["Wul"][category][element].append(round(0.0, 4))
+                            if element in data_crc[category]:
+                                data_minerals["Crc"][category][element].append(round(data_crc[category][element], 4))
+                            else:
+                                data_minerals["Crc"][category][element].append(round(0.0, 4))
+                            if element in data_sz[category]:
+                                data_minerals["Sz"][category][element].append(round(data_sz[category][element], 4))
+                            else:
+                                data_minerals["Sz"][category][element].append(round(0.0, 4))
+                            if element in data_group[category]:
+                                data_minerals["Wul-Group"][category][element].append(round(data_group[category][element], 4))
+                            else:
+                                data_minerals["Wul-Group"][category][element].append(round(0.0, 4))
+                #
+                n += 1
+            #
+            data_minerals["Wul"]["color"] = "tab:blue"
+            data_minerals["Crc"]["color"] = "tab:red"
+            data_minerals["Sz"]["color"] = "tab:green"
+            data_minerals["Wul-Group"]["color"] = "tab:gray"
         #
         return data_minerals

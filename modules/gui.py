@@ -6,7 +6,7 @@
 # Name:		gui.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		31.08.2022
+# Date:		07.09.2022
 
 #-----------------------------------------------
 
@@ -16,7 +16,7 @@ import tkinter as tk
 import csv, re
 from modules.gui_elements import SimpleElements as SE
 from modules.sulfates import Sulfates
-from modules.oxides import Oxides, RutileGroup, PericlaseGroup
+from modules.oxides import Oxides, RutileGroup, PericlaseGroup, WulfeniteGroup
 from modules.sulfides import Sulfides
 from modules.carbonates import Carbonates, CarbonateRocks
 from modules.halogenes import Halogenes
@@ -426,12 +426,12 @@ class GebPyGUI(tk.Frame):
                        "Cuprospinel", "Jacobsite", "Magnesioferrite", "Trevorite", "Franklinite", "Ulvöspinel",
                        "Iron Spinels", "Uraninite", "Litharge", "Massicot", "Minium", "Plattnerite", "Scrutinyite",
                        "Zincite", "Columbite", "Tantalite", "Coltan", "Hematite-Group", "Rutile-Group",
-                       "Periclase-Group"]:
+                       "Periclase-Group", "Crocoite", "Wulfenite", "Wulfenite-Group"]:
             Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                      color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
                      entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
         #
-        elif var_opt in ["Spinel Group", "Hematite Group", "Rutile Group", "Periclase Group"]:
+        elif var_opt in ["Spinel Group", "Hematite Group", "Rutile Group", "Periclase Group", "Wulfenite Group"]:
             #
             ## CLEANING
             try:
@@ -550,7 +550,7 @@ class GebPyGUI(tk.Frame):
                      entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
         ## CARBONATES
         elif var_opt in ["Calcite", "Dolomite", "Magnesite", "Siderite", "Rhodochrosite", "Aragonite", "Cerussite",
-                         "Ankerite", "Azurite", "Malachite"]:
+                         "Ankerite", "Azurite", "Malachite", "Ikaite"]:
             Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                      color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
                      entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
@@ -739,9 +739,11 @@ class GebPyGUI(tk.Frame):
                             "Magnesiochromite", "Zincochromite", "Cuprospinel", "Jacobsite", "Magnesioferrite",
                             "Trevorite", "Franklinite", "Ulvöspinel", "Uraninite", "Litharge", "Massicot", "Minium",
                             "Plattnerite", "Scrutinyite", "Zincite", "Columbite", "Tantalite", "Coltan",
-                            "Hematite-Group", "Rutile-Group", "Periclase-Group"]
+                            "Hematite-Group", "Rutile-Group", "Periclase-Group", "Crocoite", "Wulfenite",
+                            "Wulfenite-Group"]
             opt_list_0_1.sort()
-            opt_oxide_comparison = ["Spinel Group", "Hematite Group", "Rutile Group", "Periclase Group"]
+            opt_oxide_comparison = ["Spinel Group", "Hematite Group", "Rutile Group", "Periclase Group",
+                                    "Wulfenite Group"]
             opt_oxide_comparison.sort()
             #
             self.opt_oxide = SE(parent=self.parent, row_id=10, column_id=0, n_rows=2, n_columns=2,
@@ -807,7 +809,7 @@ class GebPyGUI(tk.Frame):
                 pass
             var_opt_0_3 = tk.StringVar()
             opt_list_0_3 = ["Calcite", "Dolomite", "Magnesite", "Siderite", "Rhodochrosite", "Aragonite", "Cerussite",
-                            "Ankerite", "Azurite", "Malachite"]
+                            "Ankerite", "Azurite", "Malachite", "Ikaite"]
             opt_list_0_3.sort()
             self.opt_carb = SE(parent=self.parent, row_id=10, column_id=0, n_rows=2, n_columns=2,
                                bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
@@ -1629,12 +1631,18 @@ class Minerals:
                 data = Oxides(impurity="pure", data_type=True).create_quartz()
             elif self.mineral == "Magnetite":
                 data = Oxides(impurity="pure", data_type=True).create_magnetite()
+            elif self.mineral == "Crocoite":
+                data = Oxides(impurity="pure", data_type=True).create_crocoite()
+            elif self.mineral == "Wulfenite":
+                data = Oxides(impurity="pure", data_type=True).create_wulfenite()
             elif self.mineral == "Hematite-Group":
                 data = Oxides(impurity="pure", data_type=True).create_hematite_group()
             elif self.mineral == "Rutile-Group":
                 data = RutileGroup().create_rutile_group()
             elif self.mineral == "Periclase-Group":
                 data = PericlaseGroup().create_periclase_group()
+            elif self.mineral == "Wulfenite-Group":
+                data = WulfeniteGroup().create_wulfenite_group()
             elif self.mineral == "Cassiterite":
                 data = Oxides(impurity="pure", data_type=True).create_cassiterite()
             elif self.mineral == "Pyrolusite":
@@ -1765,6 +1773,8 @@ class Minerals:
                 data = Carbonates(impurity="pure", data_type=True).create_azurite()
             elif self.mineral == "Malachite":
                 data = Carbonates(impurity="pure", data_type=True).create_malachite()
+            elif self.mineral == "Ikaite":
+                data = Carbonates(impurity="pure", data_type=True).create_ikaite()
             # Halides
             elif self.mineral == "Halite":
                 data = Halogenes(impurity="pure", dict=True).create_halite()
@@ -2219,12 +2229,18 @@ class Minerals:
                 data = Oxides(impurity="pure", data_type=True).create_quartz()
             elif self.mineral == "Magnetite":
                 data = Oxides(impurity="pure").create_magnetite(dict=True)
+            elif self.mineral == "Crocoite":
+                data = Oxides(impurity="pure", data_type=True).create_crocoite()
+            elif self.mineral == "Wulfenite":
+                data = Oxides(impurity="pure", data_type=True).create_wulfenite()
             elif self.mineral == "Hematite-Group":
                 data = Oxides(impurity="pure", data_type=True).create_hematite_group()
             elif self.mineral == "Rutile-Group":
                 data = RutileGroup().create_rutile_group()
             elif self.mineral == "Periclase-Group":
                 data = PericlaseGroup().create_periclase_group()
+            elif self.mineral == "Wulfenite-Group":
+                data = WulfeniteGroup().create_wulfenite_group()
             elif self.mineral == "Cassiterite":
                 data = Oxides(impurity="pure", data_type=True).create_cassiterite()
             elif self.mineral == "Chromite":
@@ -2355,6 +2371,8 @@ class Minerals:
                 data = Carbonates(impurity="pure", data_type=True).create_azurite()
             elif self.mineral == "Malachite":
                 data = Carbonates(impurity="pure", data_type=True).create_malachite()
+            elif self.mineral == "Ikaite":
+                data = Carbonates(impurity="pure", data_type=True).create_ikaite()
             # Halides
             elif self.mineral == "Halite":
                 data = Halogenes(impurity="pure", dict=True).create_halite()

@@ -6,7 +6,7 @@
 # Name:		silicates.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		13.08.2022
+# Date:		08.09.2022
 
 # -----------------------------------------------
 
@@ -7474,6 +7474,12 @@ class Inosilicates:
         majors_data = np.array([["O", oxygen[1], 6, oxygen[2]], ["Na", sodium[1], 1, sodium[2]],
                                 ["Al", aluminium[1], x, aluminium[2]], ["Si", silicon[1], 2, silicon[2]],
                                 ["Fe", iron[1], (1-x), iron[2]]], dtype=object)
+        majors_data_al = np.array([["O", oxygen[1], 6, oxygen[2]], ["Na", sodium[1], 1, sodium[2]],
+                                ["Al", aluminium[1], 1, aluminium[2]], ["Si", silicon[1], 2, silicon[2]],
+                                ["Fe", iron[1], 0, iron[2]]], dtype=object)
+        majors_data_fe = np.array([["O", oxygen[1], 6, oxygen[2]], ["Na", sodium[1], 1, sodium[2]],
+                                ["Al", aluminium[1], 0, aluminium[2]], ["Si", silicon[1], 2, silicon[2]],
+                                ["Fe", iron[1], 1, iron[2]]], dtype=object)
         # Minor elements
         traces_data = []
         if len(self.traces_list) > 0:
@@ -7504,9 +7510,19 @@ class Inosilicates:
         #
         # Molar mass
         molar_mass_pure = sodium[2] + (x*aluminium[2] + (1-x)*iron[2]) + 2*silicon[2] + 6*oxygen[2]
-        molar_mass, amounts = MineralChemistry(w_traces=traces_data, molar_mass_pure=molar_mass_pure,
-                                               majors=majors_data).calculate_molar_mass()
+        molar_mass, amounts = MineralChemistry(
+            w_traces=traces_data, molar_mass_pure=molar_mass_pure, majors=majors_data).calculate_molar_mass()
         element = [PeriodicSystem(name=amounts[i][0]).get_data() for i in range(len(amounts))]
+        #
+        molar_mass_pure_al = sodium[2] + aluminium[2] + 2*silicon[2] + 6*oxygen[2]
+        molar_mass_al, amounts_al = MineralChemistry(
+            w_traces=traces_data, molar_mass_pure=molar_mass_pure_al, majors=majors_data_al).calculate_molar_mass()
+        element_al = [PeriodicSystem(name=amounts_al[i][0]).get_data() for i in range(len(amounts_al))]
+        #
+        molar_mass_pure_fe = sodium[2] + iron[2] + 2*silicon[2] + 6*oxygen[2]
+        molar_mass_fe, amounts_fe = MineralChemistry(
+            w_traces=traces_data, molar_mass_pure=molar_mass_pure_fe, majors=majors_data_fe).calculate_molar_mass()
+        element_fe = [PeriodicSystem(name=amounts_fe[i][0]).get_data() for i in range(len(amounts_fe))]
         # Density
         dataV = CrystalPhysics([[9.418, 8.562, 5.219], [107.56], "monoclinic"])
         V = dataV.calculate_volume()
@@ -7515,6 +7531,26 @@ class Inosilicates:
         dataRho = CrystalPhysics([molar_mass, Z, V])
         rho = dataRho.calculate_bulk_density()
         rho_e = wg(amounts=amounts, elements=element, rho_b=rho).calculate_electron_density()
+        #
+        dataV_al = CrystalPhysics([[9.418, 8.562, 5.219], [107.56], "monoclinic"])
+        V_al = dataV_al.calculate_volume()
+        Z_al = 4
+        V_m_al = MineralChemistry().calculate_molar_volume(volume_cell=V_al, z=Z_al)
+        dataRho_al = CrystalPhysics([molar_mass_al, Z_al, V_al])
+        rho_al = dataRho_al.calculate_bulk_density()
+        rho_e_al = wg(amounts=amounts_al, elements=element_al, rho_b=rho_al).calculate_electron_density()
+        #
+        dataV_fe = CrystalPhysics([[9.65, 8.79, 5.29], [107.5], "monoclinic"])
+        V_fe = dataV_fe.calculate_volume()
+        Z_fe = 4
+        V_m_fe = MineralChemistry().calculate_molar_volume(volume_cell=V_fe, z=Z_fe)
+        dataRho_fe = CrystalPhysics([molar_mass_fe, Z_fe, V_fe])
+        rho_fe = dataRho_fe.calculate_bulk_density()
+        rho_e_fe = wg(amounts=amounts_fe, elements=element_fe, rho_b=rho_fe).calculate_electron_density()
+        #
+        V_m = x*V_m_al + (1-x)*V_m_fe
+        rho = x*rho_al + (1-x)*rho_fe
+        rho_e = x*rho_e_al + (1-x)*rho_e_fe
         # Bulk modulus
         K_Al = 74.38*10**9
         K_Fe = 124.44*10**9
