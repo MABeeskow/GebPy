@@ -140,7 +140,11 @@ class GebPyGUI(tk.Frame):
         #
         self.var_rb_main = tk.IntVar()
         self.var_rb_mineralogy_mineral = tk.IntVar()
+        self.var_rb_mineralogy_mineral.set(0)
         self.var_rb_mineralogy_plot = tk.IntVar()
+        self.var_rb_mineralogy_plot.set(0)
+        self.var_rb_mineralogy_traces = tk.IntVar()
+        self.var_rb_mineralogy_traces.set(0)
         ## Radiobuttons
         rb_01 = SE(
             parent=self.parent, row_id=4, column_id=0, n_rows=1, n_columns=1, bg=self.color_menu,
@@ -548,6 +552,35 @@ class GebPyGUI(tk.Frame):
             Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                      color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
                      entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
+            #
+            ## Labels
+            lb_trace = SE(parent=self.parent, row_id=20, column_id=0, n_rows=1, n_columns=2, bg=self.color_accent_03,
+                          fg=self.color_fg_dark).create_label(text="Trace Elements", relief=tk.RAISED)
+            #
+            self.container_gui["MINERALOGY"]["LABEL"].extend([lb_trace])
+            #
+            ## Radiobuttons
+            rb_trace_01 = SE(
+                    parent=self.parent, row_id=21, column_id=0, n_rows=1, n_columns=1, bg=self.color_menu,
+                    fg=self.color_bg).create_radiobutton(
+                    var_rb=self.var_rb_mineralogy_traces, var_rb_set=0, value_rb=0, text="Without Traces",
+                    color_bg=self.color_menu)
+            rb_trace_02 = SE(
+                    parent=self.parent, row_id=22, column_id=0, n_rows=1, n_columns=1, bg=self.color_menu,
+                    fg=self.color_bg).create_radiobutton(
+                    var_rb=self.var_rb_mineralogy_traces, var_rb_set=0, value_rb=1, text="With Traces",
+                    color_bg=self.color_menu)
+            #
+            self.container_gui["MINERALOGY"]["RADIOBUTTON"].extend([rb_trace_01, rb_trace_02])
+            #
+            ## Buttons
+            btn_trace = SE(
+                parent=self.parent, row_id=21, column_id=1, n_rows=2, n_columns=1, bg=self.color_accent_02,
+                fg=self.color_fg_dark).create_button(
+                text="Select\n Trace Elements")
+            #
+            self.container_gui["MINERALOGY"]["BUTTON"].extend([btn_trace])
+            #
         ## CARBONATES
         elif var_opt in ["Calcite", "Dolomite", "Magnesite", "Siderite", "Rhodochrosite", "Aragonite", "Cerussite",
                          "Ankerite", "Azurite", "Malachite", "Ikaite"]:
@@ -777,17 +810,26 @@ class GebPyGUI(tk.Frame):
             except:
                 pass
             var_opt_0_2 = tk.StringVar()
+            var_opt_0_3 = tk.StringVar()
             opt_list_0_2 = ["Pyrite", "Chalcopyrite", "Galena", "Acanthite", "Chalcocite", "Bornite", "Sphalerite",
                             "Pyrrhotite", "Millerite", "Pentlandite", "Covellite", "Cinnabar", "Realgar", "Orpiment",
                             "Stibnite", "Marcasite", "Molybdenite", "Fahlore", "Chalcopyrite-Group", "Gallite",
                             "Roquesite", "Lenaite", "Laforetite", "Vaesite", "Cattierite", "Pyrite-Group"]
             opt_list_0_2.sort()
+            opt_list_sulfide_groups = ["Pyrite Group"]
+            opt_list_sulfide_groups.sort()
+            #
             self.opt_sulfide = SE(parent=self.parent, row_id=10, column_id=0, n_rows=2, n_columns=2,
                                   bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
                 var_opt=var_opt_0_2, var_opt_set="Select Sulfide Mineral", opt_list=opt_list_0_2,
                 command=lambda var_opt=var_opt_0_2: self.select_opt(var_opt))
+            self.opt_sulfide_groups = SE(
+                parent=self.parent, row_id=12, column_id=0, n_rows=2, n_columns=2, bg=self.color_accent_02,
+                fg=self.color_fg_dark).create_option_menu(
+                var_opt=var_opt_0_3, var_opt_set="Select Sulfide Group", opt_list=opt_list_sulfide_groups,
+                active_bg=self.color_accent_02)
             #
-            self.container_gui["MINERALOGY"]["OPTION MENU"].append(self.opt_sulfide)
+            self.container_gui["MINERALOGY"]["OPTION MENU"].extend([self.opt_sulfide, self.opt_sulfide_groups])
             #
         # CARBONATES
         elif var_opt == "Carbonates":

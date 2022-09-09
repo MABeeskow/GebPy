@@ -194,7 +194,8 @@ class Sulfides():
         iron = PeriodicSystem(name="Fe").get_data()
         majors_name = ["S", "Fe"]
         majors_data = np.array([["S", sulfur[1], 2, sulfur[2]], ["Fe", iron[1], 1, iron[2]]], dtype=object)
-        # Minor elements
+        # Trace elements
+        elements_traces = ["Ni", "Co", "As", "Cu", "Zn", "Ag", "Au", "Tl", "Se", "V"]
         traces_data = []
         if len(self.traces_list) > 0:
             self.impurity = "impure"
@@ -296,6 +297,7 @@ class Sulfides():
             results["PE"] = round(pe, 4)
             results["U"] = round(U, 4)
             results["thermodynamics"] = thermodynamics
+            results["trace elements"] = elements_traces
             if p != None:
                 results["p"] = round(p, 4)
             else:
