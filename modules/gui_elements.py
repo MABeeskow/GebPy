@@ -72,10 +72,13 @@ class SimpleElements:
     #
     def create_button(self, text, command=None):
         if command == None:
-            btn = tk.Button(self.parent, text=text, bg=self.bg, fg=self.fg, activebackground="#F9DED7", highlightbackground=self.bg)
+            btn = tk.Button(
+                self.parent, text=text, bg=self.bg, fg=self.fg, activebackground="#F9DED7", highlightbackground=self.bg)
         else:
-            btn = tk.Button(self.parent, text=text, bg=self.bg, fg=self.fg, activebackground="#F9DED7", highlightbackground=self.bg,
-                            highlightthickness=0, command=command)
+            btn = tk.Button(
+                self.parent, text=text, bg=self.bg, fg=self.fg, activebackground="#F9DED7", highlightbackground=self.bg,
+                highlightthickness=0, command=command)
+        #
         btn.grid(row=self.row_id, column=self.column_id, rowspan=self.n_rows, columnspan=self.n_columns, sticky="nesw")
         #
         return btn

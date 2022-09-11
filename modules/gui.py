@@ -6,7 +6,7 @@
 # Name:		gui.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		07.09.2022
+# Date:		11.09.2022
 
 #-----------------------------------------------
 
@@ -82,16 +82,25 @@ class GebPyGUI(tk.Frame):
         self.entr_w["custom"] = {}
         self.gui_elements = []
         self.container_gui = {}
+        self.container_gui_specific = {}
         self.categories_sections = ["MINERALOGY", "PETROLOGY", "STRATIGRAPHY"]
         self.sub_categories_gui = ["LABEL", "BUTTON", "RADIOBUTTON", "CHECKBOX", "OPTION MENU", "ENTRY", "CANVAS_HISTO",
                                    "CANVAS_SCATTER", "CANVAS_GEOCHEM"]
+        self.sub_categories_gui_specific = ["WITHOUT TRACES", "WITH TRACES"]
         self.container_var = {}
         #
         for category in self.categories_sections:
             self.container_gui[category] = {}
+            self.container_gui_specific[category] = {}
             self.container_var[category] = {}
+            for sub_category_specific in self.sub_categories_gui_specific:
+                if category == "MINERALOGY":
+                    self.container_gui_specific[category][sub_category_specific] = {}
+                    for sub_category in self.sub_categories_gui:
+                        self.container_gui_specific[category][sub_category_specific][sub_category] = []
             for sub_category in self.sub_categories_gui:
                 self.container_gui[category][sub_category] = []
+                self.container_gui_specific[category][sub_category] = []
                 if sub_category == "ENTRY":
                     self.container_var[category][sub_category] = {}
                     self.container_var[category][sub_category]["MIN"] = {}
@@ -290,12 +299,12 @@ class GebPyGUI(tk.Frame):
                     #
                     self.container_gui["STRATIGRAPHY"]["OPTION MENU"].append(self.opt_realseq)
                     #
-                    self.btn_randseq = SE(
+                    btn_randseq = SE(
                         parent=self.parent, row_id=10, column_id=0, n_rows=2, n_columns=2, bg=self.color_accent_02,
                         fg=self.color_fg_dark).create_button(
                         text="Create Random Sequence", command=lambda var_btn="random": self.pressed_button(var_btn))
                     #
-                    self.container_gui["STRATIGRAPHY"]["BUTTON"].append(self.btn_randseq)
+                    self.container_gui["STRATIGRAPHY"]["BUTTON"].append(btn_randseq)
                     #
         else:
             ## MINERALOGY
@@ -554,32 +563,24 @@ class GebPyGUI(tk.Frame):
                      entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
             #
             ## Labels
-            lb_trace = SE(parent=self.parent, row_id=20, column_id=0, n_rows=1, n_columns=2, bg=self.color_accent_03,
+            lb_trace = SE(parent=self.parent, row_id=14, column_id=0, n_rows=1, n_columns=2, bg=self.color_accent_03,
                           fg=self.color_fg_dark).create_label(text="Trace Elements", relief=tk.RAISED)
             #
             self.container_gui["MINERALOGY"]["LABEL"].extend([lb_trace])
             #
             ## Radiobuttons
             rb_trace_01 = SE(
-                    parent=self.parent, row_id=21, column_id=0, n_rows=1, n_columns=1, bg=self.color_menu,
-                    fg=self.color_bg).create_radiobutton(
-                    var_rb=self.var_rb_mineralogy_traces, var_rb_set=0, value_rb=0, text="Without Traces",
-                    color_bg=self.color_menu)
+                parent=self.parent, row_id=15, column_id=0, n_rows=1, n_columns=1, bg=self.color_menu,
+                fg=self.color_bg).create_radiobutton(
+                var_rb=self.var_rb_mineralogy_traces, var_rb_set=0, value_rb=0, text="Without Traces",
+                color_bg=self.color_menu, command=lambda var_opt=var_opt: self.change_rb_trace(var_opt))
             rb_trace_02 = SE(
-                    parent=self.parent, row_id=22, column_id=0, n_rows=1, n_columns=1, bg=self.color_menu,
-                    fg=self.color_bg).create_radiobutton(
-                    var_rb=self.var_rb_mineralogy_traces, var_rb_set=0, value_rb=1, text="With Traces",
-                    color_bg=self.color_menu)
+                parent=self.parent, row_id=15, column_id=1, n_rows=1, n_columns=1, bg=self.color_menu,
+                fg=self.color_bg).create_radiobutton(
+                var_rb=self.var_rb_mineralogy_traces, var_rb_set=0, value_rb=1, text="With Traces",
+                color_bg=self.color_menu, command=lambda var_opt=var_opt: self.change_rb_trace(var_opt))
             #
             self.container_gui["MINERALOGY"]["RADIOBUTTON"].extend([rb_trace_01, rb_trace_02])
-            #
-            ## Buttons
-            btn_trace = SE(
-                parent=self.parent, row_id=21, column_id=1, n_rows=2, n_columns=1, bg=self.color_accent_02,
-                fg=self.color_fg_dark).create_button(
-                text="Select\n Trace Elements")
-            #
-            self.container_gui["MINERALOGY"]["BUTTON"].extend([btn_trace])
             #
         ## CARBONATES
         elif var_opt in ["Calcite", "Dolomite", "Magnesite", "Siderite", "Rhodochrosite", "Aragonite", "Cerussite",
@@ -1334,6 +1335,66 @@ class GebPyGUI(tk.Frame):
                 color_acc=[self.color_accent_03, self.color_accent_04], subsurface=var_opt, lbl_w=self.lbl_w,
                 entr_w=self.entr_w, gui_elements=self.gui_elements).create_real_world_sequences(
                 name=var_opt, data_units=data_muschelkalk)
+    #
+    def change_rb_trace(self, var_opt):
+        if self.var_rb_mineralogy_traces.get() == 0:
+            ## Cleaning
+            for sub_category in self.sub_categories_gui:
+                if len(self.container_gui_specific["MINERALOGY"]["WITH TRACES"][sub_category]) > 0:
+                    for gui_item in self.container_gui_specific["MINERALOGY"]["WITH TRACES"][sub_category]:
+                        if sub_category not in ["CANVAS_HISTO", "CANVAS_SCATTER", "CANVAS_GEOCHEM"]:
+                            gui_item.grid_remove()
+                        else:
+                            gui_item.get_tk_widget().grid_remove()
+            #
+            # Reconstruction
+            for sub_category in self.sub_categories_gui:
+                if len(self.container_gui_specific["MINERALOGY"]["WITHOUT TRACES"][sub_category]) > 0:
+                    for gui_item in self.container_gui_specific["MINERALOGY"]["WITHOUT TRACES"][sub_category]:
+                        if sub_category not in ["CANVAS_HISTO", "CANVAS_SCATTER", "CANVAS_GEOCHEM"]:
+                            gui_item.grid()
+                        else:
+                            gui_item.get_tk_widget().grid()
+            #
+        elif self.var_rb_mineralogy_traces.get() == 1:
+            ## Cleaning
+            for sub_category in self.sub_categories_gui:
+                if len(self.container_gui_specific["MINERALOGY"]["WITHOUT TRACES"][sub_category]) > 0:
+                    for gui_item in self.container_gui_specific["MINERALOGY"]["WITHOUT TRACES"][sub_category]:
+                        if sub_category not in ["CANVAS_HISTO", "CANVAS_SCATTER", "CANVAS_GEOCHEM"]:
+                            gui_item.grid_remove()
+                        else:
+                            gui_item.get_tk_widget().grid_remove()
+            #
+            ## Reconstruction
+            for sub_category in self.sub_categories_gui:
+                if len(self.container_gui_specific["MINERALOGY"]["WITH TRACES"][sub_category]) > 0:
+                    for gui_item in self.container_gui_specific["MINERALOGY"]["WITH TRACES"][sub_category]:
+                        if sub_category not in ["CANVAS_HISTO", "CANVAS_SCATTER", "CANVAS_GEOCHEM"]:
+                            gui_item.grid()
+                        else:
+                            gui_item.get_tk_widget().grid()
+            #
+            ## Buttons
+            if len(self.container_gui_specific["MINERALOGY"]["WITH TRACES"]["BUTTON"]) == 0:
+                data_mineral = Sulfides(mineral=var_opt, data_type=True).get_data()
+                btn_trace = SE(
+                    parent=self.parent, row_id=16, column_id=0, n_rows=1, n_columns=2, bg=self.color_accent_02,
+                    fg=self.color_fg_dark).create_button(
+                    text="Select Trace Elements",
+                    command=lambda traces_list=data_mineral["trace elements"]: self.select_trace_elements(traces_list))
+                #
+                self.container_gui_specific["MINERALOGY"]["WITH TRACES"]["BUTTON"].append(btn_trace)
+    #
+    def select_trace_elements(self, traces_list):
+        var_opt_traces = tk.StringVar()
+        traces_list.sort()
+        opt_traces = SE(
+            parent=self.parent, row_id=17, column_id=0, n_rows=1, n_columns=2, bg=self.color_accent_02,
+            fg=self.color_fg_dark).create_option_menu(
+            var_opt=var_opt_traces, var_opt_set="Select Trace Element", opt_list=traces_list)
+        #
+        self.container_gui_specific["MINERALOGY"]["WITH TRACES"]["OPTION MENU"].append(opt_traces)
     #
     def plot_histogram_comparison(self, dataset):
         labels = [["Density - kg/m$^3$", "Gamma Ray - API", "Photoelectricity - barns/e$^-$"],
