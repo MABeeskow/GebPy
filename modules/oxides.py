@@ -178,7 +178,9 @@ class Oxides():
         #
         name = "Qz"
         #
-        # Minor elements
+        # Trace elements
+        elements_traces = ["Ti", "Ge", "Sn", "C", "Al", "Fe", "Ga", "As", "B", "P", "H", "Li", "Na", "Ag", "K", "Mg",
+                           "Cu", "Be", "Mn"]
         traces_data = []
         if len(self.traces_list) > 0:
             self.impurity = "impure"
@@ -315,6 +317,7 @@ class Oxides():
             results["GR"] = round(gamma_ray, 4)
             results["PE"] = round(pe, 4)
             results["U"] = round(U, 4)
+            results["trace elements"] = elements_traces
             if p != None:
                 results["p"] = round(p, 4)
             else:

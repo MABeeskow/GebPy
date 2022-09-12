@@ -57,8 +57,7 @@ class SimpleElements:
         #
         return entry
     #
-    def create_radiobutton(self, var_rb, var_rb_set, value_rb, color_bg, relief=tk.FLAT, command=None, text=""):
-        var_rb.set(var_rb_set)
+    def create_radiobutton(self, var_rb, value_rb, color_bg, relief=tk.FLAT, command=None, text=""):
         if command == None:
             rb = tk.Radiobutton(self.parent, text=text, variable=var_rb, value=value_rb, bg=self.bg, fg=self.fg,
                                 activebackground=color_bg, highlightthickness=0, relief=relief, selectcolor=color_bg)
@@ -73,7 +72,8 @@ class SimpleElements:
     def create_button(self, text, command=None):
         if command == None:
             btn = tk.Button(
-                self.parent, text=text, bg=self.bg, fg=self.fg, activebackground="#F9DED7", highlightbackground=self.bg)
+                self.parent, text=text, bg=self.bg, fg=self.fg, activebackground="#F9DED7", highlightbackground=self.bg,
+                highlightthickness=0)
         else:
             btn = tk.Button(
                 self.parent, text=text, bg=self.bg, fg=self.fg, activebackground="#F9DED7", highlightbackground=self.bg,
