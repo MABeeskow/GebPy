@@ -6,7 +6,7 @@
 # Name:		gui.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		11.09.2022
+# Date:		16.09.2022
 
 #-----------------------------------------------
 
@@ -438,7 +438,7 @@ class GebPyGUI(tk.Frame):
                        "Cuprospinel", "Jacobsite", "Magnesioferrite", "Trevorite", "Franklinite", "Ulvöspinel",
                        "Iron Spinels", "Uraninite", "Litharge", "Massicot", "Minium", "Plattnerite", "Scrutinyite",
                        "Zincite", "Columbite", "Tantalite", "Coltan", "Hematite-Group", "Rutile-Group",
-                       "Periclase-Group", "Crocoite", "Wulfenite", "Wulfenite-Group"]:
+                       "Periclase-Group", "Crocoite", "Wulfenite", "Wulfenite-Group", "Goethite"]:
             Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                      color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
                      entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
@@ -489,7 +489,7 @@ class GebPyGUI(tk.Frame):
                 rb_key = SE(
                     parent=self.parent, row_id=15 + index, column_id=0, n_rows=1, n_columns=1, bg=self.color_menu,
                     fg=self.color_bg).create_radiobutton(
-                    var_rb=self.var_rb_mineralogy_mineral, var_rb_set=0, value_rb=index, text=key,
+                    var_rb=self.var_rb_mineralogy_mineral, value_rb=index, text=key,
                     color_bg=self.color_menu, command=lambda dataset=self.data_minerals: self.change_rb_comparison_key(dataset))
                 #
                 if index == 0:
@@ -516,7 +516,7 @@ class GebPyGUI(tk.Frame):
                 rb_plot = SE(
                     parent=self.parent, row_id=15 + index, column_id=1, n_rows=1, n_columns=1, bg=self.color_menu,
                     fg=self.color_bg).create_radiobutton(
-                    var_rb=self.var_rb_mineralogy_plot, var_rb_set=0, value_rb=index, text=plot_category,
+                    var_rb=self.var_rb_mineralogy_plot, value_rb=index, text=plot_category,
                     color_bg=self.color_menu,
                     command=lambda dataset=self.data_minerals: self.change_rb_comparison_plot(dataset))
                 #
@@ -649,7 +649,7 @@ class GebPyGUI(tk.Frame):
                      color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
                      entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
         # NESOSILICATES
-        elif var_opt in ["Zircon", "Thorite", "Andalusite", "Kyanite", "Sillimanite", "Topaz", "Staurolite",
+        elif var_opt in ["Zircon", "Titanite", "Thorite", "Andalusite", "Kyanite", "Sillimanite", "Topaz", "Staurolite",
                          "Fayalite", "Forsterite", "Tephroite", "Calcio-Olivine", "Liebenbergite", "Olivine", "Pyrope",
                          "Almandine", "Grossular", "Andradite", "Uvarovite", "Aluminium Garnet", "Calcium Garnet"]:
             Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
@@ -800,7 +800,7 @@ class GebPyGUI(tk.Frame):
                             "Trevorite", "Franklinite", "Ulvöspinel", "Uraninite", "Litharge", "Massicot", "Minium",
                             "Plattnerite", "Scrutinyite", "Zincite", "Columbite", "Tantalite", "Coltan",
                             "Hematite-Group", "Rutile-Group", "Periclase-Group", "Crocoite", "Wulfenite",
-                            "Wulfenite-Group"]
+                            "Wulfenite-Group", "Goethite"]
             opt_list_0_1.sort()
             opt_oxide_comparison = ["Spinel Group", "Hematite Group", "Rutile Group", "Periclase Group",
                                     "Wulfenite Group"]
@@ -1020,7 +1020,7 @@ class GebPyGUI(tk.Frame):
             except:
                 pass
             var_opt_0_8 = tk.StringVar()
-            opt_list_0_8 = ["Zircon", "Thorite", "Andalusite", "Kyanite", "Sillimanite", "Topaz", "Staurolite",
+            opt_list_0_8 = ["Zircon", "Titanite", "Thorite", "Andalusite", "Kyanite", "Sillimanite", "Topaz", "Staurolite",
                             "Fayalite", "Forsterite", "Tephroite", "Calcio-Olivine", "Liebenbergite", "Olivine",
                             "Pyrope", "Almandine", "Grossular", "Andradite", "Uvarovite", "Aluminium Garnet",
                             "Calcium Garnet"]
@@ -1764,6 +1764,8 @@ class Minerals:
                 data = Oxides(impurity="pure", data_type=True).create_quartz()
             elif self.mineral == "Magnetite":
                 data = Oxides(impurity="pure", data_type=True).create_magnetite()
+            elif self.mineral == "Goethite":
+                data = Oxides(impurity="pure", data_type=True).create_goethite()
             elif self.mineral == "Crocoite":
                 data = Oxides(impurity="pure", data_type=True).create_crocoite()
             elif self.mineral == "Wulfenite":
@@ -2005,6 +2007,8 @@ class Minerals:
                 data = Nesosilicates(data_type=True).create_zircon()
             elif self.mineral == "Thorite":
                 data = Nesosilicates(data_type=True).create_thorite()
+            elif self.mineral == "Titanite":
+                data = Nesosilicates(data_type=True).create_titanite()
             elif self.mineral == "Andalusite":
                 data = Nesosilicates(data_type=True).create_andalusite()
             elif self.mineral == "Kyanite":
@@ -2167,32 +2171,32 @@ class Minerals:
                 self.element_list[element] = []
                 for index, chem_dict in enumerate(self.chemistry, start=0):
                     self.element_list[element].append(abs(chem_dict[element]*100))
-            if self.mineral in ["Magnetite", "Hematite", "Pyrite", "Siderite"]:
-                self.w_element = self.element_list["Fe"]
-            elif self.mineral in ["Quartz"]:
-                self.w_element = self.element_list["Si"]
-            elif self.mineral in ["Galena"]:
-                self.w_element = self.element_list["Pb"]
-            elif self.mineral in ["Chalcopyrite", "Cuprospinel"]:
-                self.w_element = self.element_list["Cu"]
-            elif self.mineral in ["Cassiterite"]:
-                self.w_element = self.element_list["Sn"]
-            elif self.mineral in ["Calcite", "Dolomite", "Fluorite", "Plagioclase"]:
-                self.w_element = self.element_list["Ca"]
-            elif self.mineral in ["Magnesite", "Aluminium Spinels"]:
-                self.w_element = self.element_list["Mg"]
-            elif self.mineral in ["Halite"]:
-                self.w_element = self.element_list["Na"]
-            elif self.mineral in ["Chromite", "Magnesiochromite", "Zincochromite", "Chromium Spinels"]:
-                self.w_element = self.element_list["Cr"]
-            elif self.mineral in ["Pyrolusite"]:
-                self.w_element = self.element_list["Mn"]
-            elif self.mineral in ["Ilmenite", "Rutile"]:
-                self.w_element = self.element_list["Ti"]
-            elif self.mineral in ["Sylvite", "Alkalifeldspar"]:
-                self.w_element = self.element_list["K"]
-            elif self.mineral in ["Illite", "Corundum"]:
-                self.w_element = self.element_list["Al"]
+            # if self.mineral in ["Magnetite", "Hematite", "Pyrite", "Siderite"]:
+            #     self.w_element = self.element_list["Fe"]
+            # elif self.mineral in ["Quartz"]:
+            #     self.w_element = self.element_list["Si"]
+            # elif self.mineral in ["Galena"]:
+            #     self.w_element = self.element_list["Pb"]
+            # elif self.mineral in ["Chalcopyrite", "Cuprospinel"]:
+            #     self.w_element = self.element_list["Cu"]
+            # elif self.mineral in ["Cassiterite"]:
+            #     self.w_element = self.element_list["Sn"]
+            # elif self.mineral in ["Calcite", "Dolomite", "Fluorite", "Plagioclase"]:
+            #     self.w_element = self.element_list["Ca"]
+            # elif self.mineral in ["Magnesite", "Aluminium Spinels"]:
+            #     self.w_element = self.element_list["Mg"]
+            # elif self.mineral in ["Halite"]:
+            #     self.w_element = self.element_list["Na"]
+            # elif self.mineral in ["Chromite", "Magnesiochromite", "Zincochromite", "Chromium Spinels"]:
+            #     self.w_element = self.element_list["Cr"]
+            # elif self.mineral in ["Pyrolusite"]:
+            #     self.w_element = self.element_list["Mn"]
+            # elif self.mineral in ["Ilmenite", "Rutile"]:
+            #     self.w_element = self.element_list["Ti"]
+            # elif self.mineral in ["Sylvite", "Alkalifeldspar"]:
+            #     self.w_element = self.element_list["K"]
+            # elif self.mineral in ["Illite", "Corundum"]:
+            #     self.w_element = self.element_list["Al"]
         #
         self.var_opt_chem = tk.StringVar()
         self.list_elements = list(self.chemistry[0].keys())
@@ -2362,6 +2366,8 @@ class Minerals:
                 data = Oxides(impurity="pure", data_type=True).create_quartz()
             elif self.mineral == "Magnetite":
                 data = Oxides(impurity="pure").create_magnetite(dict=True)
+            elif self.mineral == "Goethite":
+                data = Oxides(impurity="pure", data_type=True).create_goethite()
             elif self.mineral == "Crocoite":
                 data = Oxides(impurity="pure", data_type=True).create_crocoite()
             elif self.mineral == "Wulfenite":
@@ -2603,6 +2609,8 @@ class Minerals:
                 data = Nesosilicates(data_type=True).create_zircon()
             elif self.mineral == "Thorite":
                 data = Nesosilicates(data_type=True).create_thorite()
+            elif self.mineral == "Titanite":
+                data = Nesosilicates(data_type=True).create_titanite()
             elif self.mineral == "Andalusite":
                 data = Nesosilicates(data_type=True).create_andalusite()
             elif self.mineral == "Kyanite":
@@ -2764,32 +2772,32 @@ class Minerals:
                 self.element_list[element] = []
                 for index, chem_dict in enumerate(self.chemistry, start=0):
                     self.element_list[element].append(abs(chem_dict[element]*100))
-            if self.mineral in ["Magnetite", "Hematite", "Pyrite", "Siderite"]:
-                self.w_element = self.element_list["Fe"]
-            elif self.mineral in ["Quartz"]:
-                self.w_element = self.element_list["Si"]
-            elif self.mineral in ["Galena"]:
-                self.w_element = self.element_list["Pb"]
-            elif self.mineral in ["Chalcopyrite", "Cuprospinel"]:
-                self.w_element = self.element_list["Cu"]
-            elif self.mineral in ["Cassiterite"]:
-                self.w_element = self.element_list["Sn"]
-            elif self.mineral in ["Calcite", "Dolomite", "Fluorite", "Plagioclase"]:
-                self.w_element = self.element_list["Ca"]
-            elif self.mineral in ["Magnesite", "Aluminium Spinels"]:
-                self.w_element = self.element_list["Mg"]
-            elif self.mineral in ["Halite"]:
-                self.w_element = self.element_list["Na"]
-            elif self.mineral in ["Chromite", "Magnesiochromite", "Zincochromite", "Chromium Spinels"]:
-                self.w_element = self.element_list["Cr"]
-            elif self.mineral in ["Ilmenite", "Rutile"]:
-                self.w_element = self.element_list["Ti"]
-            elif self.mineral in ["Sylvite", "Alkalifeldspar"]:
-                self.w_element = self.element_list["K"]
-            elif self.mineral in ["Illite", "Corundum"]:
-                self.w_element = self.element_list["Al"]
-            elif self.mineral in ["Pyrolusite"]:
-                self.w_element = self.element_list["Mn"]
+            # if self.mineral in ["Magnetite", "Hematite", "Pyrite", "Siderite"]:
+            #     self.w_element = self.element_list["Fe"]
+            # elif self.mineral in ["Quartz"]:
+            #     self.w_element = self.element_list["Si"]
+            # elif self.mineral in ["Galena"]:
+            #     self.w_element = self.element_list["Pb"]
+            # elif self.mineral in ["Chalcopyrite", "Cuprospinel"]:
+            #     self.w_element = self.element_list["Cu"]
+            # elif self.mineral in ["Cassiterite"]:
+            #     self.w_element = self.element_list["Sn"]
+            # elif self.mineral in ["Calcite", "Dolomite", "Fluorite", "Plagioclase"]:
+            #     self.w_element = self.element_list["Ca"]
+            # elif self.mineral in ["Magnesite", "Aluminium Spinels"]:
+            #     self.w_element = self.element_list["Mg"]
+            # elif self.mineral in ["Halite"]:
+            #     self.w_element = self.element_list["Na"]
+            # elif self.mineral in ["Chromite", "Magnesiochromite", "Zincochromite", "Chromium Spinels"]:
+            #     self.w_element = self.element_list["Cr"]
+            # elif self.mineral in ["Ilmenite", "Rutile"]:
+            #     self.w_element = self.element_list["Ti"]
+            # elif self.mineral in ["Sylvite", "Alkalifeldspar"]:
+            #     self.w_element = self.element_list["K"]
+            # elif self.mineral in ["Illite", "Corundum"]:
+            #     self.w_element = self.element_list["Al"]
+            # elif self.mineral in ["Pyrolusite"]:
+            #     self.w_element = self.element_list["Mn"]
         #
         self.list_elements = list(self.chemistry[0].keys())
         opt_list_chem = ["No Selection"]
@@ -2959,6 +2967,8 @@ class Minerals:
                         data = Oxides(impurity="pure", data_type=True).create_quartz()
                     elif self.mineral == "Magnetite":
                         data = Oxides(impurity="pure", data_type=True).create_magnetite()
+                    elif self.mineral == "Goethite":
+                        data = Oxides(impurity="pure", data_type=True).create_goethite()
                     elif self.mineral == "Cassiterite":
                         data = Oxides(impurity="pure", data_type=True).create_cassiterite()
                     elif self.mineral == "Chromite":
@@ -3145,6 +3155,8 @@ class Minerals:
                         data = Nesosilicates(data_type=True).create_zircon()
                     elif self.mineral == "Thorite":
                         data = Nesosilicates(data_type=True).create_thorite()
+                    elif self.mineral == "Titanite":
+                        data = Nesosilicates(data_type=True).create_titanite()
                     elif self.mineral == "Andalusite":
                         data = Nesosilicates(data_type=True).create_andalusite()
                     elif self.mineral == "Kyanite":
@@ -3284,32 +3296,32 @@ class Minerals:
                         self.element_list[element] = []
                         for index, chem_dict in enumerate(self.chemistry, start=0):
                             self.element_list[element].append(abs(chem_dict[element]*100))
-                    if self.mineral in ["Magnetite", "Hematite", "Pyrite", "Siderite"]:
-                        self.w_element = self.element_list["Fe"]
-                    elif self.mineral in ["Quartz"]:
-                        self.w_element = self.element_list["Si"]
-                    elif self.mineral in ["Galena"]:
-                        self.w_element = self.element_list["Pb"]
-                    elif self.mineral in ["Chalcopyrite", "Cuprospinel"]:
-                        self.w_element = self.element_list["Cu"]
-                    elif self.mineral in ["Cassiterite"]:
-                        self.w_element = self.element_list["Sn"]
-                    elif self.mineral in ["Calcite", "Dolomite", "Fluorite", "Plagioclase"]:
-                        self.w_element = self.element_list["Ca"]
-                    elif self.mineral in ["Magnesite", "Aluminium Spinels"]:
-                        self.w_element = self.element_list["Mg"]
-                    elif self.mineral in ["Halite"]:
-                        self.w_element = self.element_list["Na"]
-                    elif self.mineral in ["Chromite", "Magnesiochromite", "Zincochromite", "Chromium Spinels"]:
-                        self.w_element = self.element_list["Cr"]
-                    elif self.mineral in ["Ilmenite", "Rutile"]:
-                        self.w_element = self.element_list["Ti"]
-                    elif self.mineral in ["Sylvite", "Alkalifeldspar"]:
-                        self.w_element = self.element_list["K"]
-                    elif self.mineral in ["Illite", "Corundum"]:
-                        self.w_element = self.element_list["Al"]
-                    elif self.mineral in ["Pyrolusite"]:
-                        self.w_element = self.element_list["Mn"]
+                    # if self.mineral in ["Magnetite", "Hematite", "Pyrite", "Siderite"]:
+                    #     self.w_element = self.element_list["Fe"]
+                    # elif self.mineral in ["Quartz"]:
+                    #     self.w_element = self.element_list["Si"]
+                    # elif self.mineral in ["Galena"]:
+                    #     self.w_element = self.element_list["Pb"]
+                    # elif self.mineral in ["Chalcopyrite", "Cuprospinel"]:
+                    #     self.w_element = self.element_list["Cu"]
+                    # elif self.mineral in ["Cassiterite"]:
+                    #     self.w_element = self.element_list["Sn"]
+                    # elif self.mineral in ["Calcite", "Dolomite", "Fluorite", "Plagioclase"]:
+                    #     self.w_element = self.element_list["Ca"]
+                    # elif self.mineral in ["Magnesite", "Aluminium Spinels"]:
+                    #     self.w_element = self.element_list["Mg"]
+                    # elif self.mineral in ["Halite"]:
+                    #     self.w_element = self.element_list["Na"]
+                    # elif self.mineral in ["Chromite", "Magnesiochromite", "Zincochromite", "Chromium Spinels"]:
+                    #     self.w_element = self.element_list["Cr"]
+                    # elif self.mineral in ["Ilmenite", "Rutile"]:
+                    #     self.w_element = self.element_list["Ti"]
+                    # elif self.mineral in ["Sylvite", "Alkalifeldspar"]:
+                    #     self.w_element = self.element_list["K"]
+                    # elif self.mineral in ["Illite", "Corundum"]:
+                    #     self.w_element = self.element_list["Al"]
+                    # elif self.mineral in ["Pyrolusite"]:
+                    #     self.w_element = self.element_list["Mn"]
                 #
                 self.list_elements = list(self.chemistry[0].keys())
                 opt_list_chem = ["No Selection"]
@@ -3434,6 +3446,8 @@ class Minerals:
                     data = Oxides(impurity=selection_trace, data_type=True).create_quartz()
                 elif self.mineral == "Magnetite":
                     data = Oxides(impurity="pure", data_type=True).create_magnetite()
+                elif self.mineral == "Goethite":
+                    data = Oxides(impurity="pure", data_type=True).create_goethite()
                 elif self.mineral == "Cassiterite":
                     data = Oxides(impurity="pure", data_type=True).create_cassiterite()
                 elif self.mineral == "Chromite":
@@ -3620,6 +3634,8 @@ class Minerals:
                     data = Nesosilicates(data_type=True).create_zircon()
                 elif self.mineral == "Thorite":
                     data = Nesosilicates(data_type=True).create_thorite()
+                elif self.mineral == "Titanite":
+                        data = Nesosilicates(data_type=True).create_titanite()
                 elif self.mineral == "Andalusite":
                     data = Nesosilicates(data_type=True).create_andalusite()
                 elif self.mineral == "Kyanite":
@@ -3759,32 +3775,32 @@ class Minerals:
                     self.element_list[element] = []
                     for index, chem_dict in enumerate(self.chemistry, start=0):
                         self.element_list[element].append(abs(chem_dict[element]*100))
-                if self.mineral in ["Magnetite", "Hematite", "Pyrite", "Siderite"]:
-                    self.w_element = self.element_list["Fe"]
-                elif self.mineral in ["Quartz"]:
-                    self.w_element = self.element_list["Si"]
-                elif self.mineral in ["Galena"]:
-                    self.w_element = self.element_list["Pb"]
-                elif self.mineral in ["Chalcopyrite", "Cuprospinel"]:
-                    self.w_element = self.element_list["Cu"]
-                elif self.mineral in ["Cassiterite"]:
-                    self.w_element = self.element_list["Sn"]
-                elif self.mineral in ["Calcite", "Dolomite", "Fluorite", "Plagioclase"]:
-                    self.w_element = self.element_list["Ca"]
-                elif self.mineral in ["Magnesite", "Aluminium Spinels"]:
-                    self.w_element = self.element_list["Mg"]
-                elif self.mineral in ["Halite"]:
-                    self.w_element = self.element_list["Na"]
-                elif self.mineral in ["Chromite", "Magnesiochromite", "Zincochromite", "Chromium Spinels"]:
-                    self.w_element = self.element_list["Cr"]
-                elif self.mineral in ["Ilmenite", "Rutile"]:
-                    self.w_element = self.element_list["Ti"]
-                elif self.mineral in ["Sylvite", "Alkalifeldspar"]:
-                    self.w_element = self.element_list["K"]
-                elif self.mineral in ["Illite", "Corundum"]:
-                    self.w_element = self.element_list["Al"]
-                elif self.mineral in ["Pyrolusite"]:
-                    self.w_element = self.element_list["Mn"]
+                # if self.mineral in ["Magnetite", "Hematite", "Pyrite", "Siderite"]:
+                #     self.w_element = self.element_list["Fe"]
+                # elif self.mineral in ["Quartz"]:
+                #     self.w_element = self.element_list["Si"]
+                # elif self.mineral in ["Galena"]:
+                #     self.w_element = self.element_list["Pb"]
+                # elif self.mineral in ["Chalcopyrite", "Cuprospinel"]:
+                #     self.w_element = self.element_list["Cu"]
+                # elif self.mineral in ["Cassiterite"]:
+                #     self.w_element = self.element_list["Sn"]
+                # elif self.mineral in ["Calcite", "Dolomite", "Fluorite", "Plagioclase"]:
+                #     self.w_element = self.element_list["Ca"]
+                # elif self.mineral in ["Magnesite", "Aluminium Spinels"]:
+                #     self.w_element = self.element_list["Mg"]
+                # elif self.mineral in ["Halite"]:
+                #     self.w_element = self.element_list["Na"]
+                # elif self.mineral in ["Chromite", "Magnesiochromite", "Zincochromite", "Chromium Spinels"]:
+                #     self.w_element = self.element_list["Cr"]
+                # elif self.mineral in ["Ilmenite", "Rutile"]:
+                #     self.w_element = self.element_list["Ti"]
+                # elif self.mineral in ["Sylvite", "Alkalifeldspar"]:
+                #     self.w_element = self.element_list["K"]
+                # elif self.mineral in ["Illite", "Corundum"]:
+                #     self.w_element = self.element_list["Al"]
+                # elif self.mineral in ["Pyrolusite"]:
+                #     self.w_element = self.element_list["Mn"]
             #
             self.list_elements = list(self.chemistry[0].keys())
             opt_list_chem = ["No Selection"]
@@ -3963,9 +3979,9 @@ class Rocks:
         self.var_phi1 = tk.IntVar()
         var_phi1_start = 30
         self.var_rb = tk.IntVar()
+        self.var_rb.set(0)
         self.var_rb_geochem = tk.IntVar()
-        var_rb_start = 0
-        var_rb_geochem_start = 2
+        self.var_rb_geochem.set(2)
         self.rock = rock
         self.lbl_w = lbl_w
         self.entr_w = entr_w
@@ -4062,19 +4078,19 @@ class Rocks:
         self.entr_w["physics"].extend([entr_01, entr_02, entr_03])
         #
         rb_01 = SE(parent=self.parent_rock, row_id=32, column_id=0, n_rows=1, n_columns=2, bg=self.color_acc_01,
-           fg="black").create_radiobutton(var_rb=self.var_rb, var_rb_set=var_rb_start, value_rb=0, text="Histogram",
+           fg="black").create_radiobutton(var_rb=self.var_rb, value_rb=0, text="Histogram",
                                            color_bg=self.color_acc_01,
                                            command=lambda var_rb=self.var_rb: self.change_radiobutton(var_rb))
         rb_02 = SE(parent=self.parent_rock, row_id=33, column_id=0, n_rows=1, n_columns=2, bg=self.color_acc_01,
-           fg="black").create_radiobutton(var_rb=self.var_rb, var_rb_set=var_rb_start, value_rb=1, text="Scatter",
+           fg="black").create_radiobutton(var_rb=self.var_rb, value_rb=1, text="Scatter",
                                            color_bg=self.color_acc_01,
                                            command=lambda var_rb=self.var_rb: self.change_radiobutton(var_rb))
         rb_03 = SE(parent=self.parent_rock, row_id=34, column_id=0, n_rows=1, n_columns=1, bg=self.color_acc_01,
-           fg="black").create_radiobutton(var_rb=self.var_rb_geochem, var_rb_set=var_rb_geochem_start, value_rb=2,
+           fg="black").create_radiobutton(var_rb=self.var_rb_geochem, value_rb=2,
                                           text="Elements", color_bg=self.color_acc_01,
                                           command=lambda var_rb=self.var_rb_geochem: self.change_radiobutton(var_rb))
         rb_04 = SE(parent=self.parent_rock, row_id=35, column_id=0, n_rows=1, n_columns=2, bg=self.color_acc_01,
-           fg="black").create_radiobutton(var_rb=self.var_rb_geochem, var_rb_set=var_rb_geochem_start, value_rb=3,
+           fg="black").create_radiobutton(var_rb=self.var_rb_geochem, value_rb=3,
                                           text="Minerals", color_bg=self.color_acc_01,
                                           command=lambda var_rb=self.var_rb_geochem: self.change_radiobutton(var_rb))
         #
@@ -4093,7 +4109,7 @@ class Rocks:
                         rb_oxides = SE(
                             parent=self.parent_rock, row_id=34, column_id=1, n_rows=1, n_columns=1, bg=self.color_acc_01,
                             fg="black").create_radiobutton(
-                            var_rb=self.var_rb_geochem, var_rb_set=var_rb_geochem_start, value_rb=4, text="Oxides",
+                            var_rb=self.var_rb_geochem, value_rb=4, text="Oxides",
                             color_bg=self.color_acc_01, command=lambda var_rb=self.var_rb_geochem:
                             self.change_radiobutton(var_rb))
                         self.gui_elements.append(rb_oxides)
@@ -4103,7 +4119,7 @@ class Rocks:
                         rb_oxides = SE(
                             parent=self.parent_rock, row_id=34, column_id=1, n_rows=1, n_columns=1, bg=self.color_acc_01,
                             fg="black").create_radiobutton(
-                            var_rb=self.var_rb_geochem, var_rb_set=var_rb_geochem_start, value_rb=4, text="Oxides",
+                            var_rb=self.var_rb_geochem, value_rb=4, text="Oxides",
                             color_bg=self.color_acc_01, command=lambda var_rb=self.var_rb_geochem:
                             self.change_radiobutton(var_rb))
                         self.gui_elements.append(rb_oxides)
@@ -4113,7 +4129,7 @@ class Rocks:
                         rb_oxides = SE(
                             parent=self.parent_rock, row_id=34, column_id=1, n_rows=1, n_columns=1, bg=self.color_acc_01,
                             fg="black").create_radiobutton(
-                            var_rb=self.var_rb_geochem, var_rb_set=var_rb_geochem_start, value_rb=4, text="Oxides",
+                            var_rb=self.var_rb_geochem, value_rb=4, text="Oxides",
                             color_bg=self.color_acc_01, command=lambda var_rb=self.var_rb_geochem:
                             self.change_radiobutton(var_rb))
                         self.gui_elements.append(rb_oxides)
@@ -4123,7 +4139,7 @@ class Rocks:
                         rb_oxides = SE(
                             parent=self.parent_rock, row_id=34, column_id=1, n_rows=1, n_columns=1, bg=self.color_acc_01,
                             fg="black").create_radiobutton(
-                            var_rb=self.var_rb_geochem, var_rb_set=var_rb_geochem_start, value_rb=4, text="Oxides",
+                            var_rb=self.var_rb_geochem, value_rb=4, text="Oxides",
                             color_bg=self.color_acc_01, command=lambda var_rb=self.var_rb_geochem:
                             self.change_radiobutton(var_rb))
                         self.gui_elements.append(rb_oxides)
@@ -4134,7 +4150,7 @@ class Rocks:
                             parent=self.parent_rock, row_id=34, column_id=1, n_rows=1, n_columns=1,
                             bg=self.color_acc_01,
                             fg="black").create_radiobutton(
-                            var_rb=self.var_rb_geochem, var_rb_set=var_rb_geochem_start, value_rb=4, text="Oxides",
+                            var_rb=self.var_rb_geochem, value_rb=4, text="Oxides",
                             color_bg=self.color_acc_01, command=lambda var_rb=self.var_rb_geochem:
                             self.change_radiobutton(var_rb))
                         self.gui_elements.append(rb_oxides)
@@ -4145,7 +4161,7 @@ class Rocks:
                             parent=self.parent_rock, row_id=34, column_id=1, n_rows=1, n_columns=1,
                             bg=self.color_acc_01,
                             fg="black").create_radiobutton(
-                            var_rb=self.var_rb_geochem, var_rb_set=var_rb_geochem_start, value_rb=4, text="Oxides",
+                            var_rb=self.var_rb_geochem, value_rb=4, text="Oxides",
                             color_bg=self.color_acc_01, command=lambda var_rb=self.var_rb_geochem:
                             self.change_radiobutton(var_rb))
                         self.gui_elements.append(rb_oxides)
@@ -4185,7 +4201,7 @@ class Rocks:
                         rb_oxides = SE(
                             parent=self.parent_rock, row_id=34, column_id=1, n_rows=1, n_columns=1, bg=self.color_acc_01,
                             fg="black").create_radiobutton(
-                            var_rb=self.var_rb_geochem, var_rb_set=var_rb_geochem_start, value_rb=4, text="Oxides",
+                            var_rb=self.var_rb_geochem, value_rb=4, text="Oxides",
                             color_bg=self.color_acc_01, command=lambda var_rb=self.var_rb_geochem:
                             self.change_radiobutton(var_rb))
                         self.gui_elements.append(rb_oxides)
@@ -4196,7 +4212,7 @@ class Rocks:
                         rb_oxides = SE(
                             parent=self.parent_rock, row_id=34, column_id=1, n_rows=1, n_columns=1, bg=self.color_acc_01,
                             fg="black").create_radiobutton(
-                            var_rb=self.var_rb_geochem, var_rb_set=var_rb_geochem_start, value_rb=4, text="Oxides",
+                            var_rb=self.var_rb_geochem, value_rb=4, text="Oxides",
                             color_bg=self.color_acc_01, command=lambda var_rb=self.var_rb_geochem:
                             self.change_radiobutton(var_rb))
                         self.gui_elements.append(rb_oxides)
@@ -4207,7 +4223,7 @@ class Rocks:
                         rb_oxides = SE(
                             parent=self.parent_rock, row_id=34, column_id=1, n_rows=1, n_columns=1, bg=self.color_acc_01,
                             fg="black").create_radiobutton(
-                            var_rb=self.var_rb_geochem, var_rb_set=var_rb_geochem_start, value_rb=4, text="Oxides",
+                            var_rb=self.var_rb_geochem, value_rb=4, text="Oxides",
                             color_bg=self.color_acc_01, command=lambda var_rb=self.var_rb_geochem:
                             self.change_radiobutton(var_rb))
                         self.gui_elements.append(rb_oxides)
@@ -4218,7 +4234,7 @@ class Rocks:
                         rb_oxides = SE(
                             parent=self.parent_rock, row_id=34, column_id=1, n_rows=1, n_columns=1, bg=self.color_acc_01,
                             fg="black").create_radiobutton(
-                            var_rb=self.var_rb_geochem, var_rb_set=var_rb_geochem_start, value_rb=4, text="Oxides",
+                            var_rb=self.var_rb_geochem, value_rb=4, text="Oxides",
                             color_bg=self.color_acc_01, command=lambda var_rb=self.var_rb_geochem:
                             self.change_radiobutton(var_rb))
                         self.gui_elements.append(rb_oxides)
@@ -4229,7 +4245,7 @@ class Rocks:
                         rb_oxides = SE(
                             parent=self.parent_rock, row_id=34, column_id=1, n_rows=1, n_columns=1, bg=self.color_acc_01,
                             fg="black").create_radiobutton(
-                            var_rb=self.var_rb_geochem, var_rb_set=var_rb_geochem_start, value_rb=4, text="Oxides",
+                            var_rb=self.var_rb_geochem, value_rb=4, text="Oxides",
                             color_bg=self.color_acc_01, command=lambda var_rb=self.var_rb_geochem:
                             self.change_radiobutton(var_rb))
                         self.gui_elements.append(rb_oxides)
@@ -4240,7 +4256,7 @@ class Rocks:
                         rb_oxides = SE(
                             parent=self.parent_rock, row_id=34, column_id=1, n_rows=1, n_columns=1, bg=self.color_acc_01,
                             fg="black").create_radiobutton(
-                            var_rb=self.var_rb_geochem, var_rb_set=var_rb_geochem_start, value_rb=4, text="Oxides",
+                            var_rb=self.var_rb_geochem, value_rb=4, text="Oxides",
                             color_bg=self.color_acc_01, command=lambda var_rb=self.var_rb_geochem:
                             self.change_radiobutton(var_rb))
                         self.gui_elements.append(rb_oxides)
@@ -4251,7 +4267,7 @@ class Rocks:
                         rb_oxides = SE(
                             parent=self.parent_rock, row_id=34, column_id=1, n_rows=1, n_columns=1, bg=self.color_acc_01,
                             fg="black").create_radiobutton(
-                            var_rb=self.var_rb_geochem, var_rb_set=var_rb_geochem_start, value_rb=4, text="Oxides",
+                            var_rb=self.var_rb_geochem, value_rb=4, text="Oxides",
                             color_bg=self.color_acc_01, command=lambda var_rb=self.var_rb_geochem:
                             self.change_radiobutton(var_rb))
                         self.gui_elements.append(rb_oxides)
@@ -4262,7 +4278,7 @@ class Rocks:
                         rb_oxides = SE(
                             parent=self.parent_rock, row_id=34, column_id=1, n_rows=1, n_columns=1, bg=self.color_acc_01,
                             fg="black").create_radiobutton(
-                            var_rb=self.var_rb_geochem, var_rb_set=var_rb_geochem_start, value_rb=4, text="Oxides",
+                            var_rb=self.var_rb_geochem, value_rb=4, text="Oxides",
                             color_bg=self.color_acc_01, command=lambda var_rb=self.var_rb_geochem:
                             self.change_radiobutton(var_rb))
                         self.gui_elements.append(rb_oxides)
@@ -4273,7 +4289,7 @@ class Rocks:
                         rb_oxides = SE(
                             parent=self.parent_rock, row_id=34, column_id=1, n_rows=1, n_columns=1, bg=self.color_acc_01,
                             fg="black").create_radiobutton(
-                            var_rb=self.var_rb_geochem, var_rb_set=var_rb_geochem_start, value_rb=4, text="Oxides",
+                            var_rb=self.var_rb_geochem, value_rb=4, text="Oxides",
                             color_bg=self.color_acc_01, command=lambda var_rb=self.var_rb_geochem:
                             self.change_radiobutton(var_rb))
                         self.gui_elements.append(rb_oxides)
@@ -4284,7 +4300,7 @@ class Rocks:
                         rb_oxides = SE(
                             parent=self.parent_rock, row_id=34, column_id=1, n_rows=1, n_columns=1, bg=self.color_acc_01,
                             fg="black").create_radiobutton(
-                            var_rb=self.var_rb_geochem, var_rb_set=var_rb_geochem_start, value_rb=4, text="Oxides",
+                            var_rb=self.var_rb_geochem, value_rb=4, text="Oxides",
                             color_bg=self.color_acc_01, command=lambda var_rb=self.var_rb_geochem:
                             self.change_radiobutton(var_rb))
                         self.gui_elements.append(rb_oxides)
@@ -4294,7 +4310,7 @@ class Rocks:
                         rb_oxides = SE(
                             parent=self.parent_rock, row_id=34, column_id=1, n_rows=1, n_columns=1, bg=self.color_acc_01,
                             fg="black").create_radiobutton(
-                            var_rb=self.var_rb_geochem, var_rb_set=var_rb_geochem_start, value_rb=4, text="Oxides",
+                            var_rb=self.var_rb_geochem, value_rb=4, text="Oxides",
                             color_bg=self.color_acc_01, command=lambda var_rb=self.var_rb_geochem:
                             self.change_radiobutton(var_rb))
                         self.gui_elements.append(rb_oxides)
@@ -4304,7 +4320,7 @@ class Rocks:
                         rb_oxides = SE(
                             parent=self.parent_rock, row_id=34, column_id=1, n_rows=1, n_columns=1, bg=self.color_acc_01,
                             fg="black").create_radiobutton(
-                            var_rb=self.var_rb_geochem, var_rb_set=var_rb_geochem_start, value_rb=4, text="Oxides",
+                            var_rb=self.var_rb_geochem, value_rb=4, text="Oxides",
                             color_bg=self.color_acc_01, command=lambda var_rb=self.var_rb_geochem:
                             self.change_radiobutton(var_rb))
                         self.gui_elements.append(rb_oxides)
@@ -4314,7 +4330,7 @@ class Rocks:
                         rb_oxides = SE(
                             parent=self.parent_rock, row_id=34, column_id=1, n_rows=1, n_columns=1, bg=self.color_acc_01,
                             fg="black").create_radiobutton(
-                            var_rb=self.var_rb_geochem, var_rb_set=var_rb_geochem_start, value_rb=4, text="Oxides",
+                            var_rb=self.var_rb_geochem, value_rb=4, text="Oxides",
                             color_bg=self.color_acc_01, command=lambda var_rb=self.var_rb_geochem:
                             self.change_radiobutton(var_rb))
                         self.gui_elements.append(rb_oxides)
@@ -4324,7 +4340,7 @@ class Rocks:
                         rb_oxides = SE(
                             parent=self.parent_rock, row_id=34, column_id=1, n_rows=1, n_columns=1, bg=self.color_acc_01,
                             fg="black").create_radiobutton(
-                            var_rb=self.var_rb_geochem, var_rb_set=var_rb_geochem_start, value_rb=4, text="Oxides",
+                            var_rb=self.var_rb_geochem, value_rb=4, text="Oxides",
                             color_bg=self.color_acc_01, command=lambda var_rb=self.var_rb_geochem:
                             self.change_radiobutton(var_rb))
                         self.gui_elements.append(rb_oxides)
@@ -4334,7 +4350,7 @@ class Rocks:
                         rb_oxides = SE(
                             parent=self.parent_rock, row_id=34, column_id=1, n_rows=1, n_columns=1, bg=self.color_acc_01,
                             fg="black").create_radiobutton(
-                            var_rb=self.var_rb_geochem, var_rb_set=var_rb_geochem_start, value_rb=4, text="Oxides",
+                            var_rb=self.var_rb_geochem, value_rb=4, text="Oxides",
                             color_bg=self.color_acc_01, command=lambda var_rb=self.var_rb_geochem:
                             self.change_radiobutton(var_rb))
                         self.gui_elements.append(rb_oxides)
@@ -5124,13 +5140,13 @@ class Rocks:
                 pass
             #
             self.var_prop = tk.IntVar()
-            var_prop_0 = 8
+            self.var_prop.set(8)
             rb_rho = SE(parent=self.parent_rock, row_id=37, column_id=0, n_rows=1, n_columns=2, bg=self.color_acc_01,
-                        fg="black").create_radiobutton(var_rb=self.var_prop, var_rb_set=var_prop_0, value_rb=8,
+                        fg="black").create_radiobutton(var_rb=self.var_prop, value_rb=8,
                                                        text="Density", color_bg=self.color_acc_01,
                                                        command=lambda var_rb=self.var_prop: self.change_radiobutton(var_rb))
             rb_phi = SE(parent=self.parent_rock, row_id=38, column_id=0, n_rows=1, n_columns=2, bg=self.color_acc_01,
-                        fg="black").create_radiobutton(var_rb=self.var_prop, var_rb_set=var_prop_0, value_rb=9,
+                        fg="black").create_radiobutton(var_rb=self.var_prop, value_rb=9,
                                                        text="Porosity", color_bg=self.color_acc_01,
                                                        command=lambda var_rb=self.var_prop: self.change_radiobutton(var_rb))
             self.rb_prop = [rb_rho, rb_phi]
@@ -5479,13 +5495,13 @@ class Rocks:
             pass
         #
         self.var_prop = tk.IntVar()
-        var_prop_0 = 8
+        self.var_prop.set(8)
         rb_rho = SE(parent=self.parent_rock, row_id=37, column_id=0, n_rows=1, n_columns=2, bg=self.color_acc_01,
-                    fg="black").create_radiobutton(var_rb=self.var_prop, var_rb_set=var_prop_0, value_rb=8,
+                    fg="black").create_radiobutton(var_rb=self.var_prop, value_rb=8,
                                                    text="Density", color_bg=self.color_acc_01,
                                                    command=lambda var_rb=self.var_prop: self.change_radiobutton(var_rb))
         rb_phi = SE(parent=self.parent_rock, row_id=38, column_id=0, n_rows=1, n_columns=2, bg=self.color_acc_01,
-                    fg="black").create_radiobutton(var_rb=self.var_prop, var_rb_set=var_prop_0, value_rb=9,
+                    fg="black").create_radiobutton(var_rb=self.var_prop, value_rb=9,
                                                    text="Porosity", color_bg=self.color_acc_01,
                                                    command=lambda var_rb=self.var_prop: self.change_radiobutton(var_rb))
         self.rb_prop = [rb_rho, rb_phi]
@@ -6831,11 +6847,11 @@ class Subsurface:
         # print(self.results_units)
         #
         self.var_rb_stat = tk.IntVar()
-        var_rb_stat_start = 0
+        self.var_rb_stat.set(0)
         self.var_rb_geochem = tk.IntVar()
-        var_rb_geochem_start = 3
+        self.var_rb_geochem.set(3)
         self.var_rb_lith = tk.IntVar()
-        var_rb_lith_start = 5
+        self.var_rb_lith.set(5)
         self.current_rb_lith = tk.IntVar()
         #
         self.results_plot = {}
@@ -6871,29 +6887,27 @@ class Subsurface:
             self.results_plot[self.results_sorted["rock"][index]]["PE"].append(value)
         #
         rb_01 = SE(parent=self.parent_subsurface, row_id=29, column_id=0, n_rows=1, n_columns=2, bg=self.color_acc_01,
-                   fg="black").create_radiobutton(var_rb=self.var_rb_stat, var_rb_set=var_rb_stat_start, value_rb=0,
+                   fg="black").create_radiobutton(var_rb=self.var_rb_stat, value_rb=0,
                                                   text="Well Log Plot", color_bg=self.color_acc_01,
                                                   command=lambda var_rb=self.var_rb_stat: self.change_radiobutton(
                                                       var_rb))
         rb_02 = SE(parent=self.parent_subsurface, row_id=30, column_id=0, n_rows=1, n_columns=2, bg=self.color_acc_01,
-                   fg="black").create_radiobutton(var_rb=self.var_rb_stat, var_rb_set=var_rb_stat_start, value_rb=1,
+                   fg="black").create_radiobutton(var_rb=self.var_rb_stat, value_rb=1,
                                                   text="Histogram Plot", color_bg=self.color_acc_01,
                                                   command=lambda var_rb=self.var_rb_stat: self.change_radiobutton(
                                                       var_rb))
         rb_03 = SE(parent=self.parent_subsurface, row_id=31, column_id=0, n_rows=1, n_columns=2, bg=self.color_acc_01,
-                   fg="black").create_radiobutton(var_rb=self.var_rb_stat, var_rb_set=var_rb_stat_start, value_rb=2,
+                   fg="black").create_radiobutton(var_rb=self.var_rb_stat, value_rb=2,
                                                   text="Scatter Plot", color_bg=self.color_acc_01,
                                                   command=lambda var_rb=self.var_rb_stat: self.change_radiobutton(
                                                       var_rb))
         rb_04 = SE(parent=self.parent_subsurface, row_id=33, column_id=0, n_rows=1, n_columns=2, bg=self.color_acc_01,
-                   fg="black").create_radiobutton(var_rb=self.var_rb_geochem, var_rb_set=var_rb_geochem_start,
-                                                  value_rb=3,
+                   fg="black").create_radiobutton(var_rb=self.var_rb_geochem, value_rb=3,
                                                   text="Elements", color_bg=self.color_acc_01,
                                                   command=lambda var_rb=self.var_rb_geochem: self.change_radiobutton(
                                                       var_rb))
         rb_05 = SE(parent=self.parent_subsurface, row_id=34, column_id=0, n_rows=1, n_columns=2, bg=self.color_acc_01,
-                   fg="black").create_radiobutton(var_rb=self.var_rb_geochem, var_rb_set=var_rb_geochem_start,
-                                                  value_rb=4,
+                   fg="black").create_radiobutton(var_rb=self.var_rb_geochem, value_rb=4,
                                                   text="Minerals", color_bg=self.color_acc_01,
                                                   command=lambda var_rb=self.var_rb_geochem: self.change_radiobutton(
                                                       var_rb))
@@ -6901,8 +6915,7 @@ class Subsurface:
         for index, rock in enumerate(self.list_rocks_short, start=0):
             rb = SE(parent=self.parent_subsurface, row_id=36 + index, column_id=0, n_rows=1, n_columns=2,
                     bg=self.color_acc_01,
-                    fg="black").create_radiobutton(var_rb=self.var_rb_lith, var_rb_set=var_rb_lith_start,
-                                                   value_rb=var_rb_lith_start + index,
+                    fg="black").create_radiobutton(var_rb=self.var_rb_lith, value_rb=index,
                                                    text=rock, color_bg=self.color_acc_01,
                                                    command=lambda var_rb=self.var_rb_lith: self.change_radiobutton(
                                                        var_rb))
@@ -7827,13 +7840,13 @@ class Subsurface:
                 pass
             #
             self.var_prop = tk.IntVar()
-            var_prop_0 = 8
+            self.var_prop.set(8)
             rb_rho = SE(parent=self.parent_subsurface, row_id=40, column_id=0, n_rows=1, n_columns=2, bg=self.color_acc_01,
-                        fg="black").create_radiobutton(var_rb=self.var_prop, var_rb_set=var_prop_0, value_rb=8,
+                        fg="black").create_radiobutton(var_rb=self.var_prop, value_rb=8,
                                                        text="Density", color_bg=self.color_acc_01,
                                                        command=lambda var_rb=self.var_prop: self.change_radiobutton(var_rb))
             rb_phi = SE(parent=self.parent_subsurface, row_id=41, column_id=0, n_rows=1, n_columns=2, bg=self.color_acc_01,
-                        fg="black").create_radiobutton(var_rb=self.var_prop, var_rb_set=var_prop_0, value_rb=9,
+                        fg="black").create_radiobutton(var_rb=self.var_prop, value_rb=9,
                                                        text="Porosity", color_bg=self.color_acc_01,
                                                        command=lambda var_rb=self.var_prop: self.change_radiobutton(var_rb))
             self.rb_prop = [rb_rho, rb_phi]
