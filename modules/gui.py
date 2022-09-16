@@ -2305,6 +2305,7 @@ class Minerals:
         #
         self.canvas = None
         self.fig, self.ax = plt.subplots(ncols=3, nrows=3, figsize=(9, 9), facecolor="#E9ECED")
+        #self.fig, self.ax = plt.subplots(ncols=3, nrows=3, facecolor="#E9ECED")
         #
         for i in range(3):
             for j in range(3):
@@ -2319,7 +2320,7 @@ class Minerals:
         #
         self.canvas = FigureCanvasTkAgg(self.fig, master=parent)
         self.canvas.get_tk_widget().grid(row=row_id, column=column_id, rowspan=n_rows, columnspan=n_columns,
-                                               sticky="nesw")
+                                         sticky="nesw")
     #
     def create_3x3_scatter(self, parent, data_x, data, row_id, column_id, n_rows, n_columns, color, labels, xlabel):
         #
