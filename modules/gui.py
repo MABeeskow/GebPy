@@ -6,7 +6,7 @@
 # Name:		gui.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		16.09.2022
+# Date:		17.09.2022
 
 #-----------------------------------------------
 
@@ -327,6 +327,27 @@ class GebPyGUI(tk.Frame):
                 command=lambda var_opt=self.var_opt_mineral_group: self.select_opt(var_opt))
             #
             self.container_gui["MINERALOGY"]["OPTION MENU"].append(self.opt_mingroup)
+            #
+            ## Labels
+            lb_trace = SE(parent=self.parent, row_id=14, column_id=0, n_rows=1, n_columns=2, bg=self.color_accent_03,
+                          fg=self.color_fg_dark).create_label(text="Trace Elements", relief=tk.RAISED)
+            #
+            self.container_gui["MINERALOGY"]["LABEL"].extend([lb_trace])
+            #
+            ## Radiobuttons
+            rb_trace_01 = SE(
+                parent=self.parent, row_id=15, column_id=0, n_rows=1, n_columns=1, bg=self.color_menu,
+                fg=self.color_bg).create_radiobutton(
+                var_rb=self.var_rb_mineralogy_traces, value_rb=0, text="Without Traces",
+                color_bg=self.color_menu, command=self.change_rb_trace)
+            rb_trace_02 = SE(
+                parent=self.parent, row_id=16, column_id=0, n_rows=1, n_columns=1, bg=self.color_menu,
+                fg=self.color_bg).create_radiobutton(
+                var_rb=self.var_rb_mineralogy_traces, value_rb=1, text="With Traces",
+                color_bg=self.color_menu, command=self.change_rb_trace)
+            #
+            self.container_gui["MINERALOGY"]["RADIOBUTTON"].extend([rb_trace_01, rb_trace_02])
+            #
     #
     def pressed_button(self, var_btn):
         if var_btn == "random":
@@ -444,27 +465,27 @@ class GebPyGUI(tk.Frame):
                      entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
         #
         elif var_opt in ["Quartz"]:
-            #
-            ## Labels
-            lb_trace = SE(parent=self.parent, row_id=14, column_id=0, n_rows=1, n_columns=2, bg=self.color_accent_03,
-                          fg=self.color_fg_dark).create_label(text="Trace Elements", relief=tk.RAISED)
-            #
-            self.container_gui["MINERALOGY"]["LABEL"].extend([lb_trace])
-            #
-            ## Radiobuttons
-            rb_trace_01 = SE(
-                parent=self.parent, row_id=15, column_id=0, n_rows=1, n_columns=1, bg=self.color_menu,
-                fg=self.color_bg).create_radiobutton(
-                var_rb=self.var_rb_mineralogy_traces, value_rb=0, text="Without Traces",
-                color_bg=self.color_menu, command=self.change_rb_trace)
-            rb_trace_02 = SE(
-                parent=self.parent, row_id=16, column_id=0, n_rows=1, n_columns=1, bg=self.color_menu,
-                fg=self.color_bg).create_radiobutton(
-                var_rb=self.var_rb_mineralogy_traces, value_rb=1, text="With Traces",
-                color_bg=self.color_menu, command=self.change_rb_trace)
-            #
-            self.container_gui["MINERALOGY"]["RADIOBUTTON"].extend([rb_trace_01, rb_trace_02])
-            #
+            # #
+            # ## Labels
+            # lb_trace = SE(parent=self.parent, row_id=14, column_id=0, n_rows=1, n_columns=2, bg=self.color_accent_03,
+            #               fg=self.color_fg_dark).create_label(text="Trace Elements", relief=tk.RAISED)
+            # #
+            # self.container_gui["MINERALOGY"]["LABEL"].extend([lb_trace])
+            # #
+            # ## Radiobuttons
+            # rb_trace_01 = SE(
+            #     parent=self.parent, row_id=15, column_id=0, n_rows=1, n_columns=1, bg=self.color_menu,
+            #     fg=self.color_bg).create_radiobutton(
+            #     var_rb=self.var_rb_mineralogy_traces, value_rb=0, text="Without Traces",
+            #     color_bg=self.color_menu, command=self.change_rb_trace)
+            # rb_trace_02 = SE(
+            #     parent=self.parent, row_id=16, column_id=0, n_rows=1, n_columns=1, bg=self.color_menu,
+            #     fg=self.color_bg).create_radiobutton(
+            #     var_rb=self.var_rb_mineralogy_traces, value_rb=1, text="With Traces",
+            #     color_bg=self.color_menu, command=self.change_rb_trace)
+            # #
+            # self.container_gui["MINERALOGY"]["RADIOBUTTON"].extend([rb_trace_01, rb_trace_02])
+            # #
             Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                      color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
                      entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
@@ -702,7 +723,11 @@ class GebPyGUI(tk.Frame):
         # IGNEOUS ROCKS (Plutonic Rocks)
         elif var_opt in ["Granite (Streckeisen)", "Granodiorite (Streckeisen)", "Tonalite (Streckeisen)",
                          "Gabbro (Streckeisen)", "Diorite (Streckeisen)", "Monzonite (Streckeisen)",
-                         "Syenite (Streckeisen)", "Granitoid (Streckeisen)", "Quarzolite (Streckeisen)"]:
+                         "Syenite (Streckeisen)", "Granitoid (Streckeisen)", "Quarzolite (Streckeisen)",
+                         "Foid-bearing Syenite (Streckeisen)", "Foid-bearing Monzonite (Streckeisen)",
+                         "Foid-bearing Monzodiorite (Streckeisen)", "Foid-bearing Monzogabbro (Streckeisen)",
+                         "Foid Monzosyenite (Streckeisen)", "Foid Monzodiorite (Streckeisen)",
+                         "Foid Monzogabbro (Streckeisen)", "Foidolite (Streckeisen)"]:
             Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
                   color_acc=[self.color_accent_03, self.color_accent_04], rock=var_opt, lbl_w=self.lbl_w,
                   entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
@@ -1232,7 +1257,10 @@ class GebPyGUI(tk.Frame):
                 "Syenite", "Tonalite", "Quartzolite", "Qz-rich Granitoid", "Granite (Streckeisen)",
                 "Granodiorite (Streckeisen)", "Tonalite (Streckeisen)", "Gabbro (Streckeisen)", "Diorite (Streckeisen)",
                 "Monzonite (Streckeisen)", "Syenite (Streckeisen)", "Granitoid (Streckeisen)",
-                "Quarzolite (Streckeisen)"]
+                "Quarzolite (Streckeisen)", "Foid-bearing Syenite (Streckeisen)", "Foid-bearing Monzonite (Streckeisen)",
+                "Foid-bearing Monzodiorite (Streckeisen)", "Foid-bearing Monzogabbro (Streckeisen)",
+                "Foid Monzosyenite (Streckeisen)", "Foid Monzodiorite (Streckeisen)",
+                "Foid Monzogabbro (Streckeisen)", "Foidolite (Streckeisen)"]
             opt_list_1_3.sort()
             self.opt_ign = SE(parent=self.parent, row_id=10, column_id=0, n_rows=2, n_columns=2,
                               bg=self.color_accent_02, fg=self.color_fg_dark).create_option_menu(
@@ -4040,7 +4068,11 @@ class Rocks:
             "Rhyolite (Streckeisen)", "Trachyte (Streckeisen)", "Latite (Streckeisen)", "Andesite (Streckeisen)",
             "Basalt (Streckeisen)", "Dacite (Streckeisen)", "Granite (Streckeisen)", "Granodiorite (Streckeisen)",
             "Tonalite (Streckeisen)", "Gabbro (Streckeisen)", "Diorite (Streckeisen)", "Monzonite (Streckeisen)",
-            "Syenite (Streckeisen)", "Granitoid (Streckeisen)", "Quarzolite (Streckeisen)", "Mudstone"]:
+            "Syenite (Streckeisen)", "Granitoid (Streckeisen)", "Quarzolite (Streckeisen)", "Mudstone",
+            "Foid-bearing Syenite (Streckeisen)", "Foid-bearing Monzonite (Streckeisen)",
+            "Foid-bearing Monzodiorite (Streckeisen)", "Foid-bearing Monzogabbro (Streckeisen)",
+            "Foid Monzosyenite (Streckeisen)", "Foid Monzodiorite (Streckeisen)",
+            "Foid Monzogabbro (Streckeisen)", "Foidolite (Streckeisen)"]:
             var_phi0_start = 0
             var_phi1_start = 10
         elif self.rock in ["Limestone", "Limestone (old)", "Dolomite Rock", "Pyroclastic Rock"]:
@@ -4293,6 +4325,103 @@ class Rocks:
                             color_bg=self.color_acc_01, command=lambda var_rb=self.var_rb_geochem:
                             self.change_radiobutton(var_rb))
                         self.gui_elements.append(rb_oxides)
+                    elif self.rock == "Foid-bearing Syenite (Streckeisen)":
+                        data = Plutonic(
+                            fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(
+                                self.var_phi0.get()/100,
+                                self.var_phi1.get()/100)).create_foidbearing_syenite_streckeisen()
+                        rb_oxides = SE(
+                            parent=self.parent_rock, row_id=34, column_id=1, n_rows=1, n_columns=1, bg=self.color_acc_01,
+                            fg="black").create_radiobutton(
+                            var_rb=self.var_rb_geochem, value_rb=4, text="Oxides",
+                            color_bg=self.color_acc_01, command=lambda var_rb=self.var_rb_geochem:
+                            self.change_radiobutton(var_rb))
+                        self.gui_elements.append(rb_oxides)
+                    elif self.rock == "Foid-bearing Monzonite (Streckeisen)":
+                        data = Plutonic(
+                            fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(
+                                self.var_phi0.get()/100,
+                                self.var_phi1.get()/100)).create_foidbearing_monzonite_streckeisen()
+                        rb_oxides = SE(
+                            parent=self.parent_rock, row_id=34, column_id=1, n_rows=1, n_columns=1, bg=self.color_acc_01,
+                            fg="black").create_radiobutton(
+                            var_rb=self.var_rb_geochem, value_rb=4, text="Oxides",
+                            color_bg=self.color_acc_01, command=lambda var_rb=self.var_rb_geochem:
+                            self.change_radiobutton(var_rb))
+                        self.gui_elements.append(rb_oxides)
+                    elif self.rock == "Foid-bearing Monzodiorite (Streckeisen)":
+                        data = Plutonic(
+                            fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(
+                                self.var_phi0.get()/100,
+                                self.var_phi1.get()/100)).create_foidbearing_monzodiorite_streckeisen()
+                        rb_oxides = SE(
+                            parent=self.parent_rock, row_id=34, column_id=1, n_rows=1, n_columns=1, bg=self.color_acc_01,
+                            fg="black").create_radiobutton(
+                            var_rb=self.var_rb_geochem, value_rb=4, text="Oxides",
+                            color_bg=self.color_acc_01, command=lambda var_rb=self.var_rb_geochem:
+                            self.change_radiobutton(var_rb))
+                        self.gui_elements.append(rb_oxides)
+                    elif self.rock == "Foid-bearing Monzogabbro (Streckeisen)":
+                        data = Plutonic(
+                            fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(
+                                self.var_phi0.get()/100,
+                                self.var_phi1.get()/100)).create_foidbearing_monzogabbro_streckeisen()
+                        rb_oxides = SE(
+                            parent=self.parent_rock, row_id=34, column_id=1, n_rows=1, n_columns=1, bg=self.color_acc_01,
+                            fg="black").create_radiobutton(
+                            var_rb=self.var_rb_geochem, value_rb=4, text="Oxides",
+                            color_bg=self.color_acc_01, command=lambda var_rb=self.var_rb_geochem:
+                            self.change_radiobutton(var_rb))
+                        self.gui_elements.append(rb_oxides)
+                    elif self.rock == "Foid Monzosyenite (Streckeisen)":
+                        data = Plutonic(
+                            fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(
+                                self.var_phi0.get()/100,
+                                self.var_phi1.get()/100)).create_foid_monzosyenite_streckeisen()
+                        rb_oxides = SE(
+                            parent=self.parent_rock, row_id=34, column_id=1, n_rows=1, n_columns=1, bg=self.color_acc_01,
+                            fg="black").create_radiobutton(
+                            var_rb=self.var_rb_geochem, value_rb=4, text="Oxides",
+                            color_bg=self.color_acc_01, command=lambda var_rb=self.var_rb_geochem:
+                            self.change_radiobutton(var_rb))
+                        self.gui_elements.append(rb_oxides)
+                    elif self.rock == "Foid Monzodiorite (Streckeisen)":
+                        data = Plutonic(
+                            fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(
+                                self.var_phi0.get()/100,
+                                self.var_phi1.get()/100)).create_foid_monzodiorite_streckeisen()
+                        rb_oxides = SE(
+                            parent=self.parent_rock, row_id=34, column_id=1, n_rows=1, n_columns=1, bg=self.color_acc_01,
+                            fg="black").create_radiobutton(
+                            var_rb=self.var_rb_geochem, value_rb=4, text="Oxides",
+                            color_bg=self.color_acc_01, command=lambda var_rb=self.var_rb_geochem:
+                            self.change_radiobutton(var_rb))
+                        self.gui_elements.append(rb_oxides)
+                    elif self.rock == "Foid Monzogabbro (Streckeisen)":
+                        data = Plutonic(
+                            fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(
+                                self.var_phi0.get()/100,
+                                self.var_phi1.get()/100)).create_foid_monzogabbro_streckeisen()
+                        rb_oxides = SE(
+                            parent=self.parent_rock, row_id=34, column_id=1, n_rows=1, n_columns=1, bg=self.color_acc_01,
+                            fg="black").create_radiobutton(
+                            var_rb=self.var_rb_geochem, value_rb=4, text="Oxides",
+                            color_bg=self.color_acc_01, command=lambda var_rb=self.var_rb_geochem:
+                            self.change_radiobutton(var_rb))
+                        self.gui_elements.append(rb_oxides)
+                    elif self.rock == "Foidolite (Streckeisen)":
+                        data = Plutonic(
+                            fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(
+                                self.var_phi0.get()/100,
+                                self.var_phi1.get()/100)).create_foidolite_streckeisen()
+                        rb_oxides = SE(
+                            parent=self.parent_rock, row_id=34, column_id=1, n_rows=1, n_columns=1, bg=self.color_acc_01,
+                            fg="black").create_radiobutton(
+                            var_rb=self.var_rb_geochem, value_rb=4, text="Oxides",
+                            color_bg=self.color_acc_01, command=lambda var_rb=self.var_rb_geochem:
+                            self.change_radiobutton(var_rb))
+                        self.gui_elements.append(rb_oxides)
+                    #
                     # Volcanic Rocks
                     elif self.rock == "Rhyolite (Streckeisen)":
                         data = Volcanic(fluid="water", actualThickness=0).create_rhyolite_generalized(
@@ -4855,6 +4984,96 @@ class Rocks:
                         data = Plutonic(
                             fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(
                                 self.var_phi0.get()/100, self.var_phi1.get()/100)).create_quarzolite_streckeisen()
+                    elif self.rock == "Foid-bearing Syenite (Streckeisen)":
+                        data = Plutonic(
+                            fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(
+                                self.var_phi0.get()/100,
+                                self.var_phi1.get()/100)).create_foidbearing_syenite_streckeisen()
+                    elif self.rock == "Foid-bearing Monzonite (Streckeisen)":
+                        data = Plutonic(
+                            fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(
+                                self.var_phi0.get()/100,
+                                self.var_phi1.get()/100)).create_foidbearing_monzonite_streckeisen()
+                        rb_oxides = SE(
+                            parent=self.parent_rock, row_id=34, column_id=1, n_rows=1, n_columns=1, bg=self.color_acc_01,
+                            fg="black").create_radiobutton(
+                            var_rb=self.var_rb_geochem, value_rb=4, text="Oxides",
+                            color_bg=self.color_acc_01, command=lambda var_rb=self.var_rb_geochem:
+                            self.change_radiobutton(var_rb))
+                        self.gui_elements.append(rb_oxides)
+                    elif self.rock == "Foid-bearing Monzodiorite (Streckeisen)":
+                        data = Plutonic(
+                            fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(
+                                self.var_phi0.get()/100,
+                                self.var_phi1.get()/100)).create_foidbearing_monzodiorite_streckeisen()
+                        rb_oxides = SE(
+                            parent=self.parent_rock, row_id=34, column_id=1, n_rows=1, n_columns=1, bg=self.color_acc_01,
+                            fg="black").create_radiobutton(
+                            var_rb=self.var_rb_geochem, value_rb=4, text="Oxides",
+                            color_bg=self.color_acc_01, command=lambda var_rb=self.var_rb_geochem:
+                            self.change_radiobutton(var_rb))
+                        self.gui_elements.append(rb_oxides)
+                    elif self.rock == "Foid-bearing Monzogabbro (Streckeisen)":
+                        data = Plutonic(
+                            fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(
+                                self.var_phi0.get()/100,
+                                self.var_phi1.get()/100)).create_foidbearing_monzogabbro_streckeisen()
+                        rb_oxides = SE(
+                            parent=self.parent_rock, row_id=34, column_id=1, n_rows=1, n_columns=1, bg=self.color_acc_01,
+                            fg="black").create_radiobutton(
+                            var_rb=self.var_rb_geochem, value_rb=4, text="Oxides",
+                            color_bg=self.color_acc_01, command=lambda var_rb=self.var_rb_geochem:
+                            self.change_radiobutton(var_rb))
+                        self.gui_elements.append(rb_oxides)
+                    elif self.rock == "Foid Monzosyenite (Streckeisen)":
+                        data = Plutonic(
+                            fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(
+                                self.var_phi0.get()/100,
+                                self.var_phi1.get()/100)).create_foid_monzosyenite_streckeisen()
+                        rb_oxides = SE(
+                            parent=self.parent_rock, row_id=34, column_id=1, n_rows=1, n_columns=1, bg=self.color_acc_01,
+                            fg="black").create_radiobutton(
+                            var_rb=self.var_rb_geochem, value_rb=4, text="Oxides",
+                            color_bg=self.color_acc_01, command=lambda var_rb=self.var_rb_geochem:
+                            self.change_radiobutton(var_rb))
+                        self.gui_elements.append(rb_oxides)
+                    elif self.rock == "Foid Monzodiorite (Streckeisen)":
+                        data = Plutonic(
+                            fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(
+                                self.var_phi0.get()/100,
+                                self.var_phi1.get()/100)).create_foid_monzodiorite_streckeisen()
+                        rb_oxides = SE(
+                            parent=self.parent_rock, row_id=34, column_id=1, n_rows=1, n_columns=1, bg=self.color_acc_01,
+                            fg="black").create_radiobutton(
+                            var_rb=self.var_rb_geochem, value_rb=4, text="Oxides",
+                            color_bg=self.color_acc_01, command=lambda var_rb=self.var_rb_geochem:
+                            self.change_radiobutton(var_rb))
+                        self.gui_elements.append(rb_oxides)
+                    elif self.rock == "Foid Monzogabbro (Streckeisen)":
+                        data = Plutonic(
+                            fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(
+                                self.var_phi0.get()/100,
+                                self.var_phi1.get()/100)).create_foid_monzogabbro_streckeisen()
+                        rb_oxides = SE(
+                            parent=self.parent_rock, row_id=34, column_id=1, n_rows=1, n_columns=1, bg=self.color_acc_01,
+                            fg="black").create_radiobutton(
+                            var_rb=self.var_rb_geochem, value_rb=4, text="Oxides",
+                            color_bg=self.color_acc_01, command=lambda var_rb=self.var_rb_geochem:
+                            self.change_radiobutton(var_rb))
+                        self.gui_elements.append(rb_oxides)
+                    elif self.rock == "Foidolite (Streckeisen)":
+                        data = Plutonic(
+                            fluid="water", actualThickness=0, dict_output=True, porosity=rd.uniform(
+                                self.var_phi0.get()/100,
+                                self.var_phi1.get()/100)).create_foidolite_streckeisen()
+                        rb_oxides = SE(
+                            parent=self.parent_rock, row_id=34, column_id=1, n_rows=1, n_columns=1, bg=self.color_acc_01,
+                            fg="black").create_radiobutton(
+                            var_rb=self.var_rb_geochem, value_rb=4, text="Oxides",
+                            color_bg=self.color_acc_01, command=lambda var_rb=self.var_rb_geochem:
+                            self.change_radiobutton(var_rb))
+                        self.gui_elements.append(rb_oxides)
+                    #
                     # Volcanic Rocks
                     elif self.rock == "Rhyolite (Streckeisen)":
                         data = Volcanic(fluid="water", actualThickness=0).create_rhyolite_generalized(
@@ -5362,7 +5581,11 @@ class Rocks:
                                "Gabbro (Streckeisen)", "Syenite (Streckeisen)", "Quarzolite (Streckeisen)",
                                "Granodiorite (Streckeisen)", "Granitoid (Streckeisen)", "Monzonite (Streckeisen)",
                                "Rhyolite (Streckeisen)", "Dacite (Streckeisen)", "Latite (Streckeisen)",
-                               "Basalt (Streckeisen)", "Andesite (Streckeisen)", "Trachyte (Streckeisen)"]:
+                               "Basalt (Streckeisen)", "Andesite (Streckeisen)", "Trachyte (Streckeisen)",
+                               "Foid-bearing Syenite (Streckeisen)", "Foid-bearing Monzonite (Streckeisen)",
+                               "Foid-bearing Monzodiorite (Streckeisen)", "Foid-bearing Monzogabbro (Streckeisen)",
+                               "Foid Monzosyenite (Streckeisen)", "Foid Monzodiorite (Streckeisen)",
+                               "Foid Monzogabbro (Streckeisen)", "Foidolite (Streckeisen)"]:
                 self.list_oxides = {
                     "Al": ["Al2O3", 1.8895], "C": ["CO2", 3.6644], "Ca": ["CaO", 1.3992], "Fe": ["FeO", 1.2865],
                     "H": ["H2O", 8.9360], "K": ["K2O", 1.2046], "Mg": ["MgO", 1.6582], "Mn": ["MnO", 1.2912],
