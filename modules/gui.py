@@ -4422,7 +4422,7 @@ class Rocks:
                 rb_oxides = SE(
                     parent=self.parent_rock, row_id=34, column_id=1, n_rows=1, n_columns=1, bg=self.color_acc_01,
                     fg="black").create_radiobutton(
-                    var_rb=self.var_rb_geochem, var_rb_set=var_rb_geochem_start, value_rb=4, text="Oxides",
+                    var_rb=self.var_rb_geochem, value_rb=4, text="Oxides",
                     color_bg=self.color_acc_01, command=lambda var_rb=self.var_rb_geochem:
                     self.change_radiobutton(var_rb))
                 self.gui_elements.append(rb_oxides)
