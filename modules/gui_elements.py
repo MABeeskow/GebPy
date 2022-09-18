@@ -3,7 +3,7 @@
 # ----------------------
 # gui_elements.py
 # Maximilian Beeskow
-# 31.08.2022
+# 18.09.2022
 # ----------------------
 #
 ## MODULES
@@ -21,12 +21,22 @@ class SimpleElements:
         self.fg = fg
         self.bg = bg
     #
-    def create_label(self, text, fontsize=None, relief=tk.GROOVE):
-        if fontsize != None:
-            lbl = tk.Label(self.parent, text=text, relief=relief, bg=self.bg, fg=self.fg, font=(fontsize))
+    def create_frame(self, relief=tk.FLAT):
+        frm = tk.Frame(self.parent, bg=self.bg, borderwidth=0, highlightthickness=0, relief=relief)
+        frm.grid(row=self.row_id, column=self.column_id, rowspan=self.n_rows, columnspan=self.n_columns, sticky="nesw")
+        #
+        return frm
+    #
+    def create_label(self, text, font_option=None, relief=tk.GROOVE, sticky_option="nesw", anchor_option=tk.CENTER):
+        if font_option != None:
+            lbl = tk.Label(self.parent, text=text, relief=relief, bg=self.bg, fg=self.fg, font=(font_option),
+                           anchor=anchor_option)
         else:
-            lbl = tk.Label(self.parent, text=text, relief=relief, bg=self.bg, fg=self.fg)
-        lbl.grid(row=self.row_id, column=self.column_id, rowspan=self.n_rows, columnspan=self.n_columns, sticky="nesw")
+            lbl = tk.Label(self.parent, text=text, relief=relief, bg=self.bg, fg=self.fg, font=(font_option),
+                           anchor=anchor_option)
+        #
+        lbl.grid(row=self.row_id, column=self.column_id, rowspan=self.n_rows, columnspan=self.n_columns,
+                 sticky=sticky_option)
         #
         return lbl
     #
@@ -44,8 +54,9 @@ class SimpleElements:
         #
         return opt_menu
     #
-    def create_entry(self, var_entr, var_entr_set, width=None, command=None):
-        var_entr.set(var_entr_set)
+    def create_entry(self, var_entr, var_entr_set=None, width=None, command=None):
+        if var_entr_set != None:
+            var_entr.set(var_entr_set)
         if width == None:
             entry = tk.Entry(self.parent, textvariable=var_entr, background=self.bg, highlightthickness=0)
         else:
@@ -57,14 +68,16 @@ class SimpleElements:
         #
         return entry
     #
-    def create_radiobutton(self, var_rb, value_rb, color_bg, relief=tk.FLAT, command=None, text=""):
+    def create_radiobutton(self, var_rb, value_rb, color_bg, relief=tk.FLAT, command=None, text="", anchor_option=tk.W):
         if command == None:
             rb = tk.Radiobutton(self.parent, text=text, variable=var_rb, value=value_rb, bg=self.bg, fg=self.fg,
-                                activebackground=color_bg, highlightthickness=0, relief=relief, selectcolor=color_bg)
+                                activebackground=self.bg, highlightthickness=0, relief=relief, selectcolor=self.bg,
+                                anchor=anchor_option)
         else:
             rb = tk.Radiobutton(self.parent, text=text, variable=var_rb, value=value_rb, bg=self.bg, fg=self.fg,
-                                activebackground=color_bg, highlightthickness=0, relief=relief, selectcolor=color_bg,
-                                command=command)
+                                activebackground=self.bg, highlightthickness=0, relief=relief, selectcolor=self.bg,
+                                anchor=anchor_option, command=command)
+        #
         rb.grid(row=self.row_id, column=self.column_id, rowspan=self.n_rows, columnspan=self.n_columns, sticky="nesw")
         #
         return  rb
