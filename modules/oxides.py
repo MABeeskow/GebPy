@@ -171,27 +171,33 @@ class Oxides():
     def generate_dataset(self, number):
         dataset = {}
         #
-        if self.mineral == "Quartz":
-            for index in range(number):
-                for key, value in self.create_quartz().items():
-                    if key in ["M", "rho", "rho_e", "V", "vP", "vS", "vP/vS", "K", "G", "E", "nu", "GR", "PE", "U",
-                               "p"]:
-                        if key not in dataset:
-                            dataset[key] = [value]
-                        else:
-                            dataset[key].append(value)
-                    elif key in ["mineral", "state", "trace elements"] and key not in dataset:
-                        dataset[key] = value
-                    elif key in ["chemistry"]:
-                        if key not in dataset:
-                            dataset[key] = {}
-                            for key_2, value_2 in value.items():
-                                dataset[key][key_2] = [value_2]
-                        else:
-                            for key_2, value_2 in value.items():
-                                dataset[key][key_2].append(value_2)
-        elif self.mineral == "Coltan":
-            dataset = [self.create_coltan() for n in range(number)]
+        #if self.mineral == "Quartz":
+        for index in range(number):
+            if self.mineral == "Quartz":
+                data_mineral = self.create_quartz()
+            elif self.mineral == "Magnetite":
+                data_mineral = self.create_magnetite()
+            elif self.mineral == "Uraninite":
+                data_mineral = self.create_uraninite()
+            for key, value in data_mineral.items():
+                if key in ["M", "rho", "rho_e", "V", "vP", "vS", "vP/vS", "K", "G", "E", "nu", "GR", "PE", "U",
+                           "p"]:
+                    if key not in dataset:
+                        dataset[key] = [value]
+                    else:
+                        dataset[key].append(value)
+                elif key in ["mineral", "state", "trace elements"] and key not in dataset:
+                    dataset[key] = value
+                elif key in ["chemistry"]:
+                    if key not in dataset:
+                        dataset[key] = {}
+                        for key_2, value_2 in value.items():
+                            dataset[key][key_2] = [value_2]
+                    else:
+                        for key_2, value_2 in value.items():
+                            dataset[key][key_2].append(value_2)
+        #elif self.mineral == "Coltan":
+        #    dataset = [self.create_coltan() for n in range(number)]
         #
         return dataset
     #
@@ -367,7 +373,8 @@ class Oxides():
         uranium = PeriodicSystem(name="U").get_data()
         majors_name = ["O", "Si"]
         majors_data = np.array([["O", oxygen[1], 2, oxygen[2]], ["U", uranium[1], 1, uranium[2]]], dtype=object)
-        # Minor elements
+        # Trace elements
+        elements_traces = ["Th", "Zr", "Pb", "Ra", "Ac", "Po", "Ce", "Y", "Er", "La"]
         traces_data = []
         if len(self.traces_list) > 0:
             self.impurity = "impure"
@@ -461,6 +468,7 @@ class Oxides():
             results["GR"] = round(gamma_ray, 4)
             results["PE"] = round(pe, 4)
             results["U"] = round(U, 4)
+            results["trace elements"] = elements_traces
             if p != None:
                 results["p"] = round(p, 4)
             else:
@@ -475,7 +483,8 @@ class Oxides():
         iron = PeriodicSystem(name="Fe").get_data()
         majors_name = ["O", "Fe"]
         majors_data = np.array([["O", oxygen[1], 4, oxygen[2]], ["Fe", iron[1], 3, iron[2]]], dtype=object)
-        # Minor elements
+        # Trace elements
+        elements_traces = ["Mg", "Zn", "Mn", "Ni", "Cr", "Ti", "V", "Al"]
         traces_data = []
         if len(self.traces_list) > 0:
             self.impurity = "impure"
@@ -572,6 +581,7 @@ class Oxides():
             results["GR"] = round(gamma_ray, 4)
             results["PE"] = round(pe, 4)
             results["U"] = round(U, 4)
+            results["trace elements"] = elements_traces
             if p != None:
                 results["p"] = round(p, 4)
             else:

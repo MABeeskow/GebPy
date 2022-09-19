@@ -44,7 +44,10 @@ class GebPyGUI(tk.Frame):
         for priority in gui_priority:
             self.gui_elements[priority] = {}
             for gui_element in gui_elements:
-                self.gui_elements[priority][gui_element] = []
+                if gui_element not in ["Canvas", "Figure", "Axis"]:
+                    self.gui_elements[priority][gui_element] = []
+                else:
+                    self.gui_elements[priority][gui_element] = {}
         #
         ### Colors
         self.colors_gebpy = {"Background": "#EFEFEF", "Navigation": "#252422", "Accent": "#EB5E28", "Option": "#CCC5B9",
@@ -421,6 +424,14 @@ class GebPyGUI(tk.Frame):
         menubar.add_cascade(
             label="Help",
             menu=help_menu)
+        #
+        ## Buttons
+        btn_quit = SimpleElements(
+            parent=self.parent, row_id=94, column_id=16, n_rows=4, n_columns=15,
+            bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_button(
+            text="Quit PySILLS", command=self.parent.destroy)
+        #
+        self.gui_elements["Static"]["Button"].append(btn_quit)
     #
     #########################
     ## M i n e r a l o g y ##
@@ -513,9 +524,14 @@ class GebPyGUI(tk.Frame):
             ## Cleaning
             for key, gui_items in self.gui_elements["Temporary"].items():
                 if len(gui_items) > 0:
-                    for gui_item in gui_items:
-                        gui_item.grid_remove()
-                    gui_items.clear()
+                    if key not in ["Canvas"]:
+                        if type(gui_items) == list:
+                            for gui_item in gui_items:
+                                gui_item.grid_remove()
+                            gui_items.clear()
+                    else:
+                        for key_2, gui_item in gui_items.items():
+                            gui_item.get_tk_widget().grid_remove()
             #
             ## Labels
             lbl_title = SimpleElements(
@@ -585,7 +601,7 @@ class GebPyGUI(tk.Frame):
                 self.gui_elements["Temporary"]["Entry"].extend([entr_min, entr_max, entr_mean, entr_error])
                 #
             ## Diagram
-            if ["Mineral Physics Scatter"] not in self.gui_elements["Temporary"]["Canvas"]:
+            if "Mineral Physics Scatter" not in self.gui_elements["Temporary"]["Canvas"]:
                 fig_scatter, ax_scatter = plt.subplots(
                     ncols=3, nrows=3, figsize=(9, 9), facecolor=self.colors_gebpy["Background"])
                 #
@@ -853,6 +869,14 @@ class GebPyGUI(tk.Frame):
         #
         self.gui_elements["Static"]["Radiobutton"].extend([rb_geophysics, rb_geochemistry])
         #
+        for key, gui_element in self.gui_elements["Temporary"].items():
+            if key not in ["Canvas"]:
+                for gui_item in gui_element:
+                    gui_item.grid_remove()
+            else:
+                for key_2, gui_item in gui_element.items():
+                    gui_item.get_tk_widget().grid_remove()
+            gui_element.clear()
     #
     ######################################
     ## G e n e r a l  F u n c t i o n s ##
@@ -868,5 +892,7 @@ class GebPyGUI(tk.Frame):
 #
 if __name__ == "__main__":
     root = tk.Tk()
+    #
     GebPyGUI(parent=root)
+    #
     root.mainloop()
