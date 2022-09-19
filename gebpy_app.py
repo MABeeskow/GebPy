@@ -14,6 +14,8 @@
 import tkinter as tk
 import collections
 import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from modules.gui_elements import SimpleElements
 from modules.oxides import Oxides
 
@@ -26,7 +28,8 @@ class GebPyGUI(tk.Frame):
         ### Container
         self.gui_elements = {}
         self.gui_elements_sub = {}
-        gui_elements = ["Frame", "Label", "Button", "Radiobutton", "Checkbox", "Entry", "Option Menu"]
+        gui_elements = ["Frame", "Label", "Button", "Radiobutton", "Checkbox", "Entry", "Option Menu", "Canvas",
+                        "Figure", "Axis"]
         gui_priority = ["Static", "Temporary"]
         gui_subwindows = ["Trace Elements"]
         for subwindow in gui_subwindows:
@@ -34,14 +37,17 @@ class GebPyGUI(tk.Frame):
             for priority in gui_priority:
                 self.gui_elements_sub[subwindow][priority] = {}
                 for gui_element in gui_elements:
-                    self.gui_elements_sub[subwindow][priority][gui_element] = []
+                    if gui_element not in ["Canvas", "Figure", "Axis"]:
+                        self.gui_elements_sub[subwindow][priority][gui_element] = []
+                    else:
+                        self.gui_elements_sub[subwindow][priority][gui_element] = {}
         for priority in gui_priority:
             self.gui_elements[priority] = {}
             for gui_element in gui_elements:
                 self.gui_elements[priority][gui_element] = []
         #
         ### Colors
-        self.colors_gebpy = {"Background": "#FFFCF2", "Navigation": "#252422", "Accent": "#EB5E28", "Option": "#CCC5B9",
+        self.colors_gebpy = {"Background": "#EFEFEF", "Navigation": "#252422", "Accent": "#EB5E28", "Option": "#CCC5B9",
                              "White": "#FFFFFF", "Black": "#000000"}
         #
         ### Variables
@@ -119,12 +125,17 @@ class GebPyGUI(tk.Frame):
         sub_mineral_groups = tk.Menu(mineralogy_menu, tearoff=0)
         mineral_groups = [
             "Oxides", "Sulfides", "Sulfates", "Halides", "Tectosilicates", "Nesosilicates", "Sorosilicates",
-            "Cyclosilicates", "Inosilicates", "Phyllosilicates"]
+            "Cyclosilicates", "Inosilicates", "Phyllosilicates", "Carbonates", "Phosphates", "Phospides"]
         mineral_groups.sort()
         for mineral_group in mineral_groups:
             if mineral_group == "Oxides":
                 sub_oxides = tk.Menu(sub_mineral_groups, tearoff=0)
-                self.oxide_minerals = ["Quartz"]
+                self.oxide_minerals = [
+                    "Quartz", "Magnetite", "Hematite", "Al-Spinel", "Ilmenite", "Cassiterite", "Chromite", "Corundum",
+                    "Rutile", "Pyrolusite", "Magnesiochromite", "Zincochromite", "Cr-Spinel", "Cuprospinel",
+                    "Jacobsite", "Magnesioferrite", "Trevorite", "Franklinite", "Ulvospinel", "Fe-Spinel", "Uraninite",
+                    "Litharge", "Massicot", "Minium", "Plattnerite", "Scrutinyite", "Zincite", "Columbite", "Tantalite",
+                    "Coltan", "Crocoite", "Wulfenite", "Goethite"]
                 self.oxide_minerals.sort()
                 for mineral in self.oxide_minerals:
                     sub_oxides.add_command(
@@ -133,13 +144,165 @@ class GebPyGUI(tk.Frame):
                 sub_mineral_groups.add_cascade(
                     label="Oxides",
                     menu=sub_oxides)
+            elif mineral_group == "Carbonates":
+                sub_carbonates = tk.Menu(sub_mineral_groups, tearoff=0)
+                self.carbonate_minerals = [
+                    "Calcite", "Dolomite", "Magnesite", "Siderite", "Rhodochrosite", "Aragonite", "Cerrusite",
+                    "Ankerite", "Azurite", "Malachite", "Ikaite"]
+                self.carbonate_minerals.sort()
+                for mineral in self.carbonate_minerals:
+                    sub_carbonates.add_command(
+                        label=mineral, command=lambda name=mineral: self.select_mineral(name))
+                #
+                sub_mineral_groups.add_cascade(
+                    label="Carbonates",
+                    menu=sub_carbonates)
+            elif mineral_group == "Sulfides":
+                sub_sulfides = tk.Menu(sub_mineral_groups, tearoff=0)
+                self.sulfide_minerals = [
+                    "Pyrite", "Chalcopyrite", "Galena", "Acanthite", "Chalcocite", "Bornite", "Sphalerite",
+                    "Pyrrhotite", "Millerite", "Pentlandite", "Covellite", "Cinnabar", "Realgar", "Orpiment",
+                    "Stibnite", "Marcasite", "Molybdenite", "Fahlore", "Gallite", "Roquesite", "Lenaite", "Laforetite",
+                    "Vaesite", "Cattierite"]
+                self.sulfide_minerals.sort()
+                for mineral in self.sulfide_minerals:
+                    sub_sulfides.add_command(
+                        label=mineral, command=lambda name=mineral: self.select_mineral(name))
+                #
+                sub_mineral_groups.add_cascade(
+                    label="Sulfides",
+                    menu=sub_sulfides)
+            elif mineral_group == "Sulfates":
+                sub_sulfates = tk.Menu(sub_mineral_groups, tearoff=0)
+                self.sulfate_minerals = [
+                    "Barite", "Celestite", "Anglesite", "Anhydrite", "Hanksite", "Gypsum", "Alunite", "Jarosite",
+                    "Chalcanthite", "Kieserite", "Scheelite", "Hexahydrite", "Kainite"]
+                self.sulfate_minerals.sort()
+                for mineral in self.sulfate_minerals:
+                    sub_sulfates.add_command(
+                        label=mineral, command=lambda name=mineral: self.select_mineral(name))
+                #
+                sub_mineral_groups.add_cascade(
+                    label="Sulfates",
+                    menu=sub_sulfates)
+            elif mineral_group == "Halides":
+                sub_halides = tk.Menu(sub_mineral_groups, tearoff=0)
+                self.halide_minerals = ["Halite", "Fluorite", "Sylvite", "Carnallite"]
+                self.halide_minerals.sort()
+                for mineral in self.halide_minerals:
+                    sub_halides.add_command(
+                        label=mineral, command=lambda name=mineral: self.select_mineral(name))
+                #
+                sub_mineral_groups.add_cascade(
+                    label="Halides",
+                    menu=sub_halides)
+            elif mineral_group == "Phosphates":
+                sub_phosphates = tk.Menu(sub_mineral_groups, tearoff=0)
+                self.phosphate_minerals = ["Apatite", "Fluoroapatite", "Hydroxyapatite", "Chloroapatite"]
+                self.phosphate_minerals.sort()
+                for mineral in self.phosphate_minerals:
+                    sub_phosphates.add_command(
+                        label=mineral, command=lambda name=mineral: self.select_mineral(name))
+                #
+                sub_mineral_groups.add_cascade(
+                    label="Phosphates",
+                    menu=sub_phosphates)
+            elif mineral_group == "Phospides":
+                sub_phosphides = tk.Menu(sub_mineral_groups, tearoff=0)
+                self.phospide_minerals = ["Allabogdanite"]
+                self.phospide_minerals.sort()
+                for mineral in self.phospide_minerals:
+                    sub_phosphides.add_command(
+                        label=mineral, command=lambda name=mineral: self.select_mineral(name))
+                #
+                sub_mineral_groups.add_cascade(
+                    label="Phospides",
+                    menu=sub_phosphides)
+            elif mineral_group == "Tectosilicates":
+                sub_tectosilicates = tk.Menu(sub_mineral_groups, tearoff=0)
+                self.tectosilicate_minerals = [
+                    "Alkaline Feldspar", "Plagioclase", "Scapolite", "Danburite", "Nepheline"]
+                self.tectosilicate_minerals.sort()
+                for mineral in self.tectosilicate_minerals:
+                    sub_tectosilicates.add_command(
+                        label=mineral, command=lambda name=mineral: self.select_mineral(name))
+                #
+                sub_mineral_groups.add_cascade(
+                    label="Tectosilicates",
+                    menu=sub_tectosilicates)
+            elif mineral_group == "Sorosilicates":
+                sub_sorosilicates = tk.Menu(sub_mineral_groups, tearoff=0)
+                self.sorosilicate_minerals = ["Epidote", "Zoisite", "Gehlenite"]
+                self.sorosilicate_minerals.sort()
+                for mineral in self.sorosilicate_minerals:
+                    sub_sorosilicates.add_command(
+                        label=mineral, command=lambda name=mineral: self.select_mineral(name))
+                #
+                sub_mineral_groups.add_cascade(
+                    label="Sorosilicates",
+                    menu=sub_sorosilicates)
+            elif mineral_group == "Inosilicates":
+                sub_inosilicates = tk.Menu(sub_mineral_groups, tearoff=0)
+                self.inosilicate_minerals = [
+                    "Enstatite", "Ferrosilite", "Diopside", "Jadeite", "Aegirine", "Spodumene", "Wollastonite",
+                    "Tremolite", "Actinolite", "Glaucophane", "Augite", "Arfvedsonite", "Ca-Amphibole", "Na-Amphibole",
+                    "Mg-Fe-Pyroxene", "Ca-Pyroxene", "Donpeacorite", "Orthopyroxene"]
+                self.inosilicate_minerals.sort()
+                for mineral in self.inosilicate_minerals:
+                    sub_inosilicates.add_command(
+                        label=mineral, command=lambda name=mineral: self.select_mineral(name))
+                #
+                sub_mineral_groups.add_cascade(
+                    label="Inosilicates",
+                    menu=sub_inosilicates)
+            elif mineral_group == "Nesosilicates":
+                sub_nesosilicates = tk.Menu(sub_mineral_groups, tearoff=0)
+                self.nesosilicate_minerals = [
+                    "Zircon", "Titanite", "Thorite", "Andalusite", "Kyanite", "Sillimanite", "Topaz", "Staurolite",
+                    "Fayalite", "Forsterite", "Tephroite", "Ca-Olivine", "Liebenbergite", "Olivine", "Pyrope",
+                    "Almandine", "Grossular", "Anhadrite", "Uvarovite", "Al-Garnet", "Ca-Garnet"]
+                self.nesosilicate_minerals.sort()
+                for mineral in self.nesosilicate_minerals:
+                    sub_nesosilicates.add_command(
+                        label=mineral, command=lambda name=mineral: self.select_mineral(name))
+                #
+                sub_mineral_groups.add_cascade(
+                    label="Nesosilicates",
+                    menu=sub_nesosilicates)
+            elif mineral_group == "Phyllosilicates":
+                sub_phyllosilicates = tk.Menu(sub_mineral_groups, tearoff=0)
+                self.phyllosilicate_minerals = [
+                    "Illite", "Kaolinite", "Montmorillonite", "Chamosite", "Clinochlore", "Pennantite", "Nimite",
+                    "Chlorite", "Vermiculite", "Annite", "Phlogopite", "Eastonite", "Siderophyllite", "Biotite",
+                    "Muscovite", "Glauconite", "Notronite", "Saponite", "Talc", "Chrysotile", "Antigorite",
+                    "Pyrophyllite"]
+                self.phyllosilicate_minerals.sort()
+                for mineral in self.phyllosilicate_minerals:
+                    sub_phyllosilicates.add_command(
+                        label=mineral, command=lambda name=mineral: self.select_mineral(name))
+                #
+                sub_mineral_groups.add_cascade(
+                    label="Phyllosilicates",
+                    menu=sub_phyllosilicates)
+            elif mineral_group == "Cyclosilicates":
+                sub_cyclosilicates = tk.Menu(sub_mineral_groups, tearoff=0)
+                self.cyclosilicate_minerals = [
+                    "Beryl", "Benitoite", "Cordierite", "Sekaninaite", "Schorl", "Elbaite", "Liddicoatite"]
+                self.cyclosilicate_minerals.sort()
+                for mineral in self.cyclosilicate_minerals:
+                    sub_cyclosilicates.add_command(
+                        label=mineral, command=lambda name=mineral: self.select_mineral(name))
+                #
+                sub_mineral_groups.add_cascade(
+                    label="Cyclosilicates",
+                    menu=sub_cyclosilicates)
             else:
                 sub_mineral_groups.add_command(
                     label=mineral_group)
         #
         sub_special_groups = tk.Menu(mineralogy_menu, tearoff=0)
         special_groups = [
-            "Spinel Group", "Hematite Group"]
+            "Spinel Group", "Hematite Group", "Rutile Group", "Periclase Group", "Wulfenite Group"]
         special_groups.sort()
         for special_group in special_groups:
             sub_special_groups.add_command(
@@ -304,17 +467,13 @@ class GebPyGUI(tk.Frame):
             parent=self.parent, row_id=14, column_id=0, n_rows=2, n_columns=16, bg=self.colors_gebpy["Navigation"],
             fg=self.colors_gebpy["Background"]).create_label(
             text="Number of Datapoints", font_option="sans 10 bold", relief=tk.FLAT)
-        lbl_analysis = SimpleElements(
-            parent=self.parent, row_id=16, column_id=0, n_rows=4, n_columns=16, bg=self.colors_gebpy["Navigation"],
-            fg=self.colors_gebpy["Background"]).create_label(
-            text="Analysis Mode", font_option="sans 10 bold", relief=tk.FLAT)
         lbl_traces = SimpleElements(
-            parent=self.parent, row_id=20, column_id=0, n_rows=6, n_columns=16, bg=self.colors_gebpy["Navigation"],
+            parent=self.parent, row_id=16, column_id=0, n_rows=6, n_columns=16, bg=self.colors_gebpy["Navigation"],
             fg=self.colors_gebpy["Background"]).create_label(
             text="Trace Elements", font_option="sans 10 bold", relief=tk.FLAT)
         #
         self.gui_elements["Static"]["Label"].extend(
-            [lbl_mineralogy, lbl_name, lbl_samples, lbl_analysis, lbl_traces])
+            [lbl_mineralogy, lbl_name, lbl_samples, lbl_traces])
         #
         ## Entries
         entr_samples = SimpleElements(
@@ -324,33 +483,22 @@ class GebPyGUI(tk.Frame):
         self.gui_elements["Static"]["Entry"].extend([entr_samples])
         #
         ## Radiobuttons
-        rb_geophysics = SimpleElements(
-            parent=self.parent, row_id=16, column_id=16, n_rows=2, n_columns=14, bg=self.colors_gebpy["Navigation"],
-            fg=self.colors_gebpy["Background"]).create_radiobutton(
-            text="Mineral Physics", var_rb=self.gui_variables["Radiobutton"]["Analysis Mode"], value_rb=0,
-            color_bg=self.colors_gebpy["Background"], command=self.change_rb_analysis)
-        rb_geochemistry = SimpleElements(
-            parent=self.parent, row_id=18, column_id=16, n_rows=2, n_columns=14, bg=self.colors_gebpy["Navigation"],
-            fg=self.colors_gebpy["Background"]).create_radiobutton(
-            text="Mineral Chemistry", var_rb=self.gui_variables["Radiobutton"]["Analysis Mode"], value_rb=1,
-            color_bg=self.colors_gebpy["Navigation"], command=self.change_rb_analysis)
         rb_trace_without = SimpleElements(
-            parent=self.parent, row_id=20, column_id=16, n_rows=2, n_columns=15, bg=self.colors_gebpy["Navigation"],
+            parent=self.parent, row_id=16, column_id=16, n_rows=2, n_columns=15, bg=self.colors_gebpy["Navigation"],
             fg=self.colors_gebpy["Background"]).create_radiobutton(
             text="Without Trace Elements", var_rb=self.gui_variables["Radiobutton"]["Trace Elements"], value_rb=0,
             color_bg=self.colors_gebpy["Navigation"], command=lambda var_name=name: self.change_rb_traces(var_name))
         rb_trace_with = SimpleElements(
-            parent=self.parent, row_id=22, column_id=16, n_rows=2, n_columns=15, bg=self.colors_gebpy["Navigation"],
+            parent=self.parent, row_id=18, column_id=16, n_rows=2, n_columns=15, bg=self.colors_gebpy["Navigation"],
             fg=self.colors_gebpy["Background"]).create_radiobutton(
             text="With Trace Elements", var_rb=self.gui_variables["Radiobutton"]["Trace Elements"], value_rb=1,
             color_bg=self.colors_gebpy["Navigation"], command=lambda var_name=name: self.change_rb_traces(var_name))
         #
-        self.gui_elements["Static"]["Radiobutton"].extend(
-            [rb_geophysics, rb_geochemistry, rb_trace_without, rb_trace_with])
+        self.gui_elements["Static"]["Radiobutton"].extend([rb_trace_without, rb_trace_with])
         #
         ## Buttons
         btn_generate_data = SimpleElements(
-            parent=self.parent, row_id=28, column_id=16, n_rows=4, n_columns=15,
+            parent=self.parent, row_id=22, column_id=16, n_rows=4, n_columns=15,
             bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_button(
             text="Run Simulation", command=lambda var_name=name: self.run_simulation_mineralogy(var_name))
         #
@@ -399,8 +547,8 @@ class GebPyGUI(tk.Frame):
                 [lbl_title, lbl_results, lbl_min, lbl_max, lbl_mean, lbl_error])
             #
             categories = [
-                "M\n (mol)", "V\n (A3/mol)", "rho\n (kg/m3)", "vP\n (m/s)", "vS\n (m/s)", "vP/vS\n (1)", "K\n (GPa)",
-                "G\n (GPa)", "E\n (GPa)", "nu\n (1)", "GR\n (API)", "PE\n (barns/e^-)"]
+                "M\n (kg/mol)", "V\n (A$^3$/mol)", "rho\n (kg/m3)", "vP\n (m/s)", "vS\n (m/s)", "vP/vS\n (1)", "K\n (GPa)",
+                "G\n (GPa)", "E\n (GPa)", "nu\n (1)", "GR\n (API)", "PE\n (barns/e$^-$)"]
             categories_short = ["M", "V", "rho", "vP", "vS", "vP/vS", "K", "G", "E", "nu", "GR", "PE"]
             for index, category in enumerate(categories):
                 lbl_category = SimpleElements(
@@ -436,13 +584,49 @@ class GebPyGUI(tk.Frame):
                 #
                 self.gui_elements["Temporary"]["Entry"].extend([entr_min, entr_max, entr_mean, entr_error])
                 #
+            ## Diagram
+            if ["Mineral Physics Scatter"] not in self.gui_elements["Temporary"]["Canvas"]:
+                fig_scatter, ax_scatter = plt.subplots(
+                    ncols=3, nrows=3, figsize=(9, 9), facecolor=self.colors_gebpy["Background"])
+                #
+                categories = [["M", "V", "rho"], ["vP", "vS", "vP/vS"], ["GR", "PE", "nu"]]
+                labels = [["M (kg/mol)", "V (A$^3$/mol", "rho (kg/m$^3$"], ["vP (m/s)", "vS (m/s)", "vP/vS (1)"],
+                          ["GR (API)", "PE (barns/e$^-$)", "nu (1)"]]
+                for i, subcategories in enumerate(categories):
+                    for j, key in enumerate(subcategories):
+                        ax_scatter[i][j].scatter(
+                            self.data_mineral["rho"], self.data_mineral[key], color=self.colors_gebpy["Accent"],
+                            edgecolor="black", alpha=0.5)
+                        #
+                        ax_scatter[i][j].set_xlabel("Density - kg/m$^3$", fontsize=9)
+                        ax_scatter[i][j].set_ylabel(labels[i][j], labelpad=0.5, fontsize=9)
+                        ax_scatter[i][j].grid(True)
+                        ax_scatter[i][j].set_axisbelow(True)
+                #
+                fig_scatter.tight_layout()
+                #
+                canvas_scatter = FigureCanvasTkAgg(fig_scatter, master=self.parent)
+                canvas_scatter.get_tk_widget().grid(
+                    row=0, column=90, rowspan=100, columnspan=90, sticky="nesw")
+                #
+                self.gui_elements["Temporary"]["Canvas"]["Mineral Physics Scatter"] = canvas_scatter
+                self.gui_elements["Temporary"]["Figure"]["Mineral Physics Scatter"] = fig_scatter
+                self.gui_elements["Temporary"]["Axis"]["Mineral Physics Scatter"] = ax_scatter
+            else:
+                self.gui_elements["Temporary"]["Canvas"]["Mineral Physics Scatter"].get_tk_widget().grid()
+            #
         elif self.gui_variables["Radiobutton"]["Analysis Mode"].get() == 1:   # Mineral Chemistry
             ## Cleaning
             for key, gui_items in self.gui_elements["Temporary"].items():
                 if len(gui_items) > 0:
-                    for gui_item in gui_items:
-                        gui_item.grid_remove()
-                    gui_items.clear()
+                    if key not in ["Canvas", "Figure", "Axis"]:
+                        for gui_item in gui_items:
+                            gui_item.grid_remove()
+                        gui_items.clear()
+                    else:
+                        if key == "Canvas":
+                            for key, gui_element in self.gui_elements["Temporary"]["Canvas"].items():
+                                gui_element.get_tk_widget().grid_remove()
             #
             ## Labels
             lbl_title = SimpleElements(
@@ -524,7 +708,7 @@ class GebPyGUI(tk.Frame):
             #
             if self.btn_traces == None:
                 self.btn_traces = SimpleElements(
-                    parent=self.parent, row_id=24, column_id=16, n_rows=2, n_columns=15,
+                    parent=self.parent, row_id=20, column_id=16, n_rows=2, n_columns=15,
                     bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_button(
                     text="Trace Elements",
                     command=lambda var_traces=data_mineral["trace elements"]: self.select_trace_elements(var_traces))
@@ -647,6 +831,28 @@ class GebPyGUI(tk.Frame):
             self.gui_variables["Entry"]["Mean"][element].set(0.0)
             self.gui_variables["Entry"]["Error"][element] = tk.StringVar()
             self.gui_variables["Entry"]["Error"][element].set(0.0)
+        #
+        ## Labels
+        lbl_analysis = SimpleElements(
+            parent=self.parent, row_id=26, column_id=0, n_rows=4, n_columns=16, bg=self.colors_gebpy["Navigation"],
+            fg=self.colors_gebpy["Background"]).create_label(
+            text="Analysis Mode", font_option="sans 10 bold", relief=tk.FLAT)
+        #
+        self.gui_elements["Static"]["Label"].append(lbl_analysis)
+        #
+        rb_geophysics = SimpleElements(
+            parent=self.parent, row_id=26, column_id=16, n_rows=2, n_columns=14, bg=self.colors_gebpy["Navigation"],
+            fg=self.colors_gebpy["Background"]).create_radiobutton(
+            text="Mineral Physics", var_rb=self.gui_variables["Radiobutton"]["Analysis Mode"], value_rb=0,
+            color_bg=self.colors_gebpy["Background"], command=self.change_rb_analysis)
+        rb_geochemistry = SimpleElements(
+            parent=self.parent, row_id=28, column_id=16, n_rows=2, n_columns=14, bg=self.colors_gebpy["Navigation"],
+            fg=self.colors_gebpy["Background"]).create_radiobutton(
+            text="Mineral Chemistry", var_rb=self.gui_variables["Radiobutton"]["Analysis Mode"], value_rb=1,
+            color_bg=self.colors_gebpy["Navigation"], command=self.change_rb_analysis)
+        #
+        self.gui_elements["Static"]["Radiobutton"].extend([rb_geophysics, rb_geochemistry])
+        #
     #
     ######################################
     ## G e n e r a l  F u n c t i o n s ##
