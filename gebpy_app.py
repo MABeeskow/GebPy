@@ -13,6 +13,7 @@
 ## MODULES
 import tkinter as tk
 import collections
+import numpy as np
 from modules.gui_elements import SimpleElements
 from modules.oxides import Oxides
 
@@ -410,22 +411,28 @@ class GebPyGUI(tk.Frame):
                 self.gui_elements["Temporary"]["Label"].append(lbl_category)
                 #
                 ## Entries
+                #
+                var_entr_min = round(min(self.data_mineral[categories_short[index]]), 6)
+                var_entr_max = round(max(self.data_mineral[categories_short[index]]), 6)
+                var_entr_mean = round(np.mean(self.data_mineral[categories_short[index]]), 6)
+                var_entr_error = round(np.std(self.data_mineral[categories_short[index]], ddof=1), 6)
+                #
                 entr_min = SimpleElements(
                     parent=self.parent, row_id=2*(2*index + 4), column_id=start_column + 9, n_rows=4, n_columns=9,
                     bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
-                    var_entr=self.gui_variables["Entry"]["Minimum"][categories_short[index]])
+                    var_entr=self.gui_variables["Entry"]["Minimum"][categories_short[index]], var_entr_set=var_entr_min)
                 entr_max = SimpleElements(
                     parent=self.parent, row_id=2 * (2 * index + 4), column_id=start_column + 18, n_rows=4, n_columns=9,
                     bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
-                    var_entr=self.gui_variables["Entry"]["Maximum"][categories_short[index]])
+                    var_entr=self.gui_variables["Entry"]["Maximum"][categories_short[index]], var_entr_set=var_entr_max)
                 entr_mean = SimpleElements(
                     parent=self.parent, row_id=2 * (2 * index + 4), column_id=start_column + 27, n_rows=4, n_columns=9,
                     bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
-                    var_entr=self.gui_variables["Entry"]["Mean"][categories_short[index]])
+                    var_entr=self.gui_variables["Entry"]["Mean"][categories_short[index]], var_entr_set=var_entr_mean)
                 entr_error = SimpleElements(
                     parent=self.parent, row_id=2 * (2 * index + 4), column_id=start_column + 36, n_rows=4, n_columns=9,
                     bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
-                    var_entr=self.gui_variables["Entry"]["Error"][categories_short[index]])
+                    var_entr=self.gui_variables["Entry"]["Error"][categories_short[index]], var_entr_set=var_entr_error)
                 #
                 self.gui_elements["Temporary"]["Entry"].extend([entr_min, entr_max, entr_mean, entr_error])
                 #
@@ -476,22 +483,28 @@ class GebPyGUI(tk.Frame):
                 self.gui_elements["Temporary"]["Label"].append(lbl_element)
                 #
                 ## Entries
+                #
+                var_entr_min = int(min(self.data_mineral["chemistry"][element])*10**6)
+                var_entr_max = int(max(self.data_mineral["chemistry"][element])*10**6)
+                var_entr_mean = int(np.mean(self.data_mineral["chemistry"][element])*10**6)
+                var_entr_error = int(np.std(self.data_mineral["chemistry"][element], ddof=1)*10**6)
+                #
                 entr_min = SimpleElements(
                     parent=self.parent, row_id=2 * (2 * index + 4), column_id=start_column + 9, n_rows=4, n_columns=9,
                     bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
-                    var_entr=self.gui_variables["Entry"]["Minimum"][element])
+                    var_entr=self.gui_variables["Entry"]["Minimum"][element], var_entr_set=var_entr_min)
                 entr_max = SimpleElements(
                     parent=self.parent, row_id=2 * (2 * index + 4), column_id=start_column + 18, n_rows=4, n_columns=9,
                     bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
-                    var_entr=self.gui_variables["Entry"]["Maximum"][element])
+                    var_entr=self.gui_variables["Entry"]["Maximum"][element], var_entr_set=var_entr_max)
                 entr_mean = SimpleElements(
                     parent=self.parent, row_id=2 * (2 * index + 4), column_id=start_column + 27, n_rows=4, n_columns=9,
                     bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
-                    var_entr=self.gui_variables["Entry"]["Mean"][element])
+                    var_entr=self.gui_variables["Entry"]["Mean"][element], var_entr_set=var_entr_mean)
                 entr_error = SimpleElements(
                     parent=self.parent, row_id=2 * (2 * index + 4), column_id=start_column + 36, n_rows=4, n_columns=9,
                     bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
-                    var_entr=self.gui_variables["Entry"]["Error"][element])
+                    var_entr=self.gui_variables["Entry"]["Error"][element], var_entr_set=var_entr_error)
                 #
                 self.gui_elements["Temporary"]["Entry"].extend([entr_min, entr_max, entr_mean, entr_error])
                 #
@@ -618,10 +631,10 @@ class GebPyGUI(tk.Frame):
                 self.traces_list.append(key)
 
         if var_name in self.oxide_minerals:
-            data_mineral = Oxides(
+            self.data_mineral = Oxides(
                 mineral=var_name, data_type=True, traces_list=self.traces_list).generate_dataset(
                 number=self.gui_variables["Entry"]["Number Samples"].get())
-        for key, dataset in data_mineral.items():
+        for key, dataset in self.data_mineral.items():
             if key == "chemistry":
                 self.list_elements = list(dataset.keys())
         #

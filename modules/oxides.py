@@ -288,11 +288,11 @@ class Oxides():
         element = [PeriodicSystem(name=amounts[i][0]).get_data() for i in range(len(amounts))]
         # Density
         dataV = CrystalPhysics([[4.9135, 5.4050], [], "trigonal"])
-        V = dataV.calculate_volume()*magic_factor
+        V = dataV.calculate_volume()
         Z = 3
-        V_m = MineralChemistry().calculate_molar_volume(volume_cell=V, z=Z)
+        V_m = MineralChemistry().calculate_molar_volume(volume_cell=V, z=Z)*magic_factor
         dataRho = CrystalPhysics([molar_mass, Z, V])
-        rho = dataRho.calculate_bulk_density()
+        rho = dataRho.calculate_bulk_density()*magic_factor
         rho_e = wg(amounts=amounts, elements=element, rho_b=rho).calculate_electron_density()
         # Bulk modulus
         K = 29*10**9*magic_factor
