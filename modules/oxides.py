@@ -6,7 +6,7 @@
 # Name:		oxides.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		16.09.2022
+# Date:		19.09.2022
 
 # -----------------------------------------------
 
@@ -169,7 +169,28 @@ class Oxides():
         return data
     #
     def generate_dataset(self, number):
-        if self.mineral == "Coltan":
+        dataset = {}
+        #
+        if self.mineral == "Quartz":
+            for index in range(number):
+                for key, value in self.create_quartz().items():
+                    if key in ["M", "rho", "rho_e", "V", "vP", "vS", "vP/vS", "K", "G", "E", "nu", "GR", "PE", "U",
+                               "p"]:
+                        if key not in dataset:
+                            dataset[key] = [value]
+                        else:
+                            dataset[key].append(value)
+                    elif key in ["mineral", "state", "trace elements"] and key not in dataset:
+                        dataset[key] = value
+                    elif key in ["chemistry"]:
+                        if key not in dataset:
+                            dataset[key] = {}
+                            for key_2, value_2 in value.items():
+                                dataset[key][key_2] = [value_2]
+                        else:
+                            for key_2, value_2 in value.items():
+                                dataset[key][key_2].append(value_2)
+        elif self.mineral == "Coltan":
             dataset = [self.create_coltan() for n in range(number)]
         #
         return dataset
@@ -184,87 +205,99 @@ class Oxides():
         traces_data = []
         if len(self.traces_list) > 0:
             self.impurity = "impure"
+            self.traces_list_updated = []
+        #
         if self.impurity == "pure":
             var_state = "fixed"
+            self.traces_list_updated = []
         else:
             var_state = "variable"
-            self.traces_list = []
+            self.traces_list_updated = []
             minors_x = ["Ti", "Ge", "Sn", "C"]               # mainly 4+
             minors_y = ["Al", "Fe", "Ga", "As", "B", "P"]    # mainly 3+
             minors_z = ["H", "Li", "Na", "Ag", "K"]     # mainly 1+
             minors_w = ["Mg", "Cu", "Be", "Mn"]         # mainly 2+
+            #
+            minors_x_updated = list(set(self.traces_list).intersection(minors_x))
+            minors_y_updated = list(set(self.traces_list).intersection(minors_y))
+            minors_z_updated = list(set(self.traces_list).intersection(minors_z))
+            minors_w_updated = list(set(self.traces_list).intersection(minors_w))
+            #
             if self.impurity == "random":
-                n_x = rd.randint(0, len(minors_x))
-                n_y = rd.randint(0, len(minors_y))
-                n_w = rd.randint(0, len(minors_w))
+                n_x = rd.randint(0, len(minors_x_updated))
+                n_y = rd.randint(0, len(minors_y_updated))
+                n_w = rd.randint(0, len(minors_w_updated))
                 if n_x > 0:
-                    selection_x = rd.sample(minors_x, n_x)
-                    self.traces_list.extend(selection_x)
+                    selection_x = rd.sample(minors_x_updated, n_x)
+                    self.traces_list_updated.extend(selection_x)
                 if n_y > 0 and n_w == 0:
                     n_z = rd.randint(1, n_y)
-                    selection_y = rd.sample(minors_y, n_y)
-                    selection_z = rd.sample(minors_z, n_z)
-                    self.traces_list.extend(selection_y)
-                    self.traces_list.extend(selection_z)
+                    selection_y = rd.sample(minors_y_updated, n_y)
+                    selection_z = rd.sample(minors_z_updated, n_z)
+                    self.traces_list_updated.extend(selection_y)
+                    self.traces_list_updated.extend(selection_z)
                 if n_w > 0 and n_y == 0:
                     n_z = rd.randint(1, n_w)
-                    selection_w = rd.sample(minors_w, n_w)
-                    selection_z = rd.sample(minors_z, n_z)
-                    self.traces_list.extend(selection_w)
-                    self.traces_list.extend(selection_z)
+                    selection_w = rd.sample(minors_w_updated, n_w)
+                    selection_z = rd.sample(minors_z_updated, n_z)
+                    self.traces_list_updated.extend(selection_w)
+                    self.traces_list_updated.extend(selection_z)
                 if n_y > 0 and n_w > 0:
-                    if n_y + n_w <= len(minors_z):
+                    if n_y + n_w <= len(minors_z_updated):
                         n_z = rd.randint(1, (n_y + n_w))
                     else:
-                        n_z = len(minors_z)
-                    selection_y = rd.sample(minors_y, n_y)
-                    selection_w = rd.sample(minors_w, n_w)
-                    selection_z = rd.sample(minors_z, n_z)
-                    self.traces_list.extend(selection_y)
-                    self.traces_list.extend(selection_w)
-                    self.traces_list.extend(selection_z)
+                        n_z = len(minors_z_updated)
+                    selection_y = rd.sample(minors_y_updated, n_y)
+                    selection_w = rd.sample(minors_w_updated, n_w)
+                    selection_z = rd.sample(minors_z_updated, n_z)
+                    self.traces_list_updated.extend(selection_y)
+                    self.traces_list_updated.extend(selection_w)
+                    self.traces_list_updated.extend(selection_z)
             elif self.impurity != "random":
-                self.traces_list = []
-                for element in self.impurity:
-                    if element in minors_x:
-                        self.traces_list.append(element)
-                    elif element in minors_y:
-                        self.traces_list.append(element)
-                    elif element in minors_z:
-                        self.traces_list.append(element)
-                    elif element in minors_w:
-                        self.traces_list.append(element)
+                for element in self.traces_list:
+                    if element in minors_x_updated:
+                        self.traces_list_updated.append(element)
+                    elif element in minors_y_updated:
+                        self.traces_list_updated.append(element)
+                    elif element in minors_z_updated:
+                        self.traces_list_updated.append(element)
+                    elif element in minors_w_updated:
+                        self.traces_list_updated.append(element)
             #
-            traces = [PeriodicSystem(name=i).get_data() for i in self.traces_list]
-            x_traces = [round(rd.uniform(0., 0.01), 6) for i in range(len(self.traces_list))]
-            for i in range(len(self.traces_list)):
-                traces_data.append([str(self.traces_list[i]), int(traces[i][1]), float(x_traces[i])])
+            traces = [PeriodicSystem(name=i).get_data() for i in self.traces_list_updated]
+            x_traces = [round(rd.uniform(0., 0.01), 6) for i in range(len(self.traces_list_updated))]
+            for i in range(len(self.traces_list_updated)):
+                traces_data.append([str(self.traces_list_updated[i]), int(traces[i][1]), float(x_traces[i])])
             if len(traces_data) > 0:
                 traces_data = np.array(traces_data, dtype=object)
                 traces_data = traces_data[traces_data[:, 1].argsort()]
         #
-        compositon_data = TraceElements(tracer=self.traces_list).calculate_composition_quartz()
+        compositon_data = TraceElements(tracer=self.traces_list_updated).calculate_composition_quartz()
         #
         # Molar mass
+        molar_mass_pure = PeriodicSystem(name="Si").get_data()[2] + 2*PeriodicSystem(name="O").get_data()[2]
         molar_mass = 0
         amounts = []
         for element in compositon_data:
             chem_data = PeriodicSystem(name=element).get_data()
             molar_mass += compositon_data[element]["x"]*chem_data[2]
             amounts.append([chem_data[0], chem_data[1], compositon_data[element]["w"]])
+        #
+        magic_factor = molar_mass/molar_mass_pure
+        #
         element = [PeriodicSystem(name=amounts[i][0]).get_data() for i in range(len(amounts))]
         # Density
         dataV = CrystalPhysics([[4.9135, 5.4050], [], "trigonal"])
-        V = dataV.calculate_volume()
+        V = dataV.calculate_volume()*magic_factor
         Z = 3
         V_m = MineralChemistry().calculate_molar_volume(volume_cell=V, z=Z)
         dataRho = CrystalPhysics([molar_mass, Z, V])
         rho = dataRho.calculate_bulk_density()
         rho_e = wg(amounts=amounts, elements=element, rho_b=rho).calculate_electron_density()
         # Bulk modulus
-        K = 29*10**9
+        K = 29*10**9*magic_factor
         # Shear modulus
-        G = 44*10**9
+        G = 44*10**9*magic_factor
         # Young's modulus
         E = (9*K*G)/(3*K + G)
         # Poisson's ratio
@@ -281,7 +314,7 @@ class Oxides():
         pe = wg(amounts=amounts, elements=element).calculate_pe()
         U = pe*rho_e*10**(-3)
         # Electrical resistivity
-        p = 2*10**14
+        p = 2*10**14*magic_factor
         #
         if self.data_type == False:
             data = []
