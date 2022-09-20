@@ -946,6 +946,7 @@ class Phyllosilicates:
         dataset = {}
         #
         for index in range(number):
+            # Clay Minerals
             if self.mineral == "Illite":
                 data_mineral = self.create_illite()
             elif self.mineral == "Kaolinite":
@@ -964,6 +965,11 @@ class Phyllosilicates:
                 data_mineral = self.create_chlorite()
             elif self.mineral == "Vermiculite":
                 data_mineral = self.create_vermiculite()
+            elif self.mineral == "Nontronite":
+                data_mineral = self.create_nontronite()
+            elif self.mineral == "Saponite":
+                data_mineral = self.create_saponite()
+            # Mica Minerals
             elif self.mineral == "Annite":
                 data_mineral = self.create_annite()
             elif self.mineral == "Phlogopite":
@@ -978,10 +984,6 @@ class Phyllosilicates:
                 data_mineral = self.create_muscovite()
             elif self.mineral == "Glauconite":
                 data_mineral = self.create_glauconite()
-            elif self.mineral == "Notronite":
-                data_mineral = self.create_nontronite()
-            elif self.mineral == "Saponite":
-                data_mineral = self.create_saponite()
             elif self.mineral == "Talc":
                 data_mineral = self.create_talc()
             elif self.mineral == "Chrysotile":

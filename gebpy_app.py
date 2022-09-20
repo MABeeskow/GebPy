@@ -147,7 +147,7 @@ class GebPyGUI(tk.Frame):
                     "Rutile", "Pyrolusite", "Magnesiochromite", "Zincochromite", "Cr-Spinel", "Cuprospinel",
                     "Jacobsite", "Magnesioferrite", "Trevorite", "Franklinite", "Ulvospinel", "Fe-Spinel", "Uraninite",
                     "Litharge", "Massicot", "Minium", "Plattnerite", "Scrutinyite", "Zincite", "Columbite", "Tantalite",
-                    "Coltan", "Crocoite", "Wulfenite", "Goethite"]
+                    "Coltan", "Crocoite", "Wulfenite", "Goethite", "Wolframite", "Huebnerite", "Ferberite"]
                 self.oxide_minerals.sort()
                 for mineral in self.oxide_minerals:
                     sub_oxides.add_command(
@@ -160,7 +160,7 @@ class GebPyGUI(tk.Frame):
                 sub_carbonates = tk.Menu(sub_mineral_groups, tearoff=0)
                 self.carbonate_minerals = [
                     "Calcite", "Dolomite", "Magnesite", "Siderite", "Rhodochrosite", "Aragonite", "Cerrusite",
-                    "Ankerite", "Azurite", "Malachite", "Ikaite"]
+                    "Ankerite", "Azurite", "Malachite", "Ikaite", "Smithsonite"]
                 self.carbonate_minerals.sort()
                 for mineral in self.carbonate_minerals:
                     sub_carbonates.add_command(
@@ -286,7 +286,7 @@ class GebPyGUI(tk.Frame):
                 self.phyllosilicate_minerals = [
                     "Illite", "Kaolinite", "Montmorillonite", "Chamosite", "Clinochlore", "Pennantite", "Nimite",
                     "Chlorite", "Vermiculite", "Annite", "Phlogopite", "Eastonite", "Siderophyllite", "Biotite",
-                    "Muscovite", "Glauconite", "Notronite", "Saponite", "Talc", "Chrysotile", "Antigorite",
+                    "Muscovite", "Glauconite", "Nontronite", "Saponite", "Talc", "Chrysotile", "Antigorite",
                     "Pyrophyllite"]
                 self.phyllosilicate_minerals.sort()
                 for mineral in self.phyllosilicate_minerals:
@@ -1016,12 +1016,12 @@ class GebPyGUI(tk.Frame):
     def define_mineralogy(self):
         self.window_mineralogy = tk.Toplevel(self.parent)
         self.window_mineralogy.title("Mineralogy")
-        self.window_mineralogy.geometry("795x600")
+        self.window_mineralogy.geometry("1080x600")
         self.window_mineralogy.resizable(False, False)
         self.window_mineralogy["bg"] = self.colors_gebpy["Background"]
         #
         ## Geometry and Layout
-        window_width = 795
+        window_width = 1080
         window_heigth = 600
         row_min = 15
         n_rows = int(window_heigth / row_min)
@@ -1072,6 +1072,23 @@ class GebPyGUI(tk.Frame):
             #
             self.gui_elements_sub["Mineralogy"]["Static"]["Radiobutton"].append(rb_class)
         #
+        self.mineral_classes_advanced = ["Rock-Forming Minerals", "Ore Minerals", "Clay Minerals"]
+        self.mineral_classes_extended = [
+            "Oxides", "Sulfides", "Sulfates", "Phosphates", "Phospides", "Carbonates", "Tectosilicates",
+            "Nesosilicates", "Inosilicates", "Phyllosilicates", "Sorosilicates", "Cyclosilicates"]
+        self.mineral_classes_extended.sort()
+        self.mineral_classes_extended.extend(self.mineral_classes_advanced)
+        #
+        for index, mineral_class_adv in enumerate(self.mineral_classes_advanced, start=len(self.mineral_classes)):
+            rb_class_adv = SimpleElements(
+                parent=self.window_mineralogy, row_id=2*index + 3, column_id=0, n_rows=2,
+                n_columns=12, bg=self.colors_gebpy["Navigation"],
+                fg=self.colors_gebpy["Background"]).create_radiobutton(
+                text=mineral_class_adv, var_rb=self.gui_variables["Radiobutton"]["Mineralogy"], value_rb=index,
+                color_bg=self.colors_gebpy["Navigation"], command=self.change_rb_mineral_class)
+            #
+            self.gui_elements_sub["Mineralogy"]["Static"]["Radiobutton"].append(rb_class_adv)
+        #
     def change_rb_mineral_class(self):
         ## Cleaning
         categories = ["Label", "Entry", "Checkbox"]
@@ -1080,236 +1097,12 @@ class GebPyGUI(tk.Frame):
                 gui_item.grid_remove()
             self.gui_elements_sub["Mineralogy"]["Temporary"][category].clear()
         #
-        mineral_class_selected = self.mineral_classes[self.gui_variables["Radiobutton"]["Mineralogy"].get()]
+        mineral_class_selected = self.mineral_classes_extended[self.gui_variables["Radiobutton"]["Mineralogy"].get()]
         #
         if mineral_class_selected == "Oxides":
             minerals_list = self.oxide_minerals
-            # ## Cleaning
-            # categories = ["Label", "Entry", "Checkbox"]
-            # for category in categories:
-            #     for gui_item in self.gui_elements_sub["Mineralogy"]["Temporary"][category]:
-            #         gui_item.grid_remove()
-            #     self.gui_elements_sub["Mineralogy"]["Temporary"][category].clear()
-            # #
-            # ## Labels
-            # for index, mineral in enumerate(self.oxide_minerals):
-            #     if index == 0 and len(self.gui_elements_sub["Mineralogy"]["Temporary"]["Label"]) == 0:
-            #         lbl_mineral = SimpleElements(
-            #             parent=self.window_mineralogy, row_id=0, column_id=15, n_rows=2, n_columns=12,
-            #             bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
-            #             text="Mineral", font_option="sans 10 bold", relief=tk.GROOVE)
-            #         lbl_min = SimpleElements(
-            #             parent=self.window_mineralogy, row_id=0, column_id=27, n_rows=2, n_columns=3,
-            #             bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
-            #             text="Min", font_option="sans 10 bold", relief=tk.GROOVE)
-            #         lbl_max = SimpleElements(
-            #             parent=self.window_mineralogy, row_id=0, column_id=30, n_rows=2, n_columns=3,
-            #             bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
-            #             text="Max", font_option="sans 10 bold", relief=tk.GROOVE)
-            #         #
-            #         self.gui_elements_sub["Mineralogy"]["Temporary"]["Label"].extend([lbl_mineral, lbl_min, lbl_max])
-            #         #
-            #     elif index == 18:
-            #         lbl_mineral = SimpleElements(
-            #             parent=self.window_mineralogy, row_id=0, column_id=34, n_rows=2, n_columns=12,
-            #             bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
-            #             text="Mineral", font_option="sans 10 bold", relief=tk.GROOVE)
-            #         lbl_min = SimpleElements(
-            #             parent=self.window_mineralogy, row_id=0, column_id=46, n_rows=2, n_columns=3,
-            #             bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
-            #             text="Min", font_option="sans 10 bold", relief=tk.GROOVE)
-            #         lbl_max = SimpleElements(
-            #             parent=self.window_mineralogy, row_id=0, column_id=49, n_rows=2, n_columns=3,
-            #             bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
-            #             text="Max", font_option="sans 10 bold", relief=tk.GROOVE)
-            #         #
-            #         self.gui_elements_sub["Mineralogy"]["Temporary"]["Label"].extend([lbl_mineral, lbl_min, lbl_max])
-            #     #
-            #     if index < 18:
-            #         ## Labels
-            #         lbl_mineral = SimpleElements(
-            #             parent=self.window_mineralogy, row_id=2*index + 2, column_id=15, n_rows=2, n_columns=10,
-            #             bg=self.colors_gebpy["Background"], fg=self.colors_gebpy["Navigation"]).create_label(
-            #             text=mineral, font_option="sans 10 bold", relief=tk.FLAT)
-            #         #
-            #         ## Checkboxes
-            #         if mineral not in self.gui_variables["Checkbox"]["Mineralogy"]:
-            #             self.gui_variables["Checkbox"]["Mineralogy"][mineral] = tk.IntVar()
-            #             self.gui_variables["Checkbox"]["Mineralogy"][mineral].set(0)
-            #         #
-            #         cb_mineral = SimpleElements(
-            #             parent=self.window_mineralogy, row_id=2*index + 2, column_id=25, n_rows=2, n_columns=2,
-            #             bg=self.colors_gebpy["Background"], fg=self.colors_gebpy["Navigation"]).create_checkbox(
-            #             text="", var_cb=self.gui_variables["Checkbox"]["Mineralogy"][mineral])
-            #         #
-            #         ## Entries
-            #         if mineral not in self.gui_variables["Entry"]["Mineralogy"]["Minimum"]:
-            #             self.gui_variables["Entry"]["Mineralogy"]["Minimum"][mineral] = tk.IntVar()
-            #             self.gui_variables["Entry"]["Mineralogy"]["Minimum"][mineral].set(0)
-            #             self.gui_variables["Entry"]["Mineralogy"]["Maximum"][mineral] = tk.IntVar()
-            #             self.gui_variables["Entry"]["Mineralogy"]["Maximum"][mineral].set(0)
-            #         #
-            #         entr_min = SimpleElements(
-            #             parent=self.window_mineralogy, row_id=2*index + 2, column_id=27, n_rows=2, n_columns=3,
-            #             bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
-            #             var_entr=self.gui_variables["Entry"]["Mineralogy"]["Minimum"][mineral])
-            #         entr_max = SimpleElements(
-            #             parent=self.window_mineralogy, row_id=2*index + 2, column_id=30, n_rows=2, n_columns=3,
-            #             bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
-            #             var_entr=self.gui_variables["Entry"]["Mineralogy"]["Minimum"][mineral])
-            #     elif 18 <= index < 36:
-            #         ## Labels
-            #         lbl_mineral = SimpleElements(
-            #             parent=self.window_mineralogy, row_id=2*index + 2 - 36, column_id=34, n_rows=2, n_columns=10,
-            #             bg=self.colors_gebpy["Background"], fg=self.colors_gebpy["Navigation"]).create_label(
-            #             text=mineral, font_option="sans 10 bold", relief=tk.FLAT)
-            #         #
-            #         ## Checkboxes
-            #         if mineral not in self.gui_variables["Checkbox"]["Mineralogy"]:
-            #             self.gui_variables["Checkbox"]["Mineralogy"][mineral] = tk.IntVar()
-            #             self.gui_variables["Checkbox"]["Mineralogy"][mineral].set(0)
-            #         cb_mineral = SimpleElements(
-            #             parent=self.window_mineralogy, row_id=2*index + 2 - 36, column_id=44, n_rows=2, n_columns=2,
-            #             bg=self.colors_gebpy["Background"], fg=self.colors_gebpy["Navigation"]).create_checkbox(
-            #             text="", var_cb=self.gui_variables["Checkbox"]["Mineralogy"][mineral])
-            #         #
-            #         ## Entries
-            #         if mineral not in self.gui_variables["Entry"]["Mineralogy"]["Minimum"]:
-            #             self.gui_variables["Entry"]["Mineralogy"]["Minimum"][mineral] = tk.IntVar()
-            #             self.gui_variables["Entry"]["Mineralogy"]["Minimum"][mineral].set(0)
-            #             self.gui_variables["Entry"]["Mineralogy"]["Maximum"][mineral] = tk.IntVar()
-            #             self.gui_variables["Entry"]["Mineralogy"]["Maximum"][mineral].set(0)
-            #         #
-            #         entr_min = SimpleElements(
-            #             parent=self.window_mineralogy, row_id=2*index + 2 - 36, column_id=46, n_rows=2, n_columns=3,
-            #             bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
-            #             var_entr=self.gui_variables["Entry"]["Mineralogy"]["Minimum"][mineral])
-            #         entr_max = SimpleElements(
-            #             parent=self.window_mineralogy, row_id=2*index + 2 - 36, column_id=49, n_rows=2, n_columns=3,
-            #             bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
-            #             var_entr=self.gui_variables["Entry"]["Mineralogy"]["Minimum"][mineral])
-            #     #
-            #     self.gui_elements_sub["Mineralogy"]["Temporary"]["Label"].append(lbl_mineral)
-            #     self.gui_elements_sub["Mineralogy"]["Temporary"]["Checkbox"].append(cb_mineral)
-            #     self.gui_elements_sub["Mineralogy"]["Temporary"]["Entry"].extend([entr_min, entr_max])
-        #
         elif mineral_class_selected == "Sulfides":
             minerals_list = self.sulfide_minerals
-            # ## Cleaning
-            # categories = ["Label", "Entry", "Checkbox"]
-            # for category in categories:
-            #     for gui_item in self.gui_elements_sub["Mineralogy"]["Temporary"][category]:
-            #         gui_item.grid_remove()
-            #     self.gui_elements_sub["Mineralogy"]["Temporary"][category].clear()
-            # #
-            # ## Labels
-            # for index, mineral in enumerate(self.sulfide_minerals):
-            #     if index == 0 and len(self.gui_elements_sub["Mineralogy"]["Temporary"]["Label"]) == 0:
-            #         lbl_mineral = SimpleElements(
-            #             parent=self.window_mineralogy, row_id=0, column_id=15, n_rows=2, n_columns=12,
-            #             bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
-            #             text="Mineral", font_option="sans 10 bold", relief=tk.GROOVE)
-            #         lbl_min = SimpleElements(
-            #             parent=self.window_mineralogy, row_id=0, column_id=27, n_rows=2, n_columns=3,
-            #             bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
-            #             text="Min", font_option="sans 10 bold", relief=tk.GROOVE)
-            #         lbl_max = SimpleElements(
-            #             parent=self.window_mineralogy, row_id=0, column_id=30, n_rows=2, n_columns=3,
-            #             bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
-            #             text="Max", font_option="sans 10 bold", relief=tk.GROOVE)
-            #         #
-            #         self.gui_elements_sub["Mineralogy"]["Temporary"]["Label"].extend(
-            #             [lbl_mineral, lbl_min, lbl_max])
-            #         #
-            #     elif index == 18:
-            #         lbl_mineral = SimpleElements(
-            #             parent=self.window_mineralogy, row_id=0, column_id=34, n_rows=2, n_columns=12,
-            #             bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
-            #             text="Mineral", font_option="sans 10 bold", relief=tk.GROOVE)
-            #         lbl_min = SimpleElements(
-            #             parent=self.window_mineralogy, row_id=0, column_id=46, n_rows=2, n_columns=3,
-            #             bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
-            #             text="Min", font_option="sans 10 bold", relief=tk.GROOVE)
-            #         lbl_max = SimpleElements(
-            #             parent=self.window_mineralogy, row_id=0, column_id=49, n_rows=2, n_columns=3,
-            #             bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
-            #             text="Max", font_option="sans 10 bold", relief=tk.GROOVE)
-            #         #
-            #         self.gui_elements_sub["Mineralogy"]["Temporary"]["Label"].extend(
-            #             [lbl_mineral, lbl_min, lbl_max])
-            #     #
-            #     if index < 18:
-            #         ## Labels
-            #         lbl_mineral = SimpleElements(
-            #             parent=self.window_mineralogy, row_id=2 * index + 2, column_id=15, n_rows=2, n_columns=10,
-            #             bg=self.colors_gebpy["Background"], fg=self.colors_gebpy["Navigation"]).create_label(
-            #             text=mineral, font_option="sans 10 bold", relief=tk.FLAT)
-            #         #
-            #         ## Checkboxes
-            #         if mineral not in self.gui_variables["Checkbox"]["Mineralogy"]:
-            #             self.gui_variables["Checkbox"]["Mineralogy"][mineral] = tk.IntVar()
-            #             self.gui_variables["Checkbox"]["Mineralogy"][mineral].set(0)
-            #         #
-            #         cb_mineral = SimpleElements(
-            #             parent=self.window_mineralogy, row_id=2 * index + 2, column_id=25, n_rows=2, n_columns=2,
-            #             bg=self.colors_gebpy["Background"], fg=self.colors_gebpy["Navigation"]).create_checkbox(
-            #             text="", var_cb=self.gui_variables["Checkbox"]["Mineralogy"][mineral])
-            #         #
-            #         ## Entries
-            #         if mineral not in self.gui_variables["Entry"]["Mineralogy"]["Minimum"]:
-            #             self.gui_variables["Entry"]["Mineralogy"]["Minimum"][mineral] = tk.IntVar()
-            #             self.gui_variables["Entry"]["Mineralogy"]["Minimum"][mineral].set(0)
-            #             self.gui_variables["Entry"]["Mineralogy"]["Maximum"][mineral] = tk.IntVar()
-            #             self.gui_variables["Entry"]["Mineralogy"]["Maximum"][mineral].set(0)
-            #         #
-            #         entr_min = SimpleElements(
-            #             parent=self.window_mineralogy, row_id=2 * index + 2, column_id=27, n_rows=2, n_columns=3,
-            #             bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
-            #             var_entr=self.gui_variables["Entry"]["Mineralogy"]["Minimum"][mineral])
-            #         entr_max = SimpleElements(
-            #             parent=self.window_mineralogy, row_id=2 * index + 2, column_id=30, n_rows=2, n_columns=3,
-            #             bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
-            #             var_entr=self.gui_variables["Entry"]["Mineralogy"]["Minimum"][mineral])
-            #     elif 18 <= index < 36:
-            #         ## Labels
-            #         lbl_mineral = SimpleElements(
-            #             parent=self.window_mineralogy, row_id=2 * index + 2 - 36, column_id=34, n_rows=2,
-            #             n_columns=10,
-            #             bg=self.colors_gebpy["Background"], fg=self.colors_gebpy["Navigation"]).create_label(
-            #             text=mineral, font_option="sans 10 bold", relief=tk.FLAT)
-            #         #
-            #         ## Checkboxes
-            #         if mineral not in self.gui_variables["Checkbox"]["Mineralogy"]:
-            #             self.gui_variables["Checkbox"]["Mineralogy"][mineral] = tk.IntVar()
-            #             self.gui_variables["Checkbox"]["Mineralogy"][mineral].set(0)
-            #         cb_mineral = SimpleElements(
-            #             parent=self.window_mineralogy, row_id=2 * index + 2 - 36, column_id=44, n_rows=2,
-            #             n_columns=2,
-            #             bg=self.colors_gebpy["Background"], fg=self.colors_gebpy["Navigation"]).create_checkbox(
-            #             text="", var_cb=self.gui_variables["Checkbox"]["Mineralogy"][mineral])
-            #         #
-            #         ## Entries
-            #         if mineral not in self.gui_variables["Entry"]["Mineralogy"]["Minimum"]:
-            #             self.gui_variables["Entry"]["Mineralogy"]["Minimum"][mineral] = tk.IntVar()
-            #             self.gui_variables["Entry"]["Mineralogy"]["Minimum"][mineral].set(0)
-            #             self.gui_variables["Entry"]["Mineralogy"]["Maximum"][mineral] = tk.IntVar()
-            #             self.gui_variables["Entry"]["Mineralogy"]["Maximum"][mineral].set(0)
-            #         #
-            #         entr_min = SimpleElements(
-            #             parent=self.window_mineralogy, row_id=2 * index + 2 - 36, column_id=46, n_rows=2,
-            #             n_columns=3,
-            #             bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
-            #             var_entr=self.gui_variables["Entry"]["Mineralogy"]["Minimum"][mineral])
-            #         entr_max = SimpleElements(
-            #             parent=self.window_mineralogy, row_id=2 * index + 2 - 36, column_id=49, n_rows=2,
-            #             n_columns=3,
-            #             bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
-            #             var_entr=self.gui_variables["Entry"]["Mineralogy"]["Minimum"][mineral])
-            #     #
-            #     self.gui_elements_sub["Mineralogy"]["Temporary"]["Label"].append(lbl_mineral)
-            #     self.gui_elements_sub["Mineralogy"]["Temporary"]["Checkbox"].append(cb_mineral)
-            #     self.gui_elements_sub["Mineralogy"]["Temporary"]["Entry"].extend([entr_min, entr_max])
-        #
         elif mineral_class_selected == "Sulfates":
             minerals_list = self.sulfate_minerals
         elif mineral_class_selected == "Phosphates":
@@ -1330,8 +1123,22 @@ class GebPyGUI(tk.Frame):
             minerals_list = self.sorosilicate_minerals
         elif mineral_class_selected == "Cyclosilicates":
             minerals_list = self.cyclosilicate_minerals
-        #
+        elif mineral_class_selected == "Rock-Forming Minerals":
+            minerals_list = [
+                "Quartz", "Plagioclase", "Alkali Feldspar", "Olivine", "Calcite", "Dolomite", "Muscovite", "Biotite",
+                "Ca-Amphibole", "Na-Amphibole", "Mg-Fe-Pyroxene", "Ca-Pyroxene", "Al-Garnet", "Ca-Garnet"]
+        elif mineral_class_selected == "Ore Minerals":
+            minerals_list = ["Acanthite", "Barite", "Bauxite", "Beryl", "Bornite", "Cassiterite", "Chalcocite",
+                             "Chalcopyrite", "Chromite", "Cinnabar", "Cobalite", "Coltan", "Galena", "Gold", "Hematite",
+                             "Ilmenite", "Magnetite", "Malachite", "Molybdenite", "Pentlandite", "Pyrolusite",
+                             "Scheelite", "Smithsonite", "Sperrylite", "Sphalerite", "Uraninite", "Wolframite",
+                             "Pollucite", "Pyrite"]
+        elif mineral_class_selected == "Clay Minerals":
+            minerals_list = ["Illite", "Kaolinite", "Montmorillonite", "Nontronite", "Saponite", "Chlorite",
+                             "Vermiculite"]
+            #
         ## Labels
+        minerals_list.sort()
         for index, mineral in enumerate(minerals_list):
             if index == 0 and len(self.gui_elements_sub["Mineralogy"]["Temporary"]["Label"]) == 0:
                 lbl_mineral = SimpleElements(
@@ -1349,7 +1156,7 @@ class GebPyGUI(tk.Frame):
                 #
                 self.gui_elements_sub["Mineralogy"]["Temporary"]["Label"].extend(
                     [lbl_mineral, lbl_min, lbl_max])
-                #
+            #
             elif index == 18:
                 lbl_mineral = SimpleElements(
                     parent=self.window_mineralogy, row_id=0, column_id=34, n_rows=2, n_columns=12,
@@ -1361,6 +1168,23 @@ class GebPyGUI(tk.Frame):
                     text="Min", font_option="sans 10 bold", relief=tk.GROOVE)
                 lbl_max = SimpleElements(
                     parent=self.window_mineralogy, row_id=0, column_id=49, n_rows=2, n_columns=3,
+                    bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
+                    text="Max", font_option="sans 10 bold", relief=tk.GROOVE)
+                #
+                self.gui_elements_sub["Mineralogy"]["Temporary"]["Label"].extend(
+                    [lbl_mineral, lbl_min, lbl_max])
+            #
+            elif index == 36:
+                lbl_mineral = SimpleElements(
+                    parent=self.window_mineralogy, row_id=0, column_id=53, n_rows=2, n_columns=12,
+                    bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
+                    text="Mineral", font_option="sans 10 bold", relief=tk.GROOVE)
+                lbl_min = SimpleElements(
+                    parent=self.window_mineralogy, row_id=0, column_id=65, n_rows=2, n_columns=3,
+                    bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
+                    text="Min", font_option="sans 10 bold", relief=tk.GROOVE)
+                lbl_max = SimpleElements(
+                    parent=self.window_mineralogy, row_id=0, column_id=68, n_rows=2, n_columns=3,
                     bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
                     text="Max", font_option="sans 10 bold", relief=tk.GROOVE)
                 #
@@ -1399,6 +1223,7 @@ class GebPyGUI(tk.Frame):
                     parent=self.window_mineralogy, row_id=2 * index + 2, column_id=30, n_rows=2, n_columns=3,
                     bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
                     var_entr=self.gui_variables["Entry"]["Mineralogy"]["Maximum"][mineral])
+            #
             elif 18 <= index < 36:
                 ## Labels
                 lbl_mineral = SimpleElements(
@@ -1431,6 +1256,42 @@ class GebPyGUI(tk.Frame):
                     var_entr=self.gui_variables["Entry"]["Mineralogy"]["Minimum"][mineral])
                 entr_max = SimpleElements(
                     parent=self.window_mineralogy, row_id=2 * index + 2 - 36, column_id=49, n_rows=2,
+                    n_columns=3,
+                    bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
+                    var_entr=self.gui_variables["Entry"]["Mineralogy"]["Maximum"][mineral])
+            #
+            elif 36 <= index < 54:
+                ## Labels
+                lbl_mineral = SimpleElements(
+                    parent=self.window_mineralogy, row_id=2*index + 2 - 36, column_id=53, n_rows=2,
+                    n_columns=10,
+                    bg=self.colors_gebpy["Background"], fg=self.colors_gebpy["Navigation"]).create_label(
+                    text=mineral, font_option="sans 10 bold", relief=tk.FLAT)
+                #
+                ## Checkboxes
+                if mineral not in self.gui_variables["Checkbox"]["Mineralogy"]:
+                    self.gui_variables["Checkbox"]["Mineralogy"][mineral] = tk.IntVar()
+                    self.gui_variables["Checkbox"]["Mineralogy"][mineral].set(0)
+                cb_mineral = SimpleElements(
+                    parent=self.window_mineralogy, row_id=2 * index + 2 - 36, column_id=63, n_rows=2,
+                    n_columns=2,
+                    bg=self.colors_gebpy["Background"], fg=self.colors_gebpy["Navigation"]).create_checkbox(
+                    text="", var_cb=self.gui_variables["Checkbox"]["Mineralogy"][mineral])
+                #
+                ## Entries
+                if mineral not in self.gui_variables["Entry"]["Mineralogy"]["Minimum"]:
+                    self.gui_variables["Entry"]["Mineralogy"]["Minimum"][mineral] = tk.IntVar()
+                    self.gui_variables["Entry"]["Mineralogy"]["Minimum"][mineral].set(0)
+                    self.gui_variables["Entry"]["Mineralogy"]["Maximum"][mineral] = tk.IntVar()
+                    self.gui_variables["Entry"]["Mineralogy"]["Maximum"][mineral].set(0)
+                #
+                entr_min = SimpleElements(
+                    parent=self.window_mineralogy, row_id=2 * index + 2 - 36, column_id=65, n_rows=2,
+                    n_columns=3,
+                    bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
+                    var_entr=self.gui_variables["Entry"]["Mineralogy"]["Minimum"][mineral])
+                entr_max = SimpleElements(
+                    parent=self.window_mineralogy, row_id=2 * index + 2 - 36, column_id=68, n_rows=2,
                     n_columns=3,
                     bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
                     var_entr=self.gui_variables["Entry"]["Mineralogy"]["Maximum"][mineral])
