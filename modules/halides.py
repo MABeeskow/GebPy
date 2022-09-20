@@ -3,10 +3,10 @@
 
 # -----------------------------------------------
 
-# Name:		halogenes.py
+# Name:		halides.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		18.08.2022
+# Date:		20.09.2022
 
 # -----------------------------------------------
 
@@ -20,13 +20,47 @@ from modules.geophysics import WellLog as wg
 from modules.geochemistry import MineralChemistry
 
 # Halogenes
-class Halogenes:
+class Halides:
     """ Class that generates geophysical and geochemical data of halogene minerals"""
     #
-    def __init__(self, traces_list=[], impurity="pure", dict=False):
+    def __init__(self, traces_list=[], impurity="pure", dict=False, mineral=None):
         self.traces_list = traces_list
         self.impurity = impurity
         self.dict = dict
+        self.mineral = mineral
+    #
+    def generate_dataset(self, number):
+        dataset = {}
+        #
+        for index in range(number):
+            if self.mineral == "Halite":
+                data_mineral = self.create_halite()
+            elif self.mineral == "Fluorite":
+                data_mineral = self.create_fluorite()
+            elif self.mineral == "Sylvite":
+                data_mineral = self.create_sylvite()
+            elif self.mineral == "Carnallite":
+                data_mineral = self.create_carnallite()
+            #
+            for key, value in data_mineral.items():
+                if key in ["M", "rho", "rho_e", "V", "vP", "vS", "vP/vS", "K", "G", "E", "nu", "GR", "PE", "U",
+                           "p"]:
+                    if key not in dataset:
+                        dataset[key] = [value]
+                    else:
+                        dataset[key].append(value)
+                elif key in ["mineral", "state", "trace elements"] and key not in dataset:
+                    dataset[key] = value
+                elif key in ["chemistry"]:
+                    if key not in dataset:
+                        dataset[key] = {}
+                        for key_2, value_2 in value.items():
+                            dataset[key][key_2] = [value_2]
+                    else:
+                        for key_2, value_2 in value.items():
+                            dataset[key][key_2].append(value_2)
+        #
+        return dataset
     #
     def create_halite(self):    # NaCl
         # Major elements

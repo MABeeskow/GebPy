@@ -6,7 +6,7 @@
 # Name:		phospides.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		08.03.2022
+# Date:		20.09.2022
 
 # -----------------------------------------------
 
@@ -30,11 +30,38 @@ class Phospides:
     #
     def get_data(self, number=1):
         if self.mineral == "Allabogdanite":
-            data = self.create_quartz()
+            data = self.create_allabogdanite()
         else:
             data = "Nothing found!"
         #
         return data
+    #
+    def generate_dataset(self, number):
+        dataset = {}
+        #
+        for index in range(number):
+            if self.mineral == "Allabogdanite":
+                data_mineral = self.create_allabogdanite()
+            #
+            for key, value in data_mineral.items():
+                if key in ["M", "rho", "rho_e", "V", "vP", "vS", "vP/vS", "K", "G", "E", "nu", "GR", "PE", "U",
+                           "p"]:
+                    if key not in dataset:
+                        dataset[key] = [value]
+                    else:
+                        dataset[key].append(value)
+                elif key in ["mineral", "state", "trace elements"] and key not in dataset:
+                    dataset[key] = value
+                elif key in ["chemistry"]:
+                    if key not in dataset:
+                        dataset[key] = {}
+                        for key_2, value_2 in value.items():
+                            dataset[key][key_2] = [value_2]
+                    else:
+                        for key_2, value_2 in value.items():
+                            dataset[key][key_2].append(value_2)
+        #
+        return dataset
     #
     def create_allabogdanite(self): # (Fe,Ni)2 P
         #

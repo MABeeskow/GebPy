@@ -6,7 +6,7 @@
 # Name:		silicates.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		16.09.2022
+# Date:		20.09.2022
 
 # -----------------------------------------------
 
@@ -58,6 +58,41 @@ class Tectosilicates:
                 data = self.create_nepheline()
         #
         return data
+    #
+    def generate_dataset(self, number):
+        dataset = {}
+        #
+        for index in range(number):
+            if self.mineral == "Alkali Feldspar":
+                data_mineral = self.create_alkalifeldspar()
+            elif self.mineral == "Plagioclase":
+                data_mineral = self.create_plagioclase()
+            elif self.mineral == "Scapolite":
+                data_mineral = self.create_scapolite()
+            elif self.mineral == "Danburite":
+                data_mineral = self.create_danburite()
+            elif self.mineral == "Nepheline":
+                data_mineral = self.create_nepheline()
+            #
+            for key, value in data_mineral.items():
+                if key in ["M", "rho", "rho_e", "V", "vP", "vS", "vP/vS", "K", "G", "E", "nu", "GR", "PE", "U",
+                           "p"]:
+                    if key not in dataset:
+                        dataset[key] = [value]
+                    else:
+                        dataset[key].append(value)
+                elif key in ["mineral", "state", "trace elements"] and key not in dataset:
+                    dataset[key] = value
+                elif key in ["chemistry"]:
+                    if key not in dataset:
+                        dataset[key] = {}
+                        for key_2, value_2 in value.items():
+                            dataset[key][key_2] = [value_2]
+                    else:
+                        for key_2, value_2 in value.items():
+                            dataset[key][key_2].append(value_2)
+        #
+        return dataset
     #
     def create_alkalifeldspar(self, enrichment=None, x_value=None):
         self.enrichment = enrichment
@@ -6459,6 +6494,37 @@ class Sorosilicates:
         #
         return data
     #
+    def generate_dataset(self, number):
+        dataset = {}
+        #
+        for index in range(number):
+            if self.mineral == "Epidote":
+                data_mineral = self.create_epidote()
+            elif self.mineral == "Zoisite":
+                data_mineral = self.create_zoisite()
+            elif self.mineral == "Gehlenite":
+                data_mineral = self.create_gehlenite()
+            #
+            for key, value in data_mineral.items():
+                if key in ["M", "rho", "rho_e", "V", "vP", "vS", "vP/vS", "K", "G", "E", "nu", "GR", "PE", "U",
+                           "p"]:
+                    if key not in dataset:
+                        dataset[key] = [value]
+                    else:
+                        dataset[key].append(value)
+                elif key in ["mineral", "state", "trace elements"] and key not in dataset:
+                    dataset[key] = value
+                elif key in ["chemistry"]:
+                    if key not in dataset:
+                        dataset[key] = {}
+                        for key_2, value_2 in value.items():
+                            dataset[key][key_2] = [value_2]
+                    else:
+                        for key_2, value_2 in value.items():
+                            dataset[key][key_2].append(value_2)
+        #
+        return dataset
+    #
     def create_epidote(self): # Ca2 Al2 Fe Si3 H O13
         # Major elements
         hydrogen = PeriodicSystem(name="H").get_data()
@@ -6911,6 +6977,69 @@ class Inosilicates:
                 data = self.create_wollastonite()
         #
         return data
+    #
+    def generate_dataset(self, number):
+        dataset = {}
+        #
+        for index in range(number):
+            if self.mineral == "Enstatite":
+                data_mineral = self.create_enstatite()
+            elif self.mineral == "Ferrosilite":
+                data_mineral = self.create_ferrosilite()
+            elif self.mineral == "Diopside":
+                data_mineral = self.create_diopside()
+            elif self.mineral == "Jadeite":
+                data_mineral = self.create_jadeite()
+            elif self.mineral == "Aegirine":
+                data_mineral = self.create_aegirine()
+            elif self.mineral == "Spodumene":
+                data_mineral = self.create_spodumene()
+            elif self.mineral == "Wollastonite":
+                data_mineral = self.create_wollastonite()
+            elif self.mineral == "Tremolite":
+                data_mineral = self.create_tremolite()
+            elif self.mineral == "Actinolite":
+                data_mineral = self.create_actinolite()
+            elif self.mineral == "Glaucophane":
+                data_mineral = self.create_glaucophane()
+            elif self.mineral == "Augite":
+                data_mineral = self.create_augite()
+            elif self.mineral == "Riebeckite":
+                data_mineral = self.create_riebeckite()
+            elif self.mineral == "Arfvedsonite":
+                data_mineral = self.create_arfvedsonite()
+            elif self.mineral == "Ca-Amphibole":
+                data_mineral = self.create_calcium_amphibole()
+            elif self.mineral == "Na-Amphibole":
+                data_mineral = self.create_sodium_amphibole()
+            elif self.mineral == "Mg-Fe-Pyroxene":
+                data_mineral = self.create_mg_fe_pyroxene()
+            elif self.mineral == "Ca-Pyroxene":
+                data_mineral = self.create_calium_pyroxene()
+            elif self.mineral == "Donpeacorite":
+                data_mineral = self.create_donpeacorite()
+            elif self.mineral == "Orthopyroxene":
+                data_mineral = self.create_orthopyroxene()
+            #
+            for key, value in data_mineral.items():
+                if key in ["M", "rho", "rho_e", "V", "vP", "vS", "vP/vS", "K", "G", "E", "nu", "GR", "PE", "U",
+                           "p"]:
+                    if key not in dataset:
+                        dataset[key] = [value]
+                    else:
+                        dataset[key].append(value)
+                elif key in ["mineral", "state", "trace elements"] and key not in dataset:
+                    dataset[key] = value
+                elif key in ["chemistry"]:
+                    if key not in dataset:
+                        dataset[key] = {}
+                        for key_2, value_2 in value.items():
+                            dataset[key][key_2] = [value_2]
+                    else:
+                        for key_2, value_2 in value.items():
+                            dataset[key][key_2].append(value_2)
+        #
+        return dataset
     #
     def create_enstatite(self): # Mg (Mg,Fe) Si2 O6
         # Major elements

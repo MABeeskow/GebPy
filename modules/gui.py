@@ -19,7 +19,7 @@ from modules.sulfates import Sulfates
 from modules.oxides import Oxides, RutileGroup, PericlaseGroup, WulfeniteGroup
 from modules.sulfides import Sulfides
 from modules.carbonates import Carbonates, CarbonateRocks
-from modules.halogenes import Halogenes
+from modules.halides import Halogenes
 from modules.silicates import Tectosilicates, Phyllosilicates, Nesosilicates, Sorosilicates, Inosilicates, Cyclosilicates
 from modules.phospides import Phospides
 from modules.phosphates import Phosphates

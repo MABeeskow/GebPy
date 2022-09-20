@@ -19,7 +19,7 @@ import random as rd
 from modules import fluids
 from modules.geophysics import Elasticity as elast
 from modules.sulfates import Sulfates
-from modules.halogenes import Halogenes
+from modules.halides import Halogenes
 from modules.carbonates import Carbonates
 from modules.fluids import Water
 

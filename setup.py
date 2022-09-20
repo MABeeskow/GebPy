@@ -17,7 +17,7 @@ from modules.sulfates import Sulfates
 from modules.oxides import Oxides
 from modules.sulfides import Sulfides
 from modules.carbonates import Carbonates
-from modules.halogenes import Halogenes
+from modules.halides import Halogenes
 from modules.silicates import Tectosilicates, Phyllosilicates, Nesosilicates, Sorosilicates, Inosilicates
 from modules.phosphates import Phosphates
 from modules.siliciclastics import sandstone, shale

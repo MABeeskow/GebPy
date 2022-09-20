@@ -6,7 +6,7 @@
 # Name:		phosphates.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		11.03.2022
+# Date:		20.09.2022
 
 # -----------------------------------------------
 
@@ -24,10 +24,44 @@ from modules.geochemistry import MineralChemistry, TraceElements
 class Phosphates:
     """ Class that generates geophysical and geochemical data of phosphate minerals"""
     #
-    def __init__(self, traces_list=[], impurity="pure", data_type=False):
+    def __init__(self, traces_list=[], impurity="pure", data_type=False, mineral=None):
         self.traces_list = traces_list
         self.impurity = impurity
         self.data_type = data_type
+        self.mineral = mineral
+    #
+    def generate_dataset(self, number):
+        dataset = {}
+        #
+        for index in range(number):
+            if self.mineral == "Apatite":
+                data_mineral = self.create_aptite()
+            elif self.mineral == "Fluoroapatite":
+                data_mineral = self.create_aptite_f()
+            elif self.mineral == "Chloroapatite":
+                data_mineral = self.create_aptite_cl()
+            elif self.mineral == "Hydroxyapatite":
+                data_mineral = self.create_aptite_oh()
+            #
+            for key, value in data_mineral.items():
+                if key in ["M", "rho", "rho_e", "V", "vP", "vS", "vP/vS", "K", "G", "E", "nu", "GR", "PE", "U",
+                           "p"]:
+                    if key not in dataset:
+                        dataset[key] = [value]
+                    else:
+                        dataset[key].append(value)
+                elif key in ["mineral", "state", "trace elements"] and key not in dataset:
+                    dataset[key] = value
+                elif key in ["chemistry"]:
+                    if key not in dataset:
+                        dataset[key] = {}
+                        for key_2, value_2 in value.items():
+                            dataset[key][key_2] = [value_2]
+                    else:
+                        for key_2, value_2 in value.items():
+                            dataset[key][key_2].append(value_2)
+        #
+        return dataset
     #
     def create_aptite_f(self):   # Ca5 F (PO4)3
         # Major elements

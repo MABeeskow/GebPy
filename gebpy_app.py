@@ -21,6 +21,11 @@ from modules.oxides import Oxides
 from modules.carbonates import Carbonates
 from modules.sulfides import Sulfides
 from modules.sulfates import Sulfates
+from modules.halides import Halides
+from modules.phospides import Phospides
+from modules.phosphates import Phosphates
+from modules.silicates import Phyllosilicates, Tectosilicates, Inosilicates, Nesosilicates, Sorosilicates, \
+    Cyclosilicates
 
 ## GUI
 class GebPyGUI(tk.Frame):
@@ -847,6 +852,42 @@ class GebPyGUI(tk.Frame):
                 number=self.gui_variables["Entry"]["Number Samples"].get())
         elif var_name in self.sulfate_minerals:   # Sulfates
             self.data_mineral = Sulfates(
+                mineral=var_name, data_type=True, traces_list=self.traces_list).generate_dataset(
+                number=self.gui_variables["Entry"]["Number Samples"].get())
+        elif var_name in self.halide_minerals:   # Halides
+            self.data_mineral = Halides(
+                mineral=var_name, data_type=True, traces_list=self.traces_list).generate_dataset(
+                number=self.gui_variables["Entry"]["Number Samples"].get())
+        elif var_name in self.phospide_minerals:   # Phospides
+            self.data_mineral = Phospides(
+                mineral=var_name, data_type=True, traces_list=self.traces_list).generate_dataset(
+                number=self.gui_variables["Entry"]["Number Samples"].get())
+        elif var_name in self.phosphate_minerals:   # Phosphates
+            self.data_mineral = Phosphates(
+                mineral=var_name, data_type=True, traces_list=self.traces_list).generate_dataset(
+                number=self.gui_variables["Entry"]["Number Samples"].get())
+        elif var_name in self.tectosilicate_minerals:   # Tectosilicates
+            self.data_mineral = Tectosilicates(
+                mineral=var_name, data_type=True, traces_list=self.traces_list).generate_dataset(
+                number=self.gui_variables["Entry"]["Number Samples"].get())
+        elif var_name in self.nesosilicate_minerals:   # Nesosilicates
+            self.data_mineral = Nesosilicates(
+                mineral=var_name, data_type=True, traces_list=self.traces_list).generate_dataset(
+                number=self.gui_variables["Entry"]["Number Samples"].get())
+        elif var_name in self.sorosilicate_minerals:   # Sorosilicates
+            self.data_mineral = Sorosilicates(
+                mineral=var_name, data_type=True, traces_list=self.traces_list).generate_dataset(
+                number=self.gui_variables["Entry"]["Number Samples"].get())
+        elif var_name in self.inosilicate_minerals:   # Inosilicates
+            self.data_mineral = Inosilicates(
+                mineral=var_name, data_type=True, traces_list=self.traces_list).generate_dataset(
+                number=self.gui_variables["Entry"]["Number Samples"].get())
+        elif var_name in self.phyllosilicate_minerals:   # Phyllosilicates
+            self.data_mineral = Phyllosilicates(
+                mineral=var_name, data_type=True, traces_list=self.traces_list).generate_dataset(
+                number=self.gui_variables["Entry"]["Number Samples"].get())
+        elif var_name in self.cyclosilicate_minerals:   # Cyclosilicates
+            self.data_mineral = Cyclosilicates(
                 mineral=var_name, data_type=True, traces_list=self.traces_list).generate_dataset(
                 number=self.gui_variables["Entry"]["Number Samples"].get())
         #
