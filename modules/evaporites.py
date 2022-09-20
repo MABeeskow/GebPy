@@ -6,7 +6,7 @@
 # Name:		evaporites.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		18.08.2022
+# Date:		20.09.2022
 
 #-----------------------------------------------
 
@@ -19,7 +19,7 @@ import random as rd
 from modules import fluids
 from modules.geophysics import Elasticity as elast
 from modules.sulfates import Sulfates
-from modules.halides import Halogenes
+from modules.halides import Halides
 from modules.carbonates import Carbonates
 from modules.fluids import Water
 
@@ -224,9 +224,9 @@ class Evaporites:
         self.data_calcite = Carbonates(data_type=True).create_calcite()
         self.data_dolomite = Carbonates(data_type=True).create_dolomite()
         self.data_magnesite = Carbonates(data_type=True).create_magnesite()
-        self.data_halite = Halogenes(dict=True).create_halite()
-        self.data_sylvite = Halogenes(dict=True).create_sylvite()
-        self.data_carnallite = Halogenes(dict=True).create_carnallite()
+        self.data_halite = Halides(dict=True).create_halite()
+        self.data_sylvite = Halides(dict=True).create_sylvite()
+        self.data_carnallite = Halides(dict=True).create_carnallite()
         self.data_water = Water.water("")
     #
     def create_simple_rocksalt(self, w_Na=None, w_Cl=None, amounts=None, porosity=None, dict=False):

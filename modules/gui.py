@@ -6,7 +6,7 @@
 # Name:		gui.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		17.09.2022
+# Date:		20.09.2022
 
 #-----------------------------------------------
 
@@ -19,7 +19,7 @@ from modules.sulfates import Sulfates
 from modules.oxides import Oxides, RutileGroup, PericlaseGroup, WulfeniteGroup
 from modules.sulfides import Sulfides
 from modules.carbonates import Carbonates, CarbonateRocks
-from modules.halides import Halogenes
+from modules.halides import Halides
 from modules.silicates import Tectosilicates, Phyllosilicates, Nesosilicates, Sorosilicates, Inosilicates, Cyclosilicates
 from modules.phospides import Phospides
 from modules.phosphates import Phosphates
@@ -1940,13 +1940,13 @@ class Minerals:
                 data = Carbonates(impurity="pure", data_type=True).create_ikaite()
             # Halides
             elif self.mineral == "Halite":
-                data = Halogenes(impurity="pure", dict=True).create_halite()
+                data = Halides(impurity="pure", dict=True).create_halite()
             elif self.mineral == "Fluorite":
-                data = Halogenes(impurity="pure", dict=True).create_fluorite()
+                data = Halides(impurity="pure", dict=True).create_fluorite()
             elif self.mineral == "Sylvite":
-                data = Halogenes(impurity="pure", dict=True).create_sylvite()
+                data = Halides(impurity="pure", dict=True).create_sylvite()
             elif self.mineral == "Carnallite":
-                data = Halogenes(impurity="pure", dict=True).create_carnallite()
+                data = Halides(impurity="pure", dict=True).create_carnallite()
             # Phyllosilicates
             elif self.mineral == "Illite":
                 data = Phyllosilicates(data_type=True).create_illite()
@@ -2543,13 +2543,13 @@ class Minerals:
                 data = Carbonates(impurity="pure", data_type=True).create_ikaite()
             # Halides
             elif self.mineral == "Halite":
-                data = Halogenes(impurity="pure", dict=True).create_halite()
+                data = Halides(impurity="pure", dict=True).create_halite()
             elif self.mineral == "Fluorite":
-                data = Halogenes(impurity="pure", dict=True).create_fluorite()
+                data = Halides(impurity="pure", dict=True).create_fluorite()
             elif self.mineral == "Sylvite":
-                data = Halogenes(impurity="pure", dict=True).create_sylvite()
+                data = Halides(impurity="pure", dict=True).create_sylvite()
             elif self.mineral == "Carnallite":
-                data = Halogenes(impurity="pure", dict=True).create_carnallite()
+                data = Halides(impurity="pure", dict=True).create_carnallite()
             # Phyllosilicates
             elif self.mineral == "Illite":
                 data = Phyllosilicates(impurity="pure", data_type=True).create_illite()
@@ -3106,13 +3106,13 @@ class Minerals:
                         data = Carbonates(impurity="pure", data_type=True).create_malachite()
                     # Halides
                     elif self.mineral == "Halite":
-                        data = Halogenes(impurity="pure", dict=True).create_halite()
+                        data = Halides(impurity="pure", dict=True).create_halite()
                     elif self.mineral == "Fluorite":
-                        data = Halogenes(impurity="pure", dict=True).create_fluorite()
+                        data = Halides(impurity="pure", dict=True).create_fluorite()
                     elif self.mineral == "Sylvite":
-                        data = Halogenes(impurity="pure", dict=True).create_sylvite()
+                        data = Halides(impurity="pure", dict=True).create_sylvite()
                     elif self.mineral == "Carnallite":
-                        data = Halogenes(impurity="pure", dict=True).create_carnallite()
+                        data = Halides(impurity="pure", dict=True).create_carnallite()
                     # Phyllosilicates
                     elif self.mineral == "Illite":
                         data = Phyllosilicates(impurity="pure", data_type=True).create_illite()
@@ -3585,13 +3585,13 @@ class Minerals:
                     data = Carbonates(impurity="pure", data_type=True).create_malachite()
                 # Halides
                 elif self.mineral == "Halite":
-                    data = Halogenes(impurity="pure", dict=True).create_halite()
+                    data = Halides(impurity="pure", dict=True).create_halite()
                 elif self.mineral == "Fluorite":
-                    data = Halogenes(impurity="pure", dict=True).create_fluorite()
+                    data = Halides(impurity="pure", dict=True).create_fluorite()
                 elif self.mineral == "Sylvite":
-                    data = Halogenes(impurity="pure", dict=True).create_sylvite()
+                    data = Halides(impurity="pure", dict=True).create_sylvite()
                 elif self.mineral == "Carnallite":
-                    data = Halogenes(impurity="pure", dict=True).create_carnallite()
+                    data = Halides(impurity="pure", dict=True).create_carnallite()
                 # Phyllosilicates
                 elif self.mineral == "Illite":
                     data = Phyllosilicates(impurity="pure", data_type=True).create_illite()
