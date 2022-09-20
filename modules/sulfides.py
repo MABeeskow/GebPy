@@ -6,7 +6,7 @@
 # Name:		sulfides.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		28.06.2022
+# Date:		20.09.2022
 
 # -----------------------------------------------
 
@@ -72,6 +72,79 @@ class Sulfides():
                 data = self.create_fahlore()
         #
         return data
+    #
+    def generate_dataset(self, number):
+        dataset = {}
+        #
+        for index in range(number):
+            if self.mineral == "Pyrite":
+                data_mineral = self.create_pyrite()
+            elif self.mineral == "Chalcopyrite":
+                data_mineral = self.create_chalcopyrite()
+            elif self.mineral == "Galena":
+                data_mineral = self.create_galena()
+            elif self.mineral == "Acanthite":
+                data_mineral = self.create_acanthite()
+            elif self.mineral == "Chalcocite":
+                data_mineral = self.create_chalcocite()
+            elif self.mineral == "Bornite":
+                data_mineral = self.create_bornite()
+            elif self.mineral == "Sphalerite":
+                data_mineral = self.create_sphalerite()
+            elif self.mineral == "Pyrrhotite":
+                data_mineral = self.create_pyrrhotite()
+            elif self.mineral == "Millerite":
+                data_mineral = self.create_millerite()
+            elif self.mineral == "Pentlandite":
+                data_mineral = self.create_pentlandite()
+            elif self.mineral == "Covellite":
+                data_mineral = self.create_covellite()
+            elif self.mineral == "Cinnabar":
+                data_mineral = self.create_cinnabar()
+            elif self.mineral == "Realgar":
+                data_mineral = self.create_realgar()
+            elif self.mineral == "Orpiment":
+                data_mineral = self.create_orpiment()
+            elif self.mineral == "Stibnite":
+                data_mineral = self.create_stibnite()
+            elif self.mineral == "Marcasite":
+                data_mineral = self.create_marcasite()
+            elif self.mineral == "Molybdenite":
+                data_mineral = self.create_molybdenite()
+            elif self.mineral == "Fahlore":
+                data_mineral = self.create_fahlore()
+            elif self.mineral == "Gallite":
+                data_mineral = self.create_gallite()
+            elif self.mineral == "Roquesite":
+                data_mineral = self.create_roquesite()
+            elif self.mineral == "Lenaite":
+                data_mineral = self.create_lenaite()
+            elif self.mineral == "Laforetite":
+                data_mineral = self.create_laforetite()
+            elif self.mineral == "Vaesite":
+                data_mineral = self.create_vaesite()
+            elif self.mineral == "Cattierite":
+                data_mineral = self.create_cattierite()
+            #
+            for key, value in data_mineral.items():
+                if key in ["M", "rho", "rho_e", "V", "vP", "vS", "vP/vS", "K", "G", "E", "nu", "GR", "PE", "U",
+                           "p"]:
+                    if key not in dataset:
+                        dataset[key] = [value]
+                    else:
+                        dataset[key].append(value)
+                elif key in ["mineral", "state", "trace elements"] and key not in dataset:
+                    dataset[key] = value
+                elif key in ["chemistry"]:
+                    if key not in dataset:
+                        dataset[key] = {}
+                        for key_2, value_2 in value.items():
+                            dataset[key][key_2] = [value_2]
+                    else:
+                        for key_2, value_2 in value.items():
+                            dataset[key][key_2].append(value_2)
+            #
+        return dataset
     #
     def create_cinnabar(self):
         #

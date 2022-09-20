@@ -6,7 +6,7 @@
 # Name:		gebpy_app.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		19.09.2022
+# Date:		20.09.2022
 
 #-----------------------------------------------
 
@@ -18,6 +18,9 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from modules.gui_elements import SimpleElements
 from modules.oxides import Oxides
+from modules.carbonates import Carbonates
+from modules.sulfides import Sulfides
+from modules.sulfates import Sulfates
 
 ## GUI
 class GebPyGUI(tk.Frame):
@@ -829,11 +832,24 @@ class GebPyGUI(tk.Frame):
         for key, var_cb in self.gui_variables["Checkbox"]["Trace Elements"].items():
             if var_cb.get() == 1:
                 self.traces_list.append(key)
-
-        if var_name in self.oxide_minerals:
+        #
+        if var_name in self.oxide_minerals:         # Oxides
             self.data_mineral = Oxides(
                 mineral=var_name, data_type=True, traces_list=self.traces_list).generate_dataset(
                 number=self.gui_variables["Entry"]["Number Samples"].get())
+        elif var_name in self.carbonate_minerals:   # Carbonates
+            self.data_mineral = Carbonates(
+                mineral=var_name, data_type=True, traces_list=self.traces_list).generate_dataset(
+                number=self.gui_variables["Entry"]["Number Samples"].get())
+        elif var_name in self.sulfide_minerals:   # Sulfides
+            self.data_mineral = Sulfides(
+                mineral=var_name, data_type=True, traces_list=self.traces_list).generate_dataset(
+                number=self.gui_variables["Entry"]["Number Samples"].get())
+        elif var_name in self.sulfate_minerals:   # Sulfates
+            self.data_mineral = Sulfates(
+                mineral=var_name, data_type=True, traces_list=self.traces_list).generate_dataset(
+                number=self.gui_variables["Entry"]["Number Samples"].get())
+        #
         for key, dataset in self.data_mineral.items():
             if key == "chemistry":
                 self.list_elements = list(dataset.keys())
@@ -870,13 +886,17 @@ class GebPyGUI(tk.Frame):
         self.gui_elements["Static"]["Radiobutton"].extend([rb_geophysics, rb_geochemistry])
         #
         for key, gui_element in self.gui_elements["Temporary"].items():
-            if key not in ["Canvas"]:
-                for gui_item in gui_element:
-                    gui_item.grid_remove()
-            else:
+            if key not in ["Canvas", "Button"]:
+                if type(gui_element) == list:
+                    for gui_item in gui_element:
+                        gui_item.grid_remove()
+            elif key == "Canvas":
                 for key_2, gui_item in gui_element.items():
                     gui_item.get_tk_widget().grid_remove()
             gui_element.clear()
+        #
+        self.gui_variables["Radiobutton"]["Analysis Mode"].set(0)
+        self.change_rb_analysis()
     #
     ######################################
     ## G e n e r a l  F u n c t i o n s ##
@@ -892,7 +912,5 @@ class GebPyGUI(tk.Frame):
 #
 if __name__ == "__main__":
     root = tk.Tk()
-    #
     GebPyGUI(parent=root)
-    #
     root.mainloop()

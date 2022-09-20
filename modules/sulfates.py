@@ -6,7 +6,7 @@
 # Name:		sulfates.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		18.08.2022
+# Date:		20.09.2022
 
 # -----------------------------------------------
 
@@ -86,6 +86,57 @@ class Sulfates():
                 data = self.create_scheelite()
         #
         return data
+    #
+    def generate_dataset(self, number):
+        dataset = {}
+        #
+        for index in range(number):
+            if self.mineral == "Barite":
+                data_mineral = self.create_barite()
+            elif self.mineral == "Celestite":
+                data_mineral = self.create_celestine()
+            elif self.mineral == "Anglesite":
+                data_mineral = self.create_anglesite()
+            elif self.mineral == "Anhydrite":
+                data_mineral = self.create_anhydrite()
+            elif self.mineral == "Hanksite":
+                data_mineral = self.create_hanksite()
+            elif self.mineral == "Gypsum":
+                data_mineral = self.create_gypsum()
+            elif self.mineral == "Alunite":
+                data_mineral = self.create_alunite()
+            elif self.mineral == "Jarosite":
+                data_mineral = self.create_jarosite()
+            elif self.mineral == "Chalcanthite":
+                data_mineral = self.create_chalcanthite()
+            elif self.mineral == "Kieserite":
+                data_mineral = self.create_kieserite()
+            elif self.mineral == "Scheelite":
+                data_mineral = self.create_scheelite()
+            elif self.mineral == "Hexahydrite":
+                data_mineral = self.create_hexahydrite()
+            elif self.mineral == "Kainite":
+                data_mineral = self.create_kainite()
+            #
+            for key, value in data_mineral.items():
+                if key in ["M", "rho", "rho_e", "V", "vP", "vS", "vP/vS", "K", "G", "E", "nu", "GR", "PE", "U",
+                           "p"]:
+                    if key not in dataset:
+                        dataset[key] = [value]
+                    else:
+                        dataset[key].append(value)
+                elif key in ["mineral", "state", "trace elements"] and key not in dataset:
+                    dataset[key] = value
+                elif key in ["chemistry"]:
+                    if key not in dataset:
+                        dataset[key] = {}
+                        for key_2, value_2 in value.items():
+                            dataset[key][key_2] = [value_2]
+                    else:
+                        for key_2, value_2 in value.items():
+                            dataset[key][key_2].append(value_2)
+        #
+        return dataset
     #
     def create_anhydrite(self):
         # Major elements

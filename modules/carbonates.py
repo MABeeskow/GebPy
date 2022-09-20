@@ -6,7 +6,7 @@
 # Name:		carbonates.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		08.09.2022
+# Date:		20.09.2022
 
 #-----------------------------------------------
 
@@ -2556,7 +2556,7 @@ class dolomite:
             return results
 #
 # Carbonates
-class Carbonates():
+class Carbonates:
     """ Class that generates geophysical and geochemical data of carbonate minerals"""
     #
     def __init__(self, traces_list=[], impurity="pure", data_type=False, mineral=None):
@@ -2623,6 +2623,53 @@ class Carbonates():
                 data = self.create_malachite()
         #
         return data
+    #
+    def generate_dataset(self, number):
+        dataset = {}
+        #
+        for index in range(number):
+            if self.mineral == "Calcite":
+                data_mineral = self.create_calcite()
+            elif self.mineral == "Dolomite":
+                data_mineral = self.create_dolomite()
+            elif self.mineral == "Magnesite":
+                data_mineral = self.create_magnesite()
+            elif self.mineral == "Siderite":
+                data_mineral = self.create_siderite()
+            elif self.mineral == "Rhodochrosite":
+                data_mineral = self.create_rhodochrosite()
+            elif self.mineral == "Aragonite":
+                data_mineral = self.create_aragonite()
+            elif self.mineral == "Cerrusite":
+                data_mineral = self.create_cerussite()
+            elif self.mineral == "Ankerite":
+                data_mineral = self.create_ankerite()
+            elif self.mineral == "Azurite":
+                data_mineral = self.create_azurite()
+            elif self.mineral == "Malachite":
+                data_mineral = self.create_malachite()
+            elif self.mineral == "Ikaite":
+                data_mineral = self.create_ikaite()
+            #
+            for key, value in data_mineral.items():
+                if key in ["M", "rho", "rho_e", "V", "vP", "vS", "vP/vS", "K", "G", "E", "nu", "GR", "PE", "U",
+                           "p"]:
+                    if key not in dataset:
+                        dataset[key] = [value]
+                    else:
+                        dataset[key].append(value)
+                elif key in ["mineral", "state", "trace elements"] and key not in dataset:
+                    dataset[key] = value
+                elif key in ["chemistry"]:
+                    if key not in dataset:
+                        dataset[key] = {}
+                        for key_2, value_2 in value.items():
+                            dataset[key][key_2] = [value_2]
+                    else:
+                        for key_2, value_2 in value.items():
+                            dataset[key][key_2].append(value_2)
+            #
+        return dataset
     #
     def create_calcite(self):   # CaCO3
         # Major elements

@@ -6,7 +6,7 @@
 # Name:		oxides.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		19.09.2022
+# Date:		20.09.2022
 
 # -----------------------------------------------
 
@@ -171,14 +171,74 @@ class Oxides():
     def generate_dataset(self, number):
         dataset = {}
         #
-        #if self.mineral == "Quartz":
         for index in range(number):
             if self.mineral == "Quartz":
                 data_mineral = self.create_quartz()
             elif self.mineral == "Magnetite":
                 data_mineral = self.create_magnetite()
+            elif self.mineral == "Hematite":
+                data_mineral = self.create_hematite()
+            elif self.mineral == "Ilmenite":
+                data_mineral = self.create_ilmenite()
+            elif self.mineral == "Cassiterite":
+                data_mineral = self.create_cassiterite()
+            elif self.mineral == "Chromite":
+                data_mineral = self.create_chromite()
+            elif self.mineral == "Corundum":
+                data_mineral = self.create_corundum()
+            elif self.mineral == "Rutile":
+                data_mineral = self.create_rutile()
+            elif self.mineral == "Pyrolusite":
+                data_mineral = self.create_pyrolusite()
+            elif self.mineral == "Magnesiochromite":
+                data_mineral = self.create_magnesiochromite()
+            elif self.mineral == "Zincochromite":
+                data_mineral = self.create_zincochromite()
+            elif self.mineral == "Al-Spinel":
+                data_mineral = self.create_aluminium_spinel()
+            elif self.mineral == "Cr-Spinel":
+                data_mineral = self.create_chromium_spinel()
+            elif self.mineral == "Cuprospinel":
+                data_mineral = self.create_cuprospinel()
+            elif self.mineral == "Jacobsite":
+                data_mineral = self.create_jacobsite()
+            elif self.mineral == "Magnesioferrite":
+                data_mineral = self.create_magnesioferrite()
+            elif self.mineral == "Trevorite":
+                data_mineral = self.create_trevorite()
+            elif self.mineral == "Franklinite":
+                data_mineral = self.create_franklinite()
+            elif self.mineral == "Ulvospinel":
+                data_mineral = self.create_ulvoespinel()
+            elif self.mineral == "Fe-Spinel":
+                data_mineral = self.create_iron_spinel()
+            elif self.mineral == "Litharge":
+                data_mineral = self.create_litharge()
+            elif self.mineral == "Massicot":
+                data_mineral = self.create_massicot()
+            elif self.mineral == "Minium":
+                data_mineral = self.create_minium()
+            elif self.mineral == "Plattnerite":
+                data_mineral = self.create_plattnerite()
+            elif self.mineral == "Scrutinyite":
+                data_mineral = self.create_scrutinyite()
+            elif self.mineral == "Zincite":
+                data_mineral = self.create_zincite()
+            elif self.mineral == "Columbite":
+                data_mineral = self.create_columbite()
+            elif self.mineral == "Tantalite":
+                data_mineral = self.create_tantalite()
+            elif self.mineral == "Coltan":
+                data_mineral = self.create_coltan()
+            elif self.mineral == "Crocoite":
+                data_mineral = self.create_crocoite()
+            elif self.mineral == "Wulfenite":
+                data_mineral = self.create_wulfenite()
+            elif self.mineral == "Goethite":
+                data_mineral = self.create_goethite()
             elif self.mineral == "Uraninite":
                 data_mineral = self.create_uraninite()
+            #
             for key, value in data_mineral.items():
                 if key in ["M", "rho", "rho_e", "V", "vP", "vS", "vP/vS", "K", "G", "E", "nu", "GR", "PE", "U",
                            "p"]:
@@ -196,8 +256,6 @@ class Oxides():
                     else:
                         for key_2, value_2 in value.items():
                             dataset[key][key_2].append(value_2)
-        #elif self.mineral == "Coltan":
-        #    dataset = [self.create_coltan() for n in range(number)]
         #
         return dataset
     #
@@ -218,57 +276,57 @@ class Oxides():
             self.traces_list_updated = []
         else:
             var_state = "variable"
-            self.traces_list_updated = []
-            minors_x = ["Ti", "Ge", "Sn", "C"]               # mainly 4+
-            minors_y = ["Al", "Fe", "Ga", "As", "B", "P"]    # mainly 3+
-            minors_z = ["H", "Li", "Na", "Ag", "K"]     # mainly 1+
-            minors_w = ["Mg", "Cu", "Be", "Mn"]         # mainly 2+
-            #
-            minors_x_updated = list(set(self.traces_list).intersection(minors_x))
-            minors_y_updated = list(set(self.traces_list).intersection(minors_y))
-            minors_z_updated = list(set(self.traces_list).intersection(minors_z))
-            minors_w_updated = list(set(self.traces_list).intersection(minors_w))
-            #
-            if self.impurity == "random":
-                n_x = rd.randint(0, len(minors_x_updated))
-                n_y = rd.randint(0, len(minors_y_updated))
-                n_w = rd.randint(0, len(minors_w_updated))
-                if n_x > 0:
-                    selection_x = rd.sample(minors_x_updated, n_x)
-                    self.traces_list_updated.extend(selection_x)
-                if n_y > 0 and n_w == 0:
-                    n_z = rd.randint(1, n_y)
-                    selection_y = rd.sample(minors_y_updated, n_y)
-                    selection_z = rd.sample(minors_z_updated, n_z)
-                    self.traces_list_updated.extend(selection_y)
-                    self.traces_list_updated.extend(selection_z)
-                if n_w > 0 and n_y == 0:
-                    n_z = rd.randint(1, n_w)
-                    selection_w = rd.sample(minors_w_updated, n_w)
-                    selection_z = rd.sample(minors_z_updated, n_z)
-                    self.traces_list_updated.extend(selection_w)
-                    self.traces_list_updated.extend(selection_z)
-                if n_y > 0 and n_w > 0:
-                    if n_y + n_w <= len(minors_z_updated):
-                        n_z = rd.randint(1, (n_y + n_w))
-                    else:
-                        n_z = len(minors_z_updated)
-                    selection_y = rd.sample(minors_y_updated, n_y)
-                    selection_w = rd.sample(minors_w_updated, n_w)
-                    selection_z = rd.sample(minors_z_updated, n_z)
-                    self.traces_list_updated.extend(selection_y)
-                    self.traces_list_updated.extend(selection_w)
-                    self.traces_list_updated.extend(selection_z)
-            elif self.impurity != "random":
-                for element in self.traces_list:
-                    if element in minors_x_updated:
-                        self.traces_list_updated.append(element)
-                    elif element in minors_y_updated:
-                        self.traces_list_updated.append(element)
-                    elif element in minors_z_updated:
-                        self.traces_list_updated.append(element)
-                    elif element in minors_w_updated:
-                        self.traces_list_updated.append(element)
+            self.traces_list_updated = self.traces_list
+            # minors_x = ["Ti", "Ge", "Sn", "C"]               # mainly 4+
+            # minors_y = ["Al", "Fe", "Ga", "As", "B", "P"]    # mainly 3+
+            # minors_z = ["H", "Li", "Na", "Ag", "K"]     # mainly 1+
+            # minors_w = ["Mg", "Cu", "Be", "Mn"]         # mainly 2+
+            # #
+            # minors_x_updated = list(set(self.traces_list).intersection(minors_x))
+            # minors_y_updated = list(set(self.traces_list).intersection(minors_y))
+            # minors_z_updated = list(set(self.traces_list).intersection(minors_z))
+            # minors_w_updated = list(set(self.traces_list).intersection(minors_w))
+            # #
+            # if self.impurity == "random":
+            #     n_x = rd.randint(0, len(minors_x_updated))
+            #     n_y = rd.randint(0, len(minors_y_updated))
+            #     n_w = rd.randint(0, len(minors_w_updated))
+            #     if n_x > 0:
+            #         selection_x = rd.sample(minors_x_updated, n_x)
+            #         self.traces_list_updated.extend(selection_x)
+            #     if n_y > 0 and n_w == 0:
+            #         n_z = rd.randint(1, n_y)
+            #         selection_y = rd.sample(minors_y_updated, n_y)
+            #         selection_z = rd.sample(minors_z_updated, n_z)
+            #         self.traces_list_updated.extend(selection_y)
+            #         self.traces_list_updated.extend(selection_z)
+            #     if n_w > 0 and n_y == 0:
+            #         n_z = rd.randint(1, n_w)
+            #         selection_w = rd.sample(minors_w_updated, n_w)
+            #         selection_z = rd.sample(minors_z_updated, n_z)
+            #         self.traces_list_updated.extend(selection_w)
+            #         self.traces_list_updated.extend(selection_z)
+            #     if n_y > 0 and n_w > 0:
+            #         if n_y + n_w <= len(minors_z_updated):
+            #             n_z = rd.randint(1, (n_y + n_w))
+            #         else:
+            #             n_z = len(minors_z_updated)
+            #         selection_y = rd.sample(minors_y_updated, n_y)
+            #         selection_w = rd.sample(minors_w_updated, n_w)
+            #         selection_z = rd.sample(minors_z_updated, n_z)
+            #         self.traces_list_updated.extend(selection_y)
+            #         self.traces_list_updated.extend(selection_w)
+            #         self.traces_list_updated.extend(selection_z)
+            # elif self.impurity != "random":
+            #     for element in self.traces_list:
+            #         if element in minors_x_updated:
+            #             self.traces_list_updated.append(element)
+            #         elif element in minors_y_updated:
+            #             self.traces_list_updated.append(element)
+            #         elif element in minors_z_updated:
+            #             self.traces_list_updated.append(element)
+            #         elif element in minors_w_updated:
+            #             self.traces_list_updated.append(element)
             #
             traces = [PeriodicSystem(name=i).get_data() for i in self.traces_list_updated]
             x_traces = [round(rd.uniform(0., 0.01), 6) for i in range(len(self.traces_list_updated))]
