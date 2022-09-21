@@ -6,7 +6,7 @@
 # Name:		geochemistry.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		28.05.2021
+# Date:		21.09.2022
 
 #-----------------------------------------------
 
@@ -1085,7 +1085,7 @@ class Compounds:
 class TraceElements:
     #
     def __init__(self, tracer):
-        self.tracer = tracer
+        self.traces_data = tracer
     #
     def calculate_composition_quartz(self):
         parts_qz = 1000000
@@ -1110,26 +1110,31 @@ class TraceElements:
             trace_combinations = {}
             trace_combinations["singles"] = []
             trace_combinations["couples"] = []
-            for tracer in self.tracer:
-                if tracer in ["Ti", "Ge", "Sn"]:
-                    element_list.append(tracer)
-                    compound = tracer+str("O2")
-                    trace_groups["X"].append(compound)
-                    trace_combinations["singles"].append([compound])
-                elif tracer in ["Al", "Fe", "B", "As", "Ga"]:
-                    element_list.append(tracer)
-                    compound = tracer+str("2O3")
-                    trace_groups["Y"].append(compound)
-                    trace_combinations["couples"].append([compound])
-                elif tracer in ["H", "Li", "Na", "Ag", "K"]:
-                    element_list.append(tracer)
-                    compound = tracer+str("2O")
-                    trace_groups["Z"].append(compound)
-                elif tracer in ["Mg", "Be", "Ca", "Mn", "Cu", "Zn"]:
-                    element_list.append(tracer)
-                    compound = tracer+str("O")
-                    trace_groups["W"].append(compound)
-                    trace_combinations["couples"].append([compound])
+            trace_combinations["individual"] = []
+            if type(self.traces_data) == dict:
+                for tracer in list(self.traces_data.keys()):
+                    if tracer in ["Ti", "Ge", "Sn"]:
+                        element_list.append(tracer)
+                        compound = tracer+str("O2")
+                        trace_groups["X"].append(compound)
+                        trace_combinations["singles"].append([compound])
+                    elif tracer in ["Al", "Fe", "B", "As", "Ga"]:
+                        element_list.append(tracer)
+                        compound = tracer+str("2O3")
+                        trace_groups["Y"].append(compound)
+                        trace_combinations["couples"].append([compound])
+                    elif tracer in ["H", "Li", "Na", "Ag", "K"]:
+                        element_list.append(tracer)
+                        compound = tracer+str("2O")
+                        trace_groups["Z"].append(compound)
+                    elif tracer in ["Mg", "Be", "Ca", "Mn", "Cu", "Zn"]:
+                        element_list.append(tracer)
+                        compound = tracer+str("O")
+                        trace_groups["W"].append(compound)
+                        trace_combinations["couples"].append([compound])
+                    #
+                    trace_combinations["individual"].append([tracer, compound])
+            #
             for index_y, couple in enumerate(trace_combinations["couples"], start=0):
                 for index_z, item_z in enumerate(trace_groups["Z"], start=0):
                     if item_z not in couple and index_y == index_z:
@@ -1148,21 +1153,43 @@ class TraceElements:
                             couple.append(item_z)
             #
             for key in trace_combinations:
-                for item in trace_combinations[key]:
-                    amount = rd.uniform(1*10**(-6), 0.1)
-                    amount_ppm = int(amount*10000)
-                    for compound in item:
+                if key != "individual":
+                    pass
+                    # for item in trace_combinations[key]:
+                    #     amount = rd.uniform(1*10**(-6), 0.1)
+                    #     amount_ppm = int(amount*10000)
+                    #     for compound in item:
+                    #         oxides.append(compound)
+                    #         composition[compound] = amount_ppm
+                    #         composition[oxides[0]] -= amount_ppm
+                    #     item.append(amount_ppm)
+                else:
+                    for item in trace_combinations[key]:
+                        trace_element = item[0]
+                        compound = item[1]
                         oxides.append(compound)
+                        val_min = self.traces_data[trace_element]["Min"]
+                        val_max = self.traces_data[trace_element]["Max"]
+                        mean = (val_min + val_max)/2
+                        sigma = (mean - val_min)/3
+                        #
+                        condition = False
+                        while condition == False:
+                            amount_ppm = int(np.random.normal(loc=mean, scale=sigma, size=1)[0])
+                            if amount_ppm >= 0:
+                                condition = True
+                        #
                         composition[compound] = amount_ppm
                         composition[oxides[0]] -= amount_ppm
-                    item.append(amount_ppm)
             #
-            #print("Groups:", trace_groups)
-            #print("Families:", trace_combinations)
+            # print("Groups:", trace_groups)
+            # print("Families:", trace_combinations)
             #
+            print(oxides)
+            print(composition)
             results = Compounds(formula=oxides).split_formula()
-            #print("Composition:", composition)
-            #print("Results:", results)
+            # print("Composition:", composition)
+            # print("Results:", results)
             M = 0
             for oxide in composition:
                 M += composition[oxide]*10**(-6) * results[oxide]["Total"]

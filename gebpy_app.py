@@ -6,7 +6,7 @@
 # Name:		gebpy_app.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		20.09.2022
+# Date:		21.09.2022
 
 #-----------------------------------------------
 
@@ -26,6 +26,7 @@ from modules.phospides import Phospides
 from modules.phosphates import Phosphates
 from modules.silicates import Phyllosilicates, Tectosilicates, Inosilicates, Nesosilicates, Sorosilicates, \
     Cyclosilicates
+from modules.organics import Organics
 
 ## GUI
 class GebPyGUI(tk.Frame):
@@ -137,7 +138,8 @@ class GebPyGUI(tk.Frame):
         sub_mineral_groups = tk.Menu(mineralogy_menu, tearoff=0)
         mineral_groups = [
             "Oxides", "Sulfides", "Sulfates", "Halides", "Tectosilicates", "Nesosilicates", "Sorosilicates",
-            "Cyclosilicates", "Inosilicates", "Phyllosilicates", "Carbonates", "Phosphates", "Phospides"]
+            "Cyclosilicates", "Inosilicates", "Phyllosilicates", "Carbonates", "Phosphates", "Phospides",
+            "Miscellaneous"]
         mineral_groups.sort()
         for mineral_group in mineral_groups:
             if mineral_group == "Oxides":
@@ -308,6 +310,17 @@ class GebPyGUI(tk.Frame):
                 sub_mineral_groups.add_cascade(
                     label="Cyclosilicates",
                     menu=sub_cyclosilicates)
+            elif mineral_group == "Miscellaneous":
+                sub_miscellaneous = tk.Menu(sub_mineral_groups, tearoff=0)
+                self.miscellaneous_minerals = ["Organic Matter"]
+                self.miscellaneous_minerals.sort()
+                for mineral in self.miscellaneous_minerals:
+                    sub_miscellaneous.add_command(
+                        label=mineral, command=lambda name=mineral: self.select_mineral(name))
+                #
+                sub_mineral_groups.add_cascade(
+                    label="Miscellaneous",
+                    menu=sub_miscellaneous)
             else:
                 sub_mineral_groups.add_command(
                     label=mineral_group)
@@ -458,6 +471,8 @@ class GebPyGUI(tk.Frame):
         self.gui_variables["Radiobutton"]["Analysis Mode"].set(0)
         self.gui_variables["Radiobutton"]["Trace Elements"] = tk.IntVar()
         self.gui_variables["Radiobutton"]["Trace Elements"].set(0)
+        self.gui_variables["Radiobutton"]["Oxidation State"] = tk.IntVar()
+        self.gui_variables["Radiobutton"]["Oxidation State"].set(0)
         self.gui_variables["Option Menu"]["Trace Elements"] = tk.StringVar()
         self.gui_variables["Option Menu"]["Trace Elements"].set("Select Trace Element")
         self.gui_variables["Checkbox"]["Trace Elements"] = {}
@@ -465,6 +480,10 @@ class GebPyGUI(tk.Frame):
         self.gui_variables["Entry"]["Maximum"] = {}
         self.gui_variables["Entry"]["Mean"] = {}
         self.gui_variables["Entry"]["Error"] = {}
+        self.gui_variables["Entry"]["Trace Elements"] = {}
+        self.gui_variables["Entry"]["Trace Elements"]["Minimum"] = {}
+        self.gui_variables["Entry"]["Trace Elements"]["Maximum"] = {}
+        self.trace_elements_all = {"All": []}
         categories_short = ["M", "V", "rho", "vP", "vS", "vP/vS", "K", "G", "E", "nu", "GR", "PE"]
         for category in categories_short:
             self.gui_variables["Entry"]["Minimum"][category] = tk.StringVar()
@@ -734,29 +753,40 @@ class GebPyGUI(tk.Frame):
                     gui_item.grid()
             if var_name in self.oxide_minerals:
                 data_mineral = Oxides(mineral=var_name, data_type=True).get_data()
+                self.trace_elements_all = data_mineral["trace elements"]
             #
             if self.btn_traces == None:
                 self.btn_traces = SimpleElements(
                     parent=self.parent, row_id=15, column_id=16, n_rows=2, n_columns=15,
                     bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_button(
                     text="Trace Elements",
-                    command=lambda var_traces=data_mineral["trace elements"]: self.select_trace_elements(var_traces))
+                    command=lambda var_traces=self.trace_elements_all:
+                    self.select_trace_elements(var_traces))
             #
             self.gui_elements["Temporary"]["Button"].append(self.btn_traces)
     #
     def select_trace_elements(self, var_traces):
+        #
         self.window_trace_elements = tk.Toplevel(self.parent)
         self.window_trace_elements.title("Trace Elements")
-        self.window_trace_elements.geometry("300x300")
+        self.window_trace_elements.geometry("750x450")
         self.window_trace_elements.resizable(False, False)
         self.window_trace_elements["bg"] = self.colors_gebpy["Background"]
         #
+        ## Cleaning
+        categories = ["Frame", "Label", "Radiobutton", "Entry", "Checkbox"]
+        priorities = ["Static", "Temporary"]
+        for priority in priorities:
+            for category in categories:
+                if len(self.gui_elements_sub["Trace Elements"][priority][category]) > 0:
+                    self.gui_elements_sub["Trace Elements"][priority][category].clear()
+        #
         ## Geometry and Layout
-        window_width = 300
-        window_heigth = 300
-        row_min = 10
+        window_width = 750
+        window_heigth = 450
+        row_min = 15
         n_rows = int(window_heigth / row_min)
-        column_min = 10
+        column_min = 15
         n_columns = int(window_width / column_min)
         #
         for x in range(n_columns):
@@ -771,22 +801,93 @@ class GebPyGUI(tk.Frame):
         for i in range(0, n_columns):
             self.window_trace_elements.grid_columnconfigure(i, minsize=column_min)
         #
+        ## Frames
+        frm_navigation = SimpleElements(
+            parent=self.window_trace_elements, row_id=0, column_id=0, n_rows=40, n_columns=12,
+            bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Navigation"]).create_frame()
+        frm_accent = SimpleElements(
+            parent=self.window_trace_elements, row_id=0, column_id=13, n_rows=40, n_columns=1,
+            bg=self.colors_gebpy["Accent Blue"], fg=self.colors_gebpy["Accent Blue"]).create_frame()
+        #
+        self.gui_elements_sub["Trace Elements"]["Static"]["Frame"].extend([frm_navigation, frm_accent])
+        #
         ## Labels
         lbl_title = SimpleElements(
-            parent=self.window_trace_elements, row_id=0, column_id=0, n_rows=2, n_columns=16,
-            bg=self.colors_gebpy["Accent"], fg=self.colors_gebpy["Navigation"]).create_label(
-            text="Trace Elements", font_option="sans 12 bold", relief=tk.GROOVE)
+            parent=self.window_trace_elements, row_id=0, column_id=0, n_rows=2, n_columns=12,
+            bg=self.colors_gebpy["Accent Blue"], fg=self.colors_gebpy["Navigation"]).create_label(
+            text="Oxidation State", font_option="sans 12 bold", relief=tk.FLAT)
         #
-        if lbl_title not in self.gui_elements_sub["Trace Elements"]["Static"]["Label"]:
-            self.gui_elements_sub["Trace Elements"]["Static"]["Label"].append(lbl_title)
+        self.gui_elements_sub["Trace Elements"]["Static"]["Label"].append(lbl_title)
         #
-        var_traces.sort()
-        for index, trace_element in enumerate(var_traces):
-            if index < 10:
+        self.oxidation_states = list(var_traces.keys())
+        self.oxidation_states.remove("All")
+        self.oxidation_states.sort(reverse=True)
+        for index, oxidation_state in enumerate(self.oxidation_states):
+            rb_oxidation_state = SimpleElements(
+                parent=self.window_trace_elements, row_id=2*index + 2, column_id=0, n_rows=2, n_columns=12,
+                bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Background"]).create_radiobutton(
+                text="Mainly "+str(oxidation_state), var_rb=self.gui_variables["Radiobutton"]["Oxidation State"],
+                value_rb=index, color_bg=self.colors_gebpy["Navigation"],
+                command=lambda var_traces=var_traces: self.change_oxidation_state(var_traces))
+            #
+            self.gui_elements_sub["Trace Elements"]["Static"]["Radiobutton"].append(rb_oxidation_state)
+        #
+        self.change_oxidation_state(var_traces=var_traces, first_run=True)
+    #
+    def change_oxidation_state(self, var_traces, first_run=False):
+        if first_run == False:
+            ## Cleaning
+            categories = ["Label", "Entry", "Checkbox"]
+            for category in categories:
+                if len(self.gui_elements_sub["Trace Elements"]["Temporary"][category]) > 0:
+                    for gui_item in self.gui_elements_sub["Trace Elements"]["Temporary"][category]:
+                        gui_item.grid_remove()
+                    self.gui_elements_sub["Trace Elements"]["Temporary"][category].clear()
+        #
+        oxidation_state = self.oxidation_states[self.gui_variables["Radiobutton"]["Oxidation State"].get()]
+        #
+        for index, trace_element in enumerate(var_traces[oxidation_state]):
+            if index == 0:
+                ## Labels
+                lbl_mineral = SimpleElements(
+                    parent=self.window_trace_elements, row_id=0, column_id=15, n_rows=2, n_columns=7,
+                    bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
+                    text="Trace Element", font_option="sans 10 bold", relief=tk.GROOVE)
+                lbl_min = SimpleElements(
+                    parent=self.window_trace_elements, row_id=0, column_id=22, n_rows=2, n_columns=4,
+                    bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
+                    text="Min", font_option="sans 10 bold", relief=tk.GROOVE)
+                lbl_max = SimpleElements(
+                    parent=self.window_trace_elements, row_id=0, column_id=26, n_rows=2, n_columns=4,
+                    bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
+                    text="Max", font_option="sans 10 bold", relief=tk.GROOVE)
+                #
+                self.gui_elements_sub["Trace Elements"]["Temporary"]["Label"].extend(
+                    [lbl_mineral, lbl_min, lbl_max])
+                #
+            elif index == 12:
+                ## Labels
+                lbl_mineral = SimpleElements(
+                    parent=self.window_trace_elements, row_id=0, column_id=31, n_rows=2, n_columns=7,
+                    bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
+                    text="Trace Element", font_option="sans 10 bold", relief=tk.GROOVE)
+                lbl_min = SimpleElements(
+                    parent=self.window_trace_elements, row_id=0, column_id=38, n_rows=2, n_columns=4,
+                    bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
+                    text="Min", font_option="sans 10 bold", relief=tk.GROOVE)
+                lbl_max = SimpleElements(
+                    parent=self.window_trace_elements, row_id=0, column_id=42, n_rows=2, n_columns=4,
+                    bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
+                    text="Max", font_option="sans 10 bold", relief=tk.GROOVE)
+                #
+                self.gui_elements_sub["Trace Elements"]["Temporary"]["Label"].extend(
+                    [lbl_mineral, lbl_min, lbl_max])
+            #
+            if index < 12:
                 ## Labels
                 lbl_trace = SimpleElements(
-                    parent=self.window_trace_elements, row_id=2*(index + 1), column_id=0, n_rows=2, n_columns=4,
-                    bg=self.colors_gebpy["Accent"], fg=self.colors_gebpy["Navigation"]).create_label(
+                    parent=self.window_trace_elements, row_id=2 * (index + 1), column_id=15, n_rows=2, n_columns=5,
+                    bg=self.colors_gebpy["Background"], fg=self.colors_gebpy["Navigation"]).create_label(
                     text=trace_element, font_option="sans 10 bold", relief=tk.FLAT)
                 #
                 ## Checkboxes
@@ -794,19 +895,31 @@ class GebPyGUI(tk.Frame):
                     self.gui_variables["Checkbox"]["Trace Elements"][trace_element] = tk.IntVar()
                     self.gui_variables["Checkbox"]["Trace Elements"][trace_element].set(0)
                 cb_trace = SimpleElements(
-                    parent=self.window_trace_elements, row_id=2 * (index + 1), column_id=4, n_rows=2, n_columns=4,
+                    parent=self.window_trace_elements, row_id=2 * (index + 1), column_id=20, n_rows=2, n_columns=2,
                     bg=self.colors_gebpy["Background"], fg=self.colors_gebpy["Navigation"]).create_checkbox(
                     text="", var_cb=self.gui_variables["Checkbox"]["Trace Elements"][trace_element])
                 #
-                if lbl_trace not in self.gui_elements_sub["Trace Elements"]["Static"]["Label"]:
-                    self.gui_elements_sub["Trace Elements"]["Static"]["Label"].append(lbl_trace)
-                    self.gui_elements_sub["Trace Elements"]["Static"]["Checkbox"].append(cb_trace)
+                ## Entries
+                if trace_element not in self.gui_variables["Entry"]["Trace Elements"]["Minimum"]:
+                    self.gui_variables["Entry"]["Trace Elements"]["Minimum"][trace_element] = tk.IntVar()
+                    self.gui_variables["Entry"]["Trace Elements"]["Minimum"][trace_element].set(0)
+                    self.gui_variables["Entry"]["Trace Elements"]["Maximum"][trace_element] = tk.IntVar()
+                    self.gui_variables["Entry"]["Trace Elements"]["Maximum"][trace_element].set(0)
                 #
-            else:
+                entr_min = SimpleElements(
+                    parent=self.window_trace_elements, row_id=2 * index + 2, column_id=22, n_rows=2, n_columns=4,
+                    bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
+                    var_entr=self.gui_variables["Entry"]["Trace Elements"]["Minimum"][trace_element])
+                entr_max = SimpleElements(
+                    parent=self.window_trace_elements, row_id=2 * index + 2, column_id=26, n_rows=2, n_columns=4,
+                    bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
+                    var_entr=self.gui_variables["Entry"]["Trace Elements"]["Maximum"][trace_element])
+            #
+            elif 12 <= index < 24:
                 ## Labels
                 lbl_trace = SimpleElements(
-                    parent=self.window_trace_elements, row_id=2 * (index + 1) - 20, column_id=8, n_rows=2, n_columns=4,
-                    bg=self.colors_gebpy["Accent"], fg=self.colors_gebpy["Navigation"]).create_label(
+                    parent=self.window_trace_elements, row_id=2 * (index + 1), column_id=31, n_rows=2, n_columns=5,
+                    bg=self.colors_gebpy["Background"], fg=self.colors_gebpy["Navigation"]).create_label(
                     text=trace_element, font_option="sans 10 bold", relief=tk.FLAT)
                 #
                 ## Checkboxes
@@ -814,30 +927,40 @@ class GebPyGUI(tk.Frame):
                     self.gui_variables["Checkbox"]["Trace Elements"][trace_element] = tk.IntVar()
                     self.gui_variables["Checkbox"]["Trace Elements"][trace_element].set(0)
                 cb_trace = SimpleElements(
-                    parent=self.window_trace_elements, row_id=2 * (index + 1) - 20, column_id=12, n_rows=2, n_columns=4,
+                    parent=self.window_trace_elements, row_id=2 * (index + 1), column_id=36, n_rows=2, n_columns=2,
                     bg=self.colors_gebpy["Background"], fg=self.colors_gebpy["Navigation"]).create_checkbox(
                     text="", var_cb=self.gui_variables["Checkbox"]["Trace Elements"][trace_element])
                 #
-                if lbl_trace not in self.gui_elements_sub["Trace Elements"]["Static"]["Label"]:
-                    self.gui_elements_sub["Trace Elements"]["Static"]["Label"].append(lbl_trace)
-                    self.gui_elements_sub["Trace Elements"]["Static"]["Checkbox"].append(cb_trace)
-        #
-        ## Buttons
-        btn_select_all = SimpleElements(
-            parent=self.window_trace_elements, row_id=24, column_id=0, n_rows=4, n_columns=8,
-            bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_button(
-            text="Select All", command=lambda var_cb=self.gui_variables["Checkbox"]["Trace Elements"]:
-            self.select_all_checkboxes(var_cb))
-        btn_unselect_all = SimpleElements(
-            parent=self.window_trace_elements, row_id=24, column_id=8, n_rows=4, n_columns=8,
-            bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_button(
-            text="Unselect All", command=lambda var_cb=self.gui_variables["Checkbox"]["Trace Elements"]:
-            self.unselect_all_checkboxes(var_cb))
-        #
-        if btn_select_all not in self.gui_elements_sub["Trace Elements"]["Static"]["Button"]:
-            self.gui_elements_sub["Trace Elements"]["Static"]["Button"].extend([btn_select_all, btn_unselect_all])
+                ## Entries
+                if trace_element not in self.gui_variables["Entry"]["Trace Elements"]["Minimum"]:
+                    self.gui_variables["Entry"]["Trace Elements"]["Minimum"][trace_element] = tk.IntVar()
+                    self.gui_variables["Entry"]["Trace Elements"]["Minimum"][trace_element].set(0)
+                    self.gui_variables["Entry"]["Trace Elements"]["Maximum"][trace_element] = tk.IntVar()
+                    self.gui_variables["Entry"]["Trace Elements"]["Maximum"][trace_element].set(0)
+                #
+                entr_min = SimpleElements(
+                    parent=self.window_trace_elements, row_id=2 * index + 2, column_id=38, n_rows=2, n_columns=4,
+                    bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
+                    var_entr=self.gui_variables["Entry"]["Trace Elements"]["Minimum"][trace_element])
+                entr_max = SimpleElements(
+                    parent=self.window_trace_elements, row_id=2 * index + 2, column_id=42, n_rows=2, n_columns=4,
+                    bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
+                    var_entr=self.gui_variables["Entry"]["Trace Elements"]["Maximum"][trace_element])
+            #
+            self.gui_elements_sub["Trace Elements"]["Temporary"]["Label"].append(lbl_trace)
+            self.gui_elements_sub["Trace Elements"]["Temporary"]["Checkbox"].append(cb_trace)
+            self.gui_elements_sub["Trace Elements"]["Temporary"]["Entry"].extend([entr_min, entr_max])
     #
     def run_simulation_mineralogy(self, var_name):
+        #
+        self.trace_elements = {}
+        for trace_element in self.trace_elements_all["All"]:
+            if trace_element in self.gui_variables["Checkbox"]["Trace Elements"]:
+                if self.gui_variables["Checkbox"]["Trace Elements"][trace_element].get() == 1:
+                    self.trace_elements[trace_element] = {
+                        "Min": self.gui_variables["Entry"]["Trace Elements"]["Minimum"][trace_element].get(),
+                        "Max": self.gui_variables["Entry"]["Trace Elements"]["Maximum"][trace_element].get()}
+        #
         self.traces_list = []
         for key, var_cb in self.gui_variables["Checkbox"]["Trace Elements"].items():
             if var_cb.get() == 1:
@@ -845,7 +968,7 @@ class GebPyGUI(tk.Frame):
         #
         if var_name in self.oxide_minerals:         # Oxides
             self.data_mineral = Oxides(
-                mineral=var_name, data_type=True, traces_list=self.traces_list).generate_dataset(
+                mineral=var_name, data_type=True, traces_list=self.trace_elements).generate_dataset(
                 number=self.gui_variables["Entry"]["Number Samples"].get())
         elif var_name in self.carbonate_minerals:   # Carbonates
             self.data_mineral = Carbonates(
@@ -893,6 +1016,10 @@ class GebPyGUI(tk.Frame):
                 number=self.gui_variables["Entry"]["Number Samples"].get())
         elif var_name in self.cyclosilicate_minerals:   # Cyclosilicates
             self.data_mineral = Cyclosilicates(
+                mineral=var_name, data_type=True, traces_list=self.traces_list).generate_dataset(
+                number=self.gui_variables["Entry"]["Number Samples"].get())
+        elif var_name in self.miscellaneous_minerals:   # Miscellaneous
+            self.data_mineral = Organics(
                 mineral=var_name, data_type=True, traces_list=self.traces_list).generate_dataset(
                 number=self.gui_variables["Entry"]["Number Samples"].get())
         #
@@ -1020,6 +1147,14 @@ class GebPyGUI(tk.Frame):
         self.window_mineralogy.resizable(False, False)
         self.window_mineralogy["bg"] = self.colors_gebpy["Background"]
         #
+        ## Cleaning
+        categories = ["Frame", "Label", "Radiobutton", "Entry", "Checkbox"]
+        priorities = ["Static", "Temporary"]
+        for priority in priorities:
+            for category in categories:
+                if len(self.gui_elements_sub["Mineralogy"][priority][category]) > 0:
+                    self.gui_elements_sub["Mineralogy"][priority][category].clear()
+        #
         ## Geometry and Layout
         window_width = 1080
         window_heigth = 600
@@ -1061,7 +1196,7 @@ class GebPyGUI(tk.Frame):
         ## Radiobuttons
         self.mineral_classes = [
             "Oxides", "Sulfides", "Sulfates", "Phosphates", "Phospides", "Carbonates", "Tectosilicates",
-            "Nesosilicates", "Inosilicates", "Phyllosilicates", "Sorosilicates", "Cyclosilicates"]
+            "Nesosilicates", "Inosilicates", "Phyllosilicates", "Sorosilicates", "Cyclosilicates", "Miscellaneous"]
         self.mineral_classes.sort()
         for index, mineral_class in enumerate(self.mineral_classes):
             rb_class = SimpleElements(
@@ -1075,7 +1210,7 @@ class GebPyGUI(tk.Frame):
         self.mineral_classes_advanced = ["Rock-Forming Minerals", "Ore Minerals", "Clay Minerals"]
         self.mineral_classes_extended = [
             "Oxides", "Sulfides", "Sulfates", "Phosphates", "Phospides", "Carbonates", "Tectosilicates",
-            "Nesosilicates", "Inosilicates", "Phyllosilicates", "Sorosilicates", "Cyclosilicates"]
+            "Nesosilicates", "Inosilicates", "Phyllosilicates", "Sorosilicates", "Cyclosilicates", "Miscellaneous"]
         self.mineral_classes_extended.sort()
         self.mineral_classes_extended.extend(self.mineral_classes_advanced)
         #
@@ -1088,6 +1223,8 @@ class GebPyGUI(tk.Frame):
                 color_bg=self.colors_gebpy["Navigation"], command=self.change_rb_mineral_class)
             #
             self.gui_elements_sub["Mineralogy"]["Static"]["Radiobutton"].append(rb_class_adv)
+        #
+        self.change_rb_mineral_class()
         #
     def change_rb_mineral_class(self):
         ## Cleaning
@@ -1123,10 +1260,13 @@ class GebPyGUI(tk.Frame):
             minerals_list = self.sorosilicate_minerals
         elif mineral_class_selected == "Cyclosilicates":
             minerals_list = self.cyclosilicate_minerals
+        elif mineral_class_selected == "Miscellaneous":
+            minerals_list = self.miscellaneous_minerals
         elif mineral_class_selected == "Rock-Forming Minerals":
             minerals_list = [
                 "Quartz", "Plagioclase", "Alkali Feldspar", "Olivine", "Calcite", "Dolomite", "Muscovite", "Biotite",
-                "Ca-Amphibole", "Na-Amphibole", "Mg-Fe-Pyroxene", "Ca-Pyroxene", "Al-Garnet", "Ca-Garnet"]
+                "Ca-Amphibole", "Na-Amphibole", "Mg-Fe-Pyroxene", "Ca-Pyroxene", "Al-Garnet", "Ca-Garnet",
+                "Organic Matter"]
         elif mineral_class_selected == "Ore Minerals":
             minerals_list = ["Acanthite", "Barite", "Bauxite", "Beryl", "Bornite", "Cassiterite", "Chalcocite",
                              "Chalcopyrite", "Chromite", "Cinnabar", "Cobalite", "Coltan", "Galena", "Gold", "Hematite",

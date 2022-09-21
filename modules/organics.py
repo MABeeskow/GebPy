@@ -6,7 +6,7 @@
 # Name:		organics.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		17.03.2022
+# Date:		21.09.2022
 
 # -----------------------------------------------
 
@@ -23,14 +23,14 @@ from modules.geochemistry import MineralChemistry
 class Organics:
     """ Class that generates geophysical and geochemical data of halogene minerals"""
     #
-    def __init__(self, traces_list=[], impurity="pure", data_type=False, compound=None):
+    def __init__(self, traces_list=[], impurity="pure", data_type=False, mineral=None):
         self.traces_list = traces_list
         self.impurity = impurity
         self.data_type = data_type
-        self.compound = compound
+        self.mineral = mineral
     #
     def get_data(self, number=1):
-        if self.compound == "Organic Matter":
+        if self.mineral == "Organic Matter":
             if number > 1:
                 data = [self.create_organics_matter() for n in range(number)]
             else:
@@ -41,12 +41,44 @@ class Organics:
         return data
     #
     def generate_dataset(self, number):
-        if self.compound == "Organic Matter":
-            dataset = [self.create_organics_matter() for n in range(number)]
+        dataset = {}
+        #
+        for index in range(number):
+            if self.mineral == "Organic Matter":
+                data_mineral = self.create_organic_matter()
+            elif self.mineral == "Lignin":
+                data_mineral = self.create_lignin()
+            elif self.mineral == "Lipid":
+                data_mineral = self.create_lipid()
+            elif self.mineral == "Carbohydrate":
+                data_mineral = self.create_carbohydrates()
+            #
+            for key, value in data_mineral.items():
+                if key in ["M", "rho", "rho_e", "V", "vP", "vS", "vP/vS", "K", "G", "E", "nu", "GR", "PE", "U",
+                           "p"]:
+                    if key not in dataset:
+                        dataset[key] = [value]
+                    else:
+                        dataset[key].append(value)
+                elif key in ["mineral", "state", "trace elements"] and key not in dataset:
+                    dataset[key] = value
+                elif key in ["chemistry"]:
+                    if key not in dataset:
+                        dataset[key] = {}
+                        for key_2, value_2 in value.items():
+                            dataset[key][key_2] = [value_2]
+                    else:
+                        for key_2, value_2 in value.items():
+                            dataset[key][key_2].append(value_2)
         #
         return dataset
+
+        # if self.mineral == "Organic Matter":
+        #     dataset = [self.create_organics_matter() for n in range(number)]
+        #
+        # return dataset
     #
-    def create_organics_matter(self):
+    def create_organic_matter(self):
         # Major elements
         carbohydrates = Organics(data_type=True).create_carbohydrates()
         lignin = Organics(data_type=True).create_lignin()
