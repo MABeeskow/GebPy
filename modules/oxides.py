@@ -838,6 +838,7 @@ class Oxides():
         ## General Information
         name = "Mag"
         oxides = ["Fe2O3", "FeO"]
+        elements_list = ["Fe", "O"]
         molar_mass_ideal = 3*PeriodicSystem(name="Fe").get_data()[2] + 4*PeriodicSystem(name="O").get_data()[2]
         molar_mass_fe2o3 = 2*PeriodicSystem(name="Fe").get_data()[2] + 3*PeriodicSystem(name="O").get_data()[2]
         molar_mass_feo = PeriodicSystem(name="Fe").get_data()[2] + PeriodicSystem(name="O").get_data()[2]
@@ -848,7 +849,6 @@ class Oxides():
         composition_oxides = {}
         for oxide in oxides:
             composition_oxides[oxide] = int(amounts_oxides[oxide]*10**6)
-        print("Check", np.sum(list(composition_oxides.values())))
         #
         element_traces = {
             "4+": ["Ti", "V"],
@@ -861,22 +861,71 @@ class Oxides():
             var_state = "variable"
             #
             for trace_element, value in self.traces_list.items():
-                print("Test", trace_element, value)
                 if trace_element in ["Ti", "V"]:
                     compound = trace_element + str("O2")
                     oxides.append(compound)
+                    elements_list.append(trace_element)
+                    #
+                    val_min = self.traces_list[trace_element]["Min"]
+                    val_max = self.traces_list[trace_element]["Max"]
+                    mean = (val_min + val_max) / 2
+                    sigma = (mean - val_min) / 3
+                    #
+                    condition = False
+                    while condition == False:
+                        amount_ppm = int(np.random.normal(loc=mean, scale=sigma, size=1)[0])
+                        if amount_ppm >= 0:
+                            condition = True
+                    #
+                    composition_oxides[compound] = amount_ppm
+                    composition_oxides["Fe2O3"] -= int(amounts_oxides["Fe2O3"]*amount_ppm)
+                    composition_oxides["FeO"] -= amount_ppm - int(amounts_oxides["Fe2O3"]*amount_ppm)
+                    #
                 elif trace_element in ["Cr", "Al"]:
                     compound = trace_element + str("2O3")
                     oxides.append(compound)
+                    elements_list.append(trace_element)
+                    #
+                    val_min = self.traces_list[trace_element]["Min"]
+                    val_max = self.traces_list[trace_element]["Max"]
+                    mean = (val_min + val_max) / 2
+                    sigma = (mean - val_min) / 3
+                    #
+                    condition = False
+                    while condition == False:
+                        amount_ppm = int(np.random.normal(loc=mean, scale=sigma, size=1)[0])
+                        if amount_ppm >= 0:
+                            condition = True
+                    #
+                    composition_oxides[compound] = amount_ppm
+                    composition_oxides["Fe2O3"] -= amount_ppm
+                    #
                 elif trace_element in ["Mg", "Zn", "Mn", "Ni"]:
                     compound = trace_element + str("O")
                     oxides.append(compound)
+                    elements_list.append(trace_element)
+                    #
+                    val_min = self.traces_list[trace_element]["Min"]
+                    val_max = self.traces_list[trace_element]["Max"]
+                    mean = (val_min + val_max)/2
+                    sigma = (mean - val_min)/3
+                    #
+                    condition = False
+                    while condition == False:
+                        amount_ppm = int(np.random.normal(loc=mean, scale=sigma, size=1)[0])
+                        if amount_ppm >= 0:
+                            condition = True
+                    #
+                    composition_oxides[compound] = amount_ppm
+                    composition_oxides["FeO"] -= amount_ppm
             #
         else:
             self.impurity == "pure"
             var_state = "fixed"
         #
-        compositon_data = TraceElements(tracer=self.traces_list).calculate_composition_quartz()
+        compositon_data = TraceElements(
+            tracer=self.traces_list).calculate_composition_oxides(
+            var_oxides=oxides, var_composition=composition_oxides, var_mineral="Magnetite", var_elements=elements_list)
         #
         ## Molar mass
         molar_mass_pure = molar_mass_ideal

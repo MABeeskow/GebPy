@@ -1087,6 +1087,69 @@ class TraceElements:
     def __init__(self, tracer):
         self.traces_data = tracer
     #
+    def calculate_composition_oxides(self, var_oxides, var_composition, var_mineral, var_elements):
+        ## Split Formulas
+        compounds_splitted = Compounds(formula=var_oxides).split_formula()
+        #
+        cond_w = False
+        cond_x = False
+        while cond_w == False and cond_x == False:
+            w_total = 0
+            x_total = 0
+            M = 0
+            #
+            for oxide in var_composition:
+                M += var_composition[oxide]*10**(-6)*compounds_splitted[oxide]["Total"]
+            element_list = np.sort(var_elements)
+            final_comp = {}
+            for element in element_list:
+                final_comp[element] = {}
+                final_comp[element]["w"] = 0
+                final_comp[element]["x"] = 0
+            for oxide in var_composition:
+                for element in element_list:
+                    if element in compounds_splitted[oxide]:
+                        final_comp[element]["w"] += round(var_composition[oxide]*10**(-6)*compounds_splitted[oxide][element][2], 6)
+                        final_comp[element]["x"] += round(var_composition[oxide]*10**(-6)*compounds_splitted[oxide][element][0], 6)
+            #
+            if var_mineral == "Quartz":
+                final_comp["O"]["w"] = 1
+                final_comp["O"]["x"] = 2
+                final_comp["Si"]["x"] = 1
+                for element in final_comp:
+                    if element != "O":
+                        final_comp["O"]["w"] -= final_comp[element]["w"]
+                        if element != "Si":
+                            final_comp["Si"]["x"] -= final_comp[element]["x"]
+            #
+            elif var_mineral == "Magnetite":
+                final_comp["O"]["w"] = 1
+                final_comp["O"]["x"] = 4
+                final_comp["Fe"]["x"] = 3
+                for element in final_comp:
+                    if element != "O":
+                        final_comp["O"]["w"] -= final_comp[element]["w"]
+                        if element != "Fe":
+                            final_comp["Fe"]["x"] -= final_comp[element]["x"]
+            #
+            for element in final_comp:
+                final_comp[element]["w"] = round(final_comp[element]["w"], 6)
+                final_comp[element]["x"] = round(final_comp[element]["x"], 6)
+                w_total += final_comp[element]["w"]
+                x_total += final_comp[element]["x"]
+            #
+            if np.isclose(w_total, 1.0000) == True:
+                cond_w = True
+            #
+            if var_mineral == "Quartz":
+                if np.isclose(x_total, 3.0000) == True:
+                    cond_x = True
+            elif var_mineral == "Magnetite":
+                if np.isclose(x_total, 7.0000) == True:
+                    cond_x = True
+        #
+        return final_comp
+    #
     def calculate_composition_quartz(self):
         parts_qz = 1000000
         oxides = ["SiO2"]
