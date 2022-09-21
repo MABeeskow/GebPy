@@ -63,7 +63,7 @@ class Tectosilicates:
         dataset = {}
         #
         for index in range(number):
-            if self.mineral == "Alkali Feldspar":
+            if self.mineral in ["Alkali Feldspar", "Alkaline Feldspar"]:
                 data_mineral = self.create_alkalifeldspar()
             elif self.mineral == "Plagioclase":
                 data_mineral = self.create_plagioclase()

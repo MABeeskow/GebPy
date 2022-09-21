@@ -1248,8 +1248,6 @@ class TraceElements:
             # print("Groups:", trace_groups)
             # print("Families:", trace_combinations)
             #
-            print(oxides)
-            print(composition)
             results = Compounds(formula=oxides).split_formula()
             # print("Composition:", composition)
             # print("Results:", results)

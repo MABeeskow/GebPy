@@ -14,6 +14,7 @@
 import tkinter as tk
 import collections
 import numpy as np
+import random as rd
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from modules.gui_elements import SimpleElements
@@ -27,6 +28,7 @@ from modules.phosphates import Phosphates
 from modules.silicates import Phyllosilicates, Tectosilicates, Inosilicates, Nesosilicates, Sorosilicates, \
     Cyclosilicates
 from modules.organics import Organics
+from modules.fluids import Water
 
 ## GUI
 class GebPyGUI(tk.Frame):
@@ -1093,17 +1095,44 @@ class GebPyGUI(tk.Frame):
         self.gui_variables["Entry"]["Mineralogy"]["Clay Total"]["Minimum"] = tk.IntVar()
         self.gui_variables["Entry"]["Mineralogy"]["Clay Total"]["Maximum"] = tk.IntVar()
         self.gui_variables["Entry"]["Mineralogy"]["Clay Total"]["Minimum"].set(0)
-        self.gui_variables["Entry"]["Mineralogy"]["Clay Total"]["Maximum"].set(0)
+        self.gui_variables["Entry"]["Mineralogy"]["Clay Total"]["Maximum"].set(20)
         self.gui_variables["Entry"]["Mineralogy"]["Rock Forming Total"] = {}
         self.gui_variables["Entry"]["Mineralogy"]["Rock Forming Total"]["Minimum"] = tk.IntVar()
         self.gui_variables["Entry"]["Mineralogy"]["Rock Forming Total"]["Maximum"] = tk.IntVar()
-        self.gui_variables["Entry"]["Mineralogy"]["Rock Forming Total"]["Minimum"].set(0)
-        self.gui_variables["Entry"]["Mineralogy"]["Rock Forming Total"]["Maximum"].set(0)
+        self.gui_variables["Entry"]["Mineralogy"]["Rock Forming Total"]["Minimum"].set(80)
+        self.gui_variables["Entry"]["Mineralogy"]["Rock Forming Total"]["Maximum"].set(100)
         self.gui_variables["Entry"]["Mineralogy"]["Ore Total"] = {}
         self.gui_variables["Entry"]["Mineralogy"]["Ore Total"]["Minimum"] = tk.IntVar()
         self.gui_variables["Entry"]["Mineralogy"]["Ore Total"]["Maximum"] = tk.IntVar()
         self.gui_variables["Entry"]["Mineralogy"]["Ore Total"]["Minimum"].set(0)
-        self.gui_variables["Entry"]["Mineralogy"]["Ore Total"]["Maximum"].set(0)
+        self.gui_variables["Entry"]["Mineralogy"]["Ore Total"]["Maximum"].set(5)
+        #
+        self.gui_variables["Entry"]["Minimum"] = {}
+        self.gui_variables["Entry"]["Maximum"] = {}
+        self.gui_variables["Entry"]["Mean"] = {}
+        self.gui_variables["Entry"]["Error"] = {}
+        categories_short = ["rho", "vP", "vS", "vP/vS", "K", "G", "E", "nu", "GR", "PE", "phi"]
+        for category in categories_short:
+            self.gui_variables["Entry"]["Minimum"][category] = tk.StringVar()
+            self.gui_variables["Entry"]["Minimum"][category].set(0.0)
+            self.gui_variables["Entry"]["Maximum"][category] = tk.StringVar()
+            self.gui_variables["Entry"]["Maximum"][category].set(0.0)
+            self.gui_variables["Entry"]["Mean"][category] = tk.StringVar()
+            self.gui_variables["Entry"]["Mean"][category].set(0.0)
+            self.gui_variables["Entry"]["Error"][category] = tk.StringVar()
+            self.gui_variables["Entry"]["Error"][category].set(0.0)
+        #
+        self.rock_forming_minerals = [
+            "Quartz", "Plagioclase", "Alkaline Feldspar", "Olivine", "Calcite", "Dolomite", "Muscovite", "Biotite",
+            "Ca-Amphibole", "Na-Amphibole", "Mg-Fe-Pyroxene", "Ca-Pyroxene", "Al-Garnet", "Ca-Garnet",
+            "Organic Matter"]
+        self.ore_minerals = [
+            "Acanthite", "Barite", "Bauxite", "Beryl", "Bornite", "Cassiterite", "Chalcocite", "Chalcopyrite",
+            "Chromite", "Cinnabar", "Cobalite", "Coltan", "Galena", "Gold", "Hematite", "Ilmenite", "Magnetite",
+            "Malachite", "Molybdenite", "Pentlandite", "Pyrolusite", "Scheelite", "Smithsonite", "Sperrylite",
+            "Sphalerite", "Uraninite", "Wolframite", "Pollucite", "Pyrite"]
+        self.clay_minerals = [
+            "Illite", "Kaolinite", "Montmorillonite", "Nontronite", "Saponite", "Chlorite", "Vermiculite"]
         #
         ## Labels
         lbl_title = SimpleElements(
@@ -1138,7 +1167,7 @@ class GebPyGUI(tk.Frame):
         btn_simulation = SimpleElements(
             parent=self.parent, row_id=19, column_id=16, n_rows=2, n_columns=15,
             bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_button(
-            text="Run Simulation")
+            text="Run Simulation", command=self.run_simulation_rockbuilder)
         #
         self.gui_elements_sub["Trace Elements"]["Static"]["Button"].extend([btn_mineralogy, btn_simulation])
         #
@@ -1229,6 +1258,7 @@ class GebPyGUI(tk.Frame):
         self.mineral_classes_extended.sort()
         self.mineral_classes_extended.extend(self.mineral_classes_advanced)
         #
+        index_rockforming = 0
         for index, mineral_class_adv in enumerate(self.mineral_classes_advanced, start=len(self.mineral_classes)):
             rb_class_adv = SimpleElements(
                 parent=self.window_mineralogy, row_id=2*index + 3, column_id=0, n_rows=2,
@@ -1237,8 +1267,12 @@ class GebPyGUI(tk.Frame):
                 text=mineral_class_adv, var_rb=self.gui_variables["Radiobutton"]["Mineralogy"], value_rb=index,
                 color_bg=self.colors_gebpy["Navigation"], command=self.change_rb_mineral_class)
             #
+            if mineral_class_adv == "Rock-Forming Minerals":
+                index_rockforming = index
+            #
             self.gui_elements_sub["Mineralogy"]["Static"]["Radiobutton"].append(rb_class_adv)
         #
+        self.gui_variables["Radiobutton"]["Mineralogy"].set(index_rockforming)
         self.change_rb_mineral_class()
         #
     def change_rb_mineral_class(self):
@@ -1279,7 +1313,7 @@ class GebPyGUI(tk.Frame):
             minerals_list = self.miscellaneous_minerals
         elif mineral_class_selected == "Rock-Forming Minerals":
             minerals_list = [
-                "Quartz", "Plagioclase", "Alkali Feldspar", "Olivine", "Calcite", "Dolomite", "Muscovite", "Biotite",
+                "Quartz", "Plagioclase", "Alkaline Feldspar", "Olivine", "Calcite", "Dolomite", "Muscovite", "Biotite",
                 "Ca-Amphibole", "Na-Amphibole", "Mg-Fe-Pyroxene", "Ca-Pyroxene", "Al-Garnet", "Ca-Garnet",
                 "Organic Matter"]
         elif mineral_class_selected == "Ore Minerals":
@@ -1368,7 +1402,7 @@ class GebPyGUI(tk.Frame):
                     self.gui_variables["Entry"]["Mineralogy"]["Minimum"][mineral] = tk.IntVar()
                     self.gui_variables["Entry"]["Mineralogy"]["Minimum"][mineral].set(0)
                     self.gui_variables["Entry"]["Mineralogy"]["Maximum"][mineral] = tk.IntVar()
-                    self.gui_variables["Entry"]["Mineralogy"]["Maximum"][mineral].set(0)
+                    self.gui_variables["Entry"]["Mineralogy"]["Maximum"][mineral].set(100)
                 #
                 entr_min = SimpleElements(
                     parent=self.window_mineralogy, row_id=2 * index + 2, column_id=27, n_rows=2, n_columns=3,
@@ -1402,7 +1436,7 @@ class GebPyGUI(tk.Frame):
                     self.gui_variables["Entry"]["Mineralogy"]["Minimum"][mineral] = tk.IntVar()
                     self.gui_variables["Entry"]["Mineralogy"]["Minimum"][mineral].set(0)
                     self.gui_variables["Entry"]["Mineralogy"]["Maximum"][mineral] = tk.IntVar()
-                    self.gui_variables["Entry"]["Mineralogy"]["Maximum"][mineral].set(0)
+                    self.gui_variables["Entry"]["Mineralogy"]["Maximum"][mineral].set(100)
                 #
                 entr_min = SimpleElements(
                     parent=self.window_mineralogy, row_id=2 * index + 2 - 48, column_id=46, n_rows=2,
@@ -1438,7 +1472,7 @@ class GebPyGUI(tk.Frame):
                     self.gui_variables["Entry"]["Mineralogy"]["Minimum"][mineral] = tk.IntVar()
                     self.gui_variables["Entry"]["Mineralogy"]["Minimum"][mineral].set(0)
                     self.gui_variables["Entry"]["Mineralogy"]["Maximum"][mineral] = tk.IntVar()
-                    self.gui_variables["Entry"]["Mineralogy"]["Maximum"][mineral].set(0)
+                    self.gui_variables["Entry"]["Mineralogy"]["Maximum"][mineral].set(100)
                 #
                 entr_min = SimpleElements(
                     parent=self.window_mineralogy, row_id=2 * index + 2 - 72, column_id=65, n_rows=2,
@@ -1517,6 +1551,422 @@ class GebPyGUI(tk.Frame):
             self.gui_elements_sub["Mineralogy"]["Temporary"]["Label"].append(lbl_fraction_total)
             self.gui_elements_sub["Mineralogy"]["Temporary"]["Entry"].extend(
                 [entr_fraction_total_min, entr_fraction_total_max])
+    #
+    def run_simulation_rockbuilder(self):
+        ## Initialization
+        self.gui_variables["Radiobutton"]["Analysis Mode"] = tk.IntVar()
+        self.gui_variables["Radiobutton"]["Analysis Mode"].set(0)
+        #
+        ## Preparation Simulation
+        data_water = Water.water("")
+        #
+        n_datapoints = self.gui_variables["Entry"]["Number Datapoints"].get()
+        phi_min = self.gui_variables["Entry"]["Porosity Min"].get()
+        phi_max = self.gui_variables["Entry"]["Porosity Max"].get()
+        rock_forming_min = self.gui_variables["Entry"]["Mineralogy"]["Rock Forming Total"]["Minimum"].get()
+        rock_forming_max = self.gui_variables["Entry"]["Mineralogy"]["Rock Forming Total"]["Maximum"].get()
+        ore_min = self.gui_variables["Entry"]["Mineralogy"]["Ore Total"]["Minimum"].get()
+        ore_max = self.gui_variables["Entry"]["Mineralogy"]["Ore Total"]["Maximum"].get()
+        clay_min = self.gui_variables["Entry"]["Mineralogy"]["Clay Total"]["Minimum"].get()
+        clay_max = self.gui_variables["Entry"]["Mineralogy"]["Clay Total"]["Maximum"].get()
+        selected_minerals = {}
+        fractions = {
+            "Rock Forming": {"Min": rock_forming_min, "Max": rock_forming_max},
+            "Ore": {"Min": ore_min, "Max": ore_max},
+            "Clay": {"Min": clay_min, "Max": clay_max}}
+        #
+        for mineral, value in self.gui_variables["Checkbox"]["Mineralogy"].items():
+            if value.get() == 1:
+                selected_minerals[mineral] = {
+                    "Min": self.gui_variables["Entry"]["Mineralogy"]["Minimum"][mineral].get(),
+                    "Max": self.gui_variables["Entry"]["Mineralogy"]["Maximum"][mineral].get()}
+        mineral_list = list(selected_minerals.keys())
+        mineral_list.sort()
+        #
+        ## Simulation
+        self.data_rock = {}
+        categories = ["rho", "rho_s", "vP", "vS", "vP/vS", "K", "G", "E", "nu", "GR", "PE", "phi", "fluid",
+                      "mineralogy", "chemistry"]
+        for category in categories:
+            if category not in ["mineralogy", "chemistry"]:
+                self.data_rock[category] = []
+            else:
+                self.data_rock[category] = {}
+        #
+        mineral_data = {}
+        mineral_amounts = {}
+        for mineral in mineral_list:
+            if mineral in self.oxide_minerals:
+                data_mineral = Oxides(
+                    mineral=mineral, data_type=True, traces_list=[]).generate_dataset(number=n_datapoints)
+            elif mineral in self.sulfide_minerals:
+                data_mineral = Sulfides(
+                    mineral=mineral, data_type=True, traces_list=[]).generate_dataset(number=n_datapoints)
+            elif mineral in self.sulfate_minerals:
+                data_mineral = Sulfates(
+                    mineral=mineral, data_type=True, traces_list=[]).generate_dataset(number=n_datapoints)
+            elif mineral in self.carbonate_minerals:
+                data_mineral = Carbonates(
+                    mineral=mineral, data_type=True, traces_list=[]).generate_dataset(number=n_datapoints)
+            elif mineral in self.phospide_minerals:
+                data_mineral = Phospides(
+                    mineral=mineral, data_type=True, traces_list=[]).generate_dataset(number=n_datapoints)
+            elif mineral in self.phosphate_minerals:
+                data_mineral = Phosphates(
+                    mineral=mineral, data_type=True, traces_list=[]).generate_dataset(number=n_datapoints)
+            elif mineral in self.miscellaneous_minerals:
+                data_mineral = Organics(
+                    mineral=mineral, data_type=True, traces_list=[]).generate_dataset(number=n_datapoints)
+            elif mineral in self.tectosilicate_minerals:
+                data_mineral = Tectosilicates(
+                    mineral=mineral, data_type=True, traces_list=[]).generate_dataset(number=n_datapoints)
+            elif mineral in self.sorosilicate_minerals:
+                data_mineral = Sorosilicates(
+                    mineral=mineral, data_type=True, traces_list=[]).generate_dataset(number=n_datapoints)
+            elif mineral in self.nesosilicate_minerals:
+                data_mineral = Nesosilicates(
+                    mineral=mineral, data_type=True, traces_list=[]).generate_dataset(number=n_datapoints)
+            elif mineral in self.inosilicate_minerals:
+                data_mineral = Inosilicates(
+                    mineral=mineral, data_type=True, traces_list=[]).generate_dataset(number=n_datapoints)
+            elif mineral in self.cyclosilicate_minerals:
+                data_mineral = Cyclosilicates(
+                    mineral=mineral, data_type=True, traces_list=[]).generate_dataset(number=n_datapoints)
+            elif mineral in self.phyllosilicate_minerals:
+                data_mineral = Phyllosilicates(
+                    mineral=mineral, data_type=True, traces_list=[]).generate_dataset(number=n_datapoints)
+            #
+            val_min = selected_minerals[mineral]["Min"]
+            val_max = selected_minerals[mineral]["Max"]
+            mean = (val_min + val_max)/2
+            sigma = (mean - val_min)/3
+            #
+            amounts_raw = np.random.normal(loc=mean, scale=sigma, size=n_datapoints)
+            amounts_ppm = np.array([int(value) for value in amounts_raw])
+            amounts_ppm[amounts_ppm < 0] = 0
+            #
+            mineral_amounts[data_mineral["mineral"]] = list(amounts_ppm)
+            mineral_data[data_mineral["mineral"]] = data_mineral
+        #
+        n = 0
+        while n < n_datapoints:
+            porosity = round(rd.uniform(phi_min, phi_max)/100, 4)
+            rho_solid = 0
+            bulk_modulus = 0
+            shear_modulus = 0
+            gamma_ray = 0
+            photoelectricity = 0
+            w_minerals = {}
+            w_elements = {}
+            elements_list = []
+            #
+            for mineral, dataset in mineral_data.items():
+                if mineral not in self.data_rock["mineralogy"]:
+                    self.data_rock["mineralogy"][mineral] = []
+                #
+                mineral_amount = mineral_amounts[mineral][n]*10**(-2)
+                #
+                rho_solid += mineral_amount*dataset["rho"][n]
+                bulk_modulus += mineral_amount*dataset["K"][n]
+                shear_modulus += mineral_amount*dataset["G"][n]
+                gamma_ray += mineral_amount*dataset["GR"][n]
+                photoelectricity += mineral_amount*dataset["PE"][n]
+                #
+                for element, value in dataset["chemistry"].items():
+                    if element not in elements_list:
+                        elements_list.append(element)
+                        w_elements[element] = 0.0
+                    #
+                    if element not in self.data_rock["chemistry"]:
+                        self.data_rock["chemistry"][element] = []
+            #
+            rho_solid = round(rho_solid, 3)
+            bulk_modulus = round(bulk_modulus, 3)
+            shear_modulus = round(shear_modulus, 3)
+            gamma_ray = round(gamma_ray, 3)
+            photoelectricity = round(photoelectricity, 3)
+            #
+            for mineral, dataset in mineral_amounts.items():
+                mineral_amount = round((mineral_amounts[mineral][n]*mineral_data[mineral]["rho"][n])/(100*rho_solid), 4)
+                w_minerals[mineral] = mineral_amount
+                self.data_rock["mineralogy"][mineral].append(mineral_amount)
+            #
+            rho = round((1 - porosity)*rho_solid + porosity*data_water[2]/1000, 3)
+            youngs_modulus = round((9*bulk_modulus*shear_modulus)/(3*bulk_modulus + shear_modulus), 3)
+            poisson_ratio = round((3*bulk_modulus - 2*shear_modulus)/(6*bulk_modulus + 2*shear_modulus), 4)
+            vP = round(((bulk_modulus*10**9 + 4/3*shear_modulus*10**9)/(rho))**0.5, 3)
+            vS = round(((shear_modulus*10**9)/(rho))**0.5, 3)
+            vPvS = round(vP/vS, 3)
+            #
+            old_index = elements_list.index("O")
+            elements_list += [elements_list.pop(old_index)]
+            w_elements_total = 0.0
+            for element in elements_list:
+                if element != "O":
+                    for mineral, w_mineral in w_minerals.items():
+                        if element in mineral_data[mineral]["chemistry"]:
+                            value = round(w_mineral*mineral_data[mineral]["chemistry"][element][n], 4)
+                            w_elements[element] += value
+                            w_elements_total += value
+                            #
+                            w_elements[element] = round(w_elements[element], 4)
+                elif element == "O":
+                    w_elements[element] += round(1 - w_elements_total, 4)
+                    #
+                    w_elements[element] = round(w_elements[element], 4)
+            #
+            for element, value in w_elements.items():
+                self.data_rock["chemistry"][element].append(value)
+            #
+            ## Results
+            self.data_rock["rho_s"].append(rho_solid)
+            self.data_rock["rho"].append(rho)
+            self.data_rock["vP"].append(vP)
+            self.data_rock["vS"].append(vS)
+            self.data_rock["vP/vS"].append(vPvS)
+            self.data_rock["K"].append(bulk_modulus)
+            self.data_rock["G"].append(shear_modulus)
+            self.data_rock["E"].append(youngs_modulus)
+            self.data_rock["nu"].append(poisson_ratio)
+            self.data_rock["GR"].append(gamma_ray)
+            self.data_rock["PE"].append(photoelectricity)
+            self.data_rock["phi"].append(porosity)
+            #
+            self.list_elements_rock = list(w_elements.keys())
+            self.list_minerals_rock = list(w_minerals.keys())
+            #
+            n += 1
+        #
+        ## Labels
+        lbl_analysis = SimpleElements(
+            parent=self.parent, row_id=21, column_id=0, n_rows=4, n_columns=16, bg=self.colors_gebpy["Navigation"],
+            fg=self.colors_gebpy["Background"]).create_label(
+            text="Analysis Mode", font_option="sans 10 bold", relief=tk.FLAT)
+        #
+        self.gui_elements["Static"]["Label"].append(lbl_analysis)
+        #
+        ## Radiobuttons
+        rb_geophysics = SimpleElements(
+            parent=self.parent, row_id=21, column_id=16, n_rows=2, n_columns=14, bg=self.colors_gebpy["Navigation"],
+            fg=self.colors_gebpy["Background"]).create_radiobutton(
+            text="Rock Physics", var_rb=self.gui_variables["Radiobutton"]["Analysis Mode"], value_rb=0,
+            color_bg=self.colors_gebpy["Background"], command=self.change_rb_analysis_rocks)
+        rb_geochemistry = SimpleElements(
+            parent=self.parent, row_id=23, column_id=16, n_rows=2, n_columns=14, bg=self.colors_gebpy["Navigation"],
+            fg=self.colors_gebpy["Background"]).create_radiobutton(
+            text="Rock Chemistry", var_rb=self.gui_variables["Radiobutton"]["Analysis Mode"], value_rb=1,
+            color_bg=self.colors_gebpy["Navigation"], command=self.change_rb_analysis_rocks)
+        #
+        self.gui_elements["Static"]["Radiobutton"].extend([rb_geophysics, rb_geochemistry])
+        #
+        for key, gui_element in self.gui_elements["Temporary"].items():
+            if key not in ["Canvas", "Button"]:
+                if type(gui_element) == list:
+                    for gui_item in gui_element:
+                        gui_item.grid_remove()
+            elif key == "Canvas":
+                for key_2, gui_item in gui_element.items():
+                    gui_item.get_tk_widget().grid_remove()
+            gui_element.clear()
+        #
+        self.gui_variables["Radiobutton"]["Analysis Mode"].set(0)
+        self.change_rb_analysis_rocks()
+    #
+    def change_rb_analysis_rocks(self):
+        start_column = 35
+        #
+        if self.gui_variables["Radiobutton"]["Analysis Mode"].get() == 0:   # Rock Physics
+            ## Cleaning
+            for key, gui_items in self.gui_elements["Temporary"].items():
+                if len(gui_items) > 0:
+                    if key not in ["Canvas"]:
+                        if type(gui_items) == list:
+                            for gui_item in gui_items:
+                                gui_item.grid_remove()
+                            gui_items.clear()
+                    else:
+                        for key_2, gui_item in gui_items.items():
+                            gui_item.get_tk_widget().grid_remove()
+            #
+            ## Labels
+            lbl_title = SimpleElements(
+                parent=self.parent, row_id=0, column_id=start_column, n_rows=2, n_columns=45,
+                bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
+                text="Rock Physics", font_option="sans 12 bold", relief=tk.GROOVE)
+            lbl_results = SimpleElements(
+                parent=self.parent, row_id=2, column_id=start_column, n_rows=2, n_columns=9,
+                bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
+                text="Results", font_option="sans 10 bold", relief=tk.GROOVE)
+            lbl_min = SimpleElements(
+                parent=self.parent, row_id=2, column_id=start_column + 9, n_rows=2, n_columns=9,
+                bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
+                text="Minimum", font_option="sans 10 bold", relief=tk.GROOVE)
+            lbl_max = SimpleElements(
+                parent=self.parent, row_id=2, column_id=start_column + 18, n_rows=2, n_columns=9,
+                bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
+                text="Maximum", font_option="sans 10 bold", relief=tk.GROOVE)
+            lbl_mean = SimpleElements(
+                parent=self.parent, row_id=2, column_id=start_column + 27, n_rows=2, n_columns=9,
+                bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
+                text="Mean", font_option="sans 10 bold", relief=tk.GROOVE)
+            lbl_error = SimpleElements(
+                parent=self.parent, row_id=2, column_id=start_column + 36, n_rows=2, n_columns=9,
+                bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
+                text="Error", font_option="sans 10 bold", relief=tk.GROOVE)
+            #
+            self.gui_elements["Temporary"]["Label"].extend(
+                [lbl_title, lbl_results, lbl_min, lbl_max, lbl_mean, lbl_error])
+            #
+            categories = [
+                "rho\n (kg/m3)", "vP\n (m/s)", "vS\n (m/s)", "vP/vS\n (1)", "K\n (GPa)", "G\n (GPa)", "E\n (GPa)",
+                "nu\n (1)", "GR\n (API)", "PE\n (barns/e$^-$)", "phi\n (%)"]
+            categories_short = ["rho", "vP", "vS", "vP/vS", "K", "G", "E", "nu", "GR", "PE", "phi"]
+            for index, category in enumerate(categories):
+                lbl_category = SimpleElements(
+                    parent=self.parent, row_id=(3*index + 4), column_id=start_column, n_rows=3, n_columns=9,
+                    bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
+                    text=category, font_option="sans 10 bold", relief=tk.GROOVE)
+                #
+                self.gui_elements["Temporary"]["Label"].append(lbl_category)
+                #
+                ## Entries
+                #
+                var_entr_min = round(min(self.data_rock[categories_short[index]]), 6)
+                var_entr_max = round(max(self.data_rock[categories_short[index]]), 6)
+                var_entr_mean = round(np.mean(self.data_rock[categories_short[index]]), 6)
+                var_entr_error = round(np.std(self.data_rock[categories_short[index]], ddof=1), 6)
+                #
+                entr_min = SimpleElements(
+                    parent=self.parent, row_id=(3*index + 4), column_id=start_column + 9, n_rows=3, n_columns=9,
+                    bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
+                    var_entr=self.gui_variables["Entry"]["Minimum"][categories_short[index]], var_entr_set=var_entr_min)
+                entr_max = SimpleElements(
+                    parent=self.parent, row_id=(3*index + 4), column_id=start_column + 18, n_rows=3, n_columns=9,
+                    bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
+                    var_entr=self.gui_variables["Entry"]["Maximum"][categories_short[index]], var_entr_set=var_entr_max)
+                entr_mean = SimpleElements(
+                    parent=self.parent, row_id=(3*index + 4), column_id=start_column + 27, n_rows=3, n_columns=9,
+                    bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
+                    var_entr=self.gui_variables["Entry"]["Mean"][categories_short[index]], var_entr_set=var_entr_mean)
+                entr_error = SimpleElements(
+                    parent=self.parent, row_id=(3*index + 4), column_id=start_column + 36, n_rows=3, n_columns=9,
+                    bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
+                    var_entr=self.gui_variables["Entry"]["Error"][categories_short[index]], var_entr_set=var_entr_error)
+                #
+                self.gui_elements["Temporary"]["Entry"].extend([entr_min, entr_max, entr_mean, entr_error])
+            #
+            ## Diagram
+            if "Rock Physics Scatter" not in self.gui_elements["Temporary"]["Canvas"]:
+                fig_scatter, ax_scatter = plt.subplots(
+                    ncols=3, nrows=3, figsize=(9, 9), facecolor=self.colors_gebpy["Background"])
+                #
+                categories = [["phi", "GR", "PE"], ["vP", "vS", "vP/vS"], ["K", "G", "nu"]]
+                labels = [["$\\varphi$ (%)", "GR (API)", "PE (barns/e$^-$)"], ["vP (m/s)", "vS (m/s)", "vP/vS (1)"],
+                          ["K (GPa)", "G (GPa)", "nu (1)"]]
+                for i, subcategories in enumerate(categories):
+                    for j, key in enumerate(subcategories):
+                        ax_scatter[i][j].scatter(
+                            self.data_rock["rho"], self.data_rock[key], color=self.colors_gebpy["Accent"],
+                            edgecolor="black", alpha=0.5)
+                        #
+                        ax_scatter[i][j].set_xlabel("Density - kg/m$^3$", fontsize=9)
+                        ax_scatter[i][j].set_ylabel(labels[i][j], labelpad=0.5, fontsize=9)
+                        ax_scatter[i][j].grid(True)
+                        ax_scatter[i][j].set_axisbelow(True)
+                #
+                fig_scatter.tight_layout()
+                #
+                canvas_scatter = FigureCanvasTkAgg(fig_scatter, master=self.parent)
+                canvas_scatter.get_tk_widget().grid(
+                    row=0, column=90, rowspan=65, columnspan=90, sticky="nesw")
+                #
+                self.gui_elements["Temporary"]["Canvas"]["Rock Physics Scatter"] = canvas_scatter
+                self.gui_elements["Temporary"]["Figure"]["Rock Physics Scatter"] = fig_scatter
+                self.gui_elements["Temporary"]["Axis"]["Rock Physics Scatter"] = ax_scatter
+            else:
+                self.gui_elements["Temporary"]["Canvas"]["Rock Physics Scatter"].get_tk_widget().grid()
+            #
+        elif self.gui_variables["Radiobutton"]["Analysis Mode"].get() == 1: # Rock Chemistry
+            ## Cleaning
+            for key, gui_items in self.gui_elements["Temporary"].items():
+                if len(gui_items) > 0:
+                    if key not in ["Canvas"]:
+                        if type(gui_items) == list:
+                            for gui_item in gui_items:
+                                gui_item.grid_remove()
+                            gui_items.clear()
+                    else:
+                        for key_2, gui_item in gui_items.items():
+                            gui_item.get_tk_widget().grid_remove()
+            #
+            ## Labels
+            lbl_title = SimpleElements(
+                parent=self.parent, row_id=0, column_id=start_column, n_rows=2, n_columns=45,
+                bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
+                text="Rock Chemistry", font_option="sans 12 bold", relief=tk.GROOVE)
+            lbl_results = SimpleElements(
+                parent=self.parent, row_id=2, column_id=start_column, n_rows=2, n_columns=9,
+                bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
+                text="Results", font_option="sans 10 bold", relief=tk.GROOVE)
+            lbl_min = SimpleElements(
+                parent=self.parent, row_id=2, column_id=start_column + 9, n_rows=2, n_columns=9,
+                bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
+                text="Minimum", font_option="sans 10 bold", relief=tk.GROOVE)
+            lbl_max = SimpleElements(
+                parent=self.parent, row_id=2, column_id=start_column + 18, n_rows=2, n_columns=9,
+                bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
+                text="Maximum", font_option="sans 10 bold", relief=tk.GROOVE)
+            lbl_mean = SimpleElements(
+                parent=self.parent, row_id=2, column_id=start_column + 27, n_rows=2, n_columns=9,
+                bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
+                text="Mean", font_option="sans 10 bold", relief=tk.GROOVE)
+            lbl_error = SimpleElements(
+                parent=self.parent, row_id=2, column_id=start_column + 36, n_rows=2, n_columns=9,
+                bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
+                text="Error", font_option="sans 10 bold", relief=tk.GROOVE)
+            #
+            self.gui_elements["Temporary"]["Label"].extend(
+                [lbl_title, lbl_results, lbl_min, lbl_max, lbl_mean, lbl_error])
+            #
+            self.list_minerals_rock.sort()
+            for index, mineral in enumerate(self.list_minerals_rock):
+                lbl_element = SimpleElements(
+                    parent=self.parent, row_id=(2*index + 4), column_id=start_column, n_rows=2, n_columns=9,
+                    bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
+                    text=mineral, font_option="sans 10 bold", relief=tk.GROOVE)
+                #
+                self.gui_elements["Temporary"]["Label"].append(lbl_element)
+                #
+                ## Entries
+                #
+                var_entr_min = int(min(self.data_rock["mineralogy"][mineral])*10**2)
+                var_entr_max = int(max(self.data_rock["mineralogy"][mineral])*10**2)
+                var_entr_mean = int(np.mean(self.data_rock["mineralogy"][mineral])*10**2)
+                var_entr_error = int(np.std(self.data_rock["mineralogy"][mineral], ddof=1)*10**2)
+                #
+                entr_min = SimpleElements(
+                    parent=self.parent, row_id=(2*index + 4), column_id=start_column + 9, n_rows=2,
+                    n_columns=9,
+                    bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
+                    var_entr=self.gui_variables["Entry"]["Minimum"][mineral], var_entr_set=var_entr_min)
+                entr_max = SimpleElements(
+                    parent=self.parent, row_id=(2*index + 4), column_id=start_column + 18, n_rows=2,
+                    n_columns=9,
+                    bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
+                    var_entr=self.gui_variables["Entry"]["Maximum"][mineral], var_entr_set=var_entr_max)
+                entr_mean = SimpleElements(
+                    parent=self.parent, row_id=(2*index + 4), column_id=start_column + 27, n_rows=2,
+                    n_columns=9,
+                    bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
+                    var_entr=self.gui_variables["Entry"]["Mean"][mineral], var_entr_set=var_entr_mean)
+                entr_error = SimpleElements(
+                    parent=self.parent, row_id=(2*index + 4), column_id=start_column + 36, n_rows=2,
+                    n_columns=9,
+                    bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
+                    var_entr=self.gui_variables["Entry"]["Error"][mineral], var_entr_set=var_entr_error)
+                #
+                self.gui_elements["Temporary"]["Entry"].extend([entr_min, entr_max, entr_mean, entr_error])
+                #
     #
     ######################################
     ## G e n e r a l  F u n c t i o n s ##
