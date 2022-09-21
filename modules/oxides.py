@@ -6,7 +6,7 @@
 # Name:		oxides.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		20.09.2022
+# Date:		21.09.2022
 
 # -----------------------------------------------
 
