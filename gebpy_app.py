@@ -108,11 +108,14 @@ class GebPyGUI(tk.Frame):
         self.gui_elements["Static"]["Frame"].extend([frm_navigation, frm_accent])
         #
         ## Logo
-        gebpy_logo = tk.PhotoImage(file="documents/readme_images/GebPy_Logo_new.png")
-        gebpy_logo = gebpy_logo.subsample(5, 5)
-        img = tk.Label(self.parent, image=gebpy_logo, bg=self.colors_gebpy["Navigation"])
-        img.image = gebpy_logo
-        img.grid(row=0, column=0, rowspan=5, columnspan=32, sticky="nesw")
+        try:
+            gebpy_logo = tk.PhotoImage(file="documents/readme_images/GebPy_Logo_new.png")
+            gebpy_logo = gebpy_logo.subsample(5, 5)
+            img = tk.Label(self.parent, image=gebpy_logo, bg=self.colors_gebpy["Navigation"])
+            img.image = gebpy_logo
+            img.grid(row=0, column=0, rowspan=5, columnspan=32, sticky="nesw")
+        except:
+            print("Image not found!")
         #
         ### Menu Bar
         menubar = tk.Menu(self.parent)
