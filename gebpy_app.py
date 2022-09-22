@@ -456,7 +456,7 @@ class GebPyGUI(tk.Frame):
         btn_quit = SimpleElements(
             parent=self.parent, row_id=62, column_id=16, n_rows=3, n_columns=15,
             bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_button(
-            text="Quit GebPy", command=self.parent.destroy)
+            text="Quit GebPy", command=self.parent.quit)
         btn_restart = SimpleElements(
             parent=self.parent, row_id=62, column_id=1, n_rows=3, n_columns=15,
             bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_button(

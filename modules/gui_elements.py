@@ -58,9 +58,10 @@ class SimpleElements:
         if var_entr_set != None:
             var_entr.set(var_entr_set)
         if width == None:
-            entry = tk.Entry(self.parent, textvariable=var_entr, background=self.bg, highlightthickness=0)
+            entry = tk.Entry(self.parent, textvariable=var_entr, background=self.bg, fg=self.fg, highlightthickness=0)
         else:
-            entry = tk.Entry(self.parent, textvariable=var_entr, background=self.bg, highlightthickness=0, width=width)
+            entry = tk.Entry(self.parent, textvariable=var_entr, background=self.bg, fg=self.fg, highlightthickness=0,
+                             width=width)
         entry.grid(row=self.row_id, column=self.column_id, rowspan=self.n_rows, columnspan=self.n_columns,
                    sticky="nesw")
         if command != None:
