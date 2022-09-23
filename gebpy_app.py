@@ -6,7 +6,7 @@
 # Name:		gebpy_app.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		21.09.2022
+# Date:		23.09.2022
 
 #-----------------------------------------------
 
@@ -154,7 +154,7 @@ class GebPyGUI(tk.Frame):
                     "Rutile", "Pyrolusite", "Magnesiochromite", "Zincochromite", "Cr-Spinel", "Cuprospinel",
                     "Jacobsite", "Magnesioferrite", "Trevorite", "Franklinite", "Ulvospinel", "Fe-Spinel", "Uraninite",
                     "Litharge", "Massicot", "Minium", "Plattnerite", "Scrutinyite", "Zincite", "Columbite", "Tantalite",
-                    "Coltan", "Crocoite", "Wulfenite", "Goethite", "Wolframite", "Huebnerite", "Ferberite"]
+                    "Coltan", "Crocoite", "Wulfenite", "Goethite", "Wolframite", "Huebnerite", "Ferberite", "Boehmite"]
                 self.oxide_minerals.sort()
                 for mineral in self.oxide_minerals:
                     sub_oxides.add_command(
@@ -182,7 +182,7 @@ class GebPyGUI(tk.Frame):
                     "Pyrite", "Chalcopyrite", "Galena", "Acanthite", "Chalcocite", "Bornite", "Sphalerite",
                     "Pyrrhotite", "Millerite", "Pentlandite", "Covellite", "Cinnabar", "Realgar", "Orpiment",
                     "Stibnite", "Marcasite", "Molybdenite", "Fahlore", "Gallite", "Roquesite", "Lenaite", "Laforetite",
-                    "Vaesite", "Cattierite"]
+                    "Vaesite", "Cattierite", "Cobaltite"]
                 self.sulfide_minerals.sort()
                 for mineral in self.sulfide_minerals:
                     sub_sulfides.add_command(
@@ -759,6 +759,9 @@ class GebPyGUI(tk.Frame):
             if var_name in self.oxide_minerals:
                 data_mineral = Oxides(mineral=var_name, data_type=True).get_data()
                 self.trace_elements_all = data_mineral["trace elements"]
+            elif var_name in self.sulfide_minerals:
+                data_mineral = Sulfides(mineral=var_name, data_type=True).get_data()
+                self.trace_elements_all = data_mineral["trace elements"]
             #
             if self.btn_traces == None:
                 self.btn_traces = SimpleElements(
@@ -971,6 +974,7 @@ class GebPyGUI(tk.Frame):
             if var_cb.get() == 1:
                 self.traces_list.append(key)
         #
+
         if var_name in self.oxide_minerals:         # Oxides
             self.data_mineral = Oxides(
                 mineral=var_name, data_type=True, traces_list=self.trace_elements).generate_dataset(
@@ -981,7 +985,7 @@ class GebPyGUI(tk.Frame):
                 number=self.gui_variables["Entry"]["Number Samples"].get())
         elif var_name in self.sulfide_minerals:   # Sulfides
             self.data_mineral = Sulfides(
-                mineral=var_name, data_type=True, traces_list=self.traces_list).generate_dataset(
+                mineral=var_name, data_type=True, traces_list=self.trace_elements).generate_dataset(
                 number=self.gui_variables["Entry"]["Number Samples"].get())
         elif var_name in self.sulfate_minerals:   # Sulfates
             self.data_mineral = Sulfates(
@@ -1130,7 +1134,7 @@ class GebPyGUI(tk.Frame):
             "Ca-Amphibole", "Na-Amphibole", "Mg-Fe-Pyroxene", "Ca-Pyroxene", "Al-Garnet", "Ca-Garnet",
             "Organic Matter"]
         self.ore_minerals = [
-            "Acanthite", "Barite", "Bauxite", "Beryl", "Bornite", "Cassiterite", "Chalcocite", "Chalcopyrite",
+            "Acanthite", "Barite", "Boehmite", "Beryl", "Bornite", "Cassiterite", "Chalcocite", "Chalcopyrite",
             "Chromite", "Cinnabar", "Cobalite", "Coltan", "Galena", "Gold", "Hematite", "Ilmenite", "Magnetite",
             "Malachite", "Molybdenite", "Pentlandite", "Pyrolusite", "Scheelite", "Smithsonite", "Sperrylite",
             "Sphalerite", "Uraninite", "Wolframite", "Pollucite", "Pyrite"]
@@ -1320,8 +1324,8 @@ class GebPyGUI(tk.Frame):
                 "Ca-Amphibole", "Na-Amphibole", "Mg-Fe-Pyroxene", "Ca-Pyroxene", "Al-Garnet", "Ca-Garnet",
                 "Organic Matter"]
         elif mineral_class_selected == "Ore Minerals":
-            minerals_list = ["Acanthite", "Barite", "Bauxite", "Beryl", "Bornite", "Cassiterite", "Chalcocite",
-                             "Chalcopyrite", "Chromite", "Cinnabar", "Cobalite", "Coltan", "Galena", "Gold", "Hematite",
+            minerals_list = ["Acanthite", "Barite", "Boehmite", "Beryl", "Bornite", "Cassiterite", "Chalcocite",
+                             "Chalcopyrite", "Chromite", "Cinnabar", "Cobaltite", "Coltan", "Galena", "Gold", "Hematite",
                              "Ilmenite", "Magnetite", "Malachite", "Molybdenite", "Pentlandite", "Pyrolusite",
                              "Scheelite", "Smithsonite", "Sperrylite", "Sphalerite", "Uraninite", "Wolframite",
                              "Pollucite", "Pyrite"]

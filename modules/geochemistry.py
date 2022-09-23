@@ -6,7 +6,7 @@
 # Name:		geochemistry.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		21.09.2022
+# Date:		23.09.2022
 
 #-----------------------------------------------
 
@@ -1132,6 +1132,17 @@ class TraceElements:
                         if element != "Fe":
                             final_comp["Fe"]["x"] -= final_comp[element]["x"]
             #
+            elif var_mineral == "Boehmite":
+                final_comp["O"]["w"] = 1
+                final_comp["H"]["x"] = 1
+                final_comp["O"]["x"] = 2
+                final_comp["Al"]["x"] = 1
+                for element in final_comp:
+                    if element != "O":
+                        final_comp["O"]["w"] -= final_comp[element]["w"]
+                        if element not in ["Al", "H"]:
+                            final_comp["Al"]["x"] -= final_comp[element]["x"]
+            #
             for element in final_comp:
                 final_comp[element]["w"] = round(final_comp[element]["w"], 6)
                 final_comp[element]["x"] = round(final_comp[element]["x"], 6)
@@ -1146,6 +1157,59 @@ class TraceElements:
                     cond_x = True
             elif var_mineral == "Magnetite":
                 if np.isclose(x_total, 7.0000) == True:
+                    cond_x = True
+            elif var_mineral == "Boehmite":
+                if np.isclose(x_total, 4.0000) == True:
+                    cond_x = True
+        #
+        return final_comp
+    #
+    def calculate_composition_sulfides(self, var_elements, var_composition, var_mineral):
+        cond_w = False
+        cond_x = False
+        while cond_w == False and cond_x == False:
+            w_total = 0
+            x_total = 0
+            M = 0
+            #
+            for element in var_composition:
+                M += var_composition[element]*10**(-6)
+            element_list = np.sort(var_elements)
+            final_comp = {}
+            for element in element_list:
+                final_comp[element] = {}
+                final_comp[element]["w"] = 0
+                final_comp[element]["x"] = 0
+            for element in element_list:
+                final_comp[element]["w"] += round(
+                    var_composition[element]*10**(-6), 6)
+                final_comp[element]["x"] += round(
+                    var_composition[element]*10**(-6), 6)
+            #
+            if var_mineral == "Cobaltite":
+                final_comp["S"]["w"] = 1
+                final_comp["S"]["x"] = 1
+                final_comp["As"]["x"] = 1
+                final_comp["Co"]["x"] = 1
+                for element in final_comp:
+                    if element != "S":
+                        final_comp["S"]["w"] -= final_comp[element]["w"]
+                        if element in ["Sb", "Fe"]:
+                            final_comp["As"]["x"] -= final_comp[element]["x"]
+                        elif element in ["Cu", "Pb", "Ni"]:
+                            final_comp["Co"]["x"] -= final_comp[element]["x"]
+            #
+            for element in final_comp:
+                final_comp[element]["w"] = round(final_comp[element]["w"], 6)
+                final_comp[element]["x"] = round(final_comp[element]["x"], 6)
+                w_total += final_comp[element]["w"]
+                x_total += final_comp[element]["x"]
+            #
+            if np.isclose(w_total, 1.0000) == True:
+                cond_w = True
+            #
+            if var_mineral == "Cobaltite":
+                if np.isclose(x_total, 3.0000) == True:
                     cond_x = True
         #
         return final_comp
