@@ -6,7 +6,7 @@
 # Name:		geochemistry.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		23.09.2022
+# Date:		24.09.2022
 
 #-----------------------------------------------
 
@@ -1164,7 +1164,7 @@ class TraceElements:
         #
         return final_comp
     #
-    def calculate_composition_sulfides(self, var_elements, var_composition, var_mineral):
+    def calculate_composition_sulfides(self, var_elements, var_composition, var_mineral, var_x=None):
         cond_w = False
         cond_x = False
         while cond_w == False and cond_x == False:
@@ -1199,6 +1199,17 @@ class TraceElements:
                         elif element in ["Cu", "Pb", "Ni"]:
                             final_comp["Co"]["x"] -= final_comp[element]["x"]
             #
+            if var_mineral == "Marmatite":
+                final_comp["S"]["w"] = 1
+                final_comp["S"]["x"] = 1
+                final_comp["Fe"]["x"] = var_x
+                final_comp["Zn"]["x"] = 1 - var_x
+                for element in final_comp:
+                    if element != "S":
+                        final_comp["S"]["w"] -= final_comp[element]["w"]
+                        if element in ["Mn", "Cd", "Hg", "In", "Tl", "Ga", "Ge", "Sb", "Sn", "Pb", "Ag", "Co"]:
+                            final_comp["Zn"]["x"] -= final_comp[element]["x"]
+            #
             for element in final_comp:
                 final_comp[element]["w"] = round(final_comp[element]["w"], 6)
                 final_comp[element]["x"] = round(final_comp[element]["x"], 6)
@@ -1210,6 +1221,9 @@ class TraceElements:
             #
             if var_mineral == "Cobaltite":
                 if np.isclose(x_total, 3.0000) == True:
+                    cond_x = True
+            elif var_mineral == "Marmatite":
+                if np.isclose(x_total, 2.0000) == True:
                     cond_x = True
         #
         return final_comp

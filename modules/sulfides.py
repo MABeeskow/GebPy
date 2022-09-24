@@ -6,7 +6,7 @@
 # Name:		sulfides.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		23.09.2022
+# Date:		24.09.2022
 
 # -----------------------------------------------
 
@@ -75,6 +75,11 @@ class Sulfides():
                 data = [self.create_cobaltite() for n in range(number)]
             else:
                 data = self.create_cobaltite()
+        elif self.mineral in ["Marmatite"]:
+            if number > 1:
+                data = [self.create_marmatite() for n in range(number)]
+            else:
+                data = self.create_marmatite()
         #
         return data
     #
@@ -94,12 +99,17 @@ class Sulfides():
                 data_mineral = self.create_chalcocite()
             elif self.mineral == "Bornite":
                 data_mineral = self.create_bornite()
-            elif self.mineral == "Sphalerite":
-                data_mineral = self.create_sphalerite()
             elif self.mineral == "Pyrrhotite":
                 data_mineral = self.create_pyrrhotite()
             elif self.mineral == "Millerite":
                 data_mineral = self.create_millerite()
+            #
+            # Sphalerite Group
+            elif self.mineral == "Sphalerite":
+                data_mineral = self.create_sphalerite()
+            elif self.mineral == "Marmatite":
+                data_mineral = self.create_marmatite()
+            #
             elif self.mineral == "Pentlandite":
                 data_mineral = self.create_pentlandite()
             elif self.mineral == "Covellite":
@@ -4296,7 +4306,7 @@ class Sulfides():
         #
         # Major elements
         sulfur = PeriodicSystem(name="S").get_data()
-        iron = PeriodicSystem(name="Ni").get_data()
+        iron = PeriodicSystem(name="Fe").get_data()
         cobalt = PeriodicSystem(name="Co").get_data()
         nickel = PeriodicSystem(name="Ni").get_data()
         majors_name = ["S", "Co"]
@@ -4571,3 +4581,175 @@ class Sulfides():
         #
         return results
     #
+    def create_marmatite(self):   # (Zn,Fe) S
+        ## General Information
+        name = "Sp"
+        elements_list = ["S", "Fe", "Zn"]
+        #
+        sulfur = PeriodicSystem(name="S").get_data()
+        iron = PeriodicSystem(name="Fe").get_data()
+        zinc = PeriodicSystem(name="Zn").get_data()
+        #
+        majors_data_fe = np.array(
+            [["S", sulfur[1], 1, sulfur[2]], ["Fe", iron[1], 1, iron[2]], ["Zn", zinc[1], 0, zinc[2]]], dtype=object)
+        majors_data_zn = np.array(
+            [["S", sulfur[1], 1, sulfur[2]], ["Fe", iron[1], 0, iron[2]], ["Zn", zinc[1], 1, zinc[2]]], dtype=object)
+        #
+        x = round(rd.uniform(0.95, 1.0), 4)
+        #
+        molar_mass_x = x*zinc[2] + (1 - x)*iron[2] + sulfur[2]
+        amounts_elements = {
+            "S": round(sulfur[2]/molar_mass_x, 6),
+            "Fe": round((1 - x)*iron[2]/molar_mass_x, 6),
+            "Zn": round(x*zinc[2]/molar_mass_x, 6)}
+        #
+        ## Trace elements
+        composition_sulfide = {}
+        for element in elements_list:
+            composition_sulfide[element] = int(amounts_elements[element]*10**6)
+        #
+        element_traces = {
+            "4+": ["Ge"],
+            "3+": ["In", "Ga", "Sb"],
+            "2+": ["Mn", "Cd", "Hg", "Sn", "Pb", "Co"],
+            "1+": ["Tl", "Ag"],
+            "All": ["Mn", "Cd", "Hg", "In", "Tl", "Ga", "Ge", "Sb", "Sn", "Pb", "Ag", "Co"]}
+        #
+        if len(self.traces_list) > 0:
+            var_state = "variable"
+            #
+            for trace_element, value in self.traces_list.items():
+                if trace_element in ["Mn", "Cd", "Hg", "In", "Tl", "Ga", "Ge", "Sb", "Sn", "Pb", "Ag", "Co"]:
+                    elements_list.append(trace_element)
+                    #
+                    val_min = self.traces_list[trace_element]["Min"]
+                    val_max = self.traces_list[trace_element]["Max"]
+                    mean = (val_min + val_max)/2
+                    sigma = (mean - val_min)/3
+                    #
+                    condition = False
+                    while condition == False:
+                        amount_ppm = int(np.random.normal(loc=mean, scale=sigma, size=1)[0])
+                        if amount_ppm >= 0 and val_min <= amount_ppm <= val_max:
+                            condition = True
+                    #
+                    if composition_sulfide["Zn"] >= composition_sulfide["Fe"]:
+                        composition_sulfide[trace_element] = amount_ppm
+                        composition_sulfide["Zn"] -= amount_ppm
+                    else:
+                        composition_sulfide[trace_element] = amount_ppm
+                        composition_sulfide["Fe"] -= amount_ppm
+            #
+        else:
+            var_state = "fixed"
+        #
+        compositon_data = TraceElements(
+            tracer=self.traces_list).calculate_composition_sulfides(
+            var_elements=elements_list, var_composition=composition_sulfide, var_mineral="Marmatite", var_x=x)
+        #
+        ## Molar mass
+        molar_mass_pure = molar_mass_x
+        molar_mass = 0
+        amounts = []
+        #
+        for element in compositon_data:
+            chem_data = PeriodicSystem(name=element).get_data()
+            molar_mass += compositon_data[element]["x"] * chem_data[2]
+            amounts.append([chem_data[0], chem_data[1], compositon_data[element]["w"]])
+        #
+        magic_factor = molar_mass/molar_mass_pure
+        element = [PeriodicSystem(name=amounts[i][0]).get_data() for i in range(len(amounts))]
+        #
+        molar_mass_pure_fe = iron[2] + sulfur[2]
+        molar_mass_fe, amounts_fe = MineralChemistry(
+            w_traces=[], molar_mass_pure=molar_mass_pure_fe, majors=majors_data_fe).calculate_molar_mass()
+        element_fe = [PeriodicSystem(name=amounts_fe[i][0]).get_data() for i in range(len(amounts_fe))]
+        #
+        molar_mass_pure_zn = zinc[2] + sulfur[2]
+        molar_mass_zn, amounts_zn = MineralChemistry(
+            w_traces=[], molar_mass_pure=molar_mass_pure_zn, majors=majors_data_zn).calculate_molar_mass()
+        element_zn = [PeriodicSystem(name=amounts_zn[i][0]).get_data() for i in range(len(amounts_zn))]
+        #
+        # Density
+        dataV_Fe = CrystalPhysics([[3.60, 5.45], [], "tetragonal"])
+        V_Fe = dataV_Fe.calculate_volume()
+        Z_Fe = 4
+        V_m_Fe = MineralChemistry().calculate_molar_volume(volume_cell=V_Fe, z=Z_Fe)
+        dataRho_Fe = CrystalPhysics([molar_mass_fe, Z_Fe, V_Fe])
+        rho_Fe = dataRho_Fe.calculate_bulk_density()
+        rho_e_Fe = wg(amounts=amounts_fe, elements=element_fe, rho_b=rho_Fe).calculate_electron_density()
+        #
+        dataV_Zn = CrystalPhysics([[5.406], [], "cubic"])
+        V_Zn = dataV_Zn.calculate_volume()
+        Z_Zn = 4
+        V_m_Zn = MineralChemistry().calculate_molar_volume(volume_cell=V_Zn, z=Z_Zn)
+        dataRho_Zn = CrystalPhysics([molar_mass_zn, Z_Zn, V_Zn])
+        rho_Zn = dataRho_Zn.calculate_bulk_density()
+        rho_e_Zn = wg(amounts=amounts_zn, elements=element_zn, rho_b=rho_Zn).calculate_electron_density()
+        #
+        V_m = (x*V_m_Zn + (1 - x)*V_m_Fe)*magic_factor
+        rho = (x*rho_Zn + (1 - x)*rho_Fe)*magic_factor
+        rho_e = (x*rho_e_Zn + (1 - x)*rho_e_Fe)*magic_factor
+        #
+        # Bulk modulus
+        K_Fe = 30*10**9
+        K_Zn = 68*10**9
+        K = (x*K_Zn + (1 - x)*K_Fe)*magic_factor
+        # Shear modulus
+        G_Fe = 19*10**9
+        G_Zn = 33*10**9
+        G = (x*G_Zn + (1 - x)*G_Fe)*magic_factor
+        # Young's modulus
+        E = (9*K*G)/(3*K + G)
+        # Poisson's ratio
+        nu = (3*K - 2*G)/(2*(3*K + G))
+        # vP/vS
+        vPvS = ((K + 4/3*G)/G)**0.5
+        # P-wave velocity
+        vP = ((K + 4/3*G)/rho)**0.5
+        # S-wave velocity
+        vS = (G/rho)**0.5
+        # Gamma ray
+        gamma_ray = wg(amounts=amounts, elements=element).calculate_gr()
+        # Photoelectricity
+        pe = wg(amounts=amounts, elements=element).calculate_pe()
+        U = pe*rho_e*10**(-3)
+        # Electrical resistivity
+        p = None
+        # Thermodynamics
+        thermodynamics = {}
+        thermodynamics["Gibbs Energy"] = None     # J/mol
+        thermodynamics["Enthalpy"] = None         # J/mol
+        thermodynamics["Entropy"] = None          # J/(mol K)
+        thermodynamics["Heat Capacity"] = None    # J/(mol K)
+        #
+        # Output
+        results = {}
+        results["mineral"] = name
+        results["state"] = var_state
+        results["M"] = molar_mass
+        element_list = np.array(amounts)[:, 0]
+        results["chemistry"] = {}
+        for index, element in enumerate(element_list, start=0):
+            results["chemistry"][element] = amounts[index][2]
+        results["rho"] = round(rho, 4)
+        results["rho_e"] = round(rho_e, 4)
+        results["V"] = round(V_m, 4)
+        results["vP"] = round(vP, 4)
+        results["vS"] = round(vS, 4)
+        results["vP/vS"] = round(vPvS, 4)
+        results["G"] = round(G*10**(-9), 4)
+        results["K"] = round(K*10**(-9), 4)
+        results["E"] = round(E*10**(-9), 4)
+        results["nu"] = round(nu, 4)
+        results["GR"] = round(gamma_ray, 4)
+        results["PE"] = round(pe, 4)
+        results["U"] = round(U, 4)
+        results["thermodynamics"] = thermodynamics
+        results["trace elements"] = element_traces
+        if p != None:
+            results["p"] = round(p, 4)
+        else:
+            results["p"] = p
+        #
+        return results

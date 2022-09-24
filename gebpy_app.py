@@ -6,7 +6,7 @@
 # Name:		gebpy_app.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		23.09.2022
+# Date:		24.09.2022
 
 #-----------------------------------------------
 
@@ -182,7 +182,7 @@ class GebPyGUI(tk.Frame):
                     "Pyrite", "Chalcopyrite", "Galena", "Acanthite", "Chalcocite", "Bornite", "Sphalerite",
                     "Pyrrhotite", "Millerite", "Pentlandite", "Covellite", "Cinnabar", "Realgar", "Orpiment",
                     "Stibnite", "Marcasite", "Molybdenite", "Fahlore", "Gallite", "Roquesite", "Lenaite", "Laforetite",
-                    "Vaesite", "Cattierite", "Cobaltite"]
+                    "Vaesite", "Cattierite", "Cobaltite", "Marmatite"]
                 self.sulfide_minerals.sort()
                 for mineral in self.sulfide_minerals:
                     sub_sulfides.add_command(
@@ -1137,7 +1137,7 @@ class GebPyGUI(tk.Frame):
             "Acanthite", "Barite", "Boehmite", "Beryl", "Bornite", "Cassiterite", "Chalcocite", "Chalcopyrite",
             "Chromite", "Cinnabar", "Cobalite", "Coltan", "Galena", "Gold", "Hematite", "Ilmenite", "Magnetite",
             "Malachite", "Molybdenite", "Pentlandite", "Pyrolusite", "Scheelite", "Smithsonite", "Sperrylite",
-            "Sphalerite", "Uraninite", "Wolframite", "Pollucite", "Pyrite"]
+            "Sphalerite", "Uraninite", "Wolframite", "Pollucite", "Pyrite", "Marmatite"]
         self.clay_minerals = [
             "Illite", "Kaolinite", "Montmorillonite", "Nontronite", "Saponite", "Chlorite", "Vermiculite"]
         #
@@ -1328,7 +1328,7 @@ class GebPyGUI(tk.Frame):
                              "Chalcopyrite", "Chromite", "Cinnabar", "Cobaltite", "Coltan", "Galena", "Gold", "Hematite",
                              "Ilmenite", "Magnetite", "Malachite", "Molybdenite", "Pentlandite", "Pyrolusite",
                              "Scheelite", "Smithsonite", "Sperrylite", "Sphalerite", "Uraninite", "Wolframite",
-                             "Pollucite", "Pyrite"]
+                             "Pollucite", "Pyrite", "Marmatite"]
         elif mineral_class_selected == "Clay Minerals":
             minerals_list = ["Illite", "Kaolinite", "Montmorillonite", "Nontronite", "Saponite", "Chlorite",
                              "Vermiculite"]
