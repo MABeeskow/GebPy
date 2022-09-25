@@ -1570,23 +1570,153 @@ class GebPyGUI(tk.Frame):
         n_datapoints = self.gui_variables["Entry"]["Number Datapoints"].get()
         phi_min = self.gui_variables["Entry"]["Porosity Min"].get()
         phi_max = self.gui_variables["Entry"]["Porosity Max"].get()
+        #
         rock_forming_min = self.gui_variables["Entry"]["Mineralogy"]["Rock Forming Total"]["Minimum"].get()
         rock_forming_max = self.gui_variables["Entry"]["Mineralogy"]["Rock Forming Total"]["Maximum"].get()
+        n_rock_forming = 0
+        mean_rock_forming = (rock_forming_min + rock_forming_max)/2
         ore_min = self.gui_variables["Entry"]["Mineralogy"]["Ore Total"]["Minimum"].get()
         ore_max = self.gui_variables["Entry"]["Mineralogy"]["Ore Total"]["Maximum"].get()
+        n_ore = 0
+        mean_ore = (ore_min + ore_max)/2
         clay_min = self.gui_variables["Entry"]["Mineralogy"]["Clay Total"]["Minimum"].get()
         clay_max = self.gui_variables["Entry"]["Mineralogy"]["Clay Total"]["Maximum"].get()
+        n_clay = 0
+        mean_clay = (clay_min + clay_max)/2
+        #
         selected_minerals = {}
-        fractions = {
-            "Rock Forming": {"Min": rock_forming_min, "Max": rock_forming_max},
-            "Ore": {"Min": ore_min, "Max": ore_max},
-            "Clay": {"Min": clay_min, "Max": clay_max}}
         #
         for mineral, value in self.gui_variables["Checkbox"]["Mineralogy"].items():
             if value.get() == 1:
                 selected_minerals[mineral] = {
                     "Min": self.gui_variables["Entry"]["Mineralogy"]["Minimum"][mineral].get(),
                     "Max": self.gui_variables["Entry"]["Mineralogy"]["Maximum"][mineral].get()}
+                #
+                if mineral in self.rock_forming_minerals:
+                    n_rock_forming += 1
+                elif mineral in self.ore_minerals:
+                    n_ore += 1
+                elif mineral in self.clay_minerals:
+                    n_clay += 1
+        #
+        if n_rock_forming > 0:
+            if n_ore > 0 and n_clay == 0:
+                if mean_rock_forming >= mean_ore:
+                    mean = (rock_forming_min + rock_forming_max)/2
+                    sigma = (mean - rock_forming_min)/3
+                    val_fraction = np.random.normal(loc=mean, scale=sigma)
+                    #
+                    fraction_rock_forming = val_fraction
+                    fraction_ore = 100 - fraction_rock_forming
+                    fraction_clay = 0
+                else:
+                    mean = (ore_min + ore_max)/2
+                    sigma = (mean - ore_min)/3
+                    val_fraction = np.random.normal(loc=mean, scale=sigma)
+                    #
+                    fraction_ore = val_fraction
+                    fraction_rock_forming = 100 - fraction_ore
+                    fraction_clay = 0
+            elif n_ore == 0 and n_clay > 0:
+                if mean_rock_forming >= mean_clay:
+                    mean = (rock_forming_min + rock_forming_max)/2
+                    sigma = (mean - rock_forming_min)/3
+                    val_fraction = np.random.normal(loc=mean, scale=sigma)
+                    #
+                    fraction_rock_forming = val_fraction
+                    fraction_clay = 100 - fraction_rock_forming
+                    fraction_ore = 0
+                else:
+                    mean = (clay_min + clay_max)/2
+                    sigma = (mean - clay_min)/3
+                    val_fraction = np.random.normal(loc=mean, scale=sigma)
+                    #
+                    fraction_clay = val_fraction
+                    fraction_rock_forming = 100 - fraction_clay
+                    fraction_ore = 0
+            elif n_ore > 0 and n_clay > 0:
+                if mean_rock_forming >= mean_ore and mean_rock_forming >= mean_clay:
+                    if mean_ore >= mean_clay:   # clay < ore < rock forming
+                        mean_rf = (rock_forming_min + rock_forming_max)/2
+                        sigma_rf = (mean_rf - rock_forming_min)/3
+                        val_fraction_rf = np.random.normal(loc=mean_rf, scale=sigma_rf)
+                        #
+                        mean_o = (ore_min + ore_max)/2
+                        sigma_o = (mean_o - ore_min)/3
+                        val_fraction_o = np.random.normal(loc=mean_o, scale=sigma_o)
+                        #
+                        fraction_rock_forming = val_fraction_rf
+                        fraction_ore = val_fraction_o
+                        fraction_clay = 100 - fraction_rock_forming - fraction_ore
+                    else:                       # ore < clay < rock forming
+                        mean_rf = (rock_forming_min + rock_forming_max)/2
+                        sigma_rf = (mean_rf - rock_forming_min)/3
+                        val_fraction_rf = np.random.normal(loc=mean_rf, scale=sigma_rf)
+                        #
+                        mean_c = (clay_min + clay_max)/2
+                        sigma_c = (mean_c - clay_min)/3
+                        val_fraction_c = np.random.normal(loc=mean_c, scale=sigma_c)
+                        #
+                        fraction_rock_forming = val_fraction_rf
+                        fraction_clay = val_fraction_c
+                        fraction_ore = 100 - fraction_rock_forming - fraction_clay
+                elif mean_rock_forming >= mean_ore and mean_rock_forming < mean_clay:   # ore < rock forming < clay
+                    mean_c = (clay_min + clay_max)/2
+                    sigma_c = (mean_c - clay_min)/3
+                    val_fraction_c = np.random.normal(loc=mean_c, scale=sigma_c)
+                    #
+                    mean_rf = (rock_forming_min + rock_forming_max)/2
+                    sigma_rf = (mean_rf - rock_forming_min)/3
+                    val_fraction_rf = np.random.normal(loc=mean_rf, scale=sigma_rf)
+                    #
+                    fraction_clay = val_fraction_c
+                    fraction_rock_forming = val_fraction_rf
+                    fraction_ore = 100 - fraction_clay - fraction_rock_forming
+                elif mean_rock_forming < mean_ore and mean_rock_forming >= mean_clay:   # clay < rock forming < ore
+                    mean_o = (ore_min + ore_max)/2
+                    sigma_o = (mean_o - ore_min)/3
+                    val_fraction_o = np.random.normal(loc=mean_o, scale=sigma_o)
+                    #
+                    mean_rf = (rock_forming_min + rock_forming_max)/2
+                    sigma_rf = (mean_rf - rock_forming_min)/3
+                    val_fraction_rf = np.random.normal(loc=mean_rf, scale=sigma_rf)
+                    #
+                    fraction_ore = val_fraction_o
+                    fraction_rock_forming = val_fraction_rf
+                    fraction_clay = 100 - fraction_ore - fraction_rock_forming
+                elif mean_rock_forming < mean_ore and mean_rock_forming < mean_clay:
+                    if mean_ore >= mean_clay:   # rock forming < clay < ore
+                        mean_o = (ore_min + ore_max)/2
+                        sigma_o = (mean_o - ore_min)/3
+                        val_fraction_o = np.random.normal(loc=mean_o, scale=sigma_o)
+                        #
+                        mean_c = (clay_min + clay_max)/2
+                        sigma_c = (mean_c - clay_min)/3
+                        val_fraction_c = np.random.normal(loc=mean_c, scale=sigma_c)
+                        #
+                        fraction_ore = val_fraction_o
+                        fraction_clay = val_fraction_c
+                        fraction_rock_forming = 100 - fraction_ore - fraction_clay
+                    else:                       # rock forming < ore < clay
+                        mean_c = (clay_min + clay_max)/2
+                        sigma_c = (mean_c - clay_min)/3
+                        val_fraction_c = np.random.normal(loc=mean_c, scale=sigma_c)
+                        #
+                        mean_o = (ore_min + ore_max)/2
+                        sigma_o = (mean_o - ore_min)/3
+                        val_fraction_o = np.random.normal(loc=mean_o, scale=sigma_o)
+                        #
+                        fraction_clay = val_fraction_c
+                        fraction_ore = val_fraction_o
+                        fraction_rock_forming = 100 - fraction_clay - fraction_ore
+            else:
+                fraction_rock_forming = 100
+                fraction_ore = 0
+                fraction_clay = 0
+        #
+        fractions = {"Rock Forming": round(fraction_rock_forming/100, 4), "Ore": round(fraction_ore/100, 4),
+                     "Clay": round(fraction_clay/100, 4)}
+        #
         mineral_list = list(selected_minerals.keys())
         mineral_list.sort()
         #
@@ -1649,7 +1779,15 @@ class GebPyGUI(tk.Frame):
             sigma = (mean - val_min)/3
             #
             amounts_raw = np.random.normal(loc=mean, scale=sigma, size=n_datapoints)
-            amounts_ppm = np.array([int(value) for value in amounts_raw])
+            #
+            if mineral in self.rock_forming_minerals:
+                fraction_factor = fractions["Rock Forming"]
+            elif mineral in self.ore_minerals:
+                fraction_factor = fractions["Ore"]
+            elif mineral in self.ore_minerals:
+                fraction_factor = fractions["Clay"]
+            #
+            amounts_ppm = np.array([int(fraction_factor*value) for value in amounts_raw])
             amounts_ppm[amounts_ppm < 0] = 0
             #
             mineral_amounts[data_mineral["mineral"]] = list(amounts_ppm)
@@ -1778,6 +1916,26 @@ class GebPyGUI(tk.Frame):
         #
         self.gui_variables["Radiobutton"]["Analysis Mode"].set(0)
         self.change_rb_analysis_rocks()
+        #
+        for mineral in self.list_minerals_rock:
+            self.gui_variables["Entry"]["Minimum"][mineral] = tk.StringVar()
+            self.gui_variables["Entry"]["Minimum"][mineral].set(0.0)
+            self.gui_variables["Entry"]["Maximum"][mineral] = tk.StringVar()
+            self.gui_variables["Entry"]["Maximum"][mineral].set(0.0)
+            self.gui_variables["Entry"]["Mean"][mineral] = tk.StringVar()
+            self.gui_variables["Entry"]["Mean"][mineral].set(0.0)
+            self.gui_variables["Entry"]["Error"][mineral] = tk.StringVar()
+            self.gui_variables["Entry"]["Error"][mineral].set(0.0)
+        #
+        for element in self.list_elements_rock:
+            self.gui_variables["Entry"]["Minimum"][element] = tk.StringVar()
+            self.gui_variables["Entry"]["Minimum"][element].set(0.0)
+            self.gui_variables["Entry"]["Maximum"][element] = tk.StringVar()
+            self.gui_variables["Entry"]["Maximum"][element].set(0.0)
+            self.gui_variables["Entry"]["Mean"][element] = tk.StringVar()
+            self.gui_variables["Entry"]["Mean"][element].set(0.0)
+            self.gui_variables["Entry"]["Error"][element] = tk.StringVar()
+            self.gui_variables["Entry"]["Error"][element].set(0.0)
     #
     def change_rb_analysis_rocks(self):
         start_column = 35
@@ -1973,7 +2131,6 @@ class GebPyGUI(tk.Frame):
                     var_entr=self.gui_variables["Entry"]["Error"][mineral], var_entr_set=var_entr_error)
                 #
                 self.gui_elements["Temporary"]["Entry"].extend([entr_min, entr_max, entr_mean, entr_error])
-                #
     #
     ######################################
     ## G e n e r a l  F u n c t i o n s ##
