@@ -6,7 +6,7 @@
 # Name:		gebpy_app.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		24.09.2022
+# Date:		26.09.2022
 
 #-----------------------------------------------
 
@@ -1563,6 +1563,7 @@ class GebPyGUI(tk.Frame):
         ## Initialization
         self.gui_variables["Radiobutton"]["Analysis Mode"] = tk.IntVar()
         self.gui_variables["Radiobutton"]["Analysis Mode"].set(0)
+        n_digits = 8
         #
         ## Preparation Simulation
         data_water = Water.water("")
@@ -1604,118 +1605,118 @@ class GebPyGUI(tk.Frame):
                 if mean_rock_forming >= mean_ore:
                     mean = (rock_forming_min + rock_forming_max)/2
                     sigma = (mean - rock_forming_min)/3
-                    val_fraction = np.random.normal(loc=mean, scale=sigma)
+                    val_fraction = np.random.normal(loc=mean, scale=sigma, size=n_datapoints)
                     #
                     fraction_rock_forming = val_fraction
-                    fraction_ore = 100 - fraction_rock_forming
-                    fraction_clay = 0
+                    fraction_ore = 100*np.ones(n_datapoints) - fraction_rock_forming
+                    fraction_clay = np.zeros(n_datapoints)
                 else:
                     mean = (ore_min + ore_max)/2
                     sigma = (mean - ore_min)/3
-                    val_fraction = np.random.normal(loc=mean, scale=sigma)
+                    val_fraction = np.random.normal(loc=mean, scale=sigma, size=n_datapoints)
                     #
                     fraction_ore = val_fraction
-                    fraction_rock_forming = 100 - fraction_ore
-                    fraction_clay = 0
+                    fraction_rock_forming = 100*np.ones(n_datapoints) - fraction_ore
+                    fraction_clay = np.zeros(n_datapoints)
             elif n_ore == 0 and n_clay > 0:
                 if mean_rock_forming >= mean_clay:
                     mean = (rock_forming_min + rock_forming_max)/2
                     sigma = (mean - rock_forming_min)/3
-                    val_fraction = np.random.normal(loc=mean, scale=sigma)
+                    val_fraction = np.random.normal(loc=mean, scale=sigma, size=n_datapoints)
                     #
                     fraction_rock_forming = val_fraction
-                    fraction_clay = 100 - fraction_rock_forming
-                    fraction_ore = 0
+                    fraction_clay = 100*np.ones(n_datapoints) - fraction_rock_forming
+                    fraction_ore = np.zeros(n_datapoints)
                 else:
                     mean = (clay_min + clay_max)/2
                     sigma = (mean - clay_min)/3
-                    val_fraction = np.random.normal(loc=mean, scale=sigma)
+                    val_fraction = np.random.normal(loc=mean, scale=sigma, size=n_datapoints)
                     #
                     fraction_clay = val_fraction
-                    fraction_rock_forming = 100 - fraction_clay
-                    fraction_ore = 0
+                    fraction_rock_forming = 100*np.ones(n_datapoints) - fraction_clay
+                    fraction_ore = np.zeros(n_datapoints)
             elif n_ore > 0 and n_clay > 0:
                 if mean_rock_forming >= mean_ore and mean_rock_forming >= mean_clay:
                     if mean_ore >= mean_clay:   # clay < ore < rock forming
                         mean_rf = (rock_forming_min + rock_forming_max)/2
                         sigma_rf = (mean_rf - rock_forming_min)/3
-                        val_fraction_rf = np.random.normal(loc=mean_rf, scale=sigma_rf)
+                        val_fraction_rf = np.random.normal(loc=mean_rf, scale=sigma_rf, size=n_datapoints)
                         #
                         mean_o = (ore_min + ore_max)/2
                         sigma_o = (mean_o - ore_min)/3
-                        val_fraction_o = np.random.normal(loc=mean_o, scale=sigma_o)
+                        val_fraction_o = np.random.normal(loc=mean_o, scale=sigma_o, size=n_datapoints)
                         #
                         fraction_rock_forming = val_fraction_rf
                         fraction_ore = val_fraction_o
-                        fraction_clay = 100 - fraction_rock_forming - fraction_ore
+                        fraction_clay = 100*np.ones(n_datapoints) - fraction_rock_forming - fraction_ore
                     else:                       # ore < clay < rock forming
                         mean_rf = (rock_forming_min + rock_forming_max)/2
                         sigma_rf = (mean_rf - rock_forming_min)/3
-                        val_fraction_rf = np.random.normal(loc=mean_rf, scale=sigma_rf)
+                        val_fraction_rf = np.random.normal(loc=mean_rf, scale=sigma_rf, size=n_datapoints)
                         #
                         mean_c = (clay_min + clay_max)/2
                         sigma_c = (mean_c - clay_min)/3
-                        val_fraction_c = np.random.normal(loc=mean_c, scale=sigma_c)
+                        val_fraction_c = np.random.normal(loc=mean_c, scale=sigma_c, size=n_datapoints)
                         #
                         fraction_rock_forming = val_fraction_rf
                         fraction_clay = val_fraction_c
-                        fraction_ore = 100 - fraction_rock_forming - fraction_clay
+                        fraction_ore = 100*np.ones(n_datapoints) - fraction_rock_forming - fraction_clay
                 elif mean_rock_forming >= mean_ore and mean_rock_forming < mean_clay:   # ore < rock forming < clay
                     mean_c = (clay_min + clay_max)/2
                     sigma_c = (mean_c - clay_min)/3
-                    val_fraction_c = np.random.normal(loc=mean_c, scale=sigma_c)
+                    val_fraction_c = np.random.normal(loc=mean_c, scale=sigma_c, size=n_datapoints)
                     #
                     mean_rf = (rock_forming_min + rock_forming_max)/2
                     sigma_rf = (mean_rf - rock_forming_min)/3
-                    val_fraction_rf = np.random.normal(loc=mean_rf, scale=sigma_rf)
+                    val_fraction_rf = np.random.normal(loc=mean_rf, scale=sigma_rf, size=n_datapoints)
                     #
                     fraction_clay = val_fraction_c
                     fraction_rock_forming = val_fraction_rf
-                    fraction_ore = 100 - fraction_clay - fraction_rock_forming
+                    fraction_ore = 100*np.ones(n_datapoints) - fraction_clay - fraction_rock_forming
                 elif mean_rock_forming < mean_ore and mean_rock_forming >= mean_clay:   # clay < rock forming < ore
                     mean_o = (ore_min + ore_max)/2
                     sigma_o = (mean_o - ore_min)/3
-                    val_fraction_o = np.random.normal(loc=mean_o, scale=sigma_o)
+                    val_fraction_o = np.random.normal(loc=mean_o, scale=sigma_o, size=n_datapoints)
                     #
                     mean_rf = (rock_forming_min + rock_forming_max)/2
                     sigma_rf = (mean_rf - rock_forming_min)/3
-                    val_fraction_rf = np.random.normal(loc=mean_rf, scale=sigma_rf)
+                    val_fraction_rf = np.random.normal(loc=mean_rf, scale=sigma_rf, size=n_datapoints)
                     #
                     fraction_ore = val_fraction_o
                     fraction_rock_forming = val_fraction_rf
-                    fraction_clay = 100 - fraction_ore - fraction_rock_forming
+                    fraction_clay = 100*np.ones(n_datapoints) - fraction_ore - fraction_rock_forming
                 elif mean_rock_forming < mean_ore and mean_rock_forming < mean_clay:
                     if mean_ore >= mean_clay:   # rock forming < clay < ore
                         mean_o = (ore_min + ore_max)/2
                         sigma_o = (mean_o - ore_min)/3
-                        val_fraction_o = np.random.normal(loc=mean_o, scale=sigma_o)
+                        val_fraction_o = np.random.normal(loc=mean_o, scale=sigma_o, size=n_datapoints)
                         #
                         mean_c = (clay_min + clay_max)/2
                         sigma_c = (mean_c - clay_min)/3
-                        val_fraction_c = np.random.normal(loc=mean_c, scale=sigma_c)
+                        val_fraction_c = np.random.normal(loc=mean_c, scale=sigma_c, size=n_datapoints)
                         #
                         fraction_ore = val_fraction_o
                         fraction_clay = val_fraction_c
-                        fraction_rock_forming = 100 - fraction_ore - fraction_clay
+                        fraction_rock_forming = 100*np.ones(n_datapoints) - fraction_ore - fraction_clay
                     else:                       # rock forming < ore < clay
                         mean_c = (clay_min + clay_max)/2
                         sigma_c = (mean_c - clay_min)/3
-                        val_fraction_c = np.random.normal(loc=mean_c, scale=sigma_c)
+                        val_fraction_c = np.random.normal(loc=mean_c, scale=sigma_c, size=n_datapoints)
                         #
                         mean_o = (ore_min + ore_max)/2
                         sigma_o = (mean_o - ore_min)/3
-                        val_fraction_o = np.random.normal(loc=mean_o, scale=sigma_o)
+                        val_fraction_o = np.random.normal(loc=mean_o, scale=sigma_o, size=n_datapoints)
                         #
                         fraction_clay = val_fraction_c
                         fraction_ore = val_fraction_o
-                        fraction_rock_forming = 100 - fraction_clay - fraction_ore
+                        fraction_rock_forming = 100*np.ones(n_datapoints) - fraction_clay - fraction_ore
             else:
-                fraction_rock_forming = 100
-                fraction_ore = 0
-                fraction_clay = 0
+                fraction_rock_forming = 100*np.ones(n_datapoints)
+                fraction_ore = np.zeros(n_datapoints)
+                fraction_clay = np.zeros(n_datapoints)
         #
-        fractions = {"Rock Forming": round(fraction_rock_forming/100, 4), "Ore": round(fraction_ore/100, 4),
-                     "Clay": round(fraction_clay/100, 4)}
+        fractions = {"Rock Forming": np.around(fraction_rock_forming/100, n_digits),
+                     "Ore": np.around(fraction_ore/100, n_digits), "Clay": np.around(fraction_clay/100, n_digits)}
         #
         mineral_list = list(selected_minerals.keys())
         mineral_list.sort()
@@ -1787,7 +1788,7 @@ class GebPyGUI(tk.Frame):
             elif mineral in self.ore_minerals:
                 fraction_factor = fractions["Clay"]
             #
-            amounts_ppm = np.array([int(fraction_factor*value) for value in amounts_raw])
+            amounts_ppm = np.array([int(fraction_factor[index]*value) for index, value in enumerate(amounts_raw)])
             amounts_ppm[amounts_ppm < 0] = 0
             #
             mineral_amounts[data_mineral["mineral"]] = list(amounts_ppm)
@@ -1795,7 +1796,7 @@ class GebPyGUI(tk.Frame):
         #
         n = 0
         while n < n_datapoints:
-            porosity = round(rd.uniform(phi_min, phi_max)/100, 4)
+            porosity = round(rd.uniform(phi_min, phi_max)/100, 5)
             rho_solid = 0
             bulk_modulus = 0
             shear_modulus = 0
@@ -1832,7 +1833,8 @@ class GebPyGUI(tk.Frame):
             photoelectricity = round(photoelectricity, 3)
             #
             for mineral, dataset in mineral_amounts.items():
-                mineral_amount = round((mineral_amounts[mineral][n]*mineral_data[mineral]["rho"][n])/(100*rho_solid), 4)
+                mineral_amount = round(
+                    (mineral_amounts[mineral][n]*mineral_data[mineral]["rho"][n])/(100*rho_solid), n_digits)
                 w_minerals[mineral] = mineral_amount
                 self.data_rock["mineralogy"][mineral].append(mineral_amount)
             #
@@ -1850,15 +1852,15 @@ class GebPyGUI(tk.Frame):
                 if element != "O":
                     for mineral, w_mineral in w_minerals.items():
                         if element in mineral_data[mineral]["chemistry"]:
-                            value = round(w_mineral*mineral_data[mineral]["chemistry"][element][n], 4)
+                            value = round(w_mineral*mineral_data[mineral]["chemistry"][element][n], n_digits)
                             w_elements[element] += value
                             w_elements_total += value
                             #
-                            w_elements[element] = round(w_elements[element], 4)
+                            w_elements[element] = round(w_elements[element], n_digits)
                 elif element == "O":
-                    w_elements[element] += round(1 - w_elements_total, 4)
+                    w_elements[element] += round(1 - w_elements_total, n_digits)
                     #
-                    w_elements[element] = round(w_elements[element], 4)
+                    w_elements[element] = round(w_elements[element], n_digits)
             #
             for element, value in w_elements.items():
                 self.data_rock["chemistry"][element].append(value)
@@ -1875,7 +1877,7 @@ class GebPyGUI(tk.Frame):
             self.data_rock["nu"].append(poisson_ratio)
             self.data_rock["GR"].append(gamma_ray)
             self.data_rock["PE"].append(photoelectricity)
-            self.data_rock["phi"].append(porosity)
+            self.data_rock["phi"].append(porosity*100)
             #
             self.list_elements_rock = list(w_elements.keys())
             self.list_minerals_rock = list(w_minerals.keys())
@@ -1884,7 +1886,7 @@ class GebPyGUI(tk.Frame):
         #
         ## Labels
         lbl_analysis = SimpleElements(
-            parent=self.parent, row_id=21, column_id=0, n_rows=4, n_columns=16, bg=self.colors_gebpy["Navigation"],
+            parent=self.parent, row_id=22, column_id=0, n_rows=6, n_columns=14, bg=self.colors_gebpy["Navigation"],
             fg=self.colors_gebpy["Background"]).create_label(
             text="Analysis Mode", font_option="sans 10 bold", relief=tk.FLAT)
         #
@@ -1892,17 +1894,22 @@ class GebPyGUI(tk.Frame):
         #
         ## Radiobuttons
         rb_geophysics = SimpleElements(
-            parent=self.parent, row_id=21, column_id=16, n_rows=2, n_columns=14, bg=self.colors_gebpy["Navigation"],
+            parent=self.parent, row_id=22, column_id=14, n_rows=2, n_columns=16, bg=self.colors_gebpy["Navigation"],
             fg=self.colors_gebpy["Background"]).create_radiobutton(
-            text="Rock Physics", var_rb=self.gui_variables["Radiobutton"]["Analysis Mode"], value_rb=0,
+            text="Physical Data", var_rb=self.gui_variables["Radiobutton"]["Analysis Mode"], value_rb=0,
             color_bg=self.colors_gebpy["Background"], command=self.change_rb_analysis_rocks)
         rb_geochemistry = SimpleElements(
-            parent=self.parent, row_id=23, column_id=16, n_rows=2, n_columns=14, bg=self.colors_gebpy["Navigation"],
+            parent=self.parent, row_id=24, column_id=14, n_rows=2, n_columns=16, bg=self.colors_gebpy["Navigation"],
             fg=self.colors_gebpy["Background"]).create_radiobutton(
-            text="Rock Chemistry", var_rb=self.gui_variables["Radiobutton"]["Analysis Mode"], value_rb=1,
+            text="Mineral Composition", var_rb=self.gui_variables["Radiobutton"]["Analysis Mode"], value_rb=1,
+            color_bg=self.colors_gebpy["Navigation"], command=self.change_rb_analysis_rocks)
+        rb_geochemistry2 = SimpleElements(
+            parent=self.parent, row_id=26, column_id=14, n_rows=2, n_columns=16, bg=self.colors_gebpy["Navigation"],
+            fg=self.colors_gebpy["Background"]).create_radiobutton(
+            text="Element Composition", var_rb=self.gui_variables["Radiobutton"]["Analysis Mode"], value_rb=2,
             color_bg=self.colors_gebpy["Navigation"], command=self.change_rb_analysis_rocks)
         #
-        self.gui_elements["Static"]["Radiobutton"].extend([rb_geophysics, rb_geochemistry])
+        self.gui_elements["Static"]["Radiobutton"].extend([rb_geophysics, rb_geochemistry, rb_geochemistry2])
         #
         for key, gui_element in self.gui_elements["Temporary"].items():
             if key not in ["Canvas", "Button"]:
@@ -1996,10 +2003,10 @@ class GebPyGUI(tk.Frame):
                 #
                 ## Entries
                 #
-                var_entr_min = round(min(self.data_rock[categories_short[index]]), 6)
-                var_entr_max = round(max(self.data_rock[categories_short[index]]), 6)
-                var_entr_mean = round(np.mean(self.data_rock[categories_short[index]]), 6)
-                var_entr_error = round(np.std(self.data_rock[categories_short[index]], ddof=1), 6)
+                var_entr_min = round(min(self.data_rock[categories_short[index]]), 3)
+                var_entr_max = round(max(self.data_rock[categories_short[index]]), 3)
+                var_entr_mean = round(np.mean(self.data_rock[categories_short[index]]), 3)
+                var_entr_error = round(np.std(self.data_rock[categories_short[index]], ddof=1), 3)
                 #
                 entr_min = SimpleElements(
                     parent=self.parent, row_id=(3*index + 4), column_id=start_column + 9, n_rows=3, n_columns=9,
@@ -2050,8 +2057,8 @@ class GebPyGUI(tk.Frame):
                 self.gui_elements["Temporary"]["Axis"]["Rock Physics Scatter"] = ax_scatter
             else:
                 self.gui_elements["Temporary"]["Canvas"]["Rock Physics Scatter"].get_tk_widget().grid()
-            #
-        elif self.gui_variables["Radiobutton"]["Analysis Mode"].get() == 1: # Rock Chemistry
+        #
+        elif self.gui_variables["Radiobutton"]["Analysis Mode"].get() == 1: # Mineral Composition
             ## Cleaning
             for key, gui_items in self.gui_elements["Temporary"].items():
                 if len(gui_items) > 0:
@@ -2068,7 +2075,7 @@ class GebPyGUI(tk.Frame):
             lbl_title = SimpleElements(
                 parent=self.parent, row_id=0, column_id=start_column, n_rows=2, n_columns=45,
                 bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
-                text="Rock Chemistry", font_option="sans 12 bold", relief=tk.GROOVE)
+                text="Mineral Composition", font_option="sans 12 bold", relief=tk.GROOVE)
             lbl_results = SimpleElements(
                 parent=self.parent, row_id=2, column_id=start_column, n_rows=2, n_columns=9,
                 bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
@@ -2104,10 +2111,10 @@ class GebPyGUI(tk.Frame):
                 #
                 ## Entries
                 #
-                var_entr_min = int(min(self.data_rock["mineralogy"][mineral])*10**2)
-                var_entr_max = int(max(self.data_rock["mineralogy"][mineral])*10**2)
-                var_entr_mean = int(np.mean(self.data_rock["mineralogy"][mineral])*10**2)
-                var_entr_error = int(np.std(self.data_rock["mineralogy"][mineral], ddof=1)*10**2)
+                var_entr_min = round(min(self.data_rock["mineralogy"][mineral])*10**2, 2)
+                var_entr_max = round(max(self.data_rock["mineralogy"][mineral])*10**2, 2)
+                var_entr_mean = round(np.mean(self.data_rock["mineralogy"][mineral])*10**2, 2)
+                var_entr_error = round(np.std(self.data_rock["mineralogy"][mineral], ddof=1)*10**2, 2)
                 #
                 entr_min = SimpleElements(
                     parent=self.parent, row_id=(2*index + 4), column_id=start_column + 9, n_rows=2,
@@ -2129,6 +2136,87 @@ class GebPyGUI(tk.Frame):
                     n_columns=9,
                     bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
                     var_entr=self.gui_variables["Entry"]["Error"][mineral], var_entr_set=var_entr_error)
+                #
+                self.gui_elements["Temporary"]["Entry"].extend([entr_min, entr_max, entr_mean, entr_error])
+        #
+        elif self.gui_variables["Radiobutton"]["Analysis Mode"].get() == 2: # Element Composition
+            ## Cleaning
+            for key, gui_items in self.gui_elements["Temporary"].items():
+                if len(gui_items) > 0:
+                    if key not in ["Canvas"]:
+                        if type(gui_items) == list:
+                            for gui_item in gui_items:
+                                gui_item.grid_remove()
+                            gui_items.clear()
+                    else:
+                        for key_2, gui_item in gui_items.items():
+                            gui_item.get_tk_widget().grid_remove()
+            #
+            ## Labels
+            lbl_title = SimpleElements(
+                parent=self.parent, row_id=0, column_id=start_column, n_rows=2, n_columns=45,
+                bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
+                text="Element Composition", font_option="sans 12 bold", relief=tk.GROOVE)
+            lbl_results = SimpleElements(
+                parent=self.parent, row_id=2, column_id=start_column, n_rows=2, n_columns=9,
+                bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
+                text="Results", font_option="sans 10 bold", relief=tk.GROOVE)
+            lbl_min = SimpleElements(
+                parent=self.parent, row_id=2, column_id=start_column + 9, n_rows=2, n_columns=9,
+                bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
+                text="Minimum", font_option="sans 10 bold", relief=tk.GROOVE)
+            lbl_max = SimpleElements(
+                parent=self.parent, row_id=2, column_id=start_column + 18, n_rows=2, n_columns=9,
+                bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
+                text="Maximum", font_option="sans 10 bold", relief=tk.GROOVE)
+            lbl_mean = SimpleElements(
+                parent=self.parent, row_id=2, column_id=start_column + 27, n_rows=2, n_columns=9,
+                bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
+                text="Mean", font_option="sans 10 bold", relief=tk.GROOVE)
+            lbl_error = SimpleElements(
+                parent=self.parent, row_id=2, column_id=start_column + 36, n_rows=2, n_columns=9,
+                bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
+                text="Error", font_option="sans 10 bold", relief=tk.GROOVE)
+            #
+            self.gui_elements["Temporary"]["Label"].extend(
+                [lbl_title, lbl_results, lbl_min, lbl_max, lbl_mean, lbl_error])
+            #
+            self.list_elements_rock.sort()
+            for index, element in enumerate(self.list_elements_rock):
+                lbl_element = SimpleElements(
+                    parent=self.parent, row_id=(2*index + 4), column_id=start_column, n_rows=2, n_columns=9,
+                    bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
+                    text=element, font_option="sans 10 bold", relief=tk.GROOVE)
+                #
+                self.gui_elements["Temporary"]["Label"].append(lbl_element)
+                #
+                ## Entries
+                #
+                var_entr_min = int(min(self.data_rock["chemistry"][element])*10**2)
+                var_entr_max = int(max(self.data_rock["chemistry"][element])*10**2)
+                var_entr_mean = int(np.mean(self.data_rock["chemistry"][element])*10**2)
+                var_entr_error = round(np.std(self.data_rock["chemistry"][element], ddof=1)*10**2, 2)
+                #
+                entr_min = SimpleElements(
+                    parent=self.parent, row_id=(2*index + 4), column_id=start_column + 9, n_rows=2,
+                    n_columns=9,
+                    bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
+                    var_entr=self.gui_variables["Entry"]["Minimum"][element], var_entr_set=var_entr_min)
+                entr_max = SimpleElements(
+                    parent=self.parent, row_id=(2*index + 4), column_id=start_column + 18, n_rows=2,
+                    n_columns=9,
+                    bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
+                    var_entr=self.gui_variables["Entry"]["Maximum"][element], var_entr_set=var_entr_max)
+                entr_mean = SimpleElements(
+                    parent=self.parent, row_id=(2*index + 4), column_id=start_column + 27, n_rows=2,
+                    n_columns=9,
+                    bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
+                    var_entr=self.gui_variables["Entry"]["Mean"][element], var_entr_set=var_entr_mean)
+                entr_error = SimpleElements(
+                    parent=self.parent, row_id=(2*index + 4), column_id=start_column + 36, n_rows=2,
+                    n_columns=9,
+                    bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
+                    var_entr=self.gui_variables["Entry"]["Error"][element], var_entr_set=var_entr_error)
                 #
                 self.gui_elements["Temporary"]["Entry"].extend([entr_min, entr_max, entr_mean, entr_error])
     #
