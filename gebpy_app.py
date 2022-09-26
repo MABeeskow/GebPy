@@ -6,7 +6,7 @@
 # Name:		gebpy_app.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		26.09.2022
+# Date:		27.09.2022
 
 #-----------------------------------------------
 
@@ -744,7 +744,199 @@ class GebPyGUI(tk.Frame):
                     var_entr=self.gui_variables["Entry"]["Error"][element], var_entr_set=var_entr_error)
                 #
                 self.gui_elements["Temporary"]["Entry"].extend([entr_min, entr_max, entr_mean, entr_error])
+        #
+        elif self.gui_variables["Radiobutton"]["Analysis Mode"].get() == 2:   # Synthetic LA-ICP-MS
+            ## Cleaning
+            for key, gui_items in self.gui_elements["Temporary"].items():
+                if len(gui_items) > 0:
+                    if key not in ["Canvas", "Figure", "Axis"]:
+                        for gui_item in gui_items:
+                            gui_item.grid_remove()
+                        gui_items.clear()
+                    else:
+                        if key == "Canvas":
+                            for key, gui_element in self.gui_elements["Temporary"]["Canvas"].items():
+                                gui_element.get_tk_widget().grid_remove()
+            #
+            ## LA-ICP-MS Experiment Simulation
+            time_data, intensity_data = self.simulate_laicpms_experiment()
+            #
+            ## Labels
+            lbl_title = SimpleElements(
+                parent=self.parent, row_id=0, column_id=start_column, n_rows=2, n_columns=45,
+                bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
+                text="Synthetic LA-ICP-MS", font_option="sans 12 bold", relief=tk.GROOVE)
+            lbl_results = SimpleElements(
+                parent=self.parent, row_id=2, column_id=start_column, n_rows=2, n_columns=9,
+                bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
+                text="Results", font_option="sans 10 bold", relief=tk.GROOVE)
+            lbl_min = SimpleElements(
+                parent=self.parent, row_id=2, column_id=start_column + 9, n_rows=2, n_columns=9,
+                bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
+                text="Minimum", font_option="sans 10 bold", relief=tk.GROOVE)
+            lbl_max = SimpleElements(
+                parent=self.parent, row_id=2, column_id=start_column + 18, n_rows=2, n_columns=9,
+                bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
+                text="Maximum", font_option="sans 10 bold", relief=tk.GROOVE)
+            lbl_mean = SimpleElements(
+                parent=self.parent, row_id=2, column_id=start_column + 27, n_rows=2, n_columns=9,
+                bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
+                text="Mean", font_option="sans 10 bold", relief=tk.GROOVE)
+            lbl_error = SimpleElements(
+                parent=self.parent, row_id=2, column_id=start_column + 36, n_rows=2, n_columns=9,
+                bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
+                text="Error", font_option="sans 10 bold", relief=tk.GROOVE)
+            #
+            self.gui_elements["Temporary"]["Label"].extend(
+                [lbl_title, lbl_results, lbl_min, lbl_max, lbl_mean, lbl_error])
+            #
+            self.list_elements.sort()
+            for index, element in enumerate(self.list_elements):
+                lbl_element = SimpleElements(
+                    parent=self.parent, row_id=(2*index + 4), column_id=start_column, n_rows=2, n_columns=9,
+                    bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
+                    text=element, font_option="sans 10 bold", relief=tk.GROOVE)
                 #
+                self.gui_elements["Temporary"]["Label"].append(lbl_element)
+                #
+                ## Entries
+                #
+                var_entr_min = int(min(self.data_mineral["chemistry"][element])*10**6)
+                var_entr_max = int(max(self.data_mineral["chemistry"][element])*10**6)
+                var_entr_mean = int(np.mean(self.data_mineral["chemistry"][element])*10**6)
+                var_entr_error = int(np.std(self.data_mineral["chemistry"][element], ddof=1)*10**6)
+                #
+                entr_min = SimpleElements(
+                    parent=self.parent, row_id=(2*index + 4), column_id=start_column + 9, n_rows=2, n_columns=9,
+                    bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
+                    var_entr=self.gui_variables["Entry"]["Minimum"][element], var_entr_set=var_entr_min)
+                entr_max = SimpleElements(
+                    parent=self.parent, row_id=(2*index + 4), column_id=start_column + 18, n_rows=2, n_columns=9,
+                    bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
+                    var_entr=self.gui_variables["Entry"]["Maximum"][element], var_entr_set=var_entr_max)
+                entr_mean = SimpleElements(
+                    parent=self.parent, row_id=(2*index + 4), column_id=start_column + 27, n_rows=2, n_columns=9,
+                    bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
+                    var_entr=self.gui_variables["Entry"]["Mean"][element], var_entr_set=var_entr_mean)
+                entr_error = SimpleElements(
+                    parent=self.parent, row_id=(2*index + 4), column_id=start_column + 36, n_rows=2, n_columns=9,
+                    bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
+                    var_entr=self.gui_variables["Entry"]["Error"][element], var_entr_set=var_entr_error)
+                #
+                self.gui_elements["Temporary"]["Entry"].extend([entr_min, entr_max, entr_mean, entr_error])
+                #
+            ## Diagram
+            if "LA ICP MS" not in self.gui_elements["Temporary"]["Canvas"]:
+                fig_laicpms, ax_laicpms = plt.subplots(facecolor=self.colors_gebpy["Background"])
+                #
+                element_laicpms = list(intensity_data.keys())
+                for element in element_laicpms:
+                    # ax_laicpms.scatter(time_data, intensity_data[element], edgecolor="black", alpha=0.5)
+                    ax_laicpms.plot(time_data, intensity_data[element], label=element)
+                    #
+                ax_laicpms.set_xlabel("Time (s)", fontsize=9)
+                ax_laicpms.set_ylabel("Intensity (cps)", labelpad=0.5, fontsize=9)
+                ax_laicpms.set_xlim(0, 60)
+                ax_laicpms.set_xticks(np.arange(0, 60 + 5, 5))
+                ax_laicpms.set_ylim(1, 10**6)
+                ax_laicpms.set_yscale("log")
+                #ax_laicpms.grid(True)
+                plt.grid(which="major", axis="both", linestyle="-")
+                plt.minorticks_on()
+                plt.grid(which="minor", axis="both", linestyle="-", alpha=0.25)
+                ax_laicpms.set_axisbelow(True)
+                #
+                fig_laicpms.tight_layout()
+                plt.legend()
+                #
+                canvas_laicpms = FigureCanvasTkAgg(fig_laicpms, master=self.parent)
+                canvas_laicpms.get_tk_widget().grid(
+                    row=0, column=90, rowspan=65, columnspan=90, sticky="nesw")
+                #
+                self.gui_elements["Temporary"]["Canvas"]["LA ICP MS"] = canvas_laicpms
+                self.gui_elements["Temporary"]["Figure"]["LA ICP MS"] = fig_laicpms
+                self.gui_elements["Temporary"]["Axis"]["LA ICP MS"] = ax_laicpms
+            else:
+                self.gui_elements["Temporary"]["Canvas"]["LA ICP MS"].get_tk_widget().grid()
+            #
+    #
+    def simulate_laicpms_experiment(self):
+        total_ppm = 10**6
+        time_step = 0.1
+        time_data = list(np.around(np.arange(0, 60 + time_step, time_step), 1))
+        #
+        index_lower_start = time_data.index(10.1)
+        index_upper_start = time_data.index(11.0)
+        n_values_start = index_upper_start - index_lower_start
+        amount_start = np.around(np.linspace(0.5, 1.0, n_values_start + 1, endpoint=True), 4)
+        #
+        index_lower_sig = time_data.index(11.1)
+        index_upper_sig = time_data.index(50.0)
+        n_values_sig = index_upper_sig - index_lower_sig
+        amount_sig = np.around(np.linspace(1.0, 0.33, n_values_sig + 1, endpoint=True), 4)
+        #
+        index_lower_end = time_data.index(50.1)
+        index_upper_end = time_data.index(52.0)
+        n_values_end = index_upper_end - index_lower_end
+        amount_end = np.around(np.linspace(1.0, 0.05, n_values_end + 1, endpoint=True), 4)
+        #
+        index_lower_end2 = time_data.index(52.1)
+        index_upper_end2 = time_data.index(54.0)
+        n_values_end2 = index_upper_end2 - index_lower_end2
+        amount_end2 = np.around(np.geomspace(0.05, 0.0001, n_values_end2 + 1, endpoint=True), 4)
+        #
+        intensity_data = {}
+        for element in self.list_elements:
+            index_start = 0
+            index_sig = 0
+            index_end = 0
+            index_end2 = 0
+            if element != "O":
+                intensity_data[element] = []
+                #
+                mean_bg = np.random.randint(1, 100)
+                error_bg = np.random.uniform(0.1, 0.5)*mean_bg
+                mean_sig = np.mean(self.data_mineral["chemistry"][element])*10**6
+                # error_sig = np.random.uniform(0, 0.025)*mean_sig
+                #
+                for time_value in time_data:
+                    if time_value <= 10:
+                        value = int(np.random.normal(loc=mean_bg, scale=error_bg, size=1)[0])
+                        if value < 0:
+                            value = 0
+                        value_bg = value
+                    elif 10 < time_value <= 11:
+                        error_sig = np.random.uniform(0.025, 0.075)*mean_sig
+                        value = int(amount_start[index_start]*(
+                                np.random.normal(loc=mean_sig, scale=error_sig, size=1)[0] + value_bg))
+                        index_start += 1
+                    elif 11 < time_value <= 50:
+                        error_sig = np.random.uniform(0.05, 0.15)*mean_sig
+                        value = int(amount_sig[index_sig]*(
+                                np.random.normal(loc=mean_sig, scale=error_sig, size=1)[0] + value_bg))
+                        last_value_sig = value
+                        index_sig += 1
+                    elif 50 < time_value <= 52:
+                        if last_value_sig > 10**4:
+                            value = int(amount_end[index_end]*(last_value_sig + np.random.randint(10**2, 10**3) + value_bg))
+                        else:
+                            value = int(amount_end[index_end]*(last_value_sig + np.random.randint(10**1, 10**2) + value_bg))
+                        last_value = value
+                        index_end += 1
+                    elif 52 < time_value <= 54:
+                        if last_value_sig > 10**4:
+                            value = int(amount_end2[index_end2]*(last_value + np.random.randint(10**2, 10**5)) + value_bg)
+                        else:
+                            value = int(amount_end2[index_end2]*(last_value + np.random.randint(10**2, 10**3)) + value_bg)
+                        index_end2 += 1
+                    elif time_value > 54:
+                        value = int(np.random.normal(loc=mean_bg, scale=error_bg, size=1)[0])
+                        if value < 0:
+                            value = 0
+                    #
+                    intensity_data[element].append(value)
+            #
+        return time_data, intensity_data
     #
     def change_rb_traces(self, var_name):
         if self.gui_variables["Radiobutton"]["Trace Elements"].get() == 0:
@@ -1048,24 +1240,29 @@ class GebPyGUI(tk.Frame):
         #
         ## Labels
         lbl_analysis = SimpleElements(
-            parent=self.parent, row_id=21, column_id=0, n_rows=4, n_columns=16, bg=self.colors_gebpy["Navigation"],
+            parent=self.parent, row_id=21, column_id=0, n_rows=6, n_columns=14, bg=self.colors_gebpy["Navigation"],
             fg=self.colors_gebpy["Background"]).create_label(
             text="Analysis Mode", font_option="sans 10 bold", relief=tk.FLAT)
         #
         self.gui_elements["Static"]["Label"].append(lbl_analysis)
         #
         rb_geophysics = SimpleElements(
-            parent=self.parent, row_id=21, column_id=16, n_rows=2, n_columns=14, bg=self.colors_gebpy["Navigation"],
+            parent=self.parent, row_id=21, column_id=14, n_rows=2, n_columns=16, bg=self.colors_gebpy["Navigation"],
             fg=self.colors_gebpy["Background"]).create_radiobutton(
             text="Mineral Physics", var_rb=self.gui_variables["Radiobutton"]["Analysis Mode"], value_rb=0,
             color_bg=self.colors_gebpy["Background"], command=self.change_rb_analysis)
         rb_geochemistry = SimpleElements(
-            parent=self.parent, row_id=23, column_id=16, n_rows=2, n_columns=14, bg=self.colors_gebpy["Navigation"],
+            parent=self.parent, row_id=23, column_id=14, n_rows=2, n_columns=16, bg=self.colors_gebpy["Navigation"],
             fg=self.colors_gebpy["Background"]).create_radiobutton(
             text="Mineral Chemistry", var_rb=self.gui_variables["Radiobutton"]["Analysis Mode"], value_rb=1,
             color_bg=self.colors_gebpy["Navigation"], command=self.change_rb_analysis)
+        rb_laicpms = SimpleElements(
+            parent=self.parent, row_id=25, column_id=14, n_rows=2, n_columns=16, bg=self.colors_gebpy["Navigation"],
+            fg=self.colors_gebpy["Background"]).create_radiobutton(
+            text="Synthetic LA-ICP-MS", var_rb=self.gui_variables["Radiobutton"]["Analysis Mode"], value_rb=2,
+            color_bg=self.colors_gebpy["Navigation"], command=self.change_rb_analysis)
         #
-        self.gui_elements["Static"]["Radiobutton"].extend([rb_geophysics, rb_geochemistry])
+        self.gui_elements["Static"]["Radiobutton"].extend([rb_geophysics, rb_geochemistry, rb_laicpms])
         #
         for key, gui_element in self.gui_elements["Temporary"].items():
             if key not in ["Canvas", "Button"]:
