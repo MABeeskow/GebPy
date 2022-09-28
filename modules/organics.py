@@ -32,9 +32,9 @@ class Organics:
     def get_data(self, number=1):
         if self.mineral == "Organic Matter":
             if number > 1:
-                data = [self.create_organics_matter() for n in range(number)]
+                data = [self.create_organic_matter() for n in range(number)]
             else:
-                data = self.create_organics_matter()
+                data = self.create_organic_matter()
         else:
             data = "Nothing found!"
         #

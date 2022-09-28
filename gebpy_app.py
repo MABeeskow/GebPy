@@ -6,7 +6,7 @@
 # Name:		gebpy_app.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		27.09.2022
+# Date:		28.09.2022
 
 #-----------------------------------------------
 
@@ -379,7 +379,7 @@ class GebPyGUI(tk.Frame):
                     rock_list.sort()
                     for rock in rock_list:
                         sub_sedimentary.add_command(
-                            label=rock)
+                            label=rock, command=lambda var_name=rock: self.select_rock(var_name))
                     if i < n:
                         sub_sedimentary.add_separator()
                         i += 1
@@ -397,7 +397,7 @@ class GebPyGUI(tk.Frame):
                     rock_list.sort()
                     for rock in rock_list:
                         sub_igneous.add_command(
-                            label=rock)
+                            label=rock, command=lambda var_name=rock: self.select_rock(var_name))
                     if i < n:
                         sub_igneous.add_separator()
                         i += 1
@@ -1185,7 +1185,7 @@ class GebPyGUI(tk.Frame):
                 number=self.gui_variables["Entry"]["Number Samples"].get())
         elif var_name in self.halide_minerals:   # Halides
             self.data_mineral = Halides(
-                mineral=var_name, data_type=True, traces_list=self.traces_list).generate_dataset(
+                mineral=var_name, dict=True, traces_list=self.traces_list).generate_dataset(
                 number=self.gui_variables["Entry"]["Number Samples"].get())
         elif var_name in self.phospide_minerals:   # Phospides
             self.data_mineral = Phospides(
@@ -1280,6 +1280,63 @@ class GebPyGUI(tk.Frame):
     #######################
     ## P e t r o l o g y ##
     #######################
+    #
+    def select_rock(self, var_name):
+        ## Initialization
+        self.gui_variables["Entry"]["Number Datapoints"] = tk.IntVar()
+        self.gui_variables["Entry"]["Number Datapoints"].set(100)
+        self.gui_variables["Entry"]["Porosity Min"] = tk.IntVar()
+        self.gui_variables["Entry"]["Porosity Min"].set(0)
+        self.gui_variables["Entry"]["Porosity Max"] = tk.IntVar()
+        self.gui_variables["Entry"]["Porosity Max"].set(10)
+        #
+        ## Labels
+        lbl_title = SimpleElements(
+            parent=self.parent, row_id=5, column_id=0, n_rows=2, n_columns=32, bg=self.colors_gebpy["Accent"],
+            fg=self.colors_gebpy["Navigation"]).create_label(
+            text="Petrology", font_option="sans 14 bold", relief=tk.FLAT)
+        lbl_name = SimpleElements(
+            parent=self.parent, row_id=7, column_id=0, n_rows=2, n_columns=32, bg=self.colors_gebpy["Navigation"],
+            fg=self.colors_gebpy["Background"]).create_label(
+            text=var_name, font_option="sans 12 bold", relief=tk.FLAT)
+        lbl_samples = SimpleElements(
+            parent=self.parent, row_id=9, column_id=0, n_rows=2, n_columns=16, bg=self.colors_gebpy["Navigation"],
+            fg=self.colors_gebpy["Background"]).create_label(
+            text="Number of Datapoints", font_option="sans 10 bold", relief=tk.FLAT)
+        lbl_phi_min = SimpleElements(
+            parent=self.parent, row_id=12, column_id=0, n_rows=2, n_columns=16, bg=self.colors_gebpy["Navigation"],
+            fg=self.colors_gebpy["Background"]).create_label(
+            text="Porosity Minimum", font_option="sans 10 bold", relief=tk.FLAT)
+        lbl_phi_max = SimpleElements(
+            parent=self.parent, row_id=14, column_id=0, n_rows=2, n_columns=16, bg=self.colors_gebpy["Navigation"],
+            fg=self.colors_gebpy["Background"]).create_label(
+            text="Porosity Maximum", font_option="sans 10 bold", relief=tk.FLAT)
+        #
+        self.gui_elements["Static"]["Label"].extend([lbl_title, lbl_name, lbl_samples, lbl_phi_min, lbl_phi_max])
+        #
+        ## Entries
+        entr_samples = SimpleElements(
+            parent=self.parent, row_id=9, column_id=16, n_rows=2, n_columns=15, bg=self.colors_gebpy["Background"],
+            fg=self.colors_gebpy["Navigation"]).create_entry(var_entr=self.gui_variables["Entry"]["Number Datapoints"])
+        entr_phi_min = SimpleElements(
+            parent=self.parent, row_id=12, column_id=16, n_rows=2, n_columns=15, bg=self.colors_gebpy["Background"],
+            fg=self.colors_gebpy["Navigation"]).create_entry(var_entr=self.gui_variables["Entry"]["Porosity Min"])
+        entr_phi_max = SimpleElements(
+            parent=self.parent, row_id=14, column_id=16, n_rows=2, n_columns=15, bg=self.colors_gebpy["Background"],
+            fg=self.colors_gebpy["Navigation"]).create_entry(var_entr=self.gui_variables["Entry"]["Porosity Max"])
+        #
+        self.gui_elements["Static"]["Entry"].extend([entr_samples, entr_phi_min, entr_phi_max])
+        #
+        ## Buttons
+        btn_simulation = SimpleElements(
+            parent=self.parent, row_id=17, column_id=16, n_rows=2, n_columns=15,
+            bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_button(
+            text="Run Simulation", command=lambda var_name=var_name: self.run_simulation_petrology(var_name))
+        #
+        self.gui_elements_sub["Trace Elements"]["Static"]["Button"].extend([btn_simulation])
+    #
+    def run_simulation_petrology(self, var_name):
+        print("Name:", var_name)
     #
     def rock_builder(self):
         ## Initialization
@@ -1760,6 +1817,7 @@ class GebPyGUI(tk.Frame):
         ## Initialization
         self.gui_variables["Radiobutton"]["Analysis Mode"] = tk.IntVar()
         self.gui_variables["Radiobutton"]["Analysis Mode"].set(0)
+        self.selected_minerals = {}
         n_digits = 8
         #
         ## Preparation Simulation
@@ -1784,6 +1842,7 @@ class GebPyGUI(tk.Frame):
         #
         selected_minerals = {}
         #
+        self.calculate_fractions()
         for mineral, value in self.gui_variables["Checkbox"]["Mineralogy"].items():
             if value.get() == 1:
                 selected_minerals[mineral] = {
@@ -2420,6 +2479,118 @@ class GebPyGUI(tk.Frame):
     ######################################
     ## G e n e r a l  F u n c t i o n s ##
     ######################################
+    #
+    def calculate_fractions(self, mode="simplified"):
+        if mode == "simplified":
+            rock_forming_min = self.gui_variables["Entry"]["Mineralogy"]["Rock Forming Total"]["Minimum"].get()
+            rock_forming_max = self.gui_variables["Entry"]["Mineralogy"]["Rock Forming Total"]["Maximum"].get()
+            n_rock_forming = 0
+            mean_rock_forming = (rock_forming_min + rock_forming_max)/2
+            ore_min = self.gui_variables["Entry"]["Mineralogy"]["Ore Total"]["Minimum"].get()
+            ore_max = self.gui_variables["Entry"]["Mineralogy"]["Ore Total"]["Maximum"].get()
+            n_ore = 0
+            mean_ore = (ore_min + ore_max)/2
+            clay_min = self.gui_variables["Entry"]["Mineralogy"]["Clay Total"]["Minimum"].get()
+            clay_max = self.gui_variables["Entry"]["Mineralogy"]["Clay Total"]["Maximum"].get()
+            n_clay = 0
+            mean_clay = (clay_min + clay_max)/2
+            #
+            self.fractions_sum = {"Rock Forming": 0, "Ore": 0, "Clay": 0}
+            fractions_mean = {"Rock Forming": mean_rock_forming, "Ore": mean_ore, "Clay": mean_clay}
+            fractions_mean = dict(sorted(fractions_mean.items(), key=lambda item: item[1], reverse=True))
+            print(fractions_mean)
+            #
+            for mineral, value in self.gui_variables["Checkbox"]["Mineralogy"].items():
+                if value.get() == 1:
+                    var_min = self.gui_variables["Entry"]["Mineralogy"]["Minimum"][mineral].get()
+                    var_max = self.gui_variables["Entry"]["Mineralogy"]["Maximum"][mineral].get()
+                    var_mean = (var_min + var_max)/2
+                    #
+                    if mineral in self.rock_forming_minerals:
+                        var_group = "Rock Forming"
+                    elif mineral in self.ore_minerals:
+                        var_group = "Ore"
+                    elif mineral in self.clay_minerals:
+                        var_group = "Clay"
+                    #
+                    self.selected_minerals[mineral] = {
+                        "Min": var_min, "Max": var_max, "Mean": var_mean, "Group": var_group}
+                    #
+                    if mineral in self.rock_forming_minerals:
+                        n_rock_forming += 1
+                        self.fractions_sum["Rock Forming"] += 1
+                    elif mineral in self.ore_minerals:
+                        n_ore += 1
+                        self.fractions_sum["Ore"] += 1
+                    elif mineral in self.clay_minerals:
+                        n_clay += 1
+                        self.fractions_sum["Clay"] += 1
+            #
+            self.fractions_sum = dict(sorted(self.fractions_sum.items(), key=lambda item: item[1], reverse=True))
+            #
+            amounts_fractions = {}
+            last_amounts = 0
+            for index, fraction in enumerate(fractions_mean):
+                var_key = fraction+" Total"
+                if index == 0:
+                    var_min = self.gui_variables["Entry"]["Mineralogy"][var_key]["Minimum"].get()
+                    var_max = self.gui_variables["Entry"]["Mineralogy"][var_key]["Maximum"].get()
+                    var_amount = round(rd.uniform(var_min, var_max), 4)
+                elif index == len(fractions_mean) - 1:
+                    var_amount = round(100 - last_amounts, 4)
+                else:
+                    var_min = self.gui_variables["Entry"]["Mineralogy"][var_key]["Minimum"].get()
+                    var_max = 100 - last_amounts
+                    var_amount = round(rd.uniform(var_min, var_max), 4)
+                #
+                amounts_fractions[fraction] = round(var_amount, 4)
+                last_amounts += round(var_amount, 4)
+
+            amount_fraction_rf = rd.uniform(rock_forming_min, rock_forming_max)
+            amount_fraction_o = rd.uniform(ore_min, ore_max)
+            amount_fraction_c = rd.uniform(clay_min, clay_max)
+            amounts_helper = {}
+            print(amount_fraction_rf, amount_fraction_o, amount_fraction_c,
+                  np.sum([amount_fraction_rf, amount_fraction_o, amount_fraction_c]))
+            #
+            for group, value in self.fractions_sum.items():
+                index = 1
+                amount_now = 0
+                for mineral, dataset in self.selected_minerals.items():
+                    if group == dataset["Group"]:
+                        print(mineral)
+                        if group == "Rock Forming":
+                            if index == n_rock_forming:
+                                var_amount = amount_fraction_rf - amount_now
+                            else:
+                                var_amount = rd.uniform(
+                                    self.selected_minerals[mineral]["Min"], self.selected_minerals[mineral]["Max"])
+                            #
+                            amounts_helper[mineral] = var_amount
+                            amount_now += var_amount
+                            index += 1
+                        elif group == "Ore":
+                            if index == n_ore:
+                                var_amount = amount_fraction_rf - amount_now
+                            else:
+                                var_amount = rd.uniform(
+                                    self.selected_minerals[mineral]["Min"], self.selected_minerals[mineral]["Max"])
+                            #
+                            amounts_helper[mineral] = var_amount
+                            amount_now += var_amount
+                            index += 1
+                        elif group == "Clay":
+                            if index == n_clay:
+                                var_amount = amount_fraction_rf - amount_now
+                            else:
+                                var_amount = rd.uniform(
+                                    self.selected_minerals[mineral]["Min"], self.selected_minerals[mineral]["Max"])
+                            #
+                            amounts_helper[mineral] = var_amount
+                            amount_now += var_amount
+                            index += 1
+            #
+            print(amounts_helper)
     #
     def select_all_checkboxes(self, var_cb):
         for key, cb_var in var_cb.items():

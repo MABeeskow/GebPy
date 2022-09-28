@@ -6479,7 +6479,7 @@ class Rocks:
                 data = Sulfates(data_type=True, mineral=mineral).get_data()
             # Organics
             elif mineral in ["Organic Matter"]:
-                data = Organics(data_type=True, compound=mineral).get_data()
+                data = Organics(data_type=True, mineral=mineral).get_data()
             # Oxides
             else:
                 data = Oxides(data_type=True, mineral=mineral).get_data()
@@ -6523,7 +6523,7 @@ class Rocks:
                     dataset = Sulfates(data_type=True, mineral=mineral).get_data(number=n_samples)
                 # Organics
                 elif mineral in ["Organic Matter"]:
-                    dataset = Organics(data_type=True, compound=mineral).get_data(number=n_samples)
+                    dataset = Organics(data_type=True, mineral=mineral).get_data(number=n_samples)
                 # Oxides
                 else:
                     dataset = Oxides(data_type=True, mineral=mineral).get_data(number=n_samples)
