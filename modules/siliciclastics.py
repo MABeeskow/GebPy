@@ -1955,7 +1955,10 @@ class Sandstone:
             if porosity == None:
                 phi_helper = round(rd.uniform(0.0, 0.05), 4)
             else:
-                phi_helper = round(rd.uniform(porosity[0], porosity[1]), 4)
+                try:
+                    phi_helper = round(rd.uniform(porosity[0], porosity[1]), 4)
+                except:
+                    phi_helper = round(porosity, 4)
             #
             data_alkalifeldspar = Tectosilicates(impurity="pure", data_type=True).create_alkalifeldspar()
             data_plagioclase = Tectosilicates(impurity="pure", data_type=True).create_plagioclase()

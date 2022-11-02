@@ -6,7 +6,7 @@
 # Name:		gebpy_app.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		28.09.2022
+# Date:		02.11.2022
 
 #-----------------------------------------------
 
@@ -29,6 +29,7 @@ from modules.silicates import Phyllosilicates, Tectosilicates, Inosilicates, Nes
     Cyclosilicates
 from modules.organics import Organics
 from modules.fluids import Water
+from modules.siliciclastics import Sandstone
 
 ## GUI
 class GebPyGUI(tk.Frame):
@@ -600,8 +601,8 @@ class GebPyGUI(tk.Frame):
                 [lbl_title, lbl_results, lbl_min, lbl_max, lbl_mean, lbl_error])
             #
             categories = [
-                "M\n (kg/mol)", "V\n (A$^3$/mol)", "rho\n (kg/m3)", "vP\n (m/s)", "vS\n (m/s)", "vP/vS\n (1)", "K\n (GPa)",
-                "G\n (GPa)", "E\n (GPa)", "nu\n (1)", "GR\n (API)", "PE\n (barns/e$^-$)"]
+                "M\n (kg/mol)", "V\n (\u00C5\u00B3/mol)", "rho\n (kg/m\u00B3)", "vP\n (m/s)", "vS\n (m/s)",
+                "vP/vS\n (1)", "K\n (GPa)", "G\n (GPa)", "E\n (GPa)", "nu\n (1)", "GR\n (API)", "PE\n (barns/e\u207B)"]
             categories_short = ["M", "V", "rho", "vP", "vS", "vP/vS", "K", "G", "E", "nu", "GR", "PE"]
             for index, category in enumerate(categories):
                 lbl_category = SimpleElements(
@@ -1336,7 +1337,88 @@ class GebPyGUI(tk.Frame):
         self.gui_elements_sub["Trace Elements"]["Static"]["Button"].extend([btn_simulation])
     #
     def run_simulation_petrology(self, var_name):
+        ## Initialization
+        self.gui_variables["Radiobutton"]["Analysis Mode"] = tk.IntVar()
+        self.gui_variables["Radiobutton"]["Analysis Mode"].set(0)
+        self.selected_minerals = {}
+        n_digits = 8
+        #
+        self.gui_variables["Entry"]["Minimum"] = {}
+        self.gui_variables["Entry"]["Maximum"] = {}
+        self.gui_variables["Entry"]["Mean"] = {}
+        self.gui_variables["Entry"]["Error"] = {}
+        categories_short = ["rho", "vP", "vS", "vP/vS", "K", "G", "E", "nu", "GR", "PE", "phi"]
+        for category in categories_short:
+            self.gui_variables["Entry"]["Minimum"][category] = tk.StringVar()
+            self.gui_variables["Entry"]["Minimum"][category].set(0.0)
+            self.gui_variables["Entry"]["Maximum"][category] = tk.StringVar()
+            self.gui_variables["Entry"]["Maximum"][category].set(0.0)
+            self.gui_variables["Entry"]["Mean"][category] = tk.StringVar()
+            self.gui_variables["Entry"]["Mean"][category].set(0.0)
+            self.gui_variables["Entry"]["Error"][category] = tk.StringVar()
+            self.gui_variables["Entry"]["Error"][category].set(0.0)
+        #
         print("Name:", var_name)
+        if var_name == "Sandstone":
+            data = Sandstone(fluid="water", actualThickness=0).create_sandstone(
+                number=self.gui_variables["Entry"]["Number Datapoints"].get(),
+                porosity=rd.uniform(self.gui_variables["Entry"]["Porosity Min"].get()/100,
+                                    self.gui_variables["Entry"]["Porosity Max"].get()/100))
+            data = Sandstone(fluid="water", actualThickness=0).create_sandstone(
+                number=self.gui_variables["Entry"]["Number Datapoints"].get(),
+                porosity=[self.gui_variables["Entry"]["Porosity Min"].get()/100,
+                          self.gui_variables["Entry"]["Porosity Max"].get()/100])
+        #
+        self.data_rock = {}
+        categories = ["rho", "rho_s", "vP", "vS", "vP/vS", "K", "G", "E", "nu", "GR", "PE", "phi", "fluid",
+                      "mineralogy", "chemistry"]
+        for category in categories:
+            if category in ["rho", "rho_s", "vP", "vS", "vP/vS", "K", "G", "E", "nu", "GR", "PE", "phi"]:
+                self.data_rock[category] = data[category]
+            elif category in ["mineralogy", "chemistry"]:
+                self.data_rock[category] = data[category]
+        #
+        ## Radiobuttons
+        rb_geophysics = SimpleElements(
+            parent=self.parent, row_id=22, column_id=14, n_rows=2, n_columns=16, bg=self.colors_gebpy["Navigation"],
+            fg=self.colors_gebpy["Background"]).create_radiobutton(
+            text="Physical Data", var_rb=self.gui_variables["Radiobutton"]["Analysis Mode"], value_rb=0,
+            color_bg=self.colors_gebpy["Background"], command=self.change_rb_analysis_rocks)
+        rb_geochemistry = SimpleElements(
+            parent=self.parent, row_id=24, column_id=14, n_rows=2, n_columns=16, bg=self.colors_gebpy["Navigation"],
+            fg=self.colors_gebpy["Background"]).create_radiobutton(
+            text="Mineral Composition", var_rb=self.gui_variables["Radiobutton"]["Analysis Mode"], value_rb=1,
+            color_bg=self.colors_gebpy["Navigation"], command=self.change_rb_analysis_rocks)
+        rb_geochemistry2 = SimpleElements(
+            parent=self.parent, row_id=26, column_id=14, n_rows=2, n_columns=16, bg=self.colors_gebpy["Navigation"],
+            fg=self.colors_gebpy["Background"]).create_radiobutton(
+            text="Element Composition", var_rb=self.gui_variables["Radiobutton"]["Analysis Mode"], value_rb=2,
+            color_bg=self.colors_gebpy["Navigation"], command=self.change_rb_analysis_rocks)
+        #
+        self.gui_elements["Static"]["Radiobutton"].extend([rb_geophysics, rb_geochemistry, rb_geochemistry2])
+        #
+        self.gui_variables["Radiobutton"]["Analysis Mode"].set(0)
+        self.change_rb_analysis_rocks()
+        #
+        for mineral in self.list_minerals_rock:
+            self.gui_variables["Entry"]["Minimum"][mineral] = tk.StringVar()
+            self.gui_variables["Entry"]["Minimum"][mineral].set(0.0)
+            self.gui_variables["Entry"]["Maximum"][mineral] = tk.StringVar()
+            self.gui_variables["Entry"]["Maximum"][mineral].set(0.0)
+            self.gui_variables["Entry"]["Mean"][mineral] = tk.StringVar()
+            self.gui_variables["Entry"]["Mean"][mineral].set(0.0)
+            self.gui_variables["Entry"]["Error"][mineral] = tk.StringVar()
+            self.gui_variables["Entry"]["Error"][mineral].set(0.0)
+        #
+        for element in self.list_elements_rock:
+            self.gui_variables["Entry"]["Minimum"][element] = tk.StringVar()
+            self.gui_variables["Entry"]["Minimum"][element].set(0.0)
+            self.gui_variables["Entry"]["Maximum"][element] = tk.StringVar()
+            self.gui_variables["Entry"]["Maximum"][element].set(0.0)
+            self.gui_variables["Entry"]["Mean"][element] = tk.StringVar()
+            self.gui_variables["Entry"]["Mean"][element].set(0.0)
+            self.gui_variables["Entry"]["Error"][element] = tk.StringVar()
+            self.gui_variables["Entry"]["Error"][element].set(0.0)
     #
     def rock_builder(self):
         ## Initialization
@@ -2307,8 +2389,8 @@ class GebPyGUI(tk.Frame):
                 [lbl_title, lbl_results, lbl_min, lbl_max, lbl_mean, lbl_error])
             #
             categories = [
-                "rho\n (kg/m3)", "vP\n (m/s)", "vS\n (m/s)", "vP/vS\n (1)", "K\n (GPa)", "G\n (GPa)", "E\n (GPa)",
-                "nu\n (1)", "GR\n (API)", "PE\n (barns/e$^-$)", "phi\n (%)"]
+                "rho\n (kg/m\u00B3)", "vP\n (m/s)", "vS\n (m/s)", "vP/vS\n (1)", "K\n (GPa)", "G\n (GPa)", "E\n (GPa)",
+                "nu\n (1)", "GR\n (API)", "PE\n (barns/e\u207B)", "phi\n (%)"]
             categories_short = ["rho", "vP", "vS", "vP/vS", "K", "G", "E", "nu", "GR", "PE", "phi"]
             for index, category in enumerate(categories):
                 lbl_category = SimpleElements(
@@ -2350,7 +2432,7 @@ class GebPyGUI(tk.Frame):
                     ncols=3, nrows=3, figsize=(9, 9), facecolor=self.colors_gebpy["Background"])
                 #
                 categories = [["phi", "GR", "PE"], ["vP", "vS", "vP/vS"], ["K", "G", "nu"]]
-                labels = [["$\\varphi$ (%)", "GR (API)", "PE (barns/e$^-$)"], ["vP (m/s)", "vS (m/s)", "vP/vS (1)"],
+                labels = [["$\\varphi$ (%)", "GR (API)", "PE (barns/e\u207B)"], ["vP (m/s)", "vS (m/s)", "vP/vS (1)"],
                           ["K (GPa)", "G (GPa)", "nu (1)"]]
                 for i, subcategories in enumerate(categories):
                     for j, key in enumerate(subcategories):
@@ -2358,7 +2440,7 @@ class GebPyGUI(tk.Frame):
                             self.data_rock["rho"], self.data_rock[key], color=self.colors_gebpy["Accent"],
                             edgecolor="black", alpha=0.5)
                         #
-                        ax_scatter[i][j].set_xlabel("Density - kg/m$^3$", fontsize=9)
+                        ax_scatter[i][j].set_xlabel("Density - kg/m\u00B3", fontsize=9)
                         ax_scatter[i][j].set_ylabel(labels[i][j], labelpad=0.5, fontsize=9)
                         ax_scatter[i][j].grid(True)
                         ax_scatter[i][j].set_axisbelow(True)
