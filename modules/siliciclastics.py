@@ -2556,7 +2556,7 @@ class Sandstone:
         data_kaolinite = Phyllosilicates(impurity="pure", data_type=True).create_kaolinite()
         data_alkalifeldspar = Tectosilicates(impurity="pure", data_type=True).create_alkalifeldspar()
         data_plagioclase = Tectosilicates(impurity="pure", data_type=True).create_plagioclase()
-        data_organics = Organics(data_type=True).create_organics_matter()
+        data_organics = Organics(data_type=True).create_organic_matter()
         #
         assemblage = [data_montmorillonite, data_illite, data_kaolinite, self.data_quartz, data_alkalifeldspar,
                       data_plagioclase, self.data_calcite]
