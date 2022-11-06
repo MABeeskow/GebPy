@@ -1358,12 +1358,7 @@ class GebPyGUI(tk.Frame):
             self.gui_variables["Entry"]["Error"][category] = tk.StringVar()
             self.gui_variables["Entry"]["Error"][category].set(0.0)
         #
-        print("Name:", var_name)
         if var_name == "Sandstone":
-            data = Sandstone(fluid="water", actualThickness=0).create_sandstone(
-                number=self.gui_variables["Entry"]["Number Datapoints"].get(),
-                porosity=rd.uniform(self.gui_variables["Entry"]["Porosity Min"].get()/100,
-                                    self.gui_variables["Entry"]["Porosity Max"].get()/100))
             data = Sandstone(fluid="water", actualThickness=0).create_sandstone(
                 number=self.gui_variables["Entry"]["Number Datapoints"].get(),
                 porosity=[self.gui_variables["Entry"]["Porosity Min"].get()/100,
@@ -1377,6 +1372,9 @@ class GebPyGUI(tk.Frame):
                 self.data_rock[category] = data[category]
             elif category in ["mineralogy", "chemistry"]:
                 self.data_rock[category] = data[category]
+        #
+        self.list_elements_rock = list(self.data_rock["chemistry"].keys())
+        self.list_minerals_rock = list(self.data_rock["mineralogy"].keys())
         #
         ## Radiobuttons
         rb_geophysics = SimpleElements(
@@ -1396,6 +1394,16 @@ class GebPyGUI(tk.Frame):
             color_bg=self.colors_gebpy["Navigation"], command=self.change_rb_analysis_rocks)
         #
         self.gui_elements["Static"]["Radiobutton"].extend([rb_geophysics, rb_geochemistry, rb_geochemistry2])
+        #
+        for key, gui_element in self.gui_elements["Temporary"].items():
+            if key not in ["Canvas", "Button"]:
+                if type(gui_element) == list:
+                    for gui_item in gui_element:
+                        gui_item.grid_remove()
+            elif key == "Canvas":
+                for key_2, gui_item in gui_element.items():
+                    gui_item.get_tk_widget().grid_remove()
+            gui_element.clear()
         #
         self.gui_variables["Radiobutton"]["Analysis Mode"].set(0)
         self.change_rb_analysis_rocks()
@@ -2591,10 +2599,16 @@ class GebPyGUI(tk.Frame):
                 #
                 ## Entries
                 #
-                var_entr_min = int(min(self.data_rock["chemistry"][element])*10**2)
-                var_entr_max = int(max(self.data_rock["chemistry"][element])*10**2)
-                var_entr_mean = int(np.mean(self.data_rock["chemistry"][element])*10**2)
+                var_entr_min = round(min(self.data_rock["chemistry"][element])*10**2, 2)
+                var_entr_max = round(max(self.data_rock["chemistry"][element])*10**2, 2)
+                var_entr_mean = round(np.mean(self.data_rock["chemistry"][element])*10**2, 2)
                 var_entr_error = round(np.std(self.data_rock["chemistry"][element], ddof=1)*10**2, 2)
+                #
+                ## ppm
+                # var_entr_min = int(min(self.data_rock["chemistry"][element])*10**6)
+                # var_entr_max = int(max(self.data_rock["chemistry"][element])*10**6)
+                # var_entr_mean = int(np.mean(self.data_rock["chemistry"][element])*10**6)
+                # var_entr_error = round(np.std(self.data_rock["chemistry"][element], ddof=1)*10**6, 2)
                 #
                 entr_min = SimpleElements(
                     parent=self.parent, row_id=(2*index + 4), column_id=start_column + 9, n_rows=2,
