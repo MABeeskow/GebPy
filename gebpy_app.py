@@ -42,7 +42,7 @@ class GebPyGUI(tk.Frame):
         self.gui_elements_sub = {}
         gui_elements = ["Frame", "Label", "Button", "Radiobutton", "Checkbox", "Entry", "Option Menu", "Canvas",
                         "Figure", "Axis"]
-        gui_priority = ["Static", "Temporary"]
+        gui_priority = ["Static", "Temporary", "Rockbuilder Static", "Rockbuilder Temporary"]
         gui_subwindows = ["Trace Elements", "Mineralogy"]
         for subwindow in gui_subwindows:
             self.gui_elements_sub[subwindow] = {}
@@ -1247,6 +1247,7 @@ class GebPyGUI(tk.Frame):
         #
         self.gui_elements["Static"]["Label"].append(lbl_analysis)
         #
+        ## Radiobutton
         rb_geophysics = SimpleElements(
             parent=self.parent, row_id=21, column_id=14, n_rows=2, n_columns=16, bg=self.colors_gebpy["Navigation"],
             fg=self.colors_gebpy["Background"]).create_radiobutton(
@@ -1264,6 +1265,7 @@ class GebPyGUI(tk.Frame):
             color_bg=self.colors_gebpy["Navigation"], command=self.change_rb_analysis)
         #
         self.gui_elements["Static"]["Radiobutton"].extend([rb_geophysics, rb_geochemistry, rb_laicpms])
+        #
         #
         for key, gui_element in self.gui_elements["Temporary"].items():
             if key not in ["Canvas", "Button"]:
@@ -1283,6 +1285,26 @@ class GebPyGUI(tk.Frame):
     #######################
     #
     def select_rock(self, var_name):
+        ## Cleaning
+        for category in ["Label", "Button", "Entry", "Radiobutton"]:
+            for gui_element in self.gui_elements["Rockbuilder Static"][category]:
+                gui_element.grid_remove()
+        #
+        for category in ["Label", "Button", "Entry", "Radiobutton"]:
+            for gui_element in self.gui_elements["Rockbuilder Temporary"][category]:
+                gui_element.grid_remove()
+        #
+        for key, gui_items in self.gui_elements["Rockbuilder Temporary"].items():
+            if len(gui_items) > 0:
+                if key not in ["Canvas"]:
+                    if type(gui_items) == list:
+                        for gui_item in gui_items:
+                            gui_item.grid_remove()
+                        gui_items.clear()
+                else:
+                    for key_2, gui_item in gui_items.items():
+                        gui_item.get_tk_widget().grid_remove()
+        #
         ## Initialization
         self.gui_variables["Entry"]["Number Datapoints"] = tk.IntVar()
         self.gui_variables["Entry"]["Number Datapoints"].set(100)
@@ -1405,6 +1427,14 @@ class GebPyGUI(tk.Frame):
         #
         self.gui_elements["Static"]["Radiobutton"].extend([rb_geophysics, rb_geochemistry, rb_geochemistry2])
         #
+        ## Button
+        btn_export = SimpleElements(
+            parent=self.parent, row_id=29, column_id=16, n_rows=2, n_columns=15, bg=self.colors_gebpy["Option"],
+            fg=self.colors_gebpy["Navigation"]).create_button(
+            text="Export Data")
+        #
+        self.gui_elements["Static"]["Button"].append(btn_export)
+        #
         for key, gui_element in self.gui_elements["Temporary"].items():
             if key not in ["Canvas", "Button"]:
                 if type(gui_element) == list:
@@ -1520,7 +1550,7 @@ class GebPyGUI(tk.Frame):
             fg=self.colors_gebpy["Background"]).create_label(
             text="Porosity Maximum", font_option="sans 10 bold", relief=tk.FLAT)
         #
-        self.gui_elements["Static"]["Label"].extend(
+        self.gui_elements["Rockbuilder Static"]["Label"].extend(
             [lbl_title, lbl_mineralogy, lbl_datapoints, lbl_phi_min, lbl_phi_max])
         #
         ## Buttons
@@ -1533,7 +1563,7 @@ class GebPyGUI(tk.Frame):
             bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_button(
             text="Run Simulation", command=self.run_simulation_rockbuilder)
         #
-        self.gui_elements_sub["Trace Elements"]["Static"]["Button"].extend([btn_mineralogy, btn_simulation])
+        self.gui_elements["Rockbuilder Static"]["Button"].extend([btn_mineralogy, btn_simulation])
         #
         ## Entries
         entr_datapoints = SimpleElements(
@@ -1546,7 +1576,7 @@ class GebPyGUI(tk.Frame):
             parent=self.parent, row_id=16, column_id=16, n_rows=2, n_columns=15, bg=self.colors_gebpy["Background"],
             fg=self.colors_gebpy["Navigation"]).create_entry(var_entr=self.gui_variables["Entry"]["Porosity Max"])
         #
-        self.gui_elements["Static"]["Entry"].extend([entr_datapoints, entr_phi_min, entr_phi_max])
+        self.gui_elements["Rockbuilder Static"]["Entry"].extend([entr_datapoints, entr_phi_min, entr_phi_max])
     #
     def define_mineralogy(self):
         self.window_mineralogy = tk.Toplevel(self.parent)
@@ -2111,6 +2141,36 @@ class GebPyGUI(tk.Frame):
                 fraction_rock_forming = 100*np.ones(n_datapoints)
                 fraction_ore = np.zeros(n_datapoints)
                 fraction_clay = np.zeros(n_datapoints)
+        else:
+            if n_ore > 0 and n_clay == 0:
+                fraction_rock_forming = np.zeros(n_datapoints)
+                fraction_ore = 100*np.ones(n_datapoints)
+                fraction_clay = np.zeros(n_datapoints)
+            elif n_ore == 0 and n_clay > 0:
+                fraction_rock_forming = np.zeros(n_datapoints)
+                fraction_ore = np.zeros(n_datapoints)
+                fraction_clay = 100*np.ones(n_datapoints)
+            else:
+                if mean_ore >= mean_clay:
+                    mean_o = (ore_min + ore_max)/2
+                    sigma_o = (mean_o - ore_min)/3
+                    val_fraction_o = np.random.normal(loc=mean_o, scale=sigma_o, size=n_datapoints)
+                    #
+                    val_fraction_c = 100*np.ones(n_datapoints) - val_fraction_o
+                    #
+                    fraction_ore = val_fraction_o
+                    fraction_clay = val_fraction_c
+                    fraction_rock_forming = np.zeros(n_datapoints)
+                else:
+                    mean_c = (clay_min + clay_max)/2
+                    sigma_c = (mean_c - clay_min)/3
+                    val_fraction_c = np.random.normal(loc=mean_c, scale=sigma_c, size=n_datapoints)
+                    #
+                    val_fraction_o = 100*np.ones(n_datapoints) - val_fraction_c
+                    #
+                    fraction_ore = val_fraction_o
+                    fraction_clay = val_fraction_c
+                    fraction_rock_forming = np.zeros(n_datapoints)
         #
         fractions = {"Rock Forming": np.around(fraction_rock_forming/100, n_digits),
                      "Ore": np.around(fraction_ore/100, n_digits), "Clay": np.around(fraction_clay/100, n_digits)}
@@ -2182,7 +2242,7 @@ class GebPyGUI(tk.Frame):
                 fraction_factor = fractions["Rock Forming"]
             elif mineral in self.ore_minerals:
                 fraction_factor = fractions["Ore"]
-            elif mineral in self.ore_minerals:
+            elif mineral in self.clay_minerals:
                 fraction_factor = fractions["Clay"]
             #
             amounts_ppm = np.array([int(fraction_factor[index]*value) for index, value in enumerate(amounts_raw)])
@@ -2287,7 +2347,15 @@ class GebPyGUI(tk.Frame):
             fg=self.colors_gebpy["Background"]).create_label(
             text="Analysis Mode", font_option="sans 10 bold", relief=tk.FLAT)
         #
-        self.gui_elements["Static"]["Label"].append(lbl_analysis)
+        self.gui_elements["Rockbuilder Static"]["Label"].append(lbl_analysis)
+        #
+        ## Button
+        btn_export = SimpleElements(
+            parent=self.parent, row_id=29, column_id=16, n_rows=2, n_columns=15, bg=self.colors_gebpy["Option"],
+            fg=self.colors_gebpy["Navigation"]).create_button(
+            text="Export Data")
+        #
+        self.gui_elements["Rockbuilder Static"]["Button"].append(btn_export)
         #
         ## Radiobuttons
         rb_geophysics = SimpleElements(
@@ -2306,9 +2374,10 @@ class GebPyGUI(tk.Frame):
             text="Element Composition", var_rb=self.gui_variables["Radiobutton"]["Analysis Mode"], value_rb=2,
             color_bg=self.colors_gebpy["Navigation"], command=self.change_rb_analysis_rocks)
         #
-        self.gui_elements["Static"]["Radiobutton"].extend([rb_geophysics, rb_geochemistry, rb_geochemistry2])
+        self.gui_elements["Rockbuilder Static"]["Radiobutton"].extend(
+            [rb_geophysics, rb_geochemistry, rb_geochemistry2])
         #
-        for key, gui_element in self.gui_elements["Temporary"].items():
+        for key, gui_element in self.gui_elements["Rockbuilder Temporary"].items():
             if key not in ["Canvas", "Button"]:
                 if type(gui_element) == list:
                     for gui_item in gui_element:
@@ -2383,7 +2452,7 @@ class GebPyGUI(tk.Frame):
                 bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
                 text="Error", font_option="sans 10 bold", relief=tk.GROOVE)
             #
-            self.gui_elements["Temporary"]["Label"].extend(
+            self.gui_elements["Rockbuilder Temporary"]["Label"].extend(
                 [lbl_title, lbl_results, lbl_min, lbl_max, lbl_mean, lbl_error])
             #
             categories = [
@@ -2396,7 +2465,7 @@ class GebPyGUI(tk.Frame):
                     bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
                     text=category, font_option="sans 10 bold", relief=tk.GROOVE)
                 #
-                self.gui_elements["Temporary"]["Label"].append(lbl_category)
+                self.gui_elements["Rockbuilder Temporary"]["Label"].append(lbl_category)
                 #
                 ## Entries
                 #
@@ -2422,7 +2491,7 @@ class GebPyGUI(tk.Frame):
                     bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
                     var_entr=self.gui_variables["Entry"]["Error"][categories_short[index]], var_entr_set=var_entr_error)
                 #
-                self.gui_elements["Temporary"]["Entry"].extend([entr_min, entr_max, entr_mean, entr_error])
+                self.gui_elements["Rockbuilder Temporary"]["Entry"].extend([entr_min, entr_max, entr_mean, entr_error])
             #
             ## Diagram
             if "Rock Physics Scatter" not in self.gui_elements["Temporary"]["Canvas"]:
@@ -2449,15 +2518,15 @@ class GebPyGUI(tk.Frame):
                 canvas_scatter.get_tk_widget().grid(
                     row=0, column=90, rowspan=65, columnspan=90, sticky="nesw")
                 #
-                self.gui_elements["Temporary"]["Canvas"]["Rock Physics Scatter"] = canvas_scatter
-                self.gui_elements["Temporary"]["Figure"]["Rock Physics Scatter"] = fig_scatter
-                self.gui_elements["Temporary"]["Axis"]["Rock Physics Scatter"] = ax_scatter
+                self.gui_elements["Rockbuilder Temporary"]["Canvas"]["Rock Physics Scatter"] = canvas_scatter
+                self.gui_elements["Rockbuilder Temporary"]["Figure"]["Rock Physics Scatter"] = fig_scatter
+                self.gui_elements["Rockbuilder Temporary"]["Axis"]["Rock Physics Scatter"] = ax_scatter
             else:
-                self.gui_elements["Temporary"]["Canvas"]["Rock Physics Scatter"].get_tk_widget().grid()
+                self.gui_elements["Rockbuilder Temporary"]["Canvas"]["Rock Physics Scatter"].get_tk_widget().grid()
         #
         elif self.gui_variables["Radiobutton"]["Analysis Mode"].get() == 1: # Mineral Composition
             ## Cleaning
-            for key, gui_items in self.gui_elements["Temporary"].items():
+            for key, gui_items in self.gui_elements["Rockbuilder Temporary"].items():
                 if len(gui_items) > 0:
                     if key not in ["Canvas"]:
                         if type(gui_items) == list:
@@ -2494,7 +2563,7 @@ class GebPyGUI(tk.Frame):
                 bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
                 text="Error", font_option="sans 10 bold", relief=tk.GROOVE)
             #
-            self.gui_elements["Temporary"]["Label"].extend(
+            self.gui_elements["Rockbuilder Temporary"]["Label"].extend(
                 [lbl_title, lbl_results, lbl_min, lbl_max, lbl_mean, lbl_error])
             #
             self.list_minerals_rock.sort()
@@ -2504,7 +2573,7 @@ class GebPyGUI(tk.Frame):
                     bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
                     text=mineral, font_option="sans 10 bold", relief=tk.GROOVE)
                 #
-                self.gui_elements["Temporary"]["Label"].append(lbl_element)
+                self.gui_elements["Rockbuilder Temporary"]["Label"].append(lbl_element)
                 #
                 ## Entries
                 #
@@ -2534,11 +2603,11 @@ class GebPyGUI(tk.Frame):
                     bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
                     var_entr=self.gui_variables["Entry"]["Error"][mineral], var_entr_set=var_entr_error)
                 #
-                self.gui_elements["Temporary"]["Entry"].extend([entr_min, entr_max, entr_mean, entr_error])
+                self.gui_elements["Rockbuilder Temporary"]["Entry"].extend([entr_min, entr_max, entr_mean, entr_error])
         #
         elif self.gui_variables["Radiobutton"]["Analysis Mode"].get() == 2: # Element Composition
             ## Cleaning
-            for key, gui_items in self.gui_elements["Temporary"].items():
+            for key, gui_items in self.gui_elements["Rockbuilder Temporary"].items():
                 if len(gui_items) > 0:
                     if key not in ["Canvas"]:
                         if type(gui_items) == list:
@@ -2575,7 +2644,7 @@ class GebPyGUI(tk.Frame):
                 bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
                 text="Error", font_option="sans 10 bold", relief=tk.GROOVE)
             #
-            self.gui_elements["Temporary"]["Label"].extend(
+            self.gui_elements["Rockbuilder Temporary"]["Label"].extend(
                 [lbl_title, lbl_results, lbl_min, lbl_max, lbl_mean, lbl_error])
             #
             self.list_elements_rock.sort()
@@ -2585,7 +2654,7 @@ class GebPyGUI(tk.Frame):
                     bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
                     text=element, font_option="sans 10 bold", relief=tk.GROOVE)
                 #
-                self.gui_elements["Temporary"]["Label"].append(lbl_element)
+                self.gui_elements["Rockbuilder Temporary"]["Label"].append(lbl_element)
                 #
                 ## Entries
                 #
@@ -2621,7 +2690,7 @@ class GebPyGUI(tk.Frame):
                     bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
                     var_entr=self.gui_variables["Entry"]["Error"][element], var_entr_set=var_entr_error)
                 #
-                self.gui_elements["Temporary"]["Entry"].extend([entr_min, entr_max, entr_mean, entr_error])
+                self.gui_elements["Rockbuilder Temporary"]["Entry"].extend([entr_min, entr_max, entr_mean, entr_error])
     #
     ######################################
     ## G e n e r a l  F u n c t i o n s ##
@@ -2644,7 +2713,22 @@ class GebPyGUI(tk.Frame):
             #
             self.fractions_sum = {"Rock Forming": 0, "Ore": 0, "Clay": 0}
             fractions_mean = {"Rock Forming": mean_rock_forming, "Ore": mean_ore, "Clay": mean_clay}
-            fractions_mean = dict(sorted(fractions_mean.items(), key=lambda item: item[1]))
+            fractions_mean = {k: v for k, v in sorted(fractions_mean.items(), key=lambda item: item[1], reverse=True)}
+            order_fractions = {}
+            #
+            magicnumber_set = False
+            for index, (key, value) in enumerate(fractions_mean.items()):
+                if index == 0:
+                    order_fractions[index] = key
+                else:
+                    if magicnumber_set == False:
+                        magicnumber = rd.randint(0, 1)
+                        if magicnumber == 1:
+                            magicnumber_set = True
+                    else:
+                        magicnumber = 0
+                    #
+                    order_fractions[index + magicnumber] = key
             #
             for mineral, value in self.gui_variables["Checkbox"]["Mineralogy"].items():
                 if value.get() == 1:
@@ -2743,10 +2827,6 @@ class GebPyGUI(tk.Frame):
                             amounts_helper[mineral] = round(var_amount, 4)
                             amount_now += round(var_amount, 4)
                             index += 1
-            #
-            print("Amounts (Fractions):", amounts_fractions)
-            print("Amounts (Mineralogy):", amounts_helper)
-            print(round(np.sum(list(amounts_helper.values())), 4))
     #
     def select_all_checkboxes(self, var_cb):
         for key, cb_var in var_cb.items():
