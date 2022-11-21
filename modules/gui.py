@@ -6,7 +6,7 @@
 # Name:		gui.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		20.09.2022
+# Date:		21.11.2022
 
 #-----------------------------------------------
 
@@ -351,17 +351,17 @@ class GebPyGUI(tk.Frame):
     #
     def pressed_button(self, var_btn):
         if var_btn == "random":
-            Subsurface(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
+            Subsurface(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_dark,
                        color_acc=[self.color_accent_03, self.color_accent_04], subsurface=var_btn, lbl_w=self.lbl_w,
                        entr_w=self.entr_w, gui_elements=self.gui_elements)
         elif var_btn == "custom rock":
-            Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
+            Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_dark,
                   color_acc=[self.color_accent_03, self.color_accent_04], rock="Custom", lbl_w=self.lbl_w,
                   entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
         elif var_btn == "export data":
             self.export_data(var_exp=self.exp_data)
         else:
-            Subsurface(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
+            Subsurface(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_dark,
                        color_acc=[self.color_accent_03, self.color_accent_04], subsurface=var_btn, lbl_w=self.lbl_w,
                        entr_w=self.entr_w, gui_elements=self.gui_elements)
     #
@@ -460,7 +460,7 @@ class GebPyGUI(tk.Frame):
                        "Iron Spinels", "Uraninite", "Litharge", "Massicot", "Minium", "Plattnerite", "Scrutinyite",
                        "Zincite", "Columbite", "Tantalite", "Coltan", "Hematite-Group", "Rutile-Group",
                        "Periclase-Group", "Crocoite", "Wulfenite", "Wulfenite-Group", "Goethite"]:
-            Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
+            Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_dark,
                      color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
                      entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
         #
@@ -486,7 +486,7 @@ class GebPyGUI(tk.Frame):
             # #
             # self.container_gui["MINERALOGY"]["RADIOBUTTON"].extend([rb_trace_01, rb_trace_02])
             # #
-            Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
+            Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_dark,
                      color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
                      entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
             #
@@ -625,40 +625,40 @@ class GebPyGUI(tk.Frame):
             #
             self.container_gui["MINERALOGY"]["RADIOBUTTON"].extend([rb_trace_01, rb_trace_02])
             #
-            Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
+            Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_dark,
                      color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
                      entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
             #
         ## CARBONATES
         elif var_opt in ["Calcite", "Dolomite", "Magnesite", "Siderite", "Rhodochrosite", "Aragonite", "Cerussite",
                          "Ankerite", "Azurite", "Malachite", "Ikaite"]:
-            Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
+            Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_dark,
                      color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
                      entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
         ## HALIDES
         elif var_opt in ["Halite", "Fluorite", "Sylvite", "Carnallite"]:
-            Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
+            Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_dark,
                      color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
                      entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
         # SULFATES
         elif var_opt in ["Barite", "Celestite", "Anglesite", "Anhydrite", "Hanksite", "Gypsum", "Alunite", "Jarosite",
                          "Chalcanthite", "Kieserite", "Scheelite", "Hexahydrite", "Kainite"]:
-            Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
+            Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_dark,
                      color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
                      entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
         # TECTOSILICATES
         elif var_opt in ["Alkalifeldspar", "Plagioclase", "Scapolite", "Danburite", "Nepheline"]:
-            Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
+            Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_dark,
                      color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
                      entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
         # PHOSPHATES
         elif var_opt in ["Apatite-F", "Apatite-Cl", "Apatite-OH", "Apatite"]:
-            Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
+            Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_dark,
                      color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
                      entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
         # PHOSPHIDES
         elif var_opt in ["Allabogdanite"]:
-            Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
+            Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_dark,
                      color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
                      entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
         # PHYLLOSILICATES
@@ -666,19 +666,19 @@ class GebPyGUI(tk.Frame):
                          "Chlorite", "Vermiculite", "Annite", "Phlogopite", "Eastonite", "Siderophyllite", "Biotite",
                          "Muscovite", "Glauconite", "Nontronite", "Saponite", "Talc", "Chrysotile", "Antigorite",
                          "Pyrophyllite"]:
-            Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
+            Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_dark,
                      color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
                      entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
         # NESOSILICATES
         elif var_opt in ["Zircon", "Titanite", "Thorite", "Andalusite", "Kyanite", "Sillimanite", "Topaz", "Staurolite",
                          "Fayalite", "Forsterite", "Tephroite", "Calcio-Olivine", "Liebenbergite", "Olivine", "Pyrope",
                          "Almandine", "Grossular", "Andradite", "Uvarovite", "Aluminium Garnet", "Calcium Garnet"]:
-            Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
+            Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_dark,
                      color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
                      entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
         # SOROSILICATES
         elif var_opt in ["Epidote", "Zoisite", "Gehlenite"]:
-            Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
+            Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_dark,
                      color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
                      entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
         # INOSILICATES
@@ -686,38 +686,38 @@ class GebPyGUI(tk.Frame):
                          "Tremolite", "Actinolite", "Glaucophane", "Augite", "Riebeckite", "Arfvedsonite",
                          "Calcium Amphibole", "Sodium Amphibole", "Mg-Fe Pyroxene", "Calcium Pyroxene", "Donpeacorite",
                          "Orthopyroxene"]:
-            Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
+            Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_dark,
                      color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
                      entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
         # CYCLOSILICATES
         elif var_opt in ["Beryl", "Benitoite", "Cordierite", "Sekaninaite", "Schorl", "Elbaite", "Liddicoatite"]:
-            Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
+            Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_dark,
                      color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
                      entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
         # ORGANICS
         elif var_opt in ["Organic Matter"]:
-            Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
+            Minerals(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_dark,
                      color_acc=[self.color_accent_03, self.color_accent_04], mineral=var_opt, lbl_w=self.lbl_w,
                      entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
         ## ROCKS
         elif var_opt in ["Sandstone", "Shale", "Mudstone", "Conglomerate"]:
-            Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
+            Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_dark,
                   color_acc=[self.color_accent_03, self.color_accent_04], rock=var_opt, lbl_w=self.lbl_w,
                   entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
         #
         elif var_opt in ["Limestone", "Limestone (old)", "Dolomite Rock", "Marl"]:
-            Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
+            Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_dark,
                   color_acc=[self.color_accent_03, self.color_accent_04], rock=var_opt, lbl_w=self.lbl_w,
                   entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
         elif var_opt == "Custom Carbonate Rock":
-            Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
+            Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_dark,
                   color_acc=[self.color_accent_03, self.color_accent_04], rock=var_opt, lbl_w=self.lbl_w,
                   entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
         #
         # IGNEOUS ROCKS (Volcanic Rocks)
         elif var_opt in ["Rhyolite (Streckeisen)", "Trachyte (Streckeisen)", "Latite (Streckeisen)", 
                          "Andesite (Streckeisen)", "Basalt (Streckeisen)", "Dacite (Streckeisen)"]:
-            Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
+            Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_dark,
                   color_acc=[self.color_accent_03, self.color_accent_04], rock=var_opt, lbl_w=self.lbl_w,
                   entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
         # IGNEOUS ROCKS (Plutonic Rocks)
@@ -728,73 +728,73 @@ class GebPyGUI(tk.Frame):
                          "Foid-bearing Monzodiorite (Streckeisen)", "Foid-bearing Monzogabbro (Streckeisen)",
                          "Foid Monzosyenite (Streckeisen)", "Foid Monzodiorite (Streckeisen)",
                          "Foid Monzogabbro (Streckeisen)", "Foidolite (Streckeisen)"]:
-            Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
+            Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_dark,
                   color_acc=[self.color_accent_03, self.color_accent_04], rock=var_opt, lbl_w=self.lbl_w,
                   entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
         # IGNEOUS ROCKS (Pyroclastic Rocks)
         elif var_opt in ["Pyroclastic Rock"]:
             Rocks(
-                parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
+                parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_dark,
                 color_acc=[self.color_accent_03, self.color_accent_04], rock=var_opt, lbl_w=self.lbl_w,
                 entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
         elif var_opt == "Felsic Rock":
-            Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
+            Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_dark,
                   color_acc=[self.color_accent_03, self.color_accent_04], rock=var_opt, lbl_w=self.lbl_w,
                   entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
         elif var_opt == "Intermediate Rock":
-            Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
+            Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_dark,
                   color_acc=[self.color_accent_03, self.color_accent_04], rock=var_opt, lbl_w=self.lbl_w,
                   entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
         elif var_opt == "Granite":
-            Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
+            Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_dark,
                   color_acc=[self.color_accent_03, self.color_accent_04], rock=var_opt, lbl_w=self.lbl_w,
                   entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
         elif var_opt == "Gabbro":
-            Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
+            Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_dark,
                   color_acc=[self.color_accent_03, self.color_accent_04], rock=var_opt, lbl_w=self.lbl_w,
                   entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
         elif var_opt == "Diorite":
-            Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
+            Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_dark,
                   color_acc=[self.color_accent_03, self.color_accent_04], rock=var_opt, lbl_w=self.lbl_w,
                   entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
         elif var_opt == "Granodiorite":
-            Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
+            Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_dark,
                   color_acc=[self.color_accent_03, self.color_accent_04], rock=var_opt, lbl_w=self.lbl_w,
                   entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
         elif var_opt == "Syenite":
-            Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
+            Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_dark,
                   color_acc=[self.color_accent_03, self.color_accent_04], rock=var_opt, lbl_w=self.lbl_w,
                   entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
         elif var_opt == "Tonalite":
-            Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
+            Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_dark,
                   color_acc=[self.color_accent_03, self.color_accent_04], rock=var_opt, lbl_w=self.lbl_w,
                   entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
         elif var_opt == "Monzonite":
-            Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
+            Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_dark,
                   color_acc=[self.color_accent_03, self.color_accent_04], rock=var_opt, lbl_w=self.lbl_w,
                   entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
         elif var_opt == "Quartzolite":
-            Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
+            Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_dark,
                   color_acc=[self.color_accent_03, self.color_accent_04], rock=var_opt, lbl_w=self.lbl_w,
                   entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
         elif var_opt == "Qz-rich Granitoid":
-            Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
+            Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_dark,
                   color_acc=[self.color_accent_03, self.color_accent_04], rock=var_opt, lbl_w=self.lbl_w,
                   entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
         ## Evaporite Rocks
         elif var_opt in ["Rock Salt", "Anhydrite (Rock)", "Potash"]:
-            Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
+            Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_dark,
                   color_acc=[self.color_accent_03, self.color_accent_04], rock=var_opt, lbl_w=self.lbl_w,
                   entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
         ## Ore Rocks
         elif var_opt in ["Kupferschiefer", "Compact Hematite Ore", "Banded Iron Formation"]:
-            Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
+            Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_dark,
                   color_acc=[self.color_accent_03, self.color_accent_04], rock=var_opt, lbl_w=self.lbl_w,
                   entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
         ## Metamorphic Rocks
         elif var_opt in ["Granulite", "Greenschist", "Greenschist (basaltic)", "Greenschist (ultramafic)",
                          "Greenschist (pelitic)", "Amphibolite (ortho)"]:
-            Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
+            Rocks(parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_dark,
                   color_acc=[self.color_accent_03, self.color_accent_04], rock=var_opt, lbl_w=self.lbl_w,
                   entr_w=self.entr_w, gui_elements=self.gui_elements, exp_data=self.exp_data, filename=self.filename)
         #
@@ -1360,7 +1360,7 @@ class GebPyGUI(tk.Frame):
             #
             data_zechstein = data_z5 + data_z4 + data_z3 + data_z2 + data_z1
             Subsurface(
-                parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
+                parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_dark,
                 color_acc=[self.color_accent_03, self.color_accent_04], subsurface=var_opt, lbl_w=self.lbl_w,
                 entr_w=self.entr_w, gui_elements=self.gui_elements).create_real_world_sequences(
                 name=var_opt, data_units=data_zechstein)
@@ -1385,7 +1385,7 @@ class GebPyGUI(tk.Frame):
             #
             data_muschelkalk = data_muschelkalk_oberer + data_muschelkalk_mittlerer + data_muschelkalk_unterer
             Subsurface(
-                parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_light,
+                parent=self.parent, color_bg=self.color_bg, color_fg=self.color_fg_dark,
                 color_acc=[self.color_accent_03, self.color_accent_04], subsurface=var_opt, lbl_w=self.lbl_w,
                 entr_w=self.entr_w, gui_elements=self.gui_elements).create_real_world_sequences(
                 name=var_opt, data_units=data_muschelkalk)
@@ -5558,7 +5558,6 @@ class Rocks:
                     "Mg": ["MgO", 1.6582], "Mn": ["MnO", 1.2912], "Na": ["Na2O", 1.3480], "Ni": ["NiO", 1.2725],
                     "S": ["SO3", 2.4972], "Si": ["SiO2", 2.1392], "Ti": ["TiO2", 1.6681], "Zn": ["ZnO", 1.2448]}
             elif self.rock in ["Limestone"]:
-                w_Sd = round(np.mean(self.minerals["Sd"]), 4)
                 w_Ilt = round(np.mean(self.minerals["Ilt"]), 4)
                 self.list_oxides = {
                     "Al": ["Al2O3", 1.8895], "C": ["CO2", 3.6644], "Ca": ["CaO", 1.3992],

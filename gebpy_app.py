@@ -6,7 +6,7 @@
 # Name:		gebpy_app.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		17.11.2022
+# Date:		21.11.2022
 
 #-----------------------------------------------
 
@@ -19,7 +19,7 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from modules.gui_elements import SimpleElements
 from modules.oxides import Oxides
-from modules.carbonates import Carbonates
+from modules.carbonates import Carbonates, CarbonateRocks
 from modules.sulfides import Sulfides
 from modules.sulfates import Sulfates
 from modules.halides import Halides
@@ -70,6 +70,9 @@ class GebPyGUI(tk.Frame):
         self.gui_variables = {}
         for gui_element in gui_elements:
             self.gui_variables[gui_element] = {}
+        #
+        self.last_rb_analysis_rock = tk.IntVar()
+        self.last_rb_analysis_rock.set(42)
         #
         ### General Settings
         self.parent = parent
@@ -1359,6 +1362,11 @@ class GebPyGUI(tk.Frame):
         self.gui_elements_sub["Trace Elements"]["Static"]["Button"].extend([btn_simulation])
     #
     def run_simulation_petrology(self, var_name):
+        try:
+            self.canvas_scatter.get_tk_widget().grid_forget()
+        except:
+            pass
+        #
         ## Initialization
         self.gui_variables["Radiobutton"]["Analysis Mode"] = tk.IntVar()
         self.gui_variables["Radiobutton"]["Analysis Mode"].set(0)
@@ -1380,6 +1388,7 @@ class GebPyGUI(tk.Frame):
             self.gui_variables["Entry"]["Error"][category] = tk.StringVar()
             self.gui_variables["Entry"]["Error"][category].set(0.0)
         #
+        ## Siliciclastic Rocks
         if var_name == "Sandstone":
             data = Sandstone(fluid="water", actualThickness=0).create_sandstone(
                 number=self.gui_variables["Entry"]["Number Datapoints"].get(),
@@ -1395,6 +1404,23 @@ class GebPyGUI(tk.Frame):
                 number=self.gui_variables["Entry"]["Number Datapoints"].get(),
                 porosity=[self.gui_variables["Entry"]["Porosity Min"].get()/100,
                           self.gui_variables["Entry"]["Porosity Max"].get()/100], dominance="Mnt")
+        elif var_name == "Shale":
+            data = Sandstone(fluid="water", actualThickness=0).create_shale(
+                number=self.gui_variables["Entry"]["Number Datapoints"].get(),
+                porosity=[self.gui_variables["Entry"]["Porosity Min"].get()/100,
+                          self.gui_variables["Entry"]["Porosity Max"].get()/100], dominance="Chl")
+        #
+        ## Carbonate Rocks
+        elif var_name == "Limestone":
+            data = CarbonateRocks(fluid="water", actualThickness=0).create_limestone_alternative(
+                number=self.gui_variables["Entry"]["Number Datapoints"].get(),
+                porosity=[self.gui_variables["Entry"]["Porosity Min"].get()/100,
+                          self.gui_variables["Entry"]["Porosity Max"].get()/100])
+        elif var_name == "Dolomite Rock":
+            data = CarbonateRocks(fluid="water", actualThickness=0).create_dolomite_rock_alternative(
+                number=self.gui_variables["Entry"]["Number Datapoints"].get(),
+                porosity=[self.gui_variables["Entry"]["Porosity Min"].get()/100,
+                          self.gui_variables["Entry"]["Porosity Max"].get()/100])
         #
         self.data_rock = {}
         categories = ["rho", "rho_s", "vP", "vS", "vP/vS", "K", "G", "E", "nu", "GR", "PE", "phi", "fluid",
@@ -1446,6 +1472,7 @@ class GebPyGUI(tk.Frame):
             gui_element.clear()
         #
         self.gui_variables["Radiobutton"]["Analysis Mode"].set(0)
+        self.last_rb_analysis_rock.set(42)
         self.change_rb_analysis_rocks()
         #
         for mineral in self.list_minerals_rock:
@@ -1985,6 +2012,11 @@ class GebPyGUI(tk.Frame):
                     gui_element.grid_remove()
     #
     def run_simulation_rockbuilder(self):
+        try:
+            self.canvas_scatter.get_tk_widget().grid_forget()
+        except:
+            pass
+        #
         ## Initialization
         self.gui_variables["Radiobutton"]["Analysis Mode"] = tk.IntVar()
         self.gui_variables["Radiobutton"]["Analysis Mode"].set(0)
@@ -2414,283 +2446,310 @@ class GebPyGUI(tk.Frame):
         start_column = 35
         #
         if self.gui_variables["Radiobutton"]["Analysis Mode"].get() == 0:   # Rock Physics
-            ## Cleaning
-            for key, gui_items in self.gui_elements["Temporary"].items():
-                if len(gui_items) > 0:
-                    if key not in ["Canvas"]:
-                        if type(gui_items) == list:
-                            for gui_item in gui_items:
-                                gui_item.grid_remove()
-                            gui_items.clear()
-                    else:
-                        for key_2, gui_item in gui_items.items():
-                            gui_item.get_tk_widget().grid_remove()
-            #
-            ## Labels
-            lbl_title = SimpleElements(
-                parent=self.parent, row_id=0, column_id=start_column, n_rows=2, n_columns=45,
-                bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
-                text="Rock Physics", font_option="sans 12 bold", relief=tk.GROOVE)
-            lbl_results = SimpleElements(
-                parent=self.parent, row_id=2, column_id=start_column, n_rows=2, n_columns=9,
-                bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
-                text="Results", font_option="sans 10 bold", relief=tk.GROOVE)
-            lbl_min = SimpleElements(
-                parent=self.parent, row_id=2, column_id=start_column + 9, n_rows=2, n_columns=9,
-                bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
-                text="Minimum", font_option="sans 10 bold", relief=tk.GROOVE)
-            lbl_max = SimpleElements(
-                parent=self.parent, row_id=2, column_id=start_column + 18, n_rows=2, n_columns=9,
-                bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
-                text="Maximum", font_option="sans 10 bold", relief=tk.GROOVE)
-            lbl_mean = SimpleElements(
-                parent=self.parent, row_id=2, column_id=start_column + 27, n_rows=2, n_columns=9,
-                bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
-                text="Mean", font_option="sans 10 bold", relief=tk.GROOVE)
-            lbl_error = SimpleElements(
-                parent=self.parent, row_id=2, column_id=start_column + 36, n_rows=2, n_columns=9,
-                bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
-                text="Error", font_option="sans 10 bold", relief=tk.GROOVE)
-            #
-            self.gui_elements["Rockbuilder Temporary"]["Label"].extend(
-                [lbl_title, lbl_results, lbl_min, lbl_max, lbl_mean, lbl_error])
-            #
-            categories = [
-                "rho\n (kg/m\u00B3)", "vP\n (m/s)", "vS\n (m/s)", "vP/vS\n (1)", "K\n (GPa)", "G\n (GPa)", "E\n (GPa)",
-                "nu\n (1)", "GR\n (API)", "PE\n (barns/e\u207B)", "phi\n (%)"]
-            categories_short = ["rho", "vP", "vS", "vP/vS", "K", "G", "E", "nu", "GR", "PE", "phi"]
-            for index, category in enumerate(categories):
-                lbl_category = SimpleElements(
-                    parent=self.parent, row_id=(3*index + 4), column_id=start_column, n_rows=3, n_columns=9,
+            if self.last_rb_analysis_rock.get() != 0:
+                ## Cleaning
+                try:
+                    self.canvas_scatter.get_tk_widget().grid_forget()
+                except:
+                    pass
+                #
+                for key, gui_items in self.gui_elements["Temporary"].items():
+                    if len(gui_items) > 0:
+                        if key not in ["Canvas"]:
+                            if type(gui_items) == list:
+                                for gui_item in gui_items:
+                                    gui_item.grid_remove()
+                                gui_items.clear()
+                        else:
+                            for key_2, gui_item in gui_items.items():
+                                gui_item.get_tk_widget().grid_remove()
+                #
+                ## Labels
+                lbl_title = SimpleElements(
+                    parent=self.parent, row_id=0, column_id=start_column, n_rows=2, n_columns=45,
                     bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
-                    text=category, font_option="sans 10 bold", relief=tk.GROOVE)
+                    text="Rock Physics", font_option="sans 12 bold", relief=tk.GROOVE)
+                lbl_results = SimpleElements(
+                    parent=self.parent, row_id=2, column_id=start_column, n_rows=2, n_columns=9,
+                    bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
+                    text="Results", font_option="sans 10 bold", relief=tk.GROOVE)
+                lbl_min = SimpleElements(
+                    parent=self.parent, row_id=2, column_id=start_column + 9, n_rows=2, n_columns=9,
+                    bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
+                    text="Minimum", font_option="sans 10 bold", relief=tk.GROOVE)
+                lbl_max = SimpleElements(
+                    parent=self.parent, row_id=2, column_id=start_column + 18, n_rows=2, n_columns=9,
+                    bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
+                    text="Maximum", font_option="sans 10 bold", relief=tk.GROOVE)
+                lbl_mean = SimpleElements(
+                    parent=self.parent, row_id=2, column_id=start_column + 27, n_rows=2, n_columns=9,
+                    bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
+                    text="Mean", font_option="sans 10 bold", relief=tk.GROOVE)
+                lbl_error = SimpleElements(
+                    parent=self.parent, row_id=2, column_id=start_column + 36, n_rows=2, n_columns=9,
+                    bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
+                    text="Error", font_option="sans 10 bold", relief=tk.GROOVE)
                 #
-                self.gui_elements["Rockbuilder Temporary"]["Label"].append(lbl_category)
+                self.gui_elements["Rockbuilder Temporary"]["Label"].extend(
+                    [lbl_title, lbl_results, lbl_min, lbl_max, lbl_mean, lbl_error])
                 #
-                ## Entries
+                categories = [
+                    "rho\n (kg/m\u00B3)", "vP\n (m/s)", "vS\n (m/s)", "vP/vS\n (1)", "K\n (GPa)", "G\n (GPa)", "E\n (GPa)",
+                    "nu\n (1)", "GR\n (API)", "PE\n (barns/e\u207B)", "phi\n (%)"]
+                categories_short = ["rho", "vP", "vS", "vP/vS", "K", "G", "E", "nu", "GR", "PE", "phi"]
+                for index, category in enumerate(categories):
+                    lbl_category = SimpleElements(
+                        parent=self.parent, row_id=(3*index + 4), column_id=start_column, n_rows=3, n_columns=9,
+                        bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
+                        text=category, font_option="sans 10 bold", relief=tk.GROOVE)
+                    #
+                    self.gui_elements["Rockbuilder Temporary"]["Label"].append(lbl_category)
+                    #
+                    ## Entries
+                    #
+                    var_entr_min = round(min(self.data_rock[categories_short[index]]), 3)
+                    var_entr_max = round(max(self.data_rock[categories_short[index]]), 3)
+                    var_entr_mean = round(np.mean(self.data_rock[categories_short[index]]), 3)
+                    var_entr_error = round(np.std(self.data_rock[categories_short[index]], ddof=1), 3)
+                    #
+                    entr_min = SimpleElements(
+                        parent=self.parent, row_id=(3*index + 4), column_id=start_column + 9, n_rows=3, n_columns=9,
+                        bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
+                        var_entr=self.gui_variables["Entry"]["Minimum"][categories_short[index]], var_entr_set=var_entr_min)
+                    entr_max = SimpleElements(
+                        parent=self.parent, row_id=(3*index + 4), column_id=start_column + 18, n_rows=3, n_columns=9,
+                        bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
+                        var_entr=self.gui_variables["Entry"]["Maximum"][categories_short[index]], var_entr_set=var_entr_max)
+                    entr_mean = SimpleElements(
+                        parent=self.parent, row_id=(3*index + 4), column_id=start_column + 27, n_rows=3, n_columns=9,
+                        bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
+                        var_entr=self.gui_variables["Entry"]["Mean"][categories_short[index]], var_entr_set=var_entr_mean)
+                    entr_error = SimpleElements(
+                        parent=self.parent, row_id=(3*index + 4), column_id=start_column + 36, n_rows=3, n_columns=9,
+                        bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
+                        var_entr=self.gui_variables["Entry"]["Error"][categories_short[index]], var_entr_set=var_entr_error)
+                    #
+                    self.gui_elements["Rockbuilder Temporary"]["Entry"].extend([entr_min, entr_max, entr_mean, entr_error])
                 #
-                var_entr_min = round(min(self.data_rock[categories_short[index]]), 3)
-                var_entr_max = round(max(self.data_rock[categories_short[index]]), 3)
-                var_entr_mean = round(np.mean(self.data_rock[categories_short[index]]), 3)
-                var_entr_error = round(np.std(self.data_rock[categories_short[index]], ddof=1), 3)
+                ## Diagram
+                if "Rock Physics Scatter" not in self.gui_elements["Temporary"]["Canvas"]:
+                    self.fig_scatter, self.ax_scatter = plt.subplots(
+                        ncols=3, nrows=3, figsize=(9, 9), facecolor=self.colors_gebpy["Background"])
+                    #
+                    categories = [["phi", "GR", "PE"], ["vP", "vS", "vP/vS"], ["K", "G", "nu"]]
+                    labels = [["$\\varphi$ (%)", "GR (API)", "PE (barns/e\u207B)"], ["vP (m/s)", "vS (m/s)", "vP/vS (1)"],
+                              ["K (GPa)", "G (GPa)", "nu (1)"]]
+                    for i, subcategories in enumerate(categories):
+                        for j, key in enumerate(subcategories):
+                            self.ax_scatter[i][j].scatter(
+                                self.data_rock["rho"], self.data_rock[key], color=self.colors_gebpy["Accent"],
+                                edgecolor="black", alpha=0.33)
+                            #
+                            self.ax_scatter[i][j].set_xlabel("Density - kg/m\u00B3", fontsize=9)
+                            self.ax_scatter[i][j].set_ylabel(labels[i][j], labelpad=0.5, fontsize=9)
+                            self.ax_scatter[i][j].grid(True)
+                            self.ax_scatter[i][j].set_axisbelow(True)
+                    #
+                    self.fig_scatter.tight_layout()
+                    #
+                    self.canvas_scatter = FigureCanvasTkAgg(self.fig_scatter, master=self.parent)
+                    self.canvas_scatter.get_tk_widget().grid(
+                        row=0, column=90, rowspan=65, columnspan=90, sticky="nesw")
+                    #
+                    self.gui_elements["Rockbuilder Temporary"]["Canvas"]["Rock Physics Scatter"] = self.canvas_scatter
+                    self.gui_elements["Rockbuilder Temporary"]["Figure"]["Rock Physics Scatter"] = self.fig_scatter
+                    self.gui_elements["Rockbuilder Temporary"]["Axis"]["Rock Physics Scatter"] = self.ax_scatter
+                else:
+                    self.gui_elements["Rockbuilder Temporary"]["Canvas"]["Rock Physics Scatter"].get_tk_widget().grid()
                 #
-                entr_min = SimpleElements(
-                    parent=self.parent, row_id=(3*index + 4), column_id=start_column + 9, n_rows=3, n_columns=9,
-                    bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
-                    var_entr=self.gui_variables["Entry"]["Minimum"][categories_short[index]], var_entr_set=var_entr_min)
-                entr_max = SimpleElements(
-                    parent=self.parent, row_id=(3*index + 4), column_id=start_column + 18, n_rows=3, n_columns=9,
-                    bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
-                    var_entr=self.gui_variables["Entry"]["Maximum"][categories_short[index]], var_entr_set=var_entr_max)
-                entr_mean = SimpleElements(
-                    parent=self.parent, row_id=(3*index + 4), column_id=start_column + 27, n_rows=3, n_columns=9,
-                    bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
-                    var_entr=self.gui_variables["Entry"]["Mean"][categories_short[index]], var_entr_set=var_entr_mean)
-                entr_error = SimpleElements(
-                    parent=self.parent, row_id=(3*index + 4), column_id=start_column + 36, n_rows=3, n_columns=9,
-                    bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
-                    var_entr=self.gui_variables["Entry"]["Error"][categories_short[index]], var_entr_set=var_entr_error)
+                self.last_rb_analysis_rock.set(self.gui_variables["Radiobutton"]["Analysis Mode"].get())
                 #
-                self.gui_elements["Rockbuilder Temporary"]["Entry"].extend([entr_min, entr_max, entr_mean, entr_error])
-            #
-            ## Diagram
-            if "Rock Physics Scatter" not in self.gui_elements["Temporary"]["Canvas"]:
-                fig_scatter, ax_scatter = plt.subplots(
-                    ncols=3, nrows=3, figsize=(9, 9), facecolor=self.colors_gebpy["Background"])
-                #
-                categories = [["phi", "GR", "PE"], ["vP", "vS", "vP/vS"], ["K", "G", "nu"]]
-                labels = [["$\\varphi$ (%)", "GR (API)", "PE (barns/e\u207B)"], ["vP (m/s)", "vS (m/s)", "vP/vS (1)"],
-                          ["K (GPa)", "G (GPa)", "nu (1)"]]
-                for i, subcategories in enumerate(categories):
-                    for j, key in enumerate(subcategories):
-                        ax_scatter[i][j].scatter(
-                            self.data_rock["rho"], self.data_rock[key], color=self.colors_gebpy["Accent"],
-                            edgecolor="black", alpha=0.5)
-                        #
-                        ax_scatter[i][j].set_xlabel("Density - kg/m\u00B3", fontsize=9)
-                        ax_scatter[i][j].set_ylabel(labels[i][j], labelpad=0.5, fontsize=9)
-                        ax_scatter[i][j].grid(True)
-                        ax_scatter[i][j].set_axisbelow(True)
-                #
-                fig_scatter.tight_layout()
-                #
-                canvas_scatter = FigureCanvasTkAgg(fig_scatter, master=self.parent)
-                canvas_scatter.get_tk_widget().grid(
-                    row=0, column=90, rowspan=65, columnspan=90, sticky="nesw")
-                #
-                self.gui_elements["Rockbuilder Temporary"]["Canvas"]["Rock Physics Scatter"] = canvas_scatter
-                self.gui_elements["Rockbuilder Temporary"]["Figure"]["Rock Physics Scatter"] = fig_scatter
-                self.gui_elements["Rockbuilder Temporary"]["Axis"]["Rock Physics Scatter"] = ax_scatter
             else:
-                self.gui_elements["Rockbuilder Temporary"]["Canvas"]["Rock Physics Scatter"].get_tk_widget().grid()
+                self.canvas_scatter.get_tk_widget().grid()
         #
         elif self.gui_variables["Radiobutton"]["Analysis Mode"].get() == 1: # Mineral Composition
-            ## Cleaning
-            for key, gui_items in self.gui_elements["Rockbuilder Temporary"].items():
-                if len(gui_items) > 0:
-                    if key not in ["Canvas"]:
-                        if type(gui_items) == list:
-                            for gui_item in gui_items:
-                                gui_item.grid_remove()
-                            gui_items.clear()
-                    else:
-                        for key_2, gui_item in gui_items.items():
-                            gui_item.get_tk_widget().grid_remove()
-            #
-            ## Labels
-            lbl_title = SimpleElements(
-                parent=self.parent, row_id=0, column_id=start_column, n_rows=2, n_columns=45,
-                bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
-                text="Mineral Composition", font_option="sans 12 bold", relief=tk.GROOVE)
-            lbl_results = SimpleElements(
-                parent=self.parent, row_id=2, column_id=start_column, n_rows=2, n_columns=9,
-                bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
-                text="Results", font_option="sans 10 bold", relief=tk.GROOVE)
-            lbl_min = SimpleElements(
-                parent=self.parent, row_id=2, column_id=start_column + 9, n_rows=2, n_columns=9,
-                bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
-                text="Minimum", font_option="sans 10 bold", relief=tk.GROOVE)
-            lbl_max = SimpleElements(
-                parent=self.parent, row_id=2, column_id=start_column + 18, n_rows=2, n_columns=9,
-                bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
-                text="Maximum", font_option="sans 10 bold", relief=tk.GROOVE)
-            lbl_mean = SimpleElements(
-                parent=self.parent, row_id=2, column_id=start_column + 27, n_rows=2, n_columns=9,
-                bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
-                text="Mean", font_option="sans 10 bold", relief=tk.GROOVE)
-            lbl_error = SimpleElements(
-                parent=self.parent, row_id=2, column_id=start_column + 36, n_rows=2, n_columns=9,
-                bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
-                text="Error", font_option="sans 10 bold", relief=tk.GROOVE)
-            #
-            self.gui_elements["Rockbuilder Temporary"]["Label"].extend(
-                [lbl_title, lbl_results, lbl_min, lbl_max, lbl_mean, lbl_error])
-            #
-            self.list_minerals_rock.sort()
-            for index, mineral in enumerate(self.list_minerals_rock):
-                lbl_element = SimpleElements(
-                    parent=self.parent, row_id=(2*index + 4), column_id=start_column, n_rows=2, n_columns=9,
+            if self.last_rb_analysis_rock.get() != 1:
+                ## Cleaning
+                try:
+                    self.canvas_scatter.get_tk_widget().grid_forget()
+                except:
+                    pass
+                #
+                for key, gui_items in self.gui_elements["Rockbuilder Temporary"].items():
+                    if len(gui_items) > 0:
+                        if key not in ["Canvas"]:
+                            if type(gui_items) == list:
+                                for gui_item in gui_items:
+                                    gui_item.grid_remove()
+                                gui_items.clear()
+                        else:
+                            for key_2, gui_item in gui_items.items():
+                                gui_item.get_tk_widget().grid_remove()
+                #
+                ## Labels
+                lbl_title = SimpleElements(
+                    parent=self.parent, row_id=0, column_id=start_column, n_rows=2, n_columns=45,
                     bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
-                    text=mineral, font_option="sans 10 bold", relief=tk.GROOVE)
+                    text="Mineral Composition", font_option="sans 12 bold", relief=tk.GROOVE)
+                lbl_results = SimpleElements(
+                    parent=self.parent, row_id=2, column_id=start_column, n_rows=2, n_columns=9,
+                    bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
+                    text="Results", font_option="sans 10 bold", relief=tk.GROOVE)
+                lbl_min = SimpleElements(
+                    parent=self.parent, row_id=2, column_id=start_column + 9, n_rows=2, n_columns=9,
+                    bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
+                    text="Minimum", font_option="sans 10 bold", relief=tk.GROOVE)
+                lbl_max = SimpleElements(
+                    parent=self.parent, row_id=2, column_id=start_column + 18, n_rows=2, n_columns=9,
+                    bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
+                    text="Maximum", font_option="sans 10 bold", relief=tk.GROOVE)
+                lbl_mean = SimpleElements(
+                    parent=self.parent, row_id=2, column_id=start_column + 27, n_rows=2, n_columns=9,
+                    bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
+                    text="Mean", font_option="sans 10 bold", relief=tk.GROOVE)
+                lbl_error = SimpleElements(
+                    parent=self.parent, row_id=2, column_id=start_column + 36, n_rows=2, n_columns=9,
+                    bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
+                    text="Error", font_option="sans 10 bold", relief=tk.GROOVE)
                 #
-                self.gui_elements["Rockbuilder Temporary"]["Label"].append(lbl_element)
+                self.gui_elements["Rockbuilder Temporary"]["Label"].extend(
+                    [lbl_title, lbl_results, lbl_min, lbl_max, lbl_mean, lbl_error])
                 #
-                ## Entries
+                self.list_minerals_rock.sort()
+                for index, mineral in enumerate(self.list_minerals_rock):
+                    lbl_element = SimpleElements(
+                        parent=self.parent, row_id=(2*index + 4), column_id=start_column, n_rows=2, n_columns=9,
+                        bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
+                        text=mineral, font_option="sans 10 bold", relief=tk.GROOVE)
+                    #
+                    self.gui_elements["Rockbuilder Temporary"]["Label"].append(lbl_element)
+                    #
+                    ## Entries
+                    #
+                    var_entr_min = round(min(self.data_rock["mineralogy"][mineral])*10**2, 2)
+                    var_entr_max = round(max(self.data_rock["mineralogy"][mineral])*10**2, 2)
+                    var_entr_mean = round(np.mean(self.data_rock["mineralogy"][mineral])*10**2, 2)
+                    var_entr_error = round(np.std(self.data_rock["mineralogy"][mineral], ddof=1)*10**2, 2)
+                    #
+                    entr_min = SimpleElements(
+                        parent=self.parent, row_id=(2*index + 4), column_id=start_column + 9, n_rows=2,
+                        n_columns=9,
+                        bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
+                        var_entr=self.gui_variables["Entry"]["Minimum"][mineral], var_entr_set=var_entr_min)
+                    entr_max = SimpleElements(
+                        parent=self.parent, row_id=(2*index + 4), column_id=start_column + 18, n_rows=2,
+                        n_columns=9,
+                        bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
+                        var_entr=self.gui_variables["Entry"]["Maximum"][mineral], var_entr_set=var_entr_max)
+                    entr_mean = SimpleElements(
+                        parent=self.parent, row_id=(2*index + 4), column_id=start_column + 27, n_rows=2,
+                        n_columns=9,
+                        bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
+                        var_entr=self.gui_variables["Entry"]["Mean"][mineral], var_entr_set=var_entr_mean)
+                    entr_error = SimpleElements(
+                        parent=self.parent, row_id=(2*index + 4), column_id=start_column + 36, n_rows=2,
+                        n_columns=9,
+                        bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
+                        var_entr=self.gui_variables["Entry"]["Error"][mineral], var_entr_set=var_entr_error)
+                    #
+                    self.gui_elements["Rockbuilder Temporary"]["Entry"].extend([entr_min, entr_max, entr_mean, entr_error])
                 #
-                var_entr_min = round(min(self.data_rock["mineralogy"][mineral])*10**2, 2)
-                var_entr_max = round(max(self.data_rock["mineralogy"][mineral])*10**2, 2)
-                var_entr_mean = round(np.mean(self.data_rock["mineralogy"][mineral])*10**2, 2)
-                var_entr_error = round(np.std(self.data_rock["mineralogy"][mineral], ddof=1)*10**2, 2)
-                #
-                entr_min = SimpleElements(
-                    parent=self.parent, row_id=(2*index + 4), column_id=start_column + 9, n_rows=2,
-                    n_columns=9,
-                    bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
-                    var_entr=self.gui_variables["Entry"]["Minimum"][mineral], var_entr_set=var_entr_min)
-                entr_max = SimpleElements(
-                    parent=self.parent, row_id=(2*index + 4), column_id=start_column + 18, n_rows=2,
-                    n_columns=9,
-                    bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
-                    var_entr=self.gui_variables["Entry"]["Maximum"][mineral], var_entr_set=var_entr_max)
-                entr_mean = SimpleElements(
-                    parent=self.parent, row_id=(2*index + 4), column_id=start_column + 27, n_rows=2,
-                    n_columns=9,
-                    bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
-                    var_entr=self.gui_variables["Entry"]["Mean"][mineral], var_entr_set=var_entr_mean)
-                entr_error = SimpleElements(
-                    parent=self.parent, row_id=(2*index + 4), column_id=start_column + 36, n_rows=2,
-                    n_columns=9,
-                    bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
-                    var_entr=self.gui_variables["Entry"]["Error"][mineral], var_entr_set=var_entr_error)
-                #
-                self.gui_elements["Rockbuilder Temporary"]["Entry"].extend([entr_min, entr_max, entr_mean, entr_error])
+                self.last_rb_analysis_rock.set(self.gui_variables["Radiobutton"]["Analysis Mode"].get())
         #
         elif self.gui_variables["Radiobutton"]["Analysis Mode"].get() == 2: # Element Composition
-            ## Cleaning
-            for key, gui_items in self.gui_elements["Rockbuilder Temporary"].items():
-                if len(gui_items) > 0:
-                    if key not in ["Canvas"]:
-                        if type(gui_items) == list:
-                            for gui_item in gui_items:
-                                gui_item.grid_remove()
-                            gui_items.clear()
-                    else:
-                        for key_2, gui_item in gui_items.items():
-                            gui_item.get_tk_widget().grid_remove()
-            #
-            ## Labels
-            lbl_title = SimpleElements(
-                parent=self.parent, row_id=0, column_id=start_column, n_rows=2, n_columns=45,
-                bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
-                text="Element Composition", font_option="sans 12 bold", relief=tk.GROOVE)
-            lbl_results = SimpleElements(
-                parent=self.parent, row_id=2, column_id=start_column, n_rows=2, n_columns=9,
-                bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
-                text="Results", font_option="sans 10 bold", relief=tk.GROOVE)
-            lbl_min = SimpleElements(
-                parent=self.parent, row_id=2, column_id=start_column + 9, n_rows=2, n_columns=9,
-                bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
-                text="Minimum", font_option="sans 10 bold", relief=tk.GROOVE)
-            lbl_max = SimpleElements(
-                parent=self.parent, row_id=2, column_id=start_column + 18, n_rows=2, n_columns=9,
-                bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
-                text="Maximum", font_option="sans 10 bold", relief=tk.GROOVE)
-            lbl_mean = SimpleElements(
-                parent=self.parent, row_id=2, column_id=start_column + 27, n_rows=2, n_columns=9,
-                bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
-                text="Mean", font_option="sans 10 bold", relief=tk.GROOVE)
-            lbl_error = SimpleElements(
-                parent=self.parent, row_id=2, column_id=start_column + 36, n_rows=2, n_columns=9,
-                bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
-                text="Error", font_option="sans 10 bold", relief=tk.GROOVE)
-            #
-            self.gui_elements["Rockbuilder Temporary"]["Label"].extend(
-                [lbl_title, lbl_results, lbl_min, lbl_max, lbl_mean, lbl_error])
-            #
-            self.list_elements_rock.sort()
-            for index, element in enumerate(self.list_elements_rock):
-                lbl_element = SimpleElements(
-                    parent=self.parent, row_id=(2*index + 4), column_id=start_column, n_rows=2, n_columns=9,
+            if self.last_rb_analysis_rock.get() != 2:
+                ## Cleaning
+                try:
+                    self.canvas_scatter.get_tk_widget().grid_forget()
+                except:
+                    pass
+                #
+                for key, gui_items in self.gui_elements["Rockbuilder Temporary"].items():
+                    if len(gui_items) > 0:
+                        if key not in ["Canvas"]:
+                            if type(gui_items) == list:
+                                for gui_item in gui_items:
+                                    gui_item.grid_remove()
+                                gui_items.clear()
+                        else:
+                            for key_2, gui_item in gui_items.items():
+                                gui_item.get_tk_widget().grid_remove()
+                #
+                ## Labels
+                lbl_title = SimpleElements(
+                    parent=self.parent, row_id=0, column_id=start_column, n_rows=2, n_columns=45,
                     bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
-                    text=element, font_option="sans 10 bold", relief=tk.GROOVE)
+                    text="Element Composition", font_option="sans 12 bold", relief=tk.GROOVE)
+                lbl_results = SimpleElements(
+                    parent=self.parent, row_id=2, column_id=start_column, n_rows=2, n_columns=9,
+                    bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
+                    text="Results", font_option="sans 10 bold", relief=tk.GROOVE)
+                lbl_min = SimpleElements(
+                    parent=self.parent, row_id=2, column_id=start_column + 9, n_rows=2, n_columns=9,
+                    bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
+                    text="Minimum", font_option="sans 10 bold", relief=tk.GROOVE)
+                lbl_max = SimpleElements(
+                    parent=self.parent, row_id=2, column_id=start_column + 18, n_rows=2, n_columns=9,
+                    bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
+                    text="Maximum", font_option="sans 10 bold", relief=tk.GROOVE)
+                lbl_mean = SimpleElements(
+                    parent=self.parent, row_id=2, column_id=start_column + 27, n_rows=2, n_columns=9,
+                    bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
+                    text="Mean", font_option="sans 10 bold", relief=tk.GROOVE)
+                lbl_error = SimpleElements(
+                    parent=self.parent, row_id=2, column_id=start_column + 36, n_rows=2, n_columns=9,
+                    bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
+                    text="Error", font_option="sans 10 bold", relief=tk.GROOVE)
                 #
-                self.gui_elements["Rockbuilder Temporary"]["Label"].append(lbl_element)
+                self.gui_elements["Rockbuilder Temporary"]["Label"].extend(
+                    [lbl_title, lbl_results, lbl_min, lbl_max, lbl_mean, lbl_error])
                 #
-                ## Entries
+                self.list_elements_rock.sort()
+                for index, element in enumerate(self.list_elements_rock):
+                    lbl_element = SimpleElements(
+                        parent=self.parent, row_id=(2*index + 4), column_id=start_column, n_rows=2, n_columns=9,
+                        bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
+                        text=element, font_option="sans 10 bold", relief=tk.GROOVE)
+                    #
+                    self.gui_elements["Rockbuilder Temporary"]["Label"].append(lbl_element)
+                    #
+                    ## Entries
+                    #
+                    var_entr_min = round(min(self.data_rock["chemistry"][element])*10**2, 2)
+                    var_entr_max = round(max(self.data_rock["chemistry"][element])*10**2, 2)
+                    var_entr_mean = round(np.mean(self.data_rock["chemistry"][element])*10**2, 2)
+                    var_entr_error = round(np.std(self.data_rock["chemistry"][element], ddof=1)*10**2, 2)
+                    #
+                    ## ppm
+                    # var_entr_min = int(min(self.data_rock["chemistry"][element])*10**6)
+                    # var_entr_max = int(max(self.data_rock["chemistry"][element])*10**6)
+                    # var_entr_mean = int(np.mean(self.data_rock["chemistry"][element])*10**6)
+                    # var_entr_error = round(np.std(self.data_rock["chemistry"][element], ddof=1)*10**6, 2)
+                    #
+                    entr_min = SimpleElements(
+                        parent=self.parent, row_id=(2*index + 4), column_id=start_column + 9, n_rows=2,
+                        n_columns=9,
+                        bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
+                        var_entr=self.gui_variables["Entry"]["Minimum"][element], var_entr_set=var_entr_min)
+                    entr_max = SimpleElements(
+                        parent=self.parent, row_id=(2*index + 4), column_id=start_column + 18, n_rows=2,
+                        n_columns=9,
+                        bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
+                        var_entr=self.gui_variables["Entry"]["Maximum"][element], var_entr_set=var_entr_max)
+                    entr_mean = SimpleElements(
+                        parent=self.parent, row_id=(2*index + 4), column_id=start_column + 27, n_rows=2,
+                        n_columns=9,
+                        bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
+                        var_entr=self.gui_variables["Entry"]["Mean"][element], var_entr_set=var_entr_mean)
+                    entr_error = SimpleElements(
+                        parent=self.parent, row_id=(2*index + 4), column_id=start_column + 36, n_rows=2,
+                        n_columns=9,
+                        bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
+                        var_entr=self.gui_variables["Entry"]["Error"][element], var_entr_set=var_entr_error)
+                    #
+                    self.gui_elements["Rockbuilder Temporary"]["Entry"].extend([entr_min, entr_max, entr_mean, entr_error])
                 #
-                var_entr_min = round(min(self.data_rock["chemistry"][element])*10**2, 2)
-                var_entr_max = round(max(self.data_rock["chemistry"][element])*10**2, 2)
-                var_entr_mean = round(np.mean(self.data_rock["chemistry"][element])*10**2, 2)
-                var_entr_error = round(np.std(self.data_rock["chemistry"][element], ddof=1)*10**2, 2)
-                #
-                ## ppm
-                # var_entr_min = int(min(self.data_rock["chemistry"][element])*10**6)
-                # var_entr_max = int(max(self.data_rock["chemistry"][element])*10**6)
-                # var_entr_mean = int(np.mean(self.data_rock["chemistry"][element])*10**6)
-                # var_entr_error = round(np.std(self.data_rock["chemistry"][element], ddof=1)*10**6, 2)
-                #
-                entr_min = SimpleElements(
-                    parent=self.parent, row_id=(2*index + 4), column_id=start_column + 9, n_rows=2,
-                    n_columns=9,
-                    bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
-                    var_entr=self.gui_variables["Entry"]["Minimum"][element], var_entr_set=var_entr_min)
-                entr_max = SimpleElements(
-                    parent=self.parent, row_id=(2*index + 4), column_id=start_column + 18, n_rows=2,
-                    n_columns=9,
-                    bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
-                    var_entr=self.gui_variables["Entry"]["Maximum"][element], var_entr_set=var_entr_max)
-                entr_mean = SimpleElements(
-                    parent=self.parent, row_id=(2*index + 4), column_id=start_column + 27, n_rows=2,
-                    n_columns=9,
-                    bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
-                    var_entr=self.gui_variables["Entry"]["Mean"][element], var_entr_set=var_entr_mean)
-                entr_error = SimpleElements(
-                    parent=self.parent, row_id=(2*index + 4), column_id=start_column + 36, n_rows=2,
-                    n_columns=9,
-                    bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
-                    var_entr=self.gui_variables["Entry"]["Error"][element], var_entr_set=var_entr_error)
-                #
-                self.gui_elements["Rockbuilder Temporary"]["Entry"].extend([entr_min, entr_max, entr_mean, entr_error])
+                self.last_rb_analysis_rock.set(self.gui_variables["Radiobutton"]["Analysis Mode"].get())
     #
     ######################################
     ## G e n e r a l  F u n c t i o n s ##

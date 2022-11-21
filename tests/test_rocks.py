@@ -6,7 +6,7 @@
 # Name:		test_rocks.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		27.08.2022
+# Date:		21.11.2022
 
 # -----------------------------------------------
 
