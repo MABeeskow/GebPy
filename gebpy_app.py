@@ -6,7 +6,7 @@
 # Name:		gebpy_app.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		21.11.2022
+# Date:		23.11.2022
 
 #-----------------------------------------------
 
@@ -1405,10 +1405,10 @@ class GebPyGUI(tk.Frame):
                 porosity=[self.gui_variables["Entry"]["Porosity Min"].get()/100,
                           self.gui_variables["Entry"]["Porosity Max"].get()/100], dominance="Mnt")
         elif var_name == "Shale":
-            data = Sandstone(fluid="water", actualThickness=0).create_shale(
+            data = Sandstone(fluid="water", actualThickness=0).create_shale_alt(
                 number=self.gui_variables["Entry"]["Number Datapoints"].get(),
                 porosity=[self.gui_variables["Entry"]["Porosity Min"].get()/100,
-                          self.gui_variables["Entry"]["Porosity Max"].get()/100], dominance="Chl")
+                          self.gui_variables["Entry"]["Porosity Max"].get()/100])
         #
         ## Carbonate Rocks
         elif var_name == "Limestone":
@@ -2626,10 +2626,15 @@ class GebPyGUI(tk.Frame):
                     #
                     ## Entries
                     #
-                    var_entr_min = round(min(self.data_rock["mineralogy"][mineral])*10**2, 2)
-                    var_entr_max = round(max(self.data_rock["mineralogy"][mineral])*10**2, 2)
-                    var_entr_mean = round(np.mean(self.data_rock["mineralogy"][mineral])*10**2, 2)
-                    var_entr_error = round(np.std(self.data_rock["mineralogy"][mineral], ddof=1)*10**2, 2)
+                    if mineral == "Urn":
+                        n_digits = 6
+                    else:
+                        n_digits = 2
+                    #
+                    var_entr_min = round(min(self.data_rock["mineralogy"][mineral])*10**2, n_digits)
+                    var_entr_max = round(max(self.data_rock["mineralogy"][mineral])*10**2, n_digits)
+                    var_entr_mean = round(np.mean(self.data_rock["mineralogy"][mineral])*10**2, n_digits)
+                    var_entr_error = round(np.std(self.data_rock["mineralogy"][mineral], ddof=1)*10**2, n_digits)
                     #
                     entr_min = SimpleElements(
                         parent=self.parent, row_id=(2*index + 4), column_id=start_column + 9, n_rows=2,
@@ -2715,10 +2720,15 @@ class GebPyGUI(tk.Frame):
                     #
                     ## Entries
                     #
-                    var_entr_min = round(min(self.data_rock["chemistry"][element])*10**2, 2)
-                    var_entr_max = round(max(self.data_rock["chemistry"][element])*10**2, 2)
-                    var_entr_mean = round(np.mean(self.data_rock["chemistry"][element])*10**2, 2)
-                    var_entr_error = round(np.std(self.data_rock["chemistry"][element], ddof=1)*10**2, 2)
+                    if element == "U":
+                        n_digits = 6
+                    else:
+                        n_digits = 2
+                    #
+                    var_entr_min = round(min(self.data_rock["chemistry"][element])*10**2, n_digits)
+                    var_entr_max = round(max(self.data_rock["chemistry"][element])*10**2, n_digits)
+                    var_entr_mean = round(np.mean(self.data_rock["chemistry"][element])*10**2, n_digits)
+                    var_entr_error = round(np.std(self.data_rock["chemistry"][element], ddof=1)*10**2, n_digits)
                     #
                     ## ppm
                     # var_entr_min = int(min(self.data_rock["chemistry"][element])*10**6)
