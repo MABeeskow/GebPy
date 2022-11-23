@@ -20,6 +20,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from modules.gui_elements import SimpleElements
 from modules.oxides import Oxides
 from modules.carbonates import Carbonates, CarbonateRocks
+from modules.igneous import Plutonic, Volcanic, Pyroclastic
 from modules.sulfides import Sulfides
 from modules.sulfates import Sulfates
 from modules.halides import Halides
@@ -393,7 +394,7 @@ class GebPyGUI(tk.Frame):
                     menu=sub_sedimentary)
             elif rock_group == "Igneous Rocks":
                 sub_igneous = tk.Menu(petrology_menu, tearoff=0)
-                igneous_rocks = {"Plutonic": ["Granite", "Diorite", "Gabbro"], "Volcanic": ["Rhyolite", "Basalt"]} #
+                igneous_rocks = {"Plutonic": ["Granite (Streckeisen)", "Diorite", "Gabbro"], "Volcanic": ["Rhyolite", "Basalt"]} #
                 igneous_rocks = collections.OrderedDict(sorted(igneous_rocks.items()))
                 i = 1
                 n = len(igneous_rocks)
@@ -1421,6 +1422,14 @@ class GebPyGUI(tk.Frame):
                 number=self.gui_variables["Entry"]["Number Datapoints"].get(),
                 porosity=[self.gui_variables["Entry"]["Porosity Min"].get()/100,
                           self.gui_variables["Entry"]["Porosity Max"].get()/100])
+        #
+        ## Igneous Rocks (Plutonic)
+        elif var_name == "Granite (Streckeisen)":
+            data = Plutonic(
+                fluid="water", actualThickness=0, dict_output=True, porosity=[
+                    self.gui_variables["Entry"]["Porosity Min"].get()/100,
+                    self.gui_variables["Entry"]["Porosity Max"].get()/100]).create_granite_streckeisen_alt(
+                number=self.gui_variables["Entry"]["Number Datapoints"].get())
         #
         self.data_rock = {}
         categories = ["rho", "rho_s", "vP", "vS", "vP/vS", "K", "G", "E", "nu", "GR", "PE", "phi", "fluid",
