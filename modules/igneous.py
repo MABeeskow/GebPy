@@ -279,7 +279,8 @@ class Plutonic:
             K_geo = elast.calc_geometric_mean(self, phi_list, K_list)
             G_geo = elast.calc_geometric_mean(self, phi_list, G_list)
             #
-            anisotropic_factor = round(rd.uniform(1.0, 2.0), 4)
+            # anisotropic_factor = round(rd.uniform(1.0, 2.0), 4)
+            anisotropic_factor = 1.0
             #
             bulk_mod = K_geo/anisotropic_factor
             shear_mod = G_geo/anisotropic_factor
