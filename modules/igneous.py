@@ -6,7 +6,7 @@
 # Name:		igneous.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		23.11.2022
+# Date:		24.11.2022
 
 #-----------------------------------------------
 
@@ -127,7 +127,7 @@ class Plutonic:
     #
     def create_granite_streckeisen_alt(self, number=1, composition=None):
         results_container = {}
-        results_container["rock"] = "Shale"
+        results_container["rock"] = "Granite"
         results_container["mineralogy"] = {}
         results_container["chemistry"] = {}
         results_container["phi"] = []
@@ -314,6 +314,475 @@ class Plutonic:
         #
         return results_container
     #
+    def create_granodiorite_streckeisen_alt(self, number=1, composition=None):
+        results_container = {}
+        results_container["rock"] = "Granodiorite"
+        results_container["mineralogy"] = {}
+        results_container["chemistry"] = {}
+        results_container["phi"] = []
+        results_container["fluid"] = "water"
+        results_container["rho_s"] = []
+        results_container["rho"] = []
+        results_container["vP"] = []
+        results_container["vS"] = []
+        results_container["vP/vS"] = []
+        results_container["K"] = []
+        results_container["G"] = []
+        results_container["E"] = []
+        results_container["nu"] = []
+        results_container["GR"] = []
+        results_container["PE"] = []
+        #
+        n = 0
+        while n < number:
+            data_alkalifeldspar = Tectosilicates(impurity="pure", data_type=True).create_alkalifeldspar()
+            data_plagioclase = Tectosilicates(impurity="pure", data_type=True).create_plagioclase()
+            data_biotite = Phyllosilicates(impurity="pure", data_type=True).create_biotite()
+            #
+            mineralogy = {"Qz": self.data_qz, "Kfs": data_alkalifeldspar, "Pl": data_plagioclase, "Bt": data_biotite}
+            #
+            minerals_list = list(mineralogy.keys())
+            #
+            if minerals_list[0] not in results_container["mineralogy"]:
+                for mineral in minerals_list:
+                    results_container["mineralogy"][mineral] = []
+            #
+            condition = False
+            #
+            while condition == False:
+                elements_list = []
+                phi_minerals = {}
+                w_minerals = {}
+                w_elements = {}
+                #
+                if composition != None:
+                    phi_qz = composition["Qz"]
+                    phi_kfs = composition["Kfs"]
+                    phi_pl = composition["Pl"]
+                    phi_bt = composition["Bt"]
+                    #
+                    phi_minerals["Qz"] = phi_qz
+                    phi_minerals["Kfs"] = phi_kfs
+                    phi_minerals["Pl"] = phi_pl
+                    phi_minerals["Bt"] = phi_bt
+                    #
+                else:
+                    condition_2 = False
+                    while condition_2 == False:
+                        phi_qz = round(rd.uniform(0.2, 0.6), 4)
+                        phi_kfs = round(rd.uniform(0.05, (1.0 - phi_qz)), 4)
+                        phi_pl = round(rd.uniform(0.25 , (1.0 - phi_qz - phi_kfs)), 4)
+                        phi_bt = round(1 - phi_qz - phi_kfs - phi_pl, 4)
+                        phi_total = phi_qz + phi_kfs + phi_pl + phi_bt
+                        #
+                        if np.isclose(phi_total, 1.0000) == True:
+                            if 0.2 <= phi_qz <= 0.6 and 0.05 <= phi_kfs <= 0.28 and 0.25 <= phi_pl <= 0.72 \
+                                    and 0.0 <= phi_bt <= 0.05:
+                                condition_2 = True
+                        #
+                    phi_minerals["Qz"] = phi_qz
+                    phi_minerals["Kfs"] = phi_kfs
+                    phi_minerals["Pl"] = phi_pl
+                    phi_minerals["Bt"] = phi_bt
+                #
+                rho_s = 0
+                for key, value in phi_minerals.items():
+                    rho_s += phi_minerals[key]*mineralogy[key]["rho"]
+                    for element, value in mineralogy[key]["chemistry"].items():
+                        if element not in elements_list:
+                            elements_list.append(element)
+                            w_elements[element] = 0.0
+                #
+                if elements_list[0] not in results_container["chemistry"]:
+                    for element in elements_list:
+                        results_container["chemistry"][element] = []
+                #
+                rho_s = round(rho_s, 3)
+                for key, value in phi_minerals.items():
+                    if key == "Urn":
+                        n_digits = 6
+                    else:
+                        n_digits = 6
+                    #
+                    w_minerals[key] = round((phi_minerals[key]*mineralogy[key]["rho"])/rho_s, n_digits)
+                #
+                if self.porosity == None:
+                    var_porosity = round(rd.uniform(0.0, 0.1), 4)
+                else:
+                    var_porosity = round(rd.uniform(self.porosity[0], self.porosity[1]), 4)
+                #
+                if self.fluid == "water":
+                    data_fluid = self.data_water
+                elif self.fluid == "oil":
+                    data_fluid = self.data_oil
+                elif self.fluid == "gas":
+                    data_fluid = self.data_gas
+                #
+                rho = round((1 - var_porosity)*rho_s + var_porosity*data_fluid[2]/1000, 3)
+                #
+                old_index = elements_list.index("O")
+                elements_list += [elements_list.pop(old_index)]
+                #
+                w_elements_total = 0.0
+                for element in elements_list:
+                    if element != "O":
+                        for mineral, w_mineral in w_minerals.items():
+                            if element in mineralogy[mineral]["chemistry"]:
+                                if element == "U":
+                                    n_digits = 6
+                                else:
+                                    n_digits = 6
+                                #
+                                value = round(w_mineral*mineralogy[mineral]["chemistry"][element], n_digits)
+                                w_elements[element] += value
+                                w_elements_total += value
+                                #
+                                w_elements[element] = round(w_elements[element], n_digits)
+                    elif element == "O":
+                        w_elements[element] += round(1 - w_elements_total, 6)
+                        #
+                        w_elements[element] = round(w_elements[element], 6)
+                #
+                if sum(w_minerals.values()) == 1.0 and sum(w_elements.values()) == 1.0:
+                    condition = True
+            #
+            bulk_mod = 0.0
+            shear_mod = 0.0
+            gamma_ray = 0.0
+            photoelectricity = 0.0
+            #
+            K_list = []
+            G_list = []
+            phi_list = []
+            for key, value in phi_minerals.items():
+                gamma_ray += phi_minerals[key]*mineralogy[key]["GR"]
+                photoelectricity += phi_minerals[key]*mineralogy[key]["PE"]
+                #
+                gamma_ray = round(gamma_ray, 3)
+                photoelectricity = round(photoelectricity, 3)
+                #
+                K_list.append(round(phi_minerals[key]*mineralogy[key]["K"], 3))
+                G_list.append(round(phi_minerals[key]*mineralogy[key]["G"], 3))
+                phi_list.append(phi_minerals[key])
+            #
+            K_geo = elast.calc_geometric_mean(self, phi_list, K_list)
+            G_geo = elast.calc_geometric_mean(self, phi_list, G_list)
+            #
+            # anisotropic_factor = round(rd.uniform(1.0, 2.0), 4)
+            anisotropic_factor = 1.0
+            #
+            bulk_mod = K_geo/anisotropic_factor
+            shear_mod = G_geo/anisotropic_factor
+            #
+            youngs_mod = round((9*bulk_mod*shear_mod)/(3*bulk_mod + shear_mod), 3)
+            poisson_rat = round((3*bulk_mod - 2*shear_mod)/(6*bulk_mod + 2*shear_mod), 4)
+            vP = round(((bulk_mod*10**9 + 4/3*shear_mod*10**9)/(rho))**0.5, 3)
+            vS = round(((shear_mod*10**9)/(rho))**0.5, 3)
+            vPvS = round(vP/vS, 3)
+            #
+            for key, value in w_minerals.items():
+                results_container["mineralogy"][key].append(value)
+            #
+            for key, value in w_elements.items():
+                results_container["chemistry"][key].append(value)
+            #
+            results_container["phi"].append(var_porosity)
+            results_container["rho_s"].append(rho_s)
+            results_container["rho"].append(rho)
+            results_container["vP"].append(vP)
+            results_container["vS"].append(vS)
+            results_container["vP/vS"].append(vPvS)
+            results_container["K"].append(bulk_mod)
+            results_container["G"].append(shear_mod)
+            results_container["E"].append(youngs_mod)
+            results_container["nu"].append(poisson_rat)
+            results_container["GR"].append(gamma_ray)
+            results_container["PE"].append(photoelectricity)
+            #
+            n += 1
+        #
+        return results_container
+    #
+    def create_plutonic_rock_streckeisen(self, rock="Granite", number=1, composition=None, enrichment_kfs=None,
+                                         enrichment_pl=None, upper_streckeisen=True):
+        results_container = {}
+        results_container["rock"] = rock
+        results_container["mineralogy"] = {}
+        results_container["chemistry"] = {}
+        results_container["phi"] = []
+        results_container["fluid"] = "water"
+        results_container["rho_s"] = []
+        results_container["rho"] = []
+        results_container["vP"] = []
+        results_container["vS"] = []
+        results_container["vP/vS"] = []
+        results_container["K"] = []
+        results_container["G"] = []
+        results_container["E"] = []
+        results_container["nu"] = []
+        results_container["GR"] = []
+        results_container["PE"] = []
+        #
+        n = 0
+        while n < number:
+            data_alkalifeldspar = Tectosilicates(impurity="pure", data_type=True).create_alkalifeldspar(
+                enrichment=enrichment_kfs)
+            data_plagioclase = Tectosilicates(impurity="pure", data_type=True).create_plagioclase(
+                enrichment=enrichment_pl)
+            data_biotite = Phyllosilicates(impurity="pure", data_type=True).create_biotite()
+            #
+            if upper_streckeisen == True:
+                mineralogy = {"Qz": self.data_qz, "Kfs": data_alkalifeldspar, "Pl": data_plagioclase,
+                              "Bt": data_biotite}
+            elif upper_streckeisen == False:
+                data_nepheline = Tectosilicates(impurity="pure", data_type=True).create_nepheline()
+                mineralogy = {"Nph": data_nepheline, "Kfs": data_alkalifeldspar, "Pl": data_plagioclase,
+                              "Bt": data_biotite}
+            #
+            minerals_list = list(mineralogy.keys())
+            #
+            if minerals_list[0] not in results_container["mineralogy"]:
+                for mineral in minerals_list:
+                    results_container["mineralogy"][mineral] = []
+            #
+            condition = False
+            #
+            while condition == False:
+                elements_list = []
+                phi_minerals = {}
+                w_minerals = {}
+                w_elements = {}
+                #
+                if composition != None:
+                    if upper_streckeisen == True:
+                        phi_qz = composition["Qz"]
+                        phi_minerals["Qz"] = phi_qz
+                    elif upper_streckeisen == False:
+                        phi_nph = composition["Nph"]
+                        phi_minerals["Nph"] = phi_nph
+                    #
+                    phi_kfs = composition["Kfs"]
+                    phi_pl = composition["Pl"]
+                    phi_bt = composition["Bt"]
+                    #
+                    phi_minerals["Kfs"] = phi_kfs
+                    phi_minerals["Pl"] = phi_pl
+                    phi_minerals["Bt"] = phi_bt
+                    #
+                else:
+                    condition_2 = False
+                    while condition_2 == False:
+                        if rock == "Granite":
+                            qz_limits = [0.2, 0.6]
+                            kfs_limits = [0.15, 0.8]
+                            pl_limits = [0.0, 0.52]
+                            bt_limits = [0.0, 0.05]
+                        elif rock == "Granodiorite":
+                            qz_limits = [0.2, 0.6]
+                            kfs_limits = [0.05, 0.28]
+                            pl_limits = [0.25, 0.72]
+                            bt_limits = [0.0, 0.05]
+                        elif rock == "Tonalite":
+                            qz_limits = [0.2, 0.6]
+                            kfs_limits = [0.0, 0.08]
+                            pl_limits = [0.35, 0.8]
+                            bt_limits = [0.0, 0.05]
+                        elif rock == "Gabbro":
+                            qz_limits = [0.0, 0.2]
+                            kfs_limits = [0.0, 0.35]
+                            pl_limits = [0.52, 1.0]
+                            bt_limits = [0.0, 0.05]
+                        elif rock == "Diorite":
+                            qz_limits = [0.0, 0.2]
+                            kfs_limits = [0.0, 0.35]
+                            pl_limits = [0.52, 1.0]
+                            bt_limits = [0.0, 0.05]
+                        elif rock == "Monzonite":
+                            qz_limits = [0.0, 0.2]
+                            kfs_limits = [0.28, 0.65]
+                            pl_limits = [0.28, 0.65]
+                            bt_limits = [0.0, 0.05]
+                        elif rock == "Syenite":
+                            qz_limits = [0.0, 0.2]
+                            kfs_limits = [0.52, 1.0]
+                            pl_limits = [0.0, 0.35]
+                            bt_limits = [0.0, 0.05]
+                        elif rock == "Granitoid":
+                            qz_limits = [0.6, 0.9]
+                            kfs_limits = [0.0, 0.4]
+                            pl_limits = [0.0, 0.4]
+                            bt_limits = [0.0, 0.05]
+                        elif rock == "Quarzolite":
+                            qz_limits = [0.9, 1.0]
+                            kfs_limits = [0.0, 0.1]
+                            pl_limits = [0.0, 0.1]
+                            bt_limits = [0.0, 0.05]
+                        elif rock == "Foid-bearing Syenite":
+                            nph_limits = [0.0, 0.1]
+                            kfs_limits = [0.58, 1.0]
+                            pl_limits = [0.0, 0.42]
+                            bt_limits = [0.0, 0.05]
+                        #
+                        if upper_streckeisen == True:
+                            phi_qz = round(rd.uniform(qz_limits[0], qz_limits[1]), 4)
+                            phi_kfs = round(rd.uniform(kfs_limits[0], (1.0 - phi_qz)), 4)
+                            phi_pl = round(rd.uniform(0.0, (1.0 - phi_qz - phi_kfs)), 4)
+                            phi_bt = round(1 - phi_qz - phi_kfs - phi_pl, 4)
+                            phi_total = phi_qz + phi_kfs + phi_pl + phi_bt
+                            #
+                            if np.isclose(phi_total, 1.0000) == True:
+                                if qz_limits[0] <= phi_qz <= qz_limits[1] \
+                                        and kfs_limits[0] <= phi_kfs <= kfs_limits[1] \
+                                        and pl_limits[0] <= phi_pl <= pl_limits[1] \
+                                        and bt_limits[0] <= phi_bt <= bt_limits[1]:
+                                    condition_2 = True
+                            #
+                        elif upper_streckeisen == False:
+                            phi_nph = round(rd.uniform(nph_limits[0], nph_limits[1]), 4)
+                            phi_kfs = round(rd.uniform(kfs_limits[0], (1.0 - phi_nph)), 4)
+                            phi_pl = round(rd.uniform(0.0, (1.0 - phi_nph - phi_kfs)), 4)
+                            phi_bt = round(1 - phi_nph - phi_kfs - phi_pl, 4)
+                            phi_total = phi_nph + phi_kfs + phi_pl + phi_bt
+                            #
+                            if np.isclose(phi_total, 1.0000) == True:
+                                if nph_limits[0] <= phi_nph <= nph_limits[1] \
+                                        and kfs_limits[0] <= phi_kfs <= kfs_limits[1] \
+                                        and pl_limits[0] <= phi_pl <= pl_limits[1] \
+                                        and bt_limits[0] <= phi_bt <= bt_limits[1]:
+                                    condition_2 = True
+                        #
+                    if upper_streckeisen == True:
+                        phi_minerals["Qz"] = phi_qz
+                    elif upper_streckeisen == False:
+                        phi_minerals["Nph"] = phi_nph
+                    #
+                    phi_minerals["Kfs"] = phi_kfs
+                    phi_minerals["Pl"] = phi_pl
+                    phi_minerals["Bt"] = phi_bt
+                #
+                rho_s = 0
+                for key, value in phi_minerals.items():
+                    rho_s += phi_minerals[key]*mineralogy[key]["rho"]
+                    for element, value in mineralogy[key]["chemistry"].items():
+                        if element not in elements_list:
+                            elements_list.append(element)
+                            w_elements[element] = 0.0
+                #
+                if elements_list[0] not in results_container["chemistry"]:
+                    for element in elements_list:
+                        results_container["chemistry"][element] = []
+                #
+                rho_s = round(rho_s, 3)
+                for key, value in phi_minerals.items():
+                    if key == "Urn":
+                        n_digits = 6
+                    else:
+                        n_digits = 6
+                    #
+                    w_minerals[key] = round((phi_minerals[key]*mineralogy[key]["rho"])/rho_s, n_digits)
+                #
+                if self.porosity == None:
+                    var_porosity = round(rd.uniform(0.0, 0.1), 4)
+                else:
+                    var_porosity = round(rd.uniform(self.porosity[0], self.porosity[1]), 4)
+                #
+                if self.fluid == "water":
+                    data_fluid = self.data_water
+                elif self.fluid == "oil":
+                    data_fluid = self.data_oil
+                elif self.fluid == "gas":
+                    data_fluid = self.data_gas
+                #
+                rho = round((1 - var_porosity)*rho_s + var_porosity*data_fluid[2]/1000, 3)
+                #
+                old_index = elements_list.index("O")
+                elements_list += [elements_list.pop(old_index)]
+                #
+                w_elements_total = 0.0
+                for element in elements_list:
+                    if element != "O":
+                        for mineral, w_mineral in w_minerals.items():
+                            if element in mineralogy[mineral]["chemistry"]:
+                                if element == "U":
+                                    n_digits = 6
+                                else:
+                                    n_digits = 6
+                                #
+                                value = round(w_mineral*mineralogy[mineral]["chemistry"][element], n_digits)
+                                w_elements[element] += value
+                                w_elements_total += value
+                                #
+                                w_elements[element] = round(w_elements[element], n_digits)
+                    elif element == "O":
+                        w_elements[element] += round(1 - w_elements_total, 6)
+                        #
+                        w_elements[element] = round(w_elements[element], 6)
+                #
+                if sum(w_minerals.values()) == 1.0 and sum(w_elements.values()) == 1.0:
+                    for key, value in w_minerals.items():
+                        w_minerals[key] = abs(value)
+                    #
+                    for key, value in w_elements.items():
+                        w_elements[key] = abs(value)
+                    #
+                    condition = True
+            #
+            bulk_mod = 0.0
+            shear_mod = 0.0
+            gamma_ray = 0.0
+            photoelectricity = 0.0
+            #
+            K_list = []
+            G_list = []
+            phi_list = []
+            for key, value in phi_minerals.items():
+                gamma_ray += phi_minerals[key]*mineralogy[key]["GR"]
+                photoelectricity += phi_minerals[key]*mineralogy[key]["PE"]
+                #
+                gamma_ray = round(gamma_ray, 3)
+                photoelectricity = round(photoelectricity, 3)
+                #
+                K_list.append(round(phi_minerals[key]*mineralogy[key]["K"], 3))
+                G_list.append(round(phi_minerals[key]*mineralogy[key]["G"], 3))
+                phi_list.append(phi_minerals[key])
+            #
+            K_geo = elast.calc_geometric_mean(self, phi_list, K_list)
+            G_geo = elast.calc_geometric_mean(self, phi_list, G_list)
+            #
+            # anisotropic_factor = round(rd.uniform(1.0, 2.0), 4)
+            anisotropic_factor = 1.0
+            #
+            bulk_mod = K_geo/anisotropic_factor
+            shear_mod = G_geo/anisotropic_factor
+            #
+            youngs_mod = round((9*bulk_mod*shear_mod)/(3*bulk_mod + shear_mod), 3)
+            poisson_rat = round((3*bulk_mod - 2*shear_mod)/(6*bulk_mod + 2*shear_mod), 4)
+            vP = round(((bulk_mod*10**9 + 4/3*shear_mod*10**9)/(rho))**0.5, 3)
+            vS = round(((shear_mod*10**9)/(rho))**0.5, 3)
+            vPvS = round(vP/vS, 3)
+            #
+            for key, value in w_minerals.items():
+                results_container["mineralogy"][key].append(value)
+            #
+            for key, value in w_elements.items():
+                results_container["chemistry"][key].append(value)
+            #
+            results_container["phi"].append(var_porosity)
+            results_container["rho_s"].append(rho_s)
+            results_container["rho"].append(rho)
+            results_container["vP"].append(vP)
+            results_container["vS"].append(vS)
+            results_container["vP/vS"].append(vPvS)
+            results_container["K"].append(bulk_mod)
+            results_container["G"].append(shear_mod)
+            results_container["E"].append(youngs_mod)
+            results_container["nu"].append(poisson_rat)
+            results_container["GR"].append(gamma_ray)
+            results_container["PE"].append(photoelectricity)
+            #
+            n += 1
+        #
+        return results_container
     #
     def create_granite_streckeisen(self, number=1, composition=None):
         data_alkalifeldspar = Tectosilicates(impurity="pure", data_type=True).create_alkalifeldspar()

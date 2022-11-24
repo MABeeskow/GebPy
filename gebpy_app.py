@@ -6,7 +6,7 @@
 # Name:		gebpy_app.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		23.11.2022
+# Date:		24.11.2022
 
 #-----------------------------------------------
 
@@ -394,7 +394,12 @@ class GebPyGUI(tk.Frame):
                     menu=sub_sedimentary)
             elif rock_group == "Igneous Rocks":
                 sub_igneous = tk.Menu(petrology_menu, tearoff=0)
-                igneous_rocks = {"Plutonic": ["Granite (Streckeisen)", "Diorite", "Gabbro"], "Volcanic": ["Rhyolite", "Basalt"]} #
+                igneous_rocks = {
+                    "Plutonic": ["Granite (Streckeisen)", "Granodiorite (Streckeisen)", "Tonalite (Streckeisen)",
+                                 "Gabbro (Streckeisen)", "Diorite (Streckeisen)", "Monzonite (Streckeisen)",
+                                 "Syenite (Streckeisen)", "Granitoid (Streckeisen)", "Quarzolite (Streckeisen)",
+                                 "Foid-bearing Syenite (Streckeisen)"],
+                    "Volcanic": ["Rhyolite", "Basalt"]} #
                 igneous_rocks = collections.OrderedDict(sorted(igneous_rocks.items()))
                 i = 1
                 n = len(igneous_rocks)
@@ -1428,8 +1433,63 @@ class GebPyGUI(tk.Frame):
             data = Plutonic(
                 fluid="water", actualThickness=0, dict_output=True, porosity=[
                     self.gui_variables["Entry"]["Porosity Min"].get()/100,
-                    self.gui_variables["Entry"]["Porosity Max"].get()/100]).create_granite_streckeisen_alt(
-                number=self.gui_variables["Entry"]["Number Datapoints"].get())
+                    self.gui_variables["Entry"]["Porosity Max"].get()/100]).create_plutonic_rock_streckeisen(
+                rock="Granite", number=self.gui_variables["Entry"]["Number Datapoints"].get())
+        elif var_name == "Granodiorite (Streckeisen)":
+            data = Plutonic(
+                fluid="water", actualThickness=0, dict_output=True, porosity=[
+                    self.gui_variables["Entry"]["Porosity Min"].get()/100,
+                    self.gui_variables["Entry"]["Porosity Max"].get()/100]).create_plutonic_rock_streckeisen(
+                rock="Granodiorite", number=self.gui_variables["Entry"]["Number Datapoints"].get())
+        elif var_name == "Tonalite (Streckeisen)":
+            data = Plutonic(
+                fluid="water", actualThickness=0, dict_output=True, porosity=[
+                    self.gui_variables["Entry"]["Porosity Min"].get()/100,
+                    self.gui_variables["Entry"]["Porosity Max"].get()/100]).create_plutonic_rock_streckeisen(
+                rock="Tonalite", number=self.gui_variables["Entry"]["Number Datapoints"].get())
+        elif var_name == "Gabbro (Streckeisen)":
+            data = Plutonic(
+                fluid="water", actualThickness=0, dict_output=True, porosity=[
+                    self.gui_variables["Entry"]["Porosity Min"].get()/100,
+                    self.gui_variables["Entry"]["Porosity Max"].get()/100]).create_plutonic_rock_streckeisen(
+                rock="Gabbro", number=self.gui_variables["Entry"]["Number Datapoints"].get(), enrichment_pl="Ca")
+        elif var_name == "Diorite (Streckeisen)":
+            data = Plutonic(
+                fluid="water", actualThickness=0, dict_output=True, porosity=[
+                    self.gui_variables["Entry"]["Porosity Min"].get()/100,
+                    self.gui_variables["Entry"]["Porosity Max"].get()/100]).create_plutonic_rock_streckeisen(
+                rock="Diorite", number=self.gui_variables["Entry"]["Number Datapoints"].get(), enrichment_pl="Na")
+        elif var_name == "Monzonite (Streckeisen)":
+            data = Plutonic(
+                fluid="water", actualThickness=0, dict_output=True, porosity=[
+                    self.gui_variables["Entry"]["Porosity Min"].get()/100,
+                    self.gui_variables["Entry"]["Porosity Max"].get()/100]).create_plutonic_rock_streckeisen(
+                rock="Monzonite", number=self.gui_variables["Entry"]["Number Datapoints"].get())
+        elif var_name == "Syenite (Streckeisen)":
+            data = Plutonic(
+                fluid="water", actualThickness=0, dict_output=True, porosity=[
+                    self.gui_variables["Entry"]["Porosity Min"].get()/100,
+                    self.gui_variables["Entry"]["Porosity Max"].get()/100]).create_plutonic_rock_streckeisen(
+                rock="Syenite", number=self.gui_variables["Entry"]["Number Datapoints"].get())
+        elif var_name == "Granitoid (Streckeisen)":
+            data = Plutonic(
+                fluid="water", actualThickness=0, dict_output=True, porosity=[
+                    self.gui_variables["Entry"]["Porosity Min"].get()/100,
+                    self.gui_variables["Entry"]["Porosity Max"].get()/100]).create_plutonic_rock_streckeisen(
+                rock="Granitoid", number=self.gui_variables["Entry"]["Number Datapoints"].get())
+        elif var_name == "Quarzolite (Streckeisen)":
+            data = Plutonic(
+                fluid="water", actualThickness=0, dict_output=True, porosity=[
+                    self.gui_variables["Entry"]["Porosity Min"].get()/100,
+                    self.gui_variables["Entry"]["Porosity Max"].get()/100]).create_plutonic_rock_streckeisen(
+                rock="Quarzolite", number=self.gui_variables["Entry"]["Number Datapoints"].get())
+        elif var_name == "Foid-bearing Syenite (Streckeisen)":
+            data = Plutonic(
+                fluid="water", actualThickness=0, dict_output=True, porosity=[
+                    self.gui_variables["Entry"]["Porosity Min"].get()/100,
+                    self.gui_variables["Entry"]["Porosity Max"].get()/100]).create_plutonic_rock_streckeisen(
+                rock="Foid-bearing Syenite", number=self.gui_variables["Entry"]["Number Datapoints"].get(),
+                upper_streckeisen=False)
         #
         self.data_rock = {}
         categories = ["rho", "rho_s", "vP", "vS", "vP/vS", "K", "G", "E", "nu", "GR", "PE", "phi", "fluid",
