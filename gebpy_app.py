@@ -20,7 +20,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from modules.gui_elements import SimpleElements
 from modules.oxides import Oxides
 from modules.carbonates import Carbonates, CarbonateRocks
-from modules.igneous import Plutonic, Volcanic, Pyroclastic
+from modules.igneous import Plutonic, Volcanic, UltraMafic, Pyroclastic
 from modules.sulfides import Sulfides
 from modules.sulfates import Sulfates
 from modules.halides import Halides
@@ -270,7 +270,7 @@ class GebPyGUI(tk.Frame):
                 self.inosilicate_minerals = [
                     "Enstatite", "Ferrosilite", "Diopside", "Jadeite", "Aegirine", "Spodumene", "Wollastonite",
                     "Tremolite", "Actinolite", "Glaucophane", "Augite", "Arfvedsonite", "Ca-Amphibole", "Na-Amphibole",
-                    "Mg-Fe-Pyroxene", "Ca-Pyroxene", "Donpeacorite", "Orthopyroxene"]
+                    "Mg-Fe-Pyroxene", "Ca-Pyroxene", "Na-Pyroxene", "Donpeacorite", "Orthopyroxene", "Clinopyroxene"]
                 self.inosilicate_minerals.sort()
                 for mineral in self.inosilicate_minerals:
                     sub_inosilicates.add_command(
@@ -406,7 +406,11 @@ class GebPyGUI(tk.Frame):
                                  "Latite (Streckeisen)", "Andesite (Streckeisen)", "Basalt (Streckeisen)",
                                  "Phonolite (Streckeisen)", "Tephrite (Streckeisen)", "Foidite (Streckeisen)",
                                  "Foid-bearing Trachyte (Streckeisen)", "Foid-bearing Latite (Streckeisen)",
-                                 "Foid-bearing Andesite (Streckeisen)", "Foid-bearing Basalt (Streckeisen)"]}
+                                 "Foid-bearing Andesite (Streckeisen)", "Foid-bearing Basalt (Streckeisen)"],
+                    "Ultramafic": ["Orthopyroxenite", "Clinopyroxenite", "Dunite", "Harzburgite", "Wehrlite",
+                                   "Websterite", "Lherzolite", "Olivine-Websterite", "Olivine-Orthopyroxenite",
+                                   "Olivine-Clinopyroxenite"]}
+                #
                 igneous_rocks = collections.OrderedDict(sorted(igneous_rocks.items()))
                 i = 1
                 n = len(igneous_rocks)
@@ -1631,6 +1635,68 @@ class GebPyGUI(tk.Frame):
                     self.gui_variables["Entry"]["Porosity Min"].get()/100,
                     self.gui_variables["Entry"]["Porosity Max"].get()/100]).create_volcanic_rock_streckeisen(
                 rock="Foidite", number=self.gui_variables["Entry"]["Number Datapoints"].get(), upper_streckeisen=False)
+        #
+        ## Igneous Rocks (Ultramafic)
+        elif var_name == "Orthopyroxenite":
+            data = UltraMafic(
+                fluid="water", actualThickness=0, dict_output=True, porosity=[
+                    self.gui_variables["Entry"]["Porosity Min"].get()/100,
+                    self.gui_variables["Entry"]["Porosity Max"].get()/100]).create_ultramafic_rock(
+                rock="Orthopyroxenite", number=self.gui_variables["Entry"]["Number Datapoints"].get())
+        elif var_name == "Clinpyroxenite":
+            data = UltraMafic(
+                fluid="water", actualThickness=0, dict_output=True, porosity=[
+                    self.gui_variables["Entry"]["Porosity Min"].get()/100,
+                    self.gui_variables["Entry"]["Porosity Max"].get()/100]).create_ultramafic_rock(
+                rock="Clinpyroxenite", number=self.gui_variables["Entry"]["Number Datapoints"].get())
+        elif var_name == "Dunite":
+            data = UltraMafic(
+                fluid="water", actualThickness=0, dict_output=True, porosity=[
+                    self.gui_variables["Entry"]["Porosity Min"].get()/100,
+                    self.gui_variables["Entry"]["Porosity Max"].get()/100]).create_ultramafic_rock(
+                rock="Dunite", number=self.gui_variables["Entry"]["Number Datapoints"].get())
+        elif var_name == "Harzburgite":
+            data = UltraMafic(
+                fluid="water", actualThickness=0, dict_output=True, porosity=[
+                    self.gui_variables["Entry"]["Porosity Min"].get()/100,
+                    self.gui_variables["Entry"]["Porosity Max"].get()/100]).create_ultramafic_rock(
+                rock="Harzburgite", number=self.gui_variables["Entry"]["Number Datapoints"].get())
+        elif var_name == "Wehrlite":
+            data = UltraMafic(
+                fluid="water", actualThickness=0, dict_output=True, porosity=[
+                    self.gui_variables["Entry"]["Porosity Min"].get()/100,
+                    self.gui_variables["Entry"]["Porosity Max"].get()/100]).create_ultramafic_rock(
+                rock="Wehrlite", number=self.gui_variables["Entry"]["Number Datapoints"].get())
+        elif var_name == "Websterite":
+            data = UltraMafic(
+                fluid="water", actualThickness=0, dict_output=True, porosity=[
+                    self.gui_variables["Entry"]["Porosity Min"].get()/100,
+                    self.gui_variables["Entry"]["Porosity Max"].get()/100]).create_ultramafic_rock(
+                rock="Websterite", number=self.gui_variables["Entry"]["Number Datapoints"].get())
+        elif var_name == "Lherzolite":
+            data = UltraMafic(
+                fluid="water", actualThickness=0, dict_output=True, porosity=[
+                    self.gui_variables["Entry"]["Porosity Min"].get()/100,
+                    self.gui_variables["Entry"]["Porosity Max"].get()/100]).create_ultramafic_rock(
+                rock="Lherzolite", number=self.gui_variables["Entry"]["Number Datapoints"].get())
+        elif var_name == "Olivine-Websterite":
+            data = UltraMafic(
+                fluid="water", actualThickness=0, dict_output=True, porosity=[
+                    self.gui_variables["Entry"]["Porosity Min"].get()/100,
+                    self.gui_variables["Entry"]["Porosity Max"].get()/100]).create_ultramafic_rock(
+                rock="Olivine-Websterite", number=self.gui_variables["Entry"]["Number Datapoints"].get())
+        elif var_name == "Olivine-Orthopyroxenite":
+            data = UltraMafic(
+                fluid="water", actualThickness=0, dict_output=True, porosity=[
+                    self.gui_variables["Entry"]["Porosity Min"].get()/100,
+                    self.gui_variables["Entry"]["Porosity Max"].get()/100]).create_ultramafic_rock(
+                rock="Olivine-Orthopyroxenite", number=self.gui_variables["Entry"]["Number Datapoints"].get())
+        elif var_name == "Olivine-Clinopyroxenite":
+            data = UltraMafic(
+                fluid="water", actualThickness=0, dict_output=True, porosity=[
+                    self.gui_variables["Entry"]["Porosity Min"].get()/100,
+                    self.gui_variables["Entry"]["Porosity Max"].get()/100]).create_ultramafic_rock(
+                rock="Olivine-Clinopyroxenite", number=self.gui_variables["Entry"]["Number Datapoints"].get())
         #
         self.data_rock = {}
         categories = ["rho", "rho_s", "vP", "vS", "vP/vS", "K", "G", "E", "nu", "GR", "PE", "phi", "fluid",
