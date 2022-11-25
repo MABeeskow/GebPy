@@ -406,10 +406,11 @@ class GebPyGUI(tk.Frame):
                                  "Latite (Streckeisen)", "Andesite (Streckeisen)", "Basalt (Streckeisen)",
                                  "Phonolite (Streckeisen)", "Tephrite (Streckeisen)", "Foidite (Streckeisen)",
                                  "Foid-bearing Trachyte (Streckeisen)", "Foid-bearing Latite (Streckeisen)",
-                                 "Foid-bearing Andesite (Streckeisen)", "Foid-bearing Basalt (Streckeisen)"],
+                                 "Foid-bearing Andesite (Streckeisen)", "Foid-bearing Basalt (Streckeisen)",
+                                 "Basalt (Yoder & Tilley)"],
                     "Ultramafic": ["Orthopyroxenite", "Clinopyroxenite", "Dunite", "Harzburgite", "Wehrlite",
                                    "Websterite", "Lherzolite", "Olivine-Websterite", "Olivine-Orthopyroxenite",
-                                   "Olivine-Clinopyroxenite"]}
+                                   "Olivine-Clinopyroxenite", "Peridotite", "Pyroxenite"]}
                 #
                 igneous_rocks = collections.OrderedDict(sorted(igneous_rocks.items()))
                 i = 1
@@ -435,6 +436,8 @@ class GebPyGUI(tk.Frame):
             menu=sub_rock_groups)
         #
         petrology_menu.add_separator()
+        petrology_menu.add_command(
+            label="Rock Comparison", command=self.rock_comparison)
         petrology_menu.add_command(
             label="Rock Builder", command=self.rock_builder)
         #
@@ -483,13 +486,18 @@ class GebPyGUI(tk.Frame):
             bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_button(
             text="Restart GebPy", command=self.restart_gebpy)
         #
-        self.gui_elements["Static"]["Button"].extend([btn_quit, btn_restart])
+        #self.gui_elements["Static"]["Button"].extend([btn_quit, btn_restart])
     #
     #########################
     ## M i n e r a l o g y ##
     #########################
     #
     def select_mineral(self, name):
+        ## Cleaning
+        for category in ["Label", "Button", "Entry", "Radiobutton"]:
+            for gui_element in self.gui_elements["Static"][category]:
+                gui_element.grid_remove()
+        #
         ## Initialization
         self.gui_variables["Entry"]["Number Samples"] = tk.IntVar()
         self.gui_variables["Entry"]["Number Samples"].set(100)
@@ -1307,6 +1315,10 @@ class GebPyGUI(tk.Frame):
     def select_rock(self, var_name):
         ## Cleaning
         for category in ["Label", "Button", "Entry", "Radiobutton"]:
+            for gui_element in self.gui_elements["Static"][category]:
+                gui_element.grid_remove()
+        #
+        for category in ["Label", "Button", "Entry", "Radiobutton"]:
             for gui_element in self.gui_elements["Rockbuilder Static"][category]:
                 gui_element.grid_remove()
         #
@@ -1376,7 +1388,7 @@ class GebPyGUI(tk.Frame):
             bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_button(
             text="Run Simulation", command=lambda var_name=var_name: self.run_simulation_petrology(var_name))
         #
-        self.gui_elements_sub["Trace Elements"]["Static"]["Button"].extend([btn_simulation])
+        self.gui_elements["Static"]["Button"].extend([btn_simulation])
     #
     def run_simulation_petrology(self, var_name):
         try:
@@ -1635,6 +1647,12 @@ class GebPyGUI(tk.Frame):
                     self.gui_variables["Entry"]["Porosity Min"].get()/100,
                     self.gui_variables["Entry"]["Porosity Max"].get()/100]).create_volcanic_rock_streckeisen(
                 rock="Foidite", number=self.gui_variables["Entry"]["Number Datapoints"].get(), upper_streckeisen=False)
+        elif var_name == "Basalt (Yoder & Tilley)":
+            data = Volcanic(
+                fluid="water", actualThickness=0, dict_output=True, porosity=[
+                    self.gui_variables["Entry"]["Porosity Min"].get()/100,
+                    self.gui_variables["Entry"]["Porosity Max"].get()/100]).create_basaltic_rock_yoder_tilley(
+                rock="Basalt", number=self.gui_variables["Entry"]["Number Datapoints"].get())
         #
         ## Igneous Rocks (Ultramafic)
         elif var_name == "Orthopyroxenite":
@@ -1697,6 +1715,18 @@ class GebPyGUI(tk.Frame):
                     self.gui_variables["Entry"]["Porosity Min"].get()/100,
                     self.gui_variables["Entry"]["Porosity Max"].get()/100]).create_ultramafic_rock(
                 rock="Olivine-Clinopyroxenite", number=self.gui_variables["Entry"]["Number Datapoints"].get())
+        elif var_name == "Peridotite":
+            data = UltraMafic(
+                fluid="water", actualThickness=0, dict_output=True, porosity=[
+                    self.gui_variables["Entry"]["Porosity Min"].get()/100,
+                    self.gui_variables["Entry"]["Porosity Max"].get()/100]).create_ultramafic_rock(
+                rock="Peridotite", number=self.gui_variables["Entry"]["Number Datapoints"].get())
+        elif var_name == "Pyroxenite":
+            data = UltraMafic(
+                fluid="water", actualThickness=0, dict_output=True, porosity=[
+                    self.gui_variables["Entry"]["Porosity Min"].get()/100,
+                    self.gui_variables["Entry"]["Porosity Max"].get()/100]).create_ultramafic_rock(
+                rock="Pyroxenite", number=self.gui_variables["Entry"]["Number Datapoints"].get())
         #
         self.data_rock = {}
         categories = ["rho", "rho_s", "vP", "vS", "vP/vS", "K", "G", "E", "nu", "GR", "PE", "phi", "fluid",
@@ -1770,6 +1800,23 @@ class GebPyGUI(tk.Frame):
             self.gui_variables["Entry"]["Mean"][element].set(0.0)
             self.gui_variables["Entry"]["Error"][element] = tk.StringVar()
             self.gui_variables["Entry"]["Error"][element].set(0.0)
+    #
+    def rock_comparison(self):
+        ## Cleaning
+        for category in ["Label", "Button", "Entry", "Radiobutton"]:
+            for gui_element in self.gui_elements["Static"][category]:
+                gui_element.grid_remove()
+            for gui_element in self.gui_elements["Temporary"][category]:
+                gui_element.grid_remove()
+        #
+        ## Labels
+        lbl_title = SimpleElements(
+            parent=self.parent, row_id=5, column_id=0, n_rows=2, n_columns=32, bg=self.colors_gebpy["Accent"],
+            fg=self.colors_gebpy["Navigation"]).create_label(
+            text="Rock Comparison", font_option="sans 14 bold", relief=tk.FLAT)
+        #
+        self.gui_elements["Static"]["Label"].extend([lbl_title])
+        #
     #
     def rock_builder(self):
         ## Initialization
