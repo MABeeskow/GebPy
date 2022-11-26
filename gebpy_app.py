@@ -1737,10 +1737,12 @@ class GebPyGUI(tk.Frame):
         categories = ["rho", "rho_s", "vP", "vS", "vP/vS", "K", "G", "E", "nu", "GR", "PE", "phi", "fluid",
                       "mineralogy", "chemistry"]
         for category in categories:
-            if category in ["rho", "rho_s", "vP", "vS", "vP/vS", "K", "G", "E", "nu", "GR", "PE", "phi"]:
+            if category in ["rho", "rho_s", "vP", "vS", "vP/vS", "K", "G", "E", "nu", "GR", "PE"]:
                 self.data_rock[category] = data[category]
             elif category in ["mineralogy", "chemistry"]:
                 self.data_rock[category] = data[category]
+            elif category in ["phi"]:
+                self.data_rock[category] = list(np.array(data[category])*100)
         #
         self.list_elements_rock = list(self.data_rock["chemistry"].keys())
         self.list_minerals_rock = list(self.data_rock["mineralogy"].keys())
@@ -2843,19 +2845,23 @@ class GebPyGUI(tk.Frame):
                     entr_min = SimpleElements(
                         parent=self.parent, row_id=(3*index + 4), column_id=start_column + 9, n_rows=3, n_columns=9,
                         bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
-                        var_entr=self.gui_variables["Entry"]["Minimum"][categories_short[index]], var_entr_set=var_entr_min)
+                        var_entr=self.gui_variables["Entry"]["Minimum"][categories_short[index]],
+                        var_entr_set=var_entr_min)
                     entr_max = SimpleElements(
                         parent=self.parent, row_id=(3*index + 4), column_id=start_column + 18, n_rows=3, n_columns=9,
                         bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
-                        var_entr=self.gui_variables["Entry"]["Maximum"][categories_short[index]], var_entr_set=var_entr_max)
+                        var_entr=self.gui_variables["Entry"]["Maximum"][categories_short[index]],
+                        var_entr_set=var_entr_max)
                     entr_mean = SimpleElements(
                         parent=self.parent, row_id=(3*index + 4), column_id=start_column + 27, n_rows=3, n_columns=9,
                         bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
-                        var_entr=self.gui_variables["Entry"]["Mean"][categories_short[index]], var_entr_set=var_entr_mean)
+                        var_entr=self.gui_variables["Entry"]["Mean"][categories_short[index]],
+                        var_entr_set=var_entr_mean)
                     entr_error = SimpleElements(
                         parent=self.parent, row_id=(3*index + 4), column_id=start_column + 36, n_rows=3, n_columns=9,
                         bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
-                        var_entr=self.gui_variables["Entry"]["Error"][categories_short[index]], var_entr_set=var_entr_error)
+                        var_entr=self.gui_variables["Entry"]["Error"][categories_short[index]],
+                        var_entr_set=var_entr_error)
                     #
                     self.gui_elements["Rockbuilder Temporary"]["Entry"].extend([entr_min, entr_max, entr_mean, entr_error])
                 #
