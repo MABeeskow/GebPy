@@ -850,15 +850,25 @@ class Plutonic:
                             kfs_limits = [0.0, 0.08]
                             pl_limits = [0.35, 0.8]
                             bt_limits = [0.0, 0.05]
-                        elif rock == "Gabbro":
+                        elif rock == "Monzodiorite":
                             qz_limits = [0.0, 0.2]
                             kfs_limits = [0.0, 0.35]
                             pl_limits = [0.52, 1.0]
                             bt_limits = [0.0, 0.05]
+                        elif rock == "Monzogabbro":
+                            qz_limits = [0.0, 0.2]
+                            kfs_limits = [0.08, 0.35]
+                            pl_limits = [0.52, 0.9]
+                            bt_limits = [0.0, 0.05]
+                        elif rock == "Gabbro":
+                            qz_limits = [0.0, 0.2]
+                            kfs_limits = [0.0, 0.1]
+                            pl_limits = [0.72, 1.0]
+                            bt_limits = [0.0, 0.05]
                         elif rock == "Diorite":
                             qz_limits = [0.0, 0.2]
-                            kfs_limits = [0.0, 0.35]
-                            pl_limits = [0.52, 1.0]
+                            kfs_limits = [0.0, 0.1]
+                            pl_limits = [0.72, 1.0]
                             bt_limits = [0.0, 0.05]
                         elif rock == "Monzonite":
                             qz_limits = [0.0, 0.2]
@@ -879,6 +889,11 @@ class Plutonic:
                             qz_limits = [0.9, 1.0]
                             kfs_limits = [0.0, 0.1]
                             pl_limits = [0.0, 0.1]
+                            bt_limits = [0.0, 0.05]
+                        elif rock == "Norite":
+                            qz_limits = [0.0, 0.2]
+                            kfs_limits = [0.0, 0.1]
+                            pl_limits = [0.72, 1.0]
                             bt_limits = [0.0, 0.05]
                         #
                         ## LOWER STRECKEISEN DIAGRAM

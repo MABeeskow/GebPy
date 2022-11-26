@@ -317,6 +317,9 @@ class Tectosilicates:
                     mineral = "Byt"
                 elif x <= 0.1:
                     mineral = "An"
+            elif type(self.enrichment) == list:
+                x = round(rd.uniform(self.enrichment[0], self.enrichment[1]), 2)
+                mineral = "Pl"
         else:
             x = self.x_value
             mineral = "Pl"

@@ -369,7 +369,7 @@ class GebPyGUI(tk.Frame):
         #
         sub_rock_groups = tk.Menu(mineralogy_menu, tearoff=0)
         rock_groups = [
-            "Sedimentary Rocks", "Igneous Rocks", "Metamorphic Rocks", "Evaporite Rocks"]
+            "Sedimentary Rocks", "Igneous Rocks", "Metamorphic Rocks", "Evaporite Rocks", "Ore Rocks"]
         rock_groups.sort()
         for rock_group in rock_groups:
             if rock_group == "Sedimentary Rocks":
@@ -401,7 +401,8 @@ class GebPyGUI(tk.Frame):
                                  "Foid-bearing Syenite (Streckeisen)", "Foid-bearing Monzonite (Streckeisen)",
                                  "Foid-bearing Monzodiorite (Streckeisen)", "Foid-bearing Monzogabbro (Streckeisen)",
                                  "Foid Monzosyenite (Streckeisen)", "Foid Monzodiorite (Streckeisen)",
-                                 "Foid Monzogabbro (Streckeisen)", "Foidolite (Streckeisen)"],
+                                 "Foid Monzogabbro (Streckeisen)", "Foidolite (Streckeisen)", "Norite (Streckeisen)",
+                                 "Monzodiorite (Streckeisen)", "Monzogabbro (Streckeisen)"],
                     "Volcanic": ["Rhyolite (Streckeisen)", "Dacite (Streckeisen)", "Trachyte (Streckeisen)",
                                  "Latite (Streckeisen)", "Andesite (Streckeisen)", "Basalt (Streckeisen)",
                                  "Phonolite (Streckeisen)", "Tephrite (Streckeisen)", "Foidite (Streckeisen)",
@@ -1399,6 +1400,21 @@ class GebPyGUI(tk.Frame):
         ## Initialization
         self.gui_variables["Radiobutton"]["Analysis Mode"] = tk.IntVar()
         self.gui_variables["Radiobutton"]["Analysis Mode"].set(0)
+        self.gui_variables["Radiobutton"]["Diagram Type Rock"] = tk.IntVar()
+        self.gui_variables["Radiobutton"]["Diagram Type Rock"].set(0)
+        self.gui_variables["Radiobutton"]["Diagram Type Mineral"] = tk.IntVar()
+        self.gui_variables["Radiobutton"]["Diagram Type Mineral"].set(0)
+        self.gui_variables["Radiobutton"]["Diagram Type Element"] = tk.IntVar()
+        self.gui_variables["Radiobutton"]["Diagram Type Element"].set(0)
+        self.gui_variables["Radiobutton"]["Concentration Type"] = tk.IntVar()
+        self.gui_variables["Radiobutton"]["Concentration Type"].set(0)
+        self.gui_variables["Radiobutton"]["Amount Mineral"] = tk.StringVar()
+        self.gui_variables["Radiobutton"]["Amount Mineral"].set("Select Mineral")
+        self.gui_variables["Radiobutton"]["Amount Element"] = tk.StringVar()
+        self.gui_variables["Radiobutton"]["Amount Element"].set("Select Element")
+        self.gui_variables["Radiobutton"]["Amount Oxide"] = tk.StringVar()
+        self.gui_variables["Radiobutton"]["Amount Oxide"].set("Select Oxide")
+        #
         self.selected_minerals = {}
         n_digits = 8
         #
@@ -1416,6 +1432,14 @@ class GebPyGUI(tk.Frame):
             self.gui_variables["Entry"]["Mean"][category].set(0.0)
             self.gui_variables["Entry"]["Error"][category] = tk.StringVar()
             self.gui_variables["Entry"]["Error"][category].set(0.0)
+        #
+        ## Labels
+        lbl_analysis = SimpleElements(
+            parent=self.parent, row_id=22, column_id=0, n_rows=6, n_columns=14, bg=self.colors_gebpy["Navigation"],
+            fg=self.colors_gebpy["Background"]).create_label(
+            text="Analysis Mode", font_option="sans 10 bold", relief=tk.FLAT)
+        #
+        self.gui_elements["Static"]["Label"].append(lbl_analysis)
         #
         ## Siliciclastic Rocks
         if var_name == "Sandstone":
@@ -1481,12 +1505,30 @@ class GebPyGUI(tk.Frame):
                     self.gui_variables["Entry"]["Porosity Min"].get()/100,
                     self.gui_variables["Entry"]["Porosity Max"].get()/100]).create_plutonic_rock_streckeisen(
                 rock="Gabbro", number=self.gui_variables["Entry"]["Number Datapoints"].get(), enrichment_pl="Ca")
+        elif var_name == "Norite (Streckeisen)":
+            data = Plutonic(
+                fluid="water", actualThickness=0, dict_output=True, porosity=[
+                    self.gui_variables["Entry"]["Porosity Min"].get()/100,
+                    self.gui_variables["Entry"]["Porosity Max"].get()/100]).create_plutonic_rock_streckeisen(
+                rock="Norite", number=self.gui_variables["Entry"]["Number Datapoints"].get(), enrichment_pl=[0.1, 0.5])
         elif var_name == "Diorite (Streckeisen)":
             data = Plutonic(
                 fluid="water", actualThickness=0, dict_output=True, porosity=[
                     self.gui_variables["Entry"]["Porosity Min"].get()/100,
                     self.gui_variables["Entry"]["Porosity Max"].get()/100]).create_plutonic_rock_streckeisen(
                 rock="Diorite", number=self.gui_variables["Entry"]["Number Datapoints"].get(), enrichment_pl="Na")
+        elif var_name == "Monzodiorite (Streckeisen)":
+            data = Plutonic(
+                fluid="water", actualThickness=0, dict_output=True, porosity=[
+                    self.gui_variables["Entry"]["Porosity Min"].get()/100,
+                    self.gui_variables["Entry"]["Porosity Max"].get()/100]).create_plutonic_rock_streckeisen(
+                rock="Monzodiorite", number=self.gui_variables["Entry"]["Number Datapoints"].get(), enrichment_pl="Na")
+        elif var_name == "Monzogabbro (Streckeisen)":
+            data = Plutonic(
+                fluid="water", actualThickness=0, dict_output=True, porosity=[
+                    self.gui_variables["Entry"]["Porosity Min"].get()/100,
+                    self.gui_variables["Entry"]["Porosity Max"].get()/100]).create_plutonic_rock_streckeisen(
+                rock="Monzogabbro", number=self.gui_variables["Entry"]["Number Datapoints"].get(), enrichment_pl="Ca")
         elif var_name == "Monzonite (Streckeisen)":
             data = Plutonic(
                 fluid="water", actualThickness=0, dict_output=True, porosity=[
@@ -2794,6 +2836,17 @@ class GebPyGUI(tk.Frame):
                             for key_2, gui_item in gui_items.items():
                                 gui_item.get_tk_widget().grid_remove()
                 #
+                for key, gui_items in self.gui_elements["Rockbuilder Temporary"].items():
+                    if len(gui_items) > 0:
+                        if key not in ["Canvas"]:
+                            if type(gui_items) == list:
+                                for gui_item in gui_items:
+                                    gui_item.grid_remove()
+                                gui_items.clear()
+                        else:
+                            for key_2, gui_item in gui_items.items():
+                                gui_item.get_tk_widget().grid_remove()
+                #
                 ## Labels
                 lbl_title = SimpleElements(
                     parent=self.parent, row_id=0, column_id=start_column, n_rows=2, n_columns=45,
@@ -2819,10 +2872,34 @@ class GebPyGUI(tk.Frame):
                     parent=self.parent, row_id=2, column_id=start_column + 36, n_rows=2, n_columns=9,
                     bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
                     text="Error", font_option="sans 10 bold", relief=tk.GROOVE)
+                lbl_addsetup = SimpleElements(
+                    parent=self.parent, row_id=32, column_id=0, n_rows=2, n_columns=32, bg=self.colors_gebpy["Accent"],
+                    fg=self.colors_gebpy["Navigation"]).create_label(
+                    text="Additional Settings", font_option="sans 14 bold", relief=tk.FLAT)
+                lbl_diagram_type = SimpleElements(
+                    parent=self.parent, row_id=34, column_id=0, n_rows=4, n_columns=14,
+                    bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Background"]).create_label(
+                    text="Diagram Type", font_option="sans 10 bold", relief=tk.FLAT)
                 #
                 self.gui_elements["Rockbuilder Temporary"]["Label"].extend(
-                    [lbl_title, lbl_results, lbl_min, lbl_max, lbl_mean, lbl_error])
+                    [lbl_title, lbl_results, lbl_min, lbl_max, lbl_mean, lbl_error, lbl_addsetup, lbl_diagram_type])
                 #
+                ## Radiobuttons
+                rb_diagram_type_01 = SimpleElements(
+                    parent=self.parent, row_id=34, column_id=14, n_rows=2, n_columns=16,
+                    bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Background"]).create_radiobutton(
+                    text="Histogram", var_rb=self.gui_variables["Radiobutton"]["Diagram Type Rock"], value_rb=0,
+                    color_bg=self.colors_gebpy["Background"])
+                rb_diagram_type_02 = SimpleElements(
+                    parent=self.parent, row_id=36, column_id=14, n_rows=2, n_columns=16,
+                    bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Background"]).create_radiobutton(
+                    text="Scatter", var_rb=self.gui_variables["Radiobutton"]["Diagram Type Rock"], value_rb=1,
+                    color_bg=self.colors_gebpy["Background"])
+                #
+                self.gui_elements["Rockbuilder Temporary"]["Radiobutton"].extend(
+                    [rb_diagram_type_01, rb_diagram_type_02])
+                #
+                ## Results Table
                 categories = [
                     "rho\n (kg/m\u00B3)", "vP\n (m/s)", "vS\n (m/s)", "vP/vS\n (1)", "K\n (GPa)", "G\n (GPa)", "E\n (GPa)",
                     "nu\n (1)", "GR\n (API)", "PE\n (barns/e\u207B)", "phi\n (%)"]
@@ -2945,11 +3022,51 @@ class GebPyGUI(tk.Frame):
                     parent=self.parent, row_id=2, column_id=start_column + 36, n_rows=2, n_columns=9,
                     bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
                     text="Error", font_option="sans 10 bold", relief=tk.GROOVE)
+                lbl_addsetup = SimpleElements(
+                    parent=self.parent, row_id=32, column_id=0, n_rows=2, n_columns=32, bg=self.colors_gebpy["Accent"],
+                    fg=self.colors_gebpy["Navigation"]).create_label(
+                    text="Additional Settings", font_option="sans 14 bold", relief=tk.FLAT)
+                lbl_diagram_type = SimpleElements(
+                    parent=self.parent, row_id=34, column_id=0, n_rows=4, n_columns=14,
+                    bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Background"]).create_label(
+                    text="Diagram Type", font_option="sans 10 bold", relief=tk.FLAT)
+                lbl_mineral = SimpleElements(
+                    parent=self.parent, row_id=38, column_id=0, n_rows=2, n_columns=14,
+                    bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Background"]).create_label(
+                    text="Mineral Selection", font_option="sans 10 bold", relief=tk.FLAT)
                 #
                 self.gui_elements["Rockbuilder Temporary"]["Label"].extend(
-                    [lbl_title, lbl_results, lbl_min, lbl_max, lbl_mean, lbl_error])
+                    [lbl_title, lbl_results, lbl_min, lbl_max, lbl_mean, lbl_error, lbl_addsetup, lbl_diagram_type,
+                     lbl_mineral])
                 #
+                ## Radiobuttons
+                rb_diagram_type_01 = SimpleElements(
+                    parent=self.parent, row_id=34, column_id=14, n_rows=2, n_columns=16,
+                    bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Background"]).create_radiobutton(
+                    text="Histogram", var_rb=self.gui_variables["Radiobutton"]["Diagram Type Mineral"], value_rb=0,
+                    color_bg=self.colors_gebpy["Background"])
+                rb_diagram_type_02 = SimpleElements(
+                    parent=self.parent, row_id=36, column_id=14, n_rows=2, n_columns=16,
+                    bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Background"]).create_radiobutton(
+                    text="Scatter", var_rb=self.gui_variables["Radiobutton"]["Diagram Type Mineral"], value_rb=1,
+                    color_bg=self.colors_gebpy["Background"])
+                #
+                self.gui_elements["Rockbuilder Temporary"]["Radiobutton"].extend(
+                    [rb_diagram_type_01, rb_diagram_type_02])
+                #
+                ## Option Menu
                 self.list_minerals_rock.sort()
+                list_opt = self.list_minerals_rock
+                opt_mineral = SimpleElements(
+                    parent=self.parent, row_id=38, column_id=14, n_rows=2, n_columns=16,
+                    bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Navigation"]).create_option_menu(
+                    var_opt=self.gui_variables["Radiobutton"]["Amount Mineral"],
+                    var_opt_set=self.gui_variables["Radiobutton"]["Amount Mineral"].get(), opt_list=list_opt,
+                    active_bg=self.colors_gebpy["Accent"])
+                #
+                self.gui_elements["Rockbuilder Temporary"]["Option Menu"].extend([opt_mineral])
+                #
+                ## Results Table
                 for index, mineral in enumerate(self.list_minerals_rock):
                     lbl_element = SimpleElements(
                         parent=self.parent, row_id=(2*index + 4), column_id=start_column, n_rows=2, n_columns=9,
@@ -3039,11 +3156,69 @@ class GebPyGUI(tk.Frame):
                     parent=self.parent, row_id=2, column_id=start_column + 36, n_rows=2, n_columns=9,
                     bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
                     text="Error", font_option="sans 10 bold", relief=tk.GROOVE)
+                lbl_addsetup = SimpleElements(
+                    parent=self.parent, row_id=32, column_id=0, n_rows=2, n_columns=32, bg=self.colors_gebpy["Accent"],
+                    fg=self.colors_gebpy["Navigation"]).create_label(
+                    text="Additional Settings", font_option="sans 14 bold", relief=tk.FLAT)
+                lbl_diagram_type = SimpleElements(
+                    parent=self.parent, row_id=34, column_id=0, n_rows=4, n_columns=14,
+                    bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Background"]).create_label(
+                    text="Diagram Type", font_option="sans 10 bold", relief=tk.FLAT)
+                lbl_concentration_setup = SimpleElements(
+                    parent=self.parent, row_id=38, column_id=0, n_rows=4, n_columns=14,
+                    bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Background"]).create_label(
+                    text="Concentration Setup", font_option="sans 10 bold", relief=tk.FLAT)
+                lbl_element = SimpleElements(
+                    parent=self.parent, row_id=42, column_id=0, n_rows=2, n_columns=14,
+                    bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Background"]).create_label(
+                    text="Element Selection", font_option="sans 10 bold", relief=tk.FLAT)
+                lbl_oxide = SimpleElements(
+                    parent=self.parent, row_id=44, column_id=0, n_rows=2, n_columns=14,
+                    bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Background"]).create_label(
+                    text="Oxide Selection", font_option="sans 10 bold", relief=tk.FLAT)
                 #
                 self.gui_elements["Rockbuilder Temporary"]["Label"].extend(
-                    [lbl_title, lbl_results, lbl_min, lbl_max, lbl_mean, lbl_error])
+                    [lbl_title, lbl_results, lbl_min, lbl_max, lbl_mean, lbl_error, lbl_addsetup, lbl_diagram_type,
+                     lbl_concentration_setup, lbl_element, lbl_oxide])
                 #
+                ## Radiobuttons
+                rb_diagram_type_01 = SimpleElements(
+                    parent=self.parent, row_id=34, column_id=14, n_rows=2, n_columns=16,
+                    bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Background"]).create_radiobutton(
+                    text="Histogram", var_rb=self.gui_variables["Radiobutton"]["Diagram Type Element"], value_rb=0,
+                    color_bg=self.colors_gebpy["Background"])
+                rb_diagram_type_02 = SimpleElements(
+                    parent=self.parent, row_id=36, column_id=14, n_rows=2, n_columns=16,
+                    bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Background"]).create_radiobutton(
+                    text="Scatter", var_rb=self.gui_variables["Radiobutton"]["Diagram Type Element"], value_rb=1,
+                    color_bg=self.colors_gebpy["Background"])
+                rb_concentration_type_01 = SimpleElements(
+                    parent=self.parent, row_id=38, column_id=14, n_rows=2, n_columns=16,
+                    bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Background"]).create_radiobutton(
+                    text="Element Concentrations", var_rb=self.gui_variables["Radiobutton"]["Concentration Type"],
+                    value_rb=0, color_bg=self.colors_gebpy["Background"])
+                rb_concentration_type_02 = SimpleElements(
+                    parent=self.parent, row_id=40, column_id=14, n_rows=2, n_columns=16,
+                    bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Background"]).create_radiobutton(
+                    text="Oxide Concentrations", var_rb=self.gui_variables["Radiobutton"]["Concentration Type"],
+                    value_rb=1, color_bg=self.colors_gebpy["Background"])
+                #
+                self.gui_elements["Rockbuilder Temporary"]["Radiobutton"].extend(
+                    [rb_diagram_type_01, rb_diagram_type_02, rb_concentration_type_01, rb_concentration_type_02])
+                #
+                ## Option Menu
                 self.list_elements_rock.sort()
+                list_opt_element = self.list_elements_rock
+                opt_element = SimpleElements(
+                    parent=self.parent, row_id=42, column_id=14, n_rows=2, n_columns=16,
+                    bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Navigation"]).create_option_menu(
+                    var_opt=self.gui_variables["Radiobutton"]["Amount Element"],
+                    var_opt_set=self.gui_variables["Radiobutton"]["Amount Element"].get(), opt_list=list_opt_element,
+                    active_bg=self.colors_gebpy["Accent"])
+                #
+                self.gui_elements["Rockbuilder Temporary"]["Option Menu"].extend([opt_element])
+                #
+                ## Results Table
                 for index, element in enumerate(self.list_elements_rock):
                     lbl_element = SimpleElements(
                         parent=self.parent, row_id=(2*index + 4), column_id=start_column, n_rows=2, n_columns=9,
