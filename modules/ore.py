@@ -161,6 +161,22 @@ class OreRocks:
                             goe_limits = [0.0, 0.05]
                             kln_limits = [0.0, 0.02]
                             bt_limits = [0.0, 0.02]
+                        elif classification == "Friable Quartz Itabirite":
+                            gbs_limits = [0.0, 0.02]
+                            qz_limits = [0.3, 0.38]
+                            mag_limits = [0.0, 0.05]
+                            hem_limits = [0.54, 0.62]
+                            goe_limits = [0.0, 0.05]
+                            kln_limits = [0.0, 0.02]
+                            bt_limits = [0.0, 0.02]
+                        elif classification == "Goethite Itabirite":
+                            gbs_limits = [0.0, 0.05]
+                            qz_limits = [0.18, 0.28]
+                            mag_limits = [0.0, 0.05]
+                            hem_limits = [0.32, 0.4]
+                            goe_limits = [0.3, 0.38]
+                            kln_limits = [0.0, 0.02]
+                            bt_limits = [0.0, 0.02]
                         #
                         phi_hem = round(rd.uniform(hem_limits[0], hem_limits[1]), 4)
                         phi_goe = round(rd.uniform(goe_limits[0], (1 - phi_hem)), 4)

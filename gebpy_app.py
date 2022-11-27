@@ -435,7 +435,8 @@ class GebPyGUI(tk.Frame):
                 sub_ore = tk.Menu(petrology_menu, tearoff=0)
                 ore_rocks = {
                     "Fe-Ore": ["Itabirite", "Compact Hematite", "Friable Hematite", "Goethite Hematite",
-                               "Al-rich Itabirite", "Compact Quartz Itabirite"]}
+                               "Al-rich Itabirite", "Compact Quartz Itabirite", "Friable Quartz Itabirite",
+                               "Goethite Itabirite"]}
                 #
                 ore_rocks = collections.OrderedDict(sorted(ore_rocks.items()))
                 i = 1
@@ -1834,6 +1835,18 @@ class GebPyGUI(tk.Frame):
                     self.gui_variables["Entry"]["Porosity Max"].get()/100]).create_siliciclastic_itabirite(
                 rock=var_name, number=self.gui_variables["Entry"]["Number Datapoints"].get(), classification=var_name)
         elif var_name == "Compact Quartz Itabirite":
+            data = OreRocks(
+                fluid="water", actual_thickness=0, porosity=[
+                    self.gui_variables["Entry"]["Porosity Min"].get()/100,
+                    self.gui_variables["Entry"]["Porosity Max"].get()/100]).create_siliciclastic_itabirite(
+                rock=var_name, number=self.gui_variables["Entry"]["Number Datapoints"].get(), classification=var_name)
+        elif var_name == "Friable Quartz Itabirite":
+            data = OreRocks(
+                fluid="water", actual_thickness=0, porosity=[
+                    self.gui_variables["Entry"]["Porosity Min"].get()/100,
+                    self.gui_variables["Entry"]["Porosity Max"].get()/100]).create_siliciclastic_itabirite(
+                rock=var_name, number=self.gui_variables["Entry"]["Number Datapoints"].get(), classification=var_name)
+        elif var_name == "Goethite Itabirite":
             data = OreRocks(
                 fluid="water", actual_thickness=0, porosity=[
                     self.gui_variables["Entry"]["Porosity Min"].get()/100,
