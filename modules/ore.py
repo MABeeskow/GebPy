@@ -6,7 +6,7 @@
 # Name:		ore.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		26.11.2022
+# Date:		27.11.2022
 
 # -----------------------------------------------
 
@@ -30,12 +30,29 @@ from modules.pyllosilicates import Pyllosilicates
 
 class OreRocks:
     #
-    def __init__(self, fluid, actualt_thickness, porosity):
+    def __init__(self, fluid, actual_thickness, porosity):
+        ## Settings
         self.fluid = fluid
-        self.actual_thickness = actualt_thickness
+        self.actual_thickness = actual_thickness
         self.porosity = porosity
+        #
+        ## Minerals
+        self.data_quartz = Oxides(data_type=True).create_quartz()
+        self.data_magnetite = Oxides(data_type=True).create_magnetite()
+        self.data_hematite = Oxides(data_type=True).create_hematite()
+        self.data_goethite = Oxides(data_type=True).create_goethite()
+        self.data_gibbsite = Oxides(data_type=True).create_gibbsite()
+        self.data_calcite = Carbonates(data_type=True).create_calcite()
+        self.data_siderite = Carbonates(data_type=True).create_siderite()
+        self.data_kaolinite = Phyllosilicates(impurity="pure", data_type=True).create_kaolinite()
+        self.data_pyrite = Sulfides(impurity="pure", data_type=True).create_pyrite()
+        #
+        ## Fluids
+        #
+        self.data_water = Water.water("")
     #
-    def create_iron_ore_rock(self, rock="Fe-Ore", number=1, composition=None, enrichment_kfs=None, enrichment_pl=None):
+    def create_siliciclastic_itabirite(self, rock="Itabirite", number=1, composition=None, classification="Itabirite"):
+        #
         results_container = {}
         results_container["rock"] = rock
         results_container["mineralogy"] = {}
@@ -56,19 +73,11 @@ class OreRocks:
         #
         n = 0
         while n < number:
-            data_alkalifeldspar = Tectosilicates(impurity="pure", data_type=True).create_alkalifeldspar(
-                enrichment=enrichment_kfs)
-            data_plagioclase = Tectosilicates(impurity="pure", data_type=True).create_plagioclase(
-                enrichment=enrichment_pl)
             data_biotite = Phyllosilicates(impurity="pure", data_type=True).create_biotite()
             #
-            if upper_streckeisen == True:
-                mineralogy = {"Qz": self.data_qz, "Kfs": data_alkalifeldspar, "Pl": data_plagioclase,
-                              "Bt": data_biotite}
-            elif upper_streckeisen == False:
-                data_nepheline = Tectosilicates(impurity="pure", data_type=True).create_nepheline()
-                mineralogy = {"Nph": data_nepheline, "Kfs": data_alkalifeldspar, "Pl": data_plagioclase,
-                              "Bt": data_biotite}
+            mineralogy = {"Hem": self.data_hematite, "Goe": self.data_goethite, "Kln": self.data_kaolinite,
+                          "Qz": self.data_quartz, "Mag": self.data_magnetite, "Gbs": self.data_gibbsite,
+                          "Bt": data_biotite}
             #
             minerals_list = list(mineralogy.keys())
             #
@@ -85,156 +94,101 @@ class OreRocks:
                 w_elements = {}
                 #
                 if composition != None:
-                    if upper_streckeisen == True:
-                        phi_qz = composition["Qz"]
-                        phi_minerals["Qz"] = phi_qz
-                    elif upper_streckeisen == False:
-                        phi_nph = composition["Nph"]
-                        phi_minerals["Nph"] = phi_nph
-                    #
-                    phi_kfs = composition["Kfs"]
-                    phi_pl = composition["Pl"]
+                    phi_hem = composition["Hem"]
+                    phi_goe = composition["Goe"]
+                    phi_kln = composition["Kln"]
+                    phi_qz = composition["Qz"]
+                    phi_mag = composition["Mag"]
+                    phi_gbs = composition["Gbs"]
                     phi_bt = composition["Bt"]
                     #
-                    phi_minerals["Kfs"] = phi_kfs
-                    phi_minerals["Pl"] = phi_pl
+                    phi_minerals["Hem"] = phi_hem
+                    phi_minerals["Goe"] = phi_goe
+                    phi_minerals["Kln"] = phi_kln
+                    phi_minerals["Qz"] = phi_qz
+                    phi_minerals["Mag"] = phi_mag
+                    phi_minerals["Gbs"] = phi_gbs
                     phi_minerals["Bt"] = phi_bt
                     #
                 else:
                     condition_2 = False
                     while condition_2 == False:
+                        if classification == "Itabirite":
+                            gbs_limits = [0.0, 0.05]
+                            qz_limits = [0.0, 0.4]
+                            mag_limits = [0.0, 0.05]
+                            hem_limits = [0.3, 0.7]
+                            goe_limits = [0.05, 0.26]
+                            kln_limits = [0.0, 0.14]
+                            bt_limits = [0.0, 0.05]
+                        elif classification == "Compact Hematite":
+                            gbs_limits = [0.0, 0.05]
+                            qz_limits = [0.0, 0.05]
+                            mag_limits = [0.0, 0.05]
+                            hem_limits = [0.7, 0.8]
+                            goe_limits = [0.05, 0.15]
+                            kln_limits = [0.0, 0.1]
+                            bt_limits = [0.0, 0.05]
+                        elif classification == "Friable Hematite":
+                            gbs_limits = [0.0, 0.02]
+                            qz_limits = [0.0, 0.02]
+                            mag_limits = [0.0, 0.02]
+                            hem_limits = [0.85, 0.95]
+                            goe_limits = [0.04, 0.06]
+                            kln_limits = [0.0, 0.02]
+                            bt_limits = [0.0, 0.02]
+                        elif classification == "Goethite Hematite":
+                            gbs_limits = [0.05, 0.09]
+                            qz_limits = [0.0, 0.02]
+                            mag_limits = [0.0, 0.02]
+                            hem_limits = [0.66, 0.72]
+                            goe_limits = [0.18, 0.22]
+                            kln_limits = [0.0, 0.02]
+                            bt_limits = [0.0, 0.02]
+                        elif classification == "Al-rich Itabirite":
+                            gbs_limits = [0.0, 0.02]
+                            qz_limits = [0.0, 0.08]
+                            mag_limits = [0.0, 0.05]
+                            hem_limits = [0.6, 0.67]
+                            goe_limits = [0.1, 0.18]
+                            kln_limits = [0.1, 0.18]
+                            bt_limits = [0.0, 0.02]
+                        elif classification == "Compact Quartz Itabirite":
+                            gbs_limits = [0.0, 0.02]
+                            qz_limits = [0.42, 0.5]
+                            mag_limits = [0.0, 0.05]
+                            hem_limits = [0.42, 0.5]
+                            goe_limits = [0.0, 0.05]
+                            kln_limits = [0.0, 0.02]
+                            bt_limits = [0.0, 0.02]
                         #
-                        ## UPPER STRECKEISEN DIAGRAM
+                        phi_hem = round(rd.uniform(hem_limits[0], hem_limits[1]), 4)
+                        phi_goe = round(rd.uniform(goe_limits[0], (1 - phi_hem)), 4)
+                        phi_kln = round(rd.uniform(kln_limits[0], (1 - phi_hem - phi_goe)), 4)
+                        phi_qz = round(rd.uniform(qz_limits[0], (1 - phi_hem - phi_goe - phi_kln)), 4)
+                        phi_mag = round(rd.uniform(mag_limits[0], (1 - phi_hem - phi_goe - phi_kln - phi_qz)), 4)
+                        phi_gbs = round(rd.uniform(gbs_limits[0], (1 - phi_hem - phi_goe - phi_kln - phi_qz
+                                                                   - phi_mag)), 4)
+                        phi_bt = round(1 - phi_hem - phi_goe - phi_kln - phi_qz - phi_mag - phi_gbs, 4)
                         #
-                        if rock == "Granite":
-                            qz_limits = [0.2, 0.6]
-                            kfs_limits = [0.15, 0.8]
-                            pl_limits = [0.0, 0.52]
-                            bt_limits = [0.0, 0.05]
-                        elif rock == "Granodiorite":
-                            qz_limits = [0.2, 0.6]
-                            kfs_limits = [0.05, 0.28]
-                            pl_limits = [0.25, 0.72]
-                            bt_limits = [0.0, 0.05]
-                        elif rock == "Tonalite":
-                            qz_limits = [0.2, 0.6]
-                            kfs_limits = [0.0, 0.08]
-                            pl_limits = [0.35, 0.8]
-                            bt_limits = [0.0, 0.05]
-                        elif rock == "Gabbro":
-                            qz_limits = [0.0, 0.2]
-                            kfs_limits = [0.0, 0.35]
-                            pl_limits = [0.52, 1.0]
-                            bt_limits = [0.0, 0.05]
-                        elif rock == "Diorite":
-                            qz_limits = [0.0, 0.2]
-                            kfs_limits = [0.0, 0.35]
-                            pl_limits = [0.52, 1.0]
-                            bt_limits = [0.0, 0.05]
-                        elif rock == "Monzonite":
-                            qz_limits = [0.0, 0.2]
-                            kfs_limits = [0.28, 0.65]
-                            pl_limits = [0.28, 0.65]
-                            bt_limits = [0.0, 0.05]
-                        elif rock == "Syenite":
-                            qz_limits = [0.0, 0.2]
-                            kfs_limits = [0.52, 1.0]
-                            pl_limits = [0.0, 0.35]
-                            bt_limits = [0.0, 0.05]
-                        elif rock == "Granitoid":
-                            qz_limits = [0.6, 0.9]
-                            kfs_limits = [0.0, 0.4]
-                            pl_limits = [0.0, 0.4]
-                            bt_limits = [0.0, 0.05]
-                        elif rock == "Quarzolite":
-                            qz_limits = [0.9, 1.0]
-                            kfs_limits = [0.0, 0.1]
-                            pl_limits = [0.0, 0.1]
-                            bt_limits = [0.0, 0.05]
-                        elif rock == "Norite":
-                            qz_limits = [0.0, 0.2]
-                            kfs_limits = [0.0, 0.1]
-                            pl_limits = [0.72, 1.0]
-                            bt_limits = [0.0, 0.05]
+                        phi_total = phi_hem + phi_goe + phi_kln + phi_qz + phi_mag + phi_gbs + phi_bt
                         #
-                        ## LOWER STRECKEISEN DIAGRAM
+                        if np.isclose(phi_total, 1.0000) == True:
+                            if hem_limits[0] <= phi_hem <= hem_limits[1] \
+                                    and goe_limits[0] <= phi_goe <= goe_limits[1] \
+                                    and kln_limits[0] <= phi_kln <= kln_limits[1] \
+                                    and qz_limits[0] <= phi_qz <= qz_limits[1] \
+                                    and mag_limits[0] <= phi_mag <= mag_limits[1] \
+                                    and gbs_limits[0] <= phi_gbs <= gbs_limits[1] \
+                                    and bt_limits[0] <= phi_bt <= bt_limits[1]:
+                                condition_2 = True
                         #
-                        elif rock == "Foid-bearing Syenite":
-                            nph_limits = [0.0, 0.1]
-                            kfs_limits = [0.58, 1.0]
-                            pl_limits = [0.0, 0.42]
-                            bt_limits = [0.0, 0.05]
-                        elif rock == "Foid-bearing Monzonite":
-                            nph_limits = [0.0, 0.1]
-                            kfs_limits = [0.32, 0.65]
-                            pl_limits = [0.32, 0.65]
-                            bt_limits = [0.0, 0.05]
-                        elif rock == "Foid-bearing Monzodiorite":
-                            nph_limits = [0.0, 0.1]
-                            kfs_limits = [0.0, 0.35]
-                            pl_limits = [0.58, 1.0]
-                            bt_limits = [0.0, 0.05]
-                        elif rock == "Foid-bearing Monzogabbro":
-                            nph_limits = [0.0, 0.1]
-                            kfs_limits = [0.0, 0.35]
-                            pl_limits = [0.58, 1.0]
-                            bt_limits = [0.0, 0.05]
-                        elif rock == "Foid Monzosyenite":
-                            nph_limits = [0.1, 0.6]
-                            kfs_limits = [0.2, 0.9]
-                            pl_limits = [0.0, 0.45]
-                            bt_limits = [0.0, 0.05]
-                        elif rock == "Foid Monzodiorite":
-                            nph_limits = [0.1, 0.6]
-                            kfs_limits = [0.0, 0.45]
-                            pl_limits = [0.2, 0.9]
-                            bt_limits = [0.0, 0.05]
-                        elif rock == "Foid Monzogabbro":
-                            nph_limits = [0.1, 0.6]
-                            kfs_limits = [0.0, 0.45]
-                            pl_limits = [0.2, 0.9]
-                            bt_limits = [0.0, 0.05]
-                        elif rock == "Foidolite":
-                            nph_limits = [0.6, 1.0]
-                            kfs_limits = [0.0, 0.4]
-                            pl_limits = [0.0, 0.4]
-                            bt_limits = [0.0, 0.05]
-                        #
-                        if upper_streckeisen == True:
-                            phi_qz = round(rd.uniform(qz_limits[0], qz_limits[1]), 4)
-                            phi_kfs = round(rd.uniform(kfs_limits[0], (1.0 - phi_qz)), 4)
-                            phi_pl = round(rd.uniform(0.0, (1.0 - phi_qz - phi_kfs)), 4)
-                            phi_bt = round(1 - phi_qz - phi_kfs - phi_pl, 4)
-                            phi_total = phi_qz + phi_kfs + phi_pl + phi_bt
-                            #
-                            if np.isclose(phi_total, 1.0000) == True:
-                                if qz_limits[0] <= phi_qz <= qz_limits[1] \
-                                        and kfs_limits[0] <= phi_kfs <= kfs_limits[1] \
-                                        and pl_limits[0] <= phi_pl <= pl_limits[1] \
-                                        and bt_limits[0] <= phi_bt <= bt_limits[1]:
-                                    condition_2 = True
-                            #
-                        elif upper_streckeisen == False:
-                            phi_nph = round(rd.uniform(nph_limits[0], nph_limits[1]), 4)
-                            phi_kfs = round(rd.uniform(kfs_limits[0], (1.0 - phi_nph)), 4)
-                            phi_pl = round(rd.uniform(0.0, (1.0 - phi_nph - phi_kfs)), 4)
-                            phi_bt = round(1 - phi_nph - phi_kfs - phi_pl, 4)
-                            phi_total = phi_nph + phi_kfs + phi_pl + phi_bt
-                            #
-                            if np.isclose(phi_total, 1.0000) == True:
-                                if nph_limits[0] <= phi_nph <= nph_limits[1] \
-                                        and kfs_limits[0] <= phi_kfs <= kfs_limits[1] \
-                                        and pl_limits[0] <= phi_pl <= pl_limits[1] \
-                                        and bt_limits[0] <= phi_bt <= bt_limits[1]:
-                                    condition_2 = True
-                        #
-                    if upper_streckeisen == True:
-                        phi_minerals["Qz"] = phi_qz
-                    elif upper_streckeisen == False:
-                        phi_minerals["Nph"] = phi_nph
-                    #
-                    phi_minerals["Kfs"] = phi_kfs
-                    phi_minerals["Pl"] = phi_pl
+                    phi_minerals["Hem"] = phi_hem
+                    phi_minerals["Goe"] = phi_goe
+                    phi_minerals["Kln"] = phi_kln
+                    phi_minerals["Qz"] = phi_qz
+                    phi_minerals["Mag"] = phi_mag
+                    phi_minerals["Gbs"] = phi_gbs
                     phi_minerals["Bt"] = phi_bt
                 #
                 rho_s = 0
@@ -252,9 +206,9 @@ class OreRocks:
                 rho_s = round(rho_s, 3)
                 for key, value in phi_minerals.items():
                     if key == "Urn":
-                        n_digits = 6
+                        n_digits = 4
                     else:
-                        n_digits = 6
+                        n_digits = 4
                     #
                     w_minerals[key] = round((phi_minerals[key]*mineralogy[key]["rho"])/rho_s, n_digits)
                 #
@@ -265,10 +219,6 @@ class OreRocks:
                 #
                 if self.fluid == "water":
                     data_fluid = self.data_water
-                elif self.fluid == "oil":
-                    data_fluid = self.data_oil
-                elif self.fluid == "gas":
-                    data_fluid = self.data_gas
                 #
                 rho = round((1 - var_porosity)*rho_s + var_porosity*data_fluid[2]/1000, 3)
                 #
@@ -281,9 +231,9 @@ class OreRocks:
                         for mineral, w_mineral in w_minerals.items():
                             if element in mineralogy[mineral]["chemistry"]:
                                 if element == "U":
-                                    n_digits = 6
+                                    n_digits = 4
                                 else:
-                                    n_digits = 6
+                                    n_digits = 4
                                 #
                                 value = round(w_mineral*mineralogy[mineral]["chemistry"][element], n_digits)
                                 w_elements[element] += value
@@ -291,11 +241,13 @@ class OreRocks:
                                 #
                                 w_elements[element] = round(w_elements[element], n_digits)
                     elif element == "O":
-                        w_elements[element] += round(1 - w_elements_total, 6)
+                        w_elements[element] += round(1 - w_elements_total, 4)
                         #
-                        w_elements[element] = round(w_elements[element], 6)
+                        w_elements[element] = round(w_elements[element], 4)
                 #
-                if sum(w_minerals.values()) == 1.0 and sum(w_elements.values()) == 1.0:
+                total_w_minerals = round(sum(w_minerals.values()), 4)
+                total_w_elements = round(sum(w_elements.values()), 4)
+                if total_w_minerals == 1.0 and total_w_elements == 1.0:
                     for key, value in w_minerals.items():
                         w_minerals[key] = abs(value)
                     #

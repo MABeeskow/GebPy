@@ -6,7 +6,7 @@
 # Name:		oxides.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		23.09.2022
+# Date:		27.11.2022
 
 # -----------------------------------------------
 
@@ -250,6 +250,8 @@ class Oxides():
                 data_mineral = self.create_huebnerite()
             elif self.mineral == "Ferberite":
                 data_mineral = self.create_ferberite()
+            elif self.mineral == "Gibbsite":
+                data_mineral = self.create_gibbsite()
             #
             for key, value in data_mineral.items():
                 if key in ["M", "rho", "rho_e", "V", "vP", "vS", "vP/vS", "K", "G", "E", "nu", "GR", "PE", "U",
@@ -2016,7 +2018,10 @@ class Oxides():
         #
         return data
     #
-    def create_gibbsite(self):  # Al(OH)3
+    def create_gibbsite(self): # Al(OH)3
+        #
+        name = "Gbs"
+        #
         # Major elements
         hydrogen = PeriodicSystem(name="H").get_data()
         oxygen = PeriodicSystem(name="O").get_data()
@@ -2028,8 +2033,10 @@ class Oxides():
         traces_data = []
         if len(self.traces_list) > 0:
             self.impurity = "impure"
+            var_state = "variable"
         if self.impurity == "random":
             self.traces_list = []
+            var_state = "variable"
             minors = ["Fe", "Ga"]
             n = rd.randint(1, len(minors))
             while len(self.traces_list) < n:
@@ -2038,6 +2045,9 @@ class Oxides():
                     self.traces_list.append(selection)
                 else:
                     continue
+        else:
+            var_state = "fixed"
+        #
         traces = [PeriodicSystem(name=i).get_data() for i in self.traces_list]
         x_traces = [round(rd.uniform(0., 0.001), 6) for i in range(len(self.traces_list))]
         for i in range(len(self.traces_list)):
@@ -2045,10 +2055,6 @@ class Oxides():
         if len(traces_data) > 0:
             traces_data = np.array(traces_data, dtype=object)
             traces_data = traces_data[traces_data[:, 1].argsort()]
-        #
-        data = []
-        #
-        mineral = "Gbs"
         #
         # Molar mass
         molar_mass_pure = 1*aluminium[2] + 3*(oxygen[2]+hydrogen[2])
@@ -2064,9 +2070,9 @@ class Oxides():
         rho = dataRho.calculate_bulk_density()
         rho_e = wg(amounts=amounts, elements=element, rho_b=rho).calculate_electron_density()
         # Bulk modulus
-        K = 121.96*10**9
+        K = 58.2094*10**9
         # Shear modulus
-        G = 67.82*10**9
+        G = 29.0147*10**9
         # Young's modulus
         E = (9*K*G)/(3*K + G)
         # Poisson's ratio
@@ -2085,15 +2091,124 @@ class Oxides():
         # Electrical resistivity
         p = None
         #
-        data.append(mineral)
-        data.append(round(molar_mass, 2))
-        data.append(round(rho, 1))
-        data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 2), round(vPvS, 2)])
-        data.append([round(vP, 1), round(vS, 1)])
-        data.append([round(gamma_ray, 2), round(pe, 2), round(U, 2), p])
-        data.append(amounts)
-        #
-        return data
+        if self.data_type == False:
+            data = []
+            data.append(name)
+            data.append(round(molar_mass, 2))
+            data.append(round(rho, 1))
+            data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 2), round(vPvS, 2)])
+            data.append([round(vP, 1), round(vS, 1)])
+            data.append([round(gamma_ray, 2), round(pe, 2), round(U, 2), p])
+            data.append(amounts)
+            #
+            return data
+        else:
+            results = {}
+            results["mineral"] = name
+            results["state"] = var_state
+            results["M"] = molar_mass
+            results["rho"] = round(rho, 4)
+            results["rho_e"] = round(rho_e, 4)
+            results["V"] = round(V_m, 4)
+            results["vP"] = round(vP, 4)
+            results["vS"] = round(vS, 4)
+            results["vP/vS"] = round(vPvS, 4)
+            results["G"] = round(G*10**(-9), 4)
+            results["K"] = round(K*10**(-9), 4)
+            results["E"] = round(E*10**(-9), 4)
+            results["nu"] = round(nu, 4)
+            results["GR"] = round(gamma_ray, 4)
+            results["PE"] = round(pe, 4)
+            results["U"] = round(U, 4)
+            try:
+                results["p"] = round(p, 4)
+            except:
+                results["p"] = p
+            element_list = np.array(amounts)[:, 0]
+            results["chemistry"] = {}
+            for index, element in enumerate(element_list, start=0):
+                results["chemistry"][element] = amounts[index][2]
+            #
+            return results
+    #
+    # def create_gibbsite(self):  # Al(OH)3
+    #     # Major elements
+    #     hydrogen = PeriodicSystem(name="H").get_data()
+    #     oxygen = PeriodicSystem(name="O").get_data()
+    #     aluminium = PeriodicSystem(name="Al").get_data()
+    #     majors_name = ["H", "O", "Al"]
+    #     majors_data = np.array([["H", hydrogen[1], 3, hydrogen[2]], ["O", oxygen[1], 3, oxygen[2]],
+    #                             ["Al", aluminium[1], 1, aluminium[2]]], dtype=object)
+    #     # Minor elements
+    #     traces_data = []
+    #     if len(self.traces_list) > 0:
+    #         self.impurity = "impure"
+    #     if self.impurity == "random":
+    #         self.traces_list = []
+    #         minors = ["Fe", "Ga"]
+    #         n = rd.randint(1, len(minors))
+    #         while len(self.traces_list) < n:
+    #             selection = rd.choice(minors)
+    #             if selection not in self.traces_list and selection not in majors_name:
+    #                 self.traces_list.append(selection)
+    #             else:
+    #                 continue
+    #     traces = [PeriodicSystem(name=i).get_data() for i in self.traces_list]
+    #     x_traces = [round(rd.uniform(0., 0.001), 6) for i in range(len(self.traces_list))]
+    #     for i in range(len(self.traces_list)):
+    #         traces_data.append([str(self.traces_list[i]), int(traces[i][1]), float(x_traces[i])])
+    #     if len(traces_data) > 0:
+    #         traces_data = np.array(traces_data, dtype=object)
+    #         traces_data = traces_data[traces_data[:, 1].argsort()]
+    #     #
+    #     data = []
+    #     #
+    #     mineral = "Gbs"
+    #     #
+    #     # Molar mass
+    #     molar_mass_pure = 1*aluminium[2] + 3*(oxygen[2]+hydrogen[2])
+    #     molar_mass, amounts = MineralChemistry(w_traces=traces_data, molar_mass_pure=molar_mass_pure,
+    #                                   majors=majors_data).calculate_molar_mass()
+    #     element = [PeriodicSystem(name=amounts[i][0]).get_data() for i in range(len(amounts))]
+    #     # Density
+    #     dataV = CrystalPhysics([[8.641, 5.07, 9.719], [94.566], "monoclinic"])
+    #     V = dataV.calculate_volume()
+    #     Z = 8
+    #     V_m = MineralChemistry().calculate_molar_volume(volume_cell=V, z=Z)
+    #     dataRho = CrystalPhysics([molar_mass, Z, V])
+    #     rho = dataRho.calculate_bulk_density()
+    #     rho_e = wg(amounts=amounts, elements=element, rho_b=rho).calculate_electron_density()
+    #     # Bulk modulus
+    #     K = 121.96*10**9
+    #     # Shear modulus
+    #     G = 67.82*10**9
+    #     # Young's modulus
+    #     E = (9*K*G)/(3*K + G)
+    #     # Poisson's ratio
+    #     nu = (3*K - 2*G)/(2*(3*K + G))
+    #     # vP/vS
+    #     vPvS = ((K + 4/3*G)/G)**0.5
+    #     # P-wave velocity
+    #     vP = ((K + 4/3*G)/rho)**0.5
+    #     # S-wave velocity
+    #     vS = (G/rho)**0.5
+    #     # Gamma ray
+    #     gamma_ray = wg(amounts=amounts, elements=element).calculate_gr()
+    #     # Photoelectricity
+    #     pe = wg(amounts=amounts, elements=element).calculate_pe()
+    #     U = pe*rho_e*10**(-3)
+    #     # Electrical resistivity
+    #     p = None
+    #     #
+    #     data.append(mineral)
+    #     data.append(round(molar_mass, 2))
+    #     data.append(round(rho, 1))
+    #     data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 2), round(vPvS, 2)])
+    #     data.append([round(vP, 1), round(vS, 1)])
+    #     data.append([round(gamma_ray, 2), round(pe, 2), round(U, 2), p])
+    #     data.append(amounts)
+    #     #
+    #     return data
     #
     def create_cuprite(self):  # Cu2O
         # Major elements
