@@ -6,7 +6,7 @@
 # Name:		silicates.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		25.11.2022
+# Date:		30.11.2022
 
 # -----------------------------------------------
 
@@ -3827,7 +3827,10 @@ class Nesosilicates:
         self.data_type = data_type
         self.mineral = mineral
     #
-    def get_data(self, number=1): # ["Zircon", "Thorite", "Topaz", "Pyrope", "Olivine", "Ca-Garnet", "Al-Garnet", "Uvarovite", "Andratite", "Grossular", "Almandine", "Liebenbergite", "Ca-Olivine", "Tephroite", "Fayalite", "Forsterite", "Staurolite", "Sillimanite", "Kyanite", "Andalusite", "Spessartine"]
+    def get_data(self, number=1):
+        # ["Zircon", "Thorite", "Topaz", "Pyrope", "Olivine", "Ca-Garnet", "Al-Garnet", "Uvarovite", "Andratite",
+        # "Grossular", "Almandine", "Liebenbergite", "Ca-Olivine", "Tephroite", "Fayalite", "Forsterite", "Staurolite",
+        # "Sillimanite", "Kyanite", "Andalusite", "Spessartine"]
         if self.mineral in ["Zr", "Zircon"]:
             if number > 1:
                 data = [self.create_zircon() for n in range(number)]

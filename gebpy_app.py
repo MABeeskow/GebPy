@@ -32,6 +32,7 @@ from modules.organics import Organics
 from modules.fluids import Water
 from modules.siliciclastics import Sandstone
 from modules.ore import OreRocks
+from modules.metamorphics import GranuliteFacies
 
 ## GUI
 class GebPyGUI(tk.Frame):
@@ -453,6 +454,27 @@ class GebPyGUI(tk.Frame):
                 sub_rock_groups.add_cascade(
                     label="Ore Rocks",
                     menu=sub_ore)
+            #
+            elif rock_group == "Metamorphic Rocks":
+                sub_metamorphic = tk.Menu(petrology_menu, tearoff=0)
+                metamorphic_rocks = {
+                    "Granulite-Facies": ["Felsic Granulite", "Mafic Granulite"]}
+                #
+                metamorphic_rocks = collections.OrderedDict(sorted(metamorphic_rocks.items()))
+                i = 1
+                n = len(metamorphic_rocks)
+                for rock_group, rock_list in metamorphic_rocks.items():
+                    rock_list.sort()
+                    for rock in rock_list:
+                        sub_metamorphic.add_command(
+                            label=rock, command=lambda var_name=rock: self.select_rock(var_name))
+                    if i < n:
+                        sub_metamorphic.add_separator()
+                        i += 1
+                #
+                sub_rock_groups.add_cascade(
+                    label="Metamorphic Rocks",
+                    menu=sub_metamorphic)
             else:
                 sub_rock_groups.add_command(
                     label=rock_group)
@@ -1852,6 +1874,21 @@ class GebPyGUI(tk.Frame):
                     self.gui_variables["Entry"]["Porosity Min"].get()/100,
                     self.gui_variables["Entry"]["Porosity Max"].get()/100]).create_siliciclastic_itabirite(
                 rock=var_name, number=self.gui_variables["Entry"]["Number Datapoints"].get(), classification=var_name)
+        #
+        ## Metamorphic Rocks
+        # Granulite-Facies
+        elif var_name == "Felsic Granulite":
+            data = GranuliteFacies(
+                fluid="water", actual_thickness=0, porosity=[
+                    self.gui_variables["Entry"]["Porosity Min"].get()/100,
+                    self.gui_variables["Entry"]["Porosity Max"].get()/100]).create_granulite(
+                number=self.gui_variables["Entry"]["Number Datapoints"].get(), classification="felsic")
+        elif var_name == "Mafic Granulite":
+            data = GranuliteFacies(
+                fluid="water", actual_thickness=0, porosity=[
+                    self.gui_variables["Entry"]["Porosity Min"].get()/100,
+                    self.gui_variables["Entry"]["Porosity Max"].get()/100]).create_granulite(
+                number=self.gui_variables["Entry"]["Number Datapoints"].get(), classification="mafic")
         #
         self.data_rock = {}
         categories = ["rho", "rho_s", "vP", "vS", "vP/vS", "K", "G", "E", "nu", "GR", "PE", "phi", "fluid",
