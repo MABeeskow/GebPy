@@ -132,11 +132,7 @@ class GebPyGUI(tk.Frame):
         project_menu = tk.Menu(menubar, tearoff=0)
         #
         project_menu.add_command(
-            label="New")
-        project_menu.add_command(
-            label="Open")
-        project_menu.add_command(
-            label="Save")
+            label="New", command=self.restart_gebpy)
         project_menu.add_separator()
         project_menu.add_command(
             label="Exit", command=self.parent.destroy)
@@ -556,6 +552,10 @@ class GebPyGUI(tk.Frame):
         self.gui_variables["Radiobutton"]["Trace Elements"].set(0)
         self.gui_variables["Radiobutton"]["Oxidation State"] = tk.IntVar()
         self.gui_variables["Radiobutton"]["Oxidation State"].set(0)
+        self.gui_variables["Radiobutton"]["Diagram Type Mineral"] = tk.IntVar()
+        self.gui_variables["Radiobutton"]["Diagram Type Mineral"].set(0)
+        self.gui_variables["Radiobutton"]["Diagram Type Elements"] = tk.IntVar()
+        self.gui_variables["Radiobutton"]["Diagram Type Elements"].set(0)
         self.gui_variables["Option Menu"]["Trace Elements"] = tk.StringVar()
         self.gui_variables["Option Menu"]["Trace Elements"].set("Select Trace Element")
         self.gui_variables["Checkbox"]["Trace Elements"] = {}
@@ -597,9 +597,13 @@ class GebPyGUI(tk.Frame):
             parent=self.parent, row_id=11, column_id=0, n_rows=6, n_columns=16, bg=self.colors_gebpy["Navigation"],
             fg=self.colors_gebpy["Background"]).create_label(
             text="Trace Elements", font_option="sans 10 bold", relief=tk.FLAT)
+        lbl_addsetup = SimpleElements(
+            parent=self.parent, row_id=31, column_id=0, n_rows=2, n_columns=32, bg=self.colors_gebpy["Accent"],
+            fg=self.colors_gebpy["Navigation"]).create_label(
+            text="Additional Settings", font_option="sans 14 bold", relief=tk.FLAT)
         #
         self.gui_elements["Static"]["Label"].extend(
-            [lbl_mineralogy, lbl_name, lbl_samples, lbl_traces])
+            [lbl_mineralogy, lbl_name, lbl_samples, lbl_traces, lbl_addsetup])
         #
         ## Entries
         entr_samples = SimpleElements(
@@ -673,17 +677,28 @@ class GebPyGUI(tk.Frame):
                 parent=self.parent, row_id=2, column_id=start_column + 36, n_rows=2, n_columns=9,
                 bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
                 text="Error", font_option="sans 10 bold", relief=tk.GROOVE)
-            lbl_addsetup = SimpleElements(
-                parent=self.parent, row_id=31, column_id=0, n_rows=2, n_columns=32, bg=self.colors_gebpy["Accent"],
-                fg=self.colors_gebpy["Navigation"]).create_label(
-                text="Additional Settings", font_option="sans 14 bold", relief=tk.FLAT)
             lbl_diagram_type = SimpleElements(
                 parent=self.parent, row_id=33, column_id=0, n_rows=4, n_columns=14,
                 bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Background"]).create_label(
                 text="Diagram Type", font_option="sans 10 bold", relief=tk.FLAT)
             #
             self.gui_elements["Temporary"]["Label"].extend(
-                [lbl_title, lbl_results, lbl_min, lbl_max, lbl_mean, lbl_error, lbl_addsetup, lbl_diagram_type])
+                [lbl_title, lbl_results, lbl_min, lbl_max, lbl_mean, lbl_error, lbl_diagram_type])
+            #
+            ## Radiobuttons
+            rb_diagram_type_01 = SimpleElements(
+                parent=self.parent, row_id=34, column_id=14, n_rows=2, n_columns=16,
+                bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Background"]).create_radiobutton(
+                text="Histogram", var_rb=self.gui_variables["Radiobutton"]["Diagram Type Mineral"], value_rb=0,
+                color_bg=self.colors_gebpy["Background"])
+            rb_diagram_type_02 = SimpleElements(
+                parent=self.parent, row_id=36, column_id=14, n_rows=2, n_columns=16,
+                bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Background"]).create_radiobutton(
+                text="Scatter", var_rb=self.gui_variables["Radiobutton"]["Diagram Type Mineral"], value_rb=1,
+                color_bg=self.colors_gebpy["Background"])
+            #
+            self.gui_elements["Temporary"]["Radiobutton"].extend(
+                [rb_diagram_type_01, rb_diagram_type_02])
             #
             categories = [
                 "M\n (kg/mol)", "V\n (\u00C5\u00B3/mol)", "rho\n (kg/m\u00B3)", "vP\n (m/s)", "vS\n (m/s)",
@@ -792,9 +807,28 @@ class GebPyGUI(tk.Frame):
                 parent=self.parent, row_id=2, column_id=start_column + 36, n_rows=2, n_columns=9,
                 bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
                 text="Error", font_option="sans 10 bold", relief=tk.GROOVE)
+            lbl_diagram_type = SimpleElements(
+                parent=self.parent, row_id=33, column_id=0, n_rows=4, n_columns=14,
+                bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Background"]).create_label(
+                text="Diagram Type", font_option="sans 10 bold", relief=tk.FLAT)
             #
             self.gui_elements["Temporary"]["Label"].extend(
-                [lbl_title, lbl_results, lbl_min, lbl_max, lbl_mean, lbl_error])
+                [lbl_title, lbl_results, lbl_min, lbl_max, lbl_mean, lbl_error, lbl_diagram_type])
+            #
+            ## Radiobuttons
+            rb_diagram_type_01 = SimpleElements(
+                parent=self.parent, row_id=34, column_id=14, n_rows=2, n_columns=16,
+                bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Background"]).create_radiobutton(
+                text="Histogram", var_rb=self.gui_variables["Radiobutton"]["Diagram Type Elements"], value_rb=0,
+                color_bg=self.colors_gebpy["Background"])
+            rb_diagram_type_02 = SimpleElements(
+                parent=self.parent, row_id=36, column_id=14, n_rows=2, n_columns=16,
+                bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Background"]).create_radiobutton(
+                text="Scatter", var_rb=self.gui_variables["Radiobutton"]["Diagram Type Elements"], value_rb=1,
+                color_bg=self.colors_gebpy["Background"])
+            #
+            self.gui_elements["Temporary"]["Radiobutton"].extend(
+                [rb_diagram_type_01, rb_diagram_type_02])
             #
             self.list_elements.sort()
             for index, element in enumerate(self.list_elements):
@@ -1355,7 +1389,8 @@ class GebPyGUI(tk.Frame):
         btn_export = SimpleElements(
             parent=self.parent, row_id=28, column_id=16, n_rows=2, n_columns=15, bg=self.colors_gebpy["Option"],
             fg=self.colors_gebpy["Navigation"]).create_button(
-            text="Export Data", command=lambda var_dataset=self.data_mineral: self.export_mineral_data(var_dataset))
+            text="Export Data", command=lambda var_dataset=self.data_mineral, var_name=var_name:
+            self.export_mineral_data(var_dataset, var_name))
         #
         self.gui_elements["Static"]["Button"].append(btn_export)
         #
@@ -1943,7 +1978,8 @@ class GebPyGUI(tk.Frame):
         btn_export = SimpleElements(
             parent=self.parent, row_id=29, column_id=16, n_rows=2, n_columns=15, bg=self.colors_gebpy["Option"],
             fg=self.colors_gebpy["Navigation"]).create_button(
-            text="Export Data")
+            text="Export Data", command=lambda var_dataset=self.data_rock, var_name=var_name:
+            self.export_rock_data(var_dataset, var_name))
         #
         self.gui_elements["Static"]["Button"].append(btn_export)
         #
@@ -2544,6 +2580,7 @@ class GebPyGUI(tk.Frame):
         n_digits = 8
         #
         ## Preparation Simulation
+        var_name = "Custom Rock"
         data_water = Water.water("")
         #
         n_datapoints = self.gui_variables["Entry"]["Number Datapoints"].get()
@@ -2905,7 +2942,8 @@ class GebPyGUI(tk.Frame):
         btn_export = SimpleElements(
             parent=self.parent, row_id=29, column_id=16, n_rows=2, n_columns=15, bg=self.colors_gebpy["Option"],
             fg=self.colors_gebpy["Navigation"]).create_button(
-            text="Export Data")
+            text="Export Data", command=lambda var_dataset=self.data_rock, var_name=var_name:
+            self.export_rock_data(var_dataset, var_name))
         #
         self.gui_elements["Rockbuilder Static"]["Button"].append(btn_export)
         #
@@ -3614,7 +3652,7 @@ class GebPyGUI(tk.Frame):
         GebPyGUI(root)
         root.mainloop()
     #
-    def export_mineral_data(self, var_dataset):
+    def export_mineral_data(self, var_dataset, var_name):
         # for key, values in var_dataset.items():
         #     print(key)
         #     print(values)
@@ -3625,11 +3663,11 @@ class GebPyGUI(tk.Frame):
         list_keys = ["POISSON" if item == "nu" else item for item in list_keys]
         list_elements = list(var_dataset["chemistry"].keys())
         #
-        report_file = filedialog.asksaveasfile(mode="w", defaultextension=".csv")
+        report_file = filedialog.asksaveasfile(mode="w", initialfile="Report_Mineral", defaultextension=".csv")
         #
         ## General Data
         report_file.write("REPORT (MINERALOGY)"+"\n")
-        report_file.write("Mineral"+";"+str(var_dataset["mineral"])+"\n")
+        report_file.write("Mineral"+";"+str(var_name)+"\n")
         report_file.write("\n")
         #
         ## Geophysical Data
@@ -3652,20 +3690,114 @@ class GebPyGUI(tk.Frame):
             raw_line = str(index + 1) + ";"
             for key, values in var_dataset.items():
                 if key in list_keys:
-                    raw_line += str(values[index])
+                    try:
+                        raw_line += str(round(values[index], 3))
+                    except:
+                        raw_line += str(values[index])
                     raw_line += str(";")
                 elif key == "nu":
-                    raw_line += str(values[index])
+                    raw_line += str(round(values[index], 3))
                     raw_line += str(";")
             #
             raw_line += str(";")
             #
             for element, values in var_dataset["chemistry"].items():
                 if element in list_elements:
-                    raw_line += str(values[index])
-                    raw_line += str(";")
+                    if element not in ["U"]:
+                        raw_line += str(round(values[index], 4))
+                        raw_line += str(";")
+                    else:
+                        raw_line += str(round(values[index], 6))
+                        raw_line += str(";")
                 #
             report_file.write(raw_line+"\n")
+            #
+            index += 1
+        #
+        report_file.write("\n")
+    #
+    def export_rock_data(self, var_dataset, var_name):
+        # for key, values in var_dataset.items():
+        #     print(key)
+        #     print(values)
+        #
+        list_keys = list(var_dataset.keys())
+        list_keys.remove("mineralogy")
+        list_keys.remove("chemistry")
+        if "fluid" in list_keys:
+            list_keys.remove("fluid")
+        #
+        list_keys = ["POISSON" if item == "nu" else item for item in list_keys]
+        list_minerals = list(var_dataset["mineralogy"].keys())
+        list_elements = list(var_dataset["chemistry"].keys())
+        #
+        report_file = filedialog.asksaveasfile(mode="w", initialfile="Report_Rock", defaultextension=".csv")
+        #
+        ## General Data
+        report_file.write("REPORT (PETROLOGY)" + "\n")
+        report_file.write("Rock" + ";" + str(var_name) + "\n")
+        report_file.write("\n")
+        #
+        ## Geophysical Data
+        report_file.write("ROCK DATA" + "\n")
+        raw_line = "ID;"
+        for key in list_keys:
+            raw_line += str(key)
+            raw_line += str(";")
+        #
+        raw_line += str(";")
+        #
+        for mineral in list_minerals:
+            raw_line += str(mineral)
+            raw_line += str(";")
+        #
+        raw_line += str(";")
+        #
+        for element in list_elements:
+            raw_line += str(element)
+            raw_line += str(";")
+        #
+        raw_line += str("\n")
+        report_file.write(raw_line)
+        #
+        index = 0
+        while index < len(var_dataset["rho"]):
+            raw_line = str(index + 1) + ";"
+            #
+            for key, values in var_dataset.items():
+                if key in list_keys:
+                    try:
+                        raw_line += str(round(values[index], 3))
+                    except:
+                        raw_line += str(values[index])
+                    raw_line += str(";")
+                elif key == "nu":
+                    raw_line += str(round(values[index], 3))
+                    raw_line += str(";")
+            #
+            raw_line += str(";")
+            #
+            for mineral, values in var_dataset["mineralogy"].items():
+                if mineral in list_minerals:
+                    if mineral not in ["Urn"]:
+                        raw_line += str(round(values[index], 4))
+                        raw_line += str(";")
+                    else:
+                        raw_line += str(round(values[index], 6))
+                        raw_line += str(";")
+            #
+            raw_line += str(";")
+            #
+            for element, values in var_dataset["chemistry"].items():
+                if element in list_elements:
+                    if element not in ["U"]:
+                        raw_line += str(round(values[index], 4))
+                        raw_line += str(";")
+                    else:
+                        raw_line += str(round(values[index], 6))
+                        raw_line += str(";")
+            #
+            report_file.write(raw_line + "\n")
             #
             index += 1
         #
