@@ -6,7 +6,7 @@
 # Name:		gebpy_app.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		27.11.2022
+# Date:		01.12.2022
 
 #-----------------------------------------------
 
@@ -2507,6 +2507,23 @@ class GebPyGUI(tk.Frame):
         ## Initialization
         self.gui_variables["Radiobutton"]["Analysis Mode"] = tk.IntVar()
         self.gui_variables["Radiobutton"]["Analysis Mode"].set(0)
+        self.gui_variables["Radiobutton"]["Diagram Type Rock"] = tk.IntVar()
+        self.gui_variables["Radiobutton"]["Diagram Type Rock"].set(0)
+        self.gui_variables["Radiobutton"]["Diagram Type Mineral"] = tk.IntVar()
+        self.gui_variables["Radiobutton"]["Diagram Type Mineral"].set(0)
+        self.gui_variables["Radiobutton"]["Diagram Type Element"] = tk.IntVar()
+        self.gui_variables["Radiobutton"]["Diagram Type Element"].set(0)
+        self.gui_variables["Radiobutton"]["Concentration Type"] = tk.IntVar()
+        self.gui_variables["Radiobutton"]["Concentration Type"].set(0)
+        self.gui_variables["Radiobutton"]["Amount Mineral"] = tk.StringVar()
+        self.gui_variables["Radiobutton"]["Amount Mineral"].set("Select Mineral")
+        self.gui_variables["Radiobutton"]["Amount Element"] = tk.StringVar()
+        self.gui_variables["Radiobutton"]["Amount Element"].set("Select Element")
+        self.gui_variables["Radiobutton"]["Amount Oxide"] = tk.StringVar()
+        self.gui_variables["Radiobutton"]["Amount Oxide"].set("Select Oxide")
+        #
+        self.last_rb_analysis_rock.set(42)
+        #
         self.selected_minerals = {}
         n_digits = 8
         #
@@ -3174,7 +3191,7 @@ class GebPyGUI(tk.Frame):
                 list_opt = self.list_minerals_rock
                 opt_mineral = SimpleElements(
                     parent=self.parent, row_id=38, column_id=14, n_rows=2, n_columns=16,
-                    bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Navigation"]).create_option_menu(
+                    bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_option_menu(
                     var_opt=self.gui_variables["Radiobutton"]["Amount Mineral"],
                     var_opt_set=self.gui_variables["Radiobutton"]["Amount Mineral"].get(), opt_list=list_opt,
                     active_bg=self.colors_gebpy["Accent"])
@@ -3324,14 +3341,22 @@ class GebPyGUI(tk.Frame):
                 ## Option Menu
                 self.list_elements_rock.sort()
                 list_opt_element = self.list_elements_rock
+                list_opt_oxides = self.find_suitable_oxides(var_list_elements=list_opt_element)
+                #
                 opt_element = SimpleElements(
                     parent=self.parent, row_id=42, column_id=14, n_rows=2, n_columns=16,
-                    bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Navigation"]).create_option_menu(
+                    bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_option_menu(
                     var_opt=self.gui_variables["Radiobutton"]["Amount Element"],
                     var_opt_set=self.gui_variables["Radiobutton"]["Amount Element"].get(), opt_list=list_opt_element,
                     active_bg=self.colors_gebpy["Accent"])
+                opt_oxide = SimpleElements(
+                    parent=self.parent, row_id=44, column_id=14, n_rows=2, n_columns=16,
+                    bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_option_menu(
+                    var_opt=self.gui_variables["Radiobutton"]["Amount Oxide"],
+                    var_opt_set=self.gui_variables["Radiobutton"]["Amount Oxide"].get(), opt_list=list_opt_oxides,
+                    active_bg=self.colors_gebpy["Accent"])
                 #
-                self.gui_elements["Rockbuilder Temporary"]["Option Menu"].extend([opt_element])
+                self.gui_elements["Rockbuilder Temporary"]["Option Menu"].extend([opt_element, opt_oxide])
                 #
                 ## Results Table
                 for index, element in enumerate(self.list_elements_rock):
@@ -3381,7 +3406,8 @@ class GebPyGUI(tk.Frame):
                         bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
                         var_entr=self.gui_variables["Entry"]["Error"][element], var_entr_set=var_entr_error)
                     #
-                    self.gui_elements["Rockbuilder Temporary"]["Entry"].extend([entr_min, entr_max, entr_mean, entr_error])
+                    self.gui_elements["Rockbuilder Temporary"]["Entry"].extend(
+                        [entr_min, entr_max, entr_mean, entr_error])
                 #
                 self.last_rb_analysis_rock.set(self.gui_variables["Radiobutton"]["Analysis Mode"].get())
     #
@@ -3520,6 +3546,43 @@ class GebPyGUI(tk.Frame):
                             amounts_helper[mineral] = round(var_amount, 4)
                             amount_now += round(var_amount, 4)
                             index += 1
+    #
+    def find_suitable_oxides(self, var_list_elements):
+        list_oxides = []
+        #
+        for element in var_list_elements:
+            if element in ["H", "Li", "C", "Na", "Cl", "K", "Cu", "Br", "Rb", "Ag", "I", "Cs", "Au", "Hg", "Tl", "At",
+                           "Fr"]:   # +1
+                list_oxides.append(element+str("2O"))
+                #
+            if element in ["C", "Cu", "Hg", "Be", "Mg", "S", "Ca", "Ti", "V", "Cr", "Mn", "Fe", "Co", "Ni", "Zn",
+                           "Ge", "Se", "Sr", "Pd", "Cd", "Sn", "Te", "Ba", "Pt", "Pb", "Eu", "Po", "Rn", "Ra", "No",
+                           "Cn"]: # +2
+                list_oxides.append(element + str("O"))
+                #
+            if element in ["C", "Ti", "V", "Cr", "Mn", "Fe", "Co", "Eu", "Cl", "Br", "I", "Au", "Tl", "B", "N", "Al",
+                           "P", "Sc", "Ga", "As", "Y", "Ru", "Rh", "In", "Sb", "La", "Pr", "Sm", "Gd", "Tb", "Tm", "Yb",
+                           "Ir", "Bi", "Ce", "Nd", "Pm", "Dy", "Ho" "Er", "Lu", "Ac", "Am", "Bk", "Cf", "Es", "Fm",
+                           "Md", "Cm", "Lr"]: # +3
+                list_oxides.append(element + str("2O3"))
+                #
+            if element in ["C", "Ti", "V", "Mn", "Ru", "Ir", "Ce", "S", "Ge", "Se", "Pd", "Sn", "Te", "Pt", "Pb",
+                           "Si", "Zr", "Mo", "Tc", "Hf", "W", "Re", "Os", "Th", "U", "Pu", "Po", "Rf"]: # +4
+                list_oxides.append(element + str("O2"))
+                #
+            if element in ["V", "Cl", "Br", "I", "N", "P", "As", "Sb", "Nb", "Ta", "Pa", "Np", "Db"]: # +5
+                list_oxides.append(element + str("2O5"))
+                #
+            if element in ["Mn", "S", "Se", "Te", "Mo", "W", "U", "Cr", "Sg"]: # +6
+                list_oxides.append(element + str("O3"))
+                #
+            if element in ["Mn", "Cl", "I", "Tc", "Re", "Bh"]: # +7
+                list_oxides.append(element + str("2O7"))
+                #
+            if element in ["Hs"]: # +8
+                list_oxides.append(element + str("O4"))
+        #
+        return list_oxides
     #
     def select_all_checkboxes(self, var_cb):
         for key, cb_var in var_cb.items():
