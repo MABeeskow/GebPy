@@ -12,6 +12,7 @@
 
 ## MODULES
 import tkinter as tk
+from tkinter import filedialog
 import collections
 import numpy as np
 import random as rd
@@ -672,9 +673,17 @@ class GebPyGUI(tk.Frame):
                 parent=self.parent, row_id=2, column_id=start_column + 36, n_rows=2, n_columns=9,
                 bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
                 text="Error", font_option="sans 10 bold", relief=tk.GROOVE)
+            lbl_addsetup = SimpleElements(
+                parent=self.parent, row_id=31, column_id=0, n_rows=2, n_columns=32, bg=self.colors_gebpy["Accent"],
+                fg=self.colors_gebpy["Navigation"]).create_label(
+                text="Additional Settings", font_option="sans 14 bold", relief=tk.FLAT)
+            lbl_diagram_type = SimpleElements(
+                parent=self.parent, row_id=33, column_id=0, n_rows=4, n_columns=14,
+                bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Background"]).create_label(
+                text="Diagram Type", font_option="sans 10 bold", relief=tk.FLAT)
             #
             self.gui_elements["Temporary"]["Label"].extend(
-                [lbl_title, lbl_results, lbl_min, lbl_max, lbl_mean, lbl_error])
+                [lbl_title, lbl_results, lbl_min, lbl_max, lbl_mean, lbl_error, lbl_addsetup, lbl_diagram_type])
             #
             categories = [
                 "M\n (kg/mol)", "V\n (\u00C5\u00B3/mol)", "rho\n (kg/m\u00B3)", "vP\n (m/s)", "vS\n (m/s)",
@@ -682,7 +691,7 @@ class GebPyGUI(tk.Frame):
             categories_short = ["M", "V", "rho", "vP", "vS", "vP/vS", "K", "G", "E", "nu", "GR", "PE"]
             for index, category in enumerate(categories):
                 lbl_category = SimpleElements(
-                    parent=self.parent, row_id=(2*index + 4), column_id=start_column, n_rows=2, n_columns=9,
+                    parent=self.parent, row_id=(3*index + 4), column_id=start_column, n_rows=3, n_columns=9,
                     bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
                     text=category, font_option="sans 10 bold", relief=tk.GROOVE)
                 #
@@ -696,19 +705,19 @@ class GebPyGUI(tk.Frame):
                 var_entr_error = round(np.std(self.data_mineral[categories_short[index]], ddof=1), 6)
                 #
                 entr_min = SimpleElements(
-                    parent=self.parent, row_id=(2*index + 4), column_id=start_column + 9, n_rows=2, n_columns=9,
+                    parent=self.parent, row_id=(3*index + 4), column_id=start_column + 9, n_rows=3, n_columns=9,
                     bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
                     var_entr=self.gui_variables["Entry"]["Minimum"][categories_short[index]], var_entr_set=var_entr_min)
                 entr_max = SimpleElements(
-                    parent=self.parent, row_id=(2*index + 4), column_id=start_column + 18, n_rows=2, n_columns=9,
+                    parent=self.parent, row_id=(3*index + 4), column_id=start_column + 18, n_rows=3, n_columns=9,
                     bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
                     var_entr=self.gui_variables["Entry"]["Maximum"][categories_short[index]], var_entr_set=var_entr_max)
                 entr_mean = SimpleElements(
-                    parent=self.parent, row_id=(2*index + 4), column_id=start_column + 27, n_rows=2, n_columns=9,
+                    parent=self.parent, row_id=(3*index + 4), column_id=start_column + 27, n_rows=3, n_columns=9,
                     bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
                     var_entr=self.gui_variables["Entry"]["Mean"][categories_short[index]], var_entr_set=var_entr_mean)
                 entr_error = SimpleElements(
-                    parent=self.parent, row_id=(2*index + 4), column_id=start_column + 36, n_rows=2, n_columns=9,
+                    parent=self.parent, row_id=(3*index + 4), column_id=start_column + 36, n_rows=3, n_columns=9,
                     bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
                     var_entr=self.gui_variables["Entry"]["Error"][categories_short[index]], var_entr_set=var_entr_error)
                 #
@@ -915,7 +924,7 @@ class GebPyGUI(tk.Frame):
                 ax_laicpms.set_ylabel("Intensity (cps)", labelpad=0.5, fontsize=9)
                 ax_laicpms.set_xlim(0, 60)
                 ax_laicpms.set_xticks(np.arange(0, 60 + 5, 5))
-                ax_laicpms.set_ylim(1, 10**6)
+                ax_laicpms.set_ylim(1, 10**9)
                 ax_laicpms.set_yscale("log")
                 #ax_laicpms.grid(True)
                 plt.grid(which="major", axis="both", linestyle="-")
@@ -938,7 +947,7 @@ class GebPyGUI(tk.Frame):
             #
     #
     def simulate_laicpms_experiment(self):
-        total_ppm = 10**6
+        total_ppm = rd.randint(10**6, 10**9)
         time_step = 0.1
         time_data = list(np.around(np.arange(0, 60 + time_step, time_step), 1))
         #
@@ -973,7 +982,7 @@ class GebPyGUI(tk.Frame):
                 #
                 mean_bg = np.random.randint(1, 100)
                 error_bg = np.random.uniform(0.1, 0.5)*mean_bg
-                mean_sig = np.mean(self.data_mineral["chemistry"][element])*10**6
+                mean_sig = np.mean(self.data_mineral["chemistry"][element])*total_ppm
                 # error_sig = np.random.uniform(0, 0.025)*mean_sig
                 #
                 for time_value in time_data:
@@ -1342,6 +1351,13 @@ class GebPyGUI(tk.Frame):
         #
         self.gui_elements["Static"]["Radiobutton"].extend([rb_geophysics, rb_geochemistry, rb_laicpms])
         #
+        ## Button
+        btn_export = SimpleElements(
+            parent=self.parent, row_id=28, column_id=16, n_rows=2, n_columns=15, bg=self.colors_gebpy["Option"],
+            fg=self.colors_gebpy["Navigation"]).create_button(
+            text="Export Data", command=lambda var_dataset=self.data_mineral: self.export_mineral_data(var_dataset))
+        #
+        self.gui_elements["Static"]["Button"].append(btn_export)
         #
         for key, gui_element in self.gui_elements["Temporary"].items():
             if key not in ["Canvas", "Button"]:
@@ -3598,6 +3614,63 @@ class GebPyGUI(tk.Frame):
         GebPyGUI(root)
         root.mainloop()
     #
+    def export_mineral_data(self, var_dataset):
+        # for key, values in var_dataset.items():
+        #     print(key)
+        #     print(values)
+        list_keys = list(var_dataset.keys())
+        list_keys.remove("mineral")
+        list_keys.remove("state")
+        list_keys.remove("chemistry")
+        list_keys = ["POISSON" if item == "nu" else item for item in list_keys]
+        list_elements = list(var_dataset["chemistry"].keys())
+        #
+        report_file = filedialog.asksaveasfile(mode="w", defaultextension=".csv")
+        #
+        ## General Data
+        report_file.write("REPORT (MINERALOGY)"+"\n")
+        report_file.write("Mineral"+";"+str(var_dataset["mineral"])+"\n")
+        report_file.write("\n")
+        #
+        ## Geophysical Data
+        report_file.write("MINERAL DATA" + "\n")
+        raw_line = "ID;"
+        for key in list_keys:
+            raw_line += str(key)
+            raw_line += str(";")
+        #
+        raw_line += str(";")
+        #
+        for element in list_elements:
+            raw_line += str(element)
+            raw_line += str(";")
+        raw_line += str("\n")
+        report_file.write(raw_line)
+        #
+        index = 0
+        while index < len(var_dataset["rho"]):
+            raw_line = str(index + 1) + ";"
+            for key, values in var_dataset.items():
+                if key in list_keys:
+                    raw_line += str(values[index])
+                    raw_line += str(";")
+                elif key == "nu":
+                    raw_line += str(values[index])
+                    raw_line += str(";")
+            #
+            raw_line += str(";")
+            #
+            for element, values in var_dataset["chemistry"].items():
+                if element in list_elements:
+                    raw_line += str(values[index])
+                    raw_line += str(";")
+                #
+            report_file.write(raw_line+"\n")
+            #
+            index += 1
+        #
+        report_file.write("\n")
+        #
 #
 if __name__ == "__main__":
     root = tk.Tk()
