@@ -6,7 +6,7 @@
 # Name:		silicates.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		30.11.2022
+# Date:		02.12.2022
 
 # -----------------------------------------------
 
@@ -14,7 +14,7 @@
 import numpy as np
 import random as rd
 from scipy import stats
-from modules.chemistry import PeriodicSystem, DataProcessing
+from modules.chemistry import PeriodicSystem, DataProcessing, OxideCompounds
 from modules.minerals import CrystalPhysics
 from modules.geophysics import BoreholeGeophysics as bg
 from modules.geophysics import WellLog as wg
@@ -186,6 +186,14 @@ class Tectosilicates:
         rho = x*rho_Ab + (1-x)*rho_Or
         rho_e = x*rho_e_Ab + (1-x)*rho_e_Or
         V = x*V_Ab + (1-x)*V_Or
+        # Oxide Composition
+        list_oxides = ["Na2O", "K2O", "Al2O3", "SiO2"]
+        composition_oxides = {}
+        for var_oxide in list_oxides:
+            oxide_data = OxideCompounds(var_compound=var_oxide, var_amounts=amounts).get_composition()
+            #
+            composition_oxides[var_oxide] = round(oxide_data["Oxide"][1]/molar_mass, 6)
+        print(composition_oxides, sum(list(composition_oxides.values())))
         # Bulk modulus
         K_Ab = 103.45*10**9
         K_Or = 89.78*10**9
