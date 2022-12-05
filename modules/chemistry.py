@@ -6,7 +6,7 @@
 # Name:		chemistry.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		02.12.2022
+# Date:		05.12.2022
 
 # -----------------------------------------------
 
@@ -1248,9 +1248,12 @@ class OxideCompounds:
             w_1 = round(var_amount_1*PeriodicSystem(name=var_element_1).get_data()[2]/molar_mass_total, 6)
             w_2 = round(var_amount_2*PeriodicSystem(name=var_element_2).get_data()[2]/molar_mass_total, 6)
             #
-            result["Oxide"].append(molar_mass_total)
+            w_oxide = round(self.amounts_helper[var_element_1]*1/w_1, 6)
+            #
+            result["Oxide"] = [molar_mass_total, w_oxide]
             result[var_element_1] = [int(var_amount_1), w_1]
             result[var_element_2] = [int(var_amount_2), w_2]
+            result["Conversion"] = round(1/w_1, 6)
         #
         return result
 #

@@ -6,7 +6,7 @@
 # Name:		silicates.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		02.12.2022
+# Date:		05.12.2022
 
 # -----------------------------------------------
 
@@ -83,7 +83,7 @@ class Tectosilicates:
                         dataset[key].append(value)
                 elif key in ["mineral", "state", "trace elements"] and key not in dataset:
                     dataset[key] = value
-                elif key in ["chemistry"]:
+                elif key in ["chemistry", "oxides"]:
                     if key not in dataset:
                         dataset[key] = {}
                         for key_2, value_2 in value.items():
@@ -134,42 +134,65 @@ class Tectosilicates:
         data = []
         #
         # Molar mass
-        if self.x_value == None:
-            if self.enrichment == None:
-                x = round(rd.uniform(0, 1), 2)
+        condition = False
+        while condition == False:
+            if self.x_value == None:
+                if self.enrichment == None:
+                    x = round(rd.uniform(0, 1), 2)
+                    mineral = "Kfs"
+                elif self.enrichment == "Na":
+                    x = round(rd.uniform(0.75, 1), 2)
+                    mineral = "Kfs"
+                elif self.enrichment == "K":
+                    x = round(rd.uniform(0, 0.25), 2)
+                    mineral = "Kfs"
+                elif self.enrichment == "random":
+                    x = round(rd.uniform(0, 1), 2)
+                    if x >= 0.9:
+                        mineral = "Ab"
+                    elif x < 0.9 and x >= 0.63:
+                        mineral = "Ano"
+                    elif x < 0.63 and x > 0.1:
+                        mineral = "Sa"
+                    elif x <= 0.1:
+                        magicnumber = rd.randint(0, 1)
+                        if magicnumber == 0:
+                            mineral = "Or"
+                        if magicnumber == 1:
+                            mineral = "Mc"
+            else:
+                x = self.x_value
                 mineral = "Kfs"
-            elif self.enrichment == "Na":
-                x = round(rd.uniform(0.75, 1), 2)
-                mineral = "Kfs"
-            elif self.enrichment == "K":
-                x = round(rd.uniform(0, 0.25), 2)
-                mineral = "Kfs"
-            elif self.enrichment == "random":
-                x = round(rd.uniform(0, 1), 2)
-                if x >= 0.9:
-                    mineral = "Ab"
-                elif x < 0.9 and x >= 0.63:
-                    mineral = "Ano"
-                elif x < 0.63 and x > 0.1:
-                    mineral = "Sa"
-                elif x <= 0.1:
-                    magicnumber = rd.randint(0, 1)
-                    if magicnumber == 0:
-                        mineral = "Or"
-                    if magicnumber == 1:
-                        mineral = "Mc"
-        else:
-            x = self.x_value
-            mineral = "Kfs"
-        #
-        majors_data = np.array([["O", oxygen[1], 8, oxygen[2]], ["Na", sodium[1], x, sodium[2]],
-                                ["Al", aluminium[1], 1, aluminium[2]], ["Si", silicon[1], 3, silicon[2]],
-                                ["K", potassium[1], (1-x), potassium[2]]], dtype=object)
-        #
-        molar_mass_pure = round(x*sodium[2] + (1-x)*potassium[2] + aluminium[2] + 3*silicon[2] + 8*oxygen[2], 3)
-        molar_mass, amounts = MineralChemistry(w_traces=traces_data, molar_mass_pure=molar_mass_pure,
-                                      majors=majors_data).calculate_molar_mass()
-        element = [PeriodicSystem(name=amounts[i][0]).get_data() for i in range(len(amounts))]
+            #
+            majors_data = np.array([["O", oxygen[1], 8, oxygen[2]], ["Na", sodium[1], x, sodium[2]],
+                                    ["Al", aluminium[1], 1, aluminium[2]], ["Si", silicon[1], 3, silicon[2]],
+                                    ["K", potassium[1], (1-x), potassium[2]]], dtype=object)
+            #
+            molar_mass_pure = round(x*sodium[2] + (1-x)*potassium[2] + aluminium[2] + 3*silicon[2] + 8*oxygen[2], 3)
+            molar_mass, amounts = MineralChemistry(w_traces=traces_data, molar_mass_pure=molar_mass_pure,
+                                          majors=majors_data).calculate_molar_mass()
+            element = [PeriodicSystem(name=amounts[i][0]).get_data() for i in range(len(amounts))]
+            # Oxide Composition
+            list_oxides = ["Na2O", "K2O", "Al2O3", "SiO2"]
+            composition_oxides = {}
+            for var_oxide in list_oxides:
+                oxide_data = OxideCompounds(var_compound=var_oxide, var_amounts=amounts).get_composition()
+                #
+                composition_oxides[var_oxide] = round(oxide_data["Oxide"][1], 6)
+            #
+            if np.isclose(np.sum(list(composition_oxides.values())), 1.0000) == True:
+                condition = True
+            else:
+                if self.enrichment == None:
+                    x = round(rd.uniform(0, 1), 2)
+                    mineral = "Kfs"
+                elif self.enrichment == "Na":
+                    x = round(rd.uniform(0.75, 1), 2)
+                    mineral = "Kfs"
+                elif self.enrichment == "K":
+                    x = round(rd.uniform(0, 0.25), 2)
+                    mineral = "Kfs"
+            #
         # Density
         M_Ab = round(sodium[2] + aluminium[2] + 3*silicon[2] + 8*oxygen[2], 3)
         dataV_Ab = CrystalPhysics([[8.15, 12.835, 7.135], [93.85, 116.55, 88.95], "triclinic"])
@@ -183,17 +206,9 @@ class Tectosilicates:
         dataRho_Or = CrystalPhysics([M_Or, 4, V_Or])
         rho_Or = dataRho_Or.calculate_bulk_density()
         rho_e_Or = wg(amounts=amounts, elements=element, rho_b=rho_Or).calculate_electron_density()
-        rho = x*rho_Ab + (1-x)*rho_Or
-        rho_e = x*rho_e_Ab + (1-x)*rho_e_Or
-        V = x*V_Ab + (1-x)*V_Or
-        # Oxide Composition
-        list_oxides = ["Na2O", "K2O", "Al2O3", "SiO2"]
-        composition_oxides = {}
-        for var_oxide in list_oxides:
-            oxide_data = OxideCompounds(var_compound=var_oxide, var_amounts=amounts).get_composition()
-            #
-            composition_oxides[var_oxide] = round(oxide_data["Oxide"][1]/molar_mass, 6)
-        print(composition_oxides, sum(list(composition_oxides.values())))
+        rho = x*rho_Ab + (1 - x)*rho_Or
+        rho_e = x*rho_e_Ab + (1 - x)*rho_e_Or
+        V = x*V_Ab + (1 - x)*V_Or
         # Bulk modulus
         K_Ab = 103.45*10**9
         K_Or = 89.78*10**9
@@ -241,6 +256,9 @@ class Tectosilicates:
             results["chemistry"] = {}
             for index, element in enumerate(element_list, start=0):
                 results["chemistry"][element] = amounts[index][2]
+            results["oxides"] = {}
+            for index, oxide in enumerate(list_oxides, start=0):
+                results["oxides"][oxide] = composition_oxides[oxide]
             results["rho"] = round(rho, 4)
             results["rho_e"] = round(rho_e, 4)
             results["V"] = round(V, 4)

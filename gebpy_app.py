@@ -6,7 +6,7 @@
 # Name:		gebpy_app.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		01.12.2022
+# Date:		05.12.2022
 
 #-----------------------------------------------
 
@@ -811,9 +811,54 @@ class GebPyGUI(tk.Frame):
                 parent=self.parent, row_id=33, column_id=0, n_rows=4, n_columns=14,
                 bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Background"]).create_label(
                 text="Diagram Type", font_option="sans 10 bold", relief=tk.FLAT)
+            lbl_concentration_setup = SimpleElements(
+                parent=self.parent, row_id=38, column_id=0, n_rows=4, n_columns=14,
+                bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Background"]).create_label(
+                text="Concentration Setup", font_option="sans 10 bold", relief=tk.FLAT)
+            lbl_element = SimpleElements(
+                parent=self.parent, row_id=42, column_id=0, n_rows=2, n_columns=14,
+                bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Background"]).create_label(
+                text="Element Selection", font_option="sans 10 bold", relief=tk.FLAT)
+            #
+            if self.oxides_present == True:
+                lbl_compound = SimpleElements(
+                    parent=self.parent, row_id=44, column_id=0, n_rows=2, n_columns=14,
+                    bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Background"]).create_label(
+                    text="Oxide Selection", font_option="sans 10 bold", relief=tk.FLAT)
+                self.gui_variables["Option Menu"]["Amount Compound"].set("Select Oxide")
+                #
+                try:
+                    compound_list = list(self.data_mineral["oxides"].keys())
+                except:
+                    compound_list = []
+                #
+            if self.sulfides_present == True:
+                lbl_compound = SimpleElements(
+                    parent=self.parent, row_id=44, column_id=0, n_rows=2, n_columns=14,
+                    bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Background"]).create_label(
+                    text="Sulfide Selection", font_option="sans 10 bold", relief=tk.FLAT)
+                self.gui_variables["Option Menu"]["Amount Compound"].set("Select Sulfide")
+                #
+                try:
+                    compound_list = list(self.data_mineral["sulfides"].keys())
+                except:
+                    compound_list = []
+                #
+            if self.phospides_present == True:
+                lbl_compound = SimpleElements(
+                    parent=self.parent, row_id=44, column_id=0, n_rows=2, n_columns=14,
+                    bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Background"]).create_label(
+                    text="Phospide Selection", font_option="sans 10 bold", relief=tk.FLAT)
+                self.gui_variables["Option Menu"]["Amount Compound"].set("Select Phospide")
+                #
+                try:
+                    compound_list = list(self.data_mineral["phospides"].keys())
+                except:
+                    compound_list = []
             #
             self.gui_elements["Temporary"]["Label"].extend(
-                [lbl_title, lbl_results, lbl_min, lbl_max, lbl_mean, lbl_error, lbl_diagram_type])
+                [lbl_title, lbl_results, lbl_min, lbl_max, lbl_mean, lbl_error, lbl_diagram_type, lbl_element, 
+                 lbl_compound, lbl_concentration_setup, lbl_element])
             #
             ## Radiobuttons
             rb_diagram_type_01 = SimpleElements(
@@ -826,11 +871,37 @@ class GebPyGUI(tk.Frame):
                 bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Background"]).create_radiobutton(
                 text="Scatter", var_rb=self.gui_variables["Radiobutton"]["Diagram Type Elements"], value_rb=1,
                 color_bg=self.colors_gebpy["Background"])
+            rb_concentration_type_01 = SimpleElements(
+                parent=self.parent, row_id=38, column_id=14, n_rows=2, n_columns=16,
+                bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Background"]).create_radiobutton(
+                text="Element Concentrations", var_rb=self.gui_variables["Radiobutton"]["Concentration Type"],
+                value_rb=0, color_bg=self.colors_gebpy["Background"])
+            rb_concentration_type_02 = SimpleElements(
+                parent=self.parent, row_id=40, column_id=14, n_rows=2, n_columns=16,
+                bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Background"]).create_radiobutton(
+                text="Oxide Concentrations", var_rb=self.gui_variables["Radiobutton"]["Concentration Type"],
+                value_rb=1, color_bg=self.colors_gebpy["Background"])
             #
             self.gui_elements["Temporary"]["Radiobutton"].extend(
-                [rb_diagram_type_01, rb_diagram_type_02])
+                [rb_diagram_type_01, rb_diagram_type_02, rb_concentration_type_01, rb_concentration_type_02])
             #
+            ## Option Menu
             self.list_elements.sort()
+            opt_element = SimpleElements(
+                parent=self.parent, row_id=42, column_id=14, n_rows=2, n_columns=16,
+                bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_option_menu(
+                var_opt=self.gui_variables["Option Menu"]["Amount Element"],
+                var_opt_set=self.gui_variables["Option Menu"]["Amount Element"].get(), opt_list=self.list_elements,
+                active_bg=self.colors_gebpy["Accent"])
+            opt_compound = SimpleElements(
+                parent=self.parent, row_id=44, column_id=14, n_rows=2, n_columns=16,
+                bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_option_menu(
+                var_opt=self.gui_variables["Option Menu"]["Amount Compound"],
+                var_opt_set=self.gui_variables["Option Menu"]["Amount Compound"].get(), opt_list=compound_list,
+                active_bg=self.colors_gebpy["Accent"])
+            #
+            self.gui_elements["Temporary"]["Option Menu"].extend([opt_element, opt_compound])
+            #
             for index, element in enumerate(self.list_elements):
                 lbl_element = SimpleElements(
                     parent=self.parent, row_id=(2*index + 4), column_id=start_column, n_rows=2, n_columns=9,
@@ -1273,6 +1344,13 @@ class GebPyGUI(tk.Frame):
     #
     def run_simulation_mineralogy(self, var_name):
         #
+        self.gui_variables["Radiobutton"]["Concentration Type"] = tk.IntVar()
+        self.gui_variables["Radiobutton"]["Concentration Type"].set(0)
+        self.gui_variables["Option Menu"]["Amount Element"] = tk.StringVar()
+        self.gui_variables["Option Menu"]["Amount Element"].set("Select Element")
+        self.gui_variables["Option Menu"]["Amount Compound"] = tk.StringVar()
+        self.gui_variables["Option Menu"]["Amount Compound"].set("Select Compound")
+        #
         self.trace_elements = {}
         for trace_element in self.trace_elements_all["All"]:
             if trace_element in self.gui_variables["Checkbox"]["Trace Elements"]:
@@ -1286,23 +1364,30 @@ class GebPyGUI(tk.Frame):
             if var_cb.get() == 1:
                 self.traces_list.append(key)
         #
-
+        self.oxides_present = False
+        self.sulfides_present = False
+        self.phospides_present = False
+        #
         if var_name in self.oxide_minerals:         # Oxides
             self.data_mineral = Oxides(
                 mineral=var_name, data_type=True, traces_list=self.trace_elements).generate_dataset(
                 number=self.gui_variables["Entry"]["Number Samples"].get())
+            self.oxides_present = True
         elif var_name in self.carbonate_minerals:   # Carbonates
             self.data_mineral = Carbonates(
                 mineral=var_name, data_type=True, traces_list=self.traces_list).generate_dataset(
                 number=self.gui_variables["Entry"]["Number Samples"].get())
+            self.oxides_present = True
         elif var_name in self.sulfide_minerals:   # Sulfides
             self.data_mineral = Sulfides(
                 mineral=var_name, data_type=True, traces_list=self.trace_elements).generate_dataset(
                 number=self.gui_variables["Entry"]["Number Samples"].get())
+            self.sulfides_present = True
         elif var_name in self.sulfate_minerals:   # Sulfates
             self.data_mineral = Sulfates(
                 mineral=var_name, data_type=True, traces_list=self.traces_list).generate_dataset(
                 number=self.gui_variables["Entry"]["Number Samples"].get())
+            self.oxides_present = True
         elif var_name in self.halide_minerals:   # Halides
             self.data_mineral = Halides(
                 mineral=var_name, dict=True, traces_list=self.traces_list).generate_dataset(
@@ -1311,38 +1396,47 @@ class GebPyGUI(tk.Frame):
             self.data_mineral = Phospides(
                 mineral=var_name, data_type=True, traces_list=self.traces_list).generate_dataset(
                 number=self.gui_variables["Entry"]["Number Samples"].get())
+            self.phospides_present = True
         elif var_name in self.phosphate_minerals:   # Phosphates
             self.data_mineral = Phosphates(
                 mineral=var_name, data_type=True, traces_list=self.traces_list).generate_dataset(
                 number=self.gui_variables["Entry"]["Number Samples"].get())
+            self.oxides_present = True
         elif var_name in self.tectosilicate_minerals:   # Tectosilicates
             self.data_mineral = Tectosilicates(
                 mineral=var_name, data_type=True, traces_list=self.traces_list).generate_dataset(
                 number=self.gui_variables["Entry"]["Number Samples"].get())
+            self.oxides_present = True
         elif var_name in self.nesosilicate_minerals:   # Nesosilicates
             self.data_mineral = Nesosilicates(
                 mineral=var_name, data_type=True, traces_list=self.traces_list).generate_dataset(
                 number=self.gui_variables["Entry"]["Number Samples"].get())
+            self.oxides_present = True
         elif var_name in self.sorosilicate_minerals:   # Sorosilicates
             self.data_mineral = Sorosilicates(
                 mineral=var_name, data_type=True, traces_list=self.traces_list).generate_dataset(
                 number=self.gui_variables["Entry"]["Number Samples"].get())
+            self.oxides_present = True
         elif var_name in self.inosilicate_minerals:   # Inosilicates
             self.data_mineral = Inosilicates(
                 mineral=var_name, data_type=True, traces_list=self.traces_list).generate_dataset(
                 number=self.gui_variables["Entry"]["Number Samples"].get())
+            self.oxides_present = True
         elif var_name in self.phyllosilicate_minerals:   # Phyllosilicates
             self.data_mineral = Phyllosilicates(
                 mineral=var_name, data_type=True, traces_list=self.traces_list).generate_dataset(
                 number=self.gui_variables["Entry"]["Number Samples"].get())
+            self.oxides_present = True
         elif var_name in self.cyclosilicate_minerals:   # Cyclosilicates
             self.data_mineral = Cyclosilicates(
                 mineral=var_name, data_type=True, traces_list=self.traces_list).generate_dataset(
                 number=self.gui_variables["Entry"]["Number Samples"].get())
+            self.oxides_present = True
         elif var_name in self.miscellaneous_minerals:   # Miscellaneous
             self.data_mineral = Organics(
                 mineral=var_name, data_type=True, traces_list=self.traces_list).generate_dataset(
                 number=self.gui_variables["Entry"]["Number Samples"].get())
+            self.oxides_present = True
         #
         for key, dataset in self.data_mineral.items():
             if key == "chemistry":
