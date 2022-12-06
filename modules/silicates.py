@@ -31,10 +31,13 @@ class Tectosilicates:
         self.mineral = mineral
         #
         ## Chemistry
+        self.carbon = ["C", 6, 12.011]
+        self.oxygen = ["O", 8, 15.999]
         self.oxygen = ["O", 8, 15.999]
         self.sodium = ["Na", 11, 22.990]
         self.aluminium = ["Al", 13, 26.982]
         self.silicon = ["Si", 14, 28.085]
+        self.chlorine = ["Cl", 17, 35.450]
         self.potassium = ["K", 19, 39.098]
         self.calcium = ["Ca", 20, 40.078]
     #
@@ -479,29 +482,9 @@ class Tectosilicates:
         #
         name = "Scp"
         #
-        # Major Elements
-        carbon = PeriodicSystem(name="C").get_data()
-        oxygen = PeriodicSystem(name="O").get_data()
-        sodium = PeriodicSystem(name="Na").get_data()
-        aluminium = PeriodicSystem(name="Al").get_data()
-        silicon = PeriodicSystem(name="Si").get_data()
-        chlorine = PeriodicSystem(name="Cl").get_data()
-        calcium = PeriodicSystem(name="Ca").get_data()
+        ## Major Elements
         majors_name = ["C", "O", "Na", "Al", "Si", "Cl", "Ca"]
-        element = [carbon, oxygen, sodium, aluminium, silicon, chlorine, calcium]
-        #
-        if enrichment in ["Scapolite","scapolite", "Scp", "scp", None]:
-            x = round(rd.uniform(0, 1.0), 4)
-        elif enrichment in ["Ca", "Meionite", "meionite", "Mei", "mei"]:
-            x = round(rd.uniform(0.75, 1.0), 4)
-        elif enrichment in ["Na", "Marialite", "marialite", "Mar", "mar"]:
-            x = round(rd.uniform(0, 0.25), 4)
-        #
-        majors_data = np.array([["C", carbon[1], (1-x), carbon[2]], ["O", oxygen[1], 24+3*(1-x), oxygen[2]],
-                                ["Na", sodium[1], x, sodium[2]], ["Al", aluminium[1], (2-x), aluminium[2]],
-                                ["Si", silicon[1], (2+x), silicon[2]], ["Cl", chlorine[1], x, chlorine[2]],
-                                ["Ca", calcium[1], (1-x), calcium[2]]], dtype=object)
-        # Minor elements
+        ## Minor elements
         traces_data = []
         if len(self.traces_list) > 0:
             self.impurity = "impure"
@@ -526,27 +509,72 @@ class Tectosilicates:
             if len(traces_data) > 0:
                 traces_data = np.array(traces_data, dtype=object)
                 traces_data = traces_data[traces_data[:, 1].argsort()]
-        # Molar mass
-        molar_mass_pure = round(4*(x*sodium[2] + (1-x)*calcium[2])
-                                + 3*((2-x)*aluminium[2] + (2+x)*silicon[2] + 8*oxygen[2]) + x*chlorine[2]
-                                + (1-x)*(carbon[2] + 3*oxygen[2]), 3)
-        molar_mass, amounts = MineralChemistry(w_traces=traces_data, molar_mass_pure=molar_mass_pure,
-                                               majors=majors_data).calculate_molar_mass()
-        element = [PeriodicSystem(name=amounts[i][0]).get_data() for i in range(len(amounts))]
+        #
+        ## Molar mass
+        condition = False
+        while condition == False:
+            #
+            if enrichment in ["Scapolite", "scapolite", "Scp", "scp", None]:
+                x = round(rd.uniform(0, 1.0), 4)
+            elif enrichment in ["Ca", "Meionite", "meionite", "Mei", "mei"]:
+                x = round(rd.uniform(0.75, 1.0), 4)
+            elif enrichment in ["Na", "Marialite", "marialite", "Mar", "mar"]:
+                x = round(rd.uniform(0, 0.25), 4)
+            #
+            majors_data = np.array(
+                [["C", self.carbon[1], round(x, 4), self.carbon[2]],
+                 ["O", self.oxygen[1], round(24 + 3*x, 4), self.oxygen[2]],
+                 ["Na", self.sodium[1], round(4*(1 - x), 4), self.sodium[2]],
+                 ["Al", self.aluminium[1], round(3*(1 + x), 4), self.aluminium[2]],
+                 ["Si", self.silicon[1], round(3*(3 - x), 4), self.silicon[2]],
+                 ["Cl", self.chlorine[1], round((1 - x), 4), self.chlorine[2]],
+                 ["Ca", self.calcium[1], round(4*x, 4), self.calcium[2]]], dtype=object)
+            #
+            molar_mass_pure = round(4*(x*self.calcium[2] + (1 - x)*self.sodium[2]) + 3*(1 + x)*self.aluminium[2] \
+                              + 3*(3 - x)*self.silicon[2] + 24*self.oxygen[2] \
+                              + x*(self.carbon[2] + 3*self.oxygen[2]) + (1 - x)*self.chlorine[2], 3)
+            molar_mass, amounts = MineralChemistry(
+                w_traces=traces_data, molar_mass_pure=molar_mass_pure, majors=majors_data).calculate_molar_mass()
+            element = [PeriodicSystem(name=amounts[i][0]).get_data() for i in range(len(amounts))]
+            ## Oxide Composition
+            list_oxides = ["CO2", "Na2O", "Al2O3", "SiO2", "CaO"]
+            composition_oxides = {}
+            for var_oxide in list_oxides:
+                oxide_data = OxideCompounds(var_compound=var_oxide, var_amounts=amounts).get_composition()
+                #
+                composition_oxides[var_oxide] = round(oxide_data["Oxide"][1], 6)
+            #
+            w_total = np.sum(list(composition_oxides.values()))
+            composition_oxides["ClO"] = round(1 - w_total, 6)
+            list_oxides = ["CO2", "Na2O", "Al2O3", "SiO2", "ClO", "CaO"]
+            if np.isclose(np.sum(list(composition_oxides.values())), 1.0000) == True:
+                condition = True
+            else:
+                if enrichment in ["Scapolite", "scapolite", "Scp", "scp", None]:
+                    x = round(rd.uniform(0, 1.0), 4)
+                elif enrichment in ["Ca", "Meionite", "meionite", "Mei", "mei"]:
+                    x = round(rd.uniform(0.75, 1.0), 4)
+                elif enrichment in ["Na", "Marialite", "marialite", "Mar", "mar"]:
+                    x = round(rd.uniform(0, 0.25), 4)
+        #
         # Density
-        M_Mar = round(4*sodium[2] + 3*aluminium[2] + 9*silicon[2] + 24*oxygen[2] + chlorine[2], 3)
+        M_Mar = round(4*self.sodium[2] + 3*self.aluminium[2] + 9*self.silicon[2] + 24*self.oxygen[2] + self.chlorine[2], 3)
         dataV_Mar = CrystalPhysics([[12.075, 7.516], [], "tetragonal"])
         V_Mar = dataV_Mar.calculate_volume()
+        V_m_Mar = MineralChemistry().calculate_molar_volume(volume_cell=V_Mar, z=2)
         dataRho_Mar = CrystalPhysics([M_Mar, 2, V_Mar])
         rho_Mar = dataRho_Mar.calculate_bulk_density()
         rho_e_Mar = wg(amounts=amounts, elements=element, rho_b=rho_Mar).calculate_electron_density()
-        M_Mei = round(4*calcium[2] + 6*aluminium[2] + 6*silicon[2] + 24*oxygen[2] + carbon[2] + 3*oxygen[2], 3)
+        #
+        M_Mei = round(4*self.calcium[2] + 6*self.aluminium[2] + 6*self.silicon[2] + 24*self.oxygen[2] + self.carbon[2] + 3*self.oxygen[2], 3)
         dataV_Mei = CrystalPhysics([[12.26, 7.61], [], "tetragonal"])
         V_Mei = dataV_Mei.calculate_volume()
+        V_m_Mei = MineralChemistry().calculate_molar_volume(volume_cell=V_Mei, z=2)
         dataRho_Mei = CrystalPhysics([M_Mei, 2, V_Mei])
         rho_Mei = dataRho_Mei.calculate_bulk_density()
         rho_e_Mei = wg(amounts=amounts, elements=element, rho_b=rho_Mei).calculate_electron_density()
-        V = x*V_Mar + (1-x)*V_Mei
+        #
+        V = x*V_m_Mar + (1-x)*V_m_Mei
         rho = x*rho_Mar + (1-x)*rho_Mei
         rho_e = x*rho_e_Mar + (1-x)*rho_e_Mei
         # Bulk modulus
@@ -596,6 +624,9 @@ class Tectosilicates:
             results["chemistry"] = {}
             for index, element in enumerate(element_list, start=0):
                 results["chemistry"][element] = amounts[index][2]
+            results["compounds"] = {}
+            for index, oxide in enumerate(list_oxides, start=0):
+                results["compounds"][oxide] = composition_oxides[oxide]
             results["rho"] = round(rho, 4)
             results["rho_e"] = round(rho_e, 4)
             results["V"] = round(V, 4)
