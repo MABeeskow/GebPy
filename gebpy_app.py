@@ -46,8 +46,10 @@ class GebPyGUI(tk.Frame):
         self.gui_elements_sub = {}
         gui_elements = ["Frame", "Label", "Button", "Radiobutton", "Checkbox", "Entry", "Option Menu", "Canvas",
                         "Figure", "Axis"]
-        gui_priority = ["Static", "Temporary", "Rockbuilder Static", "Rockbuilder Temporary"]
-        gui_subwindows = ["Trace Elements", "Mineralogy"]
+        gui_priority = ["Static", "Temporary", "Rockbuilder Static", "Rockbuilder Temporary", "Element Concentration",
+                        "Compound Concentration"]
+        gui_subwindows = ["Trace Elements", "Mineralogy", "Mineral Physics", "Mineral Chemistry", "Synthetic LA-ICP-MS"]
+        #
         for subwindow in gui_subwindows:
             self.gui_elements_sub[subwindow] = {}
             for priority in gui_priority:
@@ -57,6 +59,7 @@ class GebPyGUI(tk.Frame):
                         self.gui_elements_sub[subwindow][priority][gui_element] = []
                     else:
                         self.gui_elements_sub[subwindow][priority][gui_element] = {}
+        #
         for priority in gui_priority:
             self.gui_elements[priority] = {}
             for gui_element in gui_elements:
@@ -543,6 +546,13 @@ class GebPyGUI(tk.Frame):
             for gui_element in self.gui_elements["Static"][category]:
                 gui_element.grid_remove()
         #
+        for key_01 in self.gui_elements_sub["Mineral Chemistry"].keys():
+            for key_02 in self.gui_elements_sub["Mineral Chemistry"][key_01].keys():
+                for gui_item in self.gui_elements_sub["Mineral Chemistry"][key_01][key_02]:
+                    gui_item.grid_remove()
+                #
+                self.gui_elements_sub["Mineral Chemistry"][key_01][key_02].clear()
+        #
         ## Initialization
         self.gui_variables["Entry"]["Number Samples"] = tk.IntVar()
         self.gui_variables["Entry"]["Number Samples"].set(100)
@@ -903,9 +913,9 @@ class GebPyGUI(tk.Frame):
                     text=element, font_option="sans 10 bold", relief=tk.GROOVE)
                 #
                 self.gui_elements["Temporary"]["Label"].append(lbl_element)
+                self.gui_elements_sub["Mineral Chemistry"]["Element Concentration"]["Label"].append(lbl_element)
                 #
                 ## Entries
-                #
                 var_entr_min = int(min(self.data_mineral["chemistry"][element])*10**6)
                 var_entr_max = int(max(self.data_mineral["chemistry"][element])*10**6)
                 var_entr_mean = int(np.mean(self.data_mineral["chemistry"][element])*10**6)
@@ -929,6 +939,8 @@ class GebPyGUI(tk.Frame):
                     var_entr=self.gui_variables["Entry"]["Error"][element], var_entr_set=var_entr_error)
                 #
                 self.gui_elements["Temporary"]["Entry"].extend([entr_min, entr_max, entr_mean, entr_error])
+                self.gui_elements_sub["Mineral Chemistry"]["Element Concentration"]["Entry"].extend(
+                    [entr_min, entr_max, entr_mean, entr_error])
         #
         elif self.gui_variables["Radiobutton"]["Analysis Mode"].get() == 2:   # Synthetic LA-ICP-MS
             ## Cleaning
@@ -1046,73 +1058,100 @@ class GebPyGUI(tk.Frame):
             #
     def change_chemical_composition(self, var_rb):
         if var_rb.get() == 0:   # Element Composition
-            for index, element in enumerate(self.list_elements):
-                lbl_element = SimpleElements(
-                    parent=self.parent, row_id=(2*index + 4), column_id=35, n_rows=2, n_columns=9,
-                    bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
-                    text=element, font_option="sans 10 bold", relief=tk.GROOVE)
-                #
-                self.gui_elements["Temporary"]["Label"].append(lbl_element)
-                #
-                ## Entries
-                #
-                var_entr_min = int(min(self.data_mineral["chemistry"][element])*10**6)
-                var_entr_max = int(max(self.data_mineral["chemistry"][element])*10**6)
-                var_entr_mean = int(np.mean(self.data_mineral["chemistry"][element])*10**6)
-                var_entr_error = int(np.std(self.data_mineral["chemistry"][element], ddof=1)*10**6)
-                #
-                entr_min = SimpleElements(
-                    parent=self.parent, row_id=(2*index + 4), column_id=35 + 9, n_rows=2, n_columns=9,
-                    bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
-                    var_entr=self.gui_variables["Entry"]["Minimum"][element], var_entr_set=var_entr_min)
-                entr_max = SimpleElements(
-                    parent=self.parent, row_id=(2*index + 4), column_id=35 + 18, n_rows=2, n_columns=9,
-                    bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
-                    var_entr=self.gui_variables["Entry"]["Maximum"][element], var_entr_set=var_entr_max)
-                entr_mean = SimpleElements(
-                    parent=self.parent, row_id=(2*index + 4), column_id=35 + 27, n_rows=2, n_columns=9,
-                    bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
-                    var_entr=self.gui_variables["Entry"]["Mean"][element], var_entr_set=var_entr_mean)
-                entr_error = SimpleElements(
-                    parent=self.parent, row_id=(2*index + 4), column_id=35 + 36, n_rows=2, n_columns=9,
-                    bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
-                    var_entr=self.gui_variables["Entry"]["Error"][element], var_entr_set=var_entr_error)
-                #
-                self.gui_elements["Temporary"]["Entry"].extend([entr_min, entr_max, entr_mean, entr_error])
+            ## Cleaning
+            for gui_category in ["Label", "Entry"]:
+                for gui_item in self.gui_elements_sub["Mineral Chemistry"]["Compound Concentration"][gui_category]:
+                    gui_item.grid_remove()
+            #
+            if len(self.gui_elements_sub["Mineral Chemistry"]["Element Concentration"]["Label"]) == 0:
+                for index, element in enumerate(self.list_elements):
+                    lbl_element = SimpleElements(
+                        parent=self.parent, row_id=(2*index + 4), column_id=35, n_rows=2, n_columns=9,
+                        bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
+                        text=element, font_option="sans 10 bold", relief=tk.GROOVE)
+                    #
+                    self.gui_elements["Temporary"]["Label"].append(lbl_element)
+                    self.gui_elements_sub["Mineral Chemistry"]["Element Concentration"]["Label"].append(lbl_element)
+                    #
+                    ## Entries
+                    var_entr_min = int(min(self.data_mineral["chemistry"][element])*10**6)
+                    var_entr_max = int(max(self.data_mineral["chemistry"][element])*10**6)
+                    var_entr_mean = int(np.mean(self.data_mineral["chemistry"][element])*10**6)
+                    var_entr_error = int(np.std(self.data_mineral["chemistry"][element], ddof=1)*10**6)
+                    #
+                    entr_min = SimpleElements(
+                        parent=self.parent, row_id=(2*index + 4), column_id=35 + 9, n_rows=2, n_columns=9,
+                        bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
+                        var_entr=self.gui_variables["Entry"]["Minimum"][element], var_entr_set=var_entr_min)
+                    entr_max = SimpleElements(
+                        parent=self.parent, row_id=(2*index + 4), column_id=35 + 18, n_rows=2, n_columns=9,
+                        bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
+                        var_entr=self.gui_variables["Entry"]["Maximum"][element], var_entr_set=var_entr_max)
+                    entr_mean = SimpleElements(
+                        parent=self.parent, row_id=(2*index + 4), column_id=35 + 27, n_rows=2, n_columns=9,
+                        bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
+                        var_entr=self.gui_variables["Entry"]["Mean"][element], var_entr_set=var_entr_mean)
+                    entr_error = SimpleElements(
+                        parent=self.parent, row_id=(2*index + 4), column_id=35 + 36, n_rows=2, n_columns=9,
+                        bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
+                        var_entr=self.gui_variables["Entry"]["Error"][element], var_entr_set=var_entr_error)
+                    #
+                    self.gui_elements["Temporary"]["Entry"].extend([entr_min, entr_max, entr_mean, entr_error])
+                    self.gui_elements_sub["Mineral Chemistry"]["Element Concentration"]["Entry"].extend(
+                        [entr_min, entr_max, entr_mean, entr_error])
+            else:
+                ## Reconstruction
+                for gui_category in ["Label", "Entry"]:
+                    for gui_item in self.gui_elements_sub["Mineral Chemistry"]["Element Concentration"][gui_category]:
+                        gui_item.grid()
             #
         elif var_rb.get() == 1: # Oxide/Sulfide/Phospide Composition
-            for index, compound in enumerate(self.list_compounds):
-                lbl_element = SimpleElements(
-                    parent=self.parent, row_id=(2*index + 4), column_id=35, n_rows=2, n_columns=9,
-                    bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
-                    text=compound, font_option="sans 10 bold", relief=tk.GROOVE)
-                #
-                self.gui_elements["Temporary"]["Label"].append(lbl_element)
-                #
-                ## Entries
-                var_entr_min = int(min(self.data_mineral["compounds"][compound])*10**6)
-                var_entr_max = int(max(self.data_mineral["compounds"][compound])*10**6)
-                var_entr_mean = int(np.mean(self.data_mineral["compounds"][compound])*10**6)
-                var_entr_error = int(np.std(self.data_mineral["compounds"][compound], ddof=1)*10**6)
-                #
-                entr_min = SimpleElements(
-                    parent=self.parent, row_id=(2*index + 4), column_id=35 + 9, n_rows=2, n_columns=9,
-                    bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
-                    var_entr=self.gui_variables["Entry"]["Minimum"][compound], var_entr_set=var_entr_min)
-                entr_max = SimpleElements(
-                    parent=self.parent, row_id=(2*index + 4), column_id=35 + 18, n_rows=2, n_columns=9,
-                    bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
-                    var_entr=self.gui_variables["Entry"]["Maximum"][compound], var_entr_set=var_entr_max)
-                entr_mean = SimpleElements(
-                    parent=self.parent, row_id=(2*index + 4), column_id=35 + 27, n_rows=2, n_columns=9,
-                    bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
-                    var_entr=self.gui_variables["Entry"]["Mean"][compound], var_entr_set=var_entr_mean)
-                entr_error = SimpleElements(
-                    parent=self.parent, row_id=(2*index + 4), column_id=35 + 36, n_rows=2, n_columns=9,
-                    bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
-                    var_entr=self.gui_variables["Entry"]["Error"][compound], var_entr_set=var_entr_error)
-                #
-                self.gui_elements["Temporary"]["Entry"].extend([entr_min, entr_max, entr_mean, entr_error])
+            ## Cleaning
+            for gui_category in ["Label", "Entry"]:
+                for gui_item in self.gui_elements_sub["Mineral Chemistry"]["Element Concentration"][gui_category]:
+                    gui_item.grid_remove()
+            #
+            if len(self.gui_elements_sub["Mineral Chemistry"]["Compound Concentration"]["Label"]) == 0:
+                for index, compound in enumerate(self.list_compounds):
+                    lbl_element = SimpleElements(
+                        parent=self.parent, row_id=(2*index + 4), column_id=35, n_rows=2, n_columns=9,
+                        bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
+                        text=compound, font_option="sans 10 bold", relief=tk.GROOVE)
+                    #
+                    self.gui_elements["Temporary"]["Label"].append(lbl_element)
+                    self.gui_elements_sub["Mineral Chemistry"]["Compound Concentration"]["Label"].append(lbl_element)
+                    #
+                    ## Entries
+                    var_entr_min = int(min(self.data_mineral["compounds"][compound])*10**6)
+                    var_entr_max = int(max(self.data_mineral["compounds"][compound])*10**6)
+                    var_entr_mean = int(np.mean(self.data_mineral["compounds"][compound])*10**6)
+                    var_entr_error = int(np.std(self.data_mineral["compounds"][compound], ddof=1)*10**6)
+                    #
+                    entr_min = SimpleElements(
+                        parent=self.parent, row_id=(2*index + 4), column_id=35 + 9, n_rows=2, n_columns=9,
+                        bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
+                        var_entr=self.gui_variables["Entry"]["Minimum"][compound], var_entr_set=var_entr_min)
+                    entr_max = SimpleElements(
+                        parent=self.parent, row_id=(2*index + 4), column_id=35 + 18, n_rows=2, n_columns=9,
+                        bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
+                        var_entr=self.gui_variables["Entry"]["Maximum"][compound], var_entr_set=var_entr_max)
+                    entr_mean = SimpleElements(
+                        parent=self.parent, row_id=(2*index + 4), column_id=35 + 27, n_rows=2, n_columns=9,
+                        bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
+                        var_entr=self.gui_variables["Entry"]["Mean"][compound], var_entr_set=var_entr_mean)
+                    entr_error = SimpleElements(
+                        parent=self.parent, row_id=(2*index + 4), column_id=35 + 36, n_rows=2, n_columns=9,
+                        bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
+                        var_entr=self.gui_variables["Entry"]["Error"][compound], var_entr_set=var_entr_error)
+                    #
+                    self.gui_elements["Temporary"]["Entry"].extend([entr_min, entr_max, entr_mean, entr_error])
+                    self.gui_elements_sub["Mineral Chemistry"]["Compound Concentration"]["Entry"].extend(
+                        [entr_min, entr_max, entr_mean, entr_error])
+            else:
+                ## Reconstruction
+                for gui_category in ["Label", "Entry"]:
+                    for gui_item in self.gui_elements_sub["Mineral Chemistry"]["Compound Concentration"][gui_category]:
+                        gui_item.grid()
             #
     #
     def simulate_laicpms_experiment(self):
@@ -1407,6 +1446,13 @@ class GebPyGUI(tk.Frame):
             self.gui_elements_sub["Trace Elements"]["Temporary"]["Entry"].extend([entr_min, entr_max])
     #
     def run_simulation_mineralogy(self, var_name):
+        ## Cleaning
+        for key_01 in self.gui_elements_sub["Mineral Chemistry"].keys():
+            for key_02 in self.gui_elements_sub["Mineral Chemistry"][key_01].keys():
+                for gui_item in self.gui_elements_sub["Mineral Chemistry"][key_01][key_02]:
+                    gui_item.grid_remove()
+                #
+                self.gui_elements_sub["Mineral Chemistry"][key_01][key_02].clear()
         #
         self.gui_variables["Radiobutton"]["Concentration Type"] = tk.IntVar()
         self.gui_variables["Radiobutton"]["Concentration Type"].set(0)
@@ -3641,6 +3687,8 @@ class GebPyGUI(tk.Frame):
     ######################################
     #
     def calculate_fractions(self, number=100, mode="simplified"):
+        self.rock_fractions = {"Rock Forming": {}, "Ore": {}, "Clay": {}}
+        #
         if mode == "simplified":
             rock_forming_min = self.gui_variables["Entry"]["Mineralogy"]["Rock Forming Total"]["Minimum"].get()
             rock_forming_max = self.gui_variables["Entry"]["Mineralogy"]["Rock Forming Total"]["Maximum"].get()
@@ -3654,6 +3702,13 @@ class GebPyGUI(tk.Frame):
             clay_max = self.gui_variables["Entry"]["Mineralogy"]["Clay Total"]["Maximum"].get()
             n_clay = 0
             mean_clay = (clay_min + clay_max)/2
+            #
+            self.rock_fractions["Rock Forming"]["Min"] = float(rock_forming_min)
+            self.rock_fractions["Rock Forming"]["Max"] = float(rock_forming_max)
+            self.rock_fractions["Ore"]["Min"] = float(ore_min)
+            self.rock_fractions["Ore"]["Max"] = float(ore_max)
+            self.rock_fractions["Clay"]["Min"] = float(clay_min)
+            self.rock_fractions["Clay"]["Max"] = float(clay_max)
             #
             self.fractions_sum = {"Rock Forming": 0, "Ore": 0, "Clay": 0}
             fractions_mean = {"Rock Forming": mean_rock_forming, "Ore": mean_ore, "Clay": mean_clay}
@@ -3702,6 +3757,73 @@ class GebPyGUI(tk.Frame):
             #
             self.fractions_sum = dict(sorted(self.fractions_sum.items(), key=lambda item: item[1]))
             #
+            w_total = 100
+            w_actual = 0
+            previous_keys = []
+            for key, value in self.fractions_sum.items():
+                if value > 0:
+                    for previous_key in previous_keys:
+                        w_actual += self.rock_fractions[previous_key]["Effective"]
+                    #
+                    value_calc = round(w_total - w_actual, 4)
+                    #
+                else:
+                    value_calc = round(0.0, 4)
+                #
+                self.rock_fractions[key]["Effective"] = value_calc
+                self.rock_fractions[key]["Size"] = value
+                previous_keys.append(key)
+            #
+            previous_keys = []
+            w_effective = 0
+            for index, (key, value) in enumerate(self.fractions_sum.items()):
+                print(index, key, value)
+                if self.rock_fractions[key]["Size"] > 0:
+                    if index < 2:
+                        self.rock_fractions[key]["Effective"] = round(
+                            (self.rock_fractions[key]["Min"] + self.rock_fractions[key]["Max"])/2, 4)
+                    else:
+                        var_delta = 100 - w_effective
+                        print("Delta", var_delta)
+                        print(self.rock_fractions[key]["Min"], self.rock_fractions[key]["Max"])
+                        if float(self.rock_fractions[key]["Min"]) < var_delta < float(self.rock_fractions[key]["Max"]):
+                            print("A")
+                            delta_min = var_delta - self.rock_fractions[key]["Min"]
+                            delta_max = self.rock_fractions[key]["Max"] - var_delta
+                            if delta_max < delta_min:
+                                self.rock_fractions[key]["Effective"] = round(100 - w_effective, 4)
+                                self.rock_fractions[key]["Min"] = round(
+                                    2*self.rock_fractions[key]["Effective"] - self.rock_fractions[key]["Max"], 4)
+                            elif delta_min < delta_max:
+                                self.rock_fractions[key]["Effective"] = round(100 - w_effective, 4)
+                                self.rock_fractions[key]["Max"] = round(
+                                    2*self.rock_fractions[key]["Effective"] - self.rock_fractions[key]["Min"], 4)
+                            else:
+                                self.rock_fractions[key]["Effective"] = round(var_delta, 4)
+                                self.rock_fractions[key]["Min"] = round(var_delta - delta_min, 4)
+                                self.rock_fractions[key]["Max"] = round(var_delta + delta_max, 4)
+                            #
+                        elif var_delta < float(self.rock_fractions[key]["Min"]):
+                            print("B")
+                            self.rock_fractions[key]["Effective"] = round(100 - w_effective, 4)
+                            self.rock_fractions[key]["Min"] = round(
+                                2*self.rock_fractions[key]["Effective"] - self.rock_fractions[key]["Max"], 4)
+                        elif var_delta == float(self.rock_fractions[key]["Min"]) \
+                                or var_delta == float(self.rock_fractions[key]["Max"]):
+                            print("C")
+                            self.rock_fractions[key]["Effective"] = round(var_delta, 4)
+                            self.rock_fractions[key]["Min"] = round(var_delta, 4)
+                            self.rock_fractions[key]["Max"] = round(var_delta, 4)
+                    #
+                else:
+                    self.rock_fractions[key]["Min"] = 0.0
+                    self.rock_fractions[key]["Max"] = 0.0
+                    self.rock_fractions[key]["Effective"] = round(
+                        (self.rock_fractions[key]["Min"] + self.rock_fractions[key]["Max"])/2, 4)
+                #
+                w_effective += self.rock_fractions[key]["Effective"]
+                previous_keys.append(key)
+            #
             amounts_fractions = {}
             last_amounts = 0
             for index, fraction in enumerate(fractions_mean):
@@ -3731,6 +3853,39 @@ class GebPyGUI(tk.Frame):
             amount_fraction_rf = round(amounts_fractions["Rock Forming"], 4)
             amount_fraction_o = round(amounts_fractions["Ore"], 4)
             amount_fraction_c = round(amounts_fractions["Clay"], 4)
+            #
+            sorted_minerals = {}
+            for fraction, size in self.fractions_sum.items():
+                sorted_minerals[fraction] = {}
+                if size > 0:
+                    for mineral, values in self.selected_minerals.items():
+                        if fraction == values["Group"]:
+                            sorted_minerals[fraction][mineral] = values["Mean"]
+            #
+            minerals_helper = {}
+            for index_01, (key_01, value_01) in enumerate(self.fractions_sum.items()):
+                if value_01 > 0:
+                    minerals_helper[key_01] = {}
+                    for index_02, (key_02, value_02) in enumerate(self.selected_minerals.items()):
+                        if key_01 == value_02["Group"]:
+                            main_mineral = self.find_maximum_in_dict(var_dict=sorted_minerals[key_01])
+                            minerals_helper[key_01][key_02] = {}
+                            if value_01 == 1:
+                                minerals_helper[key_01][key_02]["Min"] = round(100, 4)
+                                minerals_helper[key_01][key_02]["Max"] = round(100, 4)
+                                minerals_helper[key_01][key_02]["Effective"] = round(
+                                    (minerals_helper[key_01][key_02]["Min"] + minerals_helper[key_01][key_02]["Max"])/2,
+                                    4)
+                                minerals_helper[key_01][key_02]["Fraction"] = round(
+                                    self.rock_fractions[key_01]["Effective"], 4)
+                            else:
+                                minerals_helper[key_01][key_02]["Min"] = round(value_02["Min"], 4)
+                                minerals_helper[key_01][key_02]["Max"] = round(value_02["Max"], 4)
+                                minerals_helper[key_01][key_02]["Effective"] = round(
+                                    (value_02["Min"] + value_02["Max"])/2, 4)
+                                minerals_helper[key_01][key_02]["Fraction"] = round(
+                                    self.rock_fractions[key_01]["Effective"], 4)
+
             #
             amounts_helper = {}
             for group, value in self.fractions_sum.items():
@@ -3771,6 +3926,20 @@ class GebPyGUI(tk.Frame):
                             amounts_helper[mineral] = round(var_amount, 4)
                             amount_now += round(var_amount, 4)
                             index += 1
+        #
+        ## TESTING
+        print("")
+        print("Rock Fractions:")
+        for key, value in self.rock_fractions.items():
+            print(key, value)
+        print("")
+        print("Minerals Helper:")
+        for key, value in minerals_helper.items():
+            print(key, value)
+        # print("")
+        # print("Selected Minerals:")
+        # for key, value in self.selected_minerals.items():
+        #     print(key, value)
     #
     def find_suitable_oxides(self, var_list_elements):
         list_oxides = []
@@ -3808,6 +3977,12 @@ class GebPyGUI(tk.Frame):
                 list_oxides.append(element + str("O4"))
         #
         return list_oxides
+    #
+    def find_maximum_in_dict(self, var_dict):
+        v = list(var_dict.values())
+        k = list(var_dict.keys())
+        #
+        return k[v.index(max(v))]
     #
     def select_all_checkboxes(self, var_cb):
         for key, cb_var in var_cb.items():
