@@ -3777,19 +3777,16 @@ class GebPyGUI(tk.Frame):
             previous_keys = []
             w_effective = 0
             for index, (key, value) in enumerate(self.fractions_sum.items()):
-                print(index, key, value)
                 if self.rock_fractions[key]["Size"] > 0:
                     if index < 2:
                         self.rock_fractions[key]["Effective"] = round(
                             (self.rock_fractions[key]["Min"] + self.rock_fractions[key]["Max"])/2, 4)
                     else:
                         var_delta = 100 - w_effective
-                        print("Delta", var_delta)
-                        print(self.rock_fractions[key]["Min"], self.rock_fractions[key]["Max"])
                         if float(self.rock_fractions[key]["Min"]) < var_delta < float(self.rock_fractions[key]["Max"]):
-                            print("A")
                             delta_min = var_delta - self.rock_fractions[key]["Min"]
                             delta_max = self.rock_fractions[key]["Max"] - var_delta
+                            #
                             if delta_max < delta_min:
                                 self.rock_fractions[key]["Effective"] = round(100 - w_effective, 4)
                                 self.rock_fractions[key]["Min"] = round(
@@ -3804,13 +3801,11 @@ class GebPyGUI(tk.Frame):
                                 self.rock_fractions[key]["Max"] = round(var_delta + delta_max, 4)
                             #
                         elif var_delta < float(self.rock_fractions[key]["Min"]):
-                            print("B")
                             self.rock_fractions[key]["Effective"] = round(100 - w_effective, 4)
                             self.rock_fractions[key]["Min"] = round(
                                 2*self.rock_fractions[key]["Effective"] - self.rock_fractions[key]["Max"], 4)
                         elif var_delta == float(self.rock_fractions[key]["Min"]) \
                                 or var_delta == float(self.rock_fractions[key]["Max"]):
-                            print("C")
                             self.rock_fractions[key]["Effective"] = round(var_delta, 4)
                             self.rock_fractions[key]["Min"] = round(var_delta, 4)
                             self.rock_fractions[key]["Max"] = round(var_delta, 4)
@@ -3928,14 +3923,14 @@ class GebPyGUI(tk.Frame):
                             index += 1
         #
         ## TESTING
-        print("")
-        print("Rock Fractions:")
-        for key, value in self.rock_fractions.items():
-            print(key, value)
-        print("")
-        print("Minerals Helper:")
-        for key, value in minerals_helper.items():
-            print(key, value)
+        # print("")
+        # print("Rock Fractions:")
+        # for key, value in self.rock_fractions.items():
+        #     print(key, value)
+        # print("")
+        # print("Minerals Helper:")
+        # for key, value in minerals_helper.items():
+        #     print(key, value)
         # print("")
         # print("Selected Minerals:")
         # for key, value in self.selected_minerals.items():
