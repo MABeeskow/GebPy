@@ -3043,17 +3043,27 @@ class GebPyGUI(tk.Frame):
             mean = (val_min + val_max)/2
             sigma = (mean - val_min)/3
             #
-            amounts_raw = np.random.normal(loc=mean, scale=sigma, size=n_datapoints)
-            #
             if mineral in self.rock_forming_minerals:
                 fraction_factor = fractions["Rock Forming"]
+                fraction_factor = self.minerals_helper["Rock Forming"][mineral]["Fraction"]/100
+                #
+                val_min = self.minerals_helper["Rock Forming"][mineral]["Min"]
+                val_max = self.minerals_helper["Rock Forming"][mineral]["Max"]
+                mean = (val_min + val_max)/2
+                sigma = (mean - val_min)/3
             elif mineral in self.ore_minerals:
                 fraction_factor = fractions["Ore"]
+                fraction_factor = self.minerals_helper["Ore"][mineral]["Fraction"]/100
             elif mineral in self.clay_minerals:
                 fraction_factor = fractions["Clay"]
+                fraction_factor = self.minerals_helper["Clay"][mineral]["Fraction"]/100
             #
-            amounts_ppm = np.array([int(fraction_factor[index]*value) for index, value in enumerate(amounts_raw)])
+            amounts_raw = np.random.normal(loc=mean, scale=sigma, size=n_datapoints)
+            #
+            #amounts_ppm = np.array([int(fraction_factor[index]*value) for index, value in enumerate(amounts_raw)])
+            amounts_ppm = np.array([int(fraction_factor*value) for index, value in enumerate(amounts_raw)])
             amounts_ppm[amounts_ppm < 0] = 0
+            amounts_ppm[amounts_ppm == 0] = 1
             #
             mineral_amounts[data_mineral["mineral"]] = list(amounts_ppm)
             mineral_data[data_mineral["mineral"]] = data_mineral
@@ -3106,10 +3116,10 @@ class GebPyGUI(tk.Frame):
             K_geo = elast.calc_geometric_mean(self, phi_list, K_list)
             G_geo = elast.calc_geometric_mean(self, phi_list, G_list)
             #
-            anisotropic_factor = 1.0
+            anisotropic_factor = 1.0 + porosity**2
             #
-            bulk_modulus = K_geo/anisotropic_factor
-            shear_modulus = G_geo/anisotropic_factor
+            bulk_modulus = round(K_geo/anisotropic_factor, 3)
+            shear_modulus = round(G_geo/anisotropic_factor, 3)
             #
             for mineral, dataset in mineral_amounts.items():
                 mineral_amount = round(
@@ -3118,10 +3128,15 @@ class GebPyGUI(tk.Frame):
                 self.data_rock["mineralogy"][mineral].append(mineral_amount)
             #
             rho = round((1 - porosity)*rho_solid + porosity*data_water[2]/1000, 3)
-            youngs_modulus = round((9*bulk_modulus*shear_modulus)/(3*bulk_modulus + shear_modulus), 3)
-            poisson_ratio = round((3*bulk_modulus - 2*shear_modulus)/(6*bulk_modulus + 2*shear_modulus), 4)
+            youngs_modulus = (9*bulk_modulus*shear_modulus)/(3*bulk_modulus + shear_modulus)
+            youngs_modulus = round(youngs_modulus/anisotropic_factor, 3)
+            poisson_ratio = (3*bulk_modulus - 2*shear_modulus)/(6*bulk_modulus + 2*shear_modulus)
+            poisson_ratio = (youngs_modulus)/(2*shear_modulus) - 1
+            poisson_ratio = round(poisson_ratio/anisotropic_factor, 4)
             vP = round(((bulk_modulus*10**9 + 4/3*shear_modulus*10**9)/(rho))**0.5, 3)
+            vP = round(vP/anisotropic_factor, 3)
             vS = round(((shear_modulus*10**9)/(rho))**0.5, 3)
+            vS = round(vS/anisotropic_factor, 3)
             vPvS = round(vP/vS, 3)
             #
             old_index = elements_list.index("O")
@@ -3873,28 +3888,28 @@ class GebPyGUI(tk.Frame):
                         if fraction == values["Group"]:
                             sorted_minerals[fraction][mineral] = values["Mean"]
             #
-            minerals_helper = {}
+            self.minerals_helper = {}
             for index_01, (key_01, value_01) in enumerate(self.fractions_sum.items()):
                 if value_01 > 0:
-                    minerals_helper[key_01] = {}
+                    self.minerals_helper[key_01] = {}
                     for index_02, (key_02, value_02) in enumerate(self.selected_minerals.items()):
                         if key_01 == value_02["Group"]:
                             main_mineral = self.find_maximum_in_dict(var_dict=sorted_minerals[key_01])
-                            minerals_helper[key_01][key_02] = {}
+                            self.minerals_helper[key_01][key_02] = {}
                             if value_01 == 1:
-                                minerals_helper[key_01][key_02]["Min"] = round(100, 4)
-                                minerals_helper[key_01][key_02]["Max"] = round(100, 4)
-                                minerals_helper[key_01][key_02]["Effective"] = round(
-                                    (minerals_helper[key_01][key_02]["Min"] + minerals_helper[key_01][key_02]["Max"])/2,
-                                    4)
-                                minerals_helper[key_01][key_02]["Fraction"] = round(
+                                self.minerals_helper[key_01][key_02]["Min"] = round(100, 4)
+                                self.minerals_helper[key_01][key_02]["Max"] = round(100, 4)
+                                self.minerals_helper[key_01][key_02]["Effective"] = round(
+                                    (self.minerals_helper[key_01][key_02]["Min"]
+                                     + self.minerals_helper[key_01][key_02]["Max"])/2, 4)
+                                self.minerals_helper[key_01][key_02]["Fraction"] = round(
                                     self.rock_fractions[key_01]["Effective"], 4)
                             else:
-                                minerals_helper[key_01][key_02]["Min"] = round(value_02["Min"], 4)
-                                minerals_helper[key_01][key_02]["Max"] = round(value_02["Max"], 4)
-                                minerals_helper[key_01][key_02]["Effective"] = round(
+                                self.minerals_helper[key_01][key_02]["Min"] = round(value_02["Min"], 4)
+                                self.minerals_helper[key_01][key_02]["Max"] = round(value_02["Max"], 4)
+                                self.minerals_helper[key_01][key_02]["Effective"] = round(
                                     (value_02["Min"] + value_02["Max"])/2, 4)
-                                minerals_helper[key_01][key_02]["Fraction"] = round(
+                                self.minerals_helper[key_01][key_02]["Fraction"] = round(
                                     self.rock_fractions[key_01]["Effective"], 4)
 
             #
