@@ -1549,6 +1549,7 @@ class GebPyGUI(tk.Frame):
                 number=self.gui_variables["Entry"]["Number Samples"].get())
             self.oxides_present = True
         #
+        self.list_compounds = []
         for key, dataset in self.data_mineral.items():
             if key == "chemistry":
                 self.list_elements = list(dataset.keys())
