@@ -6,7 +6,7 @@
 # Name:		silicates.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		05.12.2022
+# Date:		06.12.2022
 
 # -----------------------------------------------
 
@@ -91,7 +91,7 @@ class Tectosilicates:
                         dataset[key].append(value)
                 elif key in ["mineral", "state", "trace elements"] and key not in dataset:
                     dataset[key] = value
-                elif key in ["chemistry", "oxides"]:
+                elif key in ["chemistry", "compounds"]:
                     if key not in dataset:
                         dataset[key] = {}
                         for key_2, value_2 in value.items():
@@ -264,9 +264,9 @@ class Tectosilicates:
             results["chemistry"] = {}
             for index, element in enumerate(element_list, start=0):
                 results["chemistry"][element] = amounts[index][2]
-            results["oxides"] = {}
+            results["compounds"] = {}
             for index, oxide in enumerate(list_oxides, start=0):
-                results["oxides"][oxide] = composition_oxides[oxide]
+                results["compounds"][oxide] = composition_oxides[oxide]
             results["rho"] = round(rho, 4)
             results["rho_e"] = round(rho_e, 4)
             results["V"] = round(V, 4)
@@ -452,9 +452,9 @@ class Tectosilicates:
             results["chemistry"] = {}
             for index, element in enumerate(element_list, start=0):
                 results["chemistry"][element] = amounts[index][2]
-            results["oxides"] = {}
+            results["compounds"] = {}
             for index, oxide in enumerate(list_oxides, start=0):
-                results["oxides"][oxide] = composition_oxides[oxide]
+                results["compounds"][oxide] = composition_oxides[oxide]
             results["rho"] = round(rho, 4)
             results["rho_e"] = round(rho_e, 4)
             results["V"] = round(V, 4)

@@ -6,7 +6,7 @@
 # Name:		gebpy_app.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		05.12.2022
+# Date:		06.12.2022
 
 #-----------------------------------------------
 
@@ -827,11 +827,6 @@ class GebPyGUI(tk.Frame):
                     text="Oxide Selection", font_option="sans 10 bold", relief=tk.FLAT)
                 self.gui_variables["Option Menu"]["Amount Compound"].set("Select Oxide")
                 #
-                try:
-                    compound_list = list(self.data_mineral["oxides"].keys())
-                except:
-                    compound_list = []
-                #
             if self.sulfides_present == True:
                 lbl_compound = SimpleElements(
                     parent=self.parent, row_id=44, column_id=0, n_rows=2, n_columns=14,
@@ -839,22 +834,17 @@ class GebPyGUI(tk.Frame):
                     text="Sulfide Selection", font_option="sans 10 bold", relief=tk.FLAT)
                 self.gui_variables["Option Menu"]["Amount Compound"].set("Select Sulfide")
                 #
-                try:
-                    compound_list = list(self.data_mineral["sulfides"].keys())
-                except:
-                    compound_list = []
-                #
             if self.phospides_present == True:
                 lbl_compound = SimpleElements(
                     parent=self.parent, row_id=44, column_id=0, n_rows=2, n_columns=14,
                     bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Background"]).create_label(
                     text="Phospide Selection", font_option="sans 10 bold", relief=tk.FLAT)
                 self.gui_variables["Option Menu"]["Amount Compound"].set("Select Phospide")
-                #
-                try:
-                    compound_list = list(self.data_mineral["phospides"].keys())
-                except:
-                    compound_list = []
+            #
+            try:
+                compound_list = list(self.data_mineral["compounds"].keys())
+            except:
+                compound_list = []
             #
             self.gui_elements["Temporary"]["Label"].extend(
                 [lbl_title, lbl_results, lbl_min, lbl_max, lbl_mean, lbl_error, lbl_diagram_type, lbl_element, 
@@ -875,12 +865,16 @@ class GebPyGUI(tk.Frame):
                 parent=self.parent, row_id=38, column_id=14, n_rows=2, n_columns=16,
                 bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Background"]).create_radiobutton(
                 text="Element Concentrations", var_rb=self.gui_variables["Radiobutton"]["Concentration Type"],
-                value_rb=0, color_bg=self.colors_gebpy["Background"])
+                value_rb=0, color_bg=self.colors_gebpy["Background"],
+                command=lambda var_rb=self.gui_variables["Radiobutton"]["Concentration Type"]:
+                self.change_chemical_composition(var_rb))
             rb_concentration_type_02 = SimpleElements(
                 parent=self.parent, row_id=40, column_id=14, n_rows=2, n_columns=16,
                 bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Background"]).create_radiobutton(
                 text="Oxide Concentrations", var_rb=self.gui_variables["Radiobutton"]["Concentration Type"],
-                value_rb=1, color_bg=self.colors_gebpy["Background"])
+                value_rb=1, color_bg=self.colors_gebpy["Background"],
+                command=lambda var_rb=self.gui_variables["Radiobutton"]["Concentration Type"]:
+                self.change_chemical_composition(var_rb))
             #
             self.gui_elements["Temporary"]["Radiobutton"].extend(
                 [rb_diagram_type_01, rb_diagram_type_02, rb_concentration_type_01, rb_concentration_type_02])
@@ -1049,6 +1043,76 @@ class GebPyGUI(tk.Frame):
                 self.gui_elements["Temporary"]["Axis"]["LA ICP MS"] = ax_laicpms
             else:
                 self.gui_elements["Temporary"]["Canvas"]["LA ICP MS"].get_tk_widget().grid()
+            #
+    def change_chemical_composition(self, var_rb):
+        if var_rb.get() == 0:   # Element Composition
+            for index, element in enumerate(self.list_elements):
+                lbl_element = SimpleElements(
+                    parent=self.parent, row_id=(2*index + 4), column_id=35, n_rows=2, n_columns=9,
+                    bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
+                    text=element, font_option="sans 10 bold", relief=tk.GROOVE)
+                #
+                self.gui_elements["Temporary"]["Label"].append(lbl_element)
+                #
+                ## Entries
+                #
+                var_entr_min = int(min(self.data_mineral["chemistry"][element])*10**6)
+                var_entr_max = int(max(self.data_mineral["chemistry"][element])*10**6)
+                var_entr_mean = int(np.mean(self.data_mineral["chemistry"][element])*10**6)
+                var_entr_error = int(np.std(self.data_mineral["chemistry"][element], ddof=1)*10**6)
+                #
+                entr_min = SimpleElements(
+                    parent=self.parent, row_id=(2*index + 4), column_id=35 + 9, n_rows=2, n_columns=9,
+                    bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
+                    var_entr=self.gui_variables["Entry"]["Minimum"][element], var_entr_set=var_entr_min)
+                entr_max = SimpleElements(
+                    parent=self.parent, row_id=(2*index + 4), column_id=35 + 18, n_rows=2, n_columns=9,
+                    bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
+                    var_entr=self.gui_variables["Entry"]["Maximum"][element], var_entr_set=var_entr_max)
+                entr_mean = SimpleElements(
+                    parent=self.parent, row_id=(2*index + 4), column_id=35 + 27, n_rows=2, n_columns=9,
+                    bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
+                    var_entr=self.gui_variables["Entry"]["Mean"][element], var_entr_set=var_entr_mean)
+                entr_error = SimpleElements(
+                    parent=self.parent, row_id=(2*index + 4), column_id=35 + 36, n_rows=2, n_columns=9,
+                    bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
+                    var_entr=self.gui_variables["Entry"]["Error"][element], var_entr_set=var_entr_error)
+                #
+                self.gui_elements["Temporary"]["Entry"].extend([entr_min, entr_max, entr_mean, entr_error])
+            #
+        elif var_rb.get() == 1: # Oxide/Sulfide/Phospide Composition
+            for index, compound in enumerate(self.list_compounds):
+                lbl_element = SimpleElements(
+                    parent=self.parent, row_id=(2*index + 4), column_id=35, n_rows=2, n_columns=9,
+                    bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
+                    text=compound, font_option="sans 10 bold", relief=tk.GROOVE)
+                #
+                self.gui_elements["Temporary"]["Label"].append(lbl_element)
+                #
+                ## Entries
+                var_entr_min = int(min(self.data_mineral["compounds"][compound])*10**6)
+                var_entr_max = int(max(self.data_mineral["compounds"][compound])*10**6)
+                var_entr_mean = int(np.mean(self.data_mineral["compounds"][compound])*10**6)
+                var_entr_error = int(np.std(self.data_mineral["compounds"][compound], ddof=1)*10**6)
+                #
+                entr_min = SimpleElements(
+                    parent=self.parent, row_id=(2*index + 4), column_id=35 + 9, n_rows=2, n_columns=9,
+                    bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
+                    var_entr=self.gui_variables["Entry"]["Minimum"][compound], var_entr_set=var_entr_min)
+                entr_max = SimpleElements(
+                    parent=self.parent, row_id=(2*index + 4), column_id=35 + 18, n_rows=2, n_columns=9,
+                    bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
+                    var_entr=self.gui_variables["Entry"]["Maximum"][compound], var_entr_set=var_entr_max)
+                entr_mean = SimpleElements(
+                    parent=self.parent, row_id=(2*index + 4), column_id=35 + 27, n_rows=2, n_columns=9,
+                    bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
+                    var_entr=self.gui_variables["Entry"]["Mean"][compound], var_entr_set=var_entr_mean)
+                entr_error = SimpleElements(
+                    parent=self.parent, row_id=(2*index + 4), column_id=35 + 36, n_rows=2, n_columns=9,
+                    bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
+                    var_entr=self.gui_variables["Entry"]["Error"][compound], var_entr_set=var_entr_error)
+                #
+                self.gui_elements["Temporary"]["Entry"].extend([entr_min, entr_max, entr_mean, entr_error])
             #
     #
     def simulate_laicpms_experiment(self):
@@ -1441,6 +1505,9 @@ class GebPyGUI(tk.Frame):
         for key, dataset in self.data_mineral.items():
             if key == "chemistry":
                 self.list_elements = list(dataset.keys())
+            #
+            if key == "compounds":
+                self.list_compounds = list(dataset.keys())
         #
         for element in self.list_elements:
             self.gui_variables["Entry"]["Minimum"][element] = tk.StringVar()
@@ -1451,6 +1518,16 @@ class GebPyGUI(tk.Frame):
             self.gui_variables["Entry"]["Mean"][element].set(0.0)
             self.gui_variables["Entry"]["Error"][element] = tk.StringVar()
             self.gui_variables["Entry"]["Error"][element].set(0.0)
+        #
+        for compound in self.list_compounds:
+            self.gui_variables["Entry"]["Minimum"][compound] = tk.StringVar()
+            self.gui_variables["Entry"]["Minimum"][compound].set(0.0)
+            self.gui_variables["Entry"]["Maximum"][compound] = tk.StringVar()
+            self.gui_variables["Entry"]["Maximum"][compound].set(0.0)
+            self.gui_variables["Entry"]["Mean"][compound] = tk.StringVar()
+            self.gui_variables["Entry"]["Mean"][compound].set(0.0)
+            self.gui_variables["Entry"]["Error"][compound] = tk.StringVar()
+            self.gui_variables["Entry"]["Error"][compound].set(0.0)
         #
         ## Labels
         lbl_analysis = SimpleElements(
