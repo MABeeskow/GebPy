@@ -17,6 +17,7 @@ import collections
 import numpy as np
 import random as rd
 import matplotlib.pyplot as plt
+from modules.geophysics import Elasticity as elast
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from modules.gui_elements import SimpleElements
 from modules.oxides import Oxides
@@ -1758,7 +1759,7 @@ class GebPyGUI(tk.Frame):
         #
         ## Siliciclastic Rocks
         if var_name == "Sandstone":
-            data = Sandstone(fluid="water", actualThickness=0).create_sandstone(
+            data = Sandstone(fluid="water", actualThickness=0).create_sandstone_alt(
                 number=self.gui_variables["Entry"]["Number Datapoints"].get(),
                 porosity=[self.gui_variables["Entry"]["Porosity Min"].get()/100,
                           self.gui_variables["Entry"]["Porosity Max"].get()/100])
@@ -3068,6 +3069,9 @@ class GebPyGUI(tk.Frame):
             w_minerals = {}
             w_elements = {}
             elements_list = []
+            K_list = []
+            G_list = []
+            phi_list = []
             #
             for mineral, dataset in mineral_data.items():
                 if mineral not in self.data_rock["mineralogy"]:
@@ -3080,6 +3084,10 @@ class GebPyGUI(tk.Frame):
                 shear_modulus += mineral_amount*dataset["G"][n]
                 gamma_ray += mineral_amount*dataset["GR"][n]
                 photoelectricity += mineral_amount*dataset["PE"][n]
+                #
+                K_list.append(round(mineral_amount*dataset["K"][n], 3))
+                G_list.append(round(mineral_amount*dataset["G"][n], 3))
+                phi_list.append(mineral_amount)
                 #
                 for element, value in dataset["chemistry"].items():
                     if element not in elements_list:
@@ -3094,6 +3102,14 @@ class GebPyGUI(tk.Frame):
             shear_modulus = round(shear_modulus, 3)
             gamma_ray = round(gamma_ray, 3)
             photoelectricity = round(photoelectricity, 3)
+            #
+            K_geo = elast.calc_geometric_mean(self, phi_list, K_list)
+            G_geo = elast.calc_geometric_mean(self, phi_list, G_list)
+            #
+            anisotropic_factor = 1.0
+            #
+            bulk_modulus = K_geo/anisotropic_factor
+            shear_modulus = G_geo/anisotropic_factor
             #
             for mineral, dataset in mineral_amounts.items():
                 mineral_amount = round(

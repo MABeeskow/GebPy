@@ -6,7 +6,7 @@
 # Name:		geophysics.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		05.06.2021
+# Date:		06.12.2022
 
 #-----------------------------------------------
 
@@ -14,10 +14,7 @@
 import numpy as np
 from numpy import round
 from random import *
-from modules import minerals
-from modules.elements import elements
 from scipy import signal
-import matplotlib.pyplot as plt
 
 class geophysics:
     #
