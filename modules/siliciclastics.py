@@ -2030,7 +2030,6 @@ class Sandstone:
             #
             youngs_mod = round((9*bulk_mod*shear_mod)/(3*bulk_mod + shear_mod), 3)
             poisson_rat = round((3*bulk_mod - 2*shear_mod)/(6*bulk_mod + 2*shear_mod), 6)
-            # poisson_rat = round(youngs_mod/(2*shear_mod) - 1, 6)
             vP = round(((bulk_mod*10**9 + 4/3*shear_mod*10**9)/(rho))**0.5, 3)
             vS = round(((shear_mod*10**9)/(rho))**0.5, 3)
             vPvS = round(vP/vS, 6)
