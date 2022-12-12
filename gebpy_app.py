@@ -837,6 +837,7 @@ class GebPyGUI(tk.Frame):
                     bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Background"]).create_label(
                     text="Oxide Selection", font_option="sans 10 bold", relief=tk.FLAT)
                 self.gui_variables["Option Menu"]["Amount Compound"].set("Select Oxide")
+                compound_list = ["Select Oxide"]
                 #
             if self.sulfides_present == True:
                 lbl_compound = SimpleElements(
@@ -844,6 +845,7 @@ class GebPyGUI(tk.Frame):
                     bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Background"]).create_label(
                     text="Sulfide Selection", font_option="sans 10 bold", relief=tk.FLAT)
                 self.gui_variables["Option Menu"]["Amount Compound"].set("Select Sulfide")
+                compound_list = ["Select Sulfide"]
                 #
             if self.phospides_present == True:
                 lbl_compound = SimpleElements(
@@ -851,11 +853,10 @@ class GebPyGUI(tk.Frame):
                     bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Background"]).create_label(
                     text="Phospide Selection", font_option="sans 10 bold", relief=tk.FLAT)
                 self.gui_variables["Option Menu"]["Amount Compound"].set("Select Phospide")
+                compound_list = ["Select Phospide"]
             #
-            try:
-                compound_list = list(self.data_mineral["compounds"].keys())
-            except:
-                compound_list = []
+            if "compounds" in self.data_mineral:
+                compound_list.extend(list(self.data_mineral["compounds"].keys()))
             #
             self.gui_elements["Temporary"]["Label"].extend(
                 [lbl_title, lbl_results, lbl_min, lbl_max, lbl_mean, lbl_error, lbl_diagram_type, lbl_element, 
