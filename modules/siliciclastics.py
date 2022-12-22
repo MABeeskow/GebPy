@@ -6,7 +6,7 @@
 # Name:		siliciclastics.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		26.11.2022
+# Date:		22.12.2022
 
 #-----------------------------------------------
 
@@ -28,6 +28,27 @@ from modules.silicates import Tectosilicates
 from modules.sulfides import Sulfides
 from modules.organics import Organics
 from modules.fluids import Water, Hydrocarbons
+
+class Geophysics:
+    #
+    def __init__(self, var_data):
+        self.var_data = var_data
+    #
+    def calculate_seismic_velocity(self):
+        results = {"vP": 0, "vS": 0}
+        var_porosity = self.var_data["porosity"]
+        #
+        for var_type in results.keys():
+            inv_v = 0
+            for key, velocity in self.var_data["v"].items():
+                fraction = self.var_data["Phi"][key]
+                inv_v += fraction/velocity[var_type]
+                #inv_v += fraction/(velocity[var_type]**(1 - var_porosity))
+                #inv_v += ((1 - var_porosity)*fraction)/velocity[var_type]
+            results[var_type] = round((1/inv_v)**(1 - var_porosity), 3)
+            #results[var_type] = round((1/inv_v), 3)
+        #
+        return results
 
 class Soil:
     #
@@ -1939,8 +1960,14 @@ class Sandstone:
                     phi_minerals["Hem"] = phi_hem
                 #
                 rho_s = 0
+                velocities_minerals = {}
                 for key, value in phi_minerals.items():
                     rho_s += phi_minerals[key]*mineralogy[key]["rho"]
+                    #
+                    velocities_minerals[key] = {}
+                    velocities_minerals[key]["vP"] = mineralogy[key]["vP"]
+                    velocities_minerals[key]["vS"] = mineralogy[key]["vS"]
+                    #
                     for element, value in mineralogy[key]["chemistry"].items():
                         if element not in elements_list:
                             elements_list.append(element)
@@ -2020,19 +2047,29 @@ class Sandstone:
                 G_list.append(round(phi_minerals[key]*mineralogy[key]["G"], 3))
                 phi_list.append(phi_minerals[key])
             #
-            K_geo = elast.calc_geometric_mean(self, phi_list, K_list)
-            G_geo = elast.calc_geometric_mean(self, phi_list, G_list)
-            #
+            # K_geo = elast.calc_geometric_mean(self, phi_list, K_list)
+            # G_geo = elast.calc_geometric_mean(self, phi_list, G_list)
+            # #
             anisotropic_factor = 1.0
+            # #
+            # bulk_mod = K_geo/anisotropic_factor
+            # shear_mod = G_geo/anisotropic_factor
+            # #
+            # youngs_mod = round((9*bulk_mod*shear_mod)/(3*bulk_mod + shear_mod), 3)
+            # poisson_rat = round((3*bulk_mod - 2*shear_mod)/(6*bulk_mod + 2*shear_mod), 6)
+            # vP = round(((bulk_mod*10**9 + 4/3*shear_mod*10**9)/(rho))**0.5, 3)
+            # vS = round(((shear_mod*10**9)/(rho))**0.5, 3)
+            # vPvS = round(vP/vS, 6)
             #
-            bulk_mod = K_geo/anisotropic_factor
-            shear_mod = G_geo/anisotropic_factor
-            #
+            data_velocities = {"Phi": phi_minerals, "v": velocities_minerals, "porosity": var_porosity}
+            velocities = Geophysics(var_data=data_velocities).calculate_seismic_velocity()
+            vP = round(velocities["vP"]/anisotropic_factor, 3)
+            vS = round(velocities["vS"]/anisotropic_factor, 3)
+            vPvS = round(vP/vS, 4)
+            bulk_mod = round((rho*(vP**2 - 4/3*vS**2))*10**(-9), 3)
+            shear_mod = round((rho*vS**2)*10**(-9), 3)
             youngs_mod = round((9*bulk_mod*shear_mod)/(3*bulk_mod + shear_mod), 3)
-            poisson_rat = round((3*bulk_mod - 2*shear_mod)/(6*bulk_mod + 2*shear_mod), 6)
-            vP = round(((bulk_mod*10**9 + 4/3*shear_mod*10**9)/(rho))**0.5, 3)
-            vS = round(((shear_mod*10**9)/(rho))**0.5, 3)
-            vPvS = round(vP/vS, 6)
+            poisson_rat = round((3*bulk_mod - 2*shear_mod)/(6*bulk_mod + 2*shear_mod), 4)
             #
             for key, value in w_minerals.items():
                 results_container["mineralogy"][key].append(value)
@@ -3865,8 +3902,14 @@ class Sandstone:
                     phi_minerals["Py"] = phi_py
                 #
                 rho_s = 0
+                velocities_minerals = {}
                 for key, value in phi_minerals.items():
                     rho_s += phi_minerals[key]*mineralogy[key]["rho"]
+                    #
+                    velocities_minerals[key] = {}
+                    velocities_minerals[key]["vP"] = mineralogy[key]["vP"]
+                    velocities_minerals[key]["vS"] = mineralogy[key]["vS"]
+                    #
                     for element, value in mineralogy[key]["chemistry"].items():
                         if element not in elements_list:
                             elements_list.append(element)
@@ -3944,19 +3987,29 @@ class Sandstone:
                 G_list.append(round(phi_minerals[key]*mineralogy[key]["G"], 3))
                 phi_list.append(phi_minerals[key])
             #
-            K_geo = elast.calc_geometric_mean(self, phi_list, K_list)
-            G_geo = elast.calc_geometric_mean(self, phi_list, G_list)
-            #
+            # K_geo = elast.calc_geometric_mean(self, phi_list, K_list)
+            # G_geo = elast.calc_geometric_mean(self, phi_list, G_list)
+            # #
             anisotropic_factor = round(rd.uniform(1.0, 2.0), 4)
+            # #
+            # bulk_mod = K_geo/anisotropic_factor
+            # shear_mod = G_geo/anisotropic_factor
+            # #
+            # youngs_mod = round((9*bulk_mod*shear_mod)/(3*bulk_mod + shear_mod), 3)
+            # poisson_rat = round((3*bulk_mod - 2*shear_mod)/(6*bulk_mod + 2*shear_mod), 4)
+            # vP = round(((bulk_mod*10**9 + 4/3*shear_mod*10**9)/(rho))**0.5, 3)
+            # vS = round(((shear_mod*10**9)/(rho))**0.5, 3)
+            # vPvS = round(vP/vS, 3)
             #
-            bulk_mod = K_geo/anisotropic_factor
-            shear_mod = G_geo/anisotropic_factor
-            #
+            data_velocities = {"Phi": phi_minerals, "v": velocities_minerals, "porosity": var_porosity}
+            velocities = Geophysics(var_data=data_velocities).calculate_seismic_velocity()
+            vP = round(velocities["vP"]/anisotropic_factor, 3)
+            vS = round(velocities["vS"]/anisotropic_factor, 3)
+            vPvS = round(vP/vS, 4)
+            bulk_mod = round((rho*(vP**2 - 4/3*vS**2))*10**(-9), 3)
+            shear_mod = round((rho*vS**2)*10**(-9), 3)
             youngs_mod = round((9*bulk_mod*shear_mod)/(3*bulk_mod + shear_mod), 3)
             poisson_rat = round((3*bulk_mod - 2*shear_mod)/(6*bulk_mod + 2*shear_mod), 4)
-            vP = round(((bulk_mod*10**9 + 4/3*shear_mod*10**9)/(rho))**0.5, 3)
-            vS = round(((shear_mod*10**9)/(rho))**0.5, 3)
-            vPvS = round(vP/vS, 3)
             #
             for key, value in w_minerals.items():
                 results_container["mineralogy"][key].append(value)
@@ -4119,8 +4172,14 @@ class Sandstone:
                     phi_minerals["Py"] = phi_py
                 #
                 rho_s = 0
+                velocities_minerals = {}
                 for key, value in phi_minerals.items():
                     rho_s += phi_minerals[key]*mineralogy[key]["rho"]
+                    #
+                    velocities_minerals[key] = {}
+                    velocities_minerals[key]["vP"] = mineralogy[key]["vP"]
+                    velocities_minerals[key]["vS"] = mineralogy[key]["vS"]
+                    #
                     for element, value in mineralogy[key]["chemistry"].items():
                         if element not in elements_list:
                             elements_list.append(element)
@@ -4204,19 +4263,29 @@ class Sandstone:
                 G_list.append(round(phi_minerals[key]*mineralogy[key]["G"], 3))
                 phi_list.append(phi_minerals[key])
             #
-            K_geo = elast.calc_geometric_mean(self, phi_list, K_list)
-            G_geo = elast.calc_geometric_mean(self, phi_list, G_list)
-            #
+            # K_geo = elast.calc_geometric_mean(self, phi_list, K_list)
+            # G_geo = elast.calc_geometric_mean(self, phi_list, G_list)
+            # #
             anisotropic_factor = 1.0
+            # #
+            # bulk_mod = K_geo/anisotropic_factor
+            # shear_mod = G_geo/anisotropic_factor
+            # #
+            # youngs_mod = round((9*bulk_mod*shear_mod)/(3*bulk_mod + shear_mod), 3)
+            # poisson_rat = round((3*bulk_mod - 2*shear_mod)/(6*bulk_mod + 2*shear_mod), 4)
+            # vP = round(((bulk_mod*10**9 + 4/3*shear_mod*10**9)/(rho))**0.5, 3)
+            # vS = round(((shear_mod*10**9)/(rho))**0.5, 3)
+            # vPvS = round(vP/vS, 4)
             #
-            bulk_mod = K_geo/anisotropic_factor
-            shear_mod = G_geo/anisotropic_factor
-            #
+            data_velocities = {"Phi": phi_minerals, "v": velocities_minerals, "porosity": var_porosity}
+            velocities = Geophysics(var_data=data_velocities).calculate_seismic_velocity()
+            vP = round(velocities["vP"]/anisotropic_factor, 3)
+            vS = round(velocities["vS"]/anisotropic_factor, 3)
+            vPvS = round(vP/vS, 4)
+            bulk_mod = round(rho*(vP**2 - 4/3*vS**2)*10**(-9), 3)
+            shear_mod = round(rho*vS**2*10**(-9), 3)
             youngs_mod = round((9*bulk_mod*shear_mod)/(3*bulk_mod + shear_mod), 3)
             poisson_rat = round((3*bulk_mod - 2*shear_mod)/(6*bulk_mod + 2*shear_mod), 4)
-            vP = round(((bulk_mod*10**9 + 4/3*shear_mod*10**9)/(rho))**0.5, 3)
-            vS = round(((shear_mod*10**9)/(rho))**0.5, 3)
-            vPvS = round(vP/vS, 4)
             #
             for key, value in w_minerals.items():
                 results_container["mineralogy"][key].append(value)
