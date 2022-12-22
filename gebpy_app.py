@@ -6,7 +6,7 @@
 # Name:		gebpy_app.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		06.12.2022
+# Date:		22.12.2022
 
 #-----------------------------------------------
 
@@ -645,6 +645,94 @@ class GebPyGUI(tk.Frame):
         #
         self.gui_elements["Static"]["Button"].append(btn_generate_data)
     #
+    def change_rb_diagram(self):
+        categories = ["Canvas"]
+        for category in categories:
+            if category == "Canvas":
+                for key, gui_element in self.gui_elements["Temporary"][category].items():
+                    gui_element.get_tk_widget().grid_remove()
+        #
+        if self.gui_variables["Radiobutton"]["Analysis Mode"].get() == 0:
+            ## Diagram
+            if self.gui_variables["Radiobutton"]["Diagram Type Mineral"].get() == 0:
+                if "Mineral Physics Histogram" not in self.gui_elements["Temporary"]["Canvas"]:
+                    fig_histo, ax_histo = plt.subplots(
+                        ncols=3, nrows=3, figsize=(9, 9), facecolor=self.colors_gebpy["Background"])
+                    #
+                    categories = [["M", "V", "rho"], ["vP", "vS", "vP/vS"], ["GR", "PE", "nu"]]
+                    labels = [["M (kg/mol)", "V (A$^3$/mol", "rho (kg/m$^3$"], ["vP (m/s)", "vS (m/s)", "vP/vS (1)"],
+                              ["GR (API)", "PE (barns/e$^-$)", "nu (1)"]]
+                    #
+                    for i, subcategories in enumerate(categories):
+                        for j, key in enumerate(subcategories):
+                            ax_histo[i][j].hist(
+                                x=self.data_mineral[key], color=self.colors_gebpy["Option"], edgecolor="black",
+                                bins=12)
+                            #
+                            ax_histo[i][j].set_xlabel(labels[i][j], fontsize=9)
+                            ax_histo[i][j].set_ylabel("Frequency", labelpad=0.5, fontsize=9)
+                            ax_histo[i][j].grid(True)
+                            ax_histo[i][j].set_axisbelow(True)
+                        #
+                        fig_histo.tight_layout()
+                        #
+                        canvas_histo = FigureCanvasTkAgg(fig_histo, master=self.parent)
+                        canvas_histo.get_tk_widget().grid(
+                            row=0, column=90, rowspan=65, columnspan=90, sticky="nesw")
+                        #
+                        self.gui_elements["Temporary"]["Canvas"]["Mineral Physics Histogram"] = canvas_histo
+                        self.gui_elements["Temporary"]["Figure"]["Mineral Physics Histogram"] = fig_histo
+                        self.gui_elements["Temporary"]["Axis"]["Mineral Physics Histogram"] = ax_histo
+                    #
+                else:
+                    ## Cleaning
+                    if "Mineral Physics Scatter" in self.gui_elements["Temporary"]["Canvas"]:
+                        self.gui_elements["Temporary"]["Canvas"][
+                            "Mineral Physics Scatter"].get_tk_widget().grid_remove()
+                    #
+                    self.gui_elements["Temporary"]["Canvas"]["Mineral Physics Histogram"].get_tk_widget().grid()
+                #
+            elif self.gui_variables["Radiobutton"]["Diagram Type Mineral"].get() == 1:
+                if "Mineral Physics Scatter" not in self.gui_elements["Temporary"]["Canvas"]:
+                    fig_scatter, ax_scatter = plt.subplots(
+                        ncols=3, nrows=3, figsize=(9, 9), facecolor=self.colors_gebpy["Background"])
+                    #
+                    categories = [["M", "V", "rho"], ["vP", "vS", "vP/vS"], ["GR", "PE", "nu"]]
+                    labels = [["M (kg/mol)", "V (A$^3$/mol", "rho (kg/m$^3$"], ["vP (m/s)", "vS (m/s)", "vP/vS (1)"],
+                              ["GR (API)", "PE (barns/e$^-$)", "nu (1)"]]
+                    #
+                    for i, subcategories in enumerate(categories):
+                        for j, key in enumerate(subcategories):
+                            ax_scatter[i][j].scatter(
+                                self.data_mineral["rho"], self.data_mineral[key], color=self.colors_gebpy["Option"],
+                                edgecolor="black", alpha=0.5)
+                            #
+                            ax_scatter[i][j].set_xlabel("Density - kg/m$^3$", fontsize=9)
+                            ax_scatter[i][j].set_ylabel(labels[i][j], labelpad=0.5, fontsize=9)
+                            ax_scatter[i][j].grid(True)
+                            ax_scatter[i][j].set_axisbelow(True)
+                    #
+                    fig_scatter.tight_layout()
+                    #
+                    canvas_scatter = FigureCanvasTkAgg(fig_scatter, master=self.parent)
+                    canvas_scatter.get_tk_widget().grid(
+                        row=0, column=90, rowspan=65, columnspan=90, sticky="nesw")
+                    #
+                    self.gui_elements["Temporary"]["Canvas"]["Mineral Physics Scatter"] = canvas_scatter
+                    self.gui_elements["Temporary"]["Figure"]["Mineral Physics Scatter"] = fig_scatter
+                    self.gui_elements["Temporary"]["Axis"]["Mineral Physics Scatter"] = ax_scatter
+                    #
+                else:
+                    ## Cleaning
+                    if "Mineral Physics Histogram" in self.gui_elements["Temporary"]["Canvas"]:
+                        self.gui_elements["Temporary"]["Canvas"][
+                            "Mineral Physics Histogram"].get_tk_widget().grid_remove()
+                    #
+                    self.gui_elements["Temporary"]["Canvas"]["Mineral Physics Scatter"].get_tk_widget().grid()
+            #
+        elif self.gui_variables["Radiobutton"]["Analysis Mode"].get() == 1:
+            print("Hallo")
+    #
     def change_rb_analysis(self):
         #
         start_row = 0
@@ -701,12 +789,12 @@ class GebPyGUI(tk.Frame):
                 parent=self.parent, row_id=34, column_id=14, n_rows=2, n_columns=16,
                 bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Background"]).create_radiobutton(
                 text="Histogram", var_rb=self.gui_variables["Radiobutton"]["Diagram Type Mineral"], value_rb=0,
-                color_bg=self.colors_gebpy["Background"])
+                color_bg=self.colors_gebpy["Background"], command=self.change_rb_diagram)
             rb_diagram_type_02 = SimpleElements(
                 parent=self.parent, row_id=36, column_id=14, n_rows=2, n_columns=16,
                 bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Background"]).create_radiobutton(
                 text="Scatter", var_rb=self.gui_variables["Radiobutton"]["Diagram Type Mineral"], value_rb=1,
-                color_bg=self.colors_gebpy["Background"])
+                color_bg=self.colors_gebpy["Background"], command=self.change_rb_diagram)
             #
             self.gui_elements["Temporary"]["Radiobutton"].extend(
                 [rb_diagram_type_01, rb_diagram_type_02])
@@ -749,36 +837,7 @@ class GebPyGUI(tk.Frame):
                 #
                 self.gui_elements["Temporary"]["Entry"].extend([entr_min, entr_max, entr_mean, entr_error])
                 #
-            ## Diagram
-            if "Mineral Physics Scatter" not in self.gui_elements["Temporary"]["Canvas"]:
-                fig_scatter, ax_scatter = plt.subplots(
-                    ncols=3, nrows=3, figsize=(9, 9), facecolor=self.colors_gebpy["Background"])
-                #
-                categories = [["M", "V", "rho"], ["vP", "vS", "vP/vS"], ["GR", "PE", "nu"]]
-                labels = [["M (kg/mol)", "V (A$^3$/mol", "rho (kg/m$^3$"], ["vP (m/s)", "vS (m/s)", "vP/vS (1)"],
-                          ["GR (API)", "PE (barns/e$^-$)", "nu (1)"]]
-                for i, subcategories in enumerate(categories):
-                    for j, key in enumerate(subcategories):
-                        ax_scatter[i][j].scatter(
-                            self.data_mineral["rho"], self.data_mineral[key], color=self.colors_gebpy["Accent"],
-                            edgecolor="black", alpha=0.5)
-                        #
-                        ax_scatter[i][j].set_xlabel("Density - kg/m$^3$", fontsize=9)
-                        ax_scatter[i][j].set_ylabel(labels[i][j], labelpad=0.5, fontsize=9)
-                        ax_scatter[i][j].grid(True)
-                        ax_scatter[i][j].set_axisbelow(True)
-                #
-                fig_scatter.tight_layout()
-                #
-                canvas_scatter = FigureCanvasTkAgg(fig_scatter, master=self.parent)
-                canvas_scatter.get_tk_widget().grid(
-                    row=0, column=90, rowspan=65, columnspan=90, sticky="nesw")
-                #
-                self.gui_elements["Temporary"]["Canvas"]["Mineral Physics Scatter"] = canvas_scatter
-                self.gui_elements["Temporary"]["Figure"]["Mineral Physics Scatter"] = fig_scatter
-                self.gui_elements["Temporary"]["Axis"]["Mineral Physics Scatter"] = ax_scatter
-            else:
-                self.gui_elements["Temporary"]["Canvas"]["Mineral Physics Scatter"].get_tk_widget().grid()
+            self.change_rb_diagram()
             #
         elif self.gui_variables["Radiobutton"]["Analysis Mode"].get() == 1:   # Mineral Chemistry
             ## Cleaning
@@ -867,12 +926,12 @@ class GebPyGUI(tk.Frame):
                 parent=self.parent, row_id=34, column_id=14, n_rows=2, n_columns=16,
                 bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Background"]).create_radiobutton(
                 text="Histogram", var_rb=self.gui_variables["Radiobutton"]["Diagram Type Elements"], value_rb=0,
-                color_bg=self.colors_gebpy["Background"])
+                color_bg=self.colors_gebpy["Background"], command=self.change_rb_diagram)
             rb_diagram_type_02 = SimpleElements(
                 parent=self.parent, row_id=36, column_id=14, n_rows=2, n_columns=16,
                 bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Background"]).create_radiobutton(
                 text="Scatter", var_rb=self.gui_variables["Radiobutton"]["Diagram Type Elements"], value_rb=1,
-                color_bg=self.colors_gebpy["Background"])
+                color_bg=self.colors_gebpy["Background"], command=self.change_rb_diagram)
             rb_concentration_type_01 = SimpleElements(
                 parent=self.parent, row_id=38, column_id=14, n_rows=2, n_columns=16,
                 bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Background"]).create_radiobutton(
@@ -4243,8 +4302,8 @@ class GebPyGUI(tk.Frame):
                     n += 1
                     condition = True
         #
-        for key, values in data_amounts.items():
-            print(key, len(values))
+        # for key, values in data_amounts.items():
+        #     print(key, len(values))
         #
         return data_amounts
 #
