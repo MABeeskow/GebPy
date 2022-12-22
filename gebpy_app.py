@@ -32,7 +32,7 @@ from modules.silicates import Phyllosilicates, Tectosilicates, Inosilicates, Nes
     Cyclosilicates
 from modules.organics import Organics
 from modules.fluids import Water
-from modules.siliciclastics import Sandstone
+from modules.siliciclastics import Sandstone, Geophysics
 from modules.ore import OreRocks
 from modules.metamorphics import GranuliteFacies
 
@@ -2999,6 +2999,7 @@ class GebPyGUI(tk.Frame):
         #
         mineral_data = {}
         mineral_amounts = {}
+        mineral_names = {}
         for mineral in mineral_list:
             if mineral in self.oxide_minerals:
                 data_mineral = Oxides(
@@ -3069,6 +3070,13 @@ class GebPyGUI(tk.Frame):
             #
             mineral_amounts[data_mineral["mineral"]] = list(amounts_ppm)
             mineral_data[data_mineral["mineral"]] = data_mineral
+            mineral_names[mineral] = data_mineral["mineral"]
+            #
+        data_amounts_minerals = self.calculate_mineral_fractions(
+            var_minerals=list(mineral_data.keys()), var_data=self.minerals_helper, var_n=n_datapoints)
+        #
+        for mineral, mineral_fractions in data_amounts_minerals.items():
+            mineral_amounts[mineral_names[mineral]] = mineral_fractions
         #
         n = 0
         while n < n_datapoints:
@@ -3084,12 +3092,19 @@ class GebPyGUI(tk.Frame):
             K_list = []
             G_list = []
             phi_list = []
+            phi_minerals = {}
+            velocities_minerals = {}
             #
             for mineral, dataset in mineral_data.items():
                 if mineral not in self.data_rock["mineralogy"]:
                     self.data_rock["mineralogy"][mineral] = []
                 #
                 mineral_amount = mineral_amounts[mineral][n]*10**(-2)
+                phi_minerals[mineral] = mineral_amount
+                #
+                velocities_minerals[mineral] = {}
+                velocities_minerals[mineral]["vP"] = dataset["vP"][n]
+                velocities_minerals[mineral]["vS"] = dataset["vS"][n]
                 #
                 rho_solid += mineral_amount*dataset["rho"][n]
                 bulk_modulus += mineral_amount*dataset["K"][n]
@@ -3140,6 +3155,17 @@ class GebPyGUI(tk.Frame):
             vS = round(((shear_modulus*10**9)/(rho))**0.5, 3)
             vS = round(vS/anisotropic_factor, 3)
             vPvS = round(vP/vS, 3)
+            #
+            var_porosity = porosity
+            data_velocities = {"Phi": phi_minerals, "v": velocities_minerals, "porosity": var_porosity}
+            velocities = Geophysics(var_data=data_velocities).calculate_seismic_velocity()
+            vP = round(velocities["vP"]/anisotropic_factor, 3)
+            vS = round(velocities["vS"]/anisotropic_factor, 3)
+            vPvS = round(vP/vS, 4)
+            bulk_mod = round((rho*(vP**2 - 4/3*vS**2))*10**(-9), 3)
+            shear_mod = round((rho*vS**2)*10**(-9), 3)
+            youngs_modulus = round((9*bulk_mod*shear_mod)/(3*bulk_mod + shear_mod), 3)
+            poisson_ratio = round((3*bulk_mod - 2*shear_mod)/(6*bulk_mod + 2*shear_mod), 4)
             #
             old_index = elements_list.index("O")
             elements_list += [elements_list.pop(old_index)]
@@ -4177,6 +4203,32 @@ class GebPyGUI(tk.Frame):
         #
         report_file.write("\n")
         #
+    #
+    def calculate_mineral_fractions(self, var_minerals, var_data, var_n):
+        data_amounts = {}
+        #
+        n_minerals = len(var_minerals)
+        #
+        n = 0
+        while n < var_n:
+            phi_total = 0
+            index = 0
+            for key_group, group_data in var_data.items():
+                for mineral, values in group_data.items():
+                    if mineral not in data_amounts:
+                        data_amounts[mineral] = []
+                    #
+                    if index < n_minerals - 1:
+                        value = int(values["Fraction"]*rd.randint(values["Min"], values["Max"])/100)
+                    else:
+                        value = int(100 - phi_total)
+                    #
+                    phi_total += value
+                    data_amounts[mineral].append(value)
+                    index += 1
+            n += 1
+        #
+        return data_amounts
 #
 if __name__ == "__main__":
     root = tk.Tk()
