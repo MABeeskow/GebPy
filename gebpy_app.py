@@ -3099,7 +3099,7 @@ class GebPyGUI(tk.Frame):
                 if mineral not in self.data_rock["mineralogy"]:
                     self.data_rock["mineralogy"][mineral] = []
                 #
-                mineral_amount = mineral_amounts[mineral][n]*10**(-2)
+                mineral_amount = round(mineral_amounts[mineral][n]*10**(-2), 6)
                 phi_minerals[mineral] = mineral_amount
                 #
                 velocities_minerals[mineral] = {}
@@ -3155,6 +3155,7 @@ class GebPyGUI(tk.Frame):
             vS = round(((shear_modulus*10**9)/(rho))**0.5, 3)
             vS = round(vS/anisotropic_factor, 3)
             vPvS = round(vP/vS, 3)
+            print(n, phi_minerals)
             #
             var_porosity = porosity
             data_velocities = {"Phi": phi_minerals, "v": velocities_minerals, "porosity": var_porosity}
@@ -4208,25 +4209,42 @@ class GebPyGUI(tk.Frame):
         data_amounts = {}
         #
         n_minerals = len(var_minerals)
+        mineral_information = {}
+        #
+        for key_group, group_data in var_data.items():
+            for mineral, values in group_data.items():
+                if mineral not in data_amounts:
+                    data_amounts[mineral] = []
+                    mineral_information[mineral] = values
         #
         n = 0
         while n < var_n:
-            phi_total = 0
-            index = 0
-            for key_group, group_data in var_data.items():
-                for mineral, values in group_data.items():
-                    if mineral not in data_amounts:
-                        data_amounts[mineral] = []
-                    #
+            condition = False
+            while condition == False:
+                temp_values = {}
+                phi_total = 0
+                for index, (mineral, values) in enumerate(mineral_information.items()):
                     if index < n_minerals - 1:
-                        value = int(values["Fraction"]*rd.randint(values["Min"], values["Max"])/100)
+                        value = round(0.01*values["Fraction"]*rd.randint(values["Min"], values["Max"]), 6)
                     else:
-                        value = int(100 - phi_total)
+                        value = round(100 - phi_total, 6)
                     #
-                    phi_total += value
-                    data_amounts[mineral].append(value)
-                    index += 1
-            n += 1
+                    limit_lower = 0.01*values["Fraction"]*values["Min"]
+                    limit_upper = 0.01*values["Fraction"]*values["Max"]
+                    #
+                    if limit_lower <= value <= limit_upper:
+                        phi_total += value
+                        temp_values[mineral] = value
+                #
+                mineral_total = list(temp_values.values())
+                if np.isclose(np.sum(mineral_total), 100.000000) == True:
+                    for mineral, value in temp_values.items():
+                        data_amounts[mineral].append(value)
+                    n += 1
+                    condition = True
+        #
+        for key, values in data_amounts.items():
+            print(key, len(values))
         #
         return data_amounts
 #
