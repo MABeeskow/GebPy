@@ -3131,6 +3131,8 @@ class GebPyGUI(tk.Frame):
             mineral_data[data_mineral["mineral"]] = data_mineral
             mineral_names[mineral] = data_mineral["mineral"]
             #
+        print(selected_minerals)
+        print(self.minerals_helper)
         data_amounts_minerals = self.calculate_mineral_fractions(
             var_minerals=list(mineral_data.keys()), var_data=self.minerals_helper, var_n=n_datapoints)
         #
@@ -4269,6 +4271,7 @@ class GebPyGUI(tk.Frame):
         #
         n_minerals = len(var_minerals)
         mineral_information = {}
+        print(var_data)
         #
         for key_group, group_data in var_data.items():
             for mineral, values in group_data.items():
