@@ -86,7 +86,7 @@ class GebPyGUI(tk.Frame):
         self.parent = parent
         self.parent.title("GebPy")
         self.parent.geometry("1800x975+0+0")
-        self.parent.resizable(False, False)
+        self.parent.resizable(True, True)
         self.parent["bg"] = self.colors_gebpy["Background"]
         #
         ## Geometry and Layout
