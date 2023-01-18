@@ -677,21 +677,22 @@ class GebPyGUI(tk.Frame):
         self.gui_elements["Static"]["Button"].append(btn_generate_data)
     #
     def change_rb_diagram(self):
-        categories = ["Canvas"]
-        for category in categories:
-            if category == "Canvas":
-                for key, gui_element in self.gui_elements["Temporary"][category].items():
-                    gui_element.get_tk_widget().grid_remove()
+        if self.gui_variables["Radiobutton"]["Analysis Mode"].get() == 0:
+            categories = ["Axis", "Canvas"]
+            for category in categories:
+                if category == "Axis":
+                    for key, gui_element in self.gui_elements["Temporary"][category].items():
+                        for gui_axes in gui_element:
+                            for gui_axis in gui_axes:
+                                gui_axis.axis("off")
         #
         if self.gui_variables["Radiobutton"]["Analysis Mode"].get() == 0:
             ## Diagram
             if self.gui_variables["Radiobutton"]["Diagram Type Mineral"].get() == 0:
-                if "Mineral Physics Histogram" not in self.gui_elements["Temporary"]["Canvas"]:
-                    fig_histo = Figure(
-                        figsize=(3, 3), dpi=100, tight_layout=True, facecolor=self.colors_gebpy["Background"])
-                    ax_histo = fig_histo.subplots(nrows=3, ncols=3)
-                    #fig_histo, ax_histo = plt.subplots(
-                    #    ncols=3, nrows=3, facecolor=self.colors_gebpy["Background"])
+                if "Mineral Physics Histogram" not in self.gui_elements["Temporary"]["Axis"]:
+                    fig_mineralogy = Figure(
+                        figsize=(3, 3), dpi=150, tight_layout=True, facecolor=self.colors_gebpy["Background"])
+                    ax_mp_histo = fig_mineralogy.subplots(nrows=3, ncols=3)
                     #
                     categories = [["M", "V", "rho"], ["vP", "vS", "vP/vS"], ["GR", "PE", "nu"]]
                     labels = [["M (kg/mol)", "V (A$^3$/mol", "rho (kg/m$^3$"], ["vP (m/s)", "vS (m/s)", "vP/vS (1)"],
@@ -699,38 +700,49 @@ class GebPyGUI(tk.Frame):
                     #
                     for i, subcategories in enumerate(categories):
                         for j, key in enumerate(subcategories):
-                            ax_histo[i][j].hist(
+                            ax_mp_histo[i][j].hist(
                                 x=self.data_mineral[key], color=self.colors_gebpy["Option"], edgecolor="black",
                                 bins=12)
                             #
-                            ax_histo[i][j].set_xlabel(labels[i][j], fontsize=9)
-                            ax_histo[i][j].set_ylabel("Frequency", labelpad=0.5, fontsize=9)
-                            ax_histo[i][j].grid(True)
-                            ax_histo[i][j].set_axisbelow(True)
+                            ax_mp_histo[i][j].set_xlabel(labels[i][j], fontsize=9)
+                            ax_mp_histo[i][j].set_ylabel("Frequency", labelpad=0.5, fontsize=9)
+                            ax_mp_histo[i][j].grid(True)
+                            ax_mp_histo[i][j].set_axisbelow(True)
                         #
-                        fig_histo.tight_layout()
+                        canvas_mineralogy = FigureCanvasTkAgg(fig_mineralogy, master=self.parent)
+                        canvas_mineralogy.get_tk_widget().grid(
+                            row=0, column=81, rowspan=self.n_rows, columnspan=int(self.n_columns - 81), sticky="nesw")
                         #
-                        canvas_histo = FigureCanvasTkAgg(fig_histo, master=self.parent)
-                        canvas_histo.get_tk_widget().grid(
-                            row=0, column=90, rowspan=self.n_rows, columnspan=int(self.n_columns - 90), sticky="nesw")
-                        #
-                        self.gui_elements["Temporary"]["Canvas"]["Mineral Physics Histogram"] = canvas_histo
-                        self.gui_elements["Temporary"]["Figure"]["Mineral Physics Histogram"] = fig_histo
-                        self.gui_elements["Temporary"]["Axis"]["Mineral Physics Histogram"] = ax_histo
+                        self.gui_elements["Temporary"]["Axis"]["Mineral Physics Histogram"] = ax_mp_histo
+                        self.gui_elements["Temporary"]["Figure"]["Mineralogy"] = fig_mineralogy
+                        self.gui_elements["Temporary"]["Canvas"]["Mineralogy"] = canvas_mineralogy
                     #
                 else:
                     ## Cleaning
-                    if "Mineral Physics Scatter" in self.gui_elements["Temporary"]["Canvas"]:
-                        self.gui_elements["Temporary"]["Canvas"][
-                            "Mineral Physics Scatter"].get_tk_widget().grid_remove()
+                    for gui_axes in self.gui_elements["Temporary"]["Axis"]["Mineral Physics Histogram"]:
+                        for gui_axis in gui_axes:
+                            gui_axis.axis("on")
+                            gui_axis.set_visible(True)
                     #
-                    self.gui_elements["Temporary"]["Canvas"]["Mineral Physics Histogram"].get_tk_widget().grid()
+                    categories = ["Mineral Physics Scatter", "LA ICP MS"]
+                    for category in categories:
+                        if category in self.gui_elements["Temporary"]["Axis"]:
+                            for gui_axes in self.gui_elements["Temporary"]["Axis"][category]:
+                                for gui_axis in gui_axes:
+                                    gui_axis.axis("off")
+                                    gui_axis.set_visible(False)
+                    #
+                    self.gui_elements["Temporary"]["Canvas"]["Mineralogy"].draw()
                 #
             elif self.gui_variables["Radiobutton"]["Diagram Type Mineral"].get() == 1:
-                if "Mineral Physics Scatter" not in self.gui_elements["Temporary"]["Canvas"]:
-                    fig_scatter = Figure(
-                        figsize=(3, 3), dpi=100, tight_layout=True, facecolor=self.colors_gebpy["Background"])
-                    ax_scatter = fig_scatter.subplots(nrows=3, ncols=3)
+                if "Mineral Physics Scatter" not in self.gui_elements["Temporary"]["Axis"]:
+                    if "Mineralogy" not in self.gui_elements["Temporary"]["Figure"]:
+                        fig_mineralogy = Figure(
+                            figsize=(3, 3), dpi=150, tight_layout=True, facecolor=self.colors_gebpy["Background"])
+                    else:
+                        fig_mineralogy = self.gui_elements["Temporary"]["Figure"]["Mineralogy"]
+                    #
+                    ax_mp_scatter = fig_mineralogy.subplots(nrows=3, ncols=3)
                     #
                     categories = [["M", "V", "rho"], ["vP", "vS", "vP/vS"], ["GR", "PE", "nu"]]
                     labels = [["M (kg/mol)", "V (A$^3$/mol", "rho (kg/m$^3$"], ["vP (m/s)", "vS (m/s)", "vP/vS (1)"],
@@ -738,32 +750,44 @@ class GebPyGUI(tk.Frame):
                     #
                     for i, subcategories in enumerate(categories):
                         for j, key in enumerate(subcategories):
-                            ax_scatter[i][j].scatter(
+                            ax_mp_scatter[i][j].scatter(
                                 self.data_mineral["rho"], self.data_mineral[key], color=self.colors_gebpy["Option"],
                                 edgecolor="black", alpha=0.5)
                             #
-                            ax_scatter[i][j].set_xlabel("Density - kg/m$^3$", fontsize=9)
-                            ax_scatter[i][j].set_ylabel(labels[i][j], labelpad=0.5, fontsize=9)
-                            ax_scatter[i][j].grid(True)
-                            ax_scatter[i][j].set_axisbelow(True)
+                            ax_mp_scatter[i][j].set_xlabel("Density - kg/m$^3$", fontsize=9)
+                            ax_mp_scatter[i][j].set_ylabel(labels[i][j], labelpad=0.5, fontsize=9)
+                            ax_mp_scatter[i][j].grid(True)
+                            ax_mp_scatter[i][j].set_axisbelow(True)
                     #
-                    fig_scatter.tight_layout()
+                    if "Mineralogy" not in self.gui_elements["Temporary"]["Canvas"]:
+                        canvas_mineralogy = FigureCanvasTkAgg(fig_mineralogy, master=self.parent)
+                        #
+                    else:
+                        canvas_mineralogy = self.gui_elements["Temporary"]["Canvas"]["Mineralogy"]
                     #
-                    canvas_scatter = FigureCanvasTkAgg(fig_scatter, master=self.parent)
-                    canvas_scatter.get_tk_widget().grid(
-                        row=0, column=90, rowspan=self.n_rows, columnspan=int(self.n_columns - 90), sticky="nesw")
+                    canvas_mineralogy.draw()
+                    canvas_mineralogy.get_tk_widget().grid(
+                        row=0, column=81, rowspan=self.n_rows, columnspan=int(self.n_columns - 81), sticky="nesw")
                     #
-                    self.gui_elements["Temporary"]["Canvas"]["Mineral Physics Scatter"] = canvas_scatter
-                    self.gui_elements["Temporary"]["Figure"]["Mineral Physics Scatter"] = fig_scatter
-                    self.gui_elements["Temporary"]["Axis"]["Mineral Physics Scatter"] = ax_scatter
+                    self.gui_elements["Temporary"]["Axis"]["Mineral Physics Scatter"] = ax_mp_scatter
+                    self.gui_elements["Temporary"]["Canvas"]["Mineralogy"] = canvas_mineralogy
                     #
                 else:
                     ## Cleaning
-                    if "Mineral Physics Histogram" in self.gui_elements["Temporary"]["Canvas"]:
-                        self.gui_elements["Temporary"]["Canvas"][
-                            "Mineral Physics Histogram"].get_tk_widget().grid_remove()
+                    for gui_axes in self.gui_elements["Temporary"]["Axis"]["Mineral Physics Scatter"]:
+                        for gui_axis in gui_axes:
+                            gui_axis.axis("on")
+                            gui_axis.set_visible(True)
                     #
-                    self.gui_elements["Temporary"]["Canvas"]["Mineral Physics Scatter"].get_tk_widget().grid()
+                    categories = ["Mineral Physics Scatter", "LA ICP MS"]
+                    for category in categories:
+                        if category in self.gui_elements["Temporary"]["Axis"]:
+                            for gui_axes in self.gui_elements["Temporary"]["Axis"][category]:
+                                for gui_axis in gui_axes:
+                                    gui_axis.axis("off")
+                                    gui_axis.set_visible(False)
+                    #
+                    self.gui_elements["Temporary"]["Canvas"]["Mineralogy"].draw()
             #
         elif self.gui_variables["Radiobutton"]["Analysis Mode"].get() == 1:
             print("Hallo")
@@ -876,16 +900,16 @@ class GebPyGUI(tk.Frame):
             #
         elif self.gui_variables["Radiobutton"]["Analysis Mode"].get() == 1:   # Mineral Chemistry
             ## Cleaning
-            for key, gui_items in self.gui_elements["Temporary"].items():
-                if len(gui_items) > 0:
-                    if key not in ["Canvas", "Figure", "Axis"]:
-                        for gui_item in gui_items:
-                            gui_item.grid_remove()
-                        gui_items.clear()
-                    else:
-                        if key == "Canvas":
-                            for key, gui_element in self.gui_elements["Temporary"]["Canvas"].items():
-                                gui_element.get_tk_widget().grid_remove()
+            #
+            categories = ["Mineral Physics Histogram", "Mineral Physics Scatter", "LA ICP MS"]
+            for category in categories:
+                if category in self.gui_elements["Temporary"]["Axis"]:
+                    for gui_axes in self.gui_elements["Temporary"]["Axis"][category]:
+                        for gui_axis in gui_axes:
+                            gui_axis.axis("off")
+                            gui_axis.set_visible(False)
+            #
+            self.gui_elements["Temporary"]["Canvas"]["Mineralogy"].draw()
             #
             ## Labels
             lbl_title = SimpleElements(
@@ -1040,16 +1064,16 @@ class GebPyGUI(tk.Frame):
         #
         elif self.gui_variables["Radiobutton"]["Analysis Mode"].get() == 2:   # Synthetic LA-ICP-MS
             ## Cleaning
-            for key, gui_items in self.gui_elements["Temporary"].items():
-                if len(gui_items) > 0:
-                    if key not in ["Canvas", "Figure", "Axis"]:
-                        for gui_item in gui_items:
-                            gui_item.grid_remove()
-                        gui_items.clear()
-                    else:
-                        if key == "Canvas":
-                            for key, gui_element in self.gui_elements["Temporary"]["Canvas"].items():
-                                gui_element.get_tk_widget().grid_remove()
+            #
+            categories = ["Mineral Physics Histogram", "Mineral Physics Scatter", "LA ICP MS"]
+            for category in categories:
+                if category in self.gui_elements["Temporary"]["Axis"]:
+                    for gui_axes in self.gui_elements["Temporary"]["Axis"][category]:
+                        for gui_axis in gui_axes:
+                            gui_axis.axis("off")
+                            gui_axis.set_visible(False)
+            #
+            self.gui_elements["Temporary"]["Canvas"]["Mineralogy"].draw()
             #
             ## LA-ICP-MS Experiment Simulation
             time_data, intensity_data = self.simulate_laicpms_experiment()
@@ -1120,35 +1144,44 @@ class GebPyGUI(tk.Frame):
                 #
             ## Diagram
             if "LA ICP MS" not in self.gui_elements["Temporary"]["Canvas"]:
-                fig_laicpms, ax_laicpms = plt.subplots(facecolor=self.colors_gebpy["Background"])
+                if "Mineralogy" not in self.gui_elements["Temporary"]["Figure"]:
+                    fig_mineralogy = Figure(
+                        dpi=150, tight_layout=True, facecolor=self.colors_gebpy["Background"])
+                else:
+                    fig_mineralogy = self.gui_elements["Temporary"]["Figure"]["Mineralogy"]
+                #
+                ax_laicpms = [[fig_mineralogy.subplots(nrows=1, ncols=1)]]
                 #
                 element_laicpms = list(intensity_data.keys())
                 for element in element_laicpms:
-                    # ax_laicpms.scatter(time_data, intensity_data[element], edgecolor="black", alpha=0.5)
-                    ax_laicpms.plot(time_data, intensity_data[element], label=element)
+                    ax_laicpms[0][0].plot(time_data, intensity_data[element], label=element)
                     #
-                ax_laicpms.set_xlabel("Time (s)", fontsize=9)
-                ax_laicpms.set_ylabel("Intensity (cps)", labelpad=0.5, fontsize=9)
-                ax_laicpms.set_xlim(0, 60)
-                ax_laicpms.set_xticks(np.arange(0, 60 + 5, 5))
-                ax_laicpms.set_ylim(1, 10**9)
-                ax_laicpms.set_yscale("log")
-                #ax_laicpms.grid(True)
+                ax_laicpms[0][0].set_xlabel("Time (s)", fontsize=9)
+                ax_laicpms[0][0].set_ylabel("Intensity (cps)", labelpad=0.5, fontsize=9)
+                ax_laicpms[0][0].set_xlim(0, 60)
+                ax_laicpms[0][0].set_xticks(np.arange(0, 60 + 5, 5))
+                ax_laicpms[0][0].set_ylim(1, 10**9)
+                ax_laicpms[0][0].set_yscale("log")
+                ax_laicpms[0][0].grid(True)
                 plt.grid(which="major", axis="both", linestyle="-")
                 plt.minorticks_on()
                 plt.grid(which="minor", axis="both", linestyle="-", alpha=0.25)
-                ax_laicpms.set_axisbelow(True)
+                ax_laicpms[0][0].set_axisbelow(True)
                 #
-                fig_laicpms.tight_layout()
-                plt.legend()
+                ax_laicpms[0][0].legend()
                 #
-                canvas_laicpms = FigureCanvasTkAgg(fig_laicpms, master=self.parent)
-                canvas_laicpms.get_tk_widget().grid(
-                    row=0, column=90, rowspan=65, columnspan=90, sticky="nesw")
+                if "Mineralogy" not in self.gui_elements["Temporary"]["Canvas"]:
+                    canvas_mineralogy = FigureCanvasTkAgg(fig_mineralogy, master=self.parent)
+                    #
+                else:
+                    canvas_mineralogy = self.gui_elements["Temporary"]["Canvas"]["Mineralogy"]
                 #
-                self.gui_elements["Temporary"]["Canvas"]["LA ICP MS"] = canvas_laicpms
-                self.gui_elements["Temporary"]["Figure"]["LA ICP MS"] = fig_laicpms
+                canvas_mineralogy.draw()
+                canvas_mineralogy.get_tk_widget().grid(
+                    row=0, column=81, rowspan=int(self.n_rows - 3), columnspan=int(self.n_columns - 81), sticky="nesw")
+                #
                 self.gui_elements["Temporary"]["Axis"]["LA ICP MS"] = ax_laicpms
+                self.gui_elements["Temporary"]["Canvas"]["Mineralogy"] = canvas_mineralogy
             else:
                 self.gui_elements["Temporary"]["Canvas"]["LA ICP MS"].get_tk_widget().grid()
             #
