@@ -83,8 +83,14 @@ class GebPyGUI(tk.Frame):
         for gui_element in gui_elements:
             self.gui_variables[gui_element] = {}
         #
+        self.last_rb_analysis_mineral = tk.IntVar()
+        self.last_rb_analysis_mineral.set(42)
+        self.last_rb_diagram_mineral = tk.IntVar()
+        self.last_rb_diagram_mineral.set(42)
+        #
         self.last_rb_analysis_rock = tk.IntVar()
         self.last_rb_analysis_rock.set(42)
+
         #
         ### General Settings
         self.parent = parent
@@ -677,120 +683,162 @@ class GebPyGUI(tk.Frame):
         self.gui_elements["Static"]["Button"].append(btn_generate_data)
     #
     def change_rb_diagram(self):
-        if self.gui_variables["Radiobutton"]["Analysis Mode"].get() == 0:
-            categories = ["Axis", "Canvas"]
-            for category in categories:
-                if category == "Axis":
-                    for key, gui_element in self.gui_elements["Temporary"][category].items():
-                        for gui_axes in gui_element:
-                            for gui_axis in gui_axes:
-                                gui_axis.axis("off")
-        #
-        if self.gui_variables["Radiobutton"]["Analysis Mode"].get() == 0:
+        if self.gui_variables["Radiobutton"]["Analysis Mode"].get() == 0 \
+                and self.last_rb_analysis_mineral.get() not in [1, 2]:   # MINERAL PHYSICS
             ## Diagram
-            if self.gui_variables["Radiobutton"]["Diagram Type Mineral"].get() == 0:
-                if "Mineral Physics Histogram" not in self.gui_elements["Temporary"]["Axis"]:
-                    fig_mineralogy = Figure(
-                        figsize=(3, 3), dpi=150, tight_layout=True, facecolor=self.colors_gebpy["Background"])
-                    ax_mp_histo = fig_mineralogy.subplots(nrows=3, ncols=3)
-                    #
-                    categories = [["M", "V", "rho"], ["vP", "vS", "vP/vS"], ["GR", "PE", "nu"]]
-                    labels = [["M (kg/mol)", "V (A$^3$/mol", "rho (kg/m$^3$"], ["vP (m/s)", "vS (m/s)", "vP/vS (1)"],
-                              ["GR (API)", "PE (barns/e$^-$)", "nu (1)"]]
-                    #
-                    for i, subcategories in enumerate(categories):
-                        for j, key in enumerate(subcategories):
-                            ax_mp_histo[i][j].hist(
-                                x=self.data_mineral[key], color=self.colors_gebpy["Option"], edgecolor="black",
-                                bins=12)
-                            #
-                            ax_mp_histo[i][j].set_xlabel(labels[i][j], fontsize=9)
-                            ax_mp_histo[i][j].set_ylabel("Frequency", labelpad=0.5, fontsize=9)
-                            ax_mp_histo[i][j].grid(True)
-                            ax_mp_histo[i][j].set_axisbelow(True)
+            if self.gui_variables["Radiobutton"]["Diagram Type Mineral"].get() == 0:    # HISTOGRAM
+                if self.last_rb_diagram_mineral.get() != 0:
+                    if "Mineralogy" in self.gui_elements["Temporary"]["Canvas"]:
+                        categories = ["Mineral Physics Histogram", "Mineral Physics Scatter", "LA ICP MS"]
+                        for category in categories:
+                            if category in self.gui_elements["Temporary"]["Axis"]:
+                                for gui_axes in self.gui_elements["Temporary"]["Axis"][category]:
+                                    for gui_axis in gui_axes:
+                                        gui_axis.axis("off")
+                                        gui_axis.set_visible(False)
                         #
-                        canvas_mineralogy = FigureCanvasTkAgg(fig_mineralogy, master=self.parent)
-                        canvas_mineralogy.get_tk_widget().grid(
-                            row=0, column=81, rowspan=self.n_rows, columnspan=int(self.n_columns - 81), sticky="nesw")
-                        #
-                        self.gui_elements["Temporary"]["Axis"]["Mineral Physics Histogram"] = ax_mp_histo
-                        self.gui_elements["Temporary"]["Figure"]["Mineralogy"] = fig_mineralogy
-                        self.gui_elements["Temporary"]["Canvas"]["Mineralogy"] = canvas_mineralogy
+                        self.gui_elements["Temporary"]["Canvas"]["Mineralogy"].draw()
                     #
-                else:
-                    ## Cleaning
-                    for gui_axes in self.gui_elements["Temporary"]["Axis"]["Mineral Physics Histogram"]:
-                        for gui_axis in gui_axes:
-                            gui_axis.axis("on")
-                            gui_axis.set_visible(True)
-                    #
-                    categories = ["Mineral Physics Scatter", "LA ICP MS"]
-                    for category in categories:
-                        if category in self.gui_elements["Temporary"]["Axis"]:
-                            for gui_axes in self.gui_elements["Temporary"]["Axis"][category]:
-                                for gui_axis in gui_axes:
-                                    gui_axis.axis("off")
-                                    gui_axis.set_visible(False)
-                    #
-                    self.gui_elements["Temporary"]["Canvas"]["Mineralogy"].draw()
-                #
-            elif self.gui_variables["Radiobutton"]["Diagram Type Mineral"].get() == 1:
-                if "Mineral Physics Scatter" not in self.gui_elements["Temporary"]["Axis"]:
-                    if "Mineralogy" not in self.gui_elements["Temporary"]["Figure"]:
+                    if "Mineral Physics Histogram" not in self.gui_elements["Temporary"]["Axis"]:
                         fig_mineralogy = Figure(
                             figsize=(3, 3), dpi=150, tight_layout=True, facecolor=self.colors_gebpy["Background"])
-                    else:
-                        fig_mineralogy = self.gui_elements["Temporary"]["Figure"]["Mineralogy"]
-                    #
-                    ax_mp_scatter = fig_mineralogy.subplots(nrows=3, ncols=3)
-                    #
-                    categories = [["M", "V", "rho"], ["vP", "vS", "vP/vS"], ["GR", "PE", "nu"]]
-                    labels = [["M (kg/mol)", "V (A$^3$/mol", "rho (kg/m$^3$"], ["vP (m/s)", "vS (m/s)", "vP/vS (1)"],
-                              ["GR (API)", "PE (barns/e$^-$)", "nu (1)"]]
-                    #
-                    for i, subcategories in enumerate(categories):
-                        for j, key in enumerate(subcategories):
-                            ax_mp_scatter[i][j].scatter(
-                                self.data_mineral["rho"], self.data_mineral[key], color=self.colors_gebpy["Option"],
-                                edgecolor="black", alpha=0.5)
+                        ax_mp_histo = fig_mineralogy.subplots(nrows=3, ncols=3)
+                        #
+                        categories = [["M", "V", "rho"], ["vP", "vS", "vP/vS"], ["GR", "PE", "nu"]]
+                        labels = [["M (kg/mol)", "V (A$^3$/mol", "rho (kg/m$^3$"], ["vP (m/s)", "vS (m/s)", "vP/vS (1)"],
+                                  ["GR (API)", "PE (barns/e$^-$)", "nu (1)"]]
+                        #
+                        for i, subcategories in enumerate(categories):
+                            for j, key in enumerate(subcategories):
+                                ax_mp_histo[i][j].hist(
+                                    x=self.data_mineral[key], color=self.colors_gebpy["Option"], edgecolor="black",
+                                    bins=12)
+                                #
+                                ax_mp_histo[i][j].set_xlabel(labels[i][j], fontsize=9)
+                                ax_mp_histo[i][j].set_ylabel("Frequency", labelpad=0.5, fontsize=9)
+                                ax_mp_histo[i][j].grid(True)
+                                ax_mp_histo[i][j].set_axisbelow(True)
                             #
-                            ax_mp_scatter[i][j].set_xlabel("Density - kg/m$^3$", fontsize=9)
-                            ax_mp_scatter[i][j].set_ylabel(labels[i][j], labelpad=0.5, fontsize=9)
-                            ax_mp_scatter[i][j].grid(True)
-                            ax_mp_scatter[i][j].set_axisbelow(True)
-                    #
-                    if "Mineralogy" not in self.gui_elements["Temporary"]["Canvas"]:
-                        canvas_mineralogy = FigureCanvasTkAgg(fig_mineralogy, master=self.parent)
+                            canvas_mineralogy = FigureCanvasTkAgg(fig_mineralogy, master=self.parent)
+                            canvas_mineralogy.get_tk_widget().grid(
+                                row=0, column=81, rowspan=int(self.n_rows - 3), columnspan=int(self.n_columns - 81),
+                                sticky="nesw")
+                            #
+                            self.gui_elements["Temporary"]["Axis"]["Mineral Physics Histogram"] = ax_mp_histo
+                            self.gui_elements["Temporary"]["Figure"]["Mineralogy"] = fig_mineralogy
+                            self.gui_elements["Temporary"]["Canvas"]["Mineralogy"] = canvas_mineralogy
                         #
                     else:
-                        canvas_mineralogy = self.gui_elements["Temporary"]["Canvas"]["Mineralogy"]
-                    #
-                    canvas_mineralogy.draw()
-                    canvas_mineralogy.get_tk_widget().grid(
-                        row=0, column=81, rowspan=self.n_rows, columnspan=int(self.n_columns - 81), sticky="nesw")
-                    #
-                    self.gui_elements["Temporary"]["Axis"]["Mineral Physics Scatter"] = ax_mp_scatter
-                    self.gui_elements["Temporary"]["Canvas"]["Mineralogy"] = canvas_mineralogy
+                        ## Cleaning
+                        for gui_axes in self.gui_elements["Temporary"]["Axis"]["Mineral Physics Histogram"]:
+                            for gui_axis in gui_axes:
+                                gui_axis.axis("on")
+                                gui_axis.set_visible(True)
+                        #
+                        categories = ["Mineral Physics Scatter", "LA ICP MS"]
+                        for category in categories:
+                            if category in self.gui_elements["Temporary"]["Axis"]:
+                                for gui_axes in self.gui_elements["Temporary"]["Axis"][category]:
+                                    for gui_axis in gui_axes:
+                                        gui_axis.axis("off")
+                                        gui_axis.set_visible(False)
+                        #
+                        self.gui_elements["Temporary"]["Canvas"]["Mineralogy"].draw()
                     #
                 else:
-                    ## Cleaning
-                    for gui_axes in self.gui_elements["Temporary"]["Axis"]["Mineral Physics Scatter"]:
-                        for gui_axis in gui_axes:
-                            gui_axis.axis("on")
-                            gui_axis.set_visible(True)
+                    pass
+                #
+            elif self.gui_variables["Radiobutton"]["Diagram Type Mineral"].get() == 1:  # SCATTER
+                if self.last_rb_diagram_mineral.get() != 1:
+                    if "Mineralogy" in self.gui_elements["Temporary"]["Canvas"]:
+                        categories = ["Mineral Physics Histogram", "Mineral Physics Scatter", "LA ICP MS"]
+                        for category in categories:
+                            if category in self.gui_elements["Temporary"]["Axis"]:
+                                for gui_axes in self.gui_elements["Temporary"]["Axis"][category]:
+                                    for gui_axis in gui_axes:
+                                        gui_axis.axis("off")
+                                        gui_axis.set_visible(False)
+                        #
+                        self.gui_elements["Temporary"]["Canvas"]["Mineralogy"].draw()
                     #
-                    categories = ["Mineral Physics Scatter", "LA ICP MS"]
-                    for category in categories:
-                        if category in self.gui_elements["Temporary"]["Axis"]:
-                            for gui_axes in self.gui_elements["Temporary"]["Axis"][category]:
-                                for gui_axis in gui_axes:
-                                    gui_axis.axis("off")
-                                    gui_axis.set_visible(False)
+                    if "Mineral Physics Scatter" not in self.gui_elements["Temporary"]["Axis"]:
+                        if "Mineralogy" not in self.gui_elements["Temporary"]["Figure"]:
+                            fig_mineralogy = Figure(
+                                figsize=(3, 3), dpi=150, tight_layout=True, facecolor=self.colors_gebpy["Background"])
+                        else:
+                            fig_mineralogy = self.gui_elements["Temporary"]["Figure"]["Mineralogy"]
+                        #
+                        ax_mp_scatter = fig_mineralogy.subplots(nrows=3, ncols=3)
+                        #
+                        categories = [["M", "V", "rho"], ["vP", "vS", "vP/vS"], ["GR", "PE", "nu"]]
+                        labels = [["M (kg/mol)", "V (A$^3$/mol", "rho (kg/m$^3$"], ["vP (m/s)", "vS (m/s)", "vP/vS (1)"],
+                                  ["GR (API)", "PE (barns/e$^-$)", "nu (1)"]]
+                        #
+                        for i, subcategories in enumerate(categories):
+                            for j, key in enumerate(subcategories):
+                                ax_mp_scatter[i][j].scatter(
+                                    self.data_mineral["rho"], self.data_mineral[key], color=self.colors_gebpy["Option"],
+                                    edgecolor="black", alpha=0.5)
+                                #
+                                ax_mp_scatter[i][j].set_xlabel("Density - kg/m$^3$", fontsize=9)
+                                ax_mp_scatter[i][j].set_ylabel(labels[i][j], labelpad=0.5, fontsize=9)
+                                ax_mp_scatter[i][j].grid(True)
+                                ax_mp_scatter[i][j].set_axisbelow(True)
+                        #
+                        if "Mineralogy" not in self.gui_elements["Temporary"]["Canvas"]:
+                            canvas_mineralogy = FigureCanvasTkAgg(fig_mineralogy, master=self.parent)
+                            #
+                        else:
+                            canvas_mineralogy = self.gui_elements["Temporary"]["Canvas"]["Mineralogy"]
+                        #
+                        canvas_mineralogy.draw()
+                        #
+                        self.gui_elements["Temporary"]["Axis"]["Mineral Physics Scatter"] = ax_mp_scatter
+                        self.gui_elements["Temporary"]["Canvas"]["Mineralogy"] = canvas_mineralogy
+                        #
+                    else:
+                        ## Cleaning
+                        for gui_axes in self.gui_elements["Temporary"]["Axis"]["Mineral Physics Scatter"]:
+                            for gui_axis in gui_axes:
+                                gui_axis.axis("on")
+                                gui_axis.set_visible(True)
+                        #
+                        categories = ["Mineral Physics Histogram", "LA ICP MS"]
+                        for category in categories:
+                            if category in self.gui_elements["Temporary"]["Axis"]:
+                                for gui_axes in self.gui_elements["Temporary"]["Axis"][category]:
+                                    for gui_axis in gui_axes:
+                                        gui_axis.axis("off")
+                                        gui_axis.set_visible(False)
+                        #
+                        self.gui_elements["Temporary"]["Canvas"]["Mineralogy"].draw()
                     #
-                    self.gui_elements["Temporary"]["Canvas"]["Mineralogy"].draw()
+                else:
+                    pass
+        elif self.last_rb_analysis_mineral.get() != 0 and self.gui_variables["Radiobutton"]["Analysis Mode"].get() == 0:
+            if self.gui_variables["Radiobutton"]["Diagram Type Mineral"].get() == 0:
+                key = "Mineral Physics Histogram"
+            else:
+                key = "Mineral Physics Scatter"
             #
-        elif self.gui_variables["Radiobutton"]["Analysis Mode"].get() == 1:
+            categories = ["Mineral Physics Histogram", "Mineral Physics Scatter", "LA ICP MS"]
+            for category in categories:
+                if category in self.gui_elements["Temporary"]["Axis"]:
+                    for gui_axes in self.gui_elements["Temporary"]["Axis"][category]:
+                        for gui_axis in gui_axes:
+                            if category == key:
+                                gui_axis.axis("on")
+                                gui_axis.set_visible(True)
+                            else:
+                                gui_axis.axis("off")
+                                gui_axis.set_visible(False)
+            #
+            self.gui_elements["Temporary"]["Canvas"]["Mineralogy"].draw()
+            #
+        elif self.gui_variables["Radiobutton"]["Analysis Mode"].get() == 1: # MINERAL CHEMISTRY
             print("Hallo")
+        #
+        self.last_rb_diagram_mineral.set(self.gui_variables["Radiobutton"]["Diagram Type Mineral"].get())
     #
     def change_rb_analysis(self):
         #
@@ -798,393 +846,418 @@ class GebPyGUI(tk.Frame):
         start_column = 35
         #
         if self.gui_variables["Radiobutton"]["Analysis Mode"].get() == 0:   # Mineral Physics
-            ## Cleaning
-            for key, gui_items in self.gui_elements["Temporary"].items():
-                if len(gui_items) > 0:
-                    if key not in ["Canvas"]:
-                        if type(gui_items) == list:
-                            for gui_item in gui_items:
-                                gui_item.grid_remove()
-                            gui_items.clear()
-                    else:
-                        for key_2, gui_item in gui_items.items():
-                            gui_item.get_tk_widget().grid_remove()
-            #
-            ## Labels
-            lbl_title = SimpleElements(
-                parent=self.parent, row_id=0, column_id=start_column, n_rows=2, n_columns=45,
-                bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
-                text="Mineral Physics", font_option="sans 12 bold", relief=tk.GROOVE)
-            lbl_results = SimpleElements(
-                parent=self.parent, row_id=2, column_id=start_column, n_rows=2, n_columns=9,
-                bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
-                text="Results", font_option="sans 10 bold", relief=tk.GROOVE)
-            lbl_min = SimpleElements(
-                parent=self.parent, row_id=2, column_id=start_column + 9, n_rows=2, n_columns=9,
-                bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
-                text="Minimum", font_option="sans 10 bold", relief=tk.GROOVE)
-            lbl_max = SimpleElements(
-                parent=self.parent, row_id=2, column_id=start_column + 18, n_rows=2, n_columns=9,
-                bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
-                text="Maximum", font_option="sans 10 bold", relief=tk.GROOVE)
-            lbl_mean = SimpleElements(
-                parent=self.parent, row_id=2, column_id=start_column + 27, n_rows=2, n_columns=9,
-                bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
-                text="Mean", font_option="sans 10 bold", relief=tk.GROOVE)
-            lbl_error = SimpleElements(
-                parent=self.parent, row_id=2, column_id=start_column + 36, n_rows=2, n_columns=9,
-                bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
-                text="Error", font_option="sans 10 bold", relief=tk.GROOVE)
-            lbl_diagram_type = SimpleElements(
-                parent=self.parent, row_id=33, column_id=0, n_rows=4, n_columns=14,
-                bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Background"]).create_label(
-                text="Diagram Type", font_option="sans 10 bold", relief=tk.FLAT)
-            #
-            self.gui_elements["Temporary"]["Label"].extend(
-                [lbl_title, lbl_results, lbl_min, lbl_max, lbl_mean, lbl_error, lbl_diagram_type])
-            #
-            ## Radiobuttons
-            rb_diagram_type_01 = SimpleElements(
-                parent=self.parent, row_id=34, column_id=14, n_rows=2, n_columns=16,
-                bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Background"]).create_radiobutton(
-                text="Histogram", var_rb=self.gui_variables["Radiobutton"]["Diagram Type Mineral"], value_rb=0,
-                color_bg=self.colors_gebpy["Background"], command=self.change_rb_diagram)
-            rb_diagram_type_02 = SimpleElements(
-                parent=self.parent, row_id=36, column_id=14, n_rows=2, n_columns=16,
-                bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Background"]).create_radiobutton(
-                text="Scatter", var_rb=self.gui_variables["Radiobutton"]["Diagram Type Mineral"], value_rb=1,
-                color_bg=self.colors_gebpy["Background"], command=self.change_rb_diagram)
-            #
-            self.gui_elements["Temporary"]["Radiobutton"].extend(
-                [rb_diagram_type_01, rb_diagram_type_02])
-            #
-            categories = [
-                "M\n (kg/mol)", "V\n (\u00C5\u00B3/mol)", "rho\n (kg/m\u00B3)", "vP\n (m/s)", "vS\n (m/s)",
-                "vP/vS\n (1)", "K\n (GPa)", "G\n (GPa)", "E\n (GPa)", "nu\n (1)", "GR\n (API)", "PE\n (barns/e\u207B)"]
-            categories_short = ["M", "V", "rho", "vP", "vS", "vP/vS", "K", "G", "E", "nu", "GR", "PE"]
-            for index, category in enumerate(categories):
-                lbl_category = SimpleElements(
-                    parent=self.parent, row_id=(3*index + 4), column_id=start_column, n_rows=3, n_columns=9,
+            if self.last_rb_analysis_mineral.get() != 0:
+                ## Cleaning
+                if "Mineralogy" in self.gui_elements["Temporary"]["Canvas"]:
+                    categories = ["Mineral Physics Histogram", "Mineral Physics Scatter", "LA ICP MS"]
+                    for category in categories:
+                        if category in self.gui_elements["Temporary"]["Axis"]:
+                            for gui_axes in self.gui_elements["Temporary"]["Axis"][category]:
+                                for gui_axis in gui_axes:
+                                    gui_axis.axis("off")
+                                    gui_axis.set_visible(False)
+                    #
+                    self.gui_elements["Temporary"]["Canvas"]["Mineralogy"].draw()
+                #
+                categories = ["Label", "Radiobutton", "Entry", "Option Menu"]
+                for category in categories:
+                    for gui_item in self.gui_elements["Temporary"][category]:
+                        gui_item.grid_remove()
+                #
+                ## Labels
+                lbl_title = SimpleElements(
+                    parent=self.parent, row_id=0, column_id=start_column, n_rows=2, n_columns=45,
                     bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
-                    text=category, font_option="sans 10 bold", relief=tk.GROOVE)
+                    text="Mineral Physics", font_option="sans 12 bold", relief=tk.GROOVE)
+                lbl_results = SimpleElements(
+                    parent=self.parent, row_id=2, column_id=start_column, n_rows=2, n_columns=9,
+                    bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
+                    text="Results", font_option="sans 10 bold", relief=tk.GROOVE)
+                lbl_min = SimpleElements(
+                    parent=self.parent, row_id=2, column_id=start_column + 9, n_rows=2, n_columns=9,
+                    bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
+                    text="Minimum", font_option="sans 10 bold", relief=tk.GROOVE)
+                lbl_max = SimpleElements(
+                    parent=self.parent, row_id=2, column_id=start_column + 18, n_rows=2, n_columns=9,
+                    bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
+                    text="Maximum", font_option="sans 10 bold", relief=tk.GROOVE)
+                lbl_mean = SimpleElements(
+                    parent=self.parent, row_id=2, column_id=start_column + 27, n_rows=2, n_columns=9,
+                    bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
+                    text="Mean", font_option="sans 10 bold", relief=tk.GROOVE)
+                lbl_error = SimpleElements(
+                    parent=self.parent, row_id=2, column_id=start_column + 36, n_rows=2, n_columns=9,
+                    bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
+                    text="Error", font_option="sans 10 bold", relief=tk.GROOVE)
+                lbl_diagram_type = SimpleElements(
+                    parent=self.parent, row_id=33, column_id=0, n_rows=4, n_columns=14,
+                    bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Background"]).create_label(
+                    text="Diagram Type", font_option="sans 10 bold", relief=tk.FLAT)
                 #
-                self.gui_elements["Temporary"]["Label"].append(lbl_category)
+                self.gui_elements["Temporary"]["Label"].extend(
+                    [lbl_title, lbl_results, lbl_min, lbl_max, lbl_mean, lbl_error, lbl_diagram_type])
                 #
-                ## Entries
+                ## Radiobuttons
+                rb_diagram_type_01 = SimpleElements(
+                    parent=self.parent, row_id=34, column_id=14, n_rows=2, n_columns=16,
+                    bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Background"]).create_radiobutton(
+                    text="Histogram", var_rb=self.gui_variables["Radiobutton"]["Diagram Type Mineral"], value_rb=0,
+                    color_bg=self.colors_gebpy["Background"], command=self.change_rb_diagram)
+                rb_diagram_type_02 = SimpleElements(
+                    parent=self.parent, row_id=36, column_id=14, n_rows=2, n_columns=16,
+                    bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Background"]).create_radiobutton(
+                    text="Scatter", var_rb=self.gui_variables["Radiobutton"]["Diagram Type Mineral"], value_rb=1,
+                    color_bg=self.colors_gebpy["Background"], command=self.change_rb_diagram)
                 #
-                var_entr_min = round(min(self.data_mineral[categories_short[index]]), 6)
-                var_entr_max = round(max(self.data_mineral[categories_short[index]]), 6)
-                var_entr_mean = round(np.mean(self.data_mineral[categories_short[index]]), 6)
-                var_entr_error = round(np.std(self.data_mineral[categories_short[index]], ddof=1), 6)
+                self.gui_elements["Temporary"]["Radiobutton"].extend(
+                    [rb_diagram_type_01, rb_diagram_type_02])
                 #
-                entr_min = SimpleElements(
-                    parent=self.parent, row_id=(3*index + 4), column_id=start_column + 9, n_rows=3, n_columns=9,
-                    bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
-                    var_entr=self.gui_variables["Entry"]["Minimum"][categories_short[index]], var_entr_set=var_entr_min)
-                entr_max = SimpleElements(
-                    parent=self.parent, row_id=(3*index + 4), column_id=start_column + 18, n_rows=3, n_columns=9,
-                    bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
-                    var_entr=self.gui_variables["Entry"]["Maximum"][categories_short[index]], var_entr_set=var_entr_max)
-                entr_mean = SimpleElements(
-                    parent=self.parent, row_id=(3*index + 4), column_id=start_column + 27, n_rows=3, n_columns=9,
-                    bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
-                    var_entr=self.gui_variables["Entry"]["Mean"][categories_short[index]], var_entr_set=var_entr_mean)
-                entr_error = SimpleElements(
-                    parent=self.parent, row_id=(3*index + 4), column_id=start_column + 36, n_rows=3, n_columns=9,
-                    bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
-                    var_entr=self.gui_variables["Entry"]["Error"][categories_short[index]], var_entr_set=var_entr_error)
+                categories = [
+                    "M\n (kg/mol)", "V\n (\u00C5\u00B3/mol)", "rho\n (kg/m\u00B3)", "vP\n (m/s)", "vS\n (m/s)",
+                    "vP/vS\n (1)", "K\n (GPa)", "G\n (GPa)", "E\n (GPa)", "nu\n (1)", "GR\n (API)", "PE\n (barns/e\u207B)"]
+                categories_short = ["M", "V", "rho", "vP", "vS", "vP/vS", "K", "G", "E", "nu", "GR", "PE"]
+                for index, category in enumerate(categories):
+                    lbl_category = SimpleElements(
+                        parent=self.parent, row_id=(3*index + 4), column_id=start_column, n_rows=3, n_columns=9,
+                        bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
+                        text=category, font_option="sans 10 bold", relief=tk.GROOVE)
+                    #
+                    self.gui_elements["Temporary"]["Label"].append(lbl_category)
+                    #
+                    ## Entries
+                    #
+                    var_entr_min = round(min(self.data_mineral[categories_short[index]]), 3)
+                    var_entr_max = round(max(self.data_mineral[categories_short[index]]), 3)
+                    var_entr_mean = round(np.mean(self.data_mineral[categories_short[index]]), 3)
+                    var_entr_error = round(np.std(self.data_mineral[categories_short[index]], ddof=1), 3)
+                    #
+                    entr_min = SimpleElements(
+                        parent=self.parent, row_id=(3*index + 4), column_id=start_column + 9, n_rows=3, n_columns=9,
+                        bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
+                        var_entr=self.gui_variables["Entry"]["Minimum"][categories_short[index]], var_entr_set=var_entr_min)
+                    entr_max = SimpleElements(
+                        parent=self.parent, row_id=(3*index + 4), column_id=start_column + 18, n_rows=3, n_columns=9,
+                        bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
+                        var_entr=self.gui_variables["Entry"]["Maximum"][categories_short[index]], var_entr_set=var_entr_max)
+                    entr_mean = SimpleElements(
+                        parent=self.parent, row_id=(3*index + 4), column_id=start_column + 27, n_rows=3, n_columns=9,
+                        bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
+                        var_entr=self.gui_variables["Entry"]["Mean"][categories_short[index]], var_entr_set=var_entr_mean)
+                    entr_error = SimpleElements(
+                        parent=self.parent, row_id=(3*index + 4), column_id=start_column + 36, n_rows=3, n_columns=9,
+                        bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
+                        var_entr=self.gui_variables["Entry"]["Error"][categories_short[index]], var_entr_set=var_entr_error)
+                    #
+                    self.gui_elements["Temporary"]["Entry"].extend([entr_min, entr_max, entr_mean, entr_error])
+                    #
+                self.change_rb_diagram()
                 #
-                self.gui_elements["Temporary"]["Entry"].extend([entr_min, entr_max, entr_mean, entr_error])
-                #
-            self.change_rb_diagram()
+            else:
+                pass
             #
         elif self.gui_variables["Radiobutton"]["Analysis Mode"].get() == 1:   # Mineral Chemistry
-            ## Cleaning
-            #
-            categories = ["Mineral Physics Histogram", "Mineral Physics Scatter", "LA ICP MS"]
-            for category in categories:
-                if category in self.gui_elements["Temporary"]["Axis"]:
-                    for gui_axes in self.gui_elements["Temporary"]["Axis"][category]:
-                        for gui_axis in gui_axes:
-                            gui_axis.axis("off")
-                            gui_axis.set_visible(False)
-            #
-            self.gui_elements["Temporary"]["Canvas"]["Mineralogy"].draw()
-            #
-            ## Labels
-            lbl_title = SimpleElements(
-                parent=self.parent, row_id=0, column_id=start_column, n_rows=2, n_columns=45,
-                bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
-                text="Mineral Chemistry", font_option="sans 12 bold", relief=tk.GROOVE)
-            lbl_results = SimpleElements(
-                parent=self.parent, row_id=2, column_id=start_column, n_rows=2, n_columns=9,
-                bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
-                text="Results", font_option="sans 10 bold", relief=tk.GROOVE)
-            lbl_min = SimpleElements(
-                parent=self.parent, row_id=2, column_id=start_column + 9, n_rows=2, n_columns=9,
-                bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
-                text="Minimum", font_option="sans 10 bold", relief=tk.GROOVE)
-            lbl_max = SimpleElements(
-                parent=self.parent, row_id=2, column_id=start_column + 18, n_rows=2, n_columns=9,
-                bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
-                text="Maximum", font_option="sans 10 bold", relief=tk.GROOVE)
-            lbl_mean = SimpleElements(
-                parent=self.parent, row_id=2, column_id=start_column + 27, n_rows=2, n_columns=9,
-                bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
-                text="Mean", font_option="sans 10 bold", relief=tk.GROOVE)
-            lbl_error = SimpleElements(
-                parent=self.parent, row_id=2, column_id=start_column + 36, n_rows=2, n_columns=9,
-                bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
-                text="Error", font_option="sans 10 bold", relief=tk.GROOVE)
-            lbl_diagram_type = SimpleElements(
-                parent=self.parent, row_id=33, column_id=0, n_rows=4, n_columns=14,
-                bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Background"]).create_label(
-                text="Diagram Type", font_option="sans 10 bold", relief=tk.FLAT)
-            lbl_concentration_setup = SimpleElements(
-                parent=self.parent, row_id=38, column_id=0, n_rows=4, n_columns=14,
-                bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Background"]).create_label(
-                text="Concentration Setup", font_option="sans 10 bold", relief=tk.FLAT)
-            lbl_element = SimpleElements(
-                parent=self.parent, row_id=42, column_id=0, n_rows=2, n_columns=14,
-                bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Background"]).create_label(
-                text="Element Selection", font_option="sans 10 bold", relief=tk.FLAT)
-            #
-            if self.oxides_present == True:
-                lbl_compound = SimpleElements(
-                    parent=self.parent, row_id=44, column_id=0, n_rows=2, n_columns=14,
-                    bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Background"]).create_label(
-                    text="Oxide Selection", font_option="sans 10 bold", relief=tk.FLAT)
-                self.gui_variables["Option Menu"]["Amount Compound"].set("Select Oxide")
-                compound_list = ["Select Oxide"]
+            if self.last_rb_analysis_mineral.get() != 1:
+                ## Cleaning
+                categories = ["Mineral Physics Histogram", "Mineral Physics Scatter", "LA ICP MS"]
+                for category in categories:
+                    if category in self.gui_elements["Temporary"]["Axis"]:
+                        for gui_axes in self.gui_elements["Temporary"]["Axis"][category]:
+                            for gui_axis in gui_axes:
+                                gui_axis.axis("off")
+                                gui_axis.set_visible(False)
                 #
-            if self.sulfides_present == True:
-                lbl_compound = SimpleElements(
-                    parent=self.parent, row_id=44, column_id=0, n_rows=2, n_columns=14,
-                    bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Background"]).create_label(
-                    text="Sulfide Selection", font_option="sans 10 bold", relief=tk.FLAT)
-                self.gui_variables["Option Menu"]["Amount Compound"].set("Select Sulfide")
-                compound_list = ["Select Sulfide"]
+                self.gui_elements["Temporary"]["Canvas"]["Mineralogy"].draw()
                 #
-            if self.phospides_present == True:
-                lbl_compound = SimpleElements(
-                    parent=self.parent, row_id=44, column_id=0, n_rows=2, n_columns=14,
-                    bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Background"]).create_label(
-                    text="Phospide Selection", font_option="sans 10 bold", relief=tk.FLAT)
-                self.gui_variables["Option Menu"]["Amount Compound"].set("Select Phospide")
-                compound_list = ["Select Phospide"]
-            #
-            if "compounds" in self.data_mineral:
-                compound_list.extend(list(self.data_mineral["compounds"].keys()))
-            #
-            self.gui_elements["Temporary"]["Label"].extend(
-                [lbl_title, lbl_results, lbl_min, lbl_max, lbl_mean, lbl_error, lbl_diagram_type, lbl_element, 
-                 lbl_compound, lbl_concentration_setup, lbl_element])
-            #
-            ## Radiobuttons
-            rb_diagram_type_01 = SimpleElements(
-                parent=self.parent, row_id=34, column_id=14, n_rows=2, n_columns=16,
-                bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Background"]).create_radiobutton(
-                text="Histogram", var_rb=self.gui_variables["Radiobutton"]["Diagram Type Elements"], value_rb=0,
-                color_bg=self.colors_gebpy["Background"], command=self.change_rb_diagram)
-            rb_diagram_type_02 = SimpleElements(
-                parent=self.parent, row_id=36, column_id=14, n_rows=2, n_columns=16,
-                bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Background"]).create_radiobutton(
-                text="Scatter", var_rb=self.gui_variables["Radiobutton"]["Diagram Type Elements"], value_rb=1,
-                color_bg=self.colors_gebpy["Background"], command=self.change_rb_diagram)
-            rb_concentration_type_01 = SimpleElements(
-                parent=self.parent, row_id=38, column_id=14, n_rows=2, n_columns=16,
-                bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Background"]).create_radiobutton(
-                text="Element Concentrations", var_rb=self.gui_variables["Radiobutton"]["Concentration Type"],
-                value_rb=0, color_bg=self.colors_gebpy["Background"],
-                command=lambda var_rb=self.gui_variables["Radiobutton"]["Concentration Type"]:
-                self.change_chemical_composition(var_rb))
-            rb_concentration_type_02 = SimpleElements(
-                parent=self.parent, row_id=40, column_id=14, n_rows=2, n_columns=16,
-                bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Background"]).create_radiobutton(
-                text="Oxide Concentrations", var_rb=self.gui_variables["Radiobutton"]["Concentration Type"],
-                value_rb=1, color_bg=self.colors_gebpy["Background"],
-                command=lambda var_rb=self.gui_variables["Radiobutton"]["Concentration Type"]:
-                self.change_chemical_composition(var_rb))
-            #
-            self.gui_elements["Temporary"]["Radiobutton"].extend(
-                [rb_diagram_type_01, rb_diagram_type_02, rb_concentration_type_01, rb_concentration_type_02])
-            #
-            ## Option Menu
-            self.list_elements.sort()
-            opt_element = SimpleElements(
-                parent=self.parent, row_id=42, column_id=14, n_rows=2, n_columns=16,
-                bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_option_menu(
-                var_opt=self.gui_variables["Option Menu"]["Amount Element"],
-                var_opt_set=self.gui_variables["Option Menu"]["Amount Element"].get(), opt_list=self.list_elements,
-                active_bg=self.colors_gebpy["Accent"])
-            opt_compound = SimpleElements(
-                parent=self.parent, row_id=44, column_id=14, n_rows=2, n_columns=16,
-                bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_option_menu(
-                var_opt=self.gui_variables["Option Menu"]["Amount Compound"],
-                var_opt_set=self.gui_variables["Option Menu"]["Amount Compound"].get(), opt_list=compound_list,
-                active_bg=self.colors_gebpy["Accent"])
-            #
-            self.gui_elements["Temporary"]["Option Menu"].extend([opt_element, opt_compound])
-            #
-            for index, element in enumerate(self.list_elements):
-                lbl_element = SimpleElements(
-                    parent=self.parent, row_id=(2*index + 4), column_id=start_column, n_rows=2, n_columns=9,
+                categories = ["Label", "Radiobutton", "Entry", "Option Menu"]
+                for category in categories:
+                    for gui_item in self.gui_elements["Temporary"][category]:
+                        gui_item.grid_remove()
+                #
+                ## Labels
+                lbl_title = SimpleElements(
+                    parent=self.parent, row_id=0, column_id=start_column, n_rows=2, n_columns=45,
                     bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
-                    text=element, font_option="sans 10 bold", relief=tk.GROOVE)
+                    text="Mineral Chemistry", font_option="sans 12 bold", relief=tk.GROOVE)
+                lbl_results = SimpleElements(
+                    parent=self.parent, row_id=2, column_id=start_column, n_rows=2, n_columns=9,
+                    bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
+                    text="Results", font_option="sans 10 bold", relief=tk.GROOVE)
+                lbl_min = SimpleElements(
+                    parent=self.parent, row_id=2, column_id=start_column + 9, n_rows=2, n_columns=9,
+                    bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
+                    text="Minimum", font_option="sans 10 bold", relief=tk.GROOVE)
+                lbl_max = SimpleElements(
+                    parent=self.parent, row_id=2, column_id=start_column + 18, n_rows=2, n_columns=9,
+                    bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
+                    text="Maximum", font_option="sans 10 bold", relief=tk.GROOVE)
+                lbl_mean = SimpleElements(
+                    parent=self.parent, row_id=2, column_id=start_column + 27, n_rows=2, n_columns=9,
+                    bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
+                    text="Mean", font_option="sans 10 bold", relief=tk.GROOVE)
+                lbl_error = SimpleElements(
+                    parent=self.parent, row_id=2, column_id=start_column + 36, n_rows=2, n_columns=9,
+                    bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
+                    text="Error", font_option="sans 10 bold", relief=tk.GROOVE)
+                lbl_diagram_type = SimpleElements(
+                    parent=self.parent, row_id=33, column_id=0, n_rows=4, n_columns=14,
+                    bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Background"]).create_label(
+                    text="Diagram Type", font_option="sans 10 bold", relief=tk.FLAT)
+                lbl_concentration_setup = SimpleElements(
+                    parent=self.parent, row_id=38, column_id=0, n_rows=4, n_columns=14,
+                    bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Background"]).create_label(
+                    text="Concentration Setup", font_option="sans 10 bold", relief=tk.FLAT)
+                lbl_element = SimpleElements(
+                    parent=self.parent, row_id=42, column_id=0, n_rows=2, n_columns=14,
+                    bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Background"]).create_label(
+                    text="Element Selection", font_option="sans 10 bold", relief=tk.FLAT)
                 #
-                self.gui_elements["Temporary"]["Label"].append(lbl_element)
-                self.gui_elements_sub["Mineral Chemistry"]["Element Concentration"]["Label"].append(lbl_element)
+                if self.oxides_present == True:
+                    lbl_compound = SimpleElements(
+                        parent=self.parent, row_id=44, column_id=0, n_rows=2, n_columns=14,
+                        bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Background"]).create_label(
+                        text="Oxide Selection", font_option="sans 10 bold", relief=tk.FLAT)
+                    self.gui_variables["Option Menu"]["Amount Compound"].set("Select Oxide")
+                    compound_list = ["Select Oxide"]
+                    #
+                if self.sulfides_present == True:
+                    lbl_compound = SimpleElements(
+                        parent=self.parent, row_id=44, column_id=0, n_rows=2, n_columns=14,
+                        bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Background"]).create_label(
+                        text="Sulfide Selection", font_option="sans 10 bold", relief=tk.FLAT)
+                    self.gui_variables["Option Menu"]["Amount Compound"].set("Select Sulfide")
+                    compound_list = ["Select Sulfide"]
+                    #
+                if self.phospides_present == True:
+                    lbl_compound = SimpleElements(
+                        parent=self.parent, row_id=44, column_id=0, n_rows=2, n_columns=14,
+                        bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Background"]).create_label(
+                        text="Phospide Selection", font_option="sans 10 bold", relief=tk.FLAT)
+                    self.gui_variables["Option Menu"]["Amount Compound"].set("Select Phospide")
+                    compound_list = ["Select Phospide"]
                 #
-                ## Entries
-                var_entr_min = int(min(self.data_mineral["chemistry"][element])*10**6)
-                var_entr_max = int(max(self.data_mineral["chemistry"][element])*10**6)
-                var_entr_mean = int(np.mean(self.data_mineral["chemistry"][element])*10**6)
-                var_entr_error = int(np.std(self.data_mineral["chemistry"][element], ddof=1)*10**6)
+                if "compounds" in self.data_mineral:
+                    compound_list.extend(list(self.data_mineral["compounds"].keys()))
                 #
-                entr_min = SimpleElements(
-                    parent=self.parent, row_id=(2*index + 4), column_id=start_column + 9, n_rows=2, n_columns=9,
-                    bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
-                    var_entr=self.gui_variables["Entry"]["Minimum"][element], var_entr_set=var_entr_min)
-                entr_max = SimpleElements(
-                    parent=self.parent, row_id=(2*index + 4), column_id=start_column + 18, n_rows=2, n_columns=9,
-                    bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
-                    var_entr=self.gui_variables["Entry"]["Maximum"][element], var_entr_set=var_entr_max)
-                entr_mean = SimpleElements(
-                    parent=self.parent, row_id=(2*index + 4), column_id=start_column + 27, n_rows=2, n_columns=9,
-                    bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
-                    var_entr=self.gui_variables["Entry"]["Mean"][element], var_entr_set=var_entr_mean)
-                entr_error = SimpleElements(
-                    parent=self.parent, row_id=(2*index + 4), column_id=start_column + 36, n_rows=2, n_columns=9,
-                    bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
-                    var_entr=self.gui_variables["Entry"]["Error"][element], var_entr_set=var_entr_error)
+                self.gui_elements["Temporary"]["Label"].extend(
+                    [lbl_title, lbl_results, lbl_min, lbl_max, lbl_mean, lbl_error, lbl_diagram_type, lbl_element,
+                     lbl_compound, lbl_concentration_setup, lbl_element])
                 #
-                self.gui_elements["Temporary"]["Entry"].extend([entr_min, entr_max, entr_mean, entr_error])
-                self.gui_elements_sub["Mineral Chemistry"]["Element Concentration"]["Entry"].extend(
-                    [entr_min, entr_max, entr_mean, entr_error])
+                ## Radiobuttons
+                rb_diagram_type_01 = SimpleElements(
+                    parent=self.parent, row_id=34, column_id=14, n_rows=2, n_columns=16,
+                    bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Background"]).create_radiobutton(
+                    text="Histogram", var_rb=self.gui_variables["Radiobutton"]["Diagram Type Elements"], value_rb=0,
+                    color_bg=self.colors_gebpy["Background"], command=self.change_rb_diagram)
+                rb_diagram_type_02 = SimpleElements(
+                    parent=self.parent, row_id=36, column_id=14, n_rows=2, n_columns=16,
+                    bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Background"]).create_radiobutton(
+                    text="Scatter", var_rb=self.gui_variables["Radiobutton"]["Diagram Type Elements"], value_rb=1,
+                    color_bg=self.colors_gebpy["Background"], command=self.change_rb_diagram)
+                rb_concentration_type_01 = SimpleElements(
+                    parent=self.parent, row_id=38, column_id=14, n_rows=2, n_columns=16,
+                    bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Background"]).create_radiobutton(
+                    text="Element Concentrations", var_rb=self.gui_variables["Radiobutton"]["Concentration Type"],
+                    value_rb=0, color_bg=self.colors_gebpy["Background"],
+                    command=lambda var_rb=self.gui_variables["Radiobutton"]["Concentration Type"]:
+                    self.change_chemical_composition(var_rb))
+                rb_concentration_type_02 = SimpleElements(
+                    parent=self.parent, row_id=40, column_id=14, n_rows=2, n_columns=16,
+                    bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Background"]).create_radiobutton(
+                    text="Oxide Concentrations", var_rb=self.gui_variables["Radiobutton"]["Concentration Type"],
+                    value_rb=1, color_bg=self.colors_gebpy["Background"],
+                    command=lambda var_rb=self.gui_variables["Radiobutton"]["Concentration Type"]:
+                    self.change_chemical_composition(var_rb))
+                #
+                self.gui_elements["Temporary"]["Radiobutton"].extend(
+                    [rb_diagram_type_01, rb_diagram_type_02, rb_concentration_type_01, rb_concentration_type_02])
+                #
+                ## Option Menu
+                self.list_elements.sort()
+                opt_element = SimpleElements(
+                    parent=self.parent, row_id=42, column_id=14, n_rows=2, n_columns=16,
+                    bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_option_menu(
+                    var_opt=self.gui_variables["Option Menu"]["Amount Element"],
+                    var_opt_set=self.gui_variables["Option Menu"]["Amount Element"].get(), opt_list=self.list_elements,
+                    active_bg=self.colors_gebpy["Accent"])
+                opt_compound = SimpleElements(
+                    parent=self.parent, row_id=44, column_id=14, n_rows=2, n_columns=16,
+                    bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_option_menu(
+                    var_opt=self.gui_variables["Option Menu"]["Amount Compound"],
+                    var_opt_set=self.gui_variables["Option Menu"]["Amount Compound"].get(), opt_list=compound_list,
+                    active_bg=self.colors_gebpy["Accent"])
+                #
+                self.gui_elements["Temporary"]["Option Menu"].extend([opt_element, opt_compound])
+                #
+                for index, element in enumerate(self.list_elements):
+                    lbl_element = SimpleElements(
+                        parent=self.parent, row_id=(2*index + 4), column_id=start_column, n_rows=2, n_columns=9,
+                        bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
+                        text=element, font_option="sans 10 bold", relief=tk.GROOVE)
+                    #
+                    self.gui_elements["Temporary"]["Label"].append(lbl_element)
+                    self.gui_elements_sub["Mineral Chemistry"]["Element Concentration"]["Label"].append(lbl_element)
+                    #
+                    ## Entries
+                    var_entr_min = int(min(self.data_mineral["chemistry"][element])*10**6)
+                    var_entr_max = int(max(self.data_mineral["chemistry"][element])*10**6)
+                    var_entr_mean = int(np.mean(self.data_mineral["chemistry"][element])*10**6)
+                    var_entr_error = int(np.std(self.data_mineral["chemistry"][element], ddof=1)*10**6)
+                    #
+                    entr_min = SimpleElements(
+                        parent=self.parent, row_id=(2*index + 4), column_id=start_column + 9, n_rows=2, n_columns=9,
+                        bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
+                        var_entr=self.gui_variables["Entry"]["Minimum"][element], var_entr_set=var_entr_min)
+                    entr_max = SimpleElements(
+                        parent=self.parent, row_id=(2*index + 4), column_id=start_column + 18, n_rows=2, n_columns=9,
+                        bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
+                        var_entr=self.gui_variables["Entry"]["Maximum"][element], var_entr_set=var_entr_max)
+                    entr_mean = SimpleElements(
+                        parent=self.parent, row_id=(2*index + 4), column_id=start_column + 27, n_rows=2, n_columns=9,
+                        bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
+                        var_entr=self.gui_variables["Entry"]["Mean"][element], var_entr_set=var_entr_mean)
+                    entr_error = SimpleElements(
+                        parent=self.parent, row_id=(2*index + 4), column_id=start_column + 36, n_rows=2, n_columns=9,
+                        bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
+                        var_entr=self.gui_variables["Entry"]["Error"][element], var_entr_set=var_entr_error)
+                    #
+                    self.gui_elements["Temporary"]["Entry"].extend([entr_min, entr_max, entr_mean, entr_error])
+                    self.gui_elements_sub["Mineral Chemistry"]["Element Concentration"]["Entry"].extend(
+                        [entr_min, entr_max, entr_mean, entr_error])
+                #
+            else:
+                pass
         #
         elif self.gui_variables["Radiobutton"]["Analysis Mode"].get() == 2:   # Synthetic LA-ICP-MS
-            ## Cleaning
-            #
-            categories = ["Mineral Physics Histogram", "Mineral Physics Scatter", "LA ICP MS"]
-            for category in categories:
-                if category in self.gui_elements["Temporary"]["Axis"]:
-                    for gui_axes in self.gui_elements["Temporary"]["Axis"][category]:
-                        for gui_axis in gui_axes:
-                            gui_axis.axis("off")
-                            gui_axis.set_visible(False)
-            #
-            self.gui_elements["Temporary"]["Canvas"]["Mineralogy"].draw()
-            #
-            ## LA-ICP-MS Experiment Simulation
-            time_data, intensity_data = self.simulate_laicpms_experiment()
-            #
-            ## Labels
-            lbl_title = SimpleElements(
-                parent=self.parent, row_id=0, column_id=start_column, n_rows=2, n_columns=45,
-                bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
-                text="Synthetic LA-ICP-MS", font_option="sans 12 bold", relief=tk.GROOVE)
-            lbl_results = SimpleElements(
-                parent=self.parent, row_id=2, column_id=start_column, n_rows=2, n_columns=9,
-                bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
-                text="Results", font_option="sans 10 bold", relief=tk.GROOVE)
-            lbl_min = SimpleElements(
-                parent=self.parent, row_id=2, column_id=start_column + 9, n_rows=2, n_columns=9,
-                bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
-                text="Minimum", font_option="sans 10 bold", relief=tk.GROOVE)
-            lbl_max = SimpleElements(
-                parent=self.parent, row_id=2, column_id=start_column + 18, n_rows=2, n_columns=9,
-                bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
-                text="Maximum", font_option="sans 10 bold", relief=tk.GROOVE)
-            lbl_mean = SimpleElements(
-                parent=self.parent, row_id=2, column_id=start_column + 27, n_rows=2, n_columns=9,
-                bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
-                text="Mean", font_option="sans 10 bold", relief=tk.GROOVE)
-            lbl_error = SimpleElements(
-                parent=self.parent, row_id=2, column_id=start_column + 36, n_rows=2, n_columns=9,
-                bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
-                text="Error", font_option="sans 10 bold", relief=tk.GROOVE)
-            #
-            self.gui_elements["Temporary"]["Label"].extend(
-                [lbl_title, lbl_results, lbl_min, lbl_max, lbl_mean, lbl_error])
-            #
-            self.list_elements.sort()
-            for index, element in enumerate(self.list_elements):
-                lbl_element = SimpleElements(
-                    parent=self.parent, row_id=(2*index + 4), column_id=start_column, n_rows=2, n_columns=9,
+            if self.last_rb_analysis_mineral.get() != 2:
+                ## Cleaning
+                categories = ["Mineral Physics Histogram", "Mineral Physics Scatter", "LA ICP MS"]
+                for category in categories:
+                    if category in self.gui_elements["Temporary"]["Axis"]:
+                        for gui_axes in self.gui_elements["Temporary"]["Axis"][category]:
+                            for gui_axis in gui_axes:
+                                gui_axis.axis("off")
+                                gui_axis.set_visible(False)
+                #
+                self.gui_elements["Temporary"]["Canvas"]["Mineralogy"].draw()
+                #
+                categories = ["Label", "Radiobutton", "Entry", "Option Menu"]
+                for category in categories:
+                    for gui_item in self.gui_elements["Temporary"][category]:
+                        gui_item.grid_remove()
+                #
+                ## LA-ICP-MS Experiment Simulation
+                time_data, intensity_data = self.simulate_laicpms_experiment()
+                #
+                ## Labels
+                lbl_title = SimpleElements(
+                    parent=self.parent, row_id=0, column_id=start_column, n_rows=2, n_columns=45,
                     bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
-                    text=element, font_option="sans 10 bold", relief=tk.GROOVE)
+                    text="Synthetic LA-ICP-MS", font_option="sans 12 bold", relief=tk.GROOVE)
+                lbl_results = SimpleElements(
+                    parent=self.parent, row_id=2, column_id=start_column, n_rows=2, n_columns=9,
+                    bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
+                    text="Results", font_option="sans 10 bold", relief=tk.GROOVE)
+                lbl_min = SimpleElements(
+                    parent=self.parent, row_id=2, column_id=start_column + 9, n_rows=2, n_columns=9,
+                    bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
+                    text="Minimum", font_option="sans 10 bold", relief=tk.GROOVE)
+                lbl_max = SimpleElements(
+                    parent=self.parent, row_id=2, column_id=start_column + 18, n_rows=2, n_columns=9,
+                    bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
+                    text="Maximum", font_option="sans 10 bold", relief=tk.GROOVE)
+                lbl_mean = SimpleElements(
+                    parent=self.parent, row_id=2, column_id=start_column + 27, n_rows=2, n_columns=9,
+                    bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
+                    text="Mean", font_option="sans 10 bold", relief=tk.GROOVE)
+                lbl_error = SimpleElements(
+                    parent=self.parent, row_id=2, column_id=start_column + 36, n_rows=2, n_columns=9,
+                    bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
+                    text="Error", font_option="sans 10 bold", relief=tk.GROOVE)
                 #
-                self.gui_elements["Temporary"]["Label"].append(lbl_element)
+                self.gui_elements["Temporary"]["Label"].extend(
+                    [lbl_title, lbl_results, lbl_min, lbl_max, lbl_mean, lbl_error])
                 #
-                ## Entries
-                #
-                var_entr_min = int(min(self.data_mineral["chemistry"][element])*10**6)
-                var_entr_max = int(max(self.data_mineral["chemistry"][element])*10**6)
-                var_entr_mean = int(np.mean(self.data_mineral["chemistry"][element])*10**6)
-                var_entr_error = int(np.std(self.data_mineral["chemistry"][element], ddof=1)*10**6)
-                #
-                entr_min = SimpleElements(
-                    parent=self.parent, row_id=(2*index + 4), column_id=start_column + 9, n_rows=2, n_columns=9,
-                    bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
-                    var_entr=self.gui_variables["Entry"]["Minimum"][element], var_entr_set=var_entr_min)
-                entr_max = SimpleElements(
-                    parent=self.parent, row_id=(2*index + 4), column_id=start_column + 18, n_rows=2, n_columns=9,
-                    bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
-                    var_entr=self.gui_variables["Entry"]["Maximum"][element], var_entr_set=var_entr_max)
-                entr_mean = SimpleElements(
-                    parent=self.parent, row_id=(2*index + 4), column_id=start_column + 27, n_rows=2, n_columns=9,
-                    bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
-                    var_entr=self.gui_variables["Entry"]["Mean"][element], var_entr_set=var_entr_mean)
-                entr_error = SimpleElements(
-                    parent=self.parent, row_id=(2*index + 4), column_id=start_column + 36, n_rows=2, n_columns=9,
-                    bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
-                    var_entr=self.gui_variables["Entry"]["Error"][element], var_entr_set=var_entr_error)
-                #
-                self.gui_elements["Temporary"]["Entry"].extend([entr_min, entr_max, entr_mean, entr_error])
-                #
-            ## Diagram
-            if "LA ICP MS" not in self.gui_elements["Temporary"]["Canvas"]:
-                if "Mineralogy" not in self.gui_elements["Temporary"]["Figure"]:
-                    fig_mineralogy = Figure(
-                        dpi=150, tight_layout=True, facecolor=self.colors_gebpy["Background"])
-                else:
-                    fig_mineralogy = self.gui_elements["Temporary"]["Figure"]["Mineralogy"]
-                #
-                ax_laicpms = [[fig_mineralogy.subplots(nrows=1, ncols=1)]]
-                #
-                element_laicpms = list(intensity_data.keys())
-                for element in element_laicpms:
-                    ax_laicpms[0][0].plot(time_data, intensity_data[element], label=element)
+                self.list_elements.sort()
+                for index, element in enumerate(self.list_elements):
+                    lbl_element = SimpleElements(
+                        parent=self.parent, row_id=(2*index + 4), column_id=start_column, n_rows=2, n_columns=9,
+                        bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
+                        text=element, font_option="sans 10 bold", relief=tk.GROOVE)
                     #
-                ax_laicpms[0][0].set_xlabel("Time (s)", fontsize=9)
-                ax_laicpms[0][0].set_ylabel("Intensity (cps)", labelpad=0.5, fontsize=9)
-                ax_laicpms[0][0].set_xlim(0, 60)
-                ax_laicpms[0][0].set_xticks(np.arange(0, 60 + 5, 5))
-                ax_laicpms[0][0].set_ylim(1, 10**9)
-                ax_laicpms[0][0].set_yscale("log")
-                ax_laicpms[0][0].grid(True)
-                plt.grid(which="major", axis="both", linestyle="-")
-                plt.minorticks_on()
-                plt.grid(which="minor", axis="both", linestyle="-", alpha=0.25)
-                ax_laicpms[0][0].set_axisbelow(True)
-                #
-                ax_laicpms[0][0].legend()
-                #
-                if "Mineralogy" not in self.gui_elements["Temporary"]["Canvas"]:
-                    canvas_mineralogy = FigureCanvasTkAgg(fig_mineralogy, master=self.parent)
+                    self.gui_elements["Temporary"]["Label"].append(lbl_element)
                     #
-                else:
+                    ## Entries
+                    #
+                    var_entr_min = int(min(self.data_mineral["chemistry"][element])*10**6)
+                    var_entr_max = int(max(self.data_mineral["chemistry"][element])*10**6)
+                    var_entr_mean = int(np.mean(self.data_mineral["chemistry"][element])*10**6)
+                    var_entr_error = int(np.std(self.data_mineral["chemistry"][element], ddof=1)*10**6)
+                    #
+                    entr_min = SimpleElements(
+                        parent=self.parent, row_id=(2*index + 4), column_id=start_column + 9, n_rows=2, n_columns=9,
+                        bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
+                        var_entr=self.gui_variables["Entry"]["Minimum"][element], var_entr_set=var_entr_min)
+                    entr_max = SimpleElements(
+                        parent=self.parent, row_id=(2*index + 4), column_id=start_column + 18, n_rows=2, n_columns=9,
+                        bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
+                        var_entr=self.gui_variables["Entry"]["Maximum"][element], var_entr_set=var_entr_max)
+                    entr_mean = SimpleElements(
+                        parent=self.parent, row_id=(2*index + 4), column_id=start_column + 27, n_rows=2, n_columns=9,
+                        bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
+                        var_entr=self.gui_variables["Entry"]["Mean"][element], var_entr_set=var_entr_mean)
+                    entr_error = SimpleElements(
+                        parent=self.parent, row_id=(2*index + 4), column_id=start_column + 36, n_rows=2, n_columns=9,
+                        bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
+                        var_entr=self.gui_variables["Entry"]["Error"][element], var_entr_set=var_entr_error)
+                    #
+                    self.gui_elements["Temporary"]["Entry"].extend([entr_min, entr_max, entr_mean, entr_error])
+                    #
+                ## Diagram
+                if "LA ICP MS" not in self.gui_elements["Temporary"]["Canvas"]:
+                    if "Mineralogy" not in self.gui_elements["Temporary"]["Figure"]:
+                        fig_mineralogy = Figure(
+                            dpi=150, tight_layout=True, facecolor=self.colors_gebpy["Background"])
+                    else:
+                        fig_mineralogy = self.gui_elements["Temporary"]["Figure"]["Mineralogy"]
+                    #
+                    ax_laicpms = [[fig_mineralogy.subplots(nrows=1, ncols=1)]]
+                    #
+                    element_laicpms = list(intensity_data.keys())
+                    for element in element_laicpms:
+                        ax_laicpms[0][0].plot(time_data, intensity_data[element], label=element)
+                        #
+                    ax_laicpms[0][0].set_xlabel("Time (s)", fontsize=9)
+                    ax_laicpms[0][0].set_ylabel("Intensity (cps)", labelpad=0.5, fontsize=9)
+                    ax_laicpms[0][0].set_xlim(0, 60)
+                    ax_laicpms[0][0].set_xticks(np.arange(0, 60 + 5, 5))
+                    ax_laicpms[0][0].set_ylim(1, 10**9)
+                    ax_laicpms[0][0].set_yscale("log")
+                    ax_laicpms[0][0].grid(True)
+                    #
+                    ax_laicpms[0][0].grid(which="major", axis="both", linestyle="-")
+                    ax_laicpms[0][0].minorticks_on()
+                    ax_laicpms[0][0].grid(which="minor", axis="both", linestyle="-", alpha=0.25)
+                    #
+                    ax_laicpms[0][0].set_axisbelow(True)
+                    #
+                    ax_laicpms[0][0].legend()
+                    #
                     canvas_mineralogy = self.gui_elements["Temporary"]["Canvas"]["Mineralogy"]
+                    #
+                    canvas_mineralogy.draw()
+                    canvas_mineralogy.get_tk_widget().grid(
+                        row=0, column=81, rowspan=int(self.n_rows - 3), columnspan=int(self.n_columns - 81), sticky="nesw")
+                    #
+                    self.gui_elements["Temporary"]["Axis"]["LA ICP MS"] = ax_laicpms
+                    self.gui_elements["Temporary"]["Canvas"]["Mineralogy"] = canvas_mineralogy
+                else:
+                    self.gui_elements["Temporary"]["Canvas"]["LA ICP MS"].get_tk_widget().grid()
                 #
-                canvas_mineralogy.draw()
-                canvas_mineralogy.get_tk_widget().grid(
-                    row=0, column=81, rowspan=int(self.n_rows - 3), columnspan=int(self.n_columns - 81), sticky="nesw")
-                #
-                self.gui_elements["Temporary"]["Axis"]["LA ICP MS"] = ax_laicpms
-                self.gui_elements["Temporary"]["Canvas"]["Mineralogy"] = canvas_mineralogy
             else:
-                self.gui_elements["Temporary"]["Canvas"]["LA ICP MS"].get_tk_widget().grid()
-            #
+                pass
+        #
+        self.last_rb_analysis_mineral.set(self.gui_variables["Radiobutton"]["Analysis Mode"].get())
+        #
     def change_chemical_composition(self, var_rb):
         if var_rb.get() == 0:   # Element Composition
             ## Cleaning
@@ -1582,6 +1655,11 @@ class GebPyGUI(tk.Frame):
                     gui_item.grid_remove()
                 #
                 self.gui_elements_sub["Mineral Chemistry"][key_01][key_02].clear()
+        #
+        self.last_rb_analysis_mineral.set(42)
+        self.last_rb_diagram_mineral.set(42)
+        self.gui_variables["Radiobutton"]["Analysis Mode"].set(0)
+        self.gui_variables["Radiobutton"]["Diagram Type Mineral"].set(0)
         #
         self.gui_variables["Radiobutton"]["Concentration Type"] = tk.IntVar()
         self.gui_variables["Radiobutton"]["Concentration Type"].set(0)
