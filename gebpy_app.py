@@ -6,7 +6,7 @@
 # Name:		gebpy_app.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		06.01.2023
+# Date:		18.01.2023
 
 #-----------------------------------------------
 
@@ -18,7 +18,8 @@ import numpy as np
 import random as rd
 import matplotlib.pyplot as plt
 from modules.geophysics import Elasticity as elast
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, NavigationToolbar2Tk)
+from matplotlib.figure import Figure
 from modules.gui_elements import SimpleElements
 from modules.oxides import Oxides
 from modules.carbonates import Carbonates, CarbonateRocks
@@ -39,8 +40,11 @@ from modules.metamorphics import GranuliteFacies
 ## GUI
 class GebPyGUI(tk.Frame):
     #
-    def __init__(self, parent):
+    def __init__(self, parent, var_screen_width, var_screen_height):
         tk.Frame.__init__(self, parent)
+        #
+        var_screen_width = var_screen_width
+        var_screen_height = var_screen_height
         #
         ### Container
         self.gui_elements = {}
@@ -85,17 +89,44 @@ class GebPyGUI(tk.Frame):
         ### General Settings
         self.parent = parent
         self.parent.title("GebPy")
-        self.parent.geometry("1800x975+0+0")
-        self.parent.resizable(True, True)
+        #
+        var_geometry = ""
+        var_window_width = int(round(0.95*int(var_screen_width), -2))
+        if var_window_width > 1800:
+            var_window_width = 1800
+        var_geometry += str(var_window_width)
+        var_geometry += "x"
+        var_window_height = int(round(0.85*int(var_screen_height), -2))
+        if var_window_height > 975:
+            var_window_height = 975
+        var_geometry += str(var_window_height)
+        var_geometry += "+0+0"
+        self.parent.geometry(var_geometry)
+        #self.parent.geometry("1800x975+0+0")
+        self.parent.resizable(False, False)
         self.parent["bg"] = self.colors_gebpy["Background"]
         #
         ## Geometry and Layout
-        window_width = 1800
-        window_heigth = 975
+        # window_width = 1800
+        # window_heigth = 975
+        # #
+        # row_min = 15
+        # n_rows = int(window_heigth / row_min)
+        # #
+        # column_min = 10
+        # n_columns = int(window_width / column_min)
+        #
+        window_width = var_window_width
+        window_heigth = var_window_height
+        #
         row_min = 15
         n_rows = int(window_heigth/row_min)
+        #
         column_min = 10
         n_columns = int(window_width/column_min)
+        #
+        self.n_rows = n_rows
+        self.n_columns = n_columns
         #
         for x in range(n_columns):
             tk.Grid.columnconfigure(self.parent, x, weight=1)
@@ -527,11 +558,11 @@ class GebPyGUI(tk.Frame):
         #
         ## Buttons
         btn_quit = SimpleElements(
-            parent=self.parent, row_id=62, column_id=16, n_rows=3, n_columns=15,
+            parent=self.parent, row_id=n_rows - 3, column_id=16, n_rows=3, n_columns=15,
             bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_button(
             text="Quit GebPy", command=self.parent.quit)
         btn_restart = SimpleElements(
-            parent=self.parent, row_id=62, column_id=1, n_rows=3, n_columns=15,
+            parent=self.parent, row_id=n_rows - 3, column_id=1, n_rows=3, n_columns=15,
             bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_button(
             text="Restart GebPy", command=self.restart_gebpy)
         #
@@ -656,8 +687,11 @@ class GebPyGUI(tk.Frame):
             ## Diagram
             if self.gui_variables["Radiobutton"]["Diagram Type Mineral"].get() == 0:
                 if "Mineral Physics Histogram" not in self.gui_elements["Temporary"]["Canvas"]:
-                    fig_histo, ax_histo = plt.subplots(
-                        ncols=3, nrows=3, figsize=(9, 9), facecolor=self.colors_gebpy["Background"])
+                    fig_histo = Figure(
+                        figsize=(3, 3), dpi=100, tight_layout=True, facecolor=self.colors_gebpy["Background"])
+                    ax_histo = fig_histo.subplots(nrows=3, ncols=3)
+                    #fig_histo, ax_histo = plt.subplots(
+                    #    ncols=3, nrows=3, facecolor=self.colors_gebpy["Background"])
                     #
                     categories = [["M", "V", "rho"], ["vP", "vS", "vP/vS"], ["GR", "PE", "nu"]]
                     labels = [["M (kg/mol)", "V (A$^3$/mol", "rho (kg/m$^3$"], ["vP (m/s)", "vS (m/s)", "vP/vS (1)"],
@@ -678,7 +712,7 @@ class GebPyGUI(tk.Frame):
                         #
                         canvas_histo = FigureCanvasTkAgg(fig_histo, master=self.parent)
                         canvas_histo.get_tk_widget().grid(
-                            row=0, column=90, rowspan=65, columnspan=90, sticky="nesw")
+                            row=0, column=90, rowspan=self.n_rows, columnspan=int(self.n_columns - 90), sticky="nesw")
                         #
                         self.gui_elements["Temporary"]["Canvas"]["Mineral Physics Histogram"] = canvas_histo
                         self.gui_elements["Temporary"]["Figure"]["Mineral Physics Histogram"] = fig_histo
@@ -694,8 +728,9 @@ class GebPyGUI(tk.Frame):
                 #
             elif self.gui_variables["Radiobutton"]["Diagram Type Mineral"].get() == 1:
                 if "Mineral Physics Scatter" not in self.gui_elements["Temporary"]["Canvas"]:
-                    fig_scatter, ax_scatter = plt.subplots(
-                        ncols=3, nrows=3, figsize=(9, 9), facecolor=self.colors_gebpy["Background"])
+                    fig_scatter = Figure(
+                        figsize=(3, 3), dpi=100, tight_layout=True, facecolor=self.colors_gebpy["Background"])
+                    ax_scatter = fig_scatter.subplots(nrows=3, ncols=3)
                     #
                     categories = [["M", "V", "rho"], ["vP", "vS", "vP/vS"], ["GR", "PE", "nu"]]
                     labels = [["M (kg/mol)", "V (A$^3$/mol", "rho (kg/m$^3$"], ["vP (m/s)", "vS (m/s)", "vP/vS (1)"],
@@ -716,7 +751,7 @@ class GebPyGUI(tk.Frame):
                     #
                     canvas_scatter = FigureCanvasTkAgg(fig_scatter, master=self.parent)
                     canvas_scatter.get_tk_widget().grid(
-                        row=0, column=90, rowspan=65, columnspan=90, sticky="nesw")
+                        row=0, column=90, rowspan=self.n_rows, columnspan=int(self.n_columns - 90), sticky="nesw")
                     #
                     self.gui_elements["Temporary"]["Canvas"]["Mineral Physics Scatter"] = canvas_scatter
                     self.gui_elements["Temporary"]["Figure"]["Mineral Physics Scatter"] = fig_scatter
@@ -4142,8 +4177,14 @@ class GebPyGUI(tk.Frame):
     #
     def restart_gebpy(self):
         self.parent.destroy()
+        #
         root = tk.Tk()
-        GebPyGUI(root)
+        #
+        screen_width = root.winfo_screenwidth()
+        screen_height = root.winfo_screenheight()
+        #
+        GebPyGUI(parent=root, var_screen_width=screen_width, var_screen_height=screen_height)
+        #
         root.mainloop()
     #
     def export_mineral_data(self, var_dataset, var_name):
@@ -4353,5 +4394,10 @@ class GebPyGUI(tk.Frame):
 #
 if __name__ == "__main__":
     root = tk.Tk()
-    GebPyGUI(root)
+    #
+    screen_width = root.winfo_screenwidth()
+    screen_height = root.winfo_screenheight()
+    #
+    GebPyGUI(parent=root, var_screen_width=screen_width, var_screen_height=screen_height)
+    #
     root.mainloop()
