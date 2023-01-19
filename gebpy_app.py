@@ -6,7 +6,7 @@
 # Name:		gebpy_app.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		18.01.2023
+# Date:		19.01.2023
 
 #-----------------------------------------------
 
@@ -90,7 +90,31 @@ class GebPyGUI(tk.Frame):
         #
         self.last_rb_analysis_rock = tk.IntVar()
         self.last_rb_analysis_rock.set(42)
-
+        self.last_rb_diagram_rock = tk.IntVar()
+        self.last_rb_diagram_rock.set(42)
+        #
+        self.last_rb_setting = {"Mineralogy": {}, "Petrology": {}, "Stratigraphy": {}}
+        # Mineralogy
+        self.last_rb_setting["Mineralogy"]["General Mode"] = tk.IntVar()
+        self.last_rb_setting["Mineralogy"]["General Mode"].set(42)
+        self.last_rb_setting["Mineralogy"]["Mineral Physics"] = tk.IntVar()
+        self.last_rb_setting["Mineralogy"]["Mineral Physics"].set(42)
+        self.last_rb_setting["Mineralogy"]["Mineral Chemistry"] = tk.IntVar()
+        self.last_rb_setting["Mineralogy"]["Mineral Chemistry"].set(42)
+        self.last_rb_setting["Mineralogy"]["Composition Elements"] = tk.IntVar()
+        self.last_rb_setting["Mineralogy"]["Composition Elements"].set(42)
+        # Petrology
+        self.last_rb_setting["Petrology"]["General Mode"] = tk.IntVar()
+        self.last_rb_setting["Petrology"]["General Mode"].set(42)
+        self.last_rb_setting["Petrology"]["Rock Physics"] = tk.IntVar()
+        self.last_rb_setting["Petrology"]["Rock Physics"].set(42)
+        self.last_rb_setting["Petrology"]["Rock Chemistry"] = tk.IntVar()
+        self.last_rb_setting["Petrology"]["Rock Chemistry"].set(42)
+        self.last_rb_setting["Petrology"]["Composition Minerals"] = tk.IntVar()
+        self.last_rb_setting["Petrology"]["Composition Minerals"].set(42)
+        self.last_rb_setting["Petrology"]["Composition Elements"] = tk.IntVar()
+        self.last_rb_setting["Petrology"]["Composition Elements"].set(42)
+        # Stratigraphy
         #
         ### General Settings
         self.parent = parent
@@ -682,7 +706,7 @@ class GebPyGUI(tk.Frame):
         #
         self.gui_elements["Static"]["Button"].append(btn_generate_data)
     #
-    def change_rb_diagram(self):
+    def change_rb_diagram(self):    # RB DIAGRAM MINERALOGY
         if self.gui_variables["Radiobutton"]["Analysis Mode"].get() == 0 \
                 and self.last_rb_analysis_mineral.get() not in [1, 2]:   # MINERAL PHYSICS
             ## Diagram
@@ -3482,16 +3506,499 @@ class GebPyGUI(tk.Frame):
             self.gui_variables["Entry"]["Error"][element] = tk.StringVar()
             self.gui_variables["Entry"]["Error"][element].set(0.0)
     #
+    def change_rb_diagram_rocks(self):  # RB DIAGRAM ROCKS
+        if self.gui_variables["Radiobutton"]["Analysis Mode"].get() == 0:   # ROCK PHYSICS
+            var_rb_diagram = self.gui_variables["Radiobutton"]["Diagram Type Rock"].get()
+            if var_rb_diagram == 0:   # HISTOGRAM
+                if self.last_rb_setting["Petrology"]["General Mode"].get() not in [1, 2]:
+                    if self.last_rb_setting["Petrology"]["Rock Physics"].get() != 0:
+                        if "Petrology" in self.gui_elements["Temporary"]["Canvas"]:
+                            categories = ["Rock Physics Histogram", "Rock Physics Scatter", "Rock Chemistry Histogram",
+                                          "Rock Chemistry Scatter"]
+                            for category in categories:
+                                if category in self.gui_elements["Temporary"]["Axis"]:
+                                    for gui_axes in self.gui_elements["Temporary"]["Axis"][category]:
+                                        for gui_axis in gui_axes:
+                                            gui_axis.axis("off")
+                                            gui_axis.set_visible(False)
+                            #
+                            self.gui_elements["Temporary"]["Canvas"]["Petrology"].draw()
+                        #
+                        ## Diagram
+                        if "Petrology" not in self.gui_elements["Temporary"]["Canvas"]:
+                            fig_petrology = Figure(
+                                figsize=(3, 3), dpi=150, tight_layout=True, facecolor=self.colors_gebpy["Background"])
+                            ax_rp_histo = fig_petrology.subplots(nrows=3, ncols=3)
+                            #
+                            categories = [["rho", "GR", "PE"], ["vP", "vS", "vP/vS"], ["K", "G", "nu"]]
+                            labels = [["$\\varrho$ (kg/m\u00B3)", "GR (API)", "PE (barns/e\u207B)"],
+                                      ["vP (m/s)", "vS (m/s)", "vP/vS (1)"], ["K (GPa)", "G (GPa)", "nu (1)"]]
+                            #
+                            for i, subcategories in enumerate(categories):
+                                for j, key in enumerate(subcategories):
+                                    ax_rp_histo[i][j].hist(
+                                        x=self.data_rock[key], color=self.colors_gebpy["Option"], edgecolor="black",
+                                        bins=12)
+                                    #
+                                    ax_rp_histo[i][j].set_xlabel(labels[i][j], fontsize=9)
+                                    ax_rp_histo[i][j].set_ylabel("Frequency", labelpad=0.5, fontsize=9)
+                                    ax_rp_histo[i][j].grid(True)
+                                    ax_rp_histo[i][j].set_axisbelow(True)
+                                #
+                                canvas_petrology = FigureCanvasTkAgg(fig_petrology, master=self.parent)
+                                canvas_petrology.get_tk_widget().grid(
+                                    row=0, column=81, rowspan=int(self.n_rows - 3), columnspan=int(self.n_columns - 81),
+                                    sticky="nesw")
+                                #
+                                self.gui_elements["Temporary"]["Axis"]["Rock Physics Histogram"] = ax_rp_histo
+                                self.gui_elements["Temporary"]["Figure"]["Petrology"] = fig_petrology
+                                self.gui_elements["Temporary"]["Canvas"]["Petrology"] = canvas_petrology
+                            #
+                        else:
+                            ## Cleaning
+                            for gui_axes in self.gui_elements["Temporary"]["Axis"]["Rock Physics Histogram"]:
+                                for gui_axis in gui_axes:
+                                    gui_axis.axis("on")
+                                    gui_axis.set_visible(True)
+                            #
+                            categories = ["Rock Physics Scatter", "Rock Chemistry Histogram", "Rock Chemistry Scatter"]
+                            for category in categories:
+                                if category in self.gui_elements["Temporary"]["Axis"]:
+                                    for gui_axes in self.gui_elements["Temporary"]["Axis"][category]:
+                                        for gui_axis in gui_axes:
+                                            gui_axis.axis("off")
+                                            gui_axis.set_visible(False)
+                            #
+                            self.gui_elements["Temporary"]["Canvas"]["Petrology"].draw()
+                        #
+                    else:
+                        pass
+                else:
+                    ## RECONSTRUCTION
+                    for gui_axes in self.gui_elements["Temporary"]["Axis"]["Rock Physics Histogram"]:
+                        for gui_axis in gui_axes:
+                            gui_axis.axis("on")
+                            gui_axis.set_visible(True)
+                    #
+                    categories = ["Rock Physics Scatter", "Rock Chemistry Histogram", "Rock Chemistry Scatter"]
+                    for category in categories:
+                        if category in self.gui_elements["Temporary"]["Axis"]:
+                            for gui_axes in self.gui_elements["Temporary"]["Axis"][category]:
+                                for gui_axis in gui_axes:
+                                    gui_axis.axis("off")
+                                    gui_axis.set_visible(False)
+                    #
+                    self.gui_elements["Temporary"]["Canvas"]["Petrology"].draw()
+                #
+            elif var_rb_diagram == 1:  # SCATTER
+                if self.last_rb_setting["Petrology"]["General Mode"].get() not in [1, 2]:
+                    if self.last_rb_setting["Petrology"]["Rock Physics"].get() != 1:
+                        if "Petrology" in self.gui_elements["Temporary"]["Canvas"]:
+                            categories = ["Rock Physics Histogram", "Rock Physics Scatter", "Rock Chemistry Histogram",
+                                          "Rock Chemistry Scatter"]
+                            for category in categories:
+                                if category in self.gui_elements["Temporary"]["Axis"]:
+                                    for gui_axes in self.gui_elements["Temporary"]["Axis"][category]:
+                                        for gui_axis in gui_axes:
+                                            gui_axis.axis("off")
+                                            gui_axis.set_visible(False)
+                            #
+                            self.gui_elements["Temporary"]["Canvas"]["Petrology"].draw()
+                        #
+                        if "Rock Physics Scatter" not in self.gui_elements["Temporary"]["Axis"]:
+                            if "Petrology" not in self.gui_elements["Temporary"]["Figure"]:
+                                fig_petrology = Figure(
+                                    figsize=(3, 3), dpi=150, tight_layout=True, facecolor=self.colors_gebpy["Background"])
+                            else:
+                                fig_petrology = self.gui_elements["Temporary"]["Figure"]["Petrology"]
+                            #
+                            ax_rp_scatter = fig_petrology.subplots(nrows=3, ncols=3)
+                            #
+                            categories = [["phi", "GR", "PE"], ["vP", "vS", "vP/vS"], ["K", "G", "nu"]]
+                            labels = [["$\\varphi$ (%)", "GR (API)", "PE (barns/e\u207B)"],
+                                      ["vP (m/s)", "vS (m/s)", "vP/vS (1)"], ["K (GPa)", "G (GPa)", "nu (1)"]]
+                            #
+                            for i, subcategories in enumerate(categories):
+                                for j, key in enumerate(subcategories):
+                                    ax_rp_scatter[i][j].scatter(
+                                        self.data_rock["rho"], self.data_rock[key], color=self.colors_gebpy["Option"],
+                                        edgecolor="black", alpha=0.5)
+                                    #
+                                    ax_rp_scatter[i][j].set_xlabel("Density - kg/m$^3$", fontsize=9)
+                                    ax_rp_scatter[i][j].set_ylabel(labels[i][j], labelpad=0.5, fontsize=9)
+                                    ax_rp_scatter[i][j].grid(True)
+                                    ax_rp_scatter[i][j].set_axisbelow(True)
+                            #
+                            if "Petrology" not in self.gui_elements["Temporary"]["Canvas"]:
+                                canvas_petrology = FigureCanvasTkAgg(fig_petrology, master=self.parent)
+                                #
+                            else:
+                                canvas_petrology = self.gui_elements["Temporary"]["Canvas"]["Petrology"]
+                            #
+                            canvas_petrology.draw()
+                            #
+                            self.gui_elements["Temporary"]["Axis"]["Rock Physics Scatter"] = ax_rp_scatter
+                            self.gui_elements["Temporary"]["Canvas"]["Petrology"] = canvas_petrology
+                            #
+                        else:
+                            ## Cleaning
+                            for gui_axes in self.gui_elements["Temporary"]["Axis"]["Rock Physics Scatter"]:
+                                for gui_axis in gui_axes:
+                                    gui_axis.axis("on")
+                                    gui_axis.set_visible(True)
+                            #
+                            categories = ["Rock Physics Histogram", "Rock Chemistry Histogram", "Rock Chemistry Scatter"]
+                            for category in categories:
+                                if category in self.gui_elements["Temporary"]["Axis"]:
+                                    for gui_axes in self.gui_elements["Temporary"]["Axis"][category]:
+                                        for gui_axis in gui_axes:
+                                            gui_axis.axis("off")
+                                            gui_axis.set_visible(False)
+                            #
+                            self.gui_elements["Temporary"]["Canvas"]["Petrology"].draw()
+                        #
+                    else:
+                        pass
+                    #
+                else:
+                    ## RECONSTRUCTION
+                    for gui_axes in self.gui_elements["Temporary"]["Axis"]["Rock Physics Scatter"]:
+                        for gui_axis in gui_axes:
+                            gui_axis.axis("on")
+                            gui_axis.set_visible(True)
+                    #
+                    categories = ["Rock Physics Histogram", "Rock Chemistry Histogram", "Rock Chemistry Scatter"]
+                    for category in categories:
+                        if category in self.gui_elements["Temporary"]["Axis"]:
+                            for gui_axes in self.gui_elements["Temporary"]["Axis"][category]:
+                                for gui_axis in gui_axes:
+                                    gui_axis.axis("off")
+                                    gui_axis.set_visible(False)
+                    #
+                    self.gui_elements["Temporary"]["Canvas"]["Petrology"].draw()
+            #
+            self.last_rb_setting["Petrology"]["Rock Physics"].set(var_rb_diagram)
+            #
+        elif self.gui_variables["Radiobutton"]["Analysis Mode"].get() == 1:  # ROCK CHEMISTRY
+            var_rb_diagram = self.gui_variables["Radiobutton"]["Diagram Type Mineral"].get()
+            if var_rb_diagram == 0:     # HISTOGRAM
+                print(self.last_rb_setting["Petrology"]["General Mode"].get(), self.last_rb_setting["Petrology"]["Rock Chemistry"].get())
+                if self.last_rb_setting["Petrology"]["Rock Chemistry"].get() != 0:
+                    if "Petrology" in self.gui_elements["Temporary"]["Canvas"]:
+                        categories = ["Rock Physics Histogram", "Rock Physics Scatter", "Rock Chemistry Histogram",
+                                      "Rock Chemistry Scatter"]
+                        for category in categories:
+                            if category in self.gui_elements["Temporary"]["Axis"]:
+                                for gui_axes in self.gui_elements["Temporary"]["Axis"][category]:
+                                    for gui_axis in gui_axes:
+                                        gui_axis.axis("off")
+                                        gui_axis.set_visible(False)
+                        #
+                        self.gui_elements["Temporary"]["Canvas"]["Petrology"].draw()
+                    #
+                    ## Diagram
+                    if "Rock Chemistry Histogram" not in self.gui_elements["Temporary"]["Axis"]:
+                        if "Petrology" not in self.gui_elements["Temporary"]["Figure"]:
+                            fig_petrology = Figure(
+                                figsize=(3, 3), dpi=150, tight_layout=True, facecolor=self.colors_gebpy["Background"])
+                        else:
+                            fig_petrology = self.gui_elements["Temporary"]["Figure"]["Petrology"]
+                        #
+                        ax_rc_histo = fig_petrology.subplots(nrows=3, ncols=3)
+                        #
+                        categories = []
+                        labels = []
+                        for index, mineral in enumerate(self.list_minerals_rock):
+                            if index < 3:
+                                if index == 0:
+                                    categories.append([])
+                                    labels.append([])
+                                #
+                                categories[0].append(mineral)
+                                if mineral != "Urn":
+                                    labels[0].append(str(mineral)+" (wt.%)")
+                                else:
+                                    labels[0].append(str(mineral) + " (ppm)")
+                                #
+                            elif 2 < index < 6:
+                                if index == 3:
+                                    categories.append([])
+                                    labels.append([])
+                                #
+                                categories[1].append(mineral)
+                                if mineral != "Urn":
+                                    labels[1].append(str(mineral) + " (wt.%)")
+                                else:
+                                    labels[1].append(str(mineral) + " (ppm)")
+                                #
+                            elif 5 < index < 9:
+                                if index == 6:
+                                    categories.append([])
+                                    labels.append([])
+                                #
+                                categories[2].append(mineral)
+                                if mineral != "Urn":
+                                    labels[2].append(str(mineral) + " (wt.%)")
+                                else:
+                                    labels[2].append(str(mineral) + " (ppm)")
+                        #
+                        for i, subcategories in enumerate(categories):
+                            for j, key in enumerate(subcategories):
+                                if key != "Urn":
+                                    factor = 10**2
+                                else:
+                                    factor = 10**6
+                                #
+                                ax_rc_histo[i][j].hist(
+                                    x=np.array(self.data_rock["mineralogy"][key])*factor,
+                                    color=self.colors_gebpy["Option"], edgecolor="black", bins=12)
+                                #
+                                x_min = min(np.round(np.array(self.data_rock["mineralogy"][key])*factor))
+                                x_max = max(np.round(np.array(self.data_rock["mineralogy"][key])*factor))
+                                x_min = int(2.5*round((x_min - 2.5)/2.5))
+                                x_max = int(2.5 * round((x_max + 2.5) / 2.5))
+                                #
+                                if x_min < 0:
+                                    x_min = 0
+                                if key != "Urn":
+                                    if x_max > 100:
+                                        x_max = 100
+                                #
+                                ax_rc_histo[i][j].set_xticks(np.linspace(x_min, x_max, 5, dtype=int, endpoint=True))
+                                ax_rc_histo[i][j].set_xlim(left=x_min, right=x_max)
+                                ax_rc_histo[i][j].set_xlabel(labels[i][j], fontsize=9)
+                                ax_rc_histo[i][j].set_ylabel("Frequency", labelpad=0.5, fontsize=9)
+                                ax_rc_histo[i][j].grid(True)
+                                ax_rc_histo[i][j].set_axisbelow(True)
+                            #
+                            if "Petrology" not in self.gui_elements["Temporary"]["Canvas"]:
+                                canvas_petrology = FigureCanvasTkAgg(fig_petrology, master=self.parent)
+                                #
+                            else:
+                                canvas_petrology = self.gui_elements["Temporary"]["Canvas"]["Petrology"]
+                            #
+                            canvas_petrology.draw()
+                            #
+                            self.gui_elements["Temporary"]["Axis"]["Rock Chemistry Histogram"] = ax_rc_histo
+                            self.gui_elements["Temporary"]["Canvas"]["Petrology"] = canvas_petrology
+                        #
+                    else:
+                        ## Cleaning
+                        for gui_axes in self.gui_elements["Temporary"]["Axis"]["Rock Chemistry Histogram"]:
+                            for gui_axis in gui_axes:
+                                gui_axis.axis("on")
+                                gui_axis.set_visible(True)
+                        #
+                        categories = ["Rock Physics Histogram", "Rock Physics Scatter", "Rocks Chemistry Scatter"]
+                        for category in categories:
+                            if category in self.gui_elements["Temporary"]["Axis"]:
+                                for gui_axes in self.gui_elements["Temporary"]["Axis"][category]:
+                                    for gui_axis in gui_axes:
+                                        gui_axis.axis("off")
+                                        gui_axis.set_visible(False)
+                        #
+                        self.gui_elements["Temporary"]["Canvas"]["Petrology"].draw()
+                    #
+                elif self.last_rb_setting["Petrology"]["Rock Chemistry"].get() == 0 \
+                        and self.last_rb_setting["Petrology"]["General Mode"].get() in [0, 2]:
+                    ## RECONSTRUCTION
+                    for gui_axes in self.gui_elements["Temporary"]["Axis"]["Rock Chemistry Histogram"]:
+                        for gui_axis in gui_axes:
+                            gui_axis.axis("on")
+                            gui_axis.set_visible(True)
+                    #
+                    categories = ["Rock Physics Histogram", "Rock Physics Scatter", "Rocks Chemistry Scatter"]
+                    for category in categories:
+                        if category in self.gui_elements["Temporary"]["Axis"]:
+                            for gui_axes in self.gui_elements["Temporary"]["Axis"][category]:
+                                for gui_axis in gui_axes:
+                                    gui_axis.axis("off")
+                                    gui_axis.set_visible(False)
+                    #
+                    self.gui_elements["Temporary"]["Canvas"]["Petrology"].draw()
+                    #
+                else:
+                    pass
+                #
+            elif var_rb_diagram == 1:   # SCATTER
+                if self.last_rb_setting["Petrology"]["General Mode"].get() not in [0, 2]:
+                    if self.last_rb_setting["Petrology"]["Rock Chemistry"].get() != 1:
+                        if "Petrology" in self.gui_elements["Temporary"]["Canvas"]:
+                            categories = ["Rock Physics Histogram", "Rock Physics Scatter", "Rock Chemistry Histogram",
+                                          "Rock Chemistry Scatter"]
+                            for category in categories:
+                                if category in self.gui_elements["Temporary"]["Axis"]:
+                                    for gui_axes in self.gui_elements["Temporary"]["Axis"][category]:
+                                        for gui_axis in gui_axes:
+                                            gui_axis.axis("off")
+                                            gui_axis.set_visible(False)
+                            #
+                            self.gui_elements["Temporary"]["Canvas"]["Petrology"].draw()
+                        #
+                        if "Rock Chemistry Scatter" not in self.gui_elements["Temporary"]["Axis"]:
+                            if "Petrology" not in self.gui_elements["Temporary"]["Figure"]:
+                                fig_petrology = Figure(
+                                    figsize=(3, 3), dpi=150, tight_layout=True, facecolor=self.colors_gebpy["Background"])
+                            else:
+                                fig_petrology = self.gui_elements["Temporary"]["Figure"]["Petrology"]
+                            #
+                            ax_rc_scatter = fig_petrology.subplots(nrows=3, ncols=3)
+                            #
+                            categories = []
+                            labels = []
+                            ref_mineral = None
+                            ref_mean = 0
+                            for index, mineral in enumerate(self.list_minerals_rock):
+                                mineral_mean = np.mean(self.data_rock["mineralogy"][mineral])
+                                if mineral_mean > ref_mean and mineral != "Urn":
+                                    ref_mineral = mineral
+                                #
+                                if index < 3:
+                                    if index == 0:
+                                        categories.append([])
+                                        labels.append([])
+                                    #
+                                    categories[0].append(mineral)
+                                    if mineral != "Urn":
+                                        labels[0].append(str(mineral) + " (wt.%)")
+                                    else:
+                                        labels[0].append(str(mineral) + " (ppm)")
+                                    #
+                                elif 2 < index < 6:
+                                    if index == 3:
+                                        categories.append([])
+                                        labels.append([])
+                                    #
+                                    categories[1].append(mineral)
+                                    if mineral != "Urn":
+                                        labels[1].append(str(mineral) + " (wt.%)")
+                                    else:
+                                        labels[1].append(str(mineral) + " (ppm)")
+                                    #
+                                elif 5 < index < 9:
+                                    if index == 6:
+                                        categories.append([])
+                                        labels.append([])
+                                    #
+                                    categories[2].append(mineral)
+                                    if mineral != "Urn":
+                                        labels[2].append(str(mineral) + " (wt.%)")
+                                    else:
+                                        labels[2].append(str(mineral) + " (ppm)")
+                            #
+                            for i, subcategories in enumerate(categories):
+                                for j, key in enumerate(subcategories):
+                                    if key != "Urn":
+                                        factor = 10**2
+                                        y_label = str(key)+" (wt.%)"
+                                    else:
+                                        factor = 10**6
+                                        y_label = str(key) + " (ppm)"
+                                    #
+                                    ax_rc_scatter[i][j].scatter(
+                                        np.array(self.data_rock["mineralogy"][ref_mineral])*100,
+                                        np.array(self.data_rock["mineralogy"][key])*factor,
+                                        color=self.colors_gebpy["Option"], edgecolor="black", alpha=0.5)
+                                    #
+                                    x_min = min(np.round(np.array(self.data_rock["mineralogy"][ref_mineral])*100))
+                                    x_max = max(np.round(np.array(self.data_rock["mineralogy"][ref_mineral])*100))
+                                    x_min = int(2.5 * round((x_min - 2.5) / 2.5))
+                                    x_max = int(2.5 * round((x_max + 2.5) / 2.5))
+                                    y_min = min(np.round(np.array(self.data_rock["mineralogy"][key])*factor))
+                                    y_max = max(np.round(np.array(self.data_rock["mineralogy"][key])*factor))
+                                    y_min = int(2.5 * round((y_min - 2.5) / 2.5))
+                                    y_max = int(2.5 * round((y_max + 2.5) / 2.5))
+                                    #
+                                    if x_min < 0:
+                                        x_min = 0
+                                    if key != "Urn":
+                                        if x_max > 100:
+                                            x_max = 100
+                                    if y_min < 0:
+                                        y_min = 0
+                                    if key != "Urn":
+                                        if y_max > 100:
+                                            y_max = 100
+                                    #
+                                    ax_rc_scatter[i][j].set_xticks(np.linspace(x_min, x_max, 5, dtype=int, endpoint=True))
+                                    ax_rc_scatter[i][j].set_xlim(left=x_min, right=x_max)
+                                    ax_rc_scatter[i][j].set_yticks(np.linspace(y_min, y_max, 5, dtype=int, endpoint=True))
+                                    ax_rc_scatter[i][j].set_ylim(bottom=y_min, top=y_max)
+                                    ax_rc_scatter[i][j].set_xlabel(str(ref_mineral)+" (wt.%)", fontsize=9)
+                                    ax_rc_scatter[i][j].set_ylabel(y_label, labelpad=0.5, fontsize=9)
+                                    ax_rc_scatter[i][j].grid(True)
+                                    ax_rc_scatter[i][j].set_axisbelow(True)
+                            #
+                            if "Petrology" not in self.gui_elements["Temporary"]["Canvas"]:
+                                canvas_petrology = FigureCanvasTkAgg(fig_petrology, master=self.parent)
+                                #
+                            else:
+                                canvas_petrology = self.gui_elements["Temporary"]["Canvas"]["Petrology"]
+                            #
+                            canvas_petrology.draw()
+                            #
+                            self.gui_elements["Temporary"]["Axis"]["Rock Chemistry Scatter"] = ax_rc_scatter
+                            self.gui_elements["Temporary"]["Canvas"]["Petrology"] = canvas_petrology
+                            #
+                        else:
+                            ## Cleaning
+                            for gui_axes in self.gui_elements["Temporary"]["Axis"]["Rock Chemistry Scatter"]:
+                                for gui_axis in gui_axes:
+                                    gui_axis.axis("on")
+                                    gui_axis.set_visible(True)
+                            #
+                            categories = ["Rock Physics Histogram", "Rock Physics Scatter", "Rock Chemistry Histogram"]
+                            for category in categories:
+                                if category in self.gui_elements["Temporary"]["Axis"]:
+                                    for gui_axes in self.gui_elements["Temporary"]["Axis"][category]:
+                                        for gui_axis in gui_axes:
+                                            gui_axis.axis("off")
+                                            gui_axis.set_visible(False)
+                            #
+                            self.gui_elements["Temporary"]["Canvas"]["Petrology"].draw()
+                        #
+                    else:
+                        pass
+                    #
+                else:
+                    ## RECONSTRUCTION
+                    for gui_axes in self.gui_elements["Temporary"]["Axis"]["Rock Chemistry Scatter"]:
+                        for gui_axis in gui_axes:
+                            gui_axis.axis("on")
+                            gui_axis.set_visible(True)
+                    #
+                    categories = ["Rock Physics Histogram", "Rock Chemistry Histogram", "Rock Chemistry Histogram"]
+                    for category in categories:
+                        if category in self.gui_elements["Temporary"]["Axis"]:
+                            for gui_axes in self.gui_elements["Temporary"]["Axis"][category]:
+                                for gui_axis in gui_axes:
+                                    gui_axis.axis("off")
+                                    gui_axis.set_visible(False)
+                    #
+                    self.gui_elements["Temporary"]["Canvas"]["Petrology"].draw()
+            #
+            self.last_rb_setting["Petrology"]["Rock Chemistry"].set(var_rb_diagram)
+            #
+        #
+    #
     def change_rb_analysis_rocks(self):
         start_column = 35
+        var_rb_mode = self.gui_variables["Radiobutton"]["Analysis Mode"].get()
         #
-        if self.gui_variables["Radiobutton"]["Analysis Mode"].get() == 0:   # Rock Physics
-            if self.last_rb_analysis_rock.get() != 0:
+        if var_rb_mode == 0:   # ROCK PHYSICS
+            if self.last_rb_setting["Petrology"]["General Mode"].get() != 0:
                 ## Cleaning
-                try:
-                    self.canvas_scatter.get_tk_widget().grid_forget()
-                except:
-                    pass
+                if "Petrology" in self.gui_elements["Temporary"]["Canvas"]:
+                    categories = ["Rock Physics Histogram", "Rock Physics Scatter", "Rock Chemistry Histogram",
+                                  "Rock Chemistry Scatter"]
+                    for category in categories:
+                        if category in self.gui_elements["Temporary"]["Axis"]:
+                            for gui_axes in self.gui_elements["Temporary"]["Axis"][category]:
+                                for gui_axis in gui_axes:
+                                    gui_axis.axis("off")
+                                    gui_axis.set_visible(False)
+                    #
+                    self.gui_elements["Temporary"]["Canvas"]["Petrology"].draw()
                 #
                 for key, gui_items in self.gui_elements["Temporary"].items():
                     if len(gui_items) > 0:
@@ -3500,9 +4007,6 @@ class GebPyGUI(tk.Frame):
                                 for gui_item in gui_items:
                                     gui_item.grid_remove()
                                 gui_items.clear()
-                        else:
-                            for key_2, gui_item in gui_items.items():
-                                gui_item.get_tk_widget().grid_remove()
                 #
                 for key, gui_items in self.gui_elements["Rockbuilder Temporary"].items():
                     if len(gui_items) > 0:
@@ -3511,9 +4015,6 @@ class GebPyGUI(tk.Frame):
                                 for gui_item in gui_items:
                                     gui_item.grid_remove()
                                 gui_items.clear()
-                        else:
-                            for key_2, gui_item in gui_items.items():
-                                gui_item.get_tk_widget().grid_remove()
                 #
                 ## Labels
                 lbl_title = SimpleElements(
@@ -3557,12 +4058,12 @@ class GebPyGUI(tk.Frame):
                     parent=self.parent, row_id=34, column_id=14, n_rows=2, n_columns=16,
                     bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Background"]).create_radiobutton(
                     text="Histogram", var_rb=self.gui_variables["Radiobutton"]["Diagram Type Rock"], value_rb=0,
-                    color_bg=self.colors_gebpy["Background"])
+                    color_bg=self.colors_gebpy["Background"], command=self.change_rb_diagram_rocks)
                 rb_diagram_type_02 = SimpleElements(
                     parent=self.parent, row_id=36, column_id=14, n_rows=2, n_columns=16,
                     bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Background"]).create_radiobutton(
                     text="Scatter", var_rb=self.gui_variables["Radiobutton"]["Diagram Type Rock"], value_rb=1,
-                    color_bg=self.colors_gebpy["Background"])
+                    color_bg=self.colors_gebpy["Background"], command=self.change_rb_diagram_rocks)
                 #
                 self.gui_elements["Rockbuilder Temporary"]["Radiobutton"].extend(
                     [rb_diagram_type_01, rb_diagram_type_02])
@@ -3610,49 +4111,27 @@ class GebPyGUI(tk.Frame):
                     #
                     self.gui_elements["Rockbuilder Temporary"]["Entry"].extend([entr_min, entr_max, entr_mean, entr_error])
                 #
-                ## Diagram
-                if "Rock Physics Scatter" not in self.gui_elements["Temporary"]["Canvas"]:
-                    self.fig_scatter, self.ax_scatter = plt.subplots(
-                        ncols=3, nrows=3, figsize=(9, 9), facecolor=self.colors_gebpy["Background"])
-                    #
-                    categories = [["phi", "GR", "PE"], ["vP", "vS", "vP/vS"], ["K", "G", "nu"]]
-                    labels = [["$\\varphi$ (%)", "GR (API)", "PE (barns/e\u207B)"], ["vP (m/s)", "vS (m/s)", "vP/vS (1)"],
-                              ["K (GPa)", "G (GPa)", "nu (1)"]]
-                    for i, subcategories in enumerate(categories):
-                        for j, key in enumerate(subcategories):
-                            self.ax_scatter[i][j].scatter(
-                                self.data_rock["rho"], self.data_rock[key], color=self.colors_gebpy["Accent"],
-                                edgecolor="black", alpha=0.33)
-                            #
-                            self.ax_scatter[i][j].set_xlabel("Density - kg/m\u00B3", fontsize=9)
-                            self.ax_scatter[i][j].set_ylabel(labels[i][j], labelpad=0.5, fontsize=9)
-                            self.ax_scatter[i][j].grid(True)
-                            self.ax_scatter[i][j].set_axisbelow(True)
-                    #
-                    self.fig_scatter.tight_layout()
-                    #
-                    self.canvas_scatter = FigureCanvasTkAgg(self.fig_scatter, master=self.parent)
-                    self.canvas_scatter.get_tk_widget().grid(
-                        row=0, column=90, rowspan=65, columnspan=90, sticky="nesw")
-                    #
-                    self.gui_elements["Rockbuilder Temporary"]["Canvas"]["Rock Physics Scatter"] = self.canvas_scatter
-                    self.gui_elements["Rockbuilder Temporary"]["Figure"]["Rock Physics Scatter"] = self.fig_scatter
-                    self.gui_elements["Rockbuilder Temporary"]["Axis"]["Rock Physics Scatter"] = self.ax_scatter
-                else:
-                    self.gui_elements["Rockbuilder Temporary"]["Canvas"]["Rock Physics Scatter"].get_tk_widget().grid()
+                self.change_rb_diagram_rocks()
                 #
-                self.last_rb_analysis_rock.set(self.gui_variables["Radiobutton"]["Analysis Mode"].get())
+                self.last_rb_analysis_rock.set(var_rb_mode)
                 #
             else:
-                self.canvas_scatter.get_tk_widget().grid()
+                pass
         #
-        elif self.gui_variables["Radiobutton"]["Analysis Mode"].get() == 1: # Mineral Composition
-            if self.last_rb_analysis_rock.get() != 1:
+        elif var_rb_mode == 1: # ROCK CHEMISTRY
+            if self.last_rb_setting["Petrology"]["General Mode"].get() != 1:
                 ## Cleaning
-                try:
-                    self.canvas_scatter.get_tk_widget().grid_forget()
-                except:
-                    pass
+                if "Petrology" in self.gui_elements["Temporary"]["Canvas"]:
+                    categories = ["Rock Physics Histogram", "Rock Physics Scatter", "Rock Chemistry Histogram",
+                                  "Rock Chemistry Scatter"]
+                    for category in categories:
+                        if category in self.gui_elements["Temporary"]["Axis"]:
+                            for gui_axes in self.gui_elements["Temporary"]["Axis"][category]:
+                                for gui_axis in gui_axes:
+                                    gui_axis.axis("off")
+                                    gui_axis.set_visible(False)
+                    #
+                    self.gui_elements["Temporary"]["Canvas"]["Petrology"].draw()
                 #
                 for key, gui_items in self.gui_elements["Rockbuilder Temporary"].items():
                     if len(gui_items) > 0:
@@ -3661,9 +4140,6 @@ class GebPyGUI(tk.Frame):
                                 for gui_item in gui_items:
                                     gui_item.grid_remove()
                                 gui_items.clear()
-                        else:
-                            for key_2, gui_item in gui_items.items():
-                                gui_item.get_tk_widget().grid_remove()
                 #
                 ## Labels
                 lbl_title = SimpleElements(
@@ -3712,12 +4188,12 @@ class GebPyGUI(tk.Frame):
                     parent=self.parent, row_id=34, column_id=14, n_rows=2, n_columns=16,
                     bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Background"]).create_radiobutton(
                     text="Histogram", var_rb=self.gui_variables["Radiobutton"]["Diagram Type Mineral"], value_rb=0,
-                    color_bg=self.colors_gebpy["Background"])
+                    color_bg=self.colors_gebpy["Background"], command=self.change_rb_diagram_rocks)
                 rb_diagram_type_02 = SimpleElements(
                     parent=self.parent, row_id=36, column_id=14, n_rows=2, n_columns=16,
                     bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Background"]).create_radiobutton(
                     text="Scatter", var_rb=self.gui_variables["Radiobutton"]["Diagram Type Mineral"], value_rb=1,
-                    color_bg=self.colors_gebpy["Background"])
+                    color_bg=self.colors_gebpy["Background"], command=self.change_rb_diagram_rocks)
                 #
                 self.gui_elements["Rockbuilder Temporary"]["Radiobutton"].extend(
                     [rb_diagram_type_01, rb_diagram_type_02])
@@ -3746,14 +4222,16 @@ class GebPyGUI(tk.Frame):
                     ## Entries
                     #
                     if mineral == "Urn":
-                        n_digits = 6
+                        n_digits = 2
+                        factor = 10**6
                     else:
                         n_digits = 2
+                        factor = 10**2
                     #
-                    var_entr_min = round(min(self.data_rock["mineralogy"][mineral])*10**2, n_digits)
-                    var_entr_max = round(max(self.data_rock["mineralogy"][mineral])*10**2, n_digits)
-                    var_entr_mean = round(np.mean(self.data_rock["mineralogy"][mineral])*10**2, n_digits)
-                    var_entr_error = round(np.std(self.data_rock["mineralogy"][mineral], ddof=1)*10**2, n_digits)
+                    var_entr_min = round(min(self.data_rock["mineralogy"][mineral])*factor, n_digits)
+                    var_entr_max = round(max(self.data_rock["mineralogy"][mineral])*factor, n_digits)
+                    var_entr_mean = round(np.mean(self.data_rock["mineralogy"][mineral])*factor, n_digits)
+                    var_entr_error = round(np.std(self.data_rock["mineralogy"][mineral], ddof=1)*factor, n_digits)
                     #
                     entr_min = SimpleElements(
                         parent=self.parent, row_id=(2*index + 4), column_id=start_column + 9, n_rows=2,
@@ -3776,17 +4254,30 @@ class GebPyGUI(tk.Frame):
                         bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
                         var_entr=self.gui_variables["Entry"]["Error"][mineral], var_entr_set=var_entr_error)
                     #
-                    self.gui_elements["Rockbuilder Temporary"]["Entry"].extend([entr_min, entr_max, entr_mean, entr_error])
+                    self.gui_elements["Rockbuilder Temporary"]["Entry"].extend(
+                        [entr_min, entr_max, entr_mean, entr_error])
                 #
-                self.last_rb_analysis_rock.set(self.gui_variables["Radiobutton"]["Analysis Mode"].get())
+                self.change_rb_diagram_rocks()
+                #
+                self.last_rb_analysis_rock.set(var_rb_mode)
+                #
+            else:
+                pass
         #
-        elif self.gui_variables["Radiobutton"]["Analysis Mode"].get() == 2: # Element Composition
-            if self.last_rb_analysis_rock.get() != 2:
+        elif var_rb_mode == 2: # Element Composition
+            if self.last_rb_setting["Petrology"]["General Mode"].get() != 2:
                 ## Cleaning
-                try:
-                    self.canvas_scatter.get_tk_widget().grid_forget()
-                except:
-                    pass
+                if "Petrology" in self.gui_elements["Temporary"]["Canvas"]:
+                    categories = ["Rock Physics Histogram", "Rock Physics Scatter", "Rock Chemistry Histogram",
+                                  "Rock Chemistry Scatter"]
+                    for category in categories:
+                        if category in self.gui_elements["Temporary"]["Axis"]:
+                            for gui_axes in self.gui_elements["Temporary"]["Axis"][category]:
+                                for gui_axis in gui_axes:
+                                    gui_axis.axis("off")
+                                    gui_axis.set_visible(False)
+                    #
+                    self.gui_elements["Temporary"]["Canvas"]["Petrology"].draw()
                 #
                 for key, gui_items in self.gui_elements["Rockbuilder Temporary"].items():
                     if len(gui_items) > 0:
@@ -3795,9 +4286,6 @@ class GebPyGUI(tk.Frame):
                                 for gui_item in gui_items:
                                     gui_item.grid_remove()
                                 gui_items.clear()
-                        else:
-                            for key_2, gui_item in gui_items.items():
-                                gui_item.get_tk_widget().grid_remove()
                 #
                 ## Labels
                 lbl_title = SimpleElements(
@@ -3915,12 +4403,6 @@ class GebPyGUI(tk.Frame):
                     var_entr_mean = round(np.mean(self.data_rock["chemistry"][element])*10**2, n_digits)
                     var_entr_error = round(np.std(self.data_rock["chemistry"][element], ddof=1)*10**2, n_digits)
                     #
-                    ## ppm
-                    # var_entr_min = int(min(self.data_rock["chemistry"][element])*10**6)
-                    # var_entr_max = int(max(self.data_rock["chemistry"][element])*10**6)
-                    # var_entr_mean = int(np.mean(self.data_rock["chemistry"][element])*10**6)
-                    # var_entr_error = round(np.std(self.data_rock["chemistry"][element], ddof=1)*10**6, 2)
-                    #
                     entr_min = SimpleElements(
                         parent=self.parent, row_id=(2*index + 4), column_id=start_column + 9, n_rows=2,
                         n_columns=9,
@@ -3945,7 +4427,12 @@ class GebPyGUI(tk.Frame):
                     self.gui_elements["Rockbuilder Temporary"]["Entry"].extend(
                         [entr_min, entr_max, entr_mean, entr_error])
                 #
-                self.last_rb_analysis_rock.set(self.gui_variables["Radiobutton"]["Analysis Mode"].get())
+                self.last_rb_analysis_rock.set(var_rb_mode)
+                #
+            else:
+                pass
+        #
+        self.last_rb_setting["Petrology"]["General Mode"].set(var_rb_mode)
     #
     ######################################
     ## G e n e r a l  F u n c t i o n s ##
