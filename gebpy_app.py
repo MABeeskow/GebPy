@@ -3682,7 +3682,6 @@ class GebPyGUI(tk.Frame):
         elif self.gui_variables["Radiobutton"]["Analysis Mode"].get() == 1:  # ROCK CHEMISTRY
             var_rb_diagram = self.gui_variables["Radiobutton"]["Diagram Type Mineral"].get()
             if var_rb_diagram == 0:     # HISTOGRAM
-                print(self.last_rb_setting["Petrology"]["General Mode"].get(), self.last_rb_setting["Petrology"]["Rock Chemistry"].get())
                 if self.last_rb_setting["Petrology"]["Rock Chemistry"].get() != 0:
                     if "Petrology" in self.gui_elements["Temporary"]["Canvas"]:
                         categories = ["Rock Physics Histogram", "Rock Physics Scatter", "Rock Chemistry Histogram",
