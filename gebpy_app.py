@@ -6,7 +6,7 @@
 # Name:		gebpy_app.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		19.01.2023
+# Date:		22.01.2023
 
 #-----------------------------------------------
 
@@ -713,7 +713,8 @@ class GebPyGUI(tk.Frame):
             if self.gui_variables["Radiobutton"]["Diagram Type Mineral"].get() == 0:    # HISTOGRAM
                 if self.last_rb_diagram_mineral.get() != 0:
                     if "Mineralogy" in self.gui_elements["Temporary"]["Canvas"]:
-                        categories = ["Mineral Physics Histogram", "Mineral Physics Scatter", "LA ICP MS"]
+                        categories = ["Mineral Physics Histogram", "Mineral Physics Scatter", "LA ICP MS",
+                                      "Mineral Chemistry Histogram", "Mineral Chemistry Scatter"]
                         for category in categories:
                             if category in self.gui_elements["Temporary"]["Axis"]:
                                 for gui_axes in self.gui_elements["Temporary"]["Axis"][category]:
@@ -759,7 +760,8 @@ class GebPyGUI(tk.Frame):
                                 gui_axis.axis("on")
                                 gui_axis.set_visible(True)
                         #
-                        categories = ["Mineral Physics Scatter", "LA ICP MS"]
+                        categories = ["Mineral Physics Scatter", "LA ICP MS", "Mineral Chemistry Histogram",
+                                      "Mineral Chemistry Scatter"]
                         for category in categories:
                             if category in self.gui_elements["Temporary"]["Axis"]:
                                 for gui_axes in self.gui_elements["Temporary"]["Axis"][category]:
@@ -775,7 +777,8 @@ class GebPyGUI(tk.Frame):
             elif self.gui_variables["Radiobutton"]["Diagram Type Mineral"].get() == 1:  # SCATTER
                 if self.last_rb_diagram_mineral.get() != 1:
                     if "Mineralogy" in self.gui_elements["Temporary"]["Canvas"]:
-                        categories = ["Mineral Physics Histogram", "Mineral Physics Scatter", "LA ICP MS"]
+                        categories = ["Mineral Physics Histogram", "Mineral Physics Scatter", "LA ICP MS",
+                                      "Mineral Chemistry Histogram", "Mineral Chemistry Scatter"]
                         for category in categories:
                             if category in self.gui_elements["Temporary"]["Axis"]:
                                 for gui_axes in self.gui_elements["Temporary"]["Axis"][category]:
@@ -827,7 +830,8 @@ class GebPyGUI(tk.Frame):
                                 gui_axis.axis("on")
                                 gui_axis.set_visible(True)
                         #
-                        categories = ["Mineral Physics Histogram", "LA ICP MS"]
+                        categories = ["Mineral Physics Histogram", "LA ICP MS", "Mineral Chemistry Histogram",
+                                      "Mineral Chemistry Scatter"]
                         for category in categories:
                             if category in self.gui_elements["Temporary"]["Axis"]:
                                 for gui_axes in self.gui_elements["Temporary"]["Axis"][category]:
@@ -845,7 +849,8 @@ class GebPyGUI(tk.Frame):
             else:
                 key = "Mineral Physics Scatter"
             #
-            categories = ["Mineral Physics Histogram", "Mineral Physics Scatter", "LA ICP MS"]
+            categories = ["Mineral Physics Histogram", "Mineral Physics Scatter", "LA ICP MS",
+                          "Mineral Chemistry Histogram", "Mineral Chemistry Scatter"]
             for category in categories:
                 if category in self.gui_elements["Temporary"]["Axis"]:
                     for gui_axes in self.gui_elements["Temporary"]["Axis"][category]:
@@ -860,7 +865,164 @@ class GebPyGUI(tk.Frame):
             self.gui_elements["Temporary"]["Canvas"]["Mineralogy"].draw()
             #
         elif self.gui_variables["Radiobutton"]["Analysis Mode"].get() == 1: # MINERAL CHEMISTRY
-            print("Hallo")
+            if self.gui_variables["Radiobutton"]["Diagram Type Elements"].get() == 0:   # HISTOGRAM
+                if "Mineralogy" in self.gui_elements["Temporary"]["Canvas"]:
+                    categories = ["Mineral Physics Histogram", "Mineral Physics Scatter", "LA ICP MS",
+                                  "Mineral Chemistry Histogram", "Mineral Chemistry Scatter"]
+                    for category in categories:
+                        if category in self.gui_elements["Temporary"]["Axis"]:
+                            for gui_axes in self.gui_elements["Temporary"]["Axis"][category]:
+                                for gui_axis in gui_axes:
+                                    gui_axis.axis("off")
+                                    gui_axis.set_visible(False)
+                    #
+                    self.gui_elements["Temporary"]["Canvas"]["Mineralogy"].draw()
+                #
+                if "Mineralogy" not in self.gui_elements["Temporary"]["Figure"]:
+                    fig_mineralogy = Figure(
+                        figsize=(3, 3), dpi=150, tight_layout=True, facecolor=self.colors_gebpy["Background"])
+                else:
+                    fig_mineralogy = self.gui_elements["Temporary"]["Figure"]["Mineralogy"]
+                #
+                ax_mc_histo = fig_mineralogy.subplots(nrows=3, ncols=3)
+                #
+                categories = []
+                labels = []
+                for index, (element, values) in enumerate(self.data_mineral["chemistry"].items()):
+                    if index in [0, 3, 6]:
+                        categories.append([])
+                        labels.append([])
+                    #
+                    if 0 <= index < 3:
+                        categories[0].append(element)
+                        labels[0].append(str(element)+" (wt.%)")
+                    elif 3 <= index < 6:
+                        categories[1].append(element)
+                        labels[1].append(str(element)+" (wt.%)")
+                    elif 6 <= index < 9:
+                        categories[2].append(element)
+                        labels[2].append(str(element)+" (wt.%)")
+                #
+                for i, subcategories in enumerate(categories):
+                    for j, key in enumerate(subcategories):
+                        dataset_x = np.array(self.data_mineral["chemistry"][key])*10**2
+                        ax_mc_histo[i][j].hist(
+                            x=dataset_x, color=self.colors_gebpy["Option"], edgecolor="black", bins=12)
+                        #
+                        x_min = round(min(dataset_x), 2)
+                        x_max = round(max(dataset_x), 2)
+                        if x_min < 0:
+                            x_min = 0
+                        if x_max > 100:
+                            x_max = 100
+                        #
+                        ax_mc_histo[i][j].set_xticks(np.around(np.linspace(x_min, x_max, 4, dtype=float, endpoint=True), 2))
+                        ax_mc_histo[i][j].set_xlim(left=x_min, right=x_max)
+                        ax_mc_histo[i][j].set_xlabel(labels[i][j], fontsize=9)
+                        ax_mc_histo[i][j].set_ylabel("Frequency", labelpad=0.5, fontsize=9)
+                        ax_mc_histo[i][j].grid(True)
+                        ax_mc_histo[i][j].set_axisbelow(True)
+                #
+                if "Mineralogy" not in self.gui_elements["Temporary"]["Canvas"]:
+                    canvas_mineralogy = FigureCanvasTkAgg(fig_mineralogy, master=self.parent)
+                    #
+                else:
+                    canvas_mineralogy = self.gui_elements["Temporary"]["Canvas"]["Mineralogy"]
+                #
+                canvas_mineralogy.draw()
+                #
+                self.gui_elements["Temporary"]["Axis"]["Mineral Chemistry Histogram"] = ax_mc_histo
+                self.gui_elements["Temporary"]["Canvas"]["Mineralogy"] = canvas_mineralogy
+                #
+            elif self.gui_variables["Radiobutton"]["Diagram Type Elements"].get() == 1: # SCATTER
+                if "Mineralogy" in self.gui_elements["Temporary"]["Canvas"]:
+                    categories = ["Mineral Physics Histogram", "Mineral Physics Scatter", "LA ICP MS",
+                                  "Mineral Chemistry Histogram", "Mineral Chemistry Scatter"]
+                    for category in categories:
+                        if category in self.gui_elements["Temporary"]["Axis"]:
+                            for gui_axes in self.gui_elements["Temporary"]["Axis"][category]:
+                                for gui_axis in gui_axes:
+                                    gui_axis.axis("off")
+                                    gui_axis.set_visible(False)
+                    #
+                    self.gui_elements["Temporary"]["Canvas"]["Mineralogy"].draw()
+                #
+                if "Mineralogy" not in self.gui_elements["Temporary"]["Figure"]:
+                    fig_mineralogy = Figure(
+                        figsize=(3, 3), dpi=150, tight_layout=True, facecolor=self.colors_gebpy["Background"])
+                else:
+                    fig_mineralogy = self.gui_elements["Temporary"]["Figure"]["Mineralogy"]
+                #
+                ax_mc_scatter = fig_mineralogy.subplots(nrows=3, ncols=3)
+                #
+                categories = []
+                labels = []
+                ref_key = None
+                ref_mean = 0
+                for index, (element, values) in enumerate(self.data_mineral["chemistry"].items()):
+                    mean_element = round(np.mean(values), 3)
+                    if mean_element > ref_mean:
+                        ref_key = element
+                        ref_mean = mean_element
+                    #
+                    if index in [0, 3, 6]:
+                        categories.append([])
+                        labels.append([])
+                    #
+                    if 0 <= index < 3:
+                        categories[0].append(element)
+                        labels[0].append(str(element) + " (wt.%)")
+                    elif 3 <= index < 6:
+                        categories[1].append(element)
+                        labels[1].append(str(element) + " (wt.%)")
+                    elif 6 <= index < 9:
+                        categories[2].append(element)
+                        labels[2].append(str(element) + " (wt.%)")
+                #
+                dataset_x = np.array(self.data_mineral["chemistry"][ref_key])*10**2
+                #
+                for i, subcategories in enumerate(categories):
+                    for j, key in enumerate(subcategories):
+                        dataset_y = np.array(self.data_mineral["chemistry"][key])*10**2
+                        ax_mc_scatter[i][j].scatter(
+                            dataset_x, dataset_y, color=self.colors_gebpy["Option"], edgecolor="black")
+                        #
+                        x_min = round(min(dataset_x), 2)
+                        x_max = round(max(dataset_x), 2)
+                        if x_min < 0:
+                            x_min = 0
+                        if x_max > 100:
+                            x_max = 100
+                        #
+                        y_min = round(min(dataset_y), 2)
+                        y_max = round(max(dataset_y), 2)
+                        if y_min < 0:
+                            y_min = 0
+                        if y_max > 100:
+                            y_max = 100
+                        #
+                        ax_mc_scatter[i][j].set_xlim(left=x_min, right=x_max)
+                        ax_mc_scatter[i][j].set_ylim(bottom=y_min, top=y_max)
+                        ax_mc_scatter[i][j].set_xticks(
+                            np.around(np.linspace(x_min, x_max, 4, dtype=float, endpoint=True), 1))
+                        ax_mc_scatter[i][j].set_yticks(
+                            np.around(np.linspace(y_min, y_max, 4, dtype=float, endpoint=True), 1))
+                        ax_mc_scatter[i][j].set_xlabel(str(ref_key) + " (wt.%)", fontsize=9)
+                        ax_mc_scatter[i][j].set_ylabel(labels[i][j], fontsize=9)
+                        ax_mc_scatter[i][j].grid(True)
+                        ax_mc_scatter[i][j].set_axisbelow(True)
+                #
+                if "Mineralogy" not in self.gui_elements["Temporary"]["Canvas"]:
+                    canvas_mineralogy = FigureCanvasTkAgg(fig_mineralogy, master=self.parent)
+                    #
+                else:
+                    canvas_mineralogy = self.gui_elements["Temporary"]["Canvas"]["Mineralogy"]
+                #
+                canvas_mineralogy.draw()
+                #
+                self.gui_elements["Temporary"]["Axis"]["Mineral Chemistry Scatter"] = ax_mc_scatter
+                self.gui_elements["Temporary"]["Canvas"]["Mineralogy"] = canvas_mineralogy
+                #
         #
         self.last_rb_diagram_mineral.set(self.gui_variables["Radiobutton"]["Diagram Type Mineral"].get())
     #
@@ -949,28 +1111,32 @@ class GebPyGUI(tk.Frame):
                     self.gui_elements["Temporary"]["Label"].append(lbl_category)
                     #
                     ## Entries
-                    #
-                    var_entr_min = round(min(self.data_mineral[categories_short[index]]), 3)
-                    var_entr_max = round(max(self.data_mineral[categories_short[index]]), 3)
-                    var_entr_mean = round(np.mean(self.data_mineral[categories_short[index]]), 3)
-                    var_entr_error = round(np.std(self.data_mineral[categories_short[index]], ddof=1), 3)
+                    n_digits = 2
+                    var_entr_min = round(min(self.data_mineral[categories_short[index]]), n_digits)
+                    var_entr_max = round(max(self.data_mineral[categories_short[index]]), n_digits)
+                    var_entr_mean = round(np.mean(self.data_mineral[categories_short[index]]), n_digits)
+                    var_entr_error = round(np.std(self.data_mineral[categories_short[index]], ddof=1), n_digits)
                     #
                     entr_min = SimpleElements(
                         parent=self.parent, row_id=(3*index + 4), column_id=start_column + 9, n_rows=3, n_columns=9,
                         bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
-                        var_entr=self.gui_variables["Entry"]["Minimum"][categories_short[index]], var_entr_set=var_entr_min)
+                        var_entr=self.gui_variables["Entry"]["Minimum"][categories_short[index]],
+                        var_entr_set=var_entr_min)
                     entr_max = SimpleElements(
                         parent=self.parent, row_id=(3*index + 4), column_id=start_column + 18, n_rows=3, n_columns=9,
                         bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
-                        var_entr=self.gui_variables["Entry"]["Maximum"][categories_short[index]], var_entr_set=var_entr_max)
+                        var_entr=self.gui_variables["Entry"]["Maximum"][categories_short[index]],
+                        var_entr_set=var_entr_max)
                     entr_mean = SimpleElements(
                         parent=self.parent, row_id=(3*index + 4), column_id=start_column + 27, n_rows=3, n_columns=9,
                         bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
-                        var_entr=self.gui_variables["Entry"]["Mean"][categories_short[index]], var_entr_set=var_entr_mean)
+                        var_entr=self.gui_variables["Entry"]["Mean"][categories_short[index]],
+                        var_entr_set=var_entr_mean)
                     entr_error = SimpleElements(
                         parent=self.parent, row_id=(3*index + 4), column_id=start_column + 36, n_rows=3, n_columns=9,
                         bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
-                        var_entr=self.gui_variables["Entry"]["Error"][categories_short[index]], var_entr_set=var_entr_error)
+                        var_entr=self.gui_variables["Entry"]["Error"][categories_short[index]],
+                        var_entr_set=var_entr_error)
                     #
                     self.gui_elements["Temporary"]["Entry"].extend([entr_min, entr_max, entr_mean, entr_error])
                     #
@@ -979,7 +1145,7 @@ class GebPyGUI(tk.Frame):
             else:
                 pass
             #
-        elif self.gui_variables["Radiobutton"]["Analysis Mode"].get() == 1:   # Mineral Chemistry
+        elif self.gui_variables["Radiobutton"]["Analysis Mode"].get() == 1:   # MINERAL CHEMISTRY
             if self.last_rb_analysis_mineral.get() != 1:
                 ## Cleaning
                 categories = ["Mineral Physics Histogram", "Mineral Physics Scatter", "LA ICP MS"]
@@ -1148,10 +1314,12 @@ class GebPyGUI(tk.Frame):
                     self.gui_elements_sub["Mineral Chemistry"]["Element Concentration"]["Entry"].extend(
                         [entr_min, entr_max, entr_mean, entr_error])
                 #
+                self.change_rb_diagram()
+                #
             else:
                 pass
         #
-        elif self.gui_variables["Radiobutton"]["Analysis Mode"].get() == 2:   # Synthetic LA-ICP-MS
+        elif self.gui_variables["Radiobutton"]["Analysis Mode"].get() == 2:   # SYNTHETIC LA-ICP-MS
             if self.last_rb_analysis_mineral.get() != 2:
                 ## Cleaning
                 categories = ["Mineral Physics Histogram", "Mineral Physics Scatter", "LA ICP MS"]
@@ -1211,7 +1379,6 @@ class GebPyGUI(tk.Frame):
                     self.gui_elements["Temporary"]["Label"].append(lbl_element)
                     #
                     ## Entries
-                    #
                     var_entr_min = int(min(self.data_mineral["chemistry"][element])*10**6)
                     var_entr_max = int(max(self.data_mineral["chemistry"][element])*10**6)
                     var_entr_mean = int(np.mean(self.data_mineral["chemistry"][element])*10**6)
@@ -1964,6 +2131,12 @@ class GebPyGUI(tk.Frame):
         #
         self.selected_minerals = {}
         n_digits = 8
+        for key, container in self.gui_elements["Temporary"].items():
+            if len(container) > 0:
+                container.clear()
+        for key, item in self.last_rb_setting.items():
+            for key2, item2 in item.items():
+                item2.set(42)
         #
         self.gui_variables["Entry"]["Minimum"] = {}
         self.gui_variables["Entry"]["Maximum"] = {}
@@ -4068,9 +4241,8 @@ class GebPyGUI(tk.Frame):
                     [rb_diagram_type_01, rb_diagram_type_02])
                 #
                 ## Results Table
-                categories = [
-                    "rho\n (kg/m\u00B3)", "vP\n (m/s)", "vS\n (m/s)", "vP/vS\n (1)", "K\n (GPa)", "G\n (GPa)", "E\n (GPa)",
-                    "nu\n (1)", "GR\n (API)", "PE\n (barns/e\u207B)", "phi\n (%)"]
+                categories = ["rho\n (kg/m\u00B3)", "vP\n (m/s)", "vS\n (m/s)", "vP/vS\n (1)", "K\n (GPa)", "G\n (GPa)",
+                              "E\n (GPa)", "nu\n (1)", "GR\n (API)", "PE\n (barns/e\u207B)", "phi\n (%)"]
                 categories_short = ["rho", "vP", "vS", "vP/vS", "K", "G", "E", "nu", "GR", "PE", "phi"]
                 for index, category in enumerate(categories):
                     lbl_category = SimpleElements(
@@ -4081,11 +4253,11 @@ class GebPyGUI(tk.Frame):
                     self.gui_elements["Rockbuilder Temporary"]["Label"].append(lbl_category)
                     #
                     ## Entries
-                    #
-                    var_entr_min = round(min(self.data_rock[categories_short[index]]), 3)
-                    var_entr_max = round(max(self.data_rock[categories_short[index]]), 3)
-                    var_entr_mean = round(np.mean(self.data_rock[categories_short[index]]), 3)
-                    var_entr_error = round(np.std(self.data_rock[categories_short[index]], ddof=1), 3)
+                    n_digits = 2
+                    var_entr_min = round(min(self.data_rock[categories_short[index]]), n_digits)
+                    var_entr_max = round(max(self.data_rock[categories_short[index]]), n_digits)
+                    var_entr_mean = round(np.mean(self.data_rock[categories_short[index]]), n_digits)
+                    var_entr_error = round(np.std(self.data_rock[categories_short[index]], ddof=1), n_digits)
                     #
                     entr_min = SimpleElements(
                         parent=self.parent, row_id=(3*index + 4), column_id=start_column + 9, n_rows=3, n_columns=9,
