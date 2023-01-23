@@ -735,12 +735,41 @@ class GebPyGUI(tk.Frame):
                         #
                         for i, subcategories in enumerate(categories):
                             for j, key in enumerate(subcategories):
-                                ax_mp_histo[i][j].hist(
-                                    x=self.data_mineral[key], color=self.colors_gebpy["Option"], edgecolor="black",
+                                dataset_x = self.data_mineral[key]
+                                y, x, _ = ax_mp_histo[i][j].hist(
+                                    x=dataset_x, color=self.colors_gebpy["Option"], edgecolor="black",
                                     bins=12)
                                 #
-                                ax_mp_histo[i][j].set_xlabel(labels[i][j], fontsize=9)
-                                ax_mp_histo[i][j].set_ylabel("Frequency", labelpad=0.5, fontsize=9)
+                                x_min = min(x)
+                                x_max = max(x)
+                                delta_x = round(x_max - x_min, 4)
+                                y_min = 0
+                                y_max = round(1.05*max(y), 2)
+                                #
+                                if delta_x < 1:
+                                    n_digits = 3
+                                elif 1 <= delta_x < 5:
+                                    n_digits = 2
+                                elif delta_x >= 5:
+                                    n_digits = 0
+                                #
+                                x_min = round(x_min - 0.1*delta_x, n_digits)
+                                x_max = round(x_max + 0.1*delta_x, n_digits)
+                                #
+                                if key != "nu":
+                                    if x_min < 0:
+                                        x_min = 0
+                                #
+                                ax_mp_histo[i][j].set_xlim(left=x_min, right=x_max)
+                                ax_mp_histo[i][j].set_ylim(bottom=y_min, top=y_max)
+                                ax_mp_histo[i][j].set_xticks(np.around(
+                                    np.linspace(x_min, x_max, 4, dtype=float, endpoint=True), n_digits))
+                                ax_mp_histo[i][j].set_yticks(np.around(
+                                    np.linspace(y_min, y_max, 4, dtype=float, endpoint=True), 1))
+                                ax_mp_histo[i][j].xaxis.set_tick_params(labelsize=8)
+                                ax_mp_histo[i][j].yaxis.set_tick_params(labelsize=8)
+                                ax_mp_histo[i][j].set_xlabel(labels[i][j], fontsize=8)
+                                ax_mp_histo[i][j].set_ylabel("Frequency", labelpad=0.5, fontsize=8)
                                 ax_mp_histo[i][j].grid(True)
                                 ax_mp_histo[i][j].set_axisbelow(True)
                             #
@@ -801,14 +830,54 @@ class GebPyGUI(tk.Frame):
                         labels = [["M (kg/mol)", "V (A$^3$/mol", "rho (kg/m$^3$"], ["vP (m/s)", "vS (m/s)", "vP/vS (1)"],
                                   ["GR (API)", "PE (barns/e$^-$)", "nu (1)"]]
                         #
+                        dataset_x = self.data_mineral["rho"]
+                        #
                         for i, subcategories in enumerate(categories):
                             for j, key in enumerate(subcategories):
+                                dataset_y = self.data_mineral[key]
                                 ax_mp_scatter[i][j].scatter(
-                                    self.data_mineral["rho"], self.data_mineral[key], color=self.colors_gebpy["Option"],
-                                    edgecolor="black", alpha=0.5)
+                                    dataset_x, dataset_y, color=self.colors_gebpy["Option"], edgecolor="black",
+                                    alpha=0.5)
                                 #
-                                ax_mp_scatter[i][j].set_xlabel("Density - kg/m$^3$", fontsize=9)
-                                ax_mp_scatter[i][j].set_ylabel(labels[i][j], labelpad=0.5, fontsize=9)
+                                x_min = min(dataset_x)
+                                x_max = max(dataset_x)
+                                delta_x = round(x_max - x_min, 4)
+                                y_min = min(dataset_y)
+                                y_max = max(dataset_y)
+                                delta_y = round(y_max - y_min, 4)
+                                #
+                                if delta_x < 1:
+                                    n_digits_x = 3
+                                elif 1 <= delta_x < 5:
+                                    n_digits_x = 2
+                                elif delta_x >= 5:
+                                    n_digits_x = 0
+                                if delta_y < 1:
+                                    n_digits_y = 3
+                                elif 1 <= delta_y < 5:
+                                    n_digits_y = 2
+                                elif delta_y >= 5:
+                                    n_digits_y = 0
+                                #
+                                x_min = round(x_min - 0.1*delta_x, n_digits_x)
+                                x_max = round(x_max + 0.1*delta_x, n_digits_x)
+                                y_min = round(y_min - 0.1*delta_y, n_digits_y)
+                                y_max = round(y_max + 0.1*delta_y, n_digits_y)
+                                #
+                                if key != "nu":
+                                    if y_min < 0:
+                                        y_min = 0
+                                #
+                                ax_mp_scatter[i][j].set_xlim(left=x_min, right=x_max)
+                                ax_mp_scatter[i][j].set_ylim(bottom=y_min, top=y_max)
+                                ax_mp_scatter[i][j].set_xticks(np.around(
+                                    np.linspace(x_min, x_max, 4, dtype=float, endpoint=True), n_digits_x))
+                                ax_mp_scatter[i][j].set_yticks(np.around(
+                                    np.linspace(y_min, y_max, 4, dtype=float, endpoint=True), n_digits_y))
+                                ax_mp_scatter[i][j].xaxis.set_tick_params(labelsize=8)
+                                ax_mp_scatter[i][j].yaxis.set_tick_params(labelsize=8)
+                                ax_mp_scatter[i][j].set_xlabel("Density - kg/m$^3$", fontsize=8)
+                                ax_mp_scatter[i][j].set_ylabel(labels[i][j], labelpad=0.5, fontsize=8)
                                 ax_mp_scatter[i][j].grid(True)
                                 ax_mp_scatter[i][j].set_axisbelow(True)
                         #
@@ -906,21 +975,38 @@ class GebPyGUI(tk.Frame):
                 for i, subcategories in enumerate(categories):
                     for j, key in enumerate(subcategories):
                         dataset_x = np.array(self.data_mineral["chemistry"][key])*10**2
-                        ax_mc_histo[i][j].hist(
+                        y, x, _ = ax_mc_histo[i][j].hist(
                             x=dataset_x, color=self.colors_gebpy["Option"], edgecolor="black", bins=12)
                         #
-                        x_min = round(min(dataset_x), 2)
-                        x_max = round(max(dataset_x), 2)
+                        x_min = min(x)
+                        x_max = max(x)
+                        delta_x = round(x_max - x_min, 4)
+                        y_min = 0
+                        y_max = round(1.05*max(y), 2)
+                        #
+                        if delta_x < 1:
+                            n_digits = 2
+                        elif 1 <= delta_x < 10:
+                            n_digits = 1
+                        elif delta_x >= 10:
+                            n_digits = 0
+                        #
+                        x_min = round(x_min - 0.1*delta_x, n_digits)
+                        x_max = round(x_max + 0.1*delta_x, n_digits)
+                        #
                         if x_min < 0:
                             x_min = 0
-                        if x_max > 100:
-                            x_max = 100
                         #
                         ax_mc_histo[i][j].set_xlim(left=x_min, right=x_max)
+                        ax_mc_histo[i][j].set_ylim(bottom=y_min, top=y_max)
                         ax_mc_histo[i][j].set_xticks(np.around(
-                            np.linspace(x_min, x_max, 4, dtype=float, endpoint=True), 2))
-                        ax_mc_histo[i][j].set_xlabel(labels[i][j], fontsize=9)
-                        ax_mc_histo[i][j].set_ylabel("Frequency", labelpad=0.5, fontsize=9)
+                            np.linspace(x_min, x_max, 4, dtype=float, endpoint=True), n_digits))
+                        ax_mc_histo[i][j].set_yticks(np.around(
+                            np.linspace(y_min, y_max, 4, dtype=float, endpoint=True), 1))
+                        ax_mc_histo[i][j].xaxis.set_tick_params(labelsize=8)
+                        ax_mc_histo[i][j].yaxis.set_tick_params(labelsize=8)
+                        ax_mc_histo[i][j].set_xlabel(labels[i][j], fontsize=8)
+                        ax_mc_histo[i][j].set_ylabel("Frequency", labelpad=0.5, fontsize=8)
                         ax_mc_histo[i][j].grid(True)
                         ax_mc_histo[i][j].set_axisbelow(True)
                 #
@@ -988,15 +1074,35 @@ class GebPyGUI(tk.Frame):
                         ax_mc_scatter[i][j].scatter(
                             dataset_x, dataset_y, color=self.colors_gebpy["Option"], edgecolor="black")
                         #
-                        x_min = round(min(dataset_x), 2)
-                        x_max = round(max(dataset_x), 2)
+                        x_min = min(dataset_x)
+                        x_max = max(dataset_x)
+                        delta_x = round(x_max - x_min, 4)
+                        y_min = min(dataset_y)
+                        y_max = max(dataset_y)
+                        delta_y = round(y_max - y_min, 4)
+                        #
+                        if delta_x < 1:
+                            n_digits_x = 2
+                        elif 1 <= delta_x < 10:
+                            n_digits_x = 1
+                        elif delta_x >= 10:
+                            n_digits_x = 0
+                        if delta_y < 1:
+                            n_digits_y = 2
+                        elif 1 <= delta_y < 10:
+                            n_digits_y = 1
+                        elif delta_y >= 10:
+                            n_digits_y = 0
+                        #
+                        x_min = round(x_min - 0.1*delta_x, n_digits_x)
+                        x_max = round(x_max + 0.1*delta_x, n_digits_x)
+                        y_min = round(y_min - 0.1*delta_y, n_digits_y)
+                        y_max = round(y_max + 0.1*delta_y, n_digits_y)
+                        #
                         if x_min < 0:
                             x_min = 0
                         if x_max > 100:
                             x_max = 100
-                        #
-                        y_min = round(min(dataset_y), 2)
-                        y_max = round(max(dataset_y), 2)
                         if y_min < 0:
                             y_min = 0
                         if y_max > 100:
@@ -1005,11 +1111,13 @@ class GebPyGUI(tk.Frame):
                         ax_mc_scatter[i][j].set_xlim(left=x_min, right=x_max)
                         ax_mc_scatter[i][j].set_ylim(bottom=y_min, top=y_max)
                         ax_mc_scatter[i][j].set_xticks(
-                            np.around(np.linspace(x_min, x_max, 4, dtype=float, endpoint=True), 1))
+                            np.around(np.linspace(x_min, x_max, 4, dtype=float, endpoint=True), n_digits_x))
                         ax_mc_scatter[i][j].set_yticks(
-                            np.around(np.linspace(y_min, y_max, 4, dtype=float, endpoint=True), 1))
-                        ax_mc_scatter[i][j].set_xlabel(str(ref_key) + " (wt.%)", fontsize=9)
-                        ax_mc_scatter[i][j].set_ylabel(labels[i][j], fontsize=9)
+                            np.around(np.linspace(y_min, y_max, 4, dtype=float, endpoint=True), n_digits_y))
+                        ax_mc_scatter[i][j].xaxis.set_tick_params(labelsize=8)
+                        ax_mc_scatter[i][j].yaxis.set_tick_params(labelsize=8)
+                        ax_mc_scatter[i][j].set_xlabel(str(ref_key) + " (wt.%)", fontsize=8)
+                        ax_mc_scatter[i][j].set_ylabel(labels[i][j], fontsize=8)
                         ax_mc_scatter[i][j].grid(True)
                         ax_mc_scatter[i][j].set_axisbelow(True)
                 #
