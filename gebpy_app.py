@@ -770,7 +770,6 @@ class GebPyGUI(tk.Frame):
                                 ax_mp_histo[i][j].yaxis.set_tick_params(labelsize=8)
                                 ax_mp_histo[i][j].set_xlabel(labels[i][j], fontsize=8)
                                 ax_mp_histo[i][j].set_ylabel("Frequency", labelpad=0.5, fontsize=8)
-                                ax_mp_histo[i][j].grid(True)
                                 ax_mp_histo[i][j].set_axisbelow(True)
                             #
                             canvas_mineralogy = FigureCanvasTkAgg(fig_mineralogy, master=self.parent)
