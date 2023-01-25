@@ -4811,7 +4811,7 @@ class Nesosilicates:
                                                majors=majors_data).calculate_molar_mass()
         element = [PeriodicSystem(name=amounts[i][0]).get_data() for i in range(len(amounts))]
         # Density
-        dataV = CrystalPhysics([[4.35, 8.8, 8.4], [], "orthorhombic"])
+        dataV = CrystalPhysics([[4.6499, 8.796, 8.3909], [], "orthorhombic"])   # Ref. Handbook of Mineralogy
         V = dataV.calculate_volume()
         Z = 4
         V_m = MineralChemistry().calculate_molar_volume(volume_cell=V, z=Z)
