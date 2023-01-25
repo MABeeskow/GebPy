@@ -6,7 +6,7 @@
 # Name:		gebpy_app.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		25.01.2023
+# Date:		26.01.2023
 
 #-----------------------------------------------
 
@@ -957,7 +957,12 @@ class GebPyGUI(tk.Frame):
                 #
                 categories = []
                 labels = []
-                for index, (element, values) in enumerate(self.data_mineral["chemistry"].items()):
+                if self.gui_variables["Radiobutton"]["Concentration Type"].get() == 0:
+                    var_key = "chemistry"
+                else:
+                    var_key = "compounds"
+                #
+                for index, (element, values) in enumerate(self.data_mineral[var_key].items()):
                     if index in [0, 3, 6]:
                         categories.append([])
                         labels.append([])
@@ -974,7 +979,11 @@ class GebPyGUI(tk.Frame):
                 #
                 for i, subcategories in enumerate(categories):
                     for j, key in enumerate(subcategories):
-                        dataset_x = np.array(self.data_mineral["chemistry"][key])*10**2
+                        if self.gui_variables["Radiobutton"]["Concentration Type"].get() == 0:
+                            dataset_x = np.array(self.data_mineral["chemistry"][key])*10**2
+                        else:
+                            dataset_x = np.array(self.data_mineral["compounds"][key])*10**2
+                        #
                         y, x, _ = ax_mc_histo[i][j].hist(
                             x=dataset_x, color=self.colors_gebpy["Option"], edgecolor="black", bins=12)
                         #
@@ -1046,7 +1055,12 @@ class GebPyGUI(tk.Frame):
                 labels = []
                 ref_key = None
                 ref_mean = 0
-                for index, (element, values) in enumerate(self.data_mineral["chemistry"].items()):
+                if self.gui_variables["Radiobutton"]["Concentration Type"].get() == 0:
+                    var_key = "chemistry"
+                else:
+                    var_key = "compounds"
+                #
+                for index, (element, values) in enumerate(self.data_mineral[var_key].items()):
                     mean_element = round(np.mean(values), 3)
                     if mean_element > ref_mean:
                         ref_key = element
@@ -1066,11 +1080,11 @@ class GebPyGUI(tk.Frame):
                         categories[2].append(element)
                         labels[2].append(str(element) + " (wt.%)")
                 #
-                dataset_x = np.array(self.data_mineral["chemistry"][ref_key])*10**2
+                dataset_x = np.array(self.data_mineral[var_key][ref_key])*10**2
                 #
                 for i, subcategories in enumerate(categories):
                     for j, key in enumerate(subcategories):
-                        dataset_y = np.array(self.data_mineral["chemistry"][key])*10**2
+                        dataset_y = np.array(self.data_mineral[var_key][key])*10**2
                         ax_mc_scatter[i][j].scatter(
                             dataset_x, dataset_y, color=self.colors_gebpy["Option"], edgecolor="black")
                         #
