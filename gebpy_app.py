@@ -6,7 +6,7 @@
 # Name:		gebpy_app.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		22.01.2023
+# Date:		25.01.2023
 
 #-----------------------------------------------
 
@@ -224,7 +224,7 @@ class GebPyGUI(tk.Frame):
                     "Jacobsite", "Magnesioferrite", "Trevorite", "Franklinite", "Ulvospinel", "Fe-Spinel", "Uraninite",
                     "Litharge", "Massicot", "Minium", "Plattnerite", "Scrutinyite", "Zincite", "Columbite", "Tantalite",
                     "Coltan", "Crocoite", "Wulfenite", "Goethite", "Wolframite", "Huebnerite", "Ferberite", "Boehmite",
-                    "Gibbsite"]
+                    "Gibbsite", "Au(III)-Oxide"]
                 self.oxide_minerals.sort()
                 for mineral in self.oxide_minerals:
                     sub_oxides.add_command(
@@ -770,6 +770,7 @@ class GebPyGUI(tk.Frame):
                                 ax_mp_histo[i][j].yaxis.set_tick_params(labelsize=8)
                                 ax_mp_histo[i][j].set_xlabel(labels[i][j], fontsize=8)
                                 ax_mp_histo[i][j].set_ylabel("Frequency", labelpad=0.5, fontsize=8)
+                                ax_mp_histo[i][j].grid(True)
                                 ax_mp_histo[i][j].set_axisbelow(True)
                             #
                             canvas_mineralogy = FigureCanvasTkAgg(fig_mineralogy, master=self.parent)
@@ -2821,7 +2822,7 @@ class GebPyGUI(tk.Frame):
             "Acanthite", "Barite", "Boehmite", "Beryl", "Bornite", "Cassiterite", "Chalcocite", "Chalcopyrite",
             "Chromite", "Cinnabar", "Cobalite", "Coltan", "Galena", "Gold", "Hematite", "Ilmenite", "Magnetite",
             "Malachite", "Molybdenite", "Pentlandite", "Pyrolusite", "Scheelite", "Smithsonite", "Sperrylite",
-            "Sphalerite", "Uraninite", "Wolframite", "Pollucite", "Pyrite", "Marmatite"]
+            "Sphalerite", "Uraninite", "Wolframite", "Pollucite", "Pyrite", "Marmatite", "Au(III)-Oxide"]
         self.clay_minerals = [
             "Illite", "Kaolinite", "Montmorillonite", "Nontronite", "Saponite", "Chlorite", "Vermiculite"]
         #
@@ -3070,7 +3071,7 @@ class GebPyGUI(tk.Frame):
                              "Chalcopyrite", "Chromite", "Cinnabar", "Cobaltite", "Coltan", "Galena", "Gold", "Hematite",
                              "Ilmenite", "Magnetite", "Malachite", "Molybdenite", "Pentlandite", "Pyrolusite",
                              "Scheelite", "Smithsonite", "Sperrylite", "Sphalerite", "Uraninite", "Wolframite",
-                             "Pollucite", "Pyrite", "Marmatite"]
+                             "Pollucite", "Pyrite", "Marmatite", "Au(III)-Oxide"]
         elif mineral_class_selected == "Clay Minerals":
             minerals_list = ["Illite", "Kaolinite", "Montmorillonite", "Nontronite", "Saponite", "Chlorite",
                              "Vermiculite"]
