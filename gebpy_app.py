@@ -4598,6 +4598,7 @@ class GebPyGUI(tk.Frame):
                                 element_mean = np.mean(self.data_rock["chemistry"][element])
                                 if element_mean > ref_mean and element != "U":
                                     ref_element = element
+                                    ref_mean = element_mean
                                 #
                                 if index < 3:
                                     if index == 0:
@@ -4632,6 +4633,7 @@ class GebPyGUI(tk.Frame):
                                     else:
                                         labels[2].append(str(element) + " (ppm)")
                             #
+                            print(ref_element)
                             dataset_x = np.array(self.data_rock["chemistry"][ref_element])*100
                             #
                             for i, subcategories in enumerate(categories):
