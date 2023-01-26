@@ -6,7 +6,7 @@
 # Name:		oxides.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		25.01.2023
+# Date:		26.01.2023
 
 # -----------------------------------------------
 
@@ -321,34 +321,29 @@ class Oxides():
         rho = dataRho.calculate_bulk_density()*magic_factor
         rho_e = wg(amounts=amounts, elements=element, rho_b=rho).calculate_electron_density()
         #
+        ## ELASTICITY
+        x = rd.uniform(0, 1)
         ## Bulk modulus
-        K = 29*10**9*magic_factor
-        #
+        K_raw = 1.7*x + 36.5
+        K = K_raw*10**9*magic_factor
         ## Shear modulus
-        G = 44*10**9*magic_factor
-        #
+        G_raw = -2.3*x + 45.6
+        G = G_raw*10**9*magic_factor
         ## Young's modulus
         E = (9*K*G)/(3*K + G)
-        #
         ## Poisson's ratio
         nu = (3*K - 2*G)/(2*(3*K + G))
-        #
         ## vP/vS
         vPvS = ((K + 4/3*G)/G)**0.5
-        #
         ## P-wave velocity
         vP = ((K + 4/3*G)/rho)**0.5
-        #
         ## S-wave velocity
         vS = (G/rho)**0.5
-        #
         ## Gamma ray
         gamma_ray = wg(amounts=amounts, elements=element).calculate_gr()
-        #
         ## Photoelectricity
         pe = wg(amounts=amounts, elements=element).calculate_pe()
         U = pe*rho_e*10**(-3)
-        #
         ## Electrical resistivity
         p = 2*10**14*magic_factor
         #
