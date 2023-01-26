@@ -1539,7 +1539,7 @@ class GebPyGUI(tk.Frame):
                     #
                     element_laicpms = list(intensity_data.keys())
                     for element in element_laicpms:
-                        ax_laicpms[0][0].plot(time_data, intensity_data[element], label=element)
+                        ax_laicpms[0][0].plot(time_data, intensity_data[element], label=element, linewidth=1)
                         #
                     ax_laicpms[0][0].set_xlabel("Time (s)", fontsize=9)
                     ax_laicpms[0][0].set_ylabel("Intensity (cps)", labelpad=0.5, fontsize=9)
@@ -3811,7 +3811,7 @@ class GebPyGUI(tk.Frame):
                     if self.last_rb_setting["Petrology"]["Rock Physics"].get() != 0:
                         if "Petrology" in self.gui_elements["Temporary"]["Canvas"]:
                             categories = ["Rock Physics Histogram", "Rock Physics Scatter", "Rock Chemistry Histogram",
-                                          "Rock Chemistry Scatter"]
+                                          "Rock Chemistry Scatter", "Rock Chemistry Histogram Element"]
                             for category in categories:
                                 if category in self.gui_elements["Temporary"]["Axis"]:
                                     for gui_axes in self.gui_elements["Temporary"]["Axis"][category]:
@@ -3833,12 +3833,40 @@ class GebPyGUI(tk.Frame):
                             #
                             for i, subcategories in enumerate(categories):
                                 for j, key in enumerate(subcategories):
-                                    ax_rp_histo[i][j].hist(
+                                    y, x, _ = ax_rp_histo[i][j].hist(
                                         x=self.data_rock[key], color=self.colors_gebpy["Option"], edgecolor="black",
                                         bins=12)
                                     #
-                                    ax_rp_histo[i][j].set_xlabel(labels[i][j], fontsize=9)
-                                    ax_rp_histo[i][j].set_ylabel("Frequency", labelpad=0.5, fontsize=9)
+                                    x_min = min(x)
+                                    x_max = max(x)
+                                    delta_x = round(x_max - x_min, 4)
+                                    y_min = 0
+                                    y_max = round(1.05*max(y), 2)
+                                    #
+                                    if delta_x < 1:
+                                        n_digits = 3
+                                    elif 1 <= delta_x < 5:
+                                        n_digits = 2
+                                    elif delta_x >= 5:
+                                        n_digits = 0
+                                    #
+                                    x_min = round(x_min - 0.1*delta_x, n_digits)
+                                    x_max = round(x_max + 0.1*delta_x, n_digits)
+                                    #
+                                    if key != "nu":
+                                        if x_min < 0:
+                                            x_min = 0
+                                    #
+                                    ax_rp_histo[i][j].set_xlim(left=x_min, right=x_max)
+                                    ax_rp_histo[i][j].set_ylim(bottom=y_min, top=y_max)
+                                    ax_rp_histo[i][j].set_xticks(np.around(
+                                        np.linspace(x_min, x_max, 4, dtype=float, endpoint=True), n_digits))
+                                    ax_rp_histo[i][j].set_yticks(np.around(
+                                        np.linspace(y_min, y_max, 4, dtype=float, endpoint=True), 1))
+                                    ax_rp_histo[i][j].xaxis.set_tick_params(labelsize=8)
+                                    ax_rp_histo[i][j].yaxis.set_tick_params(labelsize=8)
+                                    ax_rp_histo[i][j].set_xlabel(labels[i][j], fontsize=8)
+                                    ax_rp_histo[i][j].set_ylabel("Frequency", labelpad=0.5, fontsize=8)
                                     ax_rp_histo[i][j].grid(True)
                                     ax_rp_histo[i][j].set_axisbelow(True)
                                 #
@@ -3858,7 +3886,8 @@ class GebPyGUI(tk.Frame):
                                     gui_axis.axis("on")
                                     gui_axis.set_visible(True)
                             #
-                            categories = ["Rock Physics Scatter", "Rock Chemistry Histogram", "Rock Chemistry Scatter"]
+                            categories = ["Rock Physics Scatter", "Rock Chemistry Histogram", "Rock Chemistry Scatter",
+                                          "Rock Chemistry Histogram Element"]
                             for category in categories:
                                 if category in self.gui_elements["Temporary"]["Axis"]:
                                     for gui_axes in self.gui_elements["Temporary"]["Axis"][category]:
@@ -3877,7 +3906,8 @@ class GebPyGUI(tk.Frame):
                             gui_axis.axis("on")
                             gui_axis.set_visible(True)
                     #
-                    categories = ["Rock Physics Scatter", "Rock Chemistry Histogram", "Rock Chemistry Scatter"]
+                    categories = ["Rock Physics Scatter", "Rock Chemistry Histogram", "Rock Chemistry Scatter",
+                                  "Rock Chemistry Histogram Element"]
                     for category in categories:
                         if category in self.gui_elements["Temporary"]["Axis"]:
                             for gui_axes in self.gui_elements["Temporary"]["Axis"][category]:
@@ -3892,7 +3922,7 @@ class GebPyGUI(tk.Frame):
                     if self.last_rb_setting["Petrology"]["Rock Physics"].get() != 1:
                         if "Petrology" in self.gui_elements["Temporary"]["Canvas"]:
                             categories = ["Rock Physics Histogram", "Rock Physics Scatter", "Rock Chemistry Histogram",
-                                          "Rock Chemistry Scatter"]
+                                          "Rock Chemistry Scatter", "Rock Chemistry Histogram Element"]
                             for category in categories:
                                 if category in self.gui_elements["Temporary"]["Axis"]:
                                     for gui_axes in self.gui_elements["Temporary"]["Axis"][category]:
@@ -3915,14 +3945,58 @@ class GebPyGUI(tk.Frame):
                             labels = [["$\\varphi$ (%)", "GR (API)", "PE (barns/e\u207B)"],
                                       ["vP (m/s)", "vS (m/s)", "vP/vS (1)"], ["K (GPa)", "G (GPa)", "nu (1)"]]
                             #
+                            dataset_x = self.data_rock["rho"]
+                            #
                             for i, subcategories in enumerate(categories):
                                 for j, key in enumerate(subcategories):
+                                    dataset_y = self.data_rock[key]
                                     ax_rp_scatter[i][j].scatter(
-                                        self.data_rock["rho"], self.data_rock[key], color=self.colors_gebpy["Option"],
+                                        dataset_x, dataset_y, color=self.colors_gebpy["Option"],
                                         edgecolor="black", alpha=0.5)
                                     #
-                                    ax_rp_scatter[i][j].set_xlabel("Density - kg/m$^3$", fontsize=9)
-                                    ax_rp_scatter[i][j].set_ylabel(labels[i][j], labelpad=0.5, fontsize=9)
+                                    x_min = min(dataset_x)
+                                    x_max = max(dataset_x)
+                                    delta_x = round(x_max - x_min, 4)
+                                    y_min = min(dataset_y)
+                                    y_max = max(dataset_y)
+                                    delta_y = round(y_max - y_min, 4)
+                                    #
+                                    if delta_x < 1:
+                                        n_digits_x = 3
+                                    elif 1 <= delta_x < 5:
+                                        n_digits_x = 2
+                                    elif delta_x >= 5:
+                                        n_digits_x = 0
+                                    #
+                                    if delta_y < 1:
+                                        n_digits_y = 3
+                                    elif 1 <= delta_y < 5:
+                                        n_digits_y = 2
+                                    elif delta_y >= 5:
+                                        n_digits_y = 0
+                                    #
+                                    x_min = round(x_min - 0.1*delta_x, n_digits_x)
+                                    x_max = round(x_max + 0.1*delta_x, n_digits_x)
+                                    y_min = round(y_min - 0.1*delta_y, n_digits_y)
+                                    y_max = round(y_max + 0.1*delta_y, n_digits_y)
+                                    #
+                                    if key != "nu":
+                                        if x_min < 0:
+                                            x_min = 0
+                                    if key != "nu":
+                                        if y_min < 0:
+                                            y_min = 0
+                                    #
+                                    ax_rp_scatter[i][j].set_xlim(left=x_min, right=x_max)
+                                    ax_rp_scatter[i][j].set_ylim(bottom=y_min, top=y_max)
+                                    ax_rp_scatter[i][j].set_xticks(np.around(
+                                        np.linspace(x_min, x_max, 4, dtype=float, endpoint=True), n_digits_x))
+                                    ax_rp_scatter[i][j].set_yticks(np.around(
+                                        np.linspace(y_min, y_max, 4, dtype=float, endpoint=True), n_digits_y))
+                                    ax_rp_scatter[i][j].xaxis.set_tick_params(labelsize=8)
+                                    ax_rp_scatter[i][j].yaxis.set_tick_params(labelsize=8)
+                                    ax_rp_scatter[i][j].set_xlabel("Density - kg/m$^3$", fontsize=8)
+                                    ax_rp_scatter[i][j].set_ylabel(labels[i][j], labelpad=0.5, fontsize=8)
                                     ax_rp_scatter[i][j].grid(True)
                                     ax_rp_scatter[i][j].set_axisbelow(True)
                             #
@@ -3944,7 +4018,8 @@ class GebPyGUI(tk.Frame):
                                     gui_axis.axis("on")
                                     gui_axis.set_visible(True)
                             #
-                            categories = ["Rock Physics Histogram", "Rock Chemistry Histogram", "Rock Chemistry Scatter"]
+                            categories = ["Rock Physics Histogram", "Rock Chemistry Histogram",
+                                          "Rock Chemistry Scatter", "Rock Chemistry Histogram Element"]
                             for category in categories:
                                 if category in self.gui_elements["Temporary"]["Axis"]:
                                     for gui_axes in self.gui_elements["Temporary"]["Axis"][category]:
@@ -3964,7 +4039,8 @@ class GebPyGUI(tk.Frame):
                             gui_axis.axis("on")
                             gui_axis.set_visible(True)
                     #
-                    categories = ["Rock Physics Histogram", "Rock Chemistry Histogram", "Rock Chemistry Scatter"]
+                    categories = ["Rock Physics Histogram", "Rock Chemistry Histogram", "Rock Chemistry Scatter",
+                                  "Rock Chemistry Histogram Element"]
                     for category in categories:
                         if category in self.gui_elements["Temporary"]["Axis"]:
                             for gui_axes in self.gui_elements["Temporary"]["Axis"][category]:
@@ -3976,13 +4052,13 @@ class GebPyGUI(tk.Frame):
             #
             self.last_rb_setting["Petrology"]["Rock Physics"].set(var_rb_diagram)
             #
-        elif self.gui_variables["Radiobutton"]["Analysis Mode"].get() == 1:  # ROCK CHEMISTRY
+        elif self.gui_variables["Radiobutton"]["Analysis Mode"].get() == 1:  # ROCK CHEMISTRY (MINERALS)
             var_rb_diagram = self.gui_variables["Radiobutton"]["Diagram Type Mineral"].get()
             if var_rb_diagram == 0:     # HISTOGRAM
                 if self.last_rb_setting["Petrology"]["Rock Chemistry"].get() != 0:
                     if "Petrology" in self.gui_elements["Temporary"]["Canvas"]:
                         categories = ["Rock Physics Histogram", "Rock Physics Scatter", "Rock Chemistry Histogram",
-                                      "Rock Chemistry Scatter"]
+                                      "Rock Chemistry Scatter", "Rock Chemistry Histogram Element"]
                         for category in categories:
                             if category in self.gui_elements["Temporary"]["Axis"]:
                                 for gui_axes in self.gui_elements["Temporary"]["Axis"][category]:
@@ -4045,14 +4121,25 @@ class GebPyGUI(tk.Frame):
                                 else:
                                     factor = 10**6
                                 #
-                                ax_rc_histo[i][j].hist(
+                                y, x, _ = ax_rc_histo[i][j].hist(
                                     x=np.array(self.data_rock["mineralogy"][key])*factor,
                                     color=self.colors_gebpy["Option"], edgecolor="black", bins=12)
                                 #
-                                x_min = min(np.round(np.array(self.data_rock["mineralogy"][key])*factor))
-                                x_max = max(np.round(np.array(self.data_rock["mineralogy"][key])*factor))
-                                #x_min = int(2.5*round((x_min - 2.5)/2.5))
-                                #x_max = int(2.5 * round((x_max + 2.5) / 2.5))
+                                x_min = min(x)
+                                x_max = max(x)
+                                delta_x = round(x_max - x_min, 4)
+                                y_min = 0
+                                y_max = round(1.05*max(y), 2)
+                                #
+                                if delta_x < 1:
+                                    n_digits = 3
+                                elif 1 <= delta_x < 5:
+                                    n_digits = 2
+                                elif delta_x >= 5:
+                                    n_digits = 0
+                                #
+                                x_min = round(x_min - 0.1*delta_x, n_digits)
+                                x_max = round(x_max + 0.1*delta_x, n_digits)
                                 #
                                 if x_min < 0:
                                     x_min = 0
@@ -4061,9 +4148,17 @@ class GebPyGUI(tk.Frame):
                                         x_max = 100
                                 #
                                 ax_rc_histo[i][j].set_xlim(left=x_min, right=x_max)
+                                ax_rc_histo[i][j].set_ylim(bottom=y_min, top=y_max)
+                                ax_rc_histo[i][j].set_xticks(np.around(
+                                    np.linspace(x_min, x_max, 4, dtype=float, endpoint=True), n_digits))
+                                ax_rc_histo[i][j].set_yticks(np.around(
+                                    np.linspace(y_min, y_max, 4, dtype=float, endpoint=True), 1))
+                                ax_rc_histo[i][j].xaxis.set_tick_params(labelsize=8)
+                                ax_rc_histo[i][j].yaxis.set_tick_params(labelsize=8)
+                                ax_rc_histo[i][j].set_xlim(left=x_min, right=x_max)
                                 ax_rc_histo[i][j].set_xticks(np.linspace(x_min, x_max, 5, dtype=int, endpoint=True))
-                                ax_rc_histo[i][j].set_xlabel(labels[i][j], fontsize=9)
-                                ax_rc_histo[i][j].set_ylabel("Frequency", labelpad=0.5, fontsize=9)
+                                ax_rc_histo[i][j].set_xlabel(labels[i][j], fontsize=8)
+                                ax_rc_histo[i][j].set_ylabel("Frequency", labelpad=0.5, fontsize=8)
                                 ax_rc_histo[i][j].grid(True)
                                 ax_rc_histo[i][j].set_axisbelow(True)
                             #
@@ -4085,7 +4180,8 @@ class GebPyGUI(tk.Frame):
                                 gui_axis.axis("on")
                                 gui_axis.set_visible(True)
                         #
-                        categories = ["Rock Physics Histogram", "Rock Physics Scatter", "Rocks Chemistry Scatter"]
+                        categories = ["Rock Physics Histogram", "Rock Physics Scatter", "Rocks Chemistry Scatter",
+                                      "Rock Chemistry Histogram Element"]
                         for category in categories:
                             if category in self.gui_elements["Temporary"]["Axis"]:
                                 for gui_axes in self.gui_elements["Temporary"]["Axis"][category]:
@@ -4103,7 +4199,8 @@ class GebPyGUI(tk.Frame):
                             gui_axis.axis("on")
                             gui_axis.set_visible(True)
                     #
-                    categories = ["Rock Physics Histogram", "Rock Physics Scatter", "Rocks Chemistry Scatter"]
+                    categories = ["Rock Physics Histogram", "Rock Physics Scatter", "Rocks Chemistry Scatter",
+                                  "Rock Chemistry Histogram Element"]
                     for category in categories:
                         if category in self.gui_elements["Temporary"]["Axis"]:
                             for gui_axes in self.gui_elements["Temporary"]["Axis"][category]:
@@ -4121,7 +4218,7 @@ class GebPyGUI(tk.Frame):
                     if self.last_rb_setting["Petrology"]["Rock Chemistry"].get() != 1:
                         if "Petrology" in self.gui_elements["Temporary"]["Canvas"]:
                             categories = ["Rock Physics Histogram", "Rock Physics Scatter", "Rock Chemistry Histogram",
-                                          "Rock Chemistry Scatter"]
+                                          "Rock Chemistry Scatter", "Rock Chemistry Histogram Element"]
                             for category in categories:
                                 if category in self.gui_elements["Temporary"]["Axis"]:
                                     for gui_axes in self.gui_elements["Temporary"]["Axis"][category]:
@@ -4182,6 +4279,8 @@ class GebPyGUI(tk.Frame):
                                     else:
                                         labels[2].append(str(mineral) + " (ppm)")
                             #
+                            dataset_x = np.array(self.data_rock["mineralogy"][ref_mineral])*100
+                            #
                             for i, subcategories in enumerate(categories):
                                 for j, key in enumerate(subcategories):
                                     if key != "Urn":
@@ -4191,37 +4290,58 @@ class GebPyGUI(tk.Frame):
                                         factor = 10**6
                                         y_label = str(key) + " (ppm)"
                                     #
-                                    ax_rc_scatter[i][j].scatter(
-                                        np.array(self.data_rock["mineralogy"][ref_mineral])*100,
-                                        np.array(self.data_rock["mineralogy"][key])*factor,
-                                        color=self.colors_gebpy["Option"], edgecolor="black", alpha=0.5)
+                                    dataset_y = np.array(self.data_rock["mineralogy"][key])*factor
                                     #
-                                    x_min = min(np.round(np.array(self.data_rock["mineralogy"][ref_mineral])*100))
-                                    x_max = max(np.round(np.array(self.data_rock["mineralogy"][ref_mineral])*100))
-                                    #x_min = int(2.5 * round((x_min - 2.5) / 2.5))
-                                    #x_max = int(2.5 * round((x_max + 2.5) / 2.5))
-                                    y_min = min(np.round(np.array(self.data_rock["mineralogy"][key])*factor))
-                                    y_max = max(np.round(np.array(self.data_rock["mineralogy"][key])*factor))
-                                    #y_min = int(2.5 * round((y_min - 2.5) / 2.5))
-                                    #y_max = int(2.5 * round((y_max + 2.5) / 2.5))
+                                    ax_rc_scatter[i][j].scatter(
+                                        dataset_x, dataset_y, color=self.colors_gebpy["Option"], edgecolor="black",
+                                        alpha=0.5)
+                                    #
+                                    x_min = min(dataset_x)
+                                    x_max = max(dataset_x)
+                                    delta_x = round(x_max - x_min, 4)
+                                    y_min = min(dataset_y)
+                                    y_max = max(dataset_y)
+                                    delta_y = round(y_max - y_min, 4)
+                                    #
+                                    if delta_x < 1:
+                                        n_digits_x = 3
+                                    elif 1 <= delta_x < 5:
+                                        n_digits_x = 2
+                                    elif delta_x >= 5:
+                                        n_digits_x = 0
+                                    #
+                                    if delta_y < 1:
+                                        n_digits_y = 3
+                                    elif 1 <= delta_y < 5:
+                                        n_digits_y = 2
+                                    elif delta_y >= 5:
+                                        n_digits_y = 0
+                                    #
+                                    x_min = round(x_min - 0.1*delta_x, n_digits_x)
+                                    x_max = round(x_max + 0.1*delta_x, n_digits_x)
+                                    y_min = round(y_min - 0.1*delta_y, n_digits_y)
+                                    y_max = round(y_max + 0.1*delta_y, n_digits_y)
                                     #
                                     if x_min < 0:
                                         x_min = 0
-                                    if key != "Urn":
-                                        if x_max > 100:
-                                            x_max = 100
                                     if y_min < 0:
                                         y_min = 0
                                     if key != "Urn":
+                                        if x_max > 100:
+                                            x_max = 100
                                         if y_max > 100:
                                             y_max = 100
                                     #
                                     ax_rc_scatter[i][j].set_xlim(left=x_min, right=x_max)
                                     ax_rc_scatter[i][j].set_ylim(bottom=y_min, top=y_max)
-                                    ax_rc_scatter[i][j].set_xticks(np.linspace(x_min, x_max, 5, dtype=int, endpoint=True))
-                                    ax_rc_scatter[i][j].set_yticks(np.linspace(y_min, y_max, 5, dtype=int, endpoint=True))
-                                    ax_rc_scatter[i][j].set_xlabel(str(ref_mineral)+" (wt.%)", fontsize=9)
-                                    ax_rc_scatter[i][j].set_ylabel(y_label, labelpad=0.5, fontsize=9)
+                                    ax_rc_scatter[i][j].set_xticks(np.around(
+                                        np.linspace(x_min, x_max, 4, dtype=float, endpoint=True), n_digits_x))
+                                    ax_rc_scatter[i][j].set_yticks(np.around(
+                                        np.linspace(y_min, y_max, 4, dtype=float, endpoint=True), n_digits_y))
+                                    ax_rc_scatter[i][j].xaxis.set_tick_params(labelsize=8)
+                                    ax_rc_scatter[i][j].yaxis.set_tick_params(labelsize=8)
+                                    ax_rc_scatter[i][j].set_xlabel(str(ref_mineral)+" (wt.%)", fontsize=8)
+                                    ax_rc_scatter[i][j].set_ylabel(y_label, labelpad=0.5, fontsize=8)
                                     ax_rc_scatter[i][j].grid(True)
                                     ax_rc_scatter[i][j].set_axisbelow(True)
                             #
@@ -4243,7 +4363,8 @@ class GebPyGUI(tk.Frame):
                                     gui_axis.axis("on")
                                     gui_axis.set_visible(True)
                             #
-                            categories = ["Rock Physics Histogram", "Rock Physics Scatter", "Rock Chemistry Histogram"]
+                            categories = ["Rock Physics Histogram", "Rock Physics Scatter", "Rock Chemistry Histogram",
+                                          "Rock Chemistry Histogram Element"]
                             for category in categories:
                                 if category in self.gui_elements["Temporary"]["Axis"]:
                                     for gui_axes in self.gui_elements["Temporary"]["Axis"][category]:
@@ -4263,7 +4384,8 @@ class GebPyGUI(tk.Frame):
                             gui_axis.axis("on")
                             gui_axis.set_visible(True)
                     #
-                    categories = ["Rock Physics Histogram", "Rock Chemistry Histogram", "Rock Chemistry Histogram"]
+                    categories = ["Rock Physics Histogram", "Rock Chemistry Histogram", "Rock Chemistry Histogram",
+                                  "Rock Chemistry Histogram Element"]
                     for category in categories:
                         if category in self.gui_elements["Temporary"]["Axis"]:
                             for gui_axes in self.gui_elements["Temporary"]["Axis"][category]:
@@ -4275,6 +4397,167 @@ class GebPyGUI(tk.Frame):
             #
             self.last_rb_setting["Petrology"]["Rock Chemistry"].set(var_rb_diagram)
             #
+        elif self.gui_variables["Radiobutton"]["Analysis Mode"].get() == 2:  # ROCK CHEMISTRY (ELEMENTS)
+            var_rb_diagram = self.gui_variables["Radiobutton"]["Diagram Type Element"].get()
+            if var_rb_diagram == 0:     # HISTOGRAM
+                if self.last_rb_setting["Petrology"]["Rock Chemistry"].get() != 0 or self.last_rb_setting["Petrology"]["General Mode"].get() != 2:
+                    if "Petrology" in self.gui_elements["Temporary"]["Canvas"]:
+                        categories = ["Rock Physics Histogram", "Rock Physics Scatter", "Rock Chemistry Histogram",
+                                      "Rock Chemistry Scatter", "Rock Chemistry Histogram Element"]
+                        for category in categories:
+                            if category in self.gui_elements["Temporary"]["Axis"]:
+                                for gui_axes in self.gui_elements["Temporary"]["Axis"][category]:
+                                    for gui_axis in gui_axes:
+                                        gui_axis.axis("off")
+                                        gui_axis.set_visible(False)
+                        #
+                        self.gui_elements["Temporary"]["Canvas"]["Petrology"].draw()
+                    #
+                    ## Diagram
+                    if "Rock Chemistry Histogram Element" not in self.gui_elements["Temporary"]["Axis"]:
+                        if "Petrology" not in self.gui_elements["Temporary"]["Figure"]:
+                            fig_petrology = Figure(
+                                figsize=(3, 3), dpi=150, tight_layout=True, facecolor=self.colors_gebpy["Background"])
+                        else:
+                            fig_petrology = self.gui_elements["Temporary"]["Figure"]["Petrology"]
+                        #
+                        ax_rce_histo = fig_petrology.subplots(nrows=3, ncols=3)
+                        #
+                        categories = []
+                        labels = []
+                        for index, element in enumerate(self.list_elements_rock):
+                            if index < 3:
+                                if index == 0:
+                                    categories.append([])
+                                    labels.append([])
+                                #
+                                categories[0].append(element)
+                                if element != "U":
+                                    labels[0].append(str(element)+" (wt.%)")
+                                else:
+                                    labels[0].append(str(element) + " (ppm)")
+                                #
+                            elif 2 < index < 6:
+                                if index == 3:
+                                    categories.append([])
+                                    labels.append([])
+                                #
+                                categories[1].append(element)
+                                if element != "U":
+                                    labels[1].append(str(element) + " (wt.%)")
+                                else:
+                                    labels[1].append(str(element) + " (ppm)")
+                                #
+                            elif 5 < index < 9:
+                                if index == 6:
+                                    categories.append([])
+                                    labels.append([])
+                                #
+                                categories[2].append(element)
+                                if element != "U":
+                                    labels[2].append(str(element) + " (wt.%)")
+                                else:
+                                    labels[2].append(str(element) + " (ppm)")
+                        #
+                        for i, subcategories in enumerate(categories):
+                            for j, key in enumerate(subcategories):
+                                if key != "U":
+                                    factor = 10**2
+                                else:
+                                    factor = 10**6
+                                #
+                                y, x, _ = ax_rce_histo[i][j].hist(
+                                    x=np.array(self.data_rock["chemistry"][key])*factor,
+                                    color=self.colors_gebpy["Option"], edgecolor="black", bins=12)
+                                #
+                                x_min = min(x)
+                                x_max = max(x)
+                                delta_x = round(x_max - x_min, 4)
+                                y_min = 0
+                                y_max = round(1.05*max(y), 2)
+                                #
+                                if delta_x < 1:
+                                    n_digits = 3
+                                elif 1 <= delta_x < 5:
+                                    n_digits = 2
+                                elif delta_x >= 5:
+                                    n_digits = 0
+                                #
+                                x_min = round(x_min - 0.1*delta_x, n_digits)
+                                x_max = round(x_max + 0.1*delta_x, n_digits)
+                                #
+                                if x_min < 0:
+                                    x_min = 0
+                                if key != "U":
+                                    if x_max > 100:
+                                        x_max = 100
+                                #
+                                ax_rce_histo[i][j].set_xlim(left=x_min, right=x_max)
+                                ax_rce_histo[i][j].set_ylim(bottom=y_min, top=y_max)
+                                ax_rce_histo[i][j].set_xticks(np.around(
+                                    np.linspace(x_min, x_max, 4, dtype=float, endpoint=True), n_digits))
+                                ax_rce_histo[i][j].set_yticks(np.around(
+                                    np.linspace(y_min, y_max, 4, dtype=float, endpoint=True), 1))
+                                ax_rce_histo[i][j].xaxis.set_tick_params(labelsize=8)
+                                ax_rce_histo[i][j].yaxis.set_tick_params(labelsize=8)
+                                ax_rce_histo[i][j].set_xlim(left=x_min, right=x_max)
+                                ax_rce_histo[i][j].set_xticks(np.linspace(x_min, x_max, 5, dtype=int, endpoint=True))
+                                ax_rce_histo[i][j].set_xlabel(labels[i][j], fontsize=8)
+                                ax_rce_histo[i][j].set_ylabel("Frequency", labelpad=0.5, fontsize=8)
+                                ax_rce_histo[i][j].grid(True)
+                                ax_rce_histo[i][j].set_axisbelow(True)
+                            #
+                            if "Petrology" not in self.gui_elements["Temporary"]["Canvas"]:
+                                canvas_petrology = FigureCanvasTkAgg(fig_petrology, master=self.parent)
+                                #
+                            else:
+                                canvas_petrology = self.gui_elements["Temporary"]["Canvas"]["Petrology"]
+                            #
+                            canvas_petrology.draw()
+                            #
+                            self.gui_elements["Temporary"]["Axis"]["Rock Chemistry Histogram Element"] = ax_rce_histo
+                            self.gui_elements["Temporary"]["Canvas"]["Petrology"] = canvas_petrology
+                        #
+                    else:
+                        ## Cleaning
+                        for gui_axes in self.gui_elements["Temporary"]["Axis"]["Rock Chemistry Histogram Element"]:
+                            for gui_axis in gui_axes:
+                                gui_axis.axis("on")
+                                gui_axis.set_visible(True)
+                        #
+                        categories = ["Rock Physics Histogram", "Rock Physics Scatter", "Rocks Chemistry Histogram",
+                                      "Rocks Chemistry Scatter"]
+                        for category in categories:
+                            if category in self.gui_elements["Temporary"]["Axis"]:
+                                for gui_axes in self.gui_elements["Temporary"]["Axis"][category]:
+                                    for gui_axis in gui_axes:
+                                        gui_axis.axis("off")
+                                        gui_axis.set_visible(False)
+                        #
+                        self.gui_elements["Temporary"]["Canvas"]["Petrology"].draw()
+                    #
+                elif self.last_rb_setting["Petrology"]["Rock Chemistry"].get() == 0 \
+                        and self.last_rb_setting["Petrology"]["General Mode"].get() in [0, 2]:
+                    ## RECONSTRUCTION
+                    for gui_axes in self.gui_elements["Temporary"]["Axis"]["Rock Chemistry Histogram Element"]:
+                        for gui_axis in gui_axes:
+                            gui_axis.axis("on")
+                            gui_axis.set_visible(True)
+                    #
+                    categories = ["Rock Physics Histogram", "Rock Physics Scatter", "Rocks Chemistry Histogram",
+                                  "Rocks Chemistry Scatter"]
+                    for category in categories:
+                        if category in self.gui_elements["Temporary"]["Axis"]:
+                            for gui_axes in self.gui_elements["Temporary"]["Axis"][category]:
+                                for gui_axis in gui_axes:
+                                    gui_axis.axis("off")
+                                    gui_axis.set_visible(False)
+                    #
+                    self.gui_elements["Temporary"]["Canvas"]["Petrology"].draw()
+                    #
+                else:
+                    pass
+                #
         #
     #
     def change_rb_analysis_rocks(self):
@@ -4721,6 +5004,8 @@ class GebPyGUI(tk.Frame):
                     #
                     self.gui_elements["Rockbuilder Temporary"]["Entry"].extend(
                         [entr_min, entr_max, entr_mean, entr_error])
+                #
+                self.change_rb_diagram_rocks()
                 #
                 self.last_rb_analysis_rock.set(var_rb_mode)
                 #
