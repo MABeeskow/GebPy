@@ -6,7 +6,7 @@
 # Name:		gebpy_app.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		26.01.2023
+# Date:		27.01.2023
 
 #-----------------------------------------------
 
@@ -4566,7 +4566,7 @@ class GebPyGUI(tk.Frame):
                     pass
                 #
             elif var_rb_diagram == 1:   # SCATTER
-                if self.last_rb_setting["Petrology"]["General Mode"].get() not in [0, 2]:
+                if self.last_rb_setting["Petrology"]["General Mode"].get() not in [0, 1]:
                     if self.last_rb_setting["Petrology"]["Rock Chemistry"].get() != 1:
                         if "Petrology" in self.gui_elements["Temporary"]["Canvas"]:
                             categories = ["Rock Physics Histogram", "Rock Physics Scatter", "Rock Chemistry Histogram",
@@ -5114,22 +5114,22 @@ class GebPyGUI(tk.Frame):
                     parent=self.parent, row_id=34, column_id=14, n_rows=2, n_columns=16,
                     bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Background"]).create_radiobutton(
                     text="Histogram", var_rb=self.gui_variables["Radiobutton"]["Diagram Type Element"], value_rb=0,
-                    color_bg=self.colors_gebpy["Background"])
+                    color_bg=self.colors_gebpy["Background"], command=self.change_rb_diagram_rocks)
                 rb_diagram_type_02 = SimpleElements(
                     parent=self.parent, row_id=36, column_id=14, n_rows=2, n_columns=16,
                     bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Background"]).create_radiobutton(
                     text="Scatter", var_rb=self.gui_variables["Radiobutton"]["Diagram Type Element"], value_rb=1,
-                    color_bg=self.colors_gebpy["Background"])
+                    color_bg=self.colors_gebpy["Background"], command=self.change_rb_diagram_rocks)
                 rb_concentration_type_01 = SimpleElements(
                     parent=self.parent, row_id=38, column_id=14, n_rows=2, n_columns=16,
                     bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Background"]).create_radiobutton(
                     text="Element Concentrations", var_rb=self.gui_variables["Radiobutton"]["Concentration Type"],
-                    value_rb=0, color_bg=self.colors_gebpy["Background"])
+                    value_rb=0, color_bg=self.colors_gebpy["Background"], command=self.change_rb_diagram_rocks)
                 rb_concentration_type_02 = SimpleElements(
                     parent=self.parent, row_id=40, column_id=14, n_rows=2, n_columns=16,
                     bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Background"]).create_radiobutton(
                     text="Oxide Concentrations", var_rb=self.gui_variables["Radiobutton"]["Concentration Type"],
-                    value_rb=1, color_bg=self.colors_gebpy["Background"])
+                    value_rb=1, color_bg=self.colors_gebpy["Background"], command=self.change_rb_diagram_rocks)
                 #
                 self.gui_elements["Rockbuilder Temporary"]["Radiobutton"].extend(
                     [rb_diagram_type_01, rb_diagram_type_02, rb_concentration_type_01, rb_concentration_type_02])
