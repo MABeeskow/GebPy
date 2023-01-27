@@ -4159,8 +4159,6 @@ class GebPyGUI(tk.Frame):
                                     np.linspace(y_min, y_max, 4, dtype=float, endpoint=True), 1))
                                 ax_rc_histo[i][j].xaxis.set_tick_params(labelsize=8)
                                 ax_rc_histo[i][j].yaxis.set_tick_params(labelsize=8)
-                                ax_rc_histo[i][j].set_xlim(left=x_min, right=x_max)
-                                ax_rc_histo[i][j].set_xticks(np.linspace(x_min, x_max, 5, dtype=int, endpoint=True))
                                 ax_rc_histo[i][j].set_xlabel(labels[i][j], fontsize=8)
                                 ax_rc_histo[i][j].set_ylabel("Frequency", labelpad=0.5, fontsize=8)
                                 ax_rc_histo[i][j].grid(True)
@@ -4250,6 +4248,7 @@ class GebPyGUI(tk.Frame):
                                 mineral_mean = np.mean(self.data_rock["mineralogy"][mineral])
                                 if mineral_mean > ref_mean and mineral != "Urn":
                                     ref_mineral = mineral
+                                    ref_mean = mineral_mean
                                 #
                                 if index < 3:
                                     if index == 0:
@@ -4507,9 +4506,6 @@ class GebPyGUI(tk.Frame):
                                     np.linspace(y_min, y_max, 4, dtype=float, endpoint=True), 1))
                                 ax_rce_histo[i][j].xaxis.set_tick_params(labelsize=8)
                                 ax_rce_histo[i][j].yaxis.set_tick_params(labelsize=8)
-                                ax_rce_histo[i][j].set_xlim(left=x_min, right=x_max)
-                                ax_rce_histo[i][j].set_xticks(np.linspace(x_min, x_max, 5, dtype=int, endpoint=True))
-                                ax_rce_histo[i][j].set_xlabel(labels[i][j], fontsize=8)
                                 ax_rce_histo[i][j].set_ylabel("Frequency", labelpad=0.5, fontsize=8)
                                 ax_rce_histo[i][j].grid(True)
                                 ax_rce_histo[i][j].set_axisbelow(True)
@@ -4633,7 +4629,6 @@ class GebPyGUI(tk.Frame):
                                     else:
                                         labels[2].append(str(element) + " (ppm)")
                             #
-                            print(ref_element)
                             dataset_x = np.array(self.data_rock["chemistry"][ref_element])*100
                             #
                             for i, subcategories in enumerate(categories):
