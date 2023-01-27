@@ -4506,6 +4506,8 @@ class GebPyGUI(tk.Frame):
                                     np.linspace(y_min, y_max, 4, dtype=float, endpoint=True), 1))
                                 ax_rce_histo[i][j].xaxis.set_tick_params(labelsize=8)
                                 ax_rce_histo[i][j].yaxis.set_tick_params(labelsize=8)
+                                #ax_rce_histo[i][j].set_xlabel(str(key) + " (wt.%)", fontsize=8)
+                                ax_rce_histo[i][j].set_xlabel(labels[i][j], fontsize=8)
                                 ax_rce_histo[i][j].set_ylabel("Frequency", labelpad=0.5, fontsize=8)
                                 ax_rce_histo[i][j].grid(True)
                                 ax_rce_histo[i][j].set_axisbelow(True)
