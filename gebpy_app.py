@@ -6,7 +6,7 @@
 # Name:		gebpy_app.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		27.01.2023
+# Date:		29.01.2023
 
 #-----------------------------------------------
 
@@ -3621,17 +3621,28 @@ class GebPyGUI(tk.Frame):
             phi_list = []
             phi_minerals = {}
             velocities_minerals = {}
+            velocity_solid = {"vP": 0, "vS": 0}
+            amounts_minerals = {"mass": {}, "volume": {}}
+            sum_amounts_phi = 0
+            sum_amounts_w = 0
             #
             for mineral, dataset in mineral_data.items():
                 if mineral not in self.data_rock["mineralogy"]:
                     self.data_rock["mineralogy"][mineral] = []
+                if mineral not in amounts_minerals["mass"]:
+                    amounts_minerals["mass"][mineral] = []
+                    amounts_minerals["volume"][mineral] = []
                 #
                 mineral_amount = round(mineral_amounts[mineral][n]*10**(-2), 6)
                 phi_minerals[mineral] = mineral_amount
+                sum_amounts_w += mineral_amount*dataset["rho"][n]
+                amounts_minerals["volume"][mineral].append(mineral_amount)
                 #
                 velocities_minerals[mineral] = {}
                 velocities_minerals[mineral]["vP"] = dataset["vP"][n]
                 velocities_minerals[mineral]["vS"] = dataset["vS"][n]
+                velocity_solid["vP"] += mineral_amount*dataset["vP"][n]
+                velocity_solid["vS"] += mineral_amount*dataset["vS"][n]
                 #
                 rho_solid += mineral_amount*dataset["rho"][n]
                 bulk_modulus += mineral_amount*dataset["K"][n]
@@ -3651,19 +3662,15 @@ class GebPyGUI(tk.Frame):
                     if element not in self.data_rock["chemistry"]:
                         self.data_rock["chemistry"][element] = []
             #
+            for mineral, dataset in mineral_data.items():
+                amount_w = round((mineral_amounts[mineral][n]*10**(-2)*dataset["rho"][n])/sum_amounts_w, 6)
+                amounts_minerals["mass"][mineral].append(amount_w)
+            #
             rho_solid = round(rho_solid, 3)
             bulk_modulus = round(bulk_modulus, 3)
             shear_modulus = round(shear_modulus, 3)
             gamma_ray = round(gamma_ray, 3)
             photoelectricity = round(photoelectricity, 3)
-            #
-            K_geo = elast.calc_geometric_mean(self, phi_list, K_list)
-            G_geo = elast.calc_geometric_mean(self, phi_list, G_list)
-            #
-            anisotropic_factor = 1.0 + porosity**2
-            #
-            bulk_modulus = round(K_geo/anisotropic_factor, 3)
-            shear_modulus = round(G_geo/anisotropic_factor, 3)
             #
             for mineral, dataset in mineral_amounts.items():
                 mineral_amount = round(
@@ -3672,27 +3679,15 @@ class GebPyGUI(tk.Frame):
                 self.data_rock["mineralogy"][mineral].append(mineral_amount)
             #
             rho = round((1 - porosity)*rho_solid + porosity*data_water[2]/1000, 3)
-            youngs_modulus = (9*bulk_modulus*shear_modulus)/(3*bulk_modulus + shear_modulus)
-            youngs_modulus = round(youngs_modulus/anisotropic_factor, 3)
-            poisson_ratio = (3*bulk_modulus - 2*shear_modulus)/(6*bulk_modulus + 2*shear_modulus)
-            poisson_ratio = (youngs_modulus)/(2*shear_modulus) - 1
-            poisson_ratio = round(poisson_ratio/anisotropic_factor, 4)
-            vP = round(((bulk_modulus*10**9 + 4/3*shear_modulus*10**9)/(rho))**0.5, 3)
-            vP = round(vP/anisotropic_factor, 3)
-            vS = round(((shear_modulus*10**9)/(rho))**0.5, 3)
-            vS = round(vS/anisotropic_factor, 3)
-            vPvS = round(vP/vS, 3)
             #
-            var_porosity = porosity
-            data_velocities = {"Phi": phi_minerals, "v": velocities_minerals, "porosity": var_porosity}
-            velocities = Geophysics(var_data=data_velocities).calculate_seismic_velocity()
-            vP = round(velocities["vP"]/anisotropic_factor, 3)
-            vS = round(velocities["vS"]/anisotropic_factor, 3)
-            vPvS = round(vP/vS, 4)
-            bulk_mod = round((rho*(vP**2 - 4/3*vS**2))*10**(-9), 3)
-            shear_mod = round((rho*vS**2)*10**(-9), 3)
+            bulk_mod = round(np.mean(K_list), 3)
+            shear_mod = round(np.mean(G_list), 3)
             youngs_modulus = round((9*bulk_mod*shear_mod)/(3*bulk_mod + shear_mod), 3)
             poisson_ratio = round((3*bulk_mod - 2*shear_mod)/(6*bulk_mod + 2*shear_mod), 4)
+            #
+            vP = round(((bulk_mod*10**9 + 4/3*shear_mod*10**9)/(rho))**0.5, 3)
+            vS = round(((shear_mod*10**9)/(rho))**0.5, 3)
+            vPvS = round(vP/vS, 6)
             #
             old_index = elements_list.index("O")
             elements_list += [elements_list.pop(old_index)]

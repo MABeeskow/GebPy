@@ -6,7 +6,7 @@
 # Name:		igneous.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		25.11.2022
+# Date:		29.01.2023
 
 #-----------------------------------------------
 
@@ -1058,14 +1058,13 @@ class Plutonic:
                 gamma_ray = round(gamma_ray, 3)
                 photoelectricity = round(photoelectricity, 3)
                 #
-                K_list.append(round(phi_minerals[key]*mineralogy[key]["K"], 3))
-                G_list.append(round(phi_minerals[key]*mineralogy[key]["G"], 3))
+                K_list.append(round(mineralogy[key]["K"], 3))
+                G_list.append(round(mineralogy[key]["G"], 3))
                 phi_list.append(phi_minerals[key])
             #
-            K_geo = elast.calc_geometric_mean(self, phi_list, K_list)
-            G_geo = elast.calc_geometric_mean(self, phi_list, G_list)
+            K_geo = round(elast.calc_geometric_mean(self, phi_list, K_list), 3)
+            G_geo = round(elast.calc_geometric_mean(self, phi_list, G_list), 3)
             #
-            # anisotropic_factor = round(rd.uniform(1.0, 2.0), 4)
             anisotropic_factor = 1.0
             #
             bulk_mod = K_geo/anisotropic_factor

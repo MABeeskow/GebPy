@@ -6,7 +6,7 @@
 # Name:		siliciclastics.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		26.01.2023
+# Date:		29.01.2023
 
 #-----------------------------------------------
 
@@ -2047,33 +2047,8 @@ class Sandstone:
                 G_list.append(round(phi_minerals[key]*mineralogy[key]["G"], 3))
                 phi_list.append(phi_minerals[key])
             #
-            # K_geo = elast.calc_geometric_mean(self, phi_list, K_list)
-            # G_geo = elast.calc_geometric_mean(self, phi_list, G_list)
-            # #
-            anisotropic_factor = 1.0
-            # #
-            # bulk_mod = K_geo/anisotropic_factor
-            # shear_mod = G_geo/anisotropic_factor
-            # #
-            # youngs_mod = round((9*bulk_mod*shear_mod)/(3*bulk_mod + shear_mod), 3)
-            # poisson_rat = round((3*bulk_mod - 2*shear_mod)/(6*bulk_mod + 2*shear_mod), 6)
-            # vP = round(((bulk_mod*10**9 + 4/3*shear_mod*10**9)/(rho))**0.5, 3)
-            # vS = round(((shear_mod*10**9)/(rho))**0.5, 3)
-            # vPvS = round(vP/vS, 6)
-            #
-            data_velocities = {"Phi": phi_minerals, "v": velocities_minerals, "porosity": var_porosity}
-            velocities = Geophysics(var_data=data_velocities).calculate_seismic_velocity()
-            vP = round(velocities["vP"]/anisotropic_factor, 3)
-            vP_factor = 4/3
-            vP = round(velocities["vP"]*(1 - vP_factor*var_porosity), 3)
-            vS = round(velocities["vS"]/anisotropic_factor, 3)
-            vS_factor = 3/2
-            vS = round(velocities["vS"]*(1 - vS_factor*var_porosity), 3)
-            vPvS = round(vP/vS, 4)
-            bulk_mod = round((rho*(vP**2 - 4/3*vS**2))*10**(-9), 3)
             bulk_coeff = [75.36, -102.64, 37.83]
             bulk_mod = round((bulk_coeff[0]*var_porosity**2 + bulk_coeff[1]*var_porosity + bulk_coeff[2]), 3)
-            shear_mod = round((rho*vS**2)*10**(-9), 3)
             shear_coeff = [145.28, -154.81, 44.17]
             shear_mod = round((shear_coeff[0]*var_porosity**2 + shear_coeff[1]*var_porosity + shear_coeff[2]), 3)
             youngs_mod = round((9*bulk_mod*shear_mod)/(3*bulk_mod + shear_mod), 3)
