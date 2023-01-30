@@ -6,7 +6,7 @@
 # Name:		carbonates.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		21.11.2022
+# Date:		30.01.2023
 
 #-----------------------------------------------
 
@@ -1670,8 +1670,16 @@ class CarbonateRocks:
                     phi_minerals["Py"] = abs(phi_py)
                 #
                 rho_s = 0
+                velocity_solid = {"vP": 0, "vS": 0}
+                gamma_ray = 0.0
+                photoelectricity = 0.0
                 for key, value in phi_minerals.items():
                     rho_s += value*mineralogy[key]["rho"]
+                    velocity_solid["vP"] += value*mineralogy[key]["vP"]
+                    velocity_solid["vS"] += value*mineralogy[key]["vS"]
+                    gamma_ray += value*mineralogy[key]["GR"]
+                    photoelectricity += value*mineralogy[key]["PE"]
+                    #
                     for element, value in mineralogy[key]["chemistry"].items():
                         if element not in elements_list:
                             elements_list.append(element)
@@ -1688,7 +1696,7 @@ class CarbonateRocks:
                 else:
                     phi_helper = round(rd.uniform(porosity[0], porosity[1]), 4)
                 #
-                rho = round((1 - phi_helper)*rho_s + phi_helper*self.data_water[2], 3)
+                var_porosity = phi_helper
                 #
                 old_index = elements_list.index("O")
                 elements_list += [elements_list.pop(old_index)]
@@ -1712,57 +1720,37 @@ class CarbonateRocks:
                     #
                     condition = True
                 #
-                bulk_mod = 0.0
-                shear_mod = 0.0
-                gamma_ray = 0.0
-                photoelectricity = 0.0
-                for key, value in phi_minerals.items():
-                    bulk_mod += phi_minerals[key] * mineralogy[key]["K"]
-                    shear_mod += phi_minerals[key] * mineralogy[key]["G"]
-                    gamma_ray += phi_minerals[key] * mineralogy[key]["GR"]
-                    photoelectricity += phi_minerals[key] * mineralogy[key]["PE"]
-                    #
-                    bulk_mod = round(bulk_mod, 3)
-                    shear_mod = round(shear_mod, 3)
-                    gamma_ray = round(gamma_ray, 3)
-                    photoelectricity = round(photoelectricity, 3)
-                #
-                w_list = []
-                K_list = []
-                G_list = []
-                for key, mineral in mineralogy.items():
-                    w_list.append(w_minerals[key])
-                    K_list.append(mineral["K"])
-                    G_list.append(mineral["G"])
-                K_geo = elast.calc_geometric_mean(self, w_list, K_list)
-                G_geo = elast.calc_geometric_mean(self, w_list, G_list)
-                bulk_mod = K_geo
-                shear_mod = G_geo
-                #
-                vP_s = round(((bulk_mod*10**9 + 4/3*shear_mod*10**9)/(rho_s))**0.5, 3)
-                vS_s = round(((shear_mod * 10 ** 9) / (rho_s)) ** 0.5, 3)
-                #
-                vP = (1 - phi_helper)*vP_s + phi_helper*self.data_water[4][0]
-                vS = (1 - phi_helper)*vS_s
-                vPvS = round(vP / vS, 3)
-                #
-                shear_mod = (vS**2 * rho)*10**(-9)
-                bulk_mod = (vP**2 * rho - 4/3*shear_mod)*10**(-9)
-                youngs_mod = round((9 * bulk_mod * shear_mod) / (3 * bulk_mod + shear_mod), 3)
-                poisson_rat = round((3 * bulk_mod - 2 * shear_mod) / (6 * bulk_mod + 2 * shear_mod), 4)
+                ## Density
+                rho_solid = round(rho_s, 3)
+                rho = round((1 - var_porosity)*rho_solid + var_porosity*self.data_water[2], 3)
+                ## Seismic Velocities
+                vP_factor = 4/3
+                vP = round(velocity_solid["vP"]*(1 - vP_factor*var_porosity), 3)
+                vS_factor = 3/2
+                vS = round(velocity_solid["vS"]*(1 - vS_factor*var_porosity), 3)
+                vPvS = round(vP/vS, 6)
+                ## Elastic Parameters
+                bulk_modulus = round(rho*(vP**2 - 4/3*vS**2)*10**(-9), 3)
+                shear_modulus = round((rho*vS**2)*10**(-9), 3)
+                youngs_modulus = round((9*bulk_modulus*shear_modulus)/(3*bulk_modulus + shear_modulus), 3)
+                poisson_ratio = round((3*bulk_modulus - 2*shear_modulus)/(6*bulk_modulus + 2*shear_modulus), 4)
+                ## Gamma Ray
+                gamma_ray = round(gamma_ray, 3)
+                ## Photoelectricity
+                photoelectricity = round(photoelectricity, 3)
             #
             for mineral, value in w_minerals.items():
                 amounts_mineralogy[mineral].append(value)
             for element, value in w_elements.items():
                 amounts_chemistry[element].append(value)
             #
-            bulk_properties["rho_s"].append(rho_s)
+            bulk_properties["rho_s"].append(rho_solid)
             bulk_properties["rho"].append(rho)
             bulk_properties["phi"].append(phi_helper)
-            bulk_properties["K"].append(bulk_mod)
-            bulk_properties["G"].append(shear_mod)
-            bulk_properties["E"].append(youngs_mod)
-            bulk_properties["nu"].append(poisson_rat)
+            bulk_properties["K"].append(bulk_modulus)
+            bulk_properties["G"].append(shear_modulus)
+            bulk_properties["E"].append(youngs_modulus)
+            bulk_properties["nu"].append(poisson_ratio)
             bulk_properties["vP"].append(vP)
             bulk_properties["vS"].append(vS)
             bulk_properties["vPvS"].append(vPvS)
@@ -1802,15 +1790,15 @@ class CarbonateRocks:
             results["chemistry"] = single_amounts_chemistry
             results["phi"] = phi_helper
             results["fluid"] = "water"
-            results["rho_s"] = rho_s
+            results["rho_s"] = rho_solid
             results["rho"] = rho
             results["vP"] = vP
             results["vS"] = vS
             results["vP/vS"] = vPvS
-            results["K"] = bulk_mod
-            results["G"] = shear_mod
-            results["E"] = youngs_mod
-            results["nu"] = poisson_rat
+            results["K"] = bulk_modulus
+            results["G"] = shear_modulus
+            results["E"] = youngs_modulus
+            results["nu"] = poisson_ratio
             results["GR"] = gamma_ray
             results["PE"] = photoelectricity
         #

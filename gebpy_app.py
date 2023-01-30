@@ -2177,12 +2177,19 @@ class GebPyGUI(tk.Frame):
                         gui_item.get_tk_widget().grid_remove()
         #
         ## Initialization
+        if var_name in ["Limestone"]:
+            phi_max = 40
+        elif var_name in ["Sandstone", "Dolomite Rock"]:
+            phi_max = 30
+        else:
+            phi_max = 10
+        #
         self.gui_variables["Entry"]["Number Datapoints"] = tk.IntVar()
         self.gui_variables["Entry"]["Number Datapoints"].set(100)
         self.gui_variables["Entry"]["Porosity Min"] = tk.IntVar()
         self.gui_variables["Entry"]["Porosity Min"].set(0)
         self.gui_variables["Entry"]["Porosity Max"] = tk.IntVar()
-        self.gui_variables["Entry"]["Porosity Max"].set(10)
+        self.gui_variables["Entry"]["Porosity Max"].set(phi_max)
         #
         ## Labels
         lbl_title = SimpleElements(
