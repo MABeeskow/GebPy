@@ -6,7 +6,7 @@
 # Name:		gebpy_app.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		29.01.2023
+# Date:		30.01.2023
 
 #-----------------------------------------------
 
@@ -3616,14 +3616,11 @@ class GebPyGUI(tk.Frame):
             w_minerals = {}
             w_elements = {}
             elements_list = []
-            K_list = []
-            G_list = []
             phi_list = []
             phi_minerals = {}
             velocities_minerals = {}
             velocity_solid = {"vP": 0, "vS": 0}
             amounts_minerals = {"mass": {}, "volume": {}}
-            sum_amounts_phi = 0
             sum_amounts_w = 0
             #
             for mineral, dataset in mineral_data.items():
@@ -3649,9 +3646,6 @@ class GebPyGUI(tk.Frame):
                 shear_modulus += mineral_amount*dataset["G"][n]
                 gamma_ray += mineral_amount*dataset["GR"][n]
                 photoelectricity += mineral_amount*dataset["PE"][n]
-                #
-                K_list.append(round(mineral_amount*dataset["K"][n], 3))
-                G_list.append(round(mineral_amount*dataset["G"][n], 3))
                 phi_list.append(mineral_amount)
                 #
                 for element, value in dataset["chemistry"].items():
@@ -3666,10 +3660,23 @@ class GebPyGUI(tk.Frame):
                 amount_w = round((mineral_amounts[mineral][n]*10**(-2)*dataset["rho"][n])/sum_amounts_w, 6)
                 amounts_minerals["mass"][mineral].append(amount_w)
             #
+            ## Density
             rho_solid = round(rho_solid, 3)
-            bulk_modulus = round(bulk_modulus, 3)
-            shear_modulus = round(shear_modulus, 3)
+            rho = round((1 - porosity)*rho_solid + porosity*data_water[2], 3)
+            ## Seismic Velocities
+            vP_factor = 4/3
+            vP = round(velocity_solid["vP"]*(1 - vP_factor*porosity), 3)
+            vS_factor = 3/2
+            vS = round(velocity_solid["vS"]*(1 - vS_factor*porosity), 3)
+            vPvS = round(vP/vS, 6)
+            ## Elastic Parameters
+            bulk_modulus = round(rho*(vP**2 - 4/3*vS**2)*10**(-9), 3)
+            shear_modulus = round((rho*vS**2)*10**(-9), 3)
+            youngs_modulus = round((9*bulk_modulus*shear_modulus)/(3*bulk_modulus + shear_modulus), 3)
+            poisson_ratio = round((3*bulk_modulus - 2*shear_modulus)/(6*bulk_modulus + 2*shear_modulus), 4)
+            ## Gamma Ray
             gamma_ray = round(gamma_ray, 3)
+            ## Photoelectricity
             photoelectricity = round(photoelectricity, 3)
             #
             for mineral, dataset in mineral_amounts.items():
@@ -3677,17 +3684,6 @@ class GebPyGUI(tk.Frame):
                     (mineral_amounts[mineral][n]*mineral_data[mineral]["rho"][n])/(100*rho_solid), n_digits)
                 w_minerals[mineral] = mineral_amount
                 self.data_rock["mineralogy"][mineral].append(mineral_amount)
-            #
-            rho = round((1 - porosity)*rho_solid + porosity*data_water[2]/1000, 3)
-            #
-            bulk_mod = round(np.mean(K_list), 3)
-            shear_mod = round(np.mean(G_list), 3)
-            youngs_modulus = round((9*bulk_mod*shear_mod)/(3*bulk_mod + shear_mod), 3)
-            poisson_ratio = round((3*bulk_mod - 2*shear_mod)/(6*bulk_mod + 2*shear_mod), 4)
-            #
-            vP = round(((bulk_mod*10**9 + 4/3*shear_mod*10**9)/(rho))**0.5, 3)
-            vS = round(((shear_mod*10**9)/(rho))**0.5, 3)
-            vPvS = round(vP/vS, 6)
             #
             old_index = elements_list.index("O")
             elements_list += [elements_list.pop(old_index)]
