@@ -6,7 +6,7 @@
 # Name:		oxides.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		26.01.2023
+# Date:		30.01.2023
 
 # -----------------------------------------------
 
@@ -277,7 +277,7 @@ class Oxides():
         #
         return dataset
     #
-    def create_quartz(self):
+    def create_quartz(self, var_T=298.15):
         ## General Information
         name = "Qz"
         #
@@ -346,6 +346,12 @@ class Oxides():
         U = pe*rho_e*10**(-3)
         ## Electrical resistivity
         p = 2*10**14*magic_factor
+        ## Thermodynamics
+        dGf0 = -856281  # J/mol
+        dHf0 = -910700  # J/mol
+        dS0 = 41.439    # J/(mol K)
+        Cp0 = 44.59     # J/(mol K)
+        CpT = 39.62 + 44.78*10**(-3)*var_T - 7.45*10**5*var_T**(-2)
         #
         ## Data Export
         results = {}
