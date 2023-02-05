@@ -6,7 +6,7 @@
 # Name:		oxides.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		30.01.2023
+# Date:		05.02.2023
 
 # -----------------------------------------------
 
@@ -264,7 +264,7 @@ class Oxides():
                         dataset[key] = [value]
                     else:
                         dataset[key].append(value)
-                elif key in ["mineral", "state", "trace elements"] and key not in dataset:
+                elif key in ["mineral", "state", "trace elements", "LA-ICP-MS"] and key not in dataset:
                     dataset[key] = value
                 elif key in ["chemistry"]:
                     if key not in dataset:
@@ -352,6 +352,8 @@ class Oxides():
         dS0 = 41.439    # J/(mol K)
         Cp0 = 44.59     # J/(mol K)
         CpT = 39.62 + 44.78*10**(-3)*var_T - 7.45*10**5*var_T**(-2)
+        ## LA-ICP-MS
+        normalized_sensitivity_Si = 44.54
         #
         ## Data Export
         results = {}
@@ -376,6 +378,8 @@ class Oxides():
         results["PE"] = round(pe, 4)
         results["U"] = round(U, 4)
         results["trace elements"] = element_traces
+        results["thermodynamics"] = {"dGf0": dGf0, "dHf0": dHf0, "dS0": dS0, "Cp0": Cp0, "CpT": CpT}
+        results["LA-ICP-MS"] = {"Si": normalized_sensitivity_Si}
         if p != None:
             results["p"] = round(p, 4)
         else:

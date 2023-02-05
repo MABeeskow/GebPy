@@ -6,7 +6,7 @@
 # Name:		gebpy_app.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		30.01.2023
+# Date:		05.02.2023
 
 #-----------------------------------------------
 
@@ -18,6 +18,7 @@ import numpy as np
 import random as rd
 import matplotlib.pyplot as plt
 from modules.geophysics import Elasticity as elast
+import matplotlib as mpl
 from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, NavigationToolbar2Tk)
 from matplotlib.figure import Figure
 from modules.gui_elements import SimpleElements
@@ -555,18 +556,36 @@ class GebPyGUI(tk.Frame):
             label="Petrology",
             menu=petrology_menu)
         #
-        ## Stratigraphy
+        ## STRATIGRAPHY
         stratigraphy_menu = tk.Menu(menubar, tearoff=0)
-        stratigraphy_menu.add_command(
-            label="Real Sequences", command=self.real_sequences)
+        #
+        sub_permian = tk.Menu(stratigraphy_menu, tearoff=0)
+        permian_units = ["Zechstein", "Rotliegendes"]
+        for unit in permian_units:
+            sub_permian.add_command(label=unit, command=lambda var_unit=unit: self.real_sequences(var_unit))
+        #
+        sub_triassic = tk.Menu(stratigraphy_menu, tearoff=0)
+        triassic_units = ["Keuper", "Muschelkalk", "Buntsandstein"]
+        for unit in triassic_units:
+            sub_triassic.add_command(label=unit, command=lambda var_unit=unit: self.real_sequences(var_unit))
+        #
+        # Real Sequences
+        stratigraphy_menu.add_cascade(
+            label="Triassic Units",
+            menu=sub_triassic)
+        stratigraphy_menu.add_cascade(
+            label="Permian Units",
+            menu=sub_permian)
+        #
+        stratigraphy_menu.add_separator()
         stratigraphy_menu.add_command(
             label="Create Sequences")
-
+        #
         menubar.add_cascade(
             label="Stratigraphy",
             menu=stratigraphy_menu)
         #
-        ## Database
+        ## DATABASE
         database_menu = tk.Menu(menubar, tearoff=0)
         database_menu.add_command(
             label="Elements")
@@ -1544,7 +1563,7 @@ class GebPyGUI(tk.Frame):
                     ax_laicpms[0][0].set_xlabel("Time (s)", fontsize=9)
                     ax_laicpms[0][0].set_ylabel("Intensity (cps)", labelpad=0.5, fontsize=9)
                     ax_laicpms[0][0].set_xlim(0, 60)
-                    ax_laicpms[0][0].set_ylim(1, 10 ** 9)
+                    ax_laicpms[0][0].set_ylim(1, 10**9)
                     ax_laicpms[0][0].set_xticks(np.arange(0, 60 + 5, 5))
                     ax_laicpms[0][0].set_yscale("log")
                     ax_laicpms[0][0].grid(True)
@@ -1572,6 +1591,33 @@ class GebPyGUI(tk.Frame):
                 pass
         #
         self.last_rb_analysis_mineral.set(self.gui_variables["Radiobutton"]["Analysis Mode"].get())
+    #
+    def simulate_srm(self, var_srm="NIST 610 (GeoRem)"):
+        data_srm = {}
+        if var_srm == "NIST 610 (GeoRem)":
+            concentration_data = {
+                "Li": 485, "Be": 466, "B": 356, "Na": 102970, "Mg": 465, "Al": 10791, "Si": 327091, "P": 409, "S": 570,
+                "Cl": 470, "K": 465, "Ca": 81833, "Sc": 452, "Ti": 460, "V": 442, "Cr": 405, "Mn": 433, "Fe": 457,
+                "Co": 405, "Ni": 459, "Cu": 430, "Zn": 456, "Ga": 438, "Ge": 426, "As": 317, "Se": 112, "Br": 33,
+                "Rb": 426, "Sr": 516, "Y": 458, "Zr": 437, "Nb": 485, "Mo": 410, "Rh": 1, "Pd": 1, "Ag": 239, "Cd": 259,
+                "In": 441, "Sn": 427, "Sb": 405, "Te": 327, "Cs": 357, "Ba": 454, "La": 440, "Ce": 458, "Pr": 443,
+                "Nd": 437, "Sm": 453, "Eu": 444, "Gd": 456, "Tb": 440, "Dy": 436, "Ho": 440, "Er": 456, "Tm": 423,
+                "Yb": 455, "Lu": 440, "Hf": 421, "Ta": 482, "W": 447, "Re": 50, "Pt": 3, "Au": 23, "Tl": 61, "Pb": 426,
+                "Bi": 358, "Th": 457, "U": 462}
+            #
+            normalized_sensitivity_data = {
+                "Li": 2555, "Be": 348, "B": 408, "Na": 5400, "Al": 3825, "Si": 78, "Ti": 462, "Mn": 8282, "Fe": 340,
+                "Sn": 3439}
+            #
+            analytical_sensitivity_data = {
+                "Li": 32.96, "Be": 4.49, "B": 5.27, "Na": 69.66, "Al": 49.34, "Si": 1.00, "Ti": 5.95, "Mn": 106.83,
+                "Fe": 4.38, "Sn": 44.35}
+            #
+        data_srm["Concentration"] = concentration_data
+        data_srm["Normalized Sensitivity"] = normalized_sensitivity_data
+        data_srm["Analytical Sensitivity"] = analytical_sensitivity_data
+        #
+        return data_srm
         #
     def change_chemical_composition(self, var_rb):
         if var_rb.get() == 0:   # Element Composition
@@ -1672,7 +1718,7 @@ class GebPyGUI(tk.Frame):
             #
     #
     def simulate_laicpms_experiment(self):
-        total_ppm = rd.randint(10**6, 10**9)
+        total_ppm = rd.randint(10**8, 10**9)
         time_step = 0.1
         time_data = list(np.around(np.arange(0, 60 + time_step, time_step), 1))
         #
@@ -1696,8 +1742,17 @@ class GebPyGUI(tk.Frame):
         n_values_end2 = index_upper_end2 - index_lower_end2
         amount_end2 = np.around(np.geomspace(0.05, 0.0001, n_values_end2 + 1, endpoint=True), 4)
         #
+        data_srm = self.simulate_srm()
+        #
         intensity_data = {}
-        for element in self.list_elements:
+        if self.data_mineral["mineral"] == "Qz":
+            target_id = self.list_elements.index("Si")
+            self.list_elements.insert(0, self.list_elements.pop(target_id))
+            var_list_element = self.list_elements
+        else:
+            var_list_element = self.list_elements
+        #
+        for element in var_list_element:
             index_start = 0
             index_sig = 0
             index_end = 0
@@ -1708,6 +1763,13 @@ class GebPyGUI(tk.Frame):
                 mean_bg = np.random.randint(1, 100)
                 error_bg = np.random.uniform(0.1, 0.5)*mean_bg
                 mean_sig = np.mean(self.data_mineral["chemistry"][element])*total_ppm
+                if self.data_mineral["mineral"] == "Qz":
+                    if element == "Si":
+                        mean_sig_is = np.mean(self.data_mineral["chemistry"][element])*10**6*self.data_mineral[
+                            "LA-ICP-MS"][element]
+                    else:
+                        mean_sig = data_srm["Analytical Sensitivity"][element]*mean_sig_is*np.mean(
+                            self.data_mineral["chemistry"][element])/np.mean(self.data_mineral["chemistry"]["Si"])
                 # error_sig = np.random.uniform(0, 0.025)*mean_sig
                 #
                 for time_value in time_data:
@@ -3945,7 +4007,8 @@ class GebPyGUI(tk.Frame):
                             labels = [["$\\varphi$ (%)", "GR (API)", "PE (barns/e\u207B)"],
                                       ["vP (m/s)", "vS (m/s)", "vP/vS (1)"], ["K (GPa)", "G (GPa)", "nu (1)"]]
                             #
-                            dataset_x = self.data_rock["rho"]
+                            x_key = "rho"
+                            dataset_x = self.data_rock[x_key]
                             #
                             for i, subcategories in enumerate(categories):
                                 for j, key in enumerate(subcategories):
@@ -3963,22 +4026,47 @@ class GebPyGUI(tk.Frame):
                                     #
                                     if delta_x < 1:
                                         n_digits_x = 3
+                                        x_factor = 0.9
                                     elif 1 <= delta_x < 5:
                                         n_digits_x = 2
+                                        x_factor = 0.5
                                     elif delta_x >= 5:
                                         n_digits_x = 0
+                                        x_factor = 0.1
                                     #
                                     if delta_y < 1:
                                         n_digits_y = 3
+                                        y_factor = 0.9
+                                        var_dtype = float
                                     elif 1 <= delta_y < 5:
                                         n_digits_y = 2
+                                        y_factor = 0.5
+                                        var_dtype = float
                                     elif delta_y >= 5:
                                         n_digits_y = 0
+                                        y_factor = 0.1
+                                        var_dtype = int
                                     #
-                                    x_min = round(x_min - 0.1*delta_x, n_digits_x)
-                                    x_max = round(x_max + 0.1*delta_x, n_digits_x)
-                                    y_min = round(y_min - 0.1*delta_y, n_digits_y)
-                                    y_max = round(y_max + 0.1*delta_y, n_digits_y)
+                                    x_min = round(x_min - x_factor*delta_x, n_digits_x)
+                                    x_max = round(x_max + x_factor*delta_x, n_digits_x)
+                                    y_min = round(y_min - y_factor*delta_y, n_digits_y)
+                                    y_max = round(y_max + y_factor*delta_y, n_digits_y)
+                                    #
+                                    if x_key in ["rho"]:
+                                        x_min = round(round(min(dataset_x) - 150, -2), n_digits_x)
+                                        x_max = round(round(max(dataset_x) + 150, -2), n_digits_x)
+                                    if key in ["vP", "vS", "rho"]:
+                                        y_min = round(round(min(dataset_y) - 150, -2), n_digits_y)
+                                        y_max = round(round(max(dataset_y) + 150, -2), n_digits_y)
+                                    elif key in ["K", "G", "E", "GR"]:
+                                        y_min = round(round(min(dataset_y) - 15, -1) + 10, n_digits_y)
+                                        y_max = round(round(max(dataset_y) + 15, -1) - 10, n_digits_y)
+                                    elif key in ["phi"]:
+                                        y_min = round(round(min(dataset_y) - 7, -1) + 5, n_digits_y)
+                                        y_max = round(round(max(dataset_y) + 7, -1) - 5, n_digits_y)
+                                    elif key in ["PE", "vPvS", "nu"]:
+                                        y_min = round(round(min(dataset_y) - 0.005, 3), n_digits_y)
+                                        y_max = round(round(max(dataset_y) + 0.005, 3), n_digits_y)
                                     #
                                     if key != "nu":
                                         if x_min < 0:
@@ -3987,17 +4075,30 @@ class GebPyGUI(tk.Frame):
                                         if y_min < 0:
                                             y_min = 0
                                     #
+                                    step_x = (x_max - x_min)/4
+                                    step_x = int(round(step_x, n_digits_x))
+                                    x_ticks = np.arange(x_min, x_max + step_x, step_x)
+                                    step_y = (y_max - y_min)/4
+                                    if var_dtype == float:
+                                        step_y = round(step_y, n_digits_y)
+                                    else:
+                                        step_y = int(round(step_y, n_digits_y))
+                                    y_ticks = np.arange(y_min, y_max + step_y, step_y)
+                                    #
                                     ax_rp_scatter[i][j].set_xlim(left=x_min, right=x_max)
                                     ax_rp_scatter[i][j].set_ylim(bottom=y_min, top=y_max)
-                                    ax_rp_scatter[i][j].set_xticks(np.around(
-                                        np.linspace(x_min, x_max, 4, dtype=float, endpoint=True), n_digits_x))
-                                    ax_rp_scatter[i][j].set_yticks(np.around(
-                                        np.linspace(y_min, y_max, 4, dtype=float, endpoint=True), n_digits_y))
+                                    ax_rp_scatter[i][j].set_xticks(x_ticks)
+                                    ax_rp_scatter[i][j].set_yticks(y_ticks)
                                     ax_rp_scatter[i][j].xaxis.set_tick_params(labelsize=8)
                                     ax_rp_scatter[i][j].yaxis.set_tick_params(labelsize=8)
                                     ax_rp_scatter[i][j].set_xlabel("Density - kg/m$^3$", fontsize=8)
                                     ax_rp_scatter[i][j].set_ylabel(labels[i][j], labelpad=0.5, fontsize=8)
-                                    ax_rp_scatter[i][j].grid(True)
+                                    #
+                                    ax_rp_scatter[i][j].grid(which="major", axis="both", linestyle="-")
+                                    ax_rp_scatter[i][j].grid(which="minor", axis="both", linestyle=":", alpha=0.5)
+                                    ax_rp_scatter[i][j].minorticks_on()
+                                    ax_rp_scatter[i][j].xaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(3))
+                                    ax_rp_scatter[i][j].yaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(3))
                                     ax_rp_scatter[i][j].set_axisbelow(True)
                             #
                             if "Petrology" not in self.gui_elements["Temporary"]["Canvas"]:
@@ -5763,7 +5864,7 @@ class GebPyGUI(tk.Frame):
     ## SEQUENCE STRATIGRAPHY ##
     ###########################
     #
-    def real_sequences(self):
+    def real_sequences(self, var_unit):
         ## CLEANING
         for category in ["Label", "Button", "Entry", "Radiobutton"]:
             for gui_element in self.gui_elements["Static"][category]:
@@ -5801,7 +5902,45 @@ class GebPyGUI(tk.Frame):
             self.gui_elements["Temporary"]["Canvas"]["Petrology"].draw()
         #
         ## INITIALIZATION
+        self.gui_variables["Radiobutton"]["Diagram Type"] = tk.IntVar()
+        self.gui_variables["Radiobutton"]["Diagram Type"].set(0)
         #
+        ## Labels
+        lbl_01 = SimpleElements(
+            parent=self.parent, row_id=5, column_id=0, n_rows=2, n_columns=32, bg=self.colors_gebpy["Accent"],
+            fg=self.colors_gebpy["Navigation"]).create_label(
+            text="Subsurface Simulation", font_option="sans 14 bold", relief=tk.FLAT)
+        lbl_02 = SimpleElements(
+            parent=self.parent, row_id=7, column_id=0, n_rows=2, n_columns=32, bg=self.colors_gebpy["Navigation"],
+            fg=self.colors_gebpy["Background"]).create_label(
+            text=var_unit, font_option="sans 12 bold", relief=tk.FLAT)
+        lbl_03 = SimpleElements(
+            parent=self.parent, row_id=9, column_id=0, n_rows=6, n_columns=14, bg=self.colors_gebpy["Navigation"],
+            fg=self.colors_gebpy["Background"]).create_label(
+            text="Diagram Type", font_option="sans 10 bold", relief=tk.FLAT)
+        #
+        self.gui_elements["Static"]["Label"].extend([lbl_01, lbl_02, lbl_03])
+        #
+        ## Radiobuttons
+        rb_03a = SimpleElements(
+            parent=self.parent, row_id=9, column_id=14, n_rows=2, n_columns=16,
+            bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Background"]).create_radiobutton(
+            text="Well-Log Analysis", var_rb=self.gui_variables["Radiobutton"]["Diagram Type"], value_rb=0,
+            color_bg=self.colors_gebpy["Background"])
+        rb_03b = SimpleElements(
+            parent=self.parent, row_id=11, column_id=14, n_rows=2, n_columns=16,
+            bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Background"]).create_radiobutton(
+            text="Histogram", var_rb=self.gui_variables["Radiobutton"]["Diagram Type"], value_rb=1,
+            color_bg=self.colors_gebpy["Background"])
+        rb_03c = SimpleElements(
+            parent=self.parent, row_id=13, column_id=14, n_rows=2, n_columns=16,
+            bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Background"]).create_radiobutton(
+            text="Scatter Plots", var_rb=self.gui_variables["Radiobutton"]["Diagram Type"], value_rb=2,
+            color_bg=self.colors_gebpy["Background"])
+        #
+        self.gui_elements["Static"]["Radiobutton"].extend([rb_03a, rb_03b, rb_03c])
+        #
+        ## Option Menus
 #
 if __name__ == "__main__":
     root = tk.Tk()

@@ -6,7 +6,7 @@
 # Name:		siliciclastics.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		29.01.2023
+# Date:		05.02.2023
 
 #-----------------------------------------------
 
@@ -1932,9 +1932,9 @@ class Sandstone:
                     while condition_2 == False:
                         if classification == "Sandstone":
                             qz_limits = [0.7, 1.0]
-                            kfs_limits = [0.0, 0.2]
-                            pl_limits = [0.0, 0.2]
-                            kln_limits = [0.0, 0.2]
+                            kfs_limits = [0.0, 0.25]
+                            pl_limits = [0.0, 0.25]
+                            kln_limits = [0.0, 0.25]
                             hem_limits = [0.0, 0.05]
                         #
                         phi_qz = round(rd.uniform(qz_limits[0], qz_limits[1]), 4)
@@ -1960,13 +1960,8 @@ class Sandstone:
                     phi_minerals["Hem"] = phi_hem
                 #
                 rho_s = 0
-                velocities_minerals = {}
                 for key, value in phi_minerals.items():
                     rho_s += phi_minerals[key]*mineralogy[key]["rho"]
-                    #
-                    velocities_minerals[key] = {}
-                    velocities_minerals[key]["vP"] = mineralogy[key]["vP"]
-                    velocities_minerals[key]["vS"] = mineralogy[key]["vS"]
                     #
                     for element, value in mineralogy[key]["chemistry"].items():
                         if element not in elements_list:
@@ -1993,8 +1988,6 @@ class Sandstone:
                 #
                 if self.fluid == "water":
                     data_fluid = self.data_water
-                #
-                rho = round((1 - var_porosity)*rho_s + var_porosity*data_fluid[2]/1000, 3)
                 #
                 old_index = elements_list.index("O")
                 elements_list += [elements_list.pop(old_index)]
@@ -2030,33 +2023,35 @@ class Sandstone:
                     #
                     condition = True
             #
+            rho_solid = 0
+            velocity_solid = {"vP": 0, "vS": 0}
             gamma_ray = 0.0
             photoelectricity = 0.0
-            #
-            K_list = []
-            G_list = []
-            phi_list = []
             for key, value in phi_minerals.items():
+                rho_solid += phi_minerals[key]*mineralogy[key]["rho"]
+                velocity_solid["vP"] += phi_minerals[key]*mineralogy[key]["vP"]
+                velocity_solid["vS"] += phi_minerals[key]*mineralogy[key]["vS"]
                 gamma_ray += phi_minerals[key]*mineralogy[key]["GR"]
                 photoelectricity += phi_minerals[key]*mineralogy[key]["PE"]
-                #
-                gamma_ray = round(gamma_ray, 3)
-                photoelectricity = round(photoelectricity, 3)
-                #
-                K_list.append(round(phi_minerals[key]*mineralogy[key]["K"], 3))
-                G_list.append(round(phi_minerals[key]*mineralogy[key]["G"], 3))
-                phi_list.append(phi_minerals[key])
             #
-            bulk_coeff = [75.36, -102.64, 37.83]
-            bulk_mod = round((bulk_coeff[0]*var_porosity**2 + bulk_coeff[1]*var_porosity + bulk_coeff[2]), 3)
-            shear_coeff = [145.28, -154.81, 44.17]
-            shear_mod = round((shear_coeff[0]*var_porosity**2 + shear_coeff[1]*var_porosity + shear_coeff[2]), 3)
-            youngs_mod = round((9*bulk_mod*shear_mod)/(3*bulk_mod + shear_mod), 3)
-            poisson_rat = round((3*bulk_mod - 2*shear_mod)/(6*bulk_mod + 2*shear_mod), 4)
-            #
-            vP = round(((bulk_mod*10**9 + 4/3*shear_mod*10**9)/(rho))**0.5, 3)
-            vS = round(((shear_mod*10**9)/(rho))**0.5, 3)
+            ## Density
+            rho_solid = round(rho_solid, 3)
+            rho = round((1 - var_porosity)*rho_solid + var_porosity*data_fluid[2]/1000, 3)
+            ## Seismic Velocities
+            vP_factor = 4/3
+            vP = round(velocity_solid["vP"]*(1 - vP_factor*var_porosity), 3)
+            vS_factor = 3/2
+            vS = round(velocity_solid["vS"]*(1 - vS_factor*var_porosity), 3)
             vPvS = round(vP/vS, 6)
+            ## Elastic Parameters
+            bulk_modulus = round(rho*(vP**2 - 4/3*vS**2)*10**(-9), 3)
+            shear_modulus = round((rho*vS**2)*10**(-9), 3)
+            youngs_modulus = round((9*bulk_modulus*shear_modulus)/(3*bulk_modulus + shear_modulus), 3)
+            poisson_ratio = round((3*bulk_modulus - 2*shear_modulus)/(6*bulk_modulus + 2*shear_modulus), 4)
+            ## Gamma Ray
+            gamma_ray = round(gamma_ray, 3)
+            ## Photoelectricity
+            photoelectricity = round(photoelectricity, 3)
             #
             for key, value in w_minerals.items():
                 results_container["mineralogy"][key].append(value)
@@ -2070,10 +2065,10 @@ class Sandstone:
             results_container["vP"].append(vP)
             results_container["vS"].append(vS)
             results_container["vP/vS"].append(vPvS)
-            results_container["K"].append(bulk_mod)
-            results_container["G"].append(shear_mod)
-            results_container["E"].append(youngs_mod)
-            results_container["nu"].append(poisson_rat)
+            results_container["K"].append(bulk_modulus)
+            results_container["G"].append(shear_modulus)
+            results_container["E"].append(youngs_modulus)
+            results_container["nu"].append(poisson_ratio)
             results_container["GR"].append(gamma_ray)
             results_container["PE"].append(photoelectricity)
             #
