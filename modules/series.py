@@ -6,7 +6,7 @@
 # Name:		series.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		23.08.2020
+# Date:		05.02.2023
 
 #-----------------------------------------------
 
@@ -15,9 +15,9 @@ import math
 import random as rd
 import numpy as np
 import scipy
-from ore import Ores
-from carbonates import limestone, CarbonateRocks
-from evaporites import Evaporites
+from modules.ore import Ores
+from modules.carbonates import limestone, CarbonateRocks
+from modules.evaporites import Evaporites
 from modules.siliciclastics import shale, Sandstone
 from modules.sedimentary_rocks import SedimentaryRocks
 
@@ -534,6 +534,12 @@ class Muschelkalk:
         self.composition = composition
         #
         self.actual_thickness = actual_thickness
+    #
+    def export_lithological_keys(self):
+        list_keys = ["Marl", "Dolomite", "Limestone", "Anhydrite", "Mudstone"]
+        list_keys.sort()
+        #
+        return list_keys
     #
     def create_muschelkalk_unterer(self, thickness_unit=100, top_unit=0):  # Unterer Muschelkalk
         fraction_marl_pre = round(rd.uniform(10, 15), 4)

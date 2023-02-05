@@ -37,6 +37,8 @@ from modules.fluids import Water
 from modules.siliciclastics import Sandstone, Geophysics
 from modules.ore import OreRocks
 from modules.metamorphics import GranuliteFacies
+# Sequence Stratigraphy
+from modules.series import Muschelkalk, Zechstein
 
 ## GUI
 class GebPyGUI(tk.Frame):
@@ -5865,9 +5867,12 @@ class GebPyGUI(tk.Frame):
     ###########################
     #
     def real_sequences(self, var_unit):
+        ################################################################################################################
         ## CLEANING
-        for category in ["Label", "Button", "Entry", "Radiobutton"]:
+        for category in ["Label", "Button", "Entry", "Radiobutton", "Option Menu"]:
             for gui_element in self.gui_elements["Static"][category]:
+                gui_element.grid_remove()
+            for gui_element in self.gui_elements["Temporary"][category]:
                 gui_element.grid_remove()
         #
         for category in ["Label", "Button", "Entry", "Radiobutton"]:
@@ -5901,9 +5906,14 @@ class GebPyGUI(tk.Frame):
             #
             self.gui_elements["Temporary"]["Canvas"]["Petrology"].draw()
         #
+        ################################################################################################################
         ## INITIALIZATION
         self.gui_variables["Radiobutton"]["Diagram Type"] = tk.IntVar()
         self.gui_variables["Radiobutton"]["Diagram Type"].set(0)
+        self.gui_variables["Radiobutton"]["Subunit"] = tk.IntVar()
+        self.gui_variables["Radiobutton"]["Subunit"].set(0)
+        self.gui_variables["Option Menu"]["Lithological Focus"] = tk.StringVar()
+        self.gui_variables["Option Menu"]["Lithological Focus"].set("Select Rock")
         #
         ## Labels
         lbl_01 = SimpleElements(
@@ -5915,7 +5925,7 @@ class GebPyGUI(tk.Frame):
             fg=self.colors_gebpy["Background"]).create_label(
             text=var_unit, font_option="sans 12 bold", relief=tk.FLAT)
         lbl_03 = SimpleElements(
-            parent=self.parent, row_id=9, column_id=0, n_rows=6, n_columns=14, bg=self.colors_gebpy["Navigation"],
+            parent=self.parent, row_id=10, column_id=0, n_rows=6, n_columns=14, bg=self.colors_gebpy["Navigation"],
             fg=self.colors_gebpy["Background"]).create_label(
             text="Diagram Type", font_option="sans 10 bold", relief=tk.FLAT)
         #
@@ -5923,24 +5933,113 @@ class GebPyGUI(tk.Frame):
         #
         ## Radiobuttons
         rb_03a = SimpleElements(
-            parent=self.parent, row_id=9, column_id=14, n_rows=2, n_columns=16,
+            parent=self.parent, row_id=10, column_id=14, n_rows=2, n_columns=16,
             bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Background"]).create_radiobutton(
             text="Well-Log Analysis", var_rb=self.gui_variables["Radiobutton"]["Diagram Type"], value_rb=0,
             color_bg=self.colors_gebpy["Background"])
         rb_03b = SimpleElements(
-            parent=self.parent, row_id=11, column_id=14, n_rows=2, n_columns=16,
+            parent=self.parent, row_id=12, column_id=14, n_rows=2, n_columns=16,
             bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Background"]).create_radiobutton(
             text="Histogram", var_rb=self.gui_variables["Radiobutton"]["Diagram Type"], value_rb=1,
             color_bg=self.colors_gebpy["Background"])
         rb_03c = SimpleElements(
-            parent=self.parent, row_id=13, column_id=14, n_rows=2, n_columns=16,
+            parent=self.parent, row_id=14, column_id=14, n_rows=2, n_columns=16,
             bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Background"]).create_radiobutton(
             text="Scatter Plots", var_rb=self.gui_variables["Radiobutton"]["Diagram Type"], value_rb=2,
             color_bg=self.colors_gebpy["Background"])
         #
         self.gui_elements["Static"]["Radiobutton"].extend([rb_03a, rb_03b, rb_03c])
         #
-        ## Option Menus
+        ## ADDITIONAL FEATURES
+        self.build_unit(var_unit=var_unit)
+        #
+    #
+    def build_unit(self, var_unit):
+        if var_unit == "Muschelkalk":
+            ## LABELS
+            lbl_04 = SimpleElements(
+                parent=self.parent, row_id=17, column_id=0, n_rows=8, n_columns=14, bg=self.colors_gebpy["Navigation"],
+                fg=self.colors_gebpy["Background"]).create_label(
+                text="Stratigraphic Focus", font_option="sans 10 bold", relief=tk.FLAT)
+            lbl_05 = SimpleElements(
+                parent=self.parent, row_id=26, column_id=0, n_rows=2, n_columns=14, bg=self.colors_gebpy["Navigation"],
+                fg=self.colors_gebpy["Background"]).create_label(
+                text="Lithological Focus", font_option="sans 10 bold", relief=tk.FLAT)
+            #
+            self.gui_elements["Temporary"]["Label"].extend([lbl_04, lbl_05])
+            #
+            ## RADIOBUTTONS
+            rb_04a = SimpleElements(
+                parent=self.parent, row_id=17, column_id=14, n_rows=2, n_columns=16, bg=self.colors_gebpy["Navigation"],
+                fg=self.colors_gebpy["Background"]).create_radiobutton(
+                text="Complete Muschelkalk", var_rb=self.gui_variables["Radiobutton"]["Subunit"], value_rb=0,
+                color_bg=self.colors_gebpy["Background"])
+            rb_04b = SimpleElements(
+                parent=self.parent, row_id=19, column_id=14, n_rows=2, n_columns=16, bg=self.colors_gebpy["Navigation"],
+                fg=self.colors_gebpy["Background"]).create_radiobutton(
+                text="Upper Muschelkalk", var_rb=self.gui_variables["Radiobutton"]["Subunit"], value_rb=1,
+                color_bg=self.colors_gebpy["Background"])
+            rb_04c = SimpleElements(
+                parent=self.parent, row_id=21, column_id=14, n_rows=2, n_columns=16, bg=self.colors_gebpy["Navigation"],
+                fg=self.colors_gebpy["Background"]).create_radiobutton(
+                text="Medium Muschelkalk", var_rb=self.gui_variables["Radiobutton"]["Subunit"], value_rb=2,
+                color_bg=self.colors_gebpy["Background"])
+            rb_04d = SimpleElements(
+                parent=self.parent, row_id=23, column_id=14, n_rows=2, n_columns=16, bg=self.colors_gebpy["Navigation"],
+                fg=self.colors_gebpy["Background"]).create_radiobutton(
+                text="Lower Muschelkalk", var_rb=self.gui_variables["Radiobutton"]["Subunit"], value_rb=3,
+                color_bg=self.colors_gebpy["Background"])
+            #
+            self.gui_elements["Temporary"]["Radiobutton"].extend([rb_04a, rb_04b, rb_04c, rb_04d])
+            #
+            ## OPTION MENUS
+            list_rocks = Muschelkalk().export_lithological_keys()
+            list_rocks.insert(0, "All Rocks")
+            self.gui_variables["Option Menu"]["Lithological Focus"].set(list_rocks[0])
+            #
+            opt_05a = SimpleElements(
+                parent=self.parent, row_id=26, column_id=14, n_rows=2, n_columns=16, bg=self.colors_gebpy["Option"],
+                fg=self.colors_gebpy["Navigation"]).create_option_menu(
+                var_opt=self.gui_variables["Option Menu"]["Lithological Focus"],
+                var_opt_set=self.gui_variables["Option Menu"]["Lithological Focus"].get(), opt_list=list_rocks,
+                active_bg=self.colors_gebpy["Accent"])
+            #
+            self.gui_elements["Temporary"]["Option Menu"].extend([opt_05a])
+            #
+            ## BUTTONS
+            btn_06 = SimpleElements(
+                parent=self.parent, row_id=29, column_id=14, n_rows=2, n_columns=16,
+                bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_button(
+                text="Run Simulation", command=lambda var_unit=var_unit: self.generate_stratigraphic_data(var_unit))
+            #
+            self.gui_elements["Temporary"]["Button"].extend([btn_06])
+            #
+            ## INITIALIZATION
+            self.generate_stratigraphic_data(var_unit=var_unit)
+            #
+    #
+    def generate_stratigraphic_data(self, var_unit):
+        if var_unit == "Muschelkalk":
+            thickness_complete = rd.randrange(900, 1500, 100)
+            thickness_muschelkalk_oberer_random = int(rd.uniform(0.3, 0.4) * thickness_complete)
+            thickness_muschelkalk_mittlerer_random = int(rd.uniform(0.3, 0.4) * thickness_complete)
+            thickness_muschelkalk_unterer_random = int(thickness_complete - thickness_muschelkalk_oberer_random
+                                                       - thickness_muschelkalk_mittlerer_random)
+            #
+            #
+            data_muschelkalk_oberer = Muschelkalk(
+                actual_thickness=0, resolution=10).create_muschelkalk_oberer(
+                top_unit=0, thickness_unit=thickness_muschelkalk_oberer_random)
+            data_muschelkalk_mittlerer = Muschelkalk(
+                actual_thickness=0, resolution=10).create_muschelkalk_mittlerer(
+                top_unit=thickness_muschelkalk_oberer_random, thickness_unit=thickness_muschelkalk_mittlerer_random)
+            data_muschelkalk_unterer = Muschelkalk(
+                actual_thickness=0).create_muschelkalk_unterer(
+                top_unit=thickness_muschelkalk_oberer_random+thickness_muschelkalk_mittlerer_random,
+                thickness_unit=thickness_muschelkalk_unterer_random)
+            #
+            data_muschelkalk = data_muschelkalk_oberer + data_muschelkalk_mittlerer + data_muschelkalk_unterer
+            #
 #
 if __name__ == "__main__":
     root = tk.Tk()
