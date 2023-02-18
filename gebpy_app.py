@@ -6045,6 +6045,9 @@ class GebPyGUI(tk.Frame):
             #
             data_muschelkalk = data_muschelkalk_oberer + data_muschelkalk_mittlerer + data_muschelkalk_unterer
             #
+            for index, item in enumerate(data_muschelkalk):
+                for key, subitem in item.items():
+                    print(key, subitem)
 #
 if __name__ == "__main__":
     root = tk.Tk()
