@@ -6,7 +6,7 @@
 # Name:		gebpy_app.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		05.02.2023
+# Date:		18.02.2023
 
 #-----------------------------------------------
 
@@ -444,7 +444,7 @@ class GebPyGUI(tk.Frame):
                 sub_sedimentary = tk.Menu(petrology_menu, tearoff=0)
                 sedimentary_rocks = {
                     "Siliciclastic": ["Sandstone", "Shale", "Mudstone", "Conglomerate", "Greywacke (Huckenholz)"],
-                    "Carbonate": ["Limestone", "Dolomite Rock"]}
+                    "Carbonate": ["Limestone", "Dolomite Rock", "Marl"]}
                 sedimentary_rocks = collections.OrderedDict(sorted(sedimentary_rocks.items()))
                 i = 1
                 n = len(sedimentary_rocks)
@@ -2243,7 +2243,7 @@ class GebPyGUI(tk.Frame):
         ## Initialization
         if var_name in ["Limestone"]:
             phi_max = 40
-        elif var_name in ["Sandstone", "Dolomite Rock"]:
+        elif var_name in ["Sandstone", "Dolomite Rock", "Marl"]:
             phi_max = 30
         else:
             phi_max = 10
@@ -2391,6 +2391,11 @@ class GebPyGUI(tk.Frame):
                           self.gui_variables["Entry"]["Porosity Max"].get()/100])
         elif var_name == "Dolomite Rock":
             data = CarbonateRocks(fluid="water", actualThickness=0).create_dolomite_rock_alternative(
+                number=self.gui_variables["Entry"]["Number Datapoints"].get(),
+                porosity=[self.gui_variables["Entry"]["Porosity Min"].get()/100,
+                          self.gui_variables["Entry"]["Porosity Max"].get()/100])
+        elif var_name == "Marl":
+            data = CarbonateRocks(fluid="water", actualThickness=0).create_marl(
                 number=self.gui_variables["Entry"]["Number Datapoints"].get(),
                 porosity=[self.gui_variables["Entry"]["Porosity Min"].get()/100,
                           self.gui_variables["Entry"]["Porosity Max"].get()/100])

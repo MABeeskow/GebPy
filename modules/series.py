@@ -6,7 +6,7 @@
 # Name:		series.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		05.02.2023
+# Date:		18.02.2023
 
 #-----------------------------------------------
 
@@ -583,7 +583,7 @@ class Muschelkalk:
         for i in steps_marl:
             depth = round(i, 4)
             container_marl[depth] = SedimentaryRocks(
-                fluid="water", actualThickness=0).create_marl(
+                fluid="water", actualThickness=0).create_marl_alt(
                 number=1, porosity=rd.uniform(0.1, 0.3))
         #
         ## TEST
@@ -633,7 +633,7 @@ class Muschelkalk:
         for i in steps_unit:
             depth = round(i, 4)
             container_marl[depth] = SedimentaryRocks(
-                fluid="water", actualThickness=0).create_marl(
+                fluid="water", actualThickness=0).create_marl_alt(
                 number=1, porosity=rd.uniform(0.1, 0.3))
         actual_top += thickness_marl
         actual_bottom += thickness_dolomite_medium
@@ -747,7 +747,7 @@ class Muschelkalk:
         for i in steps_unit:
             depth = round(i, 4)
             container_marl[depth] = SedimentaryRocks(
-                fluid="water", actualThickness=0).create_marl(
+                fluid="water", actualThickness=0).create_marl_alt(
                 number=1, porosity=rd.uniform(0.1, 0.3))
         actual_top += thickness_marl
         actual_bottom += thickness_limestone_medium_medium
