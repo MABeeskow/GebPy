@@ -6,12 +6,13 @@
 # Name:		gebpy_app.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		18.02.2023
+# Date:		22.03.2023
 
 #-----------------------------------------------
 
 ## MODULES
 import tkinter as tk
+from tkinter import ttk
 from tkinter import filedialog
 import collections
 import numpy as np
@@ -1285,6 +1286,43 @@ class GebPyGUI(tk.Frame):
                     self.gui_elements["Temporary"]["Entry"].extend([entr_min, entr_max, entr_mean, entr_error])
                     #
                 self.change_rb_diagram()
+                #
+                # ## TREE VIEW
+                # categories = [
+                #     "M (kg/mol)", "V (\u00C5\u00B3/mol)", "rho (kg/m\u00B3)", "vP (m/s)", "vS (m/s)", "vP/vS (1)",
+                #     "K (GPa)", "G (GPa)", "E (GPa)", "nu (1)", "GR (API)", "PE (barns/e\u207B)"]
+                # list_categories = ["Category", "Minimum", "Maximum", "Mean", "Standard Deviation"]
+                # list_width = list(75*np.ones(len(list_categories)))
+                # list_width = [int(item) for item in list_width]
+                # list_width[0] = 90
+                # list_width[-1] = 150
+                # #
+                # tv_ma_results = SimpleElements(
+                #     parent=self.parent, row_id=0, column_id=start_column, n_rows=20, n_columns=45,
+                #     fg=self.colors_gebpy["Black"], bg=self.colors_gebpy["White"]).create_treeview(
+                #     n_categories=len(list_categories), text_n=list_categories,
+                #     width_n=list_width, individual=True)
+                # #
+                # scb_v = ttk.Scrollbar(self.parent, orient="vertical")
+                # scb_h = ttk.Scrollbar(self.parent, orient="horizontal")
+                # tv_ma_results.configure(xscrollcommand=scb_h.set, yscrollcommand=scb_v.set)
+                # scb_v.config(command=tv_ma_results.yview)
+                # scb_h.config(command=tv_ma_results.xview)
+                # scb_v.grid(row=0, column=start_column + 45, rowspan=20, columnspan=1, sticky="ns")
+                # scb_h.grid(row=20, column=start_column, rowspan=1, columnspan=45, sticky="ew")
+                # #
+                # for index, category in enumerate(categories):
+                #     entries = [category]
+                #     #
+                #     n_digits = 2
+                #     var_entr_min = round(min(self.data_mineral[categories_short[index]]), n_digits)
+                #     var_entr_max = round(max(self.data_mineral[categories_short[index]]), n_digits)
+                #     var_entr_mean = round(np.mean(self.data_mineral[categories_short[index]]), n_digits)
+                #     var_entr_error = round(np.std(self.data_mineral[categories_short[index]], ddof=1), n_digits)
+                #     #
+                #     entries.extend([var_entr_min, var_entr_max, var_entr_mean, var_entr_error])
+                #     #
+                #     tv_ma_results.insert("", tk.END, values=entries)
                 #
             else:
                 pass
