@@ -2098,6 +2098,7 @@ class Sandstone:
         results_container["PE"] = []
         #
         n = 0
+        helper = [[], []]
         while n < number:
             data_illite = Phyllosilicates(impurity="pure", data_type=True).create_illite()
             data_alkalifeldspar = Tectosilicates(impurity="pure", data_type=True).create_alkalifeldspar()
@@ -2228,11 +2229,6 @@ class Sandstone:
                     #
                     w_minerals[key] = round((phi_minerals[key]*mineralogy[key]["rho"])/rho_s, n_digits)
                 #
-                # if porosity == None:
-                #     var_porosity = round(rd.uniform(0.0, 0.3), 4)
-                # else:
-                #     var_porosity = round(rd.uniform(porosity[0], porosity[1]), 4)
-                #
                 if self.fluid == "water":
                     data_fluid = self.data_water
                 #
@@ -2283,36 +2279,35 @@ class Sandstone:
             #
             ## Seismic Velocities
             condition_v = False
+            helper[0].append(velocity_solid["vP"])
+            helper[1].append(velocity_solid["vS"])
             while condition_v == False:
                 if porosity == None:
                     var_porosity = round(rd.uniform(0.0, 0.3), 4)
                 else:
                     var_porosity = round(rd.uniform(porosity[0], porosity[1]), 4)
                 #
-                #vP_factor = round(rd.uniform(0.0, 1.0), 2)
-               # vP = round(velocity_solid["vP"]*(1 - vP_factor*(1 + var_porosity)), 3)
-                #
                 if var_porosity < 0.1:
-                    vP_factor = round(rd.uniform(0.3571, 0.4242), 2)
+                    vP_factor = round(rd.uniform(0.3571, 0.4545), 2)
                     vP = round(velocity_solid["vP"]*(1 - vP_factor*(1 + var_porosity)), 3)
                     if 4000 <= vP < 4500:
-                        vS_factor = round(rd.uniform(0.35, 0.4242), 4)
+                        vS_factor = round(rd.uniform(0.3810, 0.4449), 4)
                         vS = round(velocity_solid["vS"]*(1 - vS_factor*(1 + var_porosity)), 3)
                         if 2400 <= vS < 2600:
                             condition_v = True
                 elif 0.1 <= var_porosity <= 0.2:
-                    vP_factor = round(rd.uniform(0.3896, 0.4444), 2)
+                    vP_factor = round(rd.uniform(0.3896, 0.4688), 2)
                     vP = round(velocity_solid["vP"]*(1 - vP_factor*(1 + var_porosity)), 3)
                     if 3500 <= vP < 4000:
-                        vS_factor = round(rd.uniform(0.3636, 0.4259), 4)
+                        vS_factor = round(rd.uniform(0.3896, 0.4433), 4)
                         vS = round(velocity_solid["vS"]*(1 - vS_factor*(1 + var_porosity)), 3)
                         if 2200 <= vS < 2400:
                             condition_v = True
                 elif var_porosity > 0.2:
-                    vP_factor = round(rd.uniform(0.4167, 0.4615), 2)
+                    vP_factor = round(rd.uniform(0.4167, 0.4808), 2)
                     vP = round(velocity_solid["vP"]*(1 - vP_factor*(1 + var_porosity)), 3)
                     if 3000 <= vP < 3500:
-                        vS_factor = round(rd.uniform(0.3750, 0.4274), 4)
+                        vS_factor = round(rd.uniform(0.3968, 0.4419), 4)
                         vS = round(velocity_solid["vS"]*(1 - vS_factor*(1 + var_porosity)), 3)
                         if 2000 <= vS < 2200:
                             condition_v = True
