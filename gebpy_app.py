@@ -6,7 +6,7 @@
 # Name:		gebpy_app.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		22.03.2023
+# Date:		23.03.2023
 
 #-----------------------------------------------
 
@@ -2409,7 +2409,7 @@ class GebPyGUI(tk.Frame):
             data = Sandstone(fluid="water", actualThickness=0).create_mudstone(
                 number=self.gui_variables["Entry"]["Number Datapoints"].get(),
                 porosity=[self.gui_variables["Entry"]["Porosity Min"].get()/100,
-                          self.gui_variables["Entry"]["Porosity Max"].get()/100], dominance="Mnt")
+                          self.gui_variables["Entry"]["Porosity Max"].get()/100], dominance="Kln")
         elif var_name == "Shale":
             data = Sandstone(fluid="water", actualThickness=0).create_shale_alt(
                 number=self.gui_variables["Entry"]["Number Datapoints"].get(),

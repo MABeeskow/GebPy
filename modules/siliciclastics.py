@@ -6,7 +6,7 @@
 # Name:		siliciclastics.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		05.02.2023
+# Date:		23.03.2023
 
 #-----------------------------------------------
 
@@ -2781,7 +2781,7 @@ class Sandstone:
         #
         return results
     #
-    def create_mudstone(self, number, porosity=None, dominance="Mnt", dominant_group="Clays"):
+    def create_mudstone(self, number, porosity=None, dominance="Kln", dominant_group="Clays"):
         #
         data_montmorillonite = Phyllosilicates(impurity="pure", data_type=True).create_montmorillonite()
         data_illite = Phyllosilicates(impurity="pure", data_type=True).create_illite()
@@ -2791,7 +2791,7 @@ class Sandstone:
         data_organics = Organics(data_type=True).create_organic_matter()
         #
         assemblage = [data_montmorillonite, data_illite, data_kaolinite, self.data_quartz, data_alkalifeldspar,
-                      data_plagioclase, self.data_calcite]
+                      data_plagioclase, self.data_calcite, data_organics]
         #
         amounts_mineralogy = {}
         amounts_chemistry = {}
@@ -2812,7 +2812,7 @@ class Sandstone:
         mineral_list.sort()
         mineral_list_clays = ["Ilt", "Kln", "Mnt"]
         mineral_list_silic = ["Kfs", "Pl", "Qz"]
-        mineral_list_carb = ["Cal"]
+        mineral_list_carb = ["Cal", "Org"]
         elements.sort()
         #
         n = 0
@@ -2846,10 +2846,10 @@ class Sandstone:
                         if dominance == "Mnt" and n_minerals < 3:
                             if mineral == "Mnt":
                                 if n_minerals < len(mineral_list) - 1:
-                                    value = round(fraction * rd.uniform(0.8, 1.0), 4)
+                                    value = round(fraction*rd.uniform(0.7, 0.9), 4)
                                 else:
                                     value = round(1 - w_total, 4)
-                                if value >= 0.0 and 0.6 <= value <= 1.0:
+                                if value >= 0.0 and 0.28 <= value <= 0.63:
                                     amounts_helper.append(value)
                                     w_total += value
                                     w_total_clay += value
@@ -2857,10 +2857,10 @@ class Sandstone:
                                     n_clay += 1
                             elif mineral == "Ilt":
                                 if n_minerals < len(mineral_list) - 1:
-                                    value = round(fraction * rd.uniform(0.0, 0.05), 4)
+                                    value = round(fraction*rd.uniform(0.0, 0.3), 4)
                                 else:
                                     value = round(1 - w_total, 4)
-                                if value >= 0.0 and 0.0 <= value <= 0.05:
+                                if value >= 0.0 and 0.0 <= value <= 0.21:
                                     amounts_helper.append(value)
                                     w_total += value
                                     w_total_clay += value
@@ -2868,10 +2868,10 @@ class Sandstone:
                                     n_clay += 1
                             elif mineral == "Kln":
                                 if n_minerals < len(mineral_list) - 1:
-                                    value = round(fraction * rd.uniform(0.0, 0.05), 4)
+                                    value = round(fraction*rd.uniform(0.0, 0.3), 4)
                                 else:
                                     value = round(1 - w_total, 4)
-                                if value >= 0.0 and 0.0 <= value <= 0.05:
+                                if value >= 0.0 and 0.0 <= value <= 0.21:
                                     amounts_helper.append(value)
                                     w_total += value
                                     w_total_clay += value
@@ -2880,10 +2880,10 @@ class Sandstone:
                         elif dominance == "Ilt" and n_minerals < 3:
                             if mineral == "Ilt":
                                 if n_minerals < len(mineral_list) - 1:
-                                    value = round(fraction * rd.uniform(0.8, 1.0), 4)
+                                    value =round(fraction*rd.uniform(0.7, 0.9), 4)
                                 else:
                                     value = round(1 - w_total, 4)
-                                if value >= 0.0 and 0.6 <= value <= 1.0:
+                                if value >= 0.0 and 0.28 <= value <= 0.63:
                                     amounts_helper.append(value)
                                     w_total += value
                                     w_total_clay += value
@@ -2891,10 +2891,10 @@ class Sandstone:
                                     n_clay += 1
                             elif mineral == "Mnt":
                                 if n_minerals < len(mineral_list) - 1:
-                                    value = round(fraction * rd.uniform(0.0, 0.05), 4)
+                                    value = round(fraction*rd.uniform(0.0, 0.3), 4)
                                 else:
                                     value = round(1 - w_total, 4)
-                                if value >= 0.0 and 0.0 <= value <= 0.05:
+                                if value >= 0.0 and 0.0 <= value <= 0.21:
                                     amounts_helper.append(value)
                                     w_total += value
                                     w_total_clay += value
@@ -2902,10 +2902,10 @@ class Sandstone:
                                     n_clay += 1
                             elif mineral == "Kln":
                                 if n_minerals < len(mineral_list) - 1:
-                                    value = round(fraction * rd.uniform(0.0, 0.05), 4)
+                                    value = round(fraction*rd.uniform(0.0, 0.3), 4)
                                 else:
                                     value = round(1 - w_total, 4)
-                                if value >= 0.0 and 0.0 <= value <= 0.05:
+                                if value >= 0.0 and 0.0 <= value <= 0.21:
                                     amounts_helper.append(value)
                                     w_total += value
                                     w_total_clay += value
@@ -2914,10 +2914,10 @@ class Sandstone:
                         elif dominance == "Kln" and n_minerals < 3:
                             if mineral == "Kln":
                                 if n_minerals < len(mineral_list) - 1:
-                                    value = round(fraction * rd.uniform(0.8, 1.0), 4)
+                                    value = round(fraction*rd.uniform(0.7, 0.9), 4)
                                 else:
                                     value = round(1 - w_total, 4)
-                                if value >= 0.0 and 0.6 <= value <= 1.0:
+                                if value >= 0.0 and 0.28 <= value <= 0.63:
                                     amounts_helper.append(value)
                                     w_total += value
                                     w_total_clay += value
@@ -2925,10 +2925,10 @@ class Sandstone:
                                     n_clay += 1
                             elif mineral == "Mnt":
                                 if n_minerals < len(mineral_list) - 1:
-                                    value = round(fraction * rd.uniform(0.0, 0.05), 4)
+                                    value = round(fraction*rd.uniform(0.0, 0.3), 4)
                                 else:
                                     value = round(1 - w_total, 4)
-                                if value >= 0.0 and 0.0 <= value <= 0.05:
+                                if value >= 0.0 and 0.0 <= value <= 0.21:
                                     amounts_helper.append(value)
                                     w_total += value
                                     w_total_clay += value
@@ -2936,10 +2936,10 @@ class Sandstone:
                                     n_clay += 1
                             elif mineral == "Ilt":
                                 if n_minerals < len(mineral_list) - 1:
-                                    value = round(fraction * rd.uniform(0.0, 0.05), 4)
+                                    value = round(fraction*rd.uniform(0.0, 0.3), 4)
                                 else:
                                     value = round(1 - w_total, 4)
-                                if value >= 0.0 and 0.0 <= value <= 0.05:
+                                if value >= 0.0 and 0.0 <= value <= 0.21:
                                     amounts_helper.append(value)
                                     w_total += value
                                     w_total_clay += value
@@ -2950,7 +2950,7 @@ class Sandstone:
                     for mineral in mineral_list_silic:
                         if mineral == "Qz":
                             if n_minerals < len(mineral_list) - 1:
-                                value = round(fraction * rd.uniform(0.0, 1.0), 4)
+                                value = round(fraction*rd.uniform(0.9, 1.0), 4)
                             elif n_silic == 2:
                                 value = round(w_silic - w_total_silic, 4)
                             else:
@@ -2963,7 +2963,7 @@ class Sandstone:
                                 n_silic += 1
                         elif mineral == "Kfs":
                             if n_minerals < len(mineral_list) - 1:
-                                value = round(fraction * rd.uniform(0.0, 1.0), 4)
+                                value = round(fraction*rd.uniform(0.0, 0.1), 4)
                             else:
                                 value = round(1 - w_total, 4)
                             if value >= 0.0 and 0.0 <= value <= fraction:
@@ -2974,7 +2974,7 @@ class Sandstone:
                                 n_silic += 1
                         elif mineral == "Pl":
                             if n_minerals < len(mineral_list) - 1:
-                                value = round(fraction * rd.uniform(0.0, 1.0), 4)
+                                value = round(fraction*rd.uniform(0.0, 0.1), 4)
                             else:
                                 value = round(1 - w_total, 4)
                             if value >= 0.0 and 0.0 <= value <= fraction:
@@ -2983,13 +2983,25 @@ class Sandstone:
                                 w_total_silic += value
                                 n_minerals += 1
                                 n_silic += 1
+                    #
                 elif group == "Carbonates":
                     for mineral in mineral_list_carb:
                         if mineral == "Cal":
                             if n_minerals < len(mineral_list) - 1:
-                                value = round(fraction * rd.uniform(0.0, 1.0), 4)
+                                value = round(fraction*rd.uniform(0.5, 1.0), 4)
                             elif n_silic == 2:
                                 value = round(w_carb - w_total_carb, 4)
+                            else:
+                                value = round(1 - w_total, 4)
+                            if value >= 0.0 and 0.0 <= value <= fraction:
+                                amounts_helper.append(value)
+                                w_total += value
+                                w_total_carb += value
+                                n_minerals += 1
+                                n_carb += 1
+                        elif mineral == "Org":
+                            if n_minerals < len(mineral_list) - 1:
+                                value = round(fraction*rd.uniform(0.0, 0.5), 4)
                             else:
                                 value = round(1 - w_total, 4)
                             if value >= 0.0 and 0.0 <= value <= fraction:
@@ -3032,6 +3044,7 @@ class Sandstone:
             data_kaolinite = Phyllosilicates(impurity="pure", data_type=True).create_kaolinite()
             data_alkalifeldspar = Tectosilicates(impurity="pure", data_type=True).create_alkalifeldspar()
             data_plagioclase = Tectosilicates(impurity="pure", data_type=True).create_plagioclase()
+            data_organics = Organics(data_type=True).create_organic_matter()
             #
             old_index = elements.index("O")
             elements += [elements.pop(old_index)]
@@ -3083,6 +3096,13 @@ class Sandstone:
                 if element in self.data_calcite["chemistry"]:
                     if n_elements < len(elements) - 1:
                         value = round(amounts_mineralogy["Cal"][n] * self.data_calcite["chemistry"][element], 4)
+                    else:
+                        value = round(1 - w_total, 4)
+                    amounts_helper[element] += value
+                    w_total += value
+                if element in data_organics["chemistry"]:
+                    if n_elements < len(elements) - 1:
+                        value = round(amounts_mineralogy["Org"][n]*data_organics["chemistry"][element], 4)
                     else:
                         value = round(1 - w_total, 4)
                     amounts_helper[element] += value
@@ -3145,6 +3165,13 @@ class Sandstone:
                             shear_factor * amounts_mineralogy[mineral][n] * data_plagioclase["G"], 3)
                         gr_helper += round(amounts_mineralogy[mineral][n] * data_plagioclase["GR"], 3)
                         pe_helper += round(amounts_mineralogy[mineral][n] * data_plagioclase["PE"], 3)
+                    elif mineral == "Org":
+                        rho_s_helper += round(amounts_mineralogy[mineral][n]*data_organics["rho"], 3)
+                        bulkmod_helper += round(amounts_mineralogy[mineral][n]*data_organics["K"], 3)
+                        shearmod_helper += round(
+                            shear_factor * amounts_mineralogy[mineral][n]*data_organics["G"], 3)
+                        gr_helper += round(amounts_mineralogy[mineral][n]*data_organics["GR"], 3)
+                        pe_helper += round(amounts_mineralogy[mineral][n]*data_organics["PE"], 3)
                 #
                 # anisotropic_factor = round(rd.uniform(1.0, 2.0), 2)
                 anisotropic_factor = 1.0
