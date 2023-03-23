@@ -2281,7 +2281,7 @@ class GebPyGUI(tk.Frame):
         ## Initialization
         if var_name in ["Limestone"]:
             phi_max = 40
-        elif var_name in ["Sandstone", "Dolomite Rock", "Marl"]:
+        elif var_name in ["Sandstone", "Dolomite Rock", "Marl", "Mudstone"]:
             phi_max = 30
         else:
             phi_max = 10

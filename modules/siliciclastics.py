@@ -3035,7 +3035,7 @@ class Sandstone:
             gr_helper = 0
             pe_helper = 0
             if porosity == None:
-                phi_helper = round(rd.uniform(0.0, 0.4), 4)
+                phi_helper = round(rd.uniform(0.0, 0.3), 4)
             else:
                 phi_helper = round(rd.uniform(porosity[0], porosity[1]), 4)
             #
@@ -3110,7 +3110,7 @@ class Sandstone:
                 #
                 n_elements += 1
             #
-            shear_factor = 1.0
+            shear_factor = 1
             #
             if sum(amounts_helper.values()) == 1.0:
                 for key, value in amounts_helper.items():
@@ -3174,7 +3174,7 @@ class Sandstone:
                         pe_helper += round(amounts_mineralogy[mineral][n]*data_organics["PE"], 3)
                 #
                 # anisotropic_factor = round(rd.uniform(1.0, 2.0), 2)
-                anisotropic_factor = 1.0
+                anisotropic_factor = 2.5
                 bulkmod_helper = bulkmod_helper/anisotropic_factor
                 shearmod_helper = shearmod_helper / anisotropic_factor
                 #
