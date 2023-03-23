@@ -2076,6 +2076,278 @@ class Sandstone:
         #
         return results_container
     #
+    def create_mudstone_alt(self, rock="Mudstone", number=1, composition=None, classification="Mudstone",
+                            porosity=None):
+        #
+        results_container = {}
+        results_container["rock"] = rock
+        results_container["mineralogy"] = {}
+        results_container["chemistry"] = {}
+        results_container["phi"] = []
+        results_container["fluid"] = self.fluid
+        results_container["rho_s"] = []
+        results_container["rho"] = []
+        results_container["vP"] = []
+        results_container["vS"] = []
+        results_container["vP/vS"] = []
+        results_container["K"] = []
+        results_container["G"] = []
+        results_container["E"] = []
+        results_container["nu"] = []
+        results_container["GR"] = []
+        results_container["PE"] = []
+        #
+        n = 0
+        while n < number:
+            data_illite = Phyllosilicates(impurity="pure", data_type=True).create_illite()
+            data_alkalifeldspar = Tectosilicates(impurity="pure", data_type=True).create_alkalifeldspar()
+            data_plagioclase = Tectosilicates(impurity="pure", data_type=True).create_plagioclase()
+            data_organics = Organics(data_type=True).create_organic_matter()
+            #
+            mineralogy = {
+                "Kln": self.data_kaolinite, "Ilt": data_illite, "Qz": self.data_quartz, "Kfs": data_alkalifeldspar,
+                "Pl": data_plagioclase, "Org": data_organics, "Py": self.data_pyrite}
+            #
+            minerals_list = list(mineralogy.keys())
+            #
+            if minerals_list[0] not in results_container["mineralogy"]:
+                for mineral in minerals_list:
+                    results_container["mineralogy"][mineral] = []
+            #
+            condition = False
+            #
+            while condition == False:
+                elements_list = []
+                phi_minerals = {}
+                w_minerals = {}
+                w_elements = {}
+                #
+                if composition != None:
+                    phi_kln = composition["Kln"]
+                    phi_ilt = composition["Ilt"]
+                    phi_qz = composition["Qz"]
+                    phi_kfs = composition["Kfs"]
+                    phi_pl = composition["Pl"]
+                    phi_org = composition["Org"]
+                    phi_py = composition["Py"]
+                    #
+                    phi_minerals["Kln"] = phi_kln
+                    phi_minerals["Ilt"] = phi_ilt
+                    phi_minerals["Qz"] = phi_qz
+                    phi_minerals["Kfs"] = phi_kfs
+                    phi_minerals["Pl"] = phi_pl
+                    phi_minerals["Org"] = phi_org
+                    phi_minerals["Py"] = phi_py
+                    #
+                else:
+                    condition_2 = False
+                    while condition_2 == False:
+                        if classification == "Mudstone":
+                            kln_limits = [0.4, 0.5]
+                            ilt_limits = [0.0, 0.1]
+                            qz_limits = [0.1, 0.3]
+                            kfs_limits = [0.0, 0.1]
+                            pl_limits = [0.0, 0.1]
+                            org_limits = [0.0, 0.1]
+                            py_limits = [0.0, 0.05]
+                        #
+                        phi_kln = round(rd.uniform(kln_limits[0], kln_limits[1]), 4)
+                        #
+                        condition_ilt = False
+                        while condition_ilt == False:
+                            phi_ilt = round(rd.uniform(ilt_limits[0], (1 - phi_kln)), 4)
+                            if ilt_limits[0] <= phi_ilt <= ilt_limits[1]:
+                                condition_ilt = True
+                        #
+                        condition_qz = False
+                        while condition_qz == False:
+                            phi_qz = round(rd.uniform(qz_limits[0], (1 - phi_kln - phi_ilt)), 4)
+                            if qz_limits[0] <= phi_qz <= qz_limits[1]:
+                                condition_qz = True
+                        #
+                        condition_kfs = False
+                        while condition_kfs == False:
+                            phi_kfs = round(rd.uniform(kfs_limits[0], (1 - phi_kln - phi_ilt - phi_qz)), 4)
+                            if kfs_limits[0] <= phi_kfs <= kfs_limits[1]:
+                                condition_kfs = True
+                        #
+                        condition_pl = False
+                        while condition_pl == False:
+                            phi_pl = round(rd.uniform(pl_limits[0], (1 - phi_kln - phi_ilt - phi_qz - phi_kfs)), 4)
+                            if pl_limits[0] <= phi_pl <= pl_limits[1]:
+                                condition_pl = True
+                        #
+                        condition_org = False
+                        while condition_org == False:
+                            phi_org = round(rd.uniform(
+                                org_limits[0], (1 - phi_kln - phi_ilt - phi_qz - phi_kfs - phi_pl)), 4)
+                            if org_limits[0] <= phi_org <= org_limits[1]:
+                                condition_org = True
+                        #
+                        phi_py = round(1 - phi_kln - phi_ilt - phi_qz - phi_kfs - phi_pl - phi_org, 4)
+                        #
+                        phi_total = phi_kln + phi_ilt + phi_qz + phi_kfs + phi_pl + phi_org + phi_py
+                        #
+                        if np.isclose(phi_total, 1.0000) == True:
+                            if kln_limits[0] <= phi_kln <= kln_limits[1] \
+                                    and ilt_limits[0] <= phi_ilt <= ilt_limits[1] \
+                                    and qz_limits[0] <= phi_qz <= qz_limits[1] \
+                                    and kfs_limits[0] <= phi_kfs <= kfs_limits[1] \
+                                    and pl_limits[0] <= phi_pl <= pl_limits[1] \
+                                    and org_limits[0] <= phi_org <= org_limits[1] \
+                                    and py_limits[0] <= phi_py <= py_limits[1]:
+                                condition_2 = True
+                    #
+                    phi_minerals["Kln"] = phi_kln
+                    phi_minerals["Ilt"] = phi_ilt
+                    phi_minerals["Qz"] = phi_qz
+                    phi_minerals["Kfs"] = phi_kfs
+                    phi_minerals["Pl"] = phi_pl
+                    phi_minerals["Org"] = phi_org
+                    phi_minerals["Py"] = phi_py
+                #
+                rho_s = 0
+                for key, value in phi_minerals.items():
+                    rho_s += phi_minerals[key]*mineralogy[key]["rho"]
+                    #
+                    for element, value in mineralogy[key]["chemistry"].items():
+                        if element not in elements_list:
+                            elements_list.append(element)
+                            w_elements[element] = 0.0
+                #
+                if elements_list[0] not in results_container["chemistry"]:
+                    for element in elements_list:
+                        results_container["chemistry"][element] = []
+                #
+                rho_s = round(rho_s, 3)
+                for key, value in phi_minerals.items():
+                    if key == "Urn":
+                        n_digits = 4
+                    else:
+                        n_digits = 4
+                    #
+                    w_minerals[key] = round((phi_minerals[key]*mineralogy[key]["rho"])/rho_s, n_digits)
+                #
+                # if porosity == None:
+                #     var_porosity = round(rd.uniform(0.0, 0.3), 4)
+                # else:
+                #     var_porosity = round(rd.uniform(porosity[0], porosity[1]), 4)
+                #
+                if self.fluid == "water":
+                    data_fluid = self.data_water
+                #
+                old_index = elements_list.index("O")
+                elements_list += [elements_list.pop(old_index)]
+                #
+                w_elements_total = 0.0
+                for element in elements_list:
+                    if element != "O":
+                        for mineral, w_mineral in w_minerals.items():
+                            if element in mineralogy[mineral]["chemistry"]:
+                                if element == "U":
+                                    n_digits = 4
+                                else:
+                                    n_digits = 4
+                                #
+                                value = round(w_mineral*mineralogy[mineral]["chemistry"][element], n_digits)
+                                w_elements[element] += value
+                                w_elements_total += value
+                                #
+                                w_elements[element] = round(w_elements[element], n_digits)
+                    elif element == "O":
+                        w_elements[element] += round(1 - w_elements_total, 4)
+                        #
+                        w_elements[element] = round(w_elements[element], 4)
+                #
+                total_w_minerals = round(sum(w_minerals.values()), 4)
+                total_w_elements = round(sum(w_elements.values()), 4)
+                if total_w_minerals == 1.0 and total_w_elements == 1.0:
+                    for key, value in w_minerals.items():
+                        w_minerals[key] = abs(value)
+                    #
+                    for key, value in w_elements.items():
+                        w_elements[key] = abs(value)
+                    #
+                    condition = True
+            #
+            rho_solid = 0
+            velocity_solid = {"vP": 0, "vS": 0}
+            gamma_ray = 0.0
+            photoelectricity = 0.0
+            for key, value in phi_minerals.items():
+                rho_solid += phi_minerals[key]*mineralogy[key]["rho"]
+                velocity_solid["vP"] += phi_minerals[key]*mineralogy[key]["vP"]
+                velocity_solid["vS"] += phi_minerals[key]*mineralogy[key]["vS"]
+                gamma_ray += phi_minerals[key]*mineralogy[key]["GR"]
+                photoelectricity += phi_minerals[key]*mineralogy[key]["PE"]
+            #
+            ## Seismic Velocities
+            condition_v = False
+            while condition_v == False:
+                if porosity == None:
+                    var_porosity = round(rd.uniform(0.0, 0.3), 4)
+                else:
+                    var_porosity = round(rd.uniform(porosity[0], porosity[1]), 4)
+                #
+                vP_factor = round(rd.uniform(0.0, 1.0), 2)
+                vP = round(velocity_solid["vP"]*(1 - vP_factor*(1 + var_porosity)), 3)
+                #
+                if var_porosity < 0.1:
+                    if 4000 <= vP < 4500:
+                        vS_factor = round(rd.uniform(0.42, 0.43), 4)
+                        vS = round(velocity_solid["vS"]*(1 - vS_factor*(1 + var_porosity)), 3)
+                        if 2400 <= vS < 2600:
+                            condition_v = True
+                elif 0.1 <= var_porosity <= 0.2:
+                    if 3500 <= vP < 4000:
+                        vS_factor = round(rd.uniform(0.42, 0.43), 4)
+                        vS = round(velocity_solid["vS"]*(1 - vS_factor*(1 + var_porosity)), 3)
+                        if 2200 <= vS < 2400:
+                            condition_v = True
+                elif var_porosity > 0.2:
+                    if 3000 <= vP < 3500:
+                        vS_factor = round(rd.uniform(0.42, 0.46), 4)
+                        vS = round(velocity_solid["vS"]*(1 - vS_factor*(1 + var_porosity)), 3)
+                        if 2000 <= vS < 2200:
+                            condition_v = True
+            #
+            vPvS = round(vP/vS, 6)
+            ## Density
+            rho_solid = round(rho_solid, 3)
+            rho = round((1 - var_porosity)*rho_solid + var_porosity*data_fluid[2]/1000, 3)
+            ## Elastic Parameters
+            bulk_modulus = round(rho*(vP**2 - 4/3*vS**2)*10**(-9), 3)
+            shear_modulus = round((rho*vS**2)*10**(-9), 3)
+            youngs_modulus = round((9*bulk_modulus*shear_modulus)/(3*bulk_modulus + shear_modulus), 3)
+            poisson_ratio = round((3*bulk_modulus - 2*shear_modulus)/(6*bulk_modulus + 2*shear_modulus), 4)
+            ## Gamma Ray
+            gamma_ray = round(gamma_ray, 3)
+            ## Photoelectricity
+            photoelectricity = round(photoelectricity, 3)
+            #
+            for key, value in w_minerals.items():
+                results_container["mineralogy"][key].append(value)
+            #
+            for key, value in w_elements.items():
+                results_container["chemistry"][key].append(value)
+            #
+            results_container["phi"].append(var_porosity)
+            results_container["rho_s"].append(rho_s)
+            results_container["rho"].append(rho)
+            results_container["vP"].append(vP)
+            results_container["vS"].append(vS)
+            results_container["vP/vS"].append(vPvS)
+            results_container["K"].append(bulk_modulus)
+            results_container["G"].append(shear_modulus)
+            results_container["E"].append(youngs_modulus)
+            results_container["nu"].append(poisson_ratio)
+            results_container["GR"].append(gamma_ray)
+            results_container["PE"].append(photoelectricity)
+            #
+            n += 1
+        #
+        return results_container
+    #
     def create_sandstone(self, number, porosity=None):
         #
         data_alkalifeldspar = Tectosilicates(impurity="pure", data_type=True).create_alkalifeldspar()   # variable
@@ -2819,9 +3091,9 @@ class Sandstone:
         amounts_helper = []
         while n < number:
             if dominant_group == "Clays":
-                w_clay = round(rd.uniform(0.4, 0.7), 4)
-                w_silic = round(rd.uniform(0.0, (1 - w_clay)), 4)
-                w_carb = round(1 - w_clay - w_silic, 4)
+                w_clay = round(rd.uniform(0.5, 0.6), 4)
+                w_carb = round(rd.uniform(0.0, 0.15), 4)
+                w_silic = round(1 - w_carb - w_clay, 4)
             elif dominant_group == "Siliciclastics":
                 w_silic = round(rd.uniform(0.4, 0.7), 4)
                 w_clay = round(rd.uniform(0.0, (1 - w_silic)), 4)
@@ -3173,10 +3445,9 @@ class Sandstone:
                         gr_helper += round(amounts_mineralogy[mineral][n]*data_organics["GR"], 3)
                         pe_helper += round(amounts_mineralogy[mineral][n]*data_organics["PE"], 3)
                 #
-                # anisotropic_factor = round(rd.uniform(1.0, 2.0), 2)
-                anisotropic_factor = 2.5
+                anisotropic_factor = 2.75
                 bulkmod_helper = bulkmod_helper/anisotropic_factor
-                shearmod_helper = shearmod_helper / anisotropic_factor
+                shearmod_helper = shearmod_helper/anisotropic_factor
                 #
                 rho_helper = round((1 - phi_helper) * rho_s_helper + phi_helper * self.data_water[2] / 1000, 3)
                 youngsmod_helper = round(

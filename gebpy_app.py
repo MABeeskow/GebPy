@@ -2406,10 +2406,10 @@ class GebPyGUI(tk.Frame):
                 porosity=[self.gui_variables["Entry"]["Porosity Min"].get()/100,
                           self.gui_variables["Entry"]["Porosity Max"].get()/100])
         elif var_name == "Mudstone":
-            data = Sandstone(fluid="water", actualThickness=0).create_mudstone(
+            data = Sandstone(fluid="water", actualThickness=0).create_mudstone_alt(
                 number=self.gui_variables["Entry"]["Number Datapoints"].get(),
                 porosity=[self.gui_variables["Entry"]["Porosity Min"].get()/100,
-                          self.gui_variables["Entry"]["Porosity Max"].get()/100], dominance="Kln")
+                          self.gui_variables["Entry"]["Porosity Max"].get()/100])
         elif var_name == "Shale":
             data = Sandstone(fluid="water", actualThickness=0).create_shale_alt(
                 number=self.gui_variables["Entry"]["Number Datapoints"].get(),
