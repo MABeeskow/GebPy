@@ -2288,29 +2288,38 @@ class Sandstone:
                     var_porosity = round(rd.uniform(porosity[0], porosity[1]), 4)
                 #
                 if var_porosity < 0.1:
-                    vP_factor = round(rd.uniform(0.3571, 0.4545), 2)
+                    vP_factor = round(rd.uniform(0.3571, 0.5250), 2)    # 0.3571, 0.4545
                     vP = round(velocity_solid["vP"]*(1 - vP_factor*(1 + var_porosity)), 3)
-                    if 4000 <= vP < 4500:
+                    if 4000 <= vP < 4500:   # 4000 <= vP < 4500
                         vS_factor = round(rd.uniform(0.3810, 0.4449), 4)
                         vS = round(velocity_solid["vS"]*(1 - vS_factor*(1 + var_porosity)), 3)
                         if 2400 <= vS < 2600:
                             condition_v = True
                 elif 0.1 <= var_porosity <= 0.2:
-                    vP_factor = round(rd.uniform(0.3896, 0.4688), 2)
+                    vP_factor = round(rd.uniform(0.3896, 0.4773), 2)    # 0.3896, 0.4688
                     vP = round(velocity_solid["vP"]*(1 - vP_factor*(1 + var_porosity)), 3)
-                    if 3500 <= vP < 4000:
+                    if 3500 <= vP < 4000:   # 3500 <= vP < 4000:
                         vS_factor = round(rd.uniform(0.3896, 0.4433), 4)
                         vS = round(velocity_solid["vS"]*(1 - vS_factor*(1 + var_porosity)), 3)
                         if 2200 <= vS < 2400:
                             condition_v = True
                 elif var_porosity > 0.2:
-                    vP_factor = round(rd.uniform(0.4167, 0.4808), 2)
+                    vP_factor = round(rd.uniform(0.3736, 0.4808), 2)    # 0.4167, 0.4808
                     vP = round(velocity_solid["vP"]*(1 - vP_factor*(1 + var_porosity)), 3)
-                    if 3000 <= vP < 3500:
+                    if 3000 <= vP < 3500:   # 3000 <= vP < 3500:
                         vS_factor = round(rd.uniform(0.3968, 0.4419), 4)
                         vS = round(velocity_solid["vS"]*(1 - vS_factor*(1 + var_porosity)), 3)
                         if 2000 <= vS < 2200:
                             condition_v = True
+                #
+                # vP_factor = round(rd.uniform(0.3571, 0.4808), 2)
+                # vP = round(velocity_solid["vP"]*(1 - vP_factor*(1 + var_porosity)), 3)
+                # if 3500 <= vP < 4500:
+                #     vS_factor = round(rd.uniform(0.3810, 0.4468), 4)
+                #     vS = round(velocity_solid["vS"]*(1 - vS_factor*(1 + var_porosity)), 3)
+                #     if 2000 <= vS < 2600:
+                #         condition_v = True
+                #
             #
             vPvS = round(vP/vS, 6)
             ## Density
