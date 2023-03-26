@@ -6,7 +6,7 @@
 # Name:		siliciclastics.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		23.03.2023
+# Date:		26.03.2023
 
 #-----------------------------------------------
 
@@ -1981,10 +1981,10 @@ class Sandstone:
                     #
                     w_minerals[key] = round((phi_minerals[key]*mineralogy[key]["rho"])/rho_s, n_digits)
                 #
-                if porosity == None:
-                    var_porosity = round(rd.uniform(0.0, 0.1), 4)
-                else:
-                    var_porosity = round(rd.uniform(porosity[0], porosity[1]), 4)
+                # if porosity == None:
+                #     var_porosity = round(rd.uniform(0.0, 0.1), 4)
+                # else:
+                #     var_porosity = round(rd.uniform(porosity[0], porosity[1]), 4)
                 #
                 if self.fluid == "water":
                     data_fluid = self.data_water
@@ -2034,14 +2034,61 @@ class Sandstone:
                 gamma_ray += phi_minerals[key]*mineralogy[key]["GR"]
                 photoelectricity += phi_minerals[key]*mineralogy[key]["PE"]
             #
+            ## Porosity
+            if porosity == None:
+                var_porosity = round(rd.uniform(0.0, 0.3), 4)
+            else:
+                var_porosity = round(rd.uniform(porosity[0], porosity[1]), 4)
             ## Density
             rho_solid = round(rho_solid, 3)
             rho = round((1 - var_porosity)*rho_solid + var_porosity*data_fluid[2]/1000, 3)
+            rho_min = 1800
+            rho_max = 2800
             ## Seismic Velocities
-            vP_factor = 4/3
-            vP = round(velocity_solid["vP"]*(1 - vP_factor*var_porosity), 3)
-            vS_factor = 3/2
-            vS = round(velocity_solid["vS"]*(1 - vS_factor*var_porosity), 3)
+            vP_max_theo = 4800
+            vP_min_theo = 2800
+            vP_max_sim_upper = int(rd.uniform(1.00, 1.05) * vP_max_theo)
+            vP_max_sim_lower = int(rd.uniform(0.95, 1.00) * vP_max_theo)
+            vP_min_sim_upper = int(rd.uniform(1.00, 1.05) * vP_min_theo)
+            vP_mib_sim_lower = int(rd.uniform(0.95, 1.00) * vP_min_theo)
+            vP_max = rd.randint(vP_max_sim_lower, vP_max_sim_upper)
+            vP_min = rd.randint(vP_mib_sim_lower, vP_min_sim_upper)
+            #
+            vS_max_theo = 2500
+            vS_min_theo = 1500
+            vS_max_sim_upper = int(rd.uniform(1.00, 1.05) * vS_max_theo)
+            vS_max_sim_lower = int(rd.uniform(0.95, 1.00) * vS_max_theo)
+            vS_min_sim_upper = int(rd.uniform(1.00, 1.05) * vS_min_theo)
+            vS_mib_sim_lower = int(rd.uniform(0.95, 1.00) * vS_min_theo)
+            vS_max = rd.randint(vS_max_sim_lower, vS_max_sim_upper)
+            vS_min = rd.randint(vS_mib_sim_lower, vS_min_sim_upper)
+            #
+            constant_a_P = (vP_max - vP_min) / (rho_max - rho_min)
+            constant_b_P = vP_max - constant_a_P * rho_max
+            constant_a_S = (vS_max - vS_min) / (rho_max - rho_min)
+            constant_b_S = vS_max - constant_a_S * rho_max
+            #
+            condition_v = False
+            while condition_v == False:
+                ## Density
+                rho_solid = round(rho_solid, 3)
+                rho = round((1 - var_porosity) * rho_solid + var_porosity * data_fluid[2] / 1000, 3)
+                ## Seismic Velocities
+                vP = constant_a_P * rho + constant_b_P
+                #
+                if vP_min <= vP <= vP_max:
+                    vS = constant_a_S * rho + constant_b_S
+                    if vS_min <= vS <= vS_max:
+                        condition_v = True
+                    else:
+                        print("rho:", rho, "vS:", vS)
+                else:
+                    print("rho:", rho, "vP:", vP, vP_max, vP_min)
+            # ## Seismic Velocities
+            # vP_factor = 4/3
+            # vP = round(velocity_solid["vP"]*(1 - vP_factor*var_porosity), 3)
+            # vS_factor = 3/2
+            # vS = round(velocity_solid["vS"]*(1 - vS_factor*var_porosity), 3)
             vPvS = round(vP/vS, 6)
             ## Elastic Parameters
             bulk_modulus = round(rho*(vP**2 - 4/3*vS**2)*10**(-9), 3)
@@ -2073,6 +2120,8 @@ class Sandstone:
             results_container["PE"].append(photoelectricity)
             #
             n += 1
+        #
+        print(min(results_container["rho_s"]), max(results_container["rho_s"]), np.mean(results_container["rho_s"]), len(results_container["rho_s"]))
         #
         return results_container
     #
@@ -4208,11 +4257,11 @@ class Sandstone:
                         phi_bt = round(w_misc - phi_urn - phi_org - phi_py, 6)
                         #
                         ## Siliciclastics
-                        phi_qz = round(w_silic*rd.uniform(0.25, 0.75), 6)
+                        phi_qz = round(w_silic*rd.uniform(0.2, 0.8), 6)
                         phi_kfs = round(w_silic - phi_qz, 6)
                         #
                         ## Clays
-                        phi_ilt = round(w_clay*rd.uniform(0.75, 0.9), 6)
+                        phi_ilt = round(w_clay*rd.uniform(0.5, 1.0), 6)
                         phi_mnt = round(w_clay*rd.uniform(0.0, (1 - phi_ilt)), 6)
                         phi_chl = round(w_clay - phi_ilt - phi_mnt, 6)
                         #
@@ -4220,7 +4269,7 @@ class Sandstone:
                         #
                         if np.isclose(phi_total, 1.0000) == True:
                             if 0.0 <= phi_urn <= upper_limit_urn and 0.0 <= phi_org <= w_misc \
-                                    and 0.0 <= phi_bt <= w_misc and 0.0 <= phi_py <= 0.05 \
+                                    and 0.0 <= phi_bt <= w_misc and 0.0 <= phi_py <= 0.1 \
                                     and 0.0 <= phi_qz <= w_silic and 0.1 <= phi_kfs <= w_silic \
                                     and 0.0 <= phi_ilt <= w_clay and 0.0 <= phi_mnt <= w_clay \
                                     and 0.0 <= phi_chl <= w_clay:
@@ -4255,6 +4304,7 @@ class Sandstone:
                         results_container["chemistry"][element] = []
                 #
                 rho_s = round(rho_s, 3)
+                rho_solid = rho_s
                 for key, value in phi_minerals.items():
                     if key == "Urn":
                         n_digits = 6
@@ -4263,10 +4313,10 @@ class Sandstone:
                     #
                     w_minerals[key] = round((phi_minerals[key]*mineralogy[key]["rho"])/rho_s, n_digits)
                 #
-                if porosity == None:
-                    var_porosity = round(rd.uniform(0.0, 0.1), 4)
-                else:
-                    var_porosity = round(rd.uniform(porosity[0], porosity[1]), 4)
+                # if porosity == None:
+                #     var_porosity = round(rd.uniform(0.0, 0.1), 4)
+                # else:
+                #     var_porosity = round(rd.uniform(porosity[0], porosity[1]), 4)
                 #
                 if self.fluid == "water":
                     data_fluid = self.data_water
@@ -4275,7 +4325,7 @@ class Sandstone:
                 elif self.fluid == "gas":
                     data_fluid = self.data_gas
                 #
-                rho = round((1 - var_porosity)*rho_s + var_porosity*data_fluid[2]/1000, 3)
+                #rho = round((1 - var_porosity)*rho_s + var_porosity*data_fluid[2]/1000, 3)
                 #
                 old_index = elements_list.index("O")
                 elements_list += [elements_list.pop(old_index)]
@@ -4335,11 +4385,68 @@ class Sandstone:
             # vP = round(((bulk_mod*10**9 + 4/3*shear_mod*10**9)/(rho))**0.5, 3)
             # vS = round(((shear_mod*10**9)/(rho))**0.5, 3)
             # vPvS = round(vP/vS, 3)
+            ## Porosity
+            if porosity == None:
+                var_porosity = round(rd.uniform(0.0, 0.1), 4)
+            else:
+                var_porosity = round(rd.uniform(porosity[0], porosity[1]), 4)
+            ## Density
+            rho_solid = round(rho_solid, 3)
+            rho = round((1 - var_porosity) * rho_solid + var_porosity * data_fluid[2] / 1000, 3)
+            rho_max = 1800
+            rho_min = 2900
+            ## Seismic Velocities
+            vP_max_theo = 5000
+            vP_min_theo = 2000
+            vP_max_sim_upper = int(rd.uniform(1.00, 1.05) * vP_max_theo)
+            vP_max_sim_lower = int(rd.uniform(0.95, 1.00) * vP_max_theo)
+            vP_min_sim_upper = int(rd.uniform(1.00, 1.05) * vP_min_theo)
+            vP_mib_sim_lower = int(rd.uniform(0.95, 1.00) * vP_min_theo)
+            vP_max = rd.randint(vP_max_sim_lower, vP_max_sim_upper)
+            vP_min = rd.randint(vP_mib_sim_lower, vP_min_sim_upper)
             #
-            data_velocities = {"Phi": phi_minerals, "v": velocities_minerals, "porosity": var_porosity}
-            velocities = Geophysics(var_data=data_velocities).calculate_seismic_velocity()
-            vP = round(velocities["vP"]/anisotropic_factor, 3)
-            vS = round(velocities["vS"]/anisotropic_factor, 3)
+            vS_max_theo = 2000
+            vS_min_theo = 1000
+            vS_max_sim_upper = int(rd.uniform(1.00, 1.05) * vS_max_theo)
+            vS_max_sim_lower = int(rd.uniform(0.95, 1.00) * vS_max_theo)
+            vS_min_sim_upper = int(rd.uniform(1.00, 1.05) * vS_min_theo)
+            vS_mib_sim_lower = int(rd.uniform(0.95, 1.00) * vS_min_theo)
+            vS_max = rd.randint(vS_max_sim_lower, vS_max_sim_upper)
+            vS_min = rd.randint(vS_mib_sim_lower, vS_min_sim_upper)
+            #
+            constant_a_P = (vP_max - vP_min) / (rho_max - rho_min)
+            constant_b_P = vP_max - constant_a_P * rho_max
+            constant_a_S = (vS_max - vS_min) / (rho_max - rho_min)
+            constant_b_S = vS_max - constant_a_S * rho_max
+            #
+            condition_v = False
+            while condition_v == False:
+                if porosity == None:
+                    var_porosity = round(rd.uniform(0.0, 0.1), 4)
+                else:
+                    var_porosity = round(rd.uniform(porosity[0], porosity[1]), 4)
+                ## Density
+                rho_solid = round(rho_solid, 3)
+                rho = round((1 - var_porosity) * rho_solid + var_porosity * data_fluid[2] / 1000, 3)
+                # ## Density
+                # rho_solid = round(rho_solid, 3)
+                # rho = round((1 - var_porosity) * rho_solid + var_porosity * data_fluid[2] / 1000, 3)
+                ## Seismic Velocities
+                vP = constant_a_P * rho + constant_b_P
+                #
+                if vP_min <= vP <= vP_max:
+                    vS = constant_a_S * rho + constant_b_S
+                    if vS_min <= vS <= vS_max:
+                        condition_v = True
+                    else:
+                        print("rho:", rho, "vS:", vS)
+                else:
+                    print("rho:", rho, "vP:", vP, vP_max, vP_min)
+            #
+            # data_velocities = {"Phi": phi_minerals, "v": velocities_minerals, "porosity": var_porosity}
+            # velocities = Geophysics(var_data=data_velocities).calculate_seismic_velocity()
+            # vP = round(velocities["vP"]/anisotropic_factor, 3)
+            # vS = round(velocities["vS"]/anisotropic_factor, 3)
             vPvS = round(vP/vS, 4)
             bulk_mod = round((rho*(vP**2 - 4/3*vS**2))*10**(-9), 3)
             shear_mod = round((rho*vS**2)*10**(-9), 3)
@@ -4525,6 +4632,7 @@ class Sandstone:
                         results_container["chemistry"][element] = []
                 #
                 rho_s = round(rho_s, 3)
+                rho_solid = rho_s
                 for key, value in phi_minerals.items():
                     if key == "Urn":
                         n_digits = 4
@@ -4533,10 +4641,10 @@ class Sandstone:
                     #
                     w_minerals[key] = round((phi_minerals[key]*mineralogy[key]["rho"])/rho_s, n_digits)
                 #
-                if porosity == None:
-                    var_porosity = round(rd.uniform(0.0, 0.1), 4)
-                else:
-                    var_porosity = round(rd.uniform(porosity[0], porosity[1]), 4)
+                # if porosity == None:
+                #     var_porosity = round(rd.uniform(0.0, 0.1), 4)
+                # else:
+                #     var_porosity = round(rd.uniform(porosity[0], porosity[1]), 4)
                 #
                 if self.fluid == "water":
                     data_fluid = self.data_water
@@ -4545,7 +4653,7 @@ class Sandstone:
                 elif self.fluid == "gas":
                     data_fluid = self.data_gas
                 #
-                rho = round((1 - var_porosity)*rho_s + var_porosity*data_fluid[2]/1000, 3)
+                #rho = round((1 - var_porosity)*rho_s + var_porosity*data_fluid[2]/1000, 3)
                 #
                 old_index = elements_list.index("O")
                 elements_list += [elements_list.pop(old_index)]
@@ -4612,10 +4720,59 @@ class Sandstone:
             # vS = round(((shear_mod*10**9)/(rho))**0.5, 3)
             # vPvS = round(vP/vS, 4)
             #
-            data_velocities = {"Phi": phi_minerals, "v": velocities_minerals, "porosity": var_porosity}
-            velocities = Geophysics(var_data=data_velocities).calculate_seismic_velocity()
-            vP = round(velocities["vP"]/anisotropic_factor, 3)
-            vS = round(velocities["vS"]/anisotropic_factor, 3)
+            rho_max = 2800
+            rho_min = 2000
+            ## Seismic Velocities
+            vP_max_theo = 6000
+            vP_min_theo = 2500
+            vP_max_sim_upper = int(rd.uniform(1.00, 1.05) * vP_max_theo)
+            vP_max_sim_lower = int(rd.uniform(0.95, 1.00) * vP_max_theo)
+            vP_min_sim_upper = int(rd.uniform(1.00, 1.05) * vP_min_theo)
+            vP_mib_sim_lower = int(rd.uniform(0.95, 1.00) * vP_min_theo)
+            vP_max = rd.randint(vP_max_sim_lower, vP_max_sim_upper)
+            vP_min = rd.randint(vP_mib_sim_lower, vP_min_sim_upper)
+            #
+            vS_max_theo = 3000
+            vS_min_theo = 2000
+            vS_max_sim_upper = int(rd.uniform(1.00, 1.05) * vS_max_theo)
+            vS_max_sim_lower = int(rd.uniform(0.95, 1.00) * vS_max_theo)
+            vS_min_sim_upper = int(rd.uniform(1.00, 1.05) * vS_min_theo)
+            vS_mib_sim_lower = int(rd.uniform(0.95, 1.00) * vS_min_theo)
+            vS_max = rd.randint(vS_max_sim_lower, vS_max_sim_upper)
+            vS_min = rd.randint(vS_mib_sim_lower, vS_min_sim_upper)
+            #
+            constant_a_P = (vP_max - vP_min) / (rho_max - rho_min)
+            constant_b_P = vP_max - constant_a_P * rho_max
+            constant_a_S = (vS_max - vS_min) / (rho_max - rho_min)
+            constant_b_S = vS_max - constant_a_S * rho_max
+            #
+            condition_v = False
+            while condition_v == False:
+                if porosity == None:
+                    var_porosity = round(rd.uniform(0.0, 0.1), 4)
+                else:
+                    var_porosity = round(rd.uniform(porosity[0], porosity[1]), 4)
+                ## Density
+                rho_solid = round(rho_solid, 3)
+                rho = round((1 - var_porosity) * rho_solid + var_porosity * data_fluid[2] / 1000, 3)
+                # ## Density
+                # rho_solid = round(rho_solid, 3)
+                # rho = round((1 - var_porosity) * rho_solid + var_porosity * data_fluid[2] / 1000, 3)
+                ## Seismic Velocities
+                vP = constant_a_P * rho + constant_b_P
+                #
+                if vP_min <= vP <= vP_max:
+                    vS = constant_a_S * rho + constant_b_S
+                    if vS_min <= vS <= vS_max:
+                        condition_v = True
+                    else:
+                        print("rho:", rho, "vS:", vS)
+                else:
+                    print("rho:", rho, "vP:", vP, vP_max, vP_min)
+            # data_velocities = {"Phi": phi_minerals, "v": velocities_minerals, "porosity": var_porosity}
+            # velocities = Geophysics(var_data=data_velocities).calculate_seismic_velocity()
+            # vP = round(velocities["vP"]/anisotropic_factor, 3)
+            # vS = round(velocities["vS"]/anisotropic_factor, 3)
             vPvS = round(vP/vS, 4)
             bulk_mod = round(rho*(vP**2 - 4/3*vS**2)*10**(-9), 3)
             shear_mod = round(rho*vS**2*10**(-9), 3)
