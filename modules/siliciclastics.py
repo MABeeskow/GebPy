@@ -28,6 +28,7 @@ from modules.silicates import Tectosilicates
 from modules.sulfides import Sulfides
 from modules.organics import Organics
 from modules.fluids import Water, Hydrocarbons
+from modules.petrophysics import SeismicVelocities
 
 class Geophysics:
     #
@@ -4348,54 +4349,10 @@ class Sandstone:
                 gamma_ray += phi_minerals[key] * mineralogy[key]["GR"]
                 photoelectricity += phi_minerals[key] * mineralogy[key]["PE"]
             #
-            ## Density
-            rho_max = 2900
-            rho_min = 1800
-            ## Seismic Velocities
-            vP_max_theo = 5000
-            vP_min_theo = 2000
-            vP_max_sim_upper = int(rd.uniform(1.00, 1.05) * vP_max_theo)
-            vP_max_sim_lower = int(rd.uniform(0.95, 1.00) * vP_max_theo)
-            vP_min_sim_upper = int(rd.uniform(1.00, 1.05) * vP_min_theo)
-            vP_mib_sim_lower = int(rd.uniform(0.95, 1.00) * vP_min_theo)
-            vP_max = rd.randint(vP_max_sim_lower, vP_max_sim_upper)
-            vP_min = rd.randint(vP_mib_sim_lower, vP_min_sim_upper)
-            #
-            vS_max_theo = 2000
-            vS_min_theo = 1000
-            vS_max_sim_upper = int(rd.uniform(1.00, 1.05) * vS_max_theo)
-            vS_max_sim_lower = int(rd.uniform(0.95, 1.00) * vS_max_theo)
-            vS_min_sim_upper = int(rd.uniform(1.00, 1.05) * vS_min_theo)
-            vS_mib_sim_lower = int(rd.uniform(0.95, 1.00) * vS_min_theo)
-            vS_max = rd.randint(vS_max_sim_lower, vS_max_sim_upper)
-            vS_min = rd.randint(vS_mib_sim_lower, vS_min_sim_upper)
-            #
-            constant_a_P = (vP_max - vP_min)/(rho_max - rho_min)
-            constant_b_P = vP_max - constant_a_P*rho_max
-            constant_a_S = (vS_max - vS_min)/(rho_max - rho_min)
-            constant_b_S = vS_max - constant_a_S*rho_max
-            #
-            condition_v = False
-            while condition_v == False:
-                if porosity == None:
-                    var_porosity = round(rd.uniform(0.0, 0.1), 4)
-                else:
-                    var_porosity = round(rd.uniform(porosity[0], porosity[1]), 4)
-                ## Density
-                rho = round((1 - var_porosity)*rho_solid + var_porosity*data_fluid[2]/1000, 3)
-                ## Seismic Velocities
-                vP = constant_a_P*rho + constant_b_P
-                #
-                if vP_min <= vP <= vP_max:
-                    vS = constant_a_S * rho + constant_b_S
-                    if vS_min <= vS <= vS_max:
-                        condition_v = True
-                    else:
-                        print("rho:", rho, "vS:", vS)
-                else:
-                    print("rho:", rho, "vP:", vP, vP_max, vP_min)
-            #
-            vPvS = round(vP/vS, 4)
+            ## Bulk Density, Porosity, Seismic Velocities
+            vP, vS, vPvS, rho, var_porosity = SeismicVelocities(
+                rho_solid=rho_solid, rho_fluid=data_fluid[2]).calculate_seismic_velocities(
+                rho_limits=[1800, 2900], vP_limits=[2000, 5000], vS_limits=[1000, 2000], delta=0.05, porosity=porosity)
             ## Elastic Parameters
             bulk_modulus = round(rho * (vP ** 2 - 4 / 3 * vS ** 2) * 10 ** (-9), 3)
             shear_modulus = round((rho * vS ** 2) * 10 ** (-9), 3)

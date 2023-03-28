@@ -6,7 +6,7 @@
 # Name:		carbonates.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		30.01.2023
+# Date:		28.03.2023
 
 #-----------------------------------------------
 
@@ -29,6 +29,7 @@ from modules.sulfides import Sulfides
 from modules.pyllosilicates import Pyllosilicates
 from modules.sulfates import Sulfates
 from modules.fluids import Water
+from modules.petrophysics import SeismicVelocities
 
 class limestone:
     #
@@ -1580,7 +1581,7 @@ class CarbonateRocks:
                     while condition_2 == False:
                         magicnumber = rd.randint(0, 12)
                         if 0 <= magicnumber <= 8:   # Carbonate-dominated
-                            w_carb = round(rd.uniform(0.8, 1.0), 4)
+                            w_carb = round(rd.uniform(0.85, 1.0), 4)
                             w_clast = round(rd.uniform(0.0, (1.0 - w_carb)), 4)
                             w_clay = round(rd.uniform(0.0, (1.0 - w_carb - w_clast)), 4)
                             w_sulf = round(1 - w_carb - w_clast - w_clay, 4)
@@ -1691,12 +1692,12 @@ class CarbonateRocks:
                     w_result = round((phi_minerals[key] * mineralogy[key]["rho"]) / rho_s, 4)
                     w_minerals[key] = w_result
                 #
-                if porosity == None:
-                    phi_helper = round(rd.uniform(0.0, 0.4), 4)
-                else:
-                    phi_helper = round(rd.uniform(porosity[0], porosity[1]), 4)
-                #
-                var_porosity = phi_helper
+                # if porosity == None:
+                #     phi_helper = round(rd.uniform(0.0, 0.4), 4)
+                # else:
+                #     phi_helper = round(rd.uniform(porosity[0], porosity[1]), 4)
+                # #
+                # var_porosity = phi_helper
                 #
                 old_index = elements_list.index("O")
                 elements_list += [elements_list.pop(old_index)]
@@ -1720,15 +1721,21 @@ class CarbonateRocks:
                     #
                     condition = True
                 #
-                ## Density
+                ## Bulk Density, Porosity, Seismic Velocities
                 rho_solid = round(rho_s, 3)
-                rho = round((1 - var_porosity)*rho_solid + var_porosity*self.data_water[2], 3)
-                ## Seismic Velocities
-                vP_factor = 4/3
-                vP = round(velocity_solid["vP"]*(1 - vP_factor*var_porosity), 3)
-                vS_factor = 3/2
-                vS = round(velocity_solid["vS"]*(1 - vS_factor*var_porosity), 3)
-                vPvS = round(vP/vS, 6)
+                vP, vS, vPvS, rho, var_porosity = SeismicVelocities(
+                    rho_solid=rho_solid, rho_fluid=self.data_water[2]).calculate_seismic_velocities(
+                    rho_limits=[1800, 2800], vP_limits=[3500, 6500], vS_limits=[2000, 3500], delta=0.05,
+                    porosity=porosity)
+                # ## Density
+                # rho_solid = round(rho_s, 3)
+                # rho = round((1 - var_porosity)*rho_solid + var_porosity*self.data_water[2], 3)
+                # ## Seismic Velocities
+                # vP_factor = 4/3
+                # vP = round(velocity_solid["vP"]*(1 - vP_factor*var_porosity), 3)
+                # vS_factor = 3/2
+                # vS = round(velocity_solid["vS"]*(1 - vS_factor*var_porosity), 3)
+                # vPvS = round(vP/vS, 6)
                 ## Elastic Parameters
                 bulk_modulus = round(rho*(vP**2 - 4/3*vS**2)*10**(-9), 3)
                 shear_modulus = round((rho*vS**2)*10**(-9), 3)
@@ -1746,7 +1753,7 @@ class CarbonateRocks:
             #
             bulk_properties["rho_s"].append(rho_solid)
             bulk_properties["rho"].append(rho)
-            bulk_properties["phi"].append(phi_helper)
+            bulk_properties["phi"].append(var_porosity)
             bulk_properties["K"].append(bulk_modulus)
             bulk_properties["G"].append(shear_modulus)
             bulk_properties["E"].append(youngs_modulus)
@@ -1788,7 +1795,7 @@ class CarbonateRocks:
                 single_amounts_chemistry[element] = value
             results["mineralogy"] = single_amounts_mineralogy
             results["chemistry"] = single_amounts_chemistry
-            results["phi"] = phi_helper
+            results["phi"] = var_porosity
             results["fluid"] = "water"
             results["rho_s"] = rho_solid
             results["rho"] = rho
@@ -1973,7 +1980,7 @@ class CarbonateRocks:
                 else:
                     phi_helper = round(rd.uniform(porosity[0], porosity[1]), 4)
                 #
-                rho = round((1 - phi_helper)*rho_s + phi_helper*self.data_water[2], 3)
+                #rho = round((1 - phi_helper)*rho_s + phi_helper*self.data_water[2], 3)
                 #
                 old_index = elements_list.index("O")
                 elements_list += [elements_list.pop(old_index)]
@@ -2012,24 +2019,31 @@ class CarbonateRocks:
                     gamma_ray = round(gamma_ray, 3)
                     photoelectricity = round(photoelectricity, 3)
                 #
-                w_list = []
-                K_list = []
-                G_list = []
-                for key, mineral in mineralogy.items():
-                    w_list.append(w_minerals[key])
-                    K_list.append(mineral["K"])
-                    G_list.append(mineral["G"])
-                K_geo = elast.calc_geometric_mean(self, w_list, K_list)
-                G_geo = elast.calc_geometric_mean(self, w_list, G_list)
-                bulk_mod = K_geo
-                shear_mod = G_geo
+                ## Bulk Density, Porosity, Seismic Velocities
+                rho_solid = round(rho_s, 3)
+                vP, vS, vPvS, rho, var_porosity = SeismicVelocities(
+                    rho_solid=rho_solid, rho_fluid=self.data_water[2]).calculate_seismic_velocities(
+                    rho_limits=[2000, 2900], vP_limits=[3500, 7000], vS_limits=[2200, 3200], delta=0.05,
+                    porosity=porosity)
                 #
-                vP_s = round(((bulk_mod*10**9 + 4/3*shear_mod*10**9)/(rho_s))**0.5, 3)
-                vS_s = round(((shear_mod*10**9)/(rho_s))**0.5, 3)
-                #
-                vP = (1 - phi_helper)*vP_s + phi_helper*self.data_water[4][0]
-                vS = (1 - phi_helper)*vS_s
-                vPvS = round(vP/vS, 3)
+                # w_list = []
+                # K_list = []
+                # G_list = []
+                # for key, mineral in mineralogy.items():
+                #     w_list.append(w_minerals[key])
+                #     K_list.append(mineral["K"])
+                #     G_list.append(mineral["G"])
+                # K_geo = elast.calc_geometric_mean(self, w_list, K_list)
+                # G_geo = elast.calc_geometric_mean(self, w_list, G_list)
+                # bulk_mod = K_geo
+                # shear_mod = G_geo
+                # #
+                # vP_s = round(((bulk_mod*10**9 + 4/3*shear_mod*10**9)/(rho_s))**0.5, 3)
+                # vS_s = round(((shear_mod*10**9)/(rho_s))**0.5, 3)
+                # #
+                # vP = (1 - phi_helper)*vP_s + phi_helper*self.data_water[4][0]
+                # vS = (1 - phi_helper)*vS_s
+                # vPvS = round(vP/vS, 3)
                 #
                 shear_mod = (vS**2*rho)*10**(-9)
                 bulk_mod = (vP**2*rho - 4/3*shear_mod)*10**(-9)
@@ -2041,9 +2055,9 @@ class CarbonateRocks:
             for element, value in w_elements.items():
                 amounts_chemistry[element].append(value)
             #
-            bulk_properties["rho_s"].append(rho_s)
+            bulk_properties["rho_s"].append(rho_solid)
             bulk_properties["rho"].append(rho)
-            bulk_properties["phi"].append(phi_helper)
+            bulk_properties["phi"].append(var_porosity)
             bulk_properties["K"].append(bulk_mod)
             bulk_properties["G"].append(shear_mod)
             bulk_properties["E"].append(youngs_mod)
@@ -2085,9 +2099,9 @@ class CarbonateRocks:
                 single_amounts_chemistry[element] = value
             results["mineralogy"] = single_amounts_mineralogy
             results["chemistry"] = single_amounts_chemistry
-            results["phi"] = phi_helper
+            results["phi"] = var_porosity
             results["fluid"] = "water"
-            results["rho_s"] = rho_s
+            results["rho_s"] = rho_solid
             results["rho"] = rho
             results["vP"] = vP
             results["vS"] = vS
