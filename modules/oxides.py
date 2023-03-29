@@ -6,7 +6,7 @@
 # Name:		oxides.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		05.02.2023
+# Date:		29.03.2023
 
 # -----------------------------------------------
 
@@ -70,15 +70,22 @@ class Oxides():
             data = self.create_stolzite()
         elif self.mineral == "Crocoite":
             data = self.create_crocoite()
+        # Hematite Group
+        elif self.mineral == "Hematite":
+            data = self.create_hematite()
+        elif self.mineral == "Corundum":
+            data = self.create_corundum()
+        elif self.mineral == "Eskolaite":
+            data = self.create_eskolaite()
+        elif self.mineral == "Karelianite":
+            data = self.create_karelianite()
+        elif self.mineral == "Tistarite":
+            data = self.create_tistarite()
         #
         elif self.mineral == "Uraninite":
             data = self.create_uraninite()
         elif self.mineral == "Magnetite":
             data = self.create_magnetite()
-        elif self.mineral == "Hematite":
-            data = self.create_hematite()
-        elif self.mineral == "Corundum":
-            data = self.create_corundum()
         elif self.mineral == "Chromite":
             data = self.create_chromite()
         elif self.mineral == "Spinel":
@@ -107,10 +114,6 @@ class Oxides():
             data = self.create_pyrophanite()
         elif self.mineral == "Geikielite":
             data = self.create_geikielite()
-        elif self.mineral == "Eskolaite":
-            data = self.create_eskolaite()
-        elif self.mineral == "Karelianite":
-            data = self.create_karelianite()
         elif self.mineral == "Claudetite":
             data = self.create_claudetite()
         elif self.mineral == "Arsenolite":
@@ -179,10 +182,20 @@ class Oxides():
         for index in range(number):
             if self.mineral == "Quartz":
                 data_mineral = self.create_quartz()
-            elif self.mineral == "Magnetite":
-                data_mineral = self.create_magnetite()
+            # Hematite Group
             elif self.mineral == "Hematite":
                 data_mineral = self.create_hematite()
+            elif self.mineral == "Corundum":
+                data_mineral = self.create_corundum()
+            elif self.mineral == "Eskolaite":
+                data_mineral = self.create_eskolaite()
+            elif self.mineral == "Karelianite":
+                data_mineral = self.create_karelianite()
+            elif self.mineral == "Tistarite":
+                data_mineral = self.create_tistarite()
+            #
+            elif self.mineral == "Magnetite":
+                data_mineral = self.create_magnetite()
             elif self.mineral == "Ilmenite":
                 data_mineral = self.create_ilmenite()
             elif self.mineral == "Cassiterite":
