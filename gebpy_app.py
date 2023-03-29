@@ -407,7 +407,7 @@ class GebPyGUI(tk.Frame):
         #
         sub_special_groups = tk.Menu(mineralogy_menu, tearoff=0)
         special_groups = [
-            "Spinel Group", "Hematite Group", "Rutile Group", "Periclase Group", "Wulfenite Group"]
+            "Spinel Group", "Hematite Group", "Rutile Group", "Periclase Group", "Scheelite Group"]
         special_groups.sort()
         for special_group in special_groups:
             sub_special_groups.add_command(
@@ -827,8 +827,27 @@ class GebPyGUI(tk.Frame):
             data_wuestite = Oxides(mineral="Wuestite", data_type=True, traces_list=[]).generate_dataset(
                 number=1)
             #
-        elif var_name == "Wulfenite Group":
-            pass
+            print(data_bunsenite)
+            print(data_manganosite)
+            print(data_periclase)
+            print(data_wuestite)
+            #
+        elif var_name == "Scheelite Group":
+            ## Mineral Data
+            data_powellite = Oxides(mineral="Powellite", data_type=True, traces_list=[]).generate_dataset(
+                number=1)
+            data_scheelite = Oxides(mineral="Scheelite", data_type=True, traces_list=[]).generate_dataset(
+                number=1)
+            data_stolzite = Oxides(mineral="Stolzite", data_type=True, traces_list=[]).generate_dataset(
+                number=1)
+            data_wulfenite = Oxides(mineral="Wulfenite", data_type=True, traces_list=[]).generate_dataset(
+                number=1)
+            #
+            print(data_powellite)
+            print(data_scheelite)
+            print(data_stolzite)
+            print(data_wulfenite)
+            #
     #
     def change_rb_diagram(self):    # RB DIAGRAM MINERALOGY
         if self.gui_variables["Radiobutton"]["Analysis Mode"].get() == 0 \
