@@ -6,7 +6,7 @@
 # Name:		igneous.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		29.01.2023
+# Date:		29.03.2023
 
 #-----------------------------------------------
 
@@ -337,7 +337,6 @@ class UltraMafic:
             K_geo = elast.calc_geometric_mean(self, phi_list, K_list)
             G_geo = elast.calc_geometric_mean(self, phi_list, G_list)
             #
-            # anisotropic_factor = round(rd.uniform(1.0, 2.0), 4)
             anisotropic_factor = 1.0
             #
             bulk_mod = K_geo/anisotropic_factor

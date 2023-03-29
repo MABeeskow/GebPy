@@ -6,7 +6,7 @@
 # Name:		series.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		18.02.2023
+# Date:		29.03.2023
 
 #-----------------------------------------------
 
@@ -18,7 +18,7 @@ import scipy
 from modules.ore import Ores
 from modules.carbonates import limestone, CarbonateRocks
 from modules.evaporites import Evaporites
-from modules.siliciclastics import shale, Sandstone
+from modules.siliciclastics import shale, SiliciclasticRocks
 from modules.sedimentary_rocks import SedimentaryRocks
 
 #######################
@@ -348,7 +348,7 @@ class Zechstein:
         steps_shale = np.linspace(actual_bottom, actual_top, self.resolution, endpoint=False)[::-1]
         for i in steps_shale:
             depth = round(i, 4)
-            container_shale[depth] = Sandstone().create_mudstone(number=1, porosity=[0.0, 0.1])
+            container_shale[depth] = SiliciclasticRocks().create_mudstone(number=1, porosity=[0.0, 0.1])
             # container_shale[depth] = shale(fluid="water").create_simple_shale(dict_output=True,
             #                                                                   porosity=rd.uniform(0, 0.1))
         # actual_top += thickness_shale
@@ -451,7 +451,7 @@ class Zechstein:
         steps_shale = np.linspace(actual_bottom, actual_top, self.resolution, endpoint=False)[::-1]
         for i in steps_shale:
             depth = round(i, 4)
-            container_shale[depth] = Sandstone().create_mudstone(number=1, porosity=[0.0, 0.1])
+            container_shale[depth] = SiliciclasticRocks().create_mudstone(number=1, porosity=[0.0, 0.1])
             # container_shale[depth] = shale(fluid="water").create_simple_shale(dict_output=True,
             #                                                                   porosity=rd.uniform(0, 0.1))
         # actual_top += thickness_shale
@@ -495,7 +495,7 @@ class Zechstein:
         steps_mudstone_upper = np.linspace(actual_bottom, actual_top, self.resolution, endpoint=False)[::-1]
         for i in steps_mudstone_upper:
             depth = round(i, 4)
-            container_mudstone_upper[depth] = Sandstone().create_mudstone(number=1, porosity=[0.0, 0.1])
+            container_mudstone_upper[depth] = SiliciclasticRocks().create_mudstone(number=1, porosity=[0.0, 0.1])
         actual_top += thickness_mudstone_upper
         actual_bottom += thickness_anhydrite
         #
@@ -514,7 +514,7 @@ class Zechstein:
         steps_mudstone_lower = np.linspace(actual_bottom, actual_top, self.resolution, endpoint=False)[::-1]
         for i in steps_mudstone_lower:
             depth = round(i, 4)
-            container_mudstone_lower[depth] = Sandstone().create_mudstone(number=1, porosity=[0.0, 0.1])
+            container_mudstone_lower[depth] = SiliciclasticRocks().create_mudstone(number=1, porosity=[0.0, 0.1])
         #
         ## TEST
         # for key, value in reversed(container_mudstone_upper.items()):
@@ -727,7 +727,7 @@ class Muschelkalk:
         steps_unit = np.linspace(actual_bottom, actual_top, self.resolution, endpoint=False)[::-1]
         for i in steps_unit:
             depth = round(i, 4)
-            container_mudstone_upper[depth] = Sandstone().create_mudstone(number=1, porosity=[0.0, 0.1])
+            container_mudstone_upper[depth] = SiliciclasticRocks().create_mudstone(number=1, porosity=[0.0, 0.1])
         actual_top += thickness_mudstone_upper
         actual_bottom += thickness_limestone_medium_upper
         #
@@ -767,7 +767,7 @@ class Muschelkalk:
         steps_unit = np.linspace(actual_bottom, actual_top, self.resolution, endpoint=False)[::-1]
         for i in steps_unit:
             depth = round(i, 4)
-            container_mudstone_medium[depth] = Sandstone().create_mudstone(number=1, porosity=[0.0, 0.1])
+            container_mudstone_medium[depth] = SiliciclasticRocks().create_mudstone(number=1, porosity=[0.0, 0.1])
         actual_top += thickness_mudstone_medium
         actual_bottom += thickness_limestone_medium_lower
         #
@@ -786,7 +786,7 @@ class Muschelkalk:
         steps_unit = np.linspace(actual_bottom, actual_top, self.resolution, endpoint=False)[::-1]
         for i in steps_unit:
             depth = round(i, 4)
-            container_mudstone_lower[depth] = Sandstone().create_mudstone(number=1, porosity=[0.0, 0.1])
+            container_mudstone_lower[depth] = SiliciclasticRocks().create_mudstone(number=1, porosity=[0.0, 0.1])
         actual_top += thickness_mudstone_lower
         actual_bottom += thickness_limestone_lower
         #

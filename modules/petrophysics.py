@@ -6,7 +6,7 @@
 # Name:		petrophysics.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		28.03.2023
+# Date:		29.03.2023
 
 #-----------------------------------------------
 
@@ -87,3 +87,12 @@ class SeismicVelocities:
         vPvS = round(vP/vS, 4)
         #
         return vP, vS, vPvS, rho, var_porosity
+    #
+    def calculate_elastic_properties(self, rho, vP, vS):
+        ## Elastic Parameters
+        bulk_modulus = round(rho*(vP**2 - 4/3*vS**2)*10**(-9), 3)
+        shear_modulus = round((rho*vS**2)*10**(-9), 3)
+        youngs_modulus = round((9*bulk_modulus*shear_modulus)/(3*bulk_modulus + shear_modulus), 3)
+        poisson_ratio = round((3*bulk_modulus - 2*shear_modulus)/(6*bulk_modulus + 2*shear_modulus), 4)
+        #
+        return bulk_modulus, shear_modulus, youngs_modulus, poisson_ratio

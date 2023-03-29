@@ -6,7 +6,7 @@
 # Name:		gebpy_app.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		23.03.2023
+# Date:		29.03.2023
 
 #-----------------------------------------------
 
@@ -35,11 +35,12 @@ from modules.silicates import Phyllosilicates, Tectosilicates, Inosilicates, Nes
     Cyclosilicates
 from modules.organics import Organics
 from modules.fluids import Water
-from modules.siliciclastics import Sandstone, Geophysics
+from modules.siliciclastics import SiliciclasticRocks, Geophysics
 from modules.ore import OreRocks
 from modules.metamorphics import GranuliteFacies
 # Sequence Stratigraphy
 from modules.series import Muschelkalk, Zechstein
+from modules.petrophysics import SeismicVelocities
 
 ## GUI
 class GebPyGUI(tk.Frame):
@@ -2396,27 +2397,27 @@ class GebPyGUI(tk.Frame):
         #
         ## Siliciclastic Rocks
         if var_name == "Sandstone":
-            data = Sandstone(fluid="water", actualThickness=0).create_sandstone_alt(
+            data = SiliciclasticRocks(fluid="water", actualThickness=0).create_sandstone(
                 number=self.gui_variables["Entry"]["Number Datapoints"].get(),
                 porosity=[self.gui_variables["Entry"]["Porosity Min"].get()/100,
                           self.gui_variables["Entry"]["Porosity Max"].get()/100])
         elif var_name == "Conglomerate":
-            data = Sandstone(fluid="water", actualThickness=0).create_conglomerate(
+            data = SiliciclasticRocks(fluid="water", actualThickness=0).create_conglomerate(
                 number=self.gui_variables["Entry"]["Number Datapoints"].get(),
                 porosity=[self.gui_variables["Entry"]["Porosity Min"].get()/100,
                           self.gui_variables["Entry"]["Porosity Max"].get()/100])
         elif var_name == "Mudstone":
-            data = Sandstone(fluid="water", actualThickness=0).create_mudstone_alt(
+            data = SiliciclasticRocks(fluid="water", actualThickness=0).create_mudstone_alt(
                 number=self.gui_variables["Entry"]["Number Datapoints"].get(),
                 porosity=[self.gui_variables["Entry"]["Porosity Min"].get()/100,
                           self.gui_variables["Entry"]["Porosity Max"].get()/100])
         elif var_name == "Shale":
-            data = Sandstone(fluid="water", actualThickness=0).create_shale_alt(
+            data = SiliciclasticRocks(fluid="water", actualThickness=0).create_shale_alt(
                 number=self.gui_variables["Entry"]["Number Datapoints"].get(),
                 porosity=[self.gui_variables["Entry"]["Porosity Min"].get()/100,
                           self.gui_variables["Entry"]["Porosity Max"].get()/100])
         elif var_name == "Greywacke (Huckenholz)":
-            data = Sandstone(fluid="water", actualThickness=0).create_greywacke_huckenholz(
+            data = SiliciclasticRocks(fluid="water", actualThickness=0).create_greywacke_huckenholz(
                 rock="Greywacke", number=self.gui_variables["Entry"]["Number Datapoints"].get(),
                 porosity=[self.gui_variables["Entry"]["Porosity Min"].get()/100,
                           self.gui_variables["Entry"]["Porosity Max"].get()/100])
@@ -3784,10 +3785,9 @@ class GebPyGUI(tk.Frame):
             vS = round(velocity_solid["vS"]*(1 - vS_factor*porosity), 3)
             vPvS = round(vP/vS, 6)
             ## Elastic Parameters
-            bulk_modulus = round(rho*(vP**2 - 4/3*vS**2)*10**(-9), 3)
-            shear_modulus = round((rho*vS**2)*10**(-9), 3)
-            youngs_modulus = round((9*bulk_modulus*shear_modulus)/(3*bulk_modulus + shear_modulus), 3)
-            poisson_ratio = round((3*bulk_modulus - 2*shear_modulus)/(6*bulk_modulus + 2*shear_modulus), 4)
+            bulk_modulus, shear_modulus, youngs_modulus, poisson_ratio = SeismicVelocities(
+                rho_solid=None, rho_fluid=None).calculate_elastic_properties(
+                rho=rho, vP=vP, vS=vS)
             ## Gamma Ray
             gamma_ray = round(gamma_ray, 3)
             ## Photoelectricity

@@ -6,7 +6,7 @@
 # Name:		carbonates.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		28.03.2023
+# Date:		29.03.2023
 
 #-----------------------------------------------
 
@@ -1692,13 +1692,6 @@ class CarbonateRocks:
                     w_result = round((phi_minerals[key] * mineralogy[key]["rho"]) / rho_s, 4)
                     w_minerals[key] = w_result
                 #
-                # if porosity == None:
-                #     phi_helper = round(rd.uniform(0.0, 0.4), 4)
-                # else:
-                #     phi_helper = round(rd.uniform(porosity[0], porosity[1]), 4)
-                # #
-                # var_porosity = phi_helper
-                #
                 old_index = elements_list.index("O")
                 elements_list += [elements_list.pop(old_index)]
                 #
@@ -1727,20 +1720,10 @@ class CarbonateRocks:
                     rho_solid=rho_solid, rho_fluid=self.data_water[2]).calculate_seismic_velocities(
                     rho_limits=[1800, 2800], vP_limits=[3500, 6500], vS_limits=[2000, 3500], delta=0.05,
                     porosity=porosity)
-                # ## Density
-                # rho_solid = round(rho_s, 3)
-                # rho = round((1 - var_porosity)*rho_solid + var_porosity*self.data_water[2], 3)
-                # ## Seismic Velocities
-                # vP_factor = 4/3
-                # vP = round(velocity_solid["vP"]*(1 - vP_factor*var_porosity), 3)
-                # vS_factor = 3/2
-                # vS = round(velocity_solid["vS"]*(1 - vS_factor*var_porosity), 3)
-                # vPvS = round(vP/vS, 6)
                 ## Elastic Parameters
-                bulk_modulus = round(rho*(vP**2 - 4/3*vS**2)*10**(-9), 3)
-                shear_modulus = round((rho*vS**2)*10**(-9), 3)
-                youngs_modulus = round((9*bulk_modulus*shear_modulus)/(3*bulk_modulus + shear_modulus), 3)
-                poisson_ratio = round((3*bulk_modulus - 2*shear_modulus)/(6*bulk_modulus + 2*shear_modulus), 4)
+                bulk_modulus, shear_modulus, youngs_modulus, poisson_ratio = SeismicVelocities(
+                    rho_solid=None, rho_fluid=None).calculate_elastic_properties(
+                    rho=rho, vP=vP, vS=vS)
                 ## Gamma Ray
                 gamma_ray = round(gamma_ray, 3)
                 ## Photoelectricity
@@ -2025,30 +2008,10 @@ class CarbonateRocks:
                     rho_solid=rho_solid, rho_fluid=self.data_water[2]).calculate_seismic_velocities(
                     rho_limits=[2000, 2900], vP_limits=[3500, 7000], vS_limits=[2200, 3200], delta=0.05,
                     porosity=porosity)
-                #
-                # w_list = []
-                # K_list = []
-                # G_list = []
-                # for key, mineral in mineralogy.items():
-                #     w_list.append(w_minerals[key])
-                #     K_list.append(mineral["K"])
-                #     G_list.append(mineral["G"])
-                # K_geo = elast.calc_geometric_mean(self, w_list, K_list)
-                # G_geo = elast.calc_geometric_mean(self, w_list, G_list)
-                # bulk_mod = K_geo
-                # shear_mod = G_geo
-                # #
-                # vP_s = round(((bulk_mod*10**9 + 4/3*shear_mod*10**9)/(rho_s))**0.5, 3)
-                # vS_s = round(((shear_mod*10**9)/(rho_s))**0.5, 3)
-                # #
-                # vP = (1 - phi_helper)*vP_s + phi_helper*self.data_water[4][0]
-                # vS = (1 - phi_helper)*vS_s
-                # vPvS = round(vP/vS, 3)
-                #
-                shear_mod = (vS**2*rho)*10**(-9)
-                bulk_mod = (vP**2*rho - 4/3*shear_mod)*10**(-9)
-                youngs_mod = round((9*bulk_mod*shear_mod)/(3*bulk_mod + shear_mod), 3)
-                poisson_rat = round((3*bulk_mod - 2*shear_mod)/(6*bulk_mod + 2*shear_mod), 4)
+                ## Elastic Parameters
+                bulk_modulus, shear_modulus, youngs_modulus, poisson_ratio = SeismicVelocities(
+                    rho_solid=None, rho_fluid=None).calculate_elastic_properties(
+                    rho=rho, vP=vP, vS=vS)
             #
             for mineral, value in w_minerals.items():
                 amounts_mineralogy[mineral].append(value)
@@ -2058,10 +2021,10 @@ class CarbonateRocks:
             bulk_properties["rho_s"].append(rho_solid)
             bulk_properties["rho"].append(rho)
             bulk_properties["phi"].append(var_porosity)
-            bulk_properties["K"].append(bulk_mod)
-            bulk_properties["G"].append(shear_mod)
-            bulk_properties["E"].append(youngs_mod)
-            bulk_properties["nu"].append(poisson_rat)
+            bulk_properties["K"].append(bulk_modulus)
+            bulk_properties["G"].append(shear_modulus)
+            bulk_properties["E"].append(youngs_modulus)
+            bulk_properties["nu"].append(poisson_ratio)
             bulk_properties["vP"].append(vP)
             bulk_properties["vS"].append(vS)
             bulk_properties["vPvS"].append(vPvS)
@@ -2106,10 +2069,10 @@ class CarbonateRocks:
             results["vP"] = vP
             results["vS"] = vS
             results["vP/vS"] = vPvS
-            results["K"] = bulk_mod
-            results["G"] = shear_mod
-            results["E"] = youngs_mod
-            results["nu"] = poisson_rat
+            results["K"] = bulk_modulus
+            results["G"] = shear_modulus
+            results["E"] = youngs_modulus
+            results["nu"] = poisson_ratio
             results["GR"] = gamma_ray
             results["PE"] = photoelectricity
         #
@@ -2522,20 +2485,16 @@ class CarbonateRocks:
                 gamma_ray += phi_minerals[key]*mineralogy[key]["GR"]
                 photoelectricity += phi_minerals[key]*mineralogy[key]["PE"]
             #
-            ## Density
-            rho_solid = round(rho_solid, 3)
-            rho = round((1 - var_porosity)*rho_solid + var_porosity*data_fluid[2]/1000, 3)
-            ## Seismic Velocities
-            vP_factor = 4/3
-            vP = round(velocity_solid["vP"]*(1 - vP_factor*var_porosity), 3)
-            vS_factor = 3/2
-            vS = round(velocity_solid["vS"]*(1 - vS_factor*var_porosity), 3)
-            vPvS = round(vP/vS, 6)
+            ## Bulk Density, Porosity, Seismic Velocities
+            rho_solid = round(rho_s, 3)
+            vP, vS, vPvS, rho, var_porosity = SeismicVelocities(
+                rho_solid=rho_solid, rho_fluid=self.data_water[2]).calculate_seismic_velocities(
+                rho_limits=[2200, 2700], vP_limits=[1800, 5800], vS_limits=[1000, 2000], delta=0.05,
+                porosity=porosity)
             ## Elastic Parameters
-            bulk_modulus = round(rho*(vP**2 - 4/3*vS**2)*10**(-9), 3)
-            shear_modulus = round((rho*vS**2)*10**(-9), 3)
-            youngs_modulus = round((9*bulk_modulus*shear_modulus)/(3*bulk_modulus + shear_modulus), 3)
-            poisson_ratio = round((3*bulk_modulus - 2*shear_modulus)/(6*bulk_modulus + 2*shear_modulus), 4)
+            bulk_modulus, shear_modulus, youngs_modulus, poisson_ratio = SeismicVelocities(
+                rho_solid=None, rho_fluid=None).calculate_elastic_properties(
+                rho=rho, vP=vP, vS=vS)
             ## Gamma Ray
             gamma_ray = round(gamma_ray, 3)
             ## Photoelectricity
