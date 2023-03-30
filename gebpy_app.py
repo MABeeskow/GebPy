@@ -6,7 +6,7 @@
 # Name:		gebpy_app.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		29.03.2023
+# Date:		30.03.2023
 
 #-----------------------------------------------
 
@@ -734,120 +734,105 @@ class GebPyGUI(tk.Frame):
     ####################
     #
     def select_special_group(self, var_name):
+        ## Mineral Data
+        #
         if var_name == "Spinel Group":
-            ## Mineral Data
-            data_spinel = Oxides(mineral="Spinel", data_type=True, traces_list=[]).generate_dataset(
-                number=1)
-            data_chihmingite = Oxides(mineral="Chihmingite", data_type=True, traces_list=[]).generate_dataset(
-                number=1)
-            data_chromite = Oxides(mineral="Chromite", data_type=True, traces_list=[]).generate_dataset(
-                number=1)
-            data_cochromite = Oxides(mineral="Cochromite", data_type=True, traces_list=[]).generate_dataset(
-                number=1)
-            data_coulsonite = Oxides(mineral="Coulsonite", data_type=True, traces_list=[]).generate_dataset(
-                number=1)
-            data_cuprospinel = Oxides(mineral="Cuprospinel", data_type=True, traces_list=[]).generate_dataset(
-                number=1)
-            data_dellagiustaite = Oxides(mineral="Dellagiustaite", data_type=True, traces_list=[]).generate_dataset(
-                number=1)
-            data_franklinite = Oxides(mineral="Franklinite", data_type=True, traces_list=[]).generate_dataset(
-                number=1)
-            data_gahnite = Oxides(mineral="Gahnite", data_type=True, traces_list=[]).generate_dataset(
-                number=1)
-            data_galaxite = Oxides(mineral="Galaxite", data_type=True, traces_list=[]).generate_dataset(
-                number=1)
-            data_hercynite = Oxides(mineral="Hercynite", data_type=True, traces_list=[]).generate_dataset(
-                number=1)
-            data_jacobsite = Oxides(mineral="Jacobsite", data_type=True, traces_list=[]).generate_dataset(
-                number=1)
-            data_magnesiochromite = Oxides(mineral="Magnesiochromite", data_type=True, traces_list=[]).generate_dataset(
-                number=1)
-            data_magnesiocoulsonite = Oxides(mineral="Magnesiocoulsonite", data_type=True, traces_list=[]).generate_dataset(
-                number=1)
-            data_magnesioferrite = Oxides(mineral="Magnesioferrite", data_type=True, traces_list=[]).generate_dataset(
-                number=1)
-            data_magnetite = Oxides(mineral="Magnetite", data_type=True, traces_list=[]).generate_dataset(
-                number=1)
-            data_manganochromite = Oxides(mineral="Manganochromite", data_type=True, traces_list=[]).generate_dataset(
-                number=1)
-            data_nichromite = Oxides(mineral="Nichromite", data_type=True, traces_list=[]).generate_dataset(
-                number=1)
-            data_thermaerogenite = Oxides(mineral="Thermaerogenite", data_type=True, traces_list=[]).generate_dataset(
-                number=1)
-            data_trevorite = Oxides(mineral="Trevorite", data_type=True, traces_list=[]).generate_dataset(
-                number=1)
-            data_vuorelainenite = Oxides(mineral="Vuorelainenite", data_type=True, traces_list=[]).generate_dataset(
-                number=1)
-            data_zincochromite = Oxides(mineral="Zincochromite", data_type=True, traces_list=[]).generate_dataset(
-                number=1)
+            mineral_names = np.sort(["Spinel", "Chihmingite", "Chromite", "Cochromite", "Coulsonite", "Cuprospinel",
+                                     "Dellagiustaite", "Franklinite", "Gahnite", "Galaxite", "Hercynite", "Jacobsite",
+                                     "Magnesiochromite", "Magnesiocoulsonite", "Magnesioferrite", "Magnetite",
+                                     "Manganochromite", "Nichromite", "Thermaerogenite", "Trevorite", "Vuorelainenite",
+                                     "Zincochromite"])
+            mineral_group = {}
+            #
+            for mineral in mineral_names:
+                try:
+                    data_mineral = Oxides(mineral=mineral, data_type=True, traces_list=[]).generate_dataset(number=1)
+                    mineral_group[mineral] = data_mineral
+                except:
+                    pass
             #
         elif var_name == "Hematite Group":
-            ## Mineral Data
-            data_hematite = Oxides(mineral="Hematite", data_type=True, traces_list=[]).generate_dataset(
-                number=1)
-            data_corundum = Oxides(mineral="Corundum", data_type=True, traces_list=[]).generate_dataset(
-                number=1)
-            data_eskolaite = Oxides(mineral="Eskolaite", data_type=True, traces_list=[]).generate_dataset(
-                number=1)
-            data_karelianite = Oxides(mineral="Karelianite", data_type=True, traces_list=[]).generate_dataset(
-                number=1)
-            data_tistarite = Oxides(mineral="Tistarite", data_type=True, traces_list=[]).generate_dataset(
-                number=1)
-            print(data_hematite)
-            print(data_corundum)
-            print(data_eskolaite)
-            print(data_karelianite)
-            print(data_tistarite)
+            mineral_names = np.sort(["Corundum", "Eskolaite", "Hematite", "Karelianite", "Tistarite"])
+            mineral_group = {}
+            #
+            for mineral in mineral_names:
+                try:
+                    data_mineral = Oxides(mineral=mineral, data_type=True, traces_list=[]).generate_dataset(number=1)
+                    mineral_group[mineral] = data_mineral
+                except:
+                    pass
             #
         elif var_name == "Rutile Group":
-            ## Mineral Data
-            data_argutite = Oxides(mineral="Argutite", data_type=True, traces_list=[]).generate_dataset(
-                number=1)
-            data_cassiterite = Oxides(mineral="Cassiterite", data_type=True, traces_list=[]).generate_dataset(
-                number=1)
-            data_paratellurite = Oxides(mineral="Paratellurite", data_type=True, traces_list=[]).generate_dataset(
-                number=1)
-            data_plattnerite = Oxides(mineral="Plattnerite", data_type=True, traces_list=[]).generate_dataset(
-                number=1)
-            data_pyrolusite = Oxides(mineral="Pyrolusite", data_type=True, traces_list=[]).generate_dataset(
-                number=1)
-            data_rutile = Oxides(mineral="Rutile", data_type=True, traces_list=[]).generate_dataset(
-                number=1)
-            data_stishovite = Oxides(mineral="Stishovite", data_type=True, traces_list=[]).generate_dataset(
-                number=1)
+            mineral_names = np.sort(["Argutite", "Cassiterite", "Paratellurite", "Plattnerite", "Pyrolusite", "Rutile",
+                                     "Stishovite"])
+            mineral_group = {}
+            #
+            for mineral in mineral_names:
+                try:
+                    data_mineral = Oxides(mineral=mineral, data_type=True, traces_list=[]).generate_dataset(number=1)
+                    mineral_group[mineral] = data_mineral
+                except:
+                    pass
             #
         elif var_name == "Periclase Group":
-            ## Mineral Data
-            data_bunsenite = Oxides(mineral="Bunsenite", data_type=True, traces_list=[]).generate_dataset(
-                number=1)
-            data_manganosite = Oxides(mineral="Manganosite", data_type=True, traces_list=[]).generate_dataset(
-                number=1)
-            data_periclase = Oxides(mineral="Periclase", data_type=True, traces_list=[]).generate_dataset(
-                number=1)
-            data_wuestite = Oxides(mineral="Wuestite", data_type=True, traces_list=[]).generate_dataset(
-                number=1)
+            mineral_names = np.sort(["Bunsenite", "Manganosite", "Periclase", "Wuestite"])
+            mineral_group = {}
             #
-            print(data_bunsenite)
-            print(data_manganosite)
-            print(data_periclase)
-            print(data_wuestite)
+            for mineral in mineral_names:
+                try:
+                    data_mineral = Oxides(mineral=mineral, data_type=True, traces_list=[]).generate_dataset(number=1)
+                    mineral_group[mineral] = data_mineral
+                except:
+                    pass
             #
         elif var_name == "Scheelite Group":
-            ## Mineral Data
-            data_powellite = Oxides(mineral="Powellite", data_type=True, traces_list=[]).generate_dataset(
-                number=1)
-            data_scheelite = Oxides(mineral="Scheelite", data_type=True, traces_list=[]).generate_dataset(
-                number=1)
-            data_stolzite = Oxides(mineral="Stolzite", data_type=True, traces_list=[]).generate_dataset(
-                number=1)
-            data_wulfenite = Oxides(mineral="Wulfenite", data_type=True, traces_list=[]).generate_dataset(
-                number=1)
+            mineral_names = np.sort(["Powellite", "Scheelite", "Stolzite", "Wulfenite"])
+            mineral_group = {}
             #
-            print(data_powellite)
-            print(data_scheelite)
-            print(data_stolzite)
-            print(data_wulfenite)
+            for mineral in mineral_names:
+                try:
+                    data_mineral = Oxides(mineral=mineral, data_type=True, traces_list=[]).generate_dataset(number=1)
+                    mineral_group[mineral] = data_mineral
+                except:
+                    pass
+        #
+        ## TABLE
+        #
+        start_column = 35
+        list_categories = ["Mineral",
+            "M (kg/mol)", "V (\u00C5\u00B3/mol)", "rho (kg/m\u00B3)", "vP (m/s)", "vS (m/s)",
+            "K (GPa)", "G (GPa)", "E (GPa)", "nu (1)", "GR (API)", "PE (barns/e\u207B)"]
+        list_categories_short = ["Mineral", "M", "V", "rho", "vP", "vS", "K", "G", "E", "nu", "GR", "PE"]
+        list_minerals = list(mineral_group.keys())
+        list_width = list(80*np.ones(len(list_categories)))
+        list_width = [int(item) for item in list_width]
+        list_width[0] = 120
+        #
+        n_columns = 100
+        tv_ma_results = SimpleElements(
+            parent=self.parent, row_id=0, column_id=start_column, n_rows=20, n_columns=n_columns,
+            fg=self.colors_gebpy["Black"], bg=self.colors_gebpy["White"]).create_treeview(
+            n_categories=len(list_categories), text_n=list_categories,
+            width_n=list_width, individual=True)
+        #
+        scb_v = ttk.Scrollbar(self.parent, orient="vertical")
+        scb_h = ttk.Scrollbar(self.parent, orient="horizontal")
+        tv_ma_results.configure(xscrollcommand=scb_h.set, yscrollcommand=scb_v.set)
+        scb_v.config(command=tv_ma_results.yview)
+        scb_h.config(command=tv_ma_results.xview)
+        scb_v.grid(row=0, column=start_column + n_columns, rowspan=20, columnspan=1, sticky="ns")
+        scb_h.grid(row=20, column=start_column, rowspan=1, columnspan=n_columns, sticky="ew")
+        #
+        for index, mineral in enumerate(list_minerals):
+            entries = [mineral]
             #
+            for category_parameter in list_categories_short[1:]:
+                try:
+                    entries.append(round(np.mean(mineral_group[mineral][category_parameter]), 3))
+                except:
+                    entries.append(mineral_group[mineral][category_parameter])
+            #
+            tv_ma_results.insert("", tk.END, values=entries)
     #
     def change_rb_diagram(self):    # RB DIAGRAM MINERALOGY
         if self.gui_variables["Radiobutton"]["Analysis Mode"].get() == 0 \
