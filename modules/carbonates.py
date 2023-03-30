@@ -2489,7 +2489,7 @@ class CarbonateRocks:
             rho_solid = round(rho_s, 3)
             vP, vS, vPvS, rho, var_porosity = SeismicVelocities(
                 rho_solid=rho_solid, rho_fluid=self.data_water[2]).calculate_seismic_velocities(
-                rho_limits=[2200, 2700], vP_limits=[1800, 5800], vS_limits=[1000, 2000], delta=0.05,
+                rho_limits=[2200, 2700], vP_limits=[1800, 3200], vS_limits=[1000, 2000], delta=0.05,
                 porosity=porosity)
             ## Elastic Parameters
             bulk_modulus, shear_modulus, youngs_modulus, poisson_ratio = SeismicVelocities(
