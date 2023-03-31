@@ -1794,7 +1794,7 @@ class CarbonateRocks:
         #
         return results
     #
-    def create_dolomite_rock_alternative(self, number=1, composition=None, porosity=None):
+    def create_dolostone(self, number=1, composition=None, porosity=None):
         data_alkalifeldspar = Tectosilicates(impurity="pure", data_type=True).create_alkalifeldspar()
         data_plagioclase = Tectosilicates(impurity="pure", data_type=True).create_plagioclase()
         data_illite = Phyllosilicates(impurity="pure", data_type=True).create_illite()
@@ -2006,7 +2006,7 @@ class CarbonateRocks:
                 rho_solid = round(rho_s, 3)
                 vP, vS, vPvS, rho, var_porosity = SeismicVelocities(
                     rho_solid=rho_solid, rho_fluid=self.data_water[2]).calculate_seismic_velocities(
-                    rho_limits=[2000, 2900], vP_limits=[3500, 7000], vS_limits=[2200, 3200], delta=0.05,
+                    rho_limits=[2000, 2950], vP_limits=[3500, 7000], vS_limits=[2200, 3200], delta=0.05,
                     porosity=porosity)
                 ## Elastic Parameters
                 bulk_modulus, shear_modulus, youngs_modulus, poisson_ratio = SeismicVelocities(
@@ -2036,7 +2036,7 @@ class CarbonateRocks:
         ## EXPORT DATA
         #
         results = {}
-        results["rock"] = "Dolomite Rock"
+        results["rock"] = "Dolostone"
         if number > 1:
             results["mineralogy"] = amounts_mineralogy
             results["chemistry"] = amounts_chemistry
