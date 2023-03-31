@@ -6,7 +6,7 @@
 # Name:		carbonates.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		29.03.2023
+# Date:		31.03.2023
 
 #-----------------------------------------------
 
@@ -1581,12 +1581,12 @@ class CarbonateRocks:
                     while condition_2 == False:
                         magicnumber = rd.randint(0, 12)
                         if 0 <= magicnumber <= 8:   # Carbonate-dominated
-                            w_carb = round(rd.uniform(0.85, 1.0), 4)
+                            w_carb = round(rd.uniform(0.90, 1.0), 4)
                             w_clast = round(rd.uniform(0.0, (1.0 - w_carb)), 4)
                             w_clay = round(rd.uniform(0.0, (1.0 - w_carb - w_clast)), 4)
                             w_sulf = round(1 - w_carb - w_clast - w_clay, 4)
                             #
-                            phi_cal = round(w_carb*rd.uniform(0.9, 1.0), 4)
+                            phi_cal = round(w_carb*rd.uniform(0.95, 1.0), 4)
                             phi_dol = round(w_carb - phi_cal, 4)
                             #
                             phi_qz = round(w_clast*rd.uniform(0.8, 1.0), 4)
@@ -1606,8 +1606,8 @@ class CarbonateRocks:
                             phi_total = phi_cal + phi_dol + phi_qz + phi_kfs + phi_pl + phi_kln + phi_ilt + phi_py
                             #
                         elif magicnumber in [9, 10]:   # Clastic-dominated
-                            w_clast = round(rd.uniform(0.15, 0.3), 4)
-                            w_carb = round(rd.uniform(0.7, (1.0 - w_clast)), 4)
+                            w_clast = round(rd.uniform(0.1, 0.15), 4)
+                            w_carb = round(rd.uniform(0.85, (1.0 - w_clast)), 4)
                             w_clay = round(rd.uniform(0.0, (1.0 - w_carb - w_clast)), 4)
                             w_sulf = round(1 - w_carb - w_clast - w_clay, 4)
                             #
@@ -1615,7 +1615,7 @@ class CarbonateRocks:
                             phi_pl = round(w_clast*rd.uniform(0.0, (1.0 - phi_qz)), 4)
                             phi_kfs = round(w_clast - phi_qz - phi_pl, 4)
                             #
-                            phi_cal = round(w_carb*rd.uniform(0.8, 1.0), 4)
+                            phi_cal = round(w_carb*rd.uniform(0.95, 1.0), 4)
                             phi_dol = round(w_carb - phi_cal, 4)
                             #
                             magicnumber_2 = rd.randint(0, 1)
@@ -1631,12 +1631,12 @@ class CarbonateRocks:
                             phi_total = phi_cal + phi_dol + phi_qz + phi_kfs + phi_pl + phi_kln + phi_ilt + phi_py
                             #
                         elif magicnumber in [11, 12]:   # Clay-dominated
-                            w_clay = round(rd.uniform(0.15, 0.3), 4)
-                            w_carb = round(rd.uniform(0.7, (1.0 - w_clay)), 4)
+                            w_clay = round(rd.uniform(0.1, 0.15), 4)
+                            w_carb = round(rd.uniform(0.85, (1.0 - w_clay)), 4)
                             w_clast = round(rd.uniform(0.0, (1.0 - w_carb - w_clay)), 4)
                             w_sulf = round(1 - w_carb - w_clast - w_clay, 4)
                             #
-                            phi_cal = round(w_carb*rd.uniform(0.8, 1.0), 4)
+                            phi_cal = round(w_carb*rd.uniform(0.95, 1.0), 4)
                             phi_dol = round(w_carb - phi_cal, 4)
                             #
                             phi_qz = round(w_clast*rd.uniform(0.8, 1.0), 4)
