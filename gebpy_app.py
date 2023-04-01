@@ -6,7 +6,7 @@
 # Name:		gebpy_app.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		31.03.2023
+# Date:		01.04.2023
 
 #-----------------------------------------------
 
@@ -833,6 +833,55 @@ class GebPyGUI(tk.Frame):
                     entries.append(mineral_group[mineral][category_parameter])
             #
             tv_ma_results.insert("", tk.END, values=entries)
+        #
+        ## DIAGRAMS
+        #
+        self.mineral_group_scatter(mineral_data=mineral_group)
+        #
+    def mineral_group_scatter(self, mineral_data):
+        fig_mineral_group = Figure(
+            figsize=(6, 6), dpi=150, tight_layout=True, facecolor=self.colors_gebpy["Background"])
+        ax_mineral_group = fig_mineral_group.subplots(nrows=3, ncols=3)
+        #
+        categories = [["M", "V", "rho"], ["vP", "vS", "vP/vS"], ["GR", "PE", "nu"]]
+        labels = [["M (kg/mol)", "V (A$^3$/mol", "rho (g/cm$^3$"], ["vP (m/s)", "vS (m/s)", "vP/vS (1)"],
+                  ["GR (API)", "PE (barns/e$^-$)", "nu (1)"]]
+        #
+        helper_x = []
+        helper_y = {}
+        for i, subcategories in enumerate(categories):
+            for j, subcategory in enumerate(subcategories):
+                helper_y[subcategory] = []
+                for mineral, dataset in mineral_data.items():
+                    helper_x.append(dataset["rho"][-1]/1000)
+                    helper_y[subcategory].append(dataset[subcategory][-1])
+                    #
+                    ax_mineral_group[i][j].scatter(dataset["rho"][-1]/1000, dataset[subcategory][-1])
+                    #
+        x_min = 0.9*min(helper_x)
+        x_max = 1.1*max(helper_x)
+        #
+        for i, subcategories in enumerate(categories):
+            for j, subcategory in enumerate(subcategories):
+                y_min = 0.9*min(helper_y[subcategory])
+                y_max = 1.1*max(helper_y[subcategory])
+                #
+                ax_mineral_group[i][j].set_xlim(left=x_min, right=x_max)
+                ax_mineral_group[i][j].set_ylim(bottom=y_min, top=y_max)
+                ax_mineral_group[i][j].set_xticks(np.around(
+                    np.linspace(x_min, x_max, 4, dtype=float, endpoint=True), 2))
+                ax_mineral_group[i][j].set_yticks(np.around(
+                    np.linspace(y_min, y_max, 4, dtype=float, endpoint=True), 2))
+                ax_mineral_group[i][j].xaxis.set_tick_params(labelsize=8)
+                ax_mineral_group[i][j].yaxis.set_tick_params(labelsize=8)
+                ax_mineral_group[i][j].set_xlabel("Density - kg/m$^3$", fontsize=8)
+                ax_mineral_group[i][j].set_ylabel(labels[i][j], labelpad=0.5, fontsize=8)
+                ax_mineral_group[i][j].grid(True)
+                ax_mineral_group[i][j].set_axisbelow(True)
+        #
+        canvas_mineral_group = FigureCanvasTkAgg(fig_mineral_group, master=self.parent)
+        canvas_mineral_group.get_tk_widget().grid(
+            row=21, column=35, rowspan=int(self.n_rows - 21), columnspan=int(2*(self.n_rows - 21)), sticky="nesw")
     #
     def change_rb_diagram(self):    # RB DIAGRAM MINERALOGY
         if self.gui_variables["Radiobutton"]["Analysis Mode"].get() == 0 \
