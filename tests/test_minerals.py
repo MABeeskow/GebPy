@@ -22,6 +22,7 @@ from modules import sequences, geophysics, minerals, oxides, sulfides, sulfates,
 from modules.pyllosilicates import Pyllosilicates
 from modules.carbonates import Carbonates
 from modules.organics import Organics
+from modules.oxides import RutileGroup
 
 class TESTING_MINERALS:
     #
@@ -36,16 +37,16 @@ class TESTING_MINERALS:
         ## TESTING ORGANICS
         print("TEST - ORGANICS")
         # Test Carbohydrates
-        data = Organics(dict=True).create_carbohydrates()
+        data = Organics(data_type=True).create_carbohydrates()
         print("Carbohydrates:\n", data)
         # Test Lignin
-        data = Organics(dict=True).create_lignin()
+        data = Organics(data_type=True).create_lignin()
         print("Lignin:\n", data)
         # Test Lipid
-        data = Organics(dict=True).create_lipid()
+        data = Organics(data_type=True).create_lipid()
         print("Lipid:\n", data)
         # Test Organic matter
-        data = Organics(dict=True).create_organics_matter()
+        data = Organics(data_type=True).create_organics_matter()
         print("Organic matter:\n", data)
 
         print("")
@@ -103,6 +104,10 @@ class TESTING_MINERALS:
         # Test Quartz (incl. trace elements)
         data = oxides.Oxides(impurity="pure").create_quartz()
         print("Quartz (pure):\n", data)
+        data = oxides.Oxides(impurity="random").create_quartz()
+        print("Quartz (random):\n", data)
+        data = oxides.Oxides(impurity=["Ti"]).create_quartz()
+        print("Quartz (Ti):\n", data)
         # Test Uraninite (incl. trace elements)
         data = oxides.Oxides(impurity="pure").create_uraninite()
         print("Uraninite (incl. trace elements):\n", data)
@@ -197,8 +202,11 @@ class TESTING_MINERALS:
         data = oxides.Oxides(impurity="pure").create_brucite()
         print("Brucite (incl. trace elements):\n", data)
         # Test Ulvöspinel (incl. trace elements)
-        data = oxides.Oxides(impurity="pure").create_ulvospinel()
+        data = oxides.Oxides(impurity="pure").create_ulvoespinel()
         print("Ulvöspinel (incl. trace elements):\n", data)
+        # Test Rutile-Group
+        data = RutileGroup().create_rutile_group()
+        print("Rutile-Group:\n", data)
 
         print("")
         ## TESTING SULFIDES
@@ -245,6 +253,9 @@ class TESTING_MINERALS:
         # Test Pyrrhotite (incl. trace elements)
         data = sulfides.Sulfides(impurity="pure").create_pyrrhotite()
         print("Pyrrhotite:\n", data)
+        # Test Pyrrhotite (incl. trace elements)
+        data = sulfides.Sulfides(impurity="pure").create_pyrrhotite_group()
+        print("Pyrrhotite (alternative):\n", data)
         # Test Cobaltite (incl. trace elements)
         data = sulfides.Sulfides(impurity="pure").create_cobaltite()
         print("Cobaltite:\n", data)
@@ -272,6 +283,9 @@ class TESTING_MINERALS:
         # Test Fahlore (incl. trace elements)
         data = sulfides.Sulfides(impurity="pure").create_fahlore()
         print("Fahlore:\n", data)
+        # Test Chalcopyrite-Group (incl. trace elements)
+        data = sulfides.Sulfides(impurity="pure").create_chalcopyrite_group()
+        print("Chalcopyrite-Group:\n", data)
 
         print("")
         ## TESTING SULFATES
@@ -321,6 +335,8 @@ class TESTING_MINERALS:
         print("Alkalifeldspar (Na-enriched):\n", data)
         data = silicates.Tectosilicates(impurity="pure").create_alkalifeldspar(enrichment="K")
         print("Alkalifeldspar (K-enriched):\n", data)
+        data = silicates.Tectosilicates(impurity="pure").create_alkalifeldspar(x_value=0.95)
+        print("Alkalifeldspar (Na-enriched (x=0.95)):\n", data)
         # Test Plagioclase (incl. trace elements)
         data = silicates.Tectosilicates(impurity="pure").create_plagioclase()
         print("Plagioclase (no preference):\n", data)
@@ -330,6 +346,8 @@ class TESTING_MINERALS:
         print("Plagioclase (Na-enriched):\n", data)
         data = silicates.Tectosilicates(impurity="pure").create_plagioclase(enrichment="Ca")
         print("Plagioclase (Ca-enriched):\n", data)
+        data = silicates.Tectosilicates(impurity="pure").create_plagioclase(x_value=0.50)
+        print("Plagioclase (Na/Ca-ratio: 50/50):\n", data)
         #
         print("")
         ## TESTING PHYLLOSILICATES
@@ -343,5 +361,12 @@ class TESTING_MINERALS:
         # Test Montmorillonite (incl. trace elements)
         data = Pyllosilicates(dict=True).create_montmorillonite()
         print("Montmorillonite (no preference):\n", data)
+        # Test Nontronite (incl. trace elements)
+        data = silicates.Phyllosilicates(impurity="pure", data_type=True).create_nontronite()
+        print("Nontronite (no preference):\n", data)
+        # Test Saponite (incl. trace elements)
+        data = silicates.Phyllosilicates(impurity="pure", data_type=True).create_saponite()
+        print("Saponite (no preference):\n", data)
+#
 # RUN
 TESTING_MINERALS()

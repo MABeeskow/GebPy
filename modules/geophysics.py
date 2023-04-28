@@ -6,7 +6,7 @@
 # Name:		geophysics.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		05.06.2021
+# Date:		06.12.2022
 
 #-----------------------------------------------
 
@@ -14,10 +14,7 @@
 import numpy as np
 from numpy import round
 from random import *
-from modules import minerals
-from modules.elements import elements
 from scipy import signal
-import matplotlib.pyplot as plt
 
 class geophysics:
     #
@@ -272,7 +269,8 @@ class Elasticity:
     def calc_geometric_mean(self, f, m):
         a = 1
         for i in range(len(f)):
-            a *= m[i]**f[i]
+            if m[i] > 0:
+                a *= m[i]**f[i]
         M = a**(1/np.sum(f))
         return M
     #

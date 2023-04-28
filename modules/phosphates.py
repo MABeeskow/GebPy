@@ -3,25 +3,26 @@
 
 # -----------------------------------------------
 
-# Name:		organics.py
+# Name:		phosphates.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		21.09.2022
+# Date:		20.09.2022
 
 # -----------------------------------------------
 
 # MODULES
 import numpy as np
 import random as rd
+from scipy import stats
 from modules.chemistry import PeriodicSystem, DataProcessing
 from modules.minerals import CrystalPhysics
 from modules.geophysics import BoreholeGeophysics as bg
 from modules.geophysics import WellLog as wg
-from modules.geochemistry import MineralChemistry
-
-# Halogenes
-class Organics:
-    """ Class that generates geophysical and geochemical data of halogene minerals"""
+from modules.geochemistry import MineralChemistry, TraceElements
+#
+# Phosphates
+class Phosphates:
+    """ Class that generates geophysical and geochemical data of phosphate minerals"""
     #
     def __init__(self, traces_list=[], impurity="pure", data_type=False, mineral=None):
         self.traces_list = traces_list
@@ -29,29 +30,18 @@ class Organics:
         self.data_type = data_type
         self.mineral = mineral
     #
-    def get_data(self, number=1):
-        if self.mineral == "Organic Matter":
-            if number > 1:
-                data = [self.create_organic_matter() for n in range(number)]
-            else:
-                data = self.create_organic_matter()
-        else:
-            data = "Nothing found!"
-        #
-        return data
-    #
     def generate_dataset(self, number):
         dataset = {}
         #
         for index in range(number):
-            if self.mineral == "Organic Matter":
-                data_mineral = self.create_organic_matter()
-            elif self.mineral == "Lignin":
-                data_mineral = self.create_lignin()
-            elif self.mineral == "Lipid":
-                data_mineral = self.create_lipid()
-            elif self.mineral == "Carbohydrate":
-                data_mineral = self.create_carbohydrates()
+            if self.mineral == "Apatite":
+                data_mineral = self.create_aptite()
+            elif self.mineral == "Fluoroapatite":
+                data_mineral = self.create_aptite_f()
+            elif self.mineral == "Chloroapatite":
+                data_mineral = self.create_aptite_cl()
+            elif self.mineral == "Hydroxyapatite":
+                data_mineral = self.create_aptite_oh()
             #
             for key, value in data_mineral.items():
                 if key in ["M", "rho", "rho_e", "V", "vP", "vS", "vP/vS", "K", "G", "E", "nu", "GR", "PE", "U",
@@ -72,41 +62,78 @@ class Organics:
                             dataset[key][key_2].append(value_2)
         #
         return dataset
-
-        # if self.mineral == "Organic Matter":
-        #     dataset = [self.create_organics_matter() for n in range(number)]
-        #
-        # return dataset
     #
-    def create_organic_matter(self):
+    def create_aptite_f(self):   # Ca5 F (PO4)3
         # Major elements
-        carbohydrates = Organics(data_type=True).create_carbohydrates()
-        lignin = Organics(data_type=True).create_lignin()
-        lipid = Organics(data_type=True).create_lipid()
-        hydrogen = PeriodicSystem(name="H").get_data()
-        carbon = PeriodicSystem(name="C").get_data()
-        nitrogen = PeriodicSystem(name="N").get_data()
         oxygen = PeriodicSystem(name="O").get_data()
-        sulfur = PeriodicSystem(name="S").get_data()
-        majors_name = ["H", "C", "N", "O", "S"]
+        fluorine = PeriodicSystem(name="F").get_data()
+        phosphorus = PeriodicSystem(name="P").get_data()
+        calcium = PeriodicSystem(name="Ca").get_data()
+        majors_name = ["O", "F", "P", "Ca"]
+        majors_data = np.array([["O", oxygen[1], 12, oxygen[2]], ["F", fluorine[1], 1, fluorine[2]],
+                                ["P", phosphorus[1], 3, phosphorus[2]], ["Ca", calcium[1], 5, calcium[2]]], dtype=object)
         # Minor elements
         traces_data = []
         if len(self.traces_list) > 0:
             self.impurity = "impure"
         if self.impurity == "pure":
-            var_state = "variable"
+            var_state = "fixed"
         else:
             var_state = "variable"
+            self.traces_list = []
+            minors_x = ["Ti", "Zr", "Hf", "Th"]         # mainly 4+
+            minors_y = ["La", "Ce", "Pr", "Nd", "Sm", "Eu", "Gd", "Dy", "Y", "Er", "Cr", "As"]  # mainly 3+
+            minors_z = ["Cl", "H", "Rb"]                # mainly 1+
+            minors_w = ["Mn", "Co", "Sr", "Ba", "Pb"]   # mainly 2+
             if self.impurity == "random":
-                self.traces_list = []
-                minors = [None]
-                n = rd.randint(1, len(minors))
-                while len(self.traces_list) < n:
-                    selection = rd.choice(minors)
-                    if selection not in self.traces_list and selection not in majors_name:
-                        self.traces_list.append(selection)
+                n_x = rd.randint(0, len(minors_x))
+                n_y = rd.randint(0, len(minors_y))
+                n_w = rd.randint(0, len(minors_w))
+                if n_x > 0:
+                    selection_x = rd.sample(minors_x, n_x)
+                    self.traces_list.extend(selection_x)
+                if n_y > 0 and n_w == 0:
+                    n_z = rd.randint(1, n_y)
+                    selection_y = rd.sample(minors_y, n_y)
+                    selection_z = rd.sample(minors_z, n_z)
+                    self.traces_list.extend(selection_y)
+                    self.traces_list.extend(selection_z)
+                if n_w > 0 and n_y == 0:
+                    n_z = rd.randint(1, n_w)
+                    selection_w = rd.sample(minors_w, n_w)
+                    selection_z = rd.sample(minors_z, n_z)
+                    self.traces_list.extend(selection_w)
+                    self.traces_list.extend(selection_z)
+                if n_y > 0 and n_w > 0:
+                    if n_y + n_w <= len(minors_z):
+                        n_z = rd.randint(1, (n_y + n_w))
                     else:
-                        continue
+                        n_z = len(minors_z)
+                    selection_y = rd.sample(minors_y, n_y)
+                    selection_w = rd.sample(minors_w, n_w)
+                    selection_z = rd.sample(minors_z, n_z)
+                    self.traces_list.extend(selection_y)
+                    self.traces_list.extend(selection_w)
+                    self.traces_list.extend(selection_z)
+            elif self.impurity != "random":
+                self.traces_list = []
+                for element in self.impurity:
+                    if element in minors_x:
+                        self.traces_list.append(element)
+                    elif element in minors_y:
+                        self.traces_list.append(element)
+                    elif element in minors_z:
+                        self.traces_list.append(element)
+                    elif element in minors_w:
+                        self.traces_list.append(element)
+                # minors = ["Cl", "La", "Ce", "Pr", "Nd", "Sm", "Eu", "Gd", "Dy", "Y", "Er", "Mn", "H"]
+                # n = rd.randint(1, len(minors))
+                # while len(self.traces_list) < n:
+                #     selection = rd.choice(minors)
+                #     if selection not in self.traces_list and selection not in majors_name:
+                #         self.traces_list.append(selection)
+                #     else:
+                #         continue
             traces = [PeriodicSystem(name=i).get_data() for i in self.traces_list]
             x_traces = [round(rd.uniform(0., 0.001), 6) for i in range(len(self.traces_list))]
             for i in range(len(self.traces_list)):
@@ -116,50 +143,35 @@ class Organics:
                 traces_data = traces_data[traces_data[:, 1].argsort()]
         #
         data = []
-        #
-        mineral = "Org"
+        mineral = "Ap"
         #
         # Molar mass
-        condition = False
-        while condition == False:
-            w_ch = round(rd.uniform(0.4, 0.6), 4)
-            w_lg = round(rd.uniform(0.2, float(1-w_ch)), 4)
-            w_lp = round(1 - w_ch - w_lg, 4)
-            if w_ch+w_lg+w_lp == 1.0:
-                condition = True
-        #
-        majors_data = np.array([["H", hydrogen[1], w_ch*carbohydrates["chemistry"]["H"] + w_lg*lignin["chemistry"]["H"] + w_lp*lipid["chemistry"]["H"], hydrogen[2]],
-                                ["C", carbon[1], w_ch*carbohydrates["chemistry"]["C"] + w_lg*lignin["chemistry"]["C"] + w_lp*lipid["chemistry"]["C"], carbon[2]],
-                                ["N", nitrogen[1], w_lg*lignin["chemistry"]["N"], nitrogen[2]],
-                                ["O", oxygen[1], w_ch*carbohydrates["chemistry"]["O"] + w_lg*lignin["chemistry"]["O"] + w_lp*lipid["chemistry"]["O"], oxygen[2]],
-                                ["S", sulfur[1], w_lg*lignin["chemistry"]["S"], sulfur[2]]], dtype=object)
-        #
-        molar_mass_pure = w_ch*carbohydrates["M"] + w_lg*lignin["M"] + w_lp*lipid["M"]
-        molar_mass, amounts = MineralChemistry(w_traces=traces_data, molar_mass_pure=molar_mass_pure,
-                                               majors=majors_data).calculate_molar_mass()
-        amounts2 = []
-        w_H = round((w_ch*carbohydrates["chemistry"]["H"] + w_lg*lignin["chemistry"]["H"] + w_lp*lipid["chemistry"]["H"])*hydrogen[2]/molar_mass_pure, 4)
-        w_C = round((w_ch*carbohydrates["chemistry"]["C"] + w_lg*lignin["chemistry"]["C"] + w_lp*lipid["chemistry"]["C"])*carbon[2]/molar_mass_pure, 4)
-        w_N = round((w_lg*lignin["chemistry"]["N"])*nitrogen[2]/molar_mass_pure, 4)
-        w_S = round((w_lg*lignin["chemistry"]["S"])*sulfur[2]/molar_mass_pure, 4)
-        w_O = round(1 - w_H - w_C - w_N - w_S, 4)
-        data_H = ["H", 1, w_H]
-        data_C = ["C", 6, w_C]
-        data_N = ["N", 7, w_N]
-        data_O = ["O", 8, w_O]
-        data_S = ["S", 16, w_S]
-        amounts2.extend([data_H, data_C, data_N, data_O, data_S])
-        amounts = amounts2
-
-        element = [PeriodicSystem(name=amounts[i][0]).get_data() for i in range(len(amounts))]
+        try:
+            molar_mass_pure = 5*calcium[2] + fluorine[2] + 3*(phosphorus[2] + 4*oxygen[2])
+            molar_mass, amounts = MineralChemistry(w_traces=traces_data, molar_mass_pure=molar_mass_pure,
+                                                   majors=majors_data).calculate_molar_mass()
+            element = [PeriodicSystem(name=amounts[i][0]).get_data() for i in range(len(amounts))]
+        except:
+            compositon_data = TraceElements(tracer=self.traces_list).calculate_composition_apatite_f()
+            molar_mass = 0
+            amounts = []
+            for element in compositon_data:
+                chem_data = PeriodicSystem(name=element).get_data()
+                molar_mass += compositon_data[element]["x"]*chem_data[2]
+                amounts.append([chem_data[0], chem_data[1], compositon_data[element]["w"]])
+            element = [PeriodicSystem(name=amounts[i][0]).get_data() for i in range(len(amounts))]
         # Density
-        rho = w_ch*carbohydrates["rho"] + w_lg*lignin["rho"] + w_lp*lipid["rho"]
-        V_m = molar_mass/rho
+        dataV = CrystalPhysics([[9.367, 6.884], [], "hexagonal"])
+        V = dataV.calculate_volume()
+        Z = 2
+        V_m = MineralChemistry().calculate_molar_volume(volume_cell=V, z=Z)
+        dataRho = CrystalPhysics([molar_mass, Z, V*10**(6)])
+        rho = dataRho.calculate_bulk_density()
         rho_e = wg(amounts=amounts, elements=element, rho_b=rho).calculate_electron_density()
         # Bulk modulus
-        K = w_ch*carbohydrates["K"] + w_lg*lignin["K"] + w_lp*lipid["K"]*10**9
+        K = 83*10**9
         # Shear modulus
-        G = w_ch*carbohydrates["G"] + w_lg*lignin["G"] + w_lp*lipid["G"]*10**9
+        G = 41*10**9
         # Young's modulus
         E = (9*K*G)/(3*K + G)
         # Poisson's ratio
@@ -192,7 +204,7 @@ class Organics:
             #
             results = {}
             results["mineral"] = mineral
-            results["M"] = round(molar_mass, 3)
+            results["M"] = molar_mass
             results["state"] = var_state
             element_list = np.array(amounts)[:, 0]
             results["chemistry"] = {}
@@ -218,19 +230,22 @@ class Organics:
             #
             return results
     #
-    def create_carbohydrates(self):
+    def create_aptite_cl(self):   # Ca5 Cl (PO4)3
         # Major elements
-        hydrogen = PeriodicSystem(name="H").get_data()
-        carbon = PeriodicSystem(name="C").get_data()
         oxygen = PeriodicSystem(name="O").get_data()
-        majors_name = ["H", "C", "O"]
+        phosphorus = PeriodicSystem(name="P").get_data()
+        chlorine = PeriodicSystem(name="Cl").get_data()
+        calcium = PeriodicSystem(name="Ca").get_data()
+        majors_name = ["O", "P", "Cl", "Ca"]
+        majors_data = np.array([["O", oxygen[1], 12, oxygen[2]], ["P", phosphorus[1], 3, phosphorus[2]],
+                                ["Cl", chlorine[1], 1, chlorine[2]], ["Ca", calcium[1], 5, calcium[2]]], dtype=object)
         # Minor elements
         traces_data = []
         if len(self.traces_list) > 0:
             self.impurity = "impure"
         if self.impurity == "random":
             self.traces_list = []
-            minors = [None]
+            minors = ["F", "La", "Ce", "Pr", "Nd", "Sm", "Eu", "Gd", "Dy", "Y", "Er", "Mn", "H"]
             n = rd.randint(1, len(minors))
             while len(self.traces_list) < n:
                 selection = rd.choice(minors)
@@ -246,24 +261,26 @@ class Organics:
             traces_data = np.array(traces_data, dtype=object)
             traces_data = traces_data[traces_data[:, 1].argsort()]
         #
-        mineral = "carbohydrates"
+        data = []
+        mineral = "Ap"
         #
         # Molar mass
-        molar_mass_pure = 0.06*hydrogen[2] + 0.44*carbon[2] + 0.50*oxygen[2]
-        #
-        majors_data = np.array([["H", hydrogen[1], 0.06, hydrogen[2]], ["C", carbon[1], 0.44, carbon[2]],
-                                ["O", oxygen[1], 0.50, oxygen[2]]], dtype=object)
-        #
+        molar_mass_pure = 5*calcium[2] + chlorine[2] + 3*(phosphorus[2] + 4*oxygen[2])
         molar_mass, amounts = MineralChemistry(w_traces=traces_data, molar_mass_pure=molar_mass_pure,
-                                               majors=majors_data).calculate_molar_mass()
+                                      majors=majors_data).calculate_molar_mass()
         element = [PeriodicSystem(name=amounts[i][0]).get_data() for i in range(len(amounts))]
         # Density
-        rho = 1586
+        dataV = CrystalPhysics([[9.598, 6.776], [], "hexagonal"])
+        V = dataV.calculate_volume()
+        Z = 2
+        V_m = MineralChemistry().calculate_molar_volume(volume_cell=V, z=Z)
+        dataRho = CrystalPhysics([molar_mass, Z, V*10**(6)])
+        rho = dataRho.calculate_bulk_density()
         rho_e = wg(amounts=amounts, elements=element, rho_b=rho).calculate_electron_density()
         # Bulk modulus
-        K = 10*10**9
+        K = 98.70*10**9
         # Shear modulus
-        G = 5*10**9
+        G = 61.17*10**9
         # Young's modulus
         E = (9*K*G)/(3*K + G)
         # Poisson's ratio
@@ -283,7 +300,6 @@ class Organics:
         p = None
         #
         if self.data_type == False:
-            data = []
             data.append(mineral)
             data.append(round(molar_mass, 3))
             data.append(round(rho, 2))
@@ -304,6 +320,7 @@ class Organics:
                 results["chemistry"][element] = amounts[index][2]
             results["rho"] = round(rho, 4)
             results["rho_e"] = round(rho_e, 4)
+            results["V"] = round(V_m, 4)
             results["vP"] = round(vP, 4)
             results["vS"] = round(vS, 4)
             results["vP/vS"] = round(vPvS, 4)
@@ -321,21 +338,22 @@ class Organics:
             #
             return results
     #
-    def create_lignin(self):
+    def create_aptite_oh(self):   # Ca5 OH (PO4)3
         # Major elements
         hydrogen = PeriodicSystem(name="H").get_data()
-        carbon = PeriodicSystem(name="C").get_data()
-        nitrogen = PeriodicSystem(name="N").get_data()
         oxygen = PeriodicSystem(name="O").get_data()
-        sulfur = PeriodicSystem(name="S").get_data()
-        majors_name = ["H", "C", "N", "O", "S"]
+        phosphorus = PeriodicSystem(name="P").get_data()
+        calcium = PeriodicSystem(name="Ca").get_data()
+        majors_name = ["H", "O", "P", "Ca"]
+        majors_data = np.array([["H", hydrogen[1], 1, hydrogen[2]], ["O", oxygen[1], 13, oxygen[2]],
+                                ["P", phosphorus[1], 3, phosphorus[2]], ["Ca", calcium[1], 5, calcium[2]]], dtype=object)
         # Minor elements
         traces_data = []
         if len(self.traces_list) > 0:
             self.impurity = "impure"
         if self.impurity == "random":
             self.traces_list = []
-            minors = [None]
+            minors = ["F", "La", "Ce", "Pr", "Nd", "Sm", "Eu", "Gd", "Dy", "Y", "Er", "Mn", "Cl"]
             n = rd.randint(1, len(minors))
             while len(self.traces_list) < n:
                 selection = rd.choice(minors)
@@ -351,25 +369,26 @@ class Organics:
             traces_data = np.array(traces_data, dtype=object)
             traces_data = traces_data[traces_data[:, 1].argsort()]
         #
-        mineral = "lignin"
+        data = []
+        mineral = "Ap"
         #
         # Molar mass
-        molar_mass_pure = 0.06*hydrogen[2] + 0.626*carbon[2] + 0.003*nitrogen[2] + 0.31*oxygen[2] + 0.001*sulfur[2]
-        #
-        majors_data = np.array([["H", hydrogen[1], 0.06, hydrogen[2]], ["C", carbon[1], 0.626, carbon[2]],
-                                ["N", nitrogen[1], 0.003, nitrogen[2]], ["O", oxygen[1], 0.31, oxygen[2]],
-                                ["S", sulfur[1], 0.001, sulfur[2]]], dtype=object)
-        #
+        molar_mass_pure = 5*calcium[2] + (hydrogen[2] + oxygen[2]) + 3*(phosphorus[2] + 4*oxygen[2])
         molar_mass, amounts = MineralChemistry(w_traces=traces_data, molar_mass_pure=molar_mass_pure,
                                                majors=majors_data).calculate_molar_mass()
         element = [PeriodicSystem(name=amounts[i][0]).get_data() for i in range(len(amounts))]
         # Density
-        rho = 680
+        dataV = CrystalPhysics([[9.418, 6.875], [], "hexagonal"])
+        V = dataV.calculate_volume()
+        Z = 2
+        V_m = MineralChemistry().calculate_molar_volume(volume_cell=V, z=Z)
+        dataRho = CrystalPhysics([molar_mass, Z, V*10**(6)])
+        rho = dataRho.calculate_bulk_density()
         rho_e = wg(amounts=amounts, elements=element, rho_b=rho).calculate_electron_density()
         # Bulk modulus
-        K = 4*10**9
+        K = 105.01*10**9
         # Shear modulus
-        G = 2*10**9
+        G = 62.69*10**9
         # Young's modulus
         E = (9*K*G)/(3*K + G)
         # Poisson's ratio
@@ -389,7 +408,6 @@ class Organics:
         p = None
         #
         if self.data_type == False:
-            data = []
             data.append(mineral)
             data.append(round(molar_mass, 3))
             data.append(round(rho, 2))
@@ -410,6 +428,7 @@ class Organics:
                 results["chemistry"][element] = amounts[index][2]
             results["rho"] = round(rho, 4)
             results["rho_e"] = round(rho_e, 4)
+            results["V"] = round(V_m, 4)
             results["vP"] = round(vP, 4)
             results["vS"] = round(vS, 4)
             results["vP/vS"] = round(vPvS, 4)
@@ -427,19 +446,28 @@ class Organics:
             #
             return results
     #
-    def create_lipid(self):
+    def create_aptite(self):   # Ca5 (F,Cl,OH) (PO4)3
         # Major elements
         hydrogen = PeriodicSystem(name="H").get_data()
-        carbon = PeriodicSystem(name="C").get_data()
         oxygen = PeriodicSystem(name="O").get_data()
-        majors_name = ["H", "C", "O"]
+        fluorine = PeriodicSystem(name="F").get_data()
+        phosphorus = PeriodicSystem(name="P").get_data()
+        chlorine = PeriodicSystem(name="Cl").get_data()
+        calcium = PeriodicSystem(name="Ca").get_data()
+        majors_name = ["H", "O", "F", "P", "Cl", "Ca"]
+        a = round(rd.uniform(0, 1), 4)
+        b = round(rd.uniform(0, (1-a)), 4)
+        c = round(1-a-b, 4)
+        majors_data = np.array([["H", hydrogen[1], c, hydrogen[2]], ["O", oxygen[1], 12+c, oxygen[2]],
+                                ["F", fluorine[1], a, fluorine[2]], ["P", phosphorus[1], 3, phosphorus[2]],
+                                ["Cl", chlorine[1], b, chlorine[2]], ["Ca", calcium[1], 5, calcium[2]]], dtype=object)
         # Minor elements
         traces_data = []
         if len(self.traces_list) > 0:
             self.impurity = "impure"
         if self.impurity == "random":
             self.traces_list = []
-            minors = [None]
+            minors = ["La", "Ce", "Pr", "Nd", "Sm", "Eu", "Gd", "Dy", "Y", "Er", "Mn"]
             n = rd.randint(1, len(minors))
             while len(self.traces_list) < n:
                 selection = rd.choice(minors)
@@ -455,23 +483,52 @@ class Organics:
             traces_data = np.array(traces_data, dtype=object)
             traces_data = traces_data[traces_data[:, 1].argsort()]
         #
-        mineral = "lipid"
+        data = []
+        mineral = "Ap"
         #
         # Molar mass
-        molar_mass_pure = 0.10*hydrogen[2] + 0.80*carbon[2] + 0.10*oxygen[2]
-        #
-        majors_data = np.array([["H", hydrogen[1], 0.10, hydrogen[2]], ["C", carbon[1], 0.80, carbon[2]], ["O", oxygen[1], 0.10, oxygen[2]]], dtype=object)
-        #
+        molar_mass_pure = 5*calcium[2] + a*fluorine[2] + b*chlorine[2] + c*(hydrogen[2] + oxygen[2]) + 3*(phosphorus[2] + 4*oxygen[2])
         molar_mass, amounts = MineralChemistry(w_traces=traces_data, molar_mass_pure=molar_mass_pure,
                                                majors=majors_data).calculate_molar_mass()
         element = [PeriodicSystem(name=amounts[i][0]).get_data() for i in range(len(amounts))]
         # Density
-        rho = 850
-        rho_e = wg(amounts=amounts, elements=element, rho_b=rho).calculate_electron_density()
+        dataV_F = CrystalPhysics([[9.367, 6.884], [], "hexagonal"])
+        V_F = dataV_F.calculate_volume()
+        Z_F = 2
+        V_m_F = MineralChemistry().calculate_molar_volume(volume_cell=V_F, z=Z_F)
+        dataRho_F = CrystalPhysics([molar_mass, Z_F, V_F*10**(6)])
+        rho_F = dataRho_F.calculate_bulk_density()
+        rho_e_F = wg(amounts=amounts, elements=element, rho_b=rho_F).calculate_electron_density()
+        #
+        dataV_Cl = CrystalPhysics([[9.598, 6.776], [], "hexagonal"])
+        V_Cl = dataV_Cl.calculate_volume()
+        Z_Cl = 2
+        V_m_Cl = MineralChemistry().calculate_molar_volume(volume_cell=V_Cl, z=Z_Cl)
+        dataRho_Cl = CrystalPhysics([molar_mass, Z_Cl, V_Cl*10**(6)])
+        rho_Cl = dataRho_Cl.calculate_bulk_density()
+        rho_e_Cl = wg(amounts=amounts, elements=element, rho_b=rho_Cl).calculate_electron_density()
+        #
+        dataV_OH = CrystalPhysics([[9.418, 6.875], [], "hexagonal"])
+        V_OH = dataV_OH.calculate_volume()
+        Z_OH = 2
+        V_m_OH = MineralChemistry().calculate_molar_volume(volume_cell=V_OH, z=Z_OH)
+        dataRho_OH = CrystalPhysics([molar_mass, Z_OH, V_OH*10**(6)])
+        rho_OH = dataRho_OH.calculate_bulk_density()
+        rho_e_OH = wg(amounts=amounts, elements=element, rho_b=rho_OH).calculate_electron_density()
+        #
+        V_m = a*V_m_F + b*V_m_Cl + c*V_m_OH
+        rho = a*rho_F + b*rho_Cl + c*rho_OH
+        rho_e = a*rho_e_F + b*rho_e_Cl + c*rho_e_OH
         # Bulk modulus
-        K = 4*10**9
+        K_F = 83*10**9
+        K_Cl = 98.70*10**9
+        K_OH = 105.01*10**9
+        K = a*K_F + b*K_Cl + c*K_OH
         # Shear modulus
-        G = 2*10**9
+        G_F = 41*10**9
+        G_Cl = 61.17*10**9
+        G_OH = 62.69*10**9
+        G = a*G_F + b*G_Cl + c*G_OH
         # Young's modulus
         E = (9*K*G)/(3*K + G)
         # Poisson's ratio
@@ -491,7 +548,6 @@ class Organics:
         p = None
         #
         if self.data_type == False:
-            data = []
             data.append(mineral)
             data.append(round(molar_mass, 3))
             data.append(round(rho, 2))
@@ -512,6 +568,7 @@ class Organics:
                 results["chemistry"][element] = amounts[index][2]
             results["rho"] = round(rho, 4)
             results["rho_e"] = round(rho_e, 4)
+            results["V"] = round(V_m, 4)
             results["vP"] = round(vP, 4)
             results["vS"] = round(vS, 4)
             results["vP/vS"] = round(vPvS, 4)

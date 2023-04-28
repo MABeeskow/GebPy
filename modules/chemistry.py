@@ -6,12 +6,13 @@
 # Name:		chemistry.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		27.05.2021
+# Date:		05.12.2022
 
 # -----------------------------------------------
 
 # MODULES
 import numpy as np
+import re
 
 # CLASSES
 class PeriodicSystem():
@@ -1214,6 +1215,47 @@ class PeriodicSystem():
                     thermal_cond]
         #
         return data
+#
+class OxideCompounds:
+    #
+    def __init__(self, var_compound, var_amounts):
+        self.var_compound = var_compound
+        self.var_amounts = var_amounts
+        self.amounts_helper = {}
+        for item in self.var_amounts:
+            self.amounts_helper[item[0]] = item[2]
+    #
+    def get_composition(self): # see element to stoichiometric oxide conversion factors
+        result = {"Oxide": [self.var_compound]}
+        #
+        key = re.search("(\D+)(\d*)(\D+)(\d*)", self.var_compound)
+        if key:
+            var_element_1 = key.group(1)
+            var_amount_1 = key.group(2)
+            var_element_2 = key.group(3)
+            var_amount_2 = key.group(4)
+            #
+            if var_amount_1 == "":
+                var_amount_1 = 1
+            if var_amount_2 == "":
+                var_amount_2 = 1
+            #
+            var_amount_1 = int(var_amount_1)
+            var_amount_2 = int(var_amount_2)
+            #
+            molar_mass_total = round(var_amount_1*PeriodicSystem(name=var_element_1).get_data()[2] \
+                               + var_amount_2*PeriodicSystem(name=var_element_2).get_data()[2], 3)
+            w_1 = round(var_amount_1*PeriodicSystem(name=var_element_1).get_data()[2]/molar_mass_total, 6)
+            w_2 = round(var_amount_2*PeriodicSystem(name=var_element_2).get_data()[2]/molar_mass_total, 6)
+            #
+            w_oxide = round(self.amounts_helper[var_element_1]*1/w_1, 6)
+            #
+            result["Oxide"] = [molar_mass_total, w_oxide]
+            result[var_element_1] = [int(var_amount_1), w_1]
+            result[var_element_2] = [int(var_amount_2), w_2]
+            result["Conversion"] = round(1/w_1, 6)
+        #
+        return result
 #
 class DataProcessing():
     #
