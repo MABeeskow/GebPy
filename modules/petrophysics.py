@@ -72,17 +72,25 @@ class SeismicVelocities:
             ## Density
             rho = round((1 - var_porosity)*self.rho_solid + var_porosity*self.rho_fluid, 3)
             #
-            ## Seismic Velocities
-            vP = constant_a_P * rho + constant_b_P
-            #
-            if vP_min <= vP <= vP_max:
-                vS = constant_a_S * rho + constant_b_S
-                if vS_min <= vS <= vS_max:
-                    condition_v = True
+            if rho_min <= rho <= rho_max:
+                #
+                ## Seismic Velocities
+                vP = constant_a_P*rho + constant_b_P
+                #
+                if vP_min <= vP <= vP_max:
+                    vS = constant_a_S*rho + constant_b_S
+                    #
+                    if vS_min <= vS <= vS_max:
+                        condition_v = True
+                    else:
+                        pass
+                        #print("rho:", rho, "vS:", vS)
                 else:
-                    print("rho:", rho, "vS:", vS)
+                    pass
+                    #print("rho:", rho, "vP:", vP, vP_max, vP_min)
+                #
             else:
-                print("rho:", rho, "vP:", vP, vP_max, vP_min)
+                condition_v = False
         #
         vPvS = round(vP/vS, 4)
         #

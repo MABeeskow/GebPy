@@ -439,7 +439,7 @@ class GebPyGUI(tk.Frame):
         #
         sub_rock_groups = tk.Menu(mineralogy_menu, tearoff=0)
         rock_groups = [
-            "Sedimentary Rocks", "Igneous Rocks", "Metamorphic Rocks", "Evaporite Rocks", "Ore Rocks"]
+            "Sedimentary Rocks", "Igneous Rocks", "Metamorphic Rocks", "Evaporite Rocks", "Ore Rocks", "Custom Rocks"]
         rock_groups.sort()
         for rock_group in rock_groups:
             if rock_group == "Sedimentary Rocks":
@@ -542,6 +542,28 @@ class GebPyGUI(tk.Frame):
                 sub_rock_groups.add_cascade(
                     label="Metamorphic Rocks",
                     menu=sub_metamorphic)
+            #
+            elif rock_group == "Custom Rocks":
+                sub_custom = tk.Menu(petrology_menu, tearoff=0)
+                custom_rocks = {
+                    "BENKEN rocks": ["Felsic-rich rock", "Carbonate-rich rock", "Clay-rich rock"]}
+                #
+                custom_rocks = collections.OrderedDict(sorted(custom_rocks.items()))
+                i = 1
+                n = len(custom_rocks)
+                for rock_group, rock_list in custom_rocks.items():
+                    rock_list.sort()
+                    for rock in rock_list:
+                        sub_custom.add_command(
+                            label=rock, command=lambda var_name=rock: self.select_rock(var_name))
+                    if i < n:
+                        sub_custom.add_separator()
+                        i += 1
+                #
+                sub_rock_groups.add_cascade(
+                    label="Custom Rocks",
+                    menu=sub_custom)
+                #
             else:
                 sub_rock_groups.add_command(
                     label=rock_group)
@@ -2438,6 +2460,12 @@ class GebPyGUI(tk.Frame):
             phi_max = 40
         elif var_name in ["Sandstone", "Dolostone", "Marl", "Mudstone"]:
             phi_max = 30
+        elif var_name == "Felsic-rich rock":
+            phi_max = 15
+        elif var_name == "Carbonate-rich rock":
+            phi_max = 30
+        elif var_name == "Clay-rich rock":
+            phi_max = 15
         else:
             phi_max = 10
         #
@@ -2955,6 +2983,29 @@ class GebPyGUI(tk.Frame):
                     self.gui_variables["Entry"]["Porosity Min"].get()/100,
                     self.gui_variables["Entry"]["Porosity Max"].get()/100]).create_granulite(
                 number=self.gui_variables["Entry"]["Number Datapoints"].get(), classification="mafic")
+        #
+        ## Custom Rocks
+        # BENKEN rocks
+        elif var_name == "Felsic-rich rock":
+            data = SiliciclasticRocks(
+                fluid="water", actualThickness=0).create_benken_rock(
+                rock=var_name, number=self.gui_variables["Entry"]["Number Datapoints"].get(),
+                classification="Felsic-rich", porosity=[self.gui_variables["Entry"]["Porosity Min"].get()/100,
+                                                        self.gui_variables["Entry"]["Porosity Max"].get()/100])
+        elif var_name == "Clay-rich rock":
+            data = SiliciclasticRocks(
+                fluid="water", actualThickness=0).create_benken_rock(
+                rock=var_name, number=self.gui_variables["Entry"]["Number Datapoints"].get(),
+                classification="Clay-rich", porosity=[self.gui_variables["Entry"]["Porosity Min"].get()/100,
+                                                      self.gui_variables["Entry"]["Porosity Max"].get()/100])
+        elif var_name == "Carbonate-rich rock":
+            data = SiliciclasticRocks(
+                fluid="water", actualThickness=0).create_benken_rock(
+                rock=var_name, number=self.gui_variables["Entry"]["Number Datapoints"].get(),
+                classification="Carbonate-rich", porosity=[self.gui_variables["Entry"]["Porosity Min"].get()/100,
+                                                           self.gui_variables["Entry"]["Porosity Max"].get()/100])
+        #
+        ################################################################################################################
         #
         self.data_rock = {}
         categories = ["rho", "rho_s", "vP", "vS", "vP/vS", "K", "G", "E", "nu", "GR", "PE", "phi", "fluid",
