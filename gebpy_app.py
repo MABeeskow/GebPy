@@ -6,7 +6,7 @@
 # Name:		gebpy_app.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		01.04.2023
+# Date:		16.05.2023
 
 #-----------------------------------------------
 
@@ -6194,12 +6194,21 @@ class GebPyGUI(tk.Frame):
             list_rocks.insert(0, "All Rocks")
             self.gui_variables["Option Menu"]["Lithological Focus"].set(list_rocks[0])
             #
+            self.rock_data = {}
+            for rock in list_rocks:
+                self.rock_data[rock] = {
+                    "Physics": {"rho": [], "rho_s": [], "phi": [], "vP": [], "vS": [], "vPvS": [], "K": [], "G": [],
+                                "E": [], "v": [], "GR": [], "PE": []},
+                    "Mineralogy": {}, "Chemistry": {}}
+            #
             opt_05a = SimpleElements(
                 parent=self.parent, row_id=26, column_id=14, n_rows=2, n_columns=16, bg=self.colors_gebpy["Option"],
                 fg=self.colors_gebpy["Navigation"]).create_option_menu(
                 var_opt=self.gui_variables["Option Menu"]["Lithological Focus"],
                 var_opt_set=self.gui_variables["Option Menu"]["Lithological Focus"].get(), opt_list=list_rocks,
-                active_bg=self.colors_gebpy["Accent"])
+                active_bg=self.colors_gebpy["Accent"],
+                command=lambda var_opt=self.gui_variables["Option Menu"]["Lithological Focus"]:
+                self.stratigraphy_change_lithology(var_opt))
             #
             self.gui_elements["Temporary"]["Option Menu"].extend([opt_05a])
             #
@@ -6213,7 +6222,7 @@ class GebPyGUI(tk.Frame):
             #
             ## INITIALIZATION
             self.generate_stratigraphic_data(var_unit=var_unit)
-            #
+            self.stratigraphy_change_lithology(var_opt=self.gui_variables["Option Menu"]["Lithological Focus"].get())
     #
     def generate_stratigraphic_data(self, var_unit):
         if var_unit == "Muschelkalk":
@@ -6222,7 +6231,6 @@ class GebPyGUI(tk.Frame):
             thickness_muschelkalk_mittlerer_random = int(rd.uniform(0.3, 0.4) * thickness_complete)
             thickness_muschelkalk_unterer_random = int(thickness_complete - thickness_muschelkalk_oberer_random
                                                        - thickness_muschelkalk_mittlerer_random)
-            #
             #
             data_muschelkalk_oberer = Muschelkalk(
                 actual_thickness=0, resolution=10).create_muschelkalk_oberer(
@@ -6239,7 +6247,195 @@ class GebPyGUI(tk.Frame):
             #
             for index, item in enumerate(data_muschelkalk):
                 for key, subitem in item.items():
-                    print(key, subitem)
+                    #print(key, subitem)
+                    var_rock = subitem["rock"]
+                    var_minerals_list = list(subitem["mineralogy"].keys())
+                    var_elements_list = list(subitem["chemistry"].keys())
+                    #
+                    ## Physics
+                    try:
+                        self.rock_data[var_rock]["Physics"]["rho"].extend(subitem["rho"])
+                        self.rock_data[var_rock]["Physics"]["rho_s"].extend(subitem["rho_s"])
+                        self.rock_data[var_rock]["Physics"]["phi"].extend(subitem["phi"])
+                        self.rock_data[var_rock]["Physics"]["vP"].extend(subitem["vP"])
+                        self.rock_data[var_rock]["Physics"]["vS"].extend(subitem["vS"])
+                        self.rock_data[var_rock]["Physics"]["vPvS"].extend(subitem["vP/vS"])
+                        self.rock_data[var_rock]["Physics"]["K"].extend(subitem["K"])
+                        self.rock_data[var_rock]["Physics"]["G"].extend(subitem["G"])
+                        self.rock_data[var_rock]["Physics"]["E"].extend(subitem["E"])
+                        self.rock_data[var_rock]["Physics"]["v"].extend(subitem["nu"])
+                        self.rock_data[var_rock]["Physics"]["GR"].extend(subitem["GR"])
+                        self.rock_data[var_rock]["Physics"]["PE"].extend(subitem["PE"])
+                        #
+                        self.rock_data["All Rocks"]["Physics"]["rho"].extend(subitem["rho"])
+                        self.rock_data["All Rocks"]["Physics"]["rho_s"].extend(subitem["rho_s"])
+                        self.rock_data["All Rocks"]["Physics"]["phi"].extend(subitem["phi"])
+                        self.rock_data["All Rocks"]["Physics"]["vP"].extend(subitem["vP"])
+                        self.rock_data["All Rocks"]["Physics"]["vS"].extend(subitem["vS"])
+                        self.rock_data["All Rocks"]["Physics"]["vPvS"].extend(subitem["vP/vS"])
+                        self.rock_data["All Rocks"]["Physics"]["K"].extend(subitem["K"])
+                        self.rock_data["All Rocks"]["Physics"]["G"].extend(subitem["G"])
+                        self.rock_data["All Rocks"]["Physics"]["E"].extend(subitem["E"])
+                        self.rock_data["All Rocks"]["Physics"]["v"].extend(subitem["nu"])
+                        self.rock_data["All Rocks"]["Physics"]["GR"].extend(subitem["GR"])
+                        self.rock_data["All Rocks"]["Physics"]["PE"].extend(subitem["PE"])
+                    except:
+                        self.rock_data[var_rock]["Physics"]["rho"].append(subitem["rho"])
+                        self.rock_data[var_rock]["Physics"]["rho_s"].append(subitem["rho_s"])
+                        self.rock_data[var_rock]["Physics"]["phi"].append(subitem["phi"])
+                        self.rock_data[var_rock]["Physics"]["vP"].append(subitem["vP"])
+                        self.rock_data[var_rock]["Physics"]["vS"].append(subitem["vS"])
+                        self.rock_data[var_rock]["Physics"]["vPvS"].append(subitem["vP/vS"])
+                        self.rock_data[var_rock]["Physics"]["K"].append(subitem["K"])
+                        self.rock_data[var_rock]["Physics"]["G"].append(subitem["G"])
+                        self.rock_data[var_rock]["Physics"]["E"].append(subitem["E"])
+                        self.rock_data[var_rock]["Physics"]["v"].append(subitem["nu"])
+                        self.rock_data[var_rock]["Physics"]["GR"].append(subitem["GR"])
+                        self.rock_data[var_rock]["Physics"]["PE"].append(subitem["PE"])
+                        #
+                        self.rock_data["All Rocks"]["Physics"]["rho"].append(subitem["rho"])
+                        self.rock_data["All Rocks"]["Physics"]["rho_s"].append(subitem["rho_s"])
+                        self.rock_data["All Rocks"]["Physics"]["phi"].append(subitem["phi"])
+                        self.rock_data["All Rocks"]["Physics"]["vP"].append(subitem["vP"])
+                        self.rock_data["All Rocks"]["Physics"]["vS"].append(subitem["vS"])
+                        self.rock_data["All Rocks"]["Physics"]["vPvS"].append(subitem["vP/vS"])
+                        self.rock_data["All Rocks"]["Physics"]["K"].append(subitem["K"])
+                        self.rock_data["All Rocks"]["Physics"]["G"].append(subitem["G"])
+                        self.rock_data["All Rocks"]["Physics"]["E"].append(subitem["E"])
+                        self.rock_data["All Rocks"]["Physics"]["v"].append(subitem["nu"])
+                        self.rock_data["All Rocks"]["Physics"]["GR"].append(subitem["GR"])
+                        self.rock_data["All Rocks"]["Physics"]["PE"].append(subitem["PE"])
+                        #
+                    ## Mineralogy
+                    for mineral in var_minerals_list:
+                        if mineral not in self.rock_data[var_rock]["Mineralogy"]:
+                            self.rock_data[var_rock]["Mineralogy"][mineral] = []
+                            self.rock_data["All Rocks"]["Mineralogy"][mineral] = []
+                            #
+                            try:
+                                self.rock_data[var_rock]["Mineralogy"][mineral].extend(subitem["mineralogy"][mineral])
+                                self.rock_data["All Rocks"]["Mineralogy"][mineral].extend(subitem["mineralogy"][mineral])
+                            except:
+                                self.rock_data[var_rock]["Mineralogy"][mineral].append(subitem["mineralogy"][mineral])
+                                self.rock_data["All Rocks"]["Mineralogy"][mineral].append(subitem["mineralogy"][mineral])
+                        else:
+                            try:
+                                self.rock_data[var_rock]["Mineralogy"][mineral].extend(subitem["mineralogy"][mineral])
+                                self.rock_data["All Rocks"]["Mineralogy"][mineral].extend(subitem["mineralogy"][mineral])
+                            except:
+                                self.rock_data[var_rock]["Mineralogy"][mineral].append(subitem["mineralogy"][mineral])
+                                self.rock_data["All Rocks"]["Mineralogy"][mineral].append(subitem["mineralogy"][mineral])
+                    ## Chemistry
+                    for element in var_elements_list:
+                        if element not in self.rock_data[var_rock]["Chemistry"]:
+                            self.rock_data[var_rock]["Chemistry"][element] = []
+                            self.rock_data["All Rocks"]["Chemistry"][element] = []
+                            #
+                            try:
+                                self.rock_data[var_rock]["Chemistry"][element].extend(subitem["chemistry"][element])
+                                self.rock_data["All Rocks"]["Chemistry"][element].extend(subitem["chemistry"][element])
+                            except:
+                                self.rock_data[var_rock]["Chemistry"][element].append(subitem["chemistry"][element])
+                                self.rock_data["All Rocks"]["Chemistry"][element].append(subitem["chemistry"][element])
+                        else:
+                            try:
+                                self.rock_data[var_rock]["Chemistry"][element].extend(subitem["chemistry"][element])
+                                self.rock_data["All Rocks"]["Chemistry"][element].extend(subitem["chemistry"][element])
+                            except:
+                                self.rock_data[var_rock]["Chemistry"][element].append(subitem["chemistry"][element])
+                                self.rock_data["All Rocks"]["Chemistry"][element].append(subitem["chemistry"][element])
+        #
+        ## TREE VIEW
+        categories = ["rho (kg/m\u00B3)", "phi (%)", "vP (m/s)", "vS (m/s)", "vP/vS (1)", "K (GPa)", "G (GPa)",
+                      "E (GPa)", "nu (1)", "GR (API)", "PE (barns/e\u207B)"]
+        categories_short = ["rho", "phi", "vP", "vS", "vPvS", "K", "G", "E", "v", "GR", "PE"]
+        #
+        list_categories = ["Category", "Minimum", "Maximum", "Mean", "Standard Deviation"]
+        list_width = list(75*np.ones(len(list_categories)))
+        list_width = [int(item) for item in list_width]
+        list_width[0] = 90
+        list_width[-1] = 150
+        #
+        self.tv_strat_results = SimpleElements(
+            parent=self.parent, row_id=0, column_id=35, n_rows=30, n_columns=45,
+            fg=self.colors_gebpy["Black"], bg=self.colors_gebpy["White"]).create_treeview(
+            n_categories=len(list_categories), text_n=list_categories,
+            width_n=list_width, individual=True)
+        #
+        scb_v = ttk.Scrollbar(self.parent, orient="vertical")
+        scb_h = ttk.Scrollbar(self.parent, orient="horizontal")
+        self.tv_strat_results.configure(xscrollcommand=scb_h.set, yscrollcommand=scb_v.set)
+        scb_v.config(command=self.tv_strat_results.yview)
+        scb_h.config(command=self.tv_strat_results.xview)
+        scb_v.grid(row=0, column=35 + 45, rowspan=30, columnspan=1, sticky="ns")
+        scb_h.grid(row=30, column=35, rowspan=1, columnspan=45, sticky="ew")
+        #
+    def stratigraphy_change_lithology(self, var_opt):
+        if len(self.tv_strat_results.get_children()) > 0:
+            for item in self.tv_strat_results.get_children():
+                self.tv_strat_results.delete(item)
+        #
+        categories = ["rho (kg/m\u00B3)", "phi (%)", "vP (m/s)", "vS (m/s)", "vP/vS (1)", "K (GPa)", "G (GPa)",
+                      "E (GPa)", "nu (1)", "GR (API)", "PE (barns/e\u207B)"]
+        categories_short = ["rho", "phi", "vP", "vS", "vPvS", "K", "G", "E", "v", "GR", "PE"]
+        #
+        for index, category in enumerate(categories):
+            entries = [category]
+            #
+            n_digits = 2
+            if categories_short[index] == "phi":
+                var_factor = 100
+            else:
+                var_factor = 1
+                #
+            var_entr_min = round(
+                var_factor*min(self.rock_data[var_opt]["Physics"][categories_short[index]]), n_digits)
+            var_entr_max = round(
+                var_factor*max(self.rock_data[var_opt]["Physics"][categories_short[index]]), n_digits)
+            var_entr_mean = round(
+                var_factor*np.mean(self.rock_data[var_opt]["Physics"][categories_short[index]]), n_digits)
+            var_entr_error = round(
+                var_factor*np.std(self.rock_data[var_opt]["Physics"][categories_short[index]], ddof=1), n_digits)
+            #
+            entries.extend([var_entr_min, var_entr_max, var_entr_mean, var_entr_error])
+            #
+            self.tv_strat_results.insert("", tk.END, values=entries)
+        #
+        entries = ["-", "-", "-", "-", "-"]
+        self.tv_strat_results.insert("", tk.END, values=entries)
+        #
+        for mineral, dataset in self.rock_data[var_opt]["Mineralogy"].items():
+            entries = [str(mineral)+str(" (%)")]
+            #
+            n_digits = 2
+            var_factor = 100
+            #
+            var_entr_min = round(var_factor*min(dataset), n_digits)
+            var_entr_max = round(var_factor*max(dataset), n_digits)
+            var_entr_mean = round(var_factor*np.mean(dataset), n_digits)
+            var_entr_error = round(var_factor*np.std(dataset, ddof=1), n_digits)
+            #
+            entries.extend([var_entr_min, var_entr_max, var_entr_mean, var_entr_error])
+            #
+            self.tv_strat_results.insert("", tk.END, values=entries)
+        #
+        entries = ["-", "-", "-", "-", "-"]
+        self.tv_strat_results.insert("", tk.END, values=entries)
+        #
+        for element, dataset in self.rock_data[var_opt]["Chemistry"].items():
+            entries = [str(element)+str(" (%)")]
+            #
+            n_digits = 2
+            var_factor = 100
+            #
+            var_entr_min = round(var_factor*min(dataset), n_digits)
+            var_entr_max = round(var_factor*max(dataset), n_digits)
+            var_entr_mean = round(var_factor*np.mean(dataset), n_digits)
+            var_entr_error = round(var_factor*np.std(dataset, ddof=1), n_digits)
+            #
+            entries.extend([var_entr_min, var_entr_max, var_entr_mean, var_entr_error])
+            #
+            self.tv_strat_results.insert("", tk.END, values=entries)
 #
 if __name__ == "__main__":
     root = tk.Tk()

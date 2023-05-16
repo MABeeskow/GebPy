@@ -6,7 +6,7 @@
 # Name:		carbonates.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		31.03.2023
+# Date:		16.05.2023
 
 #-----------------------------------------------
 
@@ -1730,22 +1730,22 @@ class CarbonateRocks:
                 photoelectricity = round(photoelectricity, 3)
             #
             for mineral, value in w_minerals.items():
-                amounts_mineralogy[mineral].append(value)
+                amounts_mineralogy[mineral].append(float(value))
             for element, value in w_elements.items():
-                amounts_chemistry[element].append(value)
+                amounts_chemistry[element].append(float(value))
             #
-            bulk_properties["rho_s"].append(rho_solid)
-            bulk_properties["rho"].append(rho)
-            bulk_properties["phi"].append(var_porosity)
-            bulk_properties["K"].append(bulk_modulus)
-            bulk_properties["G"].append(shear_modulus)
-            bulk_properties["E"].append(youngs_modulus)
-            bulk_properties["nu"].append(poisson_ratio)
-            bulk_properties["vP"].append(vP)
-            bulk_properties["vS"].append(vS)
-            bulk_properties["vPvS"].append(vPvS)
-            bulk_properties["GR"].append(gamma_ray)
-            bulk_properties["PE"].append(photoelectricity)
+            bulk_properties["rho_s"].append(float(rho_solid))
+            bulk_properties["rho"].append(float(rho))
+            bulk_properties["phi"].append(float(var_porosity))
+            bulk_properties["K"].append(float(bulk_modulus))
+            bulk_properties["G"].append(float(shear_modulus))
+            bulk_properties["E"].append(float(youngs_modulus))
+            bulk_properties["nu"].append(float(poisson_ratio))
+            bulk_properties["vP"].append(float(vP))
+            bulk_properties["vS"].append(float(vS))
+            bulk_properties["vPvS"].append(float(vPvS))
+            bulk_properties["GR"].append(float(gamma_ray))
+            bulk_properties["PE"].append(float(photoelectricity))
             #
             n += 1
         #
@@ -1773,24 +1773,24 @@ class CarbonateRocks:
             single_amounts_mineralogy = {}
             single_amounts_chemistry = {}
             for mineral, value in w_minerals.items():
-                single_amounts_mineralogy[mineral] = value
+                single_amounts_mineralogy[mineral] = float(value)
             for element, value in w_elements.items():
-                single_amounts_chemistry[element] = value
+                single_amounts_chemistry[element] = float(value)
             results["mineralogy"] = single_amounts_mineralogy
             results["chemistry"] = single_amounts_chemistry
-            results["phi"] = var_porosity
+            results["phi"] = float(var_porosity)
             results["fluid"] = "water"
-            results["rho_s"] = rho_solid
-            results["rho"] = rho
-            results["vP"] = vP
-            results["vS"] = vS
-            results["vP/vS"] = vPvS
-            results["K"] = bulk_modulus
-            results["G"] = shear_modulus
-            results["E"] = youngs_modulus
-            results["nu"] = poisson_ratio
-            results["GR"] = gamma_ray
-            results["PE"] = photoelectricity
+            results["rho_s"] = float(rho_solid)
+            results["rho"] = float(rho)
+            results["vP"] = float(vP)
+            results["vS"] = float(vS)
+            results["vP/vS"] = float(vPvS)
+            results["K"] = float(bulk_modulus)
+            results["G"] = float(shear_modulus)
+            results["E"] = float(youngs_modulus)
+            results["nu"] = float(poisson_ratio)
+            results["GR"] = float(gamma_ray)
+            results["PE"] = float(photoelectricity)
         #
         return results
     #

@@ -6,7 +6,7 @@
 # Name:		sedimentary_rocks.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		18.02.2023
+# Date:		16.05.2023
 
 #-----------------------------------------------
 
@@ -503,23 +503,23 @@ class SedimentaryRocks:
             photoelectricity = round(photoelectricity, 3)
             #
             for key, value in w_minerals.items():
-                results_container["mineralogy"][key].append(value)
+                results_container["mineralogy"][key].append(float(value))
             #
             for key, value in w_elements.items():
-                results_container["chemistry"][key].append(value)
+                results_container["chemistry"][key].append(float(value))
             #
-            results_container["phi"].append(var_porosity)
-            results_container["rho_s"].append(rho_s)
-            results_container["rho"].append(rho)
-            results_container["vP"].append(vP)
-            results_container["vS"].append(vS)
-            results_container["vP/vS"].append(vPvS)
-            results_container["K"].append(bulk_modulus)
-            results_container["G"].append(shear_modulus)
-            results_container["E"].append(youngs_modulus)
-            results_container["nu"].append(poisson_ratio)
-            results_container["GR"].append(gamma_ray)
-            results_container["PE"].append(photoelectricity)
+            results_container["phi"].append(float(var_porosity))
+            results_container["rho_s"].append(float(rho_s))
+            results_container["rho"].append(float(rho))
+            results_container["vP"].append(float(vP))
+            results_container["vS"].append(float(vS))
+            results_container["vP/vS"].append(float(vPvS))
+            results_container["K"].append(float(bulk_modulus))
+            results_container["G"].append(float(shear_modulus))
+            results_container["E"].append(float(youngs_modulus))
+            results_container["nu"].append(float(poisson_ratio))
+            results_container["GR"].append(float(gamma_ray))
+            results_container["PE"].append(float(photoelectricity))
             #
             n += 1
         #
