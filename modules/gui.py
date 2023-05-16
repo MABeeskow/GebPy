@@ -6,7 +6,7 @@
 # Name:		gui.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		21.11.2022
+# Date:		17.05.2023
 
 #-----------------------------------------------
 
@@ -26,9 +26,9 @@ from modules.phosphates import Phosphates
 from modules.organics import Organics
 from modules.minerals import feldspars
 from modules.sedimentary_rocks import SedimentaryRocks
-from modules.siliciclastics import sandstone, shale, Sandstone
+from modules.siliciclastics import sandstone, shale
 from modules.metamorphics import MetamorphicRocks
-from modules.carbonates import limestone, dolomite, CustomCarbonates
+from modules.carbonates import limestone, dolomite
 from modules.sequences import SedimentaryBasin
 from modules.ore import Ores
 from modules.igneous import Plutonic, Volcanic, Pyroclastic
@@ -6965,17 +6965,30 @@ class Subsurface:
                 else:
                     self.results_sorted["Top"].append(key)
                     self.results_sorted["Bottom"].append(key)
-                self.results_sorted["rho"].append(value["rho"])
-                self.results_sorted["vP"].append(value["vP"])
-                self.results_sorted["vS"].append(value["vS"])
-                self.results_sorted["vPvS"].append(value["vP/vS"])
-                self.results_sorted["phi"].append(value["phi"])
-                self.results_sorted["K"].append(value["K"])
-                self.results_sorted["G"].append(value["G"])
-                self.results_sorted["Poisson"].append(value["nu"])
-                self.results_sorted["GR"].append(value["GR"])
-                self.results_sorted["PE"].append(value["PE"])
-                self.results_sorted["rock"].append(value["rock"])
+                try:
+                    self.results_sorted["rho"].append(value["rho"][0])
+                    self.results_sorted["vP"].append(value["vP"][0])
+                    self.results_sorted["vS"].append(value["vS"][0])
+                    self.results_sorted["vPvS"].append(value["vP/vS"][0])
+                    self.results_sorted["phi"].append(value["phi"][0])
+                    self.results_sorted["K"].append(value["K"][0])
+                    self.results_sorted["G"].append(value["G"][0])
+                    self.results_sorted["Poisson"].append(value["nu"][0])
+                    self.results_sorted["GR"].append(value["GR"][0])
+                    self.results_sorted["PE"].append(value["PE"][0])
+                    self.results_sorted["rock"].append(value["rock"])
+                except:
+                    self.results_sorted["rho"].append(value["rho"])
+                    self.results_sorted["vP"].append(value["vP"])
+                    self.results_sorted["vS"].append(value["vS"])
+                    self.results_sorted["vPvS"].append(value["vP/vS"])
+                    self.results_sorted["phi"].append(value["phi"])
+                    self.results_sorted["K"].append(value["K"])
+                    self.results_sorted["G"].append(value["G"])
+                    self.results_sorted["Poisson"].append(value["nu"])
+                    self.results_sorted["GR"].append(value["GR"])
+                    self.results_sorted["PE"].append(value["PE"])
+                    self.results_sorted["rock"].append(value["rock"])
                 #
                 if len(self.data_chemistry[value["rock"]]) == 0:
                     for element in value["chemistry"].keys():

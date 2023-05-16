@@ -6,7 +6,7 @@
 # Name:		ore.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		27.11.2022
+# Date:		17.05.2023
 
 # -----------------------------------------------
 
@@ -586,6 +586,7 @@ class Ores:
         else:
             #
             results["rho"] = round(rho*1000, 4)
+            results["rho_s"] = round(rhoSolid*1000, 4)
             results["vP"] = round(vP, 4)
             results["vS"] = round(vS, 4)
             results["vP/vS"] = round(vP/vS, 4)

@@ -6,7 +6,7 @@
 # Name:		series.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		29.03.2023
+# Date:		17.05.2023
 
 #-----------------------------------------------
 
@@ -34,6 +34,12 @@ class Zechstein:
         self.composition = composition
         #
         self.actual_thickness = actual_thickness
+    #
+    def export_lithological_keys(self):
+        list_keys = ["Kupferschiefer", "Limestone", "Anhydrite", "Dolomite", "Rock Salt", "Potash", "Shale", "Mudstone"]
+        list_keys.sort()
+        #
+        return list_keys
     #
     def create_zechstein_z1(self, thickness_z1=100, top_z=0):  # Z1 - Werra Series
         fraction_kupferschiefer_pre = round(rd.uniform(11, 18), 4)
