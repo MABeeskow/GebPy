@@ -3259,6 +3259,9 @@ class SiliciclasticRocks:
                 shearmod_helper = shearmod_helper/anisotropic_factor
                 #
                 rho_helper = round((1 - phi_helper) * rho_s_helper + phi_helper * self.data_water[2] / 1000, 3)
+                #
+                phi_neutron = (rho_helper/2400)*0.39
+                #
                 youngsmod_helper = round(
                     (9 * bulkmod_helper * shearmod_helper) / (3 * bulkmod_helper + shearmod_helper), 3)
                 poisson_helper = round(
@@ -3279,7 +3282,7 @@ class SiliciclasticRocks:
                 bulk_properties["vPvS"].append(vPvS_helper_helper)
                 bulk_properties["GR"].append(round(gr_helper, 3))
                 bulk_properties["PE"].append(round(pe_helper, 3))
-                bulk_properties["phi"].append(round(phi_helper, 3))
+                bulk_properties["phi"].append(round(phi_neutron, 4))
                 n += 1
         #
         results = {}
@@ -3814,6 +3817,9 @@ class SiliciclasticRocks:
                 shearmod_helper = shearmod_helper/anisotropic_factor
                 #
                 rho_helper = round((1 - phi_helper)*rho_s_helper + phi_helper*self.data_water[2]/1000, 3)
+                #
+                phi_neutron = (rho_helper/2400)*0.39
+                #
                 youngsmod_helper = round(
                     (9*bulkmod_helper*shearmod_helper)/(3*bulkmod_helper + shearmod_helper), 3)
                 poisson_helper = round(
@@ -3834,7 +3840,7 @@ class SiliciclasticRocks:
                 bulk_properties["vPvS"].append(vPvS_helper_helper)
                 bulk_properties["GR"].append(round(gr_helper, 3))
                 bulk_properties["PE"].append(round(pe_helper, 3))
-                bulk_properties["phi"].append(round(phi_helper, 3))
+                bulk_properties["phi"].append(round(phi_neutron, 4))
                 n += 1
         #
         results = {}
@@ -4065,6 +4071,9 @@ class SiliciclasticRocks:
             gamma_ray = round(gamma_ray, 3)
             ## Photoelectricity
             photoelectricity = round(photoelectricity, 3)
+            #
+            phi_neutron = (rho/2400)*0.39
+            #
             ## Results
             for key, value in w_minerals.items():
                 results_container["mineralogy"][key].append(value)

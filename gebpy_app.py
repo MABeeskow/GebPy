@@ -6652,8 +6652,8 @@ class GebPyGUI(tk.Frame):
             self.rock_data["All Rocks"]["Physics"]["rho"])/1000, self.stratigraphy_data["Top"], color="#57AB27",
                       linewidth=2)
         self.ax3.set_xlabel("$\\varrho$ [g/cm$^3$]")
-        self.ax3.set_xlim(1.6, 3.2)
-        self.ax3.set_xticks(np.around(np.linspace(1.6, 3.2, 4, endpoint=True), decimals=1))
+        self.ax3.set_xlim(1.7, 3.2)
+        self.ax3.set_xticks(np.around(np.linspace(1.7, 3.2, 4, endpoint=True), decimals=1))
         self.ax3.xaxis.label.set_color("#57AB27")
         self.ax3.set_ylim(0, max_thickness)
         self.ax3.set_yticks(np.arange(0, max_thickness+step_depth, step_depth))
@@ -6661,8 +6661,8 @@ class GebPyGUI(tk.Frame):
         self.ax3_2 = self.ax3.twiny()
         self.ax3_2.plot(phi_edit, self.stratigraphy_data["Top"], color="#00549F", linewidth=2)
         self.ax3_2.set_xlabel("$\\varphi$ [1]")
-        self.ax3_2.set_xlim(60, 0)
-        self.ax3_2.set_xticks(np.around(np.linspace(60, 0, 6, endpoint=True), decimals=0))
+        self.ax3_2.set_xlim(60, -30)
+        self.ax3_2.set_xticks(np.around(np.linspace(60, -30, 6, endpoint=True), decimals=0))
         self.ax3_2.minorticks_on()
         self.ax3_2.xaxis.label.set_color("#00549F")
         self.ax3_2.grid(color="grey", linestyle="dashed")
@@ -6672,9 +6672,12 @@ class GebPyGUI(tk.Frame):
         self.ax4.plot(
             self.rock_data["All Rocks"]["Physics"]["PE"], self.stratigraphy_data["Top"], color="#00549F", linewidth=2)
         self.ax4.set_xlabel("PE [barns/electron]")
-        self.ax4.set_xlim(
-            min(self.rock_data["All Rocks"]["Physics"]["PE"]), max(self.rock_data["All Rocks"]["Physics"]["PE"]))
-        self.ax4.set_xscale("log")
+        if max(self.rock_data["All Rocks"]["Physics"]["PE"]) > 10:
+            self.ax4.set_xscale("log")
+        else:
+            self.ax4.set_xlim(0, max(self.rock_data["All Rocks"]["Physics"]["PE"]))
+            self.ax4.set_xticks(np.arange(0, max(self.rock_data["All Rocks"]["Physics"]["PE"])+2, 2))
+        #self.ax4.set_xscale("log")
         self.ax4.set_ylim(0, max_thickness)
         self.ax4.set_yticks(np.arange(0, max_thickness+step_depth, step_depth))
         self.ax4.grid(color="grey", linestyle="dashed", which="both")

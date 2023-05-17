@@ -1581,15 +1581,15 @@ class CarbonateRocks:
                     while condition_2 == False:
                         magicnumber = rd.randint(0, 12)
                         if 0 <= magicnumber <= 8:   # Carbonate-dominated
-                            w_carb = round(rd.uniform(0.90, 1.0), 4)
+                            w_carb = round(rd.uniform(0.95, 1.0), 4)
                             w_clast = round(rd.uniform(0.0, (1.0 - w_carb)), 4)
                             w_clay = round(rd.uniform(0.0, (1.0 - w_carb - w_clast)), 4)
                             w_sulf = round(1 - w_carb - w_clast - w_clay, 4)
                             #
-                            phi_cal = round(w_carb*rd.uniform(0.95, 1.0), 4)
+                            phi_cal = round(w_carb*rd.uniform(0.975, 1.0), 4)
                             phi_dol = round(w_carb - phi_cal, 4)
                             #
-                            phi_qz = round(w_clast*rd.uniform(0.8, 1.0), 4)
+                            phi_qz = round(w_clast*rd.uniform(0.0, 1.0), 4)
                             phi_pl = round(w_clast*rd.uniform(0.0, (1.0 - phi_qz)), 4)
                             phi_kfs = round(w_clast - phi_qz - phi_pl, 4)
                             #
@@ -1606,16 +1606,16 @@ class CarbonateRocks:
                             phi_total = phi_cal + phi_dol + phi_qz + phi_kfs + phi_pl + phi_kln + phi_ilt + phi_py
                             #
                         elif magicnumber in [9, 10]:   # Clastic-dominated
-                            w_clast = round(rd.uniform(0.1, 0.15), 4)
-                            w_carb = round(rd.uniform(0.85, (1.0 - w_clast)), 4)
+                            w_clast = round(rd.uniform(0.05, 0.10), 4)
+                            w_carb = round(rd.uniform(0.90, (1.0 - w_clast)), 4)
                             w_clay = round(rd.uniform(0.0, (1.0 - w_carb - w_clast)), 4)
                             w_sulf = round(1 - w_carb - w_clast - w_clay, 4)
                             #
-                            phi_qz = round(w_clast*rd.uniform(0.8, 1.0), 4)
+                            phi_qz = round(w_clast*rd.uniform(0.0, 1.0), 4)
                             phi_pl = round(w_clast*rd.uniform(0.0, (1.0 - phi_qz)), 4)
                             phi_kfs = round(w_clast - phi_qz - phi_pl, 4)
                             #
-                            phi_cal = round(w_carb*rd.uniform(0.95, 1.0), 4)
+                            phi_cal = round(w_carb*rd.uniform(0.975, 1.0), 4)
                             phi_dol = round(w_carb - phi_cal, 4)
                             #
                             magicnumber_2 = rd.randint(0, 1)
@@ -1631,15 +1631,15 @@ class CarbonateRocks:
                             phi_total = phi_cal + phi_dol + phi_qz + phi_kfs + phi_pl + phi_kln + phi_ilt + phi_py
                             #
                         elif magicnumber in [11, 12]:   # Clay-dominated
-                            w_clay = round(rd.uniform(0.1, 0.15), 4)
-                            w_carb = round(rd.uniform(0.85, (1.0 - w_clay)), 4)
+                            w_clay = round(rd.uniform(0.05, 0.10), 4)
+                            w_carb = round(rd.uniform(0.90, (1.0 - w_clay)), 4)
                             w_clast = round(rd.uniform(0.0, (1.0 - w_carb - w_clay)), 4)
                             w_sulf = round(1 - w_carb - w_clast - w_clay, 4)
                             #
-                            phi_cal = round(w_carb*rd.uniform(0.95, 1.0), 4)
+                            phi_cal = round(w_carb*rd.uniform(0.975, 1.0), 4)
                             phi_dol = round(w_carb - phi_cal, 4)
                             #
-                            phi_qz = round(w_clast*rd.uniform(0.8, 1.0), 4)
+                            phi_qz = round(w_clast*rd.uniform(0.0, 1.0), 4)
                             phi_pl = round(w_clast*rd.uniform(0.0, (1.0 - phi_qz)), 4)
                             phi_kfs = round(w_clast - phi_qz - phi_pl, 4)
                             #
@@ -1656,7 +1656,7 @@ class CarbonateRocks:
                             phi_total = phi_cal + phi_dol + phi_qz + phi_kfs + phi_pl + phi_kln + phi_ilt + phi_py
                         #
                         if np.isclose(phi_total, 1.0000) == True:
-                            if 0.8 <= phi_cal <= 1.0 and 0.0 <= phi_dol <= 0.2 and 0.0 <= phi_qz <= 0.3 \
+                            if 0.9 <= phi_cal <= 1.0 and 0.0 <= phi_dol <= 0.2 and 0.0 <= phi_qz <= 0.3 \
                                     and 0.0 <= phi_kfs <= 0.2 and 0.0 <= phi_pl <= 0.2 \
                                     and 0.0 <= phi_kln <= 0.3 and 0.0 <= phi_ilt <= 0.3 and 0.0 <= phi_py <= 0.05:
                                 condition_2 = True
