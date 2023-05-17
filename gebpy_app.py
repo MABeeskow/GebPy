@@ -38,7 +38,7 @@ from modules.organics import Organics
 from modules.fluids import Water
 from modules.siliciclastics import SiliciclasticRocks, Geophysics
 from modules.ore import OreRocks
-from modules.metamorphics import GranuliteFacies
+from modules.metamorphics import GranuliteFacies, GreenschistFacies, AmphiboliteFacies
 # Sequence Stratigraphy
 from modules.series import Muschelkalk, Zechstein
 from modules.petrophysics import SeismicVelocities
@@ -526,7 +526,9 @@ class GebPyGUI(tk.Frame):
             elif rock_group == "Metamorphic Rocks":
                 sub_metamorphic = tk.Menu(petrology_menu, tearoff=0)
                 metamorphic_rocks = {
-                    "Granulite-Facies": ["Felsic Granulite", "Mafic Granulite"]}
+                    "Granulite-Facies": ["Felsic Granulite", "Mafic Granulite"],
+                    "Greenschist-Facies": ["Basaltic Greenschist", "Ultramafic Greenschist", "Pelitic Greenschist"],
+                    "Amphibolite-Facies": ["Ortho-Amphibolite"]}
                 #
                 metamorphic_rocks = collections.OrderedDict(sorted(metamorphic_rocks.items()))
                 i = 1
@@ -2956,6 +2958,19 @@ class GebPyGUI(tk.Frame):
                     self.gui_variables["Entry"]["Porosity Min"].get()/100,
                     self.gui_variables["Entry"]["Porosity Max"].get()/100]).create_granulite(
                 number=self.gui_variables["Entry"]["Number Datapoints"].get(), classification="mafic")
+        # Greenschist-Facies
+        elif var_name == "Basaltic Greenschist":
+            data = GreenschistFacies(
+                fluid="water", actual_thickness=0, porosity=[
+                    self.gui_variables["Entry"]["Porosity Min"].get()/100,
+                    self.gui_variables["Entry"]["Porosity Max"].get()/100]).create_greenschist_basaltic_alt(
+                number=self.gui_variables["Entry"]["Number Datapoints"].get())
+        elif var_name == "Ultramafic Greenschist":
+            data = GreenschistFacies(
+                fluid="water", actual_thickness=0, porosity=[
+                    self.gui_variables["Entry"]["Porosity Min"].get()/100,
+                    self.gui_variables["Entry"]["Porosity Max"].get()/100]).create_greenschist_ultramafic(
+                number=self.gui_variables["Entry"]["Number Datapoints"].get())
         #
         self.data_rock = {}
         categories = ["rho", "rho_s", "vP", "vS", "vP/vS", "K", "G", "E", "nu", "GR", "PE", "phi", "fluid",
@@ -2966,7 +2981,10 @@ class GebPyGUI(tk.Frame):
             elif category in ["mineralogy", "chemistry"]:
                 self.data_rock[category] = data[category]
             elif category in ["phi"]:
-                self.data_rock[category] = list(np.array(data[category])*100)
+                try:
+                    self.data_rock[category] = list(np.array(data[category])*100)
+                except:
+                    self.data_rock[category] = [data[category]*100]
         #
         self.list_elements_rock = list(self.data_rock["chemistry"].keys())
         self.list_minerals_rock = list(self.data_rock["mineralogy"].keys())

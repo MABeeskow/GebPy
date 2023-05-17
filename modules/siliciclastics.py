@@ -4254,6 +4254,7 @@ class SiliciclasticRocks:
                         results_container["chemistry"][element] = []
                 #
                 rho_s = round(rho_s, 3)
+                #
                 rho_solid = rho_s
                 for key, value in phi_minerals.items():
                     if key == "Urn":
