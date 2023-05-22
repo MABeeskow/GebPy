@@ -6,7 +6,7 @@
 # Name:		gebpy_app.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		22.05.2023
+# Date:		23.05.2023
 
 #-----------------------------------------------
 
@@ -230,7 +230,7 @@ class GebPyGUI(tk.Frame):
                     "Jacobsite", "Magnesioferrite", "Trevorite", "Franklinite", "Ulvospinel", "Fe-Spinel", "Uraninite",
                     "Litharge", "Massicot", "Minium", "Plattnerite", "Scrutinyite", "Zincite", "Columbite", "Tantalite",
                     "Coltan", "Crocoite", "Wulfenite", "Goethite", "Wolframite", "Huebnerite", "Ferberite", "Boehmite",
-                    "Gibbsite", "Au(III)-Oxide"]
+                    "Gibbsite", "Au(III)-Oxide", "Brucite"]
                 self.oxide_minerals.sort()
                 for mineral in self.oxide_minerals:
                     sub_oxides.add_command(
@@ -2969,7 +2969,20 @@ class GebPyGUI(tk.Frame):
             data = GreenschistFacies(
                 fluid="water", actual_thickness=0, porosity=[
                     self.gui_variables["Entry"]["Porosity Min"].get()/100,
-                    self.gui_variables["Entry"]["Porosity Max"].get()/100]).create_greenschist_ultramafic(
+                    self.gui_variables["Entry"]["Porosity Max"].get()/100]).create_greenschist_ultramafic_alt(
+                number=self.gui_variables["Entry"]["Number Datapoints"].get())
+        elif var_name == "Pelitic Greenschist":
+            data = GreenschistFacies(
+                fluid="water", actual_thickness=0, porosity=[
+                    self.gui_variables["Entry"]["Porosity Min"].get()/100,
+                    self.gui_variables["Entry"]["Porosity Max"].get()/100]).create_greenschist_pelitic_alt(
+                number=self.gui_variables["Entry"]["Number Datapoints"].get())
+        # Amphibolite-Facies
+        elif var_name == "Ortho-Amphibolite":
+            data = AmphiboliteFacies(
+                fluid="water", actual_thickness=0, porosity=[
+                    self.gui_variables["Entry"]["Porosity Min"].get()/100,
+                    self.gui_variables["Entry"]["Porosity Max"].get()/100]).create_amphibolite_ortho(
                 number=self.gui_variables["Entry"]["Number Datapoints"].get())
         #
         self.data_rock = {}

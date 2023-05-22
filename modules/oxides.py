@@ -6,7 +6,7 @@
 # Name:		oxides.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		29.03.2023
+# Date:		22.05.2023
 
 # -----------------------------------------------
 
@@ -234,6 +234,8 @@ class Oxides():
                 data_mineral = self.create_chromium_spinel()
             elif self.mineral == "Cuprospinel":
                 data_mineral = self.create_cuprospinel()
+            elif self.mineral == "Brucite":
+                data_mineral = self.create_brucite()
             elif self.mineral == "Jacobsite":
                 data_mineral = self.create_jacobsite()
             elif self.mineral == "Magnesioferrite":
