@@ -6,7 +6,7 @@
 # Name:		gebpy_app.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		17.05.2023
+# Date:		22.05.2023
 
 #-----------------------------------------------
 
@@ -6634,10 +6634,12 @@ class GebPyGUI(tk.Frame):
         self.ax1.set_xlabel("GR [API]")
         self.ax1.set_ylabel("Depth [m]")
         if max(self.rock_data["All Rocks"]["Physics"]["GR"]) > 250:
+            self.ax1.set_xlim(0.01, max(self.rock_data["All Rocks"]["Physics"]["GR"]))
+            self.ax1.set_xticks(np.arange(0.01, max(self.rock_data["All Rocks"]["Physics"]["GR"]) + 200, 200))
             self.ax1.set_xscale("log")
         else:
             self.ax1.set_xlim(-1, max(self.rock_data["All Rocks"]["Physics"]["GR"]))
-            self.ax1.set_xticks(np.arange(0, max(self.rock_data["All Rocks"]["Physics"]["GR"])+50, 50))
+            self.ax1.set_xticks(np.arange(0, max(self.rock_data["All Rocks"]["Physics"]["GR"]) + 50, 50))
         self.ax1.set_ylim(0, max_thickness)
         self.ax1.set_yticks(np.arange(0, max_thickness+step_depth, step_depth))
         self.ax1.grid(color="grey", linestyle="dashed")
@@ -6690,15 +6692,19 @@ class GebPyGUI(tk.Frame):
         self.ax4.plot(
             self.rock_data["All Rocks"]["Physics"]["PE"], self.stratigraphy_data["Top"], color="#00549F", linewidth=2)
         self.ax4.set_xlabel("PE [barns/electron]")
+        #
         if max(self.rock_data["All Rocks"]["Physics"]["PE"]) > 10:
+            self.ax4.set_xlim(1, max(self.rock_data["All Rocks"]["Physics"]["PE"]))
+            self.ax4.set_xticks(np.logspace(1, len(str(int(max(self.rock_data["All Rocks"]["Physics"]["PE"])))), 3,
+                                            endpoint=True))
             self.ax4.set_xscale("log")
         else:
             self.ax4.set_xlim(0, max(self.rock_data["All Rocks"]["Physics"]["PE"]))
-            self.ax4.set_xticks(np.arange(0, max(self.rock_data["All Rocks"]["Physics"]["PE"])+2, 2))
-        #self.ax4.set_xscale("log")
+            self.ax4.set_xticks(np.arange(0, max(self.rock_data["All Rocks"]["Physics"]["PE"]) + 2, 2))
+        #
         self.ax4.set_ylim(0, max_thickness)
         self.ax4.set_yticks(np.arange(0, max_thickness+step_depth, step_depth))
-        self.ax4.grid(color="grey", linestyle="dashed", which="both")
+        self.ax4.grid(color="grey", linestyle="dashed")
         plt.gca().invert_yaxis()
         plt.rc("axes", axisbelow=True)
         # # 5
