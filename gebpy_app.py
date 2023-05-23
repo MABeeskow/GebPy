@@ -40,7 +40,7 @@ from modules.siliciclastics import SiliciclasticRocks, Geophysics
 from modules.ore import OreRocks
 from modules.metamorphics import GranuliteFacies, GreenschistFacies, AmphiboliteFacies
 # Sequence Stratigraphy
-from modules.series import Muschelkalk, Zechstein
+from modules.series import Muschelkalk, Zechstein, Buntsandstein
 from modules.petrophysics import SeismicVelocities
 
 ## GUI
@@ -6333,6 +6333,76 @@ class GebPyGUI(tk.Frame):
                 text="Run Simulation", command=lambda var_unit=var_unit: self.generate_stratigraphic_data(var_unit))
             #
             self.gui_elements["Temporary"]["Button"].extend([btn_06])
+            #
+        elif var_unit == "Buntsandstein":
+            ## LABELS
+            lbl_04 = SimpleElements(
+                parent=self.parent, row_id=17, column_id=0, n_rows=8, n_columns=14, bg=self.colors_gebpy["Navigation"],
+                fg=self.colors_gebpy["Background"]).create_label(
+                text="Stratigraphic Focus", font_option="sans 10 bold", relief=tk.FLAT)
+            lbl_05 = SimpleElements(
+                parent=self.parent, row_id=26, column_id=0, n_rows=2, n_columns=14, bg=self.colors_gebpy["Navigation"],
+                fg=self.colors_gebpy["Background"]).create_label(
+                text="Lithological Focus", font_option="sans 10 bold", relief=tk.FLAT)
+            #
+            self.gui_elements["Temporary"]["Label"].extend([lbl_04, lbl_05])
+            #
+            ## RADIOBUTTONS
+            rb_04a = SimpleElements(
+                parent=self.parent, row_id=17, column_id=14, n_rows=2, n_columns=16, bg=self.colors_gebpy["Navigation"],
+                fg=self.colors_gebpy["Background"]).create_radiobutton(
+                text="Complete Buntsandstein", var_rb=self.gui_variables["Radiobutton"]["Subunit"], value_rb=0,
+                color_bg=self.colors_gebpy["Background"])
+            rb_04b = SimpleElements(
+                parent=self.parent, row_id=19, column_id=14, n_rows=2, n_columns=16, bg=self.colors_gebpy["Navigation"],
+                fg=self.colors_gebpy["Background"]).create_radiobutton(
+                text="Upper Buntsandstein", var_rb=self.gui_variables["Radiobutton"]["Subunit"], value_rb=1,
+                color_bg=self.colors_gebpy["Background"])
+            rb_04c = SimpleElements(
+                parent=self.parent, row_id=21, column_id=14, n_rows=2, n_columns=16, bg=self.colors_gebpy["Navigation"],
+                fg=self.colors_gebpy["Background"]).create_radiobutton(
+                text="Medium Buntsandstein", var_rb=self.gui_variables["Radiobutton"]["Subunit"], value_rb=2,
+                color_bg=self.colors_gebpy["Background"])
+            rb_04d = SimpleElements(
+                parent=self.parent, row_id=23, column_id=14, n_rows=2, n_columns=16, bg=self.colors_gebpy["Navigation"],
+                fg=self.colors_gebpy["Background"]).create_radiobutton(
+                text="Lower Buntsandstein", var_rb=self.gui_variables["Radiobutton"]["Subunit"], value_rb=3,
+                color_bg=self.colors_gebpy["Background"])
+            #
+            self.gui_elements["Temporary"]["Radiobutton"].extend([rb_04a, rb_04b, rb_04c, rb_04d])
+            #
+            ## OPTION MENUS
+            list_rocks = Buntsandstein().export_lithological_keys()
+            list_rocks.insert(0, "All Rocks")
+            self.gui_variables["Option Menu"]["Lithological Focus"].set(list_rocks[0])
+            #
+            self.rock_data = {}
+            for rock in list_rocks:
+                self.rock_data[rock] = {
+                    "Physics": {"rho": [], "rho_s": [], "phi": [], "vP": [], "vS": [], "vPvS": [], "K": [], "G": [],
+                                "E": [], "v": [], "GR": [], "PE": []},
+                    "Mineralogy": {}, "Chemistry": {}}
+            #
+            self.stratigraphy_data = {"Lithology": [], "Bottom": [], "Top": [], "Thickness": []}
+            #
+            opt_05a = SimpleElements(
+                parent=self.parent, row_id=26, column_id=14, n_rows=2, n_columns=16, bg=self.colors_gebpy["Option"],
+                fg=self.colors_gebpy["Navigation"]).create_option_menu(
+                var_opt=self.gui_variables["Option Menu"]["Lithological Focus"],
+                var_opt_set=self.gui_variables["Option Menu"]["Lithological Focus"].get(), opt_list=list_rocks,
+                active_bg=self.colors_gebpy["Accent"],
+                command=lambda var_opt=self.gui_variables["Option Menu"]["Lithological Focus"]:
+                self.stratigraphy_change_lithology(var_opt))
+            #
+            self.gui_elements["Temporary"]["Option Menu"].extend([opt_05a])
+            #
+            ## BUTTONS
+            btn_06 = SimpleElements(
+                parent=self.parent, row_id=29, column_id=14, n_rows=2, n_columns=16,
+                bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_button(
+                text="Run Simulation", command=lambda var_unit=var_unit: self.generate_stratigraphic_data(var_unit))
+            #
+            self.gui_elements["Temporary"]["Button"].extend([btn_06])
         #
         ## INITIALIZATION
         self.generate_stratigraphic_data(var_unit=var_unit)
@@ -6383,6 +6453,20 @@ class GebPyGUI(tk.Frame):
                 thickness_z1=thickness_z1_random)   # Werra
             #
             data_units = data_z5 + data_z4 + data_z3 + data_z2 + data_z1
+            #
+        elif var_unit == "Buntsandstein":
+            thickness_nordhausen_random = int(rd.uniform(0.02, 0.06)*thickness_complete)
+            #thickness_z4_random = int(rd.uniform(0.18, 0.22)*thickness_complete)
+            #thickness_z3_random = int(rd.uniform(0.31, 0.35)*thickness_complete)
+            #thickness_z2_random = int(rd.uniform(0.30, 0.34)*thickness_complete)
+           # thickness_z1_random = int(thickness_complete - thickness_z5_random - thickness_z4_random -
+               #                       thickness_z3_random - thickness_z2_random)
+            #
+            data_nordhausen = Buntsandstein(actual_thickness=0).create_nordhausen_series(
+                top_unit=0, thickness_unit=thickness_complete)
+
+            #
+            data_units = data_nordhausen
         #
         self.unit_sections = {}
         #
