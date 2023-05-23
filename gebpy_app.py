@@ -6455,18 +6455,21 @@ class GebPyGUI(tk.Frame):
             data_units = data_z5 + data_z4 + data_z3 + data_z2 + data_z1
             #
         elif var_unit == "Buntsandstein":
-            thickness_nordhausen_random = int(rd.uniform(0.02, 0.06)*thickness_complete)
-            #thickness_z4_random = int(rd.uniform(0.18, 0.22)*thickness_complete)
-            #thickness_z3_random = int(rd.uniform(0.31, 0.35)*thickness_complete)
-            #thickness_z2_random = int(rd.uniform(0.30, 0.34)*thickness_complete)
-           # thickness_z1_random = int(thickness_complete - thickness_z5_random - thickness_z4_random -
-               #                       thickness_z3_random - thickness_z2_random)
+            thickness_buntsandstein_upper = int(rd.uniform(0.24, 0.28)*thickness_complete)
+            thickness_buntsandstein_medium = int(rd.uniform(0.28, 0.32)*thickness_complete)
+            thickness_buntsandstein_lower = int(thickness_complete - thickness_buntsandstein_upper -
+                                                thickness_buntsandstein_medium)
             #
-            data_nordhausen = Buntsandstein(actual_thickness=0).create_nordhausen_series(
-                top_unit=0, thickness_unit=thickness_complete)
-
+            data_buntsandstein_upper = Buntsandstein(actual_thickness=0).create_buntsandstein_upper(
+                top_unit=0, thickness_unit=thickness_buntsandstein_upper)
+            data_buntsandstein_medium = Buntsandstein(actual_thickness=0).create_buntsandstein_medium(
+                top_unit=thickness_buntsandstein_upper, thickness_unit=thickness_buntsandstein_medium)
+            data_buntsandstein_lower = Buntsandstein(
+                actual_thickness=0).create_buntsandstein_lower(
+                top_unit=thickness_buntsandstein_upper + thickness_buntsandstein_medium,
+                thickness_unit=thickness_buntsandstein_lower)
             #
-            data_units = data_nordhausen
+            data_units = data_buntsandstein_upper + data_buntsandstein_medium + data_buntsandstein_lower
         #
         self.unit_sections = {}
         #
@@ -6801,7 +6804,7 @@ class GebPyGUI(tk.Frame):
             self.ax4.set_xscale("symlog")
         else:
             self.ax4.set_xlim(0, max(self.rock_data["All Rocks"]["Physics"]["PE"]))
-            self.ax4.set_xticks(np.arange(0, max(self.rock_data["All Rocks"]["Physics"]["PE"]) + 2, 2))
+            self.ax4.set_xticks(np.arange(0, max(self.rock_data["All Rocks"]["Physics"]["PE"]) + 1, 1))
         #
         self.ax4.set_ylim(0, max_thickness)
         self.ax4.set_yticks(np.arange(0, max_thickness+step_depth, step_depth))

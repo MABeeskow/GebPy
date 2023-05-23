@@ -1732,6 +1732,7 @@ class SiliciclasticRocks:
         results_container["mineralogy"] = {}
         results_container["chemistry"] = {}
         results_container["phi"] = []
+        results_container["phi_true"] = []
         results_container["fluid"] = self.fluid
         results_container["rho_s"] = []
         results_container["rho"] = []
@@ -1905,6 +1906,7 @@ class SiliciclasticRocks:
                 results_container["chemistry"][key].append(value)
             #
             results_container["phi"].append(phi_neutron)
+            results_container["phi_true"].append(var_porosity)
             results_container["rho_s"].append(rho_s)
             results_container["rho"].append(rho)
             results_container["vP"].append(vP)
