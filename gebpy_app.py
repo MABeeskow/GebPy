@@ -6647,12 +6647,17 @@ class GebPyGUI(tk.Frame):
         self.ax1.set_xlabel("GR [API]")
         self.ax1.set_ylabel("Depth [m]")
         if max(self.rock_data["All Rocks"]["Physics"]["GR"]) > 250:
-            self.ax1.set_xlim(0.01, max(self.rock_data["All Rocks"]["Physics"]["GR"]))
-            self.ax1.set_xticks(np.arange(0.01, max(self.rock_data["All Rocks"]["Physics"]["GR"]) + 200, 200))
-            self.ax1.set_xscale("log")
+            self.ax1.set_xlim(-0.5, max(self.rock_data["All Rocks"]["Physics"]["GR"]))
+            self.ax1.set_xticks(np.arange(-0.5, max(self.rock_data["All Rocks"]["Physics"]["GR"]) + 200, 200))
+            self.ax1.set_xscale("symlog")
+        elif 50 < max(self.rock_data["All Rocks"]["Physics"]["GR"]) < 100:
+            self.ax1.set_xlim(-0.5, max(self.rock_data["All Rocks"]["Physics"]["GR"]))
+            self.ax1.set_xticks(np.arange(-0.5, max(self.rock_data["All Rocks"]["Physics"]["GR"]) + 20, 20))
+            self.ax1.set_xscale("symlog")
         else:
             self.ax1.set_xlim(-1, max(self.rock_data["All Rocks"]["Physics"]["GR"]))
-            self.ax1.set_xticks(np.arange(0, max(self.rock_data["All Rocks"]["Physics"]["GR"]) + 50, 50))
+            self.ax1.set_xticks(np.arange(0, max(self.rock_data["All Rocks"]["Physics"]["GR"]) + 10, 10))
+        #
         self.ax1.set_ylim(0, max_thickness)
         self.ax1.set_yticks(np.arange(0, max_thickness+step_depth, step_depth))
         self.ax1.grid(color="grey", linestyle="dashed")
@@ -6707,10 +6712,9 @@ class GebPyGUI(tk.Frame):
         self.ax4.set_xlabel("PE [barns/electron]")
         #
         if max(self.rock_data["All Rocks"]["Physics"]["PE"]) > 10:
-            self.ax4.set_xlim(1, max(self.rock_data["All Rocks"]["Physics"]["PE"]))
-            self.ax4.set_xticks(np.logspace(1, len(str(int(max(self.rock_data["All Rocks"]["Physics"]["PE"])))), 3,
-                                            endpoint=True))
-            self.ax4.set_xscale("log")
+            self.ax4.set_xlim(-0.5, max(self.rock_data["All Rocks"]["Physics"]["PE"]))
+            self.ax4.set_xticks(np.arange(-0.5, len(str(int(max(self.rock_data["All Rocks"]["Physics"]["PE"])))), 3))
+            self.ax4.set_xscale("symlog")
         else:
             self.ax4.set_xlim(0, max(self.rock_data["All Rocks"]["Physics"]["PE"]))
             self.ax4.set_xticks(np.arange(0, max(self.rock_data["All Rocks"]["Physics"]["PE"]) + 2, 2))
