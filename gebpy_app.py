@@ -572,9 +572,16 @@ class GebPyGUI(tk.Frame):
             sub_permian.add_command(label=unit, command=lambda var_unit=unit: self.real_sequences(var_unit))
         #
         sub_triassic = tk.Menu(stratigraphy_menu, tearoff=0)
-        triassic_units = ["Keuper", "Muschelkalk", "Buntsandstein"]
+        triassic_units = ["Keuper", "Muschelkalk"]
         for unit in triassic_units:
             sub_triassic.add_command(label=unit, command=lambda var_unit=unit: self.real_sequences(var_unit))
+        #
+        sub_buntstandstein = tk.Menu(stratigraphy_menu, tearoff=0)
+        buntsandstein_units = ["Buntsandstein", "Upper Buntsandstein", "Medium Buntsandstein", "Lower Buntsandstein"]
+        for unit in buntsandstein_units:
+            sub_buntstandstein.add_command(label=unit, command=lambda var_unit=unit: self.real_sequences(var_unit))
+            if unit == "Buntsandstein":
+                sub_buntstandstein.add_separator()
         #
         # Real Sequences
         stratigraphy_menu.add_cascade(
@@ -583,6 +590,10 @@ class GebPyGUI(tk.Frame):
         stratigraphy_menu.add_cascade(
             label="Permian Units",
             menu=sub_permian)
+        #
+        sub_triassic.add_cascade(
+            label="Buntsandstein",
+            menu=sub_buntstandstein)
         #
         stratigraphy_menu.add_separator()
         stratigraphy_menu.add_command(
@@ -6157,7 +6168,7 @@ class GebPyGUI(tk.Frame):
             #
             self.gui_elements["Temporary"]["Button"].extend([btn_06])
             #
-        elif var_unit == "Buntsandstein":
+        elif var_unit in ["Buntsandstein", "Upper Buntsandstein", "Medium Buntsandstein", "Lower Buntsandstein"]:
             ## LABELS
             lbl_04 = SimpleElements(
                 parent=self.parent, row_id=17, column_id=0, n_rows=8, n_columns=14, bg=self.colors_gebpy["Navigation"],
@@ -6293,6 +6304,21 @@ class GebPyGUI(tk.Frame):
                 thickness_unit=thickness_buntsandstein_lower)
             #
             data_units = data_buntsandstein_upper + data_buntsandstein_medium + data_buntsandstein_lower
+        #
+        elif var_unit in ["Upper Buntsandstein", "Medium Buntsandstein", "Lower Buntsandstein"]:
+            thickness_buntsandstein = int(thickness_complete)
+            #
+            if var_unit == "Upper Buntsandstein":
+                data_buntsandstein = Buntsandstein(actual_thickness=0).create_buntsandstein_upper(
+                    top_unit=0, thickness_unit=thickness_buntsandstein)
+            elif var_unit == "Medium Buntsandstein":
+                data_buntsandstein = Buntsandstein(actual_thickness=0).create_buntsandstein_medium(
+                    top_unit=0, thickness_unit=thickness_buntsandstein)
+            elif var_unit == "Lower Buntsandstein":
+                data_buntsandstein = Buntsandstein(actual_thickness=0).create_buntsandstein_lower(
+                    top_unit=0, thickness_unit=thickness_buntsandstein)
+            #
+            data_units = data_buntsandstein
         #
         self.unit_sections = {}
         #
