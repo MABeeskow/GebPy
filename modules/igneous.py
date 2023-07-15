@@ -6,7 +6,7 @@
 # Name:		igneous.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		29.03.2023
+# Date:		15.07.2023
 
 #-----------------------------------------------
 
@@ -21,6 +21,7 @@ from modules.geophysics import Elasticity as elast
 from modules.oxides import Oxides
 from modules.silicates import Tectosilicates, Phyllosilicates, Inosilicates, Nesosilicates
 from modules.fluids import Water, Hydrocarbons
+from modules.petrophysics import SeismicVelocities
 
 class plutonic:
     #
@@ -763,7 +764,7 @@ class Plutonic:
         return results_container
     #
     def create_plutonic_rock_streckeisen(self, rock="Granite", number=1, composition=None, enrichment_kfs=None,
-                                         enrichment_pl=None, upper_streckeisen=True):
+                                         enrichment_pl=None, upper_streckeisen=True, porosity=None):
         results_container = {}
         results_container["rock"] = rock
         results_container["mineralogy"] = {}
@@ -1042,38 +1043,29 @@ class Plutonic:
                     #
                     condition = True
             #
-            bulk_mod = 0.0
-            shear_mod = 0.0
             gamma_ray = 0.0
             photoelectricity = 0.0
             #
-            K_list = []
-            G_list = []
-            phi_list = []
             for key, value in phi_minerals.items():
                 gamma_ray += phi_minerals[key]*mineralogy[key]["GR"]
                 photoelectricity += phi_minerals[key]*mineralogy[key]["PE"]
-                #
-                gamma_ray = round(gamma_ray, 3)
-                photoelectricity = round(photoelectricity, 3)
-                #
-                K_list.append(round(mineralogy[key]["K"], 3))
-                G_list.append(round(mineralogy[key]["G"], 3))
-                phi_list.append(phi_minerals[key])
             #
-            K_geo = round(elast.calc_geometric_mean(self, phi_list, K_list), 3)
-            G_geo = round(elast.calc_geometric_mean(self, phi_list, G_list), 3)
+            ## Bulk Density, Porosity, Seismic Velocities
+            rho_solid = round(rho_s, 3)
+            vP, vS, vPvS, rho, var_porosity = SeismicVelocities(
+                rho_solid=rho_solid, rho_fluid=self.data_water[2]).calculate_seismic_velocities(
+                rho_limits=[2500, 3000], vP_limits=[6000, 7500], vS_limits=[3500, 4000], delta=0.05,
+                porosity=porosity)
             #
-            anisotropic_factor = 1.0
+            ## Elastic Parameters
+            bulk_modulus, shear_modulus, youngs_modulus, poisson_ratio = SeismicVelocities(
+                rho_solid=None, rho_fluid=None).calculate_elastic_properties(
+                rho=rho, vP=vP, vS=vS)
             #
-            bulk_mod = K_geo/anisotropic_factor
-            shear_mod = G_geo/anisotropic_factor
-            #
-            youngs_mod = round((9*bulk_mod*shear_mod)/(3*bulk_mod + shear_mod), 3)
-            poisson_rat = round((3*bulk_mod - 2*shear_mod)/(6*bulk_mod + 2*shear_mod), 6)
-            vP = round(((bulk_mod*10**9 + 4/3*shear_mod*10**9)/(rho))**0.5, 3)
-            vS = round(((shear_mod*10**9)/(rho))**0.5, 3)
-            vPvS = round(vP/vS, 6)
+            ## Gamma Ray
+            gamma_ray = round(gamma_ray, 3)
+            ## Photoelectricity
+            photoelectricity = round(photoelectricity, 3)
             #
             for key, value in w_minerals.items():
                 results_container["mineralogy"][key].append(value)
@@ -1087,10 +1079,10 @@ class Plutonic:
             results_container["vP"].append(vP)
             results_container["vS"].append(vS)
             results_container["vP/vS"].append(vPvS)
-            results_container["K"].append(bulk_mod)
-            results_container["G"].append(shear_mod)
-            results_container["E"].append(youngs_mod)
-            results_container["nu"].append(poisson_rat)
+            results_container["K"].append(bulk_modulus)
+            results_container["G"].append(shear_modulus)
+            results_container["E"].append(youngs_modulus)
+            results_container["nu"].append(poisson_ratio)
             results_container["GR"].append(gamma_ray)
             results_container["PE"].append(photoelectricity)
             #
