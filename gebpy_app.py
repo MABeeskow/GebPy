@@ -6,7 +6,7 @@
 # Name:		gebpy_app.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		25.05.2023
+# Date:		15.07.2023
 
 #-----------------------------------------------
 
@@ -1354,37 +1354,12 @@ class GebPyGUI(tk.Frame):
                         gui_item.grid_remove()
                 #
                 ## Labels
-                lbl_title = SimpleElements(
-                    parent=self.parent, row_id=0, column_id=start_column, n_rows=2, n_columns=45,
-                    bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
-                    text="Mineral Physics", font_option="sans 12 bold", relief=tk.GROOVE)
-                lbl_results = SimpleElements(
-                    parent=self.parent, row_id=2, column_id=start_column, n_rows=2, n_columns=9,
-                    bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
-                    text="Results", font_option="sans 10 bold", relief=tk.GROOVE)
-                lbl_min = SimpleElements(
-                    parent=self.parent, row_id=2, column_id=start_column + 9, n_rows=2, n_columns=9,
-                    bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
-                    text="Minimum", font_option="sans 10 bold", relief=tk.GROOVE)
-                lbl_max = SimpleElements(
-                    parent=self.parent, row_id=2, column_id=start_column + 18, n_rows=2, n_columns=9,
-                    bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
-                    text="Maximum", font_option="sans 10 bold", relief=tk.GROOVE)
-                lbl_mean = SimpleElements(
-                    parent=self.parent, row_id=2, column_id=start_column + 27, n_rows=2, n_columns=9,
-                    bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
-                    text="Mean", font_option="sans 10 bold", relief=tk.GROOVE)
-                lbl_error = SimpleElements(
-                    parent=self.parent, row_id=2, column_id=start_column + 36, n_rows=2, n_columns=9,
-                    bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
-                    text="Error", font_option="sans 10 bold", relief=tk.GROOVE)
                 lbl_diagram_type = SimpleElements(
                     parent=self.parent, row_id=33, column_id=0, n_rows=4, n_columns=14,
                     bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Background"]).create_label(
                     text="Diagram Type", font_option="sans 10 bold", relief=tk.FLAT)
                 #
-                self.gui_elements["Temporary"]["Label"].extend(
-                    [lbl_title, lbl_results, lbl_min, lbl_max, lbl_mean, lbl_error, lbl_diagram_type])
+                self.gui_elements["Temporary"]["Label"].extend([lbl_diagram_type])
                 #
                 ## Radiobuttons
                 rb_diagram_type_01 = SimpleElements(
@@ -1401,86 +1376,63 @@ class GebPyGUI(tk.Frame):
                 self.gui_elements["Temporary"]["Radiobutton"].extend(
                     [rb_diagram_type_01, rb_diagram_type_02])
                 #
+                ## TREE VIEW
                 categories = [
-                    "M\n (kg/mol)", "V\n (\u00C5\u00B3/mol)", "rho\n (kg/m\u00B3)", "vP\n (m/s)", "vS\n (m/s)",
-                    "vP/vS\n (1)", "K\n (GPa)", "G\n (GPa)", "E\n (GPa)", "nu\n (1)", "GR\n (API)", "PE\n (barns/e\u207B)"]
+                    "M (kg/mol)", "V (\u00C5\u00B3/mol)", "rho (kg/m\u00B3)", "vP (m/s)", "vS (m/s)", "vP/vS (1)",
+                    "K (GPa)", "G (GPa)", "E (GPa)", "nu (1)", "GR (API)", "PE (barns/e\u207B)"]
                 categories_short = ["M", "V", "rho", "vP", "vS", "vP/vS", "K", "G", "E", "nu", "GR", "PE"]
+                list_categories = ["Category", "Minimum", "Maximum", "Mean", "Standard Deviation"]
+                list_width = list(75*np.ones(len(list_categories)))
+                list_width = [int(item) for item in list_width]
+                list_width[0] = 90
+                list_width[-1] = 150
+                #
+                self.tv_ma_results = SimpleElements(
+                    parent=self.parent, row_id=0, column_id=start_column, n_rows=30, n_columns=45,
+                    fg=self.colors_gebpy["Black"], bg=self.colors_gebpy["White"]).create_treeview(
+                    n_categories=len(list_categories), text_n=list_categories,
+                    width_n=list_width, individual=True)
+                #
+                scb_v = ttk.Scrollbar(self.parent, orient="vertical")
+                scb_h = ttk.Scrollbar(self.parent, orient="horizontal")
+                self.tv_ma_results.configure(xscrollcommand=scb_h.set, yscrollcommand=scb_v.set)
+                scb_v.config(command=self.tv_ma_results.yview)
+                scb_h.config(command=self.tv_ma_results.xview)
+                scb_v.grid(row=0, column=start_column + 45, rowspan=30, columnspan=1, sticky="ns")
+                scb_h.grid(row=30, column=start_column, rowspan=1, columnspan=45, sticky="ew")
+                #
                 for index, category in enumerate(categories):
-                    lbl_category = SimpleElements(
-                        parent=self.parent, row_id=(3*index + 4), column_id=start_column, n_rows=3, n_columns=9,
-                        bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
-                        text=category, font_option="sans 10 bold", relief=tk.GROOVE)
+                    entries = [category]
                     #
-                    self.gui_elements["Temporary"]["Label"].append(lbl_category)
-                    #
-                    ## Entries
                     n_digits = 2
                     var_entr_min = round(min(self.data_mineral[categories_short[index]]), n_digits)
                     var_entr_max = round(max(self.data_mineral[categories_short[index]]), n_digits)
                     var_entr_mean = round(np.mean(self.data_mineral[categories_short[index]]), n_digits)
                     var_entr_error = round(np.std(self.data_mineral[categories_short[index]], ddof=1), n_digits)
                     #
-                    entr_min = SimpleElements(
-                        parent=self.parent, row_id=(3*index + 4), column_id=start_column + 9, n_rows=3, n_columns=9,
-                        bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
-                        var_entr=self.gui_variables["Entry"]["Minimum"][categories_short[index]],
-                        var_entr_set=var_entr_min)
-                    entr_max = SimpleElements(
-                        parent=self.parent, row_id=(3*index + 4), column_id=start_column + 18, n_rows=3, n_columns=9,
-                        bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
-                        var_entr=self.gui_variables["Entry"]["Maximum"][categories_short[index]],
-                        var_entr_set=var_entr_max)
-                    entr_mean = SimpleElements(
-                        parent=self.parent, row_id=(3*index + 4), column_id=start_column + 27, n_rows=3, n_columns=9,
-                        bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
-                        var_entr=self.gui_variables["Entry"]["Mean"][categories_short[index]],
-                        var_entr_set=var_entr_mean)
-                    entr_error = SimpleElements(
-                        parent=self.parent, row_id=(3*index + 4), column_id=start_column + 36, n_rows=3, n_columns=9,
-                        bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
-                        var_entr=self.gui_variables["Entry"]["Error"][categories_short[index]],
-                        var_entr_set=var_entr_error)
+                    entries.extend([var_entr_min, var_entr_max, var_entr_mean, var_entr_error])
                     #
-                    self.gui_elements["Temporary"]["Entry"].extend([entr_min, entr_max, entr_mean, entr_error])
-                    #
-                self.change_rb_diagram()
+                    self.tv_ma_results.insert("", tk.END, values=entries)
                 #
-                # ## TREE VIEW
-                # categories = [
-                #     "M (kg/mol)", "V (\u00C5\u00B3/mol)", "rho (kg/m\u00B3)", "vP (m/s)", "vS (m/s)", "vP/vS (1)",
-                #     "K (GPa)", "G (GPa)", "E (GPa)", "nu (1)", "GR (API)", "PE (barns/e\u207B)"]
-                # list_categories = ["Category", "Minimum", "Maximum", "Mean", "Standard Deviation"]
-                # list_width = list(75*np.ones(len(list_categories)))
-                # list_width = [int(item) for item in list_width]
-                # list_width[0] = 90
-                # list_width[-1] = 150
-                # #
-                # tv_ma_results = SimpleElements(
-                #     parent=self.parent, row_id=0, column_id=start_column, n_rows=20, n_columns=45,
-                #     fg=self.colors_gebpy["Black"], bg=self.colors_gebpy["White"]).create_treeview(
-                #     n_categories=len(list_categories), text_n=list_categories,
-                #     width_n=list_width, individual=True)
-                # #
-                # scb_v = ttk.Scrollbar(self.parent, orient="vertical")
-                # scb_h = ttk.Scrollbar(self.parent, orient="horizontal")
-                # tv_ma_results.configure(xscrollcommand=scb_h.set, yscrollcommand=scb_v.set)
-                # scb_v.config(command=tv_ma_results.yview)
-                # scb_h.config(command=tv_ma_results.xview)
-                # scb_v.grid(row=0, column=start_column + 45, rowspan=20, columnspan=1, sticky="ns")
-                # scb_h.grid(row=20, column=start_column, rowspan=1, columnspan=45, sticky="ew")
-                # #
-                # for index, category in enumerate(categories):
-                #     entries = [category]
-                #     #
-                #     n_digits = 2
-                #     var_entr_min = round(min(self.data_mineral[categories_short[index]]), n_digits)
-                #     var_entr_max = round(max(self.data_mineral[categories_short[index]]), n_digits)
-                #     var_entr_mean = round(np.mean(self.data_mineral[categories_short[index]]), n_digits)
-                #     var_entr_error = round(np.std(self.data_mineral[categories_short[index]], ddof=1), n_digits)
-                #     #
-                #     entries.extend([var_entr_min, var_entr_max, var_entr_mean, var_entr_error])
-                #     #
-                #     tv_ma_results.insert("", tk.END, values=entries)
+                entries = ["-", "-", "-", "-", "-"]
+                self.tv_ma_results.insert("", tk.END, values=entries)
+                #
+                for element, dataset in self.data_mineral["chemistry"].items():
+                    entries = [str(element)+str(" (%)")]
+                    #
+                    n_digits = 2
+                    var_factor = 100
+                    #
+                    var_entr_min = round(var_factor*min(dataset), n_digits)
+                    var_entr_max = round(var_factor*max(dataset), n_digits)
+                    var_entr_mean = round(var_factor*np.mean(dataset), n_digits)
+                    var_entr_error = round(var_factor*np.std(dataset, ddof=1), n_digits)
+                    #
+                    entries.extend([var_entr_min, var_entr_max, var_entr_mean, var_entr_error])
+                    #
+                    self.tv_ma_results.insert("", tk.END, values=entries)
+                #
+                self.change_rb_diagram()
                 #
             else:
                 pass
@@ -1504,30 +1456,6 @@ class GebPyGUI(tk.Frame):
                         gui_item.grid_remove()
                 #
                 ## Labels
-                lbl_title = SimpleElements(
-                    parent=self.parent, row_id=0, column_id=start_column, n_rows=2, n_columns=45,
-                    bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
-                    text="Mineral Chemistry", font_option="sans 12 bold", relief=tk.GROOVE)
-                lbl_results = SimpleElements(
-                    parent=self.parent, row_id=2, column_id=start_column, n_rows=2, n_columns=9,
-                    bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
-                    text="Results", font_option="sans 10 bold", relief=tk.GROOVE)
-                lbl_min = SimpleElements(
-                    parent=self.parent, row_id=2, column_id=start_column + 9, n_rows=2, n_columns=9,
-                    bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
-                    text="Minimum", font_option="sans 10 bold", relief=tk.GROOVE)
-                lbl_max = SimpleElements(
-                    parent=self.parent, row_id=2, column_id=start_column + 18, n_rows=2, n_columns=9,
-                    bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
-                    text="Maximum", font_option="sans 10 bold", relief=tk.GROOVE)
-                lbl_mean = SimpleElements(
-                    parent=self.parent, row_id=2, column_id=start_column + 27, n_rows=2, n_columns=9,
-                    bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
-                    text="Mean", font_option="sans 10 bold", relief=tk.GROOVE)
-                lbl_error = SimpleElements(
-                    parent=self.parent, row_id=2, column_id=start_column + 36, n_rows=2, n_columns=9,
-                    bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
-                    text="Error", font_option="sans 10 bold", relief=tk.GROOVE)
                 lbl_diagram_type = SimpleElements(
                     parent=self.parent, row_id=33, column_id=0, n_rows=4, n_columns=14,
                     bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Background"]).create_label(
@@ -1569,8 +1497,7 @@ class GebPyGUI(tk.Frame):
                     compound_list.extend(list(self.data_mineral["compounds"].keys()))
                 #
                 self.gui_elements["Temporary"]["Label"].extend(
-                    [lbl_title, lbl_results, lbl_min, lbl_max, lbl_mean, lbl_error, lbl_diagram_type, lbl_element,
-                     lbl_compound, lbl_concentration_setup, lbl_element])
+                    [lbl_diagram_type, lbl_element, lbl_compound, lbl_concentration_setup, lbl_element])
                 #
                 ## Radiobuttons
                 rb_diagram_type_01 = SimpleElements(
@@ -1618,42 +1545,6 @@ class GebPyGUI(tk.Frame):
                 #
                 self.gui_elements["Temporary"]["Option Menu"].extend([opt_element, opt_compound])
                 #
-                for index, element in enumerate(self.list_elements):
-                    lbl_element = SimpleElements(
-                        parent=self.parent, row_id=(2*index + 4), column_id=start_column, n_rows=2, n_columns=9,
-                        bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
-                        text=element, font_option="sans 10 bold", relief=tk.GROOVE)
-                    #
-                    self.gui_elements["Temporary"]["Label"].append(lbl_element)
-                    self.gui_elements_sub["Mineral Chemistry"]["Element Concentration"]["Label"].append(lbl_element)
-                    #
-                    ## Entries
-                    var_entr_min = int(min(self.data_mineral["chemistry"][element])*10**6)
-                    var_entr_max = int(max(self.data_mineral["chemistry"][element])*10**6)
-                    var_entr_mean = int(np.mean(self.data_mineral["chemistry"][element])*10**6)
-                    var_entr_error = int(np.std(self.data_mineral["chemistry"][element], ddof=1)*10**6)
-                    #
-                    entr_min = SimpleElements(
-                        parent=self.parent, row_id=(2*index + 4), column_id=start_column + 9, n_rows=2, n_columns=9,
-                        bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
-                        var_entr=self.gui_variables["Entry"]["Minimum"][element], var_entr_set=var_entr_min)
-                    entr_max = SimpleElements(
-                        parent=self.parent, row_id=(2*index + 4), column_id=start_column + 18, n_rows=2, n_columns=9,
-                        bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
-                        var_entr=self.gui_variables["Entry"]["Maximum"][element], var_entr_set=var_entr_max)
-                    entr_mean = SimpleElements(
-                        parent=self.parent, row_id=(2*index + 4), column_id=start_column + 27, n_rows=2, n_columns=9,
-                        bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
-                        var_entr=self.gui_variables["Entry"]["Mean"][element], var_entr_set=var_entr_mean)
-                    entr_error = SimpleElements(
-                        parent=self.parent, row_id=(2*index + 4), column_id=start_column + 36, n_rows=2, n_columns=9,
-                        bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
-                        var_entr=self.gui_variables["Entry"]["Error"][element], var_entr_set=var_entr_error)
-                    #
-                    self.gui_elements["Temporary"]["Entry"].extend([entr_min, entr_max, entr_mean, entr_error])
-                    self.gui_elements_sub["Mineral Chemistry"]["Element Concentration"]["Entry"].extend(
-                        [entr_min, entr_max, entr_mean, entr_error])
-                #
                 self.change_rb_diagram()
                 #
             else:
@@ -1681,69 +1572,6 @@ class GebPyGUI(tk.Frame):
                 ## LA-ICP-MS Experiment Simulation
                 time_data, intensity_data = self.simulate_laicpms_experiment()
                 #
-                ## Labels
-                lbl_title = SimpleElements(
-                    parent=self.parent, row_id=0, column_id=start_column, n_rows=2, n_columns=45,
-                    bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
-                    text="Synthetic LA-ICP-MS", font_option="sans 12 bold", relief=tk.GROOVE)
-                lbl_results = SimpleElements(
-                    parent=self.parent, row_id=2, column_id=start_column, n_rows=2, n_columns=9,
-                    bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
-                    text="Results", font_option="sans 10 bold", relief=tk.GROOVE)
-                lbl_min = SimpleElements(
-                    parent=self.parent, row_id=2, column_id=start_column + 9, n_rows=2, n_columns=9,
-                    bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
-                    text="Minimum", font_option="sans 10 bold", relief=tk.GROOVE)
-                lbl_max = SimpleElements(
-                    parent=self.parent, row_id=2, column_id=start_column + 18, n_rows=2, n_columns=9,
-                    bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
-                    text="Maximum", font_option="sans 10 bold", relief=tk.GROOVE)
-                lbl_mean = SimpleElements(
-                    parent=self.parent, row_id=2, column_id=start_column + 27, n_rows=2, n_columns=9,
-                    bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
-                    text="Mean", font_option="sans 10 bold", relief=tk.GROOVE)
-                lbl_error = SimpleElements(
-                    parent=self.parent, row_id=2, column_id=start_column + 36, n_rows=2, n_columns=9,
-                    bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
-                    text="Error", font_option="sans 10 bold", relief=tk.GROOVE)
-                #
-                self.gui_elements["Temporary"]["Label"].extend(
-                    [lbl_title, lbl_results, lbl_min, lbl_max, lbl_mean, lbl_error])
-                #
-                self.list_elements.sort()
-                for index, element in enumerate(self.list_elements):
-                    lbl_element = SimpleElements(
-                        parent=self.parent, row_id=(2*index + 4), column_id=start_column, n_rows=2, n_columns=9,
-                        bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_label(
-                        text=element, font_option="sans 10 bold", relief=tk.GROOVE)
-                    #
-                    self.gui_elements["Temporary"]["Label"].append(lbl_element)
-                    #
-                    ## Entries
-                    var_entr_min = int(min(self.data_mineral["chemistry"][element])*10**6)
-                    var_entr_max = int(max(self.data_mineral["chemistry"][element])*10**6)
-                    var_entr_mean = int(np.mean(self.data_mineral["chemistry"][element])*10**6)
-                    var_entr_error = int(np.std(self.data_mineral["chemistry"][element], ddof=1)*10**6)
-                    #
-                    entr_min = SimpleElements(
-                        parent=self.parent, row_id=(2*index + 4), column_id=start_column + 9, n_rows=2, n_columns=9,
-                        bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
-                        var_entr=self.gui_variables["Entry"]["Minimum"][element], var_entr_set=var_entr_min)
-                    entr_max = SimpleElements(
-                        parent=self.parent, row_id=(2*index + 4), column_id=start_column + 18, n_rows=2, n_columns=9,
-                        bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
-                        var_entr=self.gui_variables["Entry"]["Maximum"][element], var_entr_set=var_entr_max)
-                    entr_mean = SimpleElements(
-                        parent=self.parent, row_id=(2*index + 4), column_id=start_column + 27, n_rows=2, n_columns=9,
-                        bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
-                        var_entr=self.gui_variables["Entry"]["Mean"][element], var_entr_set=var_entr_mean)
-                    entr_error = SimpleElements(
-                        parent=self.parent, row_id=(2*index + 4), column_id=start_column + 36, n_rows=2, n_columns=9,
-                        bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(
-                        var_entr=self.gui_variables["Entry"]["Error"][element], var_entr_set=var_entr_error)
-                    #
-                    self.gui_elements["Temporary"]["Entry"].extend([entr_min, entr_max, entr_mean, entr_error])
-                    #
                 ## Diagram
                 if "LA ICP MS" not in self.gui_elements["Temporary"]["Canvas"]:
                     if "Mineralogy" not in self.gui_elements["Temporary"]["Figure"]:
