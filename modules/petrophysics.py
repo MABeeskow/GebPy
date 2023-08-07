@@ -6,7 +6,7 @@
 # Name:		petrophysics.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		29.03.2023
+# Date:		07.08.2023
 
 #-----------------------------------------------
 
@@ -79,10 +79,10 @@ class SeismicVelocities:
                 vS = constant_a_S * rho + constant_b_S
                 if vS_min <= vS <= vS_max:
                     condition_v = True
-                else:
-                    print("rho:", rho, "vS:", vS)
-            else:
-                print("rho:", rho, "vP:", vP, vP_max, vP_min)
+            #    else:
+            #        print("rho:", rho, "vS:", vS)
+            #else:
+            #    print("rho:", rho, "vP:", vP, vP_max, vP_min)
         #
         vPvS = round(vP/vS, 4)
         #
