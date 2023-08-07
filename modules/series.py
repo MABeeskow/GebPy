@@ -6,7 +6,7 @@
 # Name:		series.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		23.05.2023
+# Date:		07.08.2023
 
 #-----------------------------------------------
 
@@ -321,7 +321,7 @@ class Zechstein:
         steps_mudstone = np.linspace(actual_bottom, actual_top, self.resolution, endpoint=False)[::-1]
         for i in steps_mudstone:
             depth = round(i, 4)
-            container_mudstone[depth] = SiliciclasticRocks().create_mudstone(number=1, porosity=[0.0, 0.1])
+            container_mudstone[depth] = SiliciclasticRocks().create_mudstone_alt(number=1, porosity=[0.0, 0.1])
         #
         ## TEST
         # for key, value in reversed(container_anhydrite_upper.items()):
@@ -405,7 +405,7 @@ class Zechstein:
         steps_mudstone = np.linspace(actual_bottom, actual_top, self.resolution, endpoint=False)[::-1]
         for i in steps_mudstone:
             depth = round(i, 4)
-            container_mudstone[depth] = SiliciclasticRocks().create_mudstone(number=1, porosity=[0.0, 0.1])
+            container_mudstone[depth] = SiliciclasticRocks().create_mudstone_alt(number=1, porosity=[0.0, 0.1])
         #
         ## TEST
         # for key, value in reversed(container_anhydrite_upper.items()):
@@ -442,7 +442,7 @@ class Zechstein:
         steps_mudstone_upper = np.linspace(actual_bottom, actual_top, self.resolution, endpoint=False)[::-1]
         for i in steps_mudstone_upper:
             depth = round(i, 4)
-            container_mudstone_upper[depth] = SiliciclasticRocks().create_mudstone(number=1, porosity=[0.0, 0.1])
+            container_mudstone_upper[depth] = SiliciclasticRocks().create_mudstone_alt(number=1, porosity=[0.0, 0.1])
         actual_top += thickness_mudstone_upper
         actual_bottom += thickness_anhydrite
         #
@@ -461,7 +461,7 @@ class Zechstein:
         steps_mudstone_lower = np.linspace(actual_bottom, actual_top, self.resolution, endpoint=False)[::-1]
         for i in steps_mudstone_lower:
             depth = round(i, 4)
-            container_mudstone_lower[depth] = SiliciclasticRocks().create_mudstone(number=1, porosity=[0.0, 0.1])
+            container_mudstone_lower[depth] = SiliciclasticRocks().create_mudstone_alt(number=1, porosity=[0.0, 0.1])
         #
         ## TEST
         # for key, value in reversed(container_mudstone_upper.items()):
@@ -674,7 +674,7 @@ class Muschelkalk:
         steps_unit = np.linspace(actual_bottom, actual_top, self.resolution, endpoint=False)[::-1]
         for i in steps_unit:
             depth = round(i, 4)
-            container_mudstone_upper[depth] = SiliciclasticRocks().create_mudstone(number=1, porosity=[0.0, 0.1])
+            container_mudstone_upper[depth] = SiliciclasticRocks().create_mudstone_alt(number=1, porosity=[0.0, 0.1])
         actual_top += thickness_mudstone_upper
         actual_bottom += thickness_limestone_medium_upper
         #
@@ -714,7 +714,7 @@ class Muschelkalk:
         steps_unit = np.linspace(actual_bottom, actual_top, self.resolution, endpoint=False)[::-1]
         for i in steps_unit:
             depth = round(i, 4)
-            container_mudstone_medium[depth] = SiliciclasticRocks().create_mudstone(number=1, porosity=[0.0, 0.1])
+            container_mudstone_medium[depth] = SiliciclasticRocks().create_mudstone_alt(number=1, porosity=[0.0, 0.1])
         actual_top += thickness_mudstone_medium
         actual_bottom += thickness_limestone_medium_lower
         #
@@ -733,7 +733,7 @@ class Muschelkalk:
         steps_unit = np.linspace(actual_bottom, actual_top, self.resolution, endpoint=False)[::-1]
         for i in steps_unit:
             depth = round(i, 4)
-            container_mudstone_lower[depth] = SiliciclasticRocks().create_mudstone(number=1, porosity=[0.0, 0.1])
+            container_mudstone_lower[depth] = SiliciclasticRocks().create_mudstone_alt(number=1, porosity=[0.0, 0.1])
         actual_top += thickness_mudstone_lower
         actual_bottom += thickness_limestone_lower
         #
@@ -862,7 +862,7 @@ class Buntsandstein:
         steps_rock = np.linspace(actual_bottom, actual_top, self.resolution, endpoint=False)[::-1]
         for i in steps_rock:
             depth = round(i, 4)
-            container_mudstone_06[depth] = SiliciclasticRocks().create_mudstone(number=1, porosity=[0.0, 0.1])
+            container_mudstone_06[depth] = SiliciclasticRocks().create_mudstone_alt(number=1, porosity=[0.0, 0.1])
         actual_top += thickness_mudstone_06
         actual_bottom += thickness_sandstone_05
         #
@@ -880,7 +880,7 @@ class Buntsandstein:
         steps_rock = np.linspace(actual_bottom, actual_top, self.resolution, endpoint=False)[::-1]
         for i in steps_rock:
             depth = round(i, 4)
-            container_mudstone_05[depth] = SiliciclasticRocks().create_mudstone(number=1, porosity=[0.0, 0.1])
+            container_mudstone_05[depth] = SiliciclasticRocks().create_mudstone_alt(number=1, porosity=[0.0, 0.1])
         actual_top += thickness_mudstone_05
         actual_bottom += thickness_sandstone_04
         #
@@ -898,7 +898,7 @@ class Buntsandstein:
         steps_rock = np.linspace(actual_bottom, actual_top, self.resolution, endpoint=False)[::-1]
         for i in steps_rock:
             depth = round(i, 4)
-            container_mudstone_04[depth] = SiliciclasticRocks().create_mudstone(number=1, porosity=[0.0, 0.1])
+            container_mudstone_04[depth] = SiliciclasticRocks().create_mudstone_alt(number=1, porosity=[0.0, 0.1])
         actual_top += thickness_mudstone_04
         actual_bottom += thickness_sandstone_03
         #
@@ -916,7 +916,7 @@ class Buntsandstein:
         steps_rock = np.linspace(actual_bottom, actual_top, self.resolution, endpoint=False)[::-1]
         for i in steps_rock:
             depth = round(i, 4)
-            container_mudstone_03[depth] = SiliciclasticRocks().create_mudstone(number=1, porosity=[0.0, 0.1])
+            container_mudstone_03[depth] = SiliciclasticRocks().create_mudstone_alt(number=1, porosity=[0.0, 0.1])
         actual_top += thickness_mudstone_03
         actual_bottom += thickness_sandstone_02
         #
@@ -934,7 +934,7 @@ class Buntsandstein:
         steps_rock = np.linspace(actual_bottom, actual_top, self.resolution, endpoint=False)[::-1]
         for i in steps_rock:
             depth = round(i, 4)
-            container_mudstone_02[depth] = SiliciclasticRocks().create_mudstone(number=1, porosity=[0.0, 0.1])
+            container_mudstone_02[depth] = SiliciclasticRocks().create_mudstone_alt(number=1, porosity=[0.0, 0.1])
         actual_top += thickness_mudstone_02
         actual_bottom += thickness_sandstone_01
         #
@@ -952,7 +952,7 @@ class Buntsandstein:
         steps_rock = np.linspace(actual_bottom, actual_top, self.resolution, endpoint=False)[::-1]
         for i in steps_rock:
             depth = round(i, 4)
-            container_mudstone_01[depth] = SiliciclasticRocks().create_mudstone(number=1, porosity=[0.0, 0.1])
+            container_mudstone_01[depth] = SiliciclasticRocks().create_mudstone_alt(number=1, porosity=[0.0, 0.1])
         #
         ## TEST
         # for key, value in reversed(container_mudstone_01.items()):
@@ -1005,7 +1005,7 @@ class Buntsandstein:
         steps_rock = np.linspace(actual_bottom, actual_top, self.resolution, endpoint=False)[::-1]
         for i in steps_rock:
             depth = round(i, 4)
-            container_mudstone_04[depth] = SiliciclasticRocks().create_mudstone(number=1, porosity=[0.0, 0.1])
+            container_mudstone_04[depth] = SiliciclasticRocks().create_mudstone_alt(number=1, porosity=[0.0, 0.1])
         actual_top += thickness_mudstone_04
         actual_bottom += thickness_sandstone_06
         #
@@ -1023,7 +1023,7 @@ class Buntsandstein:
         steps_rock = np.linspace(actual_bottom, actual_top, self.resolution, endpoint=False)[::-1]
         for i in steps_rock:
             depth = round(i, 4)
-            container_mudstone_03[depth] = SiliciclasticRocks().create_mudstone(number=1, porosity=[0.0, 0.1])
+            container_mudstone_03[depth] = SiliciclasticRocks().create_mudstone_alt(number=1, porosity=[0.0, 0.1])
         actual_top += thickness_mudstone_03
         actual_bottom += thickness_sandstone_05
         #
@@ -1059,7 +1059,7 @@ class Buntsandstein:
         steps_rock = np.linspace(actual_bottom, actual_top, self.resolution, endpoint=False)[::-1]
         for i in steps_rock:
             depth = round(i, 4)
-            container_mudstone_02[depth] = SiliciclasticRocks().create_mudstone(number=1, porosity=[0.0, 0.1])
+            container_mudstone_02[depth] = SiliciclasticRocks().create_mudstone_alt(number=1, porosity=[0.0, 0.1])
         actual_top += thickness_mudstone_02
         actual_bottom += thickness_sandstone_02
         #
@@ -1077,7 +1077,7 @@ class Buntsandstein:
         steps_rock = np.linspace(actual_bottom, actual_top, self.resolution, endpoint=False)[::-1]
         for i in steps_rock:
             depth = round(i, 4)
-            container_mudstone_01[depth] = SiliciclasticRocks().create_mudstone(number=1, porosity=[0.0, 0.1])
+            container_mudstone_01[depth] = SiliciclasticRocks().create_mudstone_alt(number=1, porosity=[0.0, 0.1])
         actual_top += thickness_mudstone_01
         actual_bottom += thickness_sandstone_01
         #
@@ -1129,7 +1129,7 @@ class Buntsandstein:
         steps_rock = np.linspace(actual_bottom, actual_top, self.resolution, endpoint=False)[::-1]
         for i in steps_rock:
             depth = round(i, 4)
-            container_mudstone_03[depth] = SiliciclasticRocks().create_mudstone(number=1, porosity=[0.0, 0.1])
+            container_mudstone_03[depth] = SiliciclasticRocks().create_mudstone_alt(number=1, porosity=[0.0, 0.1])
         actual_top += thickness_mudstone_03
         actual_bottom += thickness_sandstone_03
         #
@@ -1147,7 +1147,7 @@ class Buntsandstein:
         steps_rock = np.linspace(actual_bottom, actual_top, self.resolution, endpoint=False)[::-1]
         for i in steps_rock:
             depth = round(i, 4)
-            container_mudstone_02[depth] = SiliciclasticRocks().create_mudstone(number=1, porosity=[0.0, 0.1])
+            container_mudstone_02[depth] = SiliciclasticRocks().create_mudstone_alt(number=1, porosity=[0.0, 0.1])
         actual_top += thickness_mudstone_02
         actual_bottom += thickness_sandstone_02
         #
@@ -1165,7 +1165,7 @@ class Buntsandstein:
         steps_rock = np.linspace(actual_bottom, actual_top, self.resolution, endpoint=False)[::-1]
         for i in steps_rock:
             depth = round(i, 4)
-            container_mudstone_01[depth] = SiliciclasticRocks().create_mudstone(number=1, porosity=[0.0, 0.1])
+            container_mudstone_01[depth] = SiliciclasticRocks().create_mudstone_alt(number=1, porosity=[0.0, 0.1])
         actual_top += thickness_mudstone_01
         actual_bottom += thickness_sandstone_01
         #
@@ -1216,7 +1216,7 @@ class Buntsandstein:
         steps_rock = np.linspace(actual_bottom, actual_top, self.resolution, endpoint=False)[::-1]
         for i in steps_rock:
             depth = round(i, 4)
-            container_mudstone_03[depth] = SiliciclasticRocks().create_mudstone(number=1, porosity=[0.0, 0.1])
+            container_mudstone_03[depth] = SiliciclasticRocks().create_mudstone_alt(number=1, porosity=[0.0, 0.1])
         actual_top += thickness_mudstone_03
         actual_bottom += thickness_sandstone_03
         #
@@ -1234,7 +1234,7 @@ class Buntsandstein:
         steps_rock = np.linspace(actual_bottom, actual_top, self.resolution, endpoint=False)[::-1]
         for i in steps_rock:
             depth = round(i, 4)
-            container_mudstone_02[depth] = SiliciclasticRocks().create_mudstone(number=1, porosity=[0.0, 0.1])
+            container_mudstone_02[depth] = SiliciclasticRocks().create_mudstone_alt(number=1, porosity=[0.0, 0.1])
         actual_top += thickness_mudstone_02
         actual_bottom += thickness_sandstone_02
         #
@@ -1252,7 +1252,7 @@ class Buntsandstein:
         steps_rock = np.linspace(actual_bottom, actual_top, self.resolution, endpoint=False)[::-1]
         for i in steps_rock:
             depth = round(i, 4)
-            container_mudstone_01[depth] = SiliciclasticRocks().create_mudstone(number=1, porosity=[0.0, 0.1])
+            container_mudstone_01[depth] = SiliciclasticRocks().create_mudstone_alt(number=1, porosity=[0.0, 0.1])
         actual_top += thickness_mudstone_01
         actual_bottom += thickness_sandstone_01
         #
@@ -1303,7 +1303,7 @@ class Buntsandstein:
         steps_rock = np.linspace(actual_bottom, actual_top, self.resolution, endpoint=False)[::-1]
         for i in steps_rock:
             depth = round(i, 4)
-            container_mudstone_01[depth] = SiliciclasticRocks().create_mudstone(number=1, porosity=[0.0, 0.1])
+            container_mudstone_01[depth] = SiliciclasticRocks().create_mudstone_alt(number=1, porosity=[0.0, 0.1])
         actual_top += thickness_mudstone_01
         actual_bottom += thickness_sandstone_01
         #
@@ -1351,7 +1351,7 @@ class Buntsandstein:
         steps_rock = np.linspace(actual_bottom, actual_top, self.resolution, endpoint=False)[::-1]
         for i in steps_rock:
             depth = round(i, 4)
-            container_mudstone_01[depth] = SiliciclasticRocks().create_mudstone(number=1, porosity=[0.0, 0.1])
+            container_mudstone_01[depth] = SiliciclasticRocks().create_mudstone_alt(number=1, porosity=[0.0, 0.1])
         #
         ## TEST
         # for key, value in reversed(container_mudstone_01.items()):
@@ -1478,7 +1478,7 @@ class Buntsandstein:
         steps_rock = np.linspace(actual_bottom, actual_top, self.resolution, endpoint=False)[::-1]
         for i in steps_rock:
             depth = round(i, 4)
-            container_mudstone_06[depth] = SiliciclasticRocks().create_mudstone(number=1, porosity=[0.0, 0.1])
+            container_mudstone_06[depth] = SiliciclasticRocks().create_mudstone_alt(number=1, porosity=[0.0, 0.1])
         actual_top += thickness_mudstone_06
         actual_bottom += thickness_anhydrite_03
         #
@@ -1497,7 +1497,7 @@ class Buntsandstein:
         steps_rock = np.linspace(actual_bottom, actual_top, self.resolution, endpoint=False)[::-1]
         for i in steps_rock:
             depth = round(i, 4)
-            container_mudstone_05[depth] = SiliciclasticRocks().create_mudstone(number=1, porosity=[0.0, 0.1])
+            container_mudstone_05[depth] = SiliciclasticRocks().create_mudstone_alt(number=1, porosity=[0.0, 0.1])
         actual_top += thickness_mudstone_05
         actual_bottom += thickness_anhydrite_02
         #
@@ -1516,7 +1516,7 @@ class Buntsandstein:
         steps_rock = np.linspace(actual_bottom, actual_top, self.resolution, endpoint=False)[::-1]
         for i in steps_rock:
             depth = round(i, 4)
-            container_mudstone_04[depth] = SiliciclasticRocks().create_mudstone(number=1, porosity=[0.0, 0.1])
+            container_mudstone_04[depth] = SiliciclasticRocks().create_mudstone_alt(number=1, porosity=[0.0, 0.1])
         actual_top += thickness_mudstone_04
         actual_bottom += thickness_sandstone_02
         #
@@ -1534,7 +1534,7 @@ class Buntsandstein:
         steps_rock = np.linspace(actual_bottom, actual_top, self.resolution, endpoint=False)[::-1]
         for i in steps_rock:
             depth = round(i, 4)
-            container_mudstone_03[depth] = SiliciclasticRocks().create_mudstone(number=1, porosity=[0.0, 0.1])
+            container_mudstone_03[depth] = SiliciclasticRocks().create_mudstone_alt(number=1, porosity=[0.0, 0.1])
         actual_top += thickness_mudstone_03
         actual_bottom += thickness_anhydrite_01
         #
@@ -1553,7 +1553,7 @@ class Buntsandstein:
         steps_rock = np.linspace(actual_bottom, actual_top, self.resolution, endpoint=False)[::-1]
         for i in steps_rock:
             depth = round(i, 4)
-            container_mudstone_02[depth] = SiliciclasticRocks().create_mudstone(number=1, porosity=[0.0, 0.1])
+            container_mudstone_02[depth] = SiliciclasticRocks().create_mudstone_alt(number=1, porosity=[0.0, 0.1])
         actual_top += thickness_mudstone_02
         actual_bottom += thickness_sandstone_01
         #
@@ -1571,7 +1571,7 @@ class Buntsandstein:
         steps_rock = np.linspace(actual_bottom, actual_top, self.resolution, endpoint=False)[::-1]
         for i in steps_rock:
             depth = round(i, 4)
-            container_mudstone_01[depth] = SiliciclasticRocks().create_mudstone(number=1, porosity=[0.0, 0.1])
+            container_mudstone_01[depth] = SiliciclasticRocks().create_mudstone_alt(number=1, porosity=[0.0, 0.1])
         #
         ## TEST
         # for key, value in reversed(container_mudstone_01.items()):
@@ -1601,7 +1601,7 @@ class Buntsandstein:
         steps_rock = np.linspace(actual_bottom, actual_top, self.resolution, endpoint=False)[::-1]
         for i in steps_rock:
             depth = round(i, 4)
-            container_mudstone_01[depth] = SiliciclasticRocks().create_mudstone(number=1, porosity=[0.0, 0.1])
+            container_mudstone_01[depth] = SiliciclasticRocks().create_mudstone_alt(number=1, porosity=[0.0, 0.1])
         actual_top += thickness_mudstone_01
         actual_bottom += thickness_limestone_01
         #
