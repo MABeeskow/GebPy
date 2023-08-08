@@ -6,7 +6,7 @@
 # Name:		chemistry.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		05.12.2022
+# Date:		08.08.2023
 
 # -----------------------------------------------
 
@@ -1243,8 +1243,8 @@ class OxideCompounds:
             var_amount_1 = int(var_amount_1)
             var_amount_2 = int(var_amount_2)
             #
-            molar_mass_total = round(var_amount_1*PeriodicSystem(name=var_element_1).get_data()[2] \
-                               + var_amount_2*PeriodicSystem(name=var_element_2).get_data()[2], 3)
+            molar_mass_total = round(var_amount_1*PeriodicSystem(name=var_element_1).get_data()[2]
+                                     + var_amount_2*PeriodicSystem(name=var_element_2).get_data()[2], 3)
             w_1 = round(var_amount_1*PeriodicSystem(name=var_element_1).get_data()[2]/molar_mass_total, 6)
             w_2 = round(var_amount_2*PeriodicSystem(name=var_element_2).get_data()[2]/molar_mass_total, 6)
             #

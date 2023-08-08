@@ -50,7 +50,7 @@ class CarbonateRocks:
         #
         self.data_water = Water.water("")
 
-    def create_limestone_alternative(self, number=1, composition=None, porosity=None):
+    def create_limestone(self, number=1, composition=None, porosity=None):
         data_alkalifeldspar = Tectosilicates(impurity="pure", data_type=True).create_alkalifeldspar()
         data_plagioclase = Tectosilicates(impurity="pure", data_type=True).create_plagioclase()
         data_illite = Phyllosilicates(impurity="pure", data_type=True).create_illite()

@@ -11,6 +11,8 @@
 #-----------------------------------------------
 
 ## MODULES
+# external
+from datetime import datetime
 import tkinter as tk
 from tkinter import ttk
 from tkinter import filedialog
@@ -23,6 +25,7 @@ import matplotlib as mpl
 from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, NavigationToolbar2Tk)
 import matplotlib.patches as mpatches
 from matplotlib.figure import Figure
+# internal
 from modules.gui_elements import SimpleElements
 from modules.oxides import Oxides
 from modules.carbonates import Carbonates, CarbonateRocks
@@ -2099,6 +2102,7 @@ class GebPyGUI(tk.Frame):
         self.sulfides_present = False
         self.phospides_present = False
         #
+        time_start = datetime.now()
         if var_name in self.oxide_minerals:         # Oxides
             self.data_mineral = Oxides(
                 mineral=var_name, data_type=True, traces_list=self.trace_elements).generate_dataset(
@@ -2168,6 +2172,9 @@ class GebPyGUI(tk.Frame):
                 mineral=var_name, data_type=True, traces_list=self.traces_list).generate_dataset(
                 number=self.gui_variables["Entry"]["Number Samples"].get())
             self.oxides_present = True
+        time_end = datetime.now()
+        time_delta = (time_end - time_start)*1000
+        print(f"Taken time: {time_delta.total_seconds()} ms")
         #
         self.list_compounds = []
         for key, dataset in self.data_mineral.items():
@@ -2441,7 +2448,7 @@ class GebPyGUI(tk.Frame):
         #
         ## Carbonate Rocks
         elif var_name == "Limestone":
-            data = CarbonateRocks(fluid="water", actualThickness=0).create_limestone_alternative(
+            data = CarbonateRocks(fluid="water", actualThickness=0).create_limestone(
                 number=self.gui_variables["Entry"]["Number Datapoints"].get(),
                 porosity=[self.gui_variables["Entry"]["Porosity Min"].get()/100,
                           self.gui_variables["Entry"]["Porosity Max"].get()/100])

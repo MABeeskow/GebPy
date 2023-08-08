@@ -70,7 +70,7 @@ class Zechstein:
         steps_limestone = np.linspace(actual_bottom, actual_top, self.resolution, endpoint=False)[::-1]
         for i in steps_limestone:
             depth = round(i, 4)
-            container_limestone[depth] = CarbonateRocks(fluid="water", actualThickness=0).create_limestone_alternative(
+            container_limestone[depth] = CarbonateRocks(fluid="water", actualThickness=0).create_limestone(
                 number=1, porosity=[0.0, 0.4])
         actual_top += thickness_limestone
         actual_bottom += thickness_kupferschiefer
@@ -510,7 +510,7 @@ class Muschelkalk:
             # container_limestone[depth] = limestone(fluid="water", actualThickness=0).create_simple_limestone(
             #     dict=True, porosity=rd.uniform(0.15, 0.4))
             container_limestone[depth] = CarbonateRocks(
-                fluid="water", actualThickness=0).create_limestone_alternative(number=1, porosity=[0.0, 0.4])
+                fluid="water", actualThickness=0).create_limestone(number=1, porosity=[0.0, 0.4])
         actual_top += thickness_limestone
         actual_bottom += thickness_dolomite
         #
@@ -665,7 +665,7 @@ class Muschelkalk:
         for i in steps_unit:
             depth = round(i, 4)
             container_limestone_upper[depth] = CarbonateRocks(
-                fluid="water", actualThickness=0).create_limestone_alternative(number=1, porosity=[0.0, 0.4])
+                fluid="water", actualThickness=0).create_limestone(number=1, porosity=[0.0, 0.4])
         actual_top += thickness_limestone_upper
         actual_bottom += thickness_mudstone_upper
         #
@@ -684,7 +684,7 @@ class Muschelkalk:
         for i in steps_unit:
             depth = round(i, 4)
             container_limestone_medium_upper[depth] = CarbonateRocks(
-                fluid="water", actualThickness=0).create_limestone_alternative(number=1, porosity=[0.0, 0.4])
+                fluid="water", actualThickness=0).create_limestone(number=1, porosity=[0.0, 0.4])
         actual_top += thickness_limestone_medium_upper
         actual_bottom += thickness_marl
         #
@@ -705,7 +705,7 @@ class Muschelkalk:
         for i in steps_unit:
             depth = round(i, 4)
             container_limestone_medium_medium[depth] = CarbonateRocks(
-                fluid="water", actualThickness=0).create_limestone_alternative(number=1, porosity=[0.0, 0.4])
+                fluid="water", actualThickness=0).create_limestone(number=1, porosity=[0.0, 0.4])
         actual_top += thickness_limestone_medium_medium
         actual_bottom += thickness_mudstone_medium
         #
@@ -724,7 +724,7 @@ class Muschelkalk:
         for i in steps_unit:
             depth = round(i, 4)
             container_limestone_medium_lower[depth] = CarbonateRocks(
-                fluid="water", actualThickness=0).create_limestone_alternative(number=1, porosity=[0.0, 0.4])
+                fluid="water", actualThickness=0).create_limestone(number=1, porosity=[0.0, 0.4])
         actual_top += thickness_limestone_medium_lower
         actual_bottom += thickness_mudstone_lower
         #
@@ -743,7 +743,7 @@ class Muschelkalk:
         for i in steps_unit:
             depth = round(i, 4)
             container_limestone_lower[depth] = CarbonateRocks(
-                fluid="water", actualThickness=0).create_limestone_alternative(number=1, porosity=[0.0, 0.4])
+                fluid="water", actualThickness=0).create_limestone(number=1, porosity=[0.0, 0.4])
         #
         ## TEST
         # for key, value in reversed(container_limestone_lower.items()):
@@ -1611,7 +1611,7 @@ class Buntsandstein:
         for i in steps_unit:
             depth = round(i, 4)
             container_limestone_01[depth] = CarbonateRocks(
-                fluid="water", actualThickness=0).create_limestone_alternative(number=1, porosity=[0.2, 0.4])
+                fluid="water", actualThickness=0).create_limestone(number=1, porosity=[0.2, 0.4])
         #
         ## TEST
         # for key, value in reversed(container_mudstone_01.items()):
