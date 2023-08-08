@@ -6,7 +6,7 @@
 # Name:		gebpy_app.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		15.07.2023
+# Date:		08.08.2023
 
 #-----------------------------------------------
 
@@ -6348,7 +6348,7 @@ class GebPyGUI(tk.Frame):
                     elif var_rock == "Anhydrite":
                         if var_rock not in self.unit_sections:
                             self.unit_sections[var_rock] = {"Intervals": [], "Color": "orchid"}
-                    elif var_rock == "Dolomite":
+                    elif var_rock == "Dolostone":
                         if var_rock not in self.unit_sections:
                             self.unit_sections[var_rock] = {"Intervals": [], "Color": "lightcyan"}
                     elif var_rock == "Rock Salt":

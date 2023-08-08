@@ -6,7 +6,7 @@
 # Name:		series.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		07.08.2023
+# Date:		08.08.2023
 
 #-----------------------------------------------
 
@@ -36,7 +36,7 @@ class Zechstein:
         self.actual_thickness = actual_thickness
     #
     def export_lithological_keys(self):
-        list_keys = ["Kupferschiefer", "Limestone", "Anhydrite", "Dolomite", "Rock Salt", "Potash", "Mudstone"]
+        list_keys = ["Kupferschiefer", "Limestone", "Anhydrite", "Dolostone", "Rock Salt", "Potash", "Mudstone"]
         list_keys.sort()
         #
         return list_keys
@@ -119,7 +119,7 @@ class Zechstein:
             thickness_rocksalt_upper = round(thickness_z2 * fraction_rocksalt_upper, 4)
             thickness_anhydrite_upper = round(thickness_z2 * fraction_anhydrite_upper, 4)
             list_units = ["Anhydrite (upper)", "Rock Salt (upper)", "Potash", "Rock Salt (lower)", "Anhydrite (lower)",
-                          "Dolomite"]
+                          "Dolostone"]
             list_thickness = [thickness_anhydrite_upper, thickness_rocksalt_upper, thickness_potash,
                               thickness_rocksalt_lower, thickness_anhydrite_lower, thickness_dolomite]
             for thickness in list_thickness:
@@ -184,12 +184,12 @@ class Zechstein:
         actual_top += thickness_anhydrite_lower
         actual_bottom += thickness_dolomite
         #
-        ## Create Dolomite Unit
+        ## Create Dolostone Unit
         container_dolomite = {}
         steps_dolomite = np.linspace(actual_bottom, actual_top, self.resolution, endpoint=False)[::-1]
         for i in steps_dolomite:
             depth = round(i, 4)
-            container_dolomite[depth] = CarbonateRocks().create_dolomite(number=1, porosity=[0.1, 0.4])
+            container_dolomite[depth] = CarbonateRocks().create_dolostone(number=1, porosity=[0.1, 0.4])
         actual_top += thickness_dolomite
         actual_bottom += thickness_dolomite
         #
@@ -483,7 +483,7 @@ class Muschelkalk:
         self.actual_thickness = actual_thickness
     #
     def export_lithological_keys(self):
-        list_keys = ["Marl", "Dolomite", "Limestone", "Anhydrite", "Mudstone"]
+        list_keys = ["Marl", "Dolostone", "Limestone", "Anhydrite", "Mudstone"]
         list_keys.sort()
         #
         return list_keys
@@ -514,13 +514,13 @@ class Muschelkalk:
         actual_top += thickness_limestone
         actual_bottom += thickness_dolomite
         #
-        ## Create Dolomite Unit
+        ## Create Dolostone Unit
         container_dolomite = {}
         steps_dolomite = np.linspace(actual_bottom, actual_top, self.resolution, endpoint=False)[::-1]
         for i in steps_dolomite:
             depth = round(i, 4)
             container_dolomite[depth] = CarbonateRocks(
-                fluid="water", actualThickness=0).create_dolomite(number=1, porosity=[0.1, 0.2])
+                fluid="water", actualThickness=0).create_dolostone(number=1, porosity=[0.1, 0.2])
         actual_top += thickness_dolomite
         actual_bottom += thickness_marl
         #
@@ -564,13 +564,13 @@ class Muschelkalk:
         actual_top = top_unit
         actual_bottom = top_unit + thickness_dolomite_upper
         #
-        ## Create Dolomite upper Unit
+        ## Create Dolostone upper Unit
         container_dolomite_upper = {}
         steps_unit = np.linspace(actual_bottom, actual_top, self.resolution, endpoint=False)[::-1]
         for i in steps_unit:
             depth = round(i, 4)
             container_dolomite_upper[depth] = CarbonateRocks(
-                fluid="water", actualThickness=0).create_dolomite(number=1, porosity=[0.1, 0.2])
+                fluid="water", actualThickness=0).create_dolostone(number=1, porosity=[0.1, 0.2])
         actual_top += thickness_dolomite_upper
         actual_bottom += thickness_marl
         #
@@ -585,13 +585,13 @@ class Muschelkalk:
         actual_top += thickness_marl
         actual_bottom += thickness_dolomite_medium
         #
-        ## Create Dolomite medium Unit
+        ## Create Dolostone medium Unit
         container_dolomite_medium = {}
         steps_unit = np.linspace(actual_bottom, actual_top, self.resolution, endpoint=False)[::-1]
         for i in steps_unit:
             depth = round(i, 4)
             container_dolomite_medium[depth] = CarbonateRocks(
-                fluid="water", actualThickness=0).create_dolomite(number=1, porosity=[0.1, 0.2])
+                fluid="water", actualThickness=0).create_dolostone(number=1, porosity=[0.1, 0.2])
         actual_top += thickness_dolomite_medium
         actual_bottom += thickness_anhydrite
         #
@@ -605,13 +605,13 @@ class Muschelkalk:
         actual_top += thickness_anhydrite
         actual_bottom += thickness_dolomite_lower
         #
-        ## Create Dolomite lower Unit
+        ## Create Dolostone lower Unit
         container_dolomite_lower = {}
         steps_unit = np.linspace(actual_bottom, actual_top, self.resolution, endpoint=False)[::-1]
         for i in steps_unit:
             depth = round(i, 4)
             container_dolomite_lower[depth] = CarbonateRocks(
-                fluid="water", actualThickness=0).create_dolomite(number=1, porosity=[0.1, 0.2])
+                fluid="water", actualThickness=0).create_dolostone(number=1, porosity=[0.1, 0.2])
         #
         ## TEST
         # for key, value in reversed(container_anhydrite.items()):
