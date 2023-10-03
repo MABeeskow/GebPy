@@ -6,7 +6,7 @@
 # Name:		chemistry.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		08.08.2023
+# Date:		04.10.2023
 
 # -----------------------------------------------
 
@@ -1224,37 +1224,40 @@ class OxideCompounds:
         self.amounts_helper = {}
         for item in self.var_amounts:
             self.amounts_helper[item[0]] = item[2]
+        self.oxide_masses = {
+            "H2O": round(2*1.008 + 15.999, 3), "B2O3": round(2*10.806 + 3*15.999, 3),
+            "CO2": round(12.009 + 2*15.999, 3), "Na2O": round(2*22.990 + 15.999, 3), "MgO": round(24.304 + 15.999, 3),
+            "Al2O3": round(2*26.982 + 3*15.999, 3), "SiO2": round(28.084 + 2*15.999, 3),
+            "K2O": round(2*39.098 + 15.999, 3), "CaO": round(40.078 + 15.999, 3), "FeO": round(55.845 + 15.999, 3)}
     #
     def get_composition(self): # see element to stoichiometric oxide conversion factors
         result = {"Oxide": [self.var_compound]}
-        #
         key = re.search("(\D+)(\d*)(\D+)(\d*)", self.var_compound)
         if key:
             var_element_1 = key.group(1)
             var_amount_1 = key.group(2)
             var_element_2 = key.group(3)
             var_amount_2 = key.group(4)
-            #
+
             if var_amount_1 == "":
                 var_amount_1 = 1
             if var_amount_2 == "":
                 var_amount_2 = 1
-            #
+
             var_amount_1 = int(var_amount_1)
             var_amount_2 = int(var_amount_2)
-            #
-            molar_mass_total = round(var_amount_1*PeriodicSystem(name=var_element_1).get_data()[2]
-                                     + var_amount_2*PeriodicSystem(name=var_element_2).get_data()[2], 3)
+
+            molar_mass_total = self.oxide_masses[self.var_compound]
             w_1 = round(var_amount_1*PeriodicSystem(name=var_element_1).get_data()[2]/molar_mass_total, 6)
             w_2 = round(var_amount_2*PeriodicSystem(name=var_element_2).get_data()[2]/molar_mass_total, 6)
-            #
+
             w_oxide = round(self.amounts_helper[var_element_1]*1/w_1, 6)
-            #
+
             result["Oxide"] = [molar_mass_total, w_oxide]
             result[var_element_1] = [int(var_amount_1), w_1]
             result[var_element_2] = [int(var_amount_2), w_2]
             result["Conversion"] = round(1/w_1, 6)
-        #
+
         return result
 #
 class DataProcessing():
