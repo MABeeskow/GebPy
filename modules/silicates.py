@@ -18,7 +18,7 @@ from modules.chemistry import PeriodicSystem, DataProcessing, OxideCompounds
 from modules.minerals import CrystalPhysics
 from modules.geophysics import BoreholeGeophysics as bg
 from modules.geophysics import WellLog as wg
-from modules.geochemistry import MineralChemistry
+from modules.geochemistry import MineralChemistry, TraceElements
 
 # TECTOSILICATES
 class Tectosilicates:
@@ -29,7 +29,7 @@ class Tectosilicates:
         self.impurity = impurity
         self.data_type = data_type
         self.mineral = mineral
-        #
+
         ## Chemistry
         self.boron = ["B", 5, 10.806]
         self.carbon = ["C", 6, 12.011]
@@ -112,32 +112,22 @@ class Tectosilicates:
 
         # Major Elements
         majors_name = ["O", "Na", "Al", "Si", "K"]
-        # Minor elements
-        traces_data = []
+        ## Trace elements
+        element_traces = {
+            "4+": [],
+            "3+": ["Fe"],
+            "2+": ["Mg", "Ca", "Pb"],
+            "1+": ["Li", "Cs", "Rb", "K"],
+            "All": ["Fe", "Mg", "Ca", "Pb", "Li", "Cs", "Rb", "K"]}
+
         if len(self.traces_list) > 0:
             self.impurity = "impure"
-        if self.impurity == "pure":
             var_state = "variable"
         else:
-            var_state = "variable"
-            if self.impurity == "random":
-                self.traces_list = []
-                minors = ["Fe", "Ca", "Na", "Li", "Cs", "Rb", "Pb"]
-                n = rd.randint(1, len(minors))
-                while len(self.traces_list) < n:
-                    selection = rd.choice(minors)
-                    if selection not in self.traces_list and selection not in majors_name:
-                        self.traces_list.append(selection)
-                    else:
-                        continue
-            traces = [PeriodicSystem(name=i).get_data() for i in self.traces_list]
-            x_traces = [round(rd.uniform(0., 0.001), 6) for i in range(len(self.traces_list))]
-            for i in range(len(self.traces_list)):
-                traces_data.append([str(self.traces_list[i]), int(traces[i][1]), float(x_traces[i])])
-            if len(traces_data) > 0:
-                traces_data = np.array(traces_data, dtype=object)
-                traces_data = traces_data[traces_data[:, 1].argsort()]
+            self.impurity == "pure"
+            var_state = "fixed"
 
+        #compositon_data = TraceElements(tracer=self.traces_list).calculate_composition_alkaline_feldspar()
         ## Molar mass
         condition = False
         while condition == False:
@@ -9932,13 +9922,28 @@ class Inosilicates:
 # CYCLOSILICATES
 class Cyclosilicates:
     """ Class that generates geophysical and geochemical data of cyclosilicate minerals"""
-    #
     def __init__(self, traces_list=[], impurity="pure", data_type=False, mineral=None):
         self.traces_list = traces_list
         self.impurity = impurity
         self.data_type = data_type
         self.mineral = mineral
-    #
+
+        # Chemistry
+        self.hydrogen = ["H", 1, 1.008]
+        self.lithium = ["Li", 3, 6.938]
+        self.boron = ["B", 5, 10.806]
+        self.carbon = ["C", 6, 12.011]
+        self.oxygen = ["O", 8, 15.999]
+        self.flourine = ["F", 9, 18.998]
+        self.sodium = ["Na", 11, 22.990]
+        self.magnesium = ["Mg", 12, 24.304]
+        self.aluminium = ["Al", 13, 26.982]
+        self.silicon = ["Si", 14, 28.085]
+        self.chlorine = ["Cl", 17, 35.450]
+        self.potassium = ["K", 19, 39.098]
+        self.calcium = ["Ca", 20, 40.078]
+        self.iron = ["Fe", 26, 55.845]
+
     def generate_dataset(self, number):
         dataset = {}
         #
@@ -9967,7 +9972,7 @@ class Cyclosilicates:
                         dataset[key].append(value)
                 elif key in ["mineral", "state", "trace elements"] and key not in dataset:
                     dataset[key] = value
-                elif key in ["chemistry"]:
+                elif key in ["chemistry", "compounds"]:
                     if key not in dataset:
                         dataset[key] = {}
                         for key_2, value_2 in value.items():
@@ -10490,22 +10495,9 @@ class Cyclosilicates:
         #
         return results
     #
-    def create_elbaite(self):   # Na Li2.5 Al6.5 (BO3)3 Si6 O18 (OH)4
+    def create_elbaite(self, x_value=None, enrichment=None):   # Na Li2.5 Al6.5 (BO3)3 Si6 O18 (OH)4
         # Major elements
-        hydrogen = PeriodicSystem(name="H").get_data()
-        lithium = PeriodicSystem(name="Li").get_data()
-        boron = PeriodicSystem(name="B").get_data()
-        oxygen = PeriodicSystem(name="O").get_data()
-        sodium = PeriodicSystem(name="Na").get_data()
-        aluminium = PeriodicSystem(name="Al").get_data()
-        silicon = PeriodicSystem(name="Si").get_data()
         majors_name = ["H", "Li", "B", "O", "Na", "Al", "Si"]
-        #
-        majors_data = np.array([["H", hydrogen[1], 4, hydrogen[2]], ["Li", lithium[1], 1.5, lithium[2]],
-                                ["B", boron[1], 3, boron[2]], ["O", oxygen[1], 3*3+18+4, oxygen[2]],
-                                ["Na", sodium[1], 1, sodium[2]], ["Al", aluminium[1], 6+1.5, aluminium[2]],
-                                ["Si", silicon[1], 6, silicon[2]]], dtype=object)
-        #
         # Minor elements
         traces_data = []
         if len(self.traces_list) > 0:
@@ -10531,23 +10523,85 @@ class Cyclosilicates:
             if len(traces_data) > 0:
                 traces_data = np.array(traces_data, dtype=object)
                 traces_data = traces_data[traces_data[:, 1].argsort()]
-        #
+
         mineral = "Tour"
-        #
-        # Molar mass
-        molar_mass_pure = sodium[2] + 1.5*lithium[2] + 1.5*aluminium[2] + 6*aluminium[2] \
-                          + (6*silicon[2] + 18*oxygen[2]) + 3*(boron[2] + 3*oxygen[2]) + 4*(oxygen[2] + hydrogen[2])
-        molar_mass, amounts = MineralChemistry(w_traces=traces_data, molar_mass_pure=molar_mass_pure,
-                                               majors=majors_data).calculate_molar_mass()
-        element = [PeriodicSystem(name=amounts[i][0]).get_data() for i in range(len(amounts))]
+
+        ## Molar mass
+        condition = False
+        while condition == False:
+            if x_value == None:
+                if enrichment == None:
+                    #x = round(rd.uniform(0, 1), 4)
+                    x = round(rd.uniform(5/6 - 1/24, 5/6 + 1/24), 4)
+                elif enrichment == "Li":
+                    x = round(rd.uniform(0.80, 0.85), 4)
+                elif enrichment == "Al":
+                    x = round(rd.uniform(0.15, 0.20), 4)
+            else:
+                x = x_value
+
+            majors_data = np.array([
+                ["H", self.hydrogen[1], 4, self.hydrogen[2]], ["Li", self.lithium[1], 3*x, self.lithium[2]],
+                ["B", self.boron[1], 3, self.boron[2]], ["O", self.oxygen[1], 3*3 + 18 + 4, self.oxygen[2]],
+                ["Na", self.sodium[1], 1, self.sodium[2]], ["Al", self.aluminium[1], 6 + 3*(1 - x), self.aluminium[2]],
+                ["Si", self.silicon[1], 6, self.silicon[2]]], dtype=object)
+
+            molar_mass_pure = (self.sodium[2] + 3*(x*self.lithium[2] + (1 - x)*self.aluminium[2]) + 6*self.aluminium[2] +
+                               (6*self.silicon[2] + 18*self.oxygen[2]) + 3*(self.boron[2] + 3*self.oxygen[2]) +
+                               4*(self.oxygen[2] + self.hydrogen[2]))
+            molar_mass, amounts = MineralChemistry(
+                w_traces=traces_data, molar_mass_pure=molar_mass_pure, majors=majors_data).calculate_molar_mass()
+            element = [PeriodicSystem(name=amounts[i][0]).get_data() for i in range(len(amounts))]
+
+            majors_data_ideal = np.array([
+                ["H", self.hydrogen[1], 4, self.hydrogen[2]], ["Li", self.lithium[1], 2.5, self.lithium[2]],
+                ["B", self.boron[1], 3, self.boron[2]], ["O", self.oxygen[1], 3*3 + 18 + 4, self.oxygen[2]],
+                ["Na", self.sodium[1], 1, self.sodium[2]], ["Al", self.aluminium[1], 6 + 0.5, self.aluminium[2]],
+                ["Si", self.silicon[1], 6, self.silicon[2]]], dtype=object)
+
+            molar_mass_pure_ideal = (
+                    self.sodium[2] + 2.5*self.lithium[2] + 0.5*self.aluminium[2] + 6*self.aluminium[2] +
+                    (6*self.silicon[2] + 18*self.oxygen[2]) + 3*(self.boron[2] + 3*self.oxygen[2]) +
+                    4*(self.oxygen[2] + self.hydrogen[2]))
+            molar_mass_ideal, amounts_ideal = MineralChemistry(
+                w_traces=traces_data, molar_mass_pure=molar_mass_pure_ideal,
+                majors=majors_data_ideal).calculate_molar_mass()
+            element_ideal = [PeriodicSystem(name=amounts_ideal[i][0]).get_data() for i in range(len(amounts_ideal))]
+            ## Oxide Composition
+            list_oxides = ["H2O", "Li2O", "B2O3", "Na2O", "Al2O3", "SiO2"]
+            composition_oxides = {}
+            w_oxide_total = 0
+            for index, var_oxide in enumerate(list_oxides):
+                if index < len(list_oxides) - 1:
+                    oxide_data = OxideCompounds(var_compound=var_oxide, var_amounts=amounts).get_composition()
+                    if self.impurity == "pure":
+                        composition_oxides[var_oxide] = round(oxide_data["Oxide"][1], 4)
+                    else:
+                        composition_oxides[var_oxide] = round(oxide_data["Oxide"][1], 6)
+                    w_oxide_total += composition_oxides[var_oxide]
+                else:
+                    if self.impurity == "pure":
+                        composition_oxides[var_oxide] = round(1 - w_oxide_total, 4)
+                    else:
+                        composition_oxides[var_oxide] = round(1 - w_oxide_total, 6)
+
+            if np.isclose(np.sum(list(composition_oxides.values())), 1.0000) == True:
+                condition = True
+            else:
+                pass
         # Density
         dataV = CrystalPhysics([[15.838, 7.103], [], "trigonal"])
         V = dataV.calculate_volume()
         Z = 3
-        V_m = MineralChemistry().calculate_molar_volume(volume_cell=V, z=Z)
+        V_m_pre = MineralChemistry().calculate_molar_volume(volume_cell=V, z=Z)
         dataRho = CrystalPhysics([molar_mass, Z, V])
         rho = dataRho.calculate_bulk_density()
         rho_e = wg(amounts=amounts, elements=element, rho_b=rho).calculate_electron_density()
+
+        dataRho_ideal = CrystalPhysics([molar_mass_ideal, Z, V])
+        rho_ideal = dataRho_ideal.calculate_bulk_density()
+        rho_e_ideal = wg(amounts=amounts_ideal, elements=element_ideal, rho_b=rho_ideal).calculate_electron_density()
+        V_m = (rho/rho_ideal)*V_m_pre
         # Bulk modulus
         K = 99.47*10**9    # estimated
         # Shear modulus
@@ -10569,7 +10623,7 @@ class Cyclosilicates:
         U = pe*rho_e*10**(-3)
         # Electrical resistivity
         p = None
-        #
+        # Results
         results = {}
         results["mineral"] = mineral
         results["M"] = round(molar_mass, 3)
@@ -10578,6 +10632,9 @@ class Cyclosilicates:
         results["chemistry"] = {}
         for index, element in enumerate(element_list, start=0):
             results["chemistry"][element] = amounts[index][2]
+        results["compounds"] = {}
+        for index, oxide in enumerate(list_oxides, start=0):
+            results["compounds"][oxide] = composition_oxides[oxide]
         results["rho"] = round(rho, 4)
         results["rho_e"] = round(rho_e, 4)
         results["V"] = round(V_m, 4)
@@ -10595,9 +10652,9 @@ class Cyclosilicates:
             results["p"] = round(p, 4)
         else:
             results["p"] = p
-        #
+
         return results
-    #
+
     def create_liddicoatite(self):   # Ca Li2 Al7 (BO3)3 Si6 O18 (OH)4
         # Major elements
         hydrogen = PeriodicSystem(name="H").get_data()

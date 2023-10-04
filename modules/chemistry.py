@@ -1225,8 +1225,9 @@ class OxideCompounds:
         for item in self.var_amounts:
             self.amounts_helper[item[0]] = item[2]
         self.oxide_masses = {
-            "H2O": round(2*1.008 + 15.999, 3), "B2O3": round(2*10.806 + 3*15.999, 3),
-            "CO2": round(12.009 + 2*15.999, 3), "Na2O": round(2*22.990 + 15.999, 3), "MgO": round(24.304 + 15.999, 3),
+            "H2O": round(2*1.008 + 15.999, 3), "Li2O": round(2*6.938 + 15.999, 3),
+            "B2O3": round(2*10.806 + 3*15.999, 3), "CO2": round(12.009 + 2*15.999, 3),
+            "Na2O": round(2*22.990 + 15.999, 3), "MgO": round(24.304 + 15.999, 3),
             "Al2O3": round(2*26.982 + 3*15.999, 3), "SiO2": round(28.084 + 2*15.999, 3),
             "K2O": round(2*39.098 + 15.999, 3), "CaO": round(40.078 + 15.999, 3), "FeO": round(55.845 + 15.999, 3)}
     #

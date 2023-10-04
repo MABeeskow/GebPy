@@ -1961,7 +1961,7 @@ class GebPyGUI(tk.Frame):
                 command=lambda var_traces=var_traces: self.change_oxidation_state(var_traces))
             #
             self.gui_elements_sub["Trace Elements"]["Static"]["Radiobutton"].append(rb_oxidation_state)
-        #
+
         self.change_oxidation_state(var_traces=var_traces, first_run=True)
     #
     def change_oxidation_state(self, var_traces, first_run=False):
@@ -1973,9 +1973,9 @@ class GebPyGUI(tk.Frame):
                     for gui_item in self.gui_elements_sub["Trace Elements"]["Temporary"][category]:
                         gui_item.grid_remove()
                     self.gui_elements_sub["Trace Elements"]["Temporary"][category].clear()
-        #
+
         oxidation_state = self.oxidation_states[self.gui_variables["Radiobutton"]["Oxidation State"].get()]
-        #
+
         for index, trace_element in enumerate(var_traces[oxidation_state]):
             if index == 0:
                 ## Labels
