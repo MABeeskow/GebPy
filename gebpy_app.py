@@ -319,7 +319,7 @@ class GebPyGUI(tk.Frame):
             elif mineral_group == "Tectosilicates":
                 sub_tectosilicates = tk.Menu(sub_mineral_groups, tearoff=0)
                 self.tectosilicate_minerals = [
-                    "Alkaline Feldspar", "Plagioclase", "Scapolite", "Danburite", "Nepheline"]
+                    "Alkaline Feldspar", "Plagioclase", "Scapolite", "Danburite", "Nepheline", "Orthoclase"]
                 self.tectosilicate_minerals.sort()
                 for mineral in self.tectosilicate_minerals:
                     sub_tectosilicates.add_command(
@@ -679,7 +679,7 @@ class GebPyGUI(tk.Frame):
         self.gui_variables["Entry"]["Trace Elements"]["Minimum"] = {}
         self.gui_variables["Entry"]["Trace Elements"]["Maximum"] = {}
         self.trace_elements_all = {"All": []}
-        categories_short = ["M", "V", "rho", "vP", "vS", "vP/vS", "K", "G", "E", "nu", "GR", "PE"]
+        categories_short = ["M", "V", "rho", "vP", "vS", "vP/vS", "K", "G", "E", "nu", "GR", "PE", "U"]
         for category in categories_short:
             self.gui_variables["Entry"]["Minimum"][category] = tk.StringVar()
             self.gui_variables["Entry"]["Minimum"][category].set(0.0)
@@ -1393,8 +1393,8 @@ class GebPyGUI(tk.Frame):
                 ## TREE VIEW
                 categories = [
                     "M (kg/mol)", "V (\u00C5\u00B3/mol)", "rho (kg/m\u00B3)", "vP (m/s)", "vS (m/s)", "vP/vS (1)",
-                    "K (GPa)", "G (GPa)", "E (GPa)", "nu (1)", "GR (API)", "PE (barns/e\u207B)"]
-                categories_short = ["M", "V", "rho", "vP", "vS", "vP/vS", "K", "G", "E", "nu", "GR", "PE"]
+                    "K (GPa)", "G (GPa)", "E (GPa)", "nu (1)", "GR (API)", "PE (barns/e\u207B)", "U (barns/cm\u00B3)"]
+                categories_short = ["M", "V", "rho", "vP", "vS", "vP/vS", "K", "G", "E", "nu", "GR", "PE", "U"]
                 list_categories = ["Category", "Minimum", "Maximum", "Mean", "Standard Deviation"]
                 list_width = list(75*np.ones(len(list_categories)))
                 list_width = [int(item) for item in list_width]
@@ -1884,7 +1884,10 @@ class GebPyGUI(tk.Frame):
             elif var_name in self.sulfide_minerals:
                 data_mineral = Sulfides(mineral=var_name, data_type=True).get_data()
                 self.trace_elements_all = data_mineral["trace elements"]
-            #
+            elif var_name in self.tectosilicate_minerals:
+                data_mineral = Tectosilicates(mineral=var_name, data_type=True).get_data()
+                self.trace_elements_all = data_mineral["trace elements"]
+
             if self.btn_traces == None:
                 self.btn_traces = SimpleElements(
                     parent=self.parent, row_id=15, column_id=16, n_rows=2, n_columns=15,
@@ -1892,9 +1895,9 @@ class GebPyGUI(tk.Frame):
                     text="Trace Elements",
                     command=lambda var_traces=self.trace_elements_all:
                     self.select_trace_elements(var_traces))
-            #
+
             self.gui_elements["Temporary"]["Button"].append(self.btn_traces)
-    #
+
     def select_trace_elements(self, var_traces):
         #
         self.window_trace_elements = tk.Toplevel(self.parent)
@@ -2156,7 +2159,7 @@ class GebPyGUI(tk.Frame):
             self.oxides_present = True
         elif var_name in self.tectosilicate_minerals:   # Tectosilicates
             self.data_mineral = Tectosilicates(
-                mineral=var_name, data_type=True, traces_list=self.traces_list).generate_dataset(
+                mineral=var_name, data_type=True, traces_list=self.trace_elements).generate_dataset(
                 number=self.gui_variables["Entry"]["Number Samples"].get())
             self.oxides_present = True
         elif var_name in self.nesosilicate_minerals:   # Nesosilicates

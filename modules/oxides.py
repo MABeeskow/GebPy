@@ -317,14 +317,14 @@ class Oxides():
             "1+": ["H", "Li", "Na", "Ag", "K"],
             "All": ["Ti", "Ge", "Sn", "C", "Al", "Fe", "Ga", "As", "B", "P", "H", "Li", "Na", "Ag", "K", "Mg", "Cu",
                     "Be", "Mn"]}
-        #
+
         if len(self.traces_list) > 0:
             self.impurity = "impure"
             var_state = "variable"
         else:
             self.impurity == "pure"
             var_state = "fixed"
-        #
+
         compositon_data = TraceElements(tracer=self.traces_list).calculate_composition_quartz()
         #
         ## Molar mass
