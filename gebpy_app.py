@@ -1106,7 +1106,11 @@ class GebPyGUI(tk.Frame):
                                     step_y = round(step_y, n_digits_y)
                                 else:
                                     step_y = int(round(step_y, n_digits_y))
-                                y_ticks = np.arange(y_min, y_max + step_y, step_y)
+                                if step_y > 0:
+                                    y_ticks = np.arange(y_min, y_max + step_y, step_y)
+                                else:
+                                    step_y = (1.1*y_max - 0.9*y_min)/10
+                                    y_ticks = np.arange(y_min - step_y, y_max + step_y, step_y)
 
                                 ax_mp_scatter[i][j].set_xlim(left=x_min, right=x_max)
                                 ax_mp_scatter[i][j].set_ylim(bottom=y_min, top=y_max)
