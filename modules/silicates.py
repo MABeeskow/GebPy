@@ -100,7 +100,8 @@ class Tectosilicates:
                         dataset[key] = [value]
                     else:
                         dataset[key].append(value)
-                elif key in ["mineral", "state", "trace elements"] and key not in dataset:
+                elif (key in ["mineral", "state", "trace elements", "major elements", "major compounds"] and key
+                      not in dataset):
                     dataset[key] = value
                 elif key in ["chemistry", "compounds"]:
                     if key not in dataset:
@@ -719,6 +720,7 @@ class Tectosilicates:
         name = "Fsp"
         # Major Elements
         majors_name = ["O", "Al", "Si", "K"]
+        major_compounds = ["Al2O3", "SiO2", "K2O"]
         # Trace elements
         element_traces = {
             "2+": ["Ba", "Ca", "Fe"],
@@ -732,10 +734,7 @@ class Tectosilicates:
             self.impurity == "pure"
             var_state = "fixed"
 
-        #compositon_data = TraceElements(tracer=self.traces_list).calculate_composition_orthoclase()
-
         # Molar mass
-        ## Molar mass
         molar_mass_pure = round(self.potassium[2] + self.aluminium[2] + 3*self.silicon[2] + 8*self.oxygen[2], 3)
         condition = False
         while condition == False:
@@ -831,6 +830,8 @@ class Tectosilicates:
         results["PE"] = round(pe, 4)
         results["U"] = round(U, 4)
         results["trace elements"] = element_traces
+        results["major elements"] = majors_name
+        results["major compounds"] = major_compounds
         if p != None:
             results["p"] = round(p, 4)
         else:

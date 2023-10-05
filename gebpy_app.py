@@ -6,7 +6,7 @@
 # Name:		gebpy_app.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		04.10.2023
+# Date:		05.10.2023
 
 #-----------------------------------------------
 
@@ -960,12 +960,19 @@ class GebPyGUI(tk.Frame):
                                     np.linspace(x_min, x_max, 4, dtype=float, endpoint=True), n_digits))
                                 ax_mp_histo[i][j].set_yticks(np.around(
                                     np.linspace(y_min, y_max, 4, dtype=float, endpoint=True), 1))
-                                ax_mp_histo[i][j].xaxis.set_tick_params(labelsize=8)
-                                ax_mp_histo[i][j].yaxis.set_tick_params(labelsize=8)
-                                ax_mp_histo[i][j].set_xlabel(labels[i][j], fontsize=8)
-                                ax_mp_histo[i][j].set_ylabel("Frequency", labelpad=0.5, fontsize=8)
-                                ax_mp_histo[i][j].grid(True)
+                                ax_mp_histo[i][j].xaxis.set_tick_params(labelsize="x-small")
+                                ax_mp_histo[i][j].yaxis.set_tick_params(labelsize="x-small")
+                                ax_mp_histo[i][j].set_xlabel(labels[i][j], fontsize="x-small")
+                                ax_mp_histo[i][j].set_ylabel("Frequency", labelpad=0.5, fontsize="x-small")
+
+                                ax_mp_histo[i][j].grid(which="major", axis="both", linestyle="-")
+                                ax_mp_histo[i][j].grid(which="minor", axis="both", linestyle=":", alpha=0.5)
+                                ax_mp_histo[i][j].minorticks_on()
+                                ax_mp_histo[i][j].xaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(3))
+                                ax_mp_histo[i][j].yaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(3))
                                 ax_mp_histo[i][j].set_axisbelow(True)
+                                #ax_mp_histo[i][j].grid(True)
+                                #ax_mp_histo[i][j].set_axisbelow(True)
                             #
                             canvas_mineralogy = FigureCanvasTkAgg(fig_mineralogy, master=self.parent)
                             canvas_mineralogy.get_tk_widget().grid(
@@ -1032,49 +1039,91 @@ class GebPyGUI(tk.Frame):
                                 ax_mp_scatter[i][j].scatter(
                                     dataset_x, dataset_y, color=self.colors_gebpy["Option"], edgecolor="black",
                                     alpha=0.5)
-                                #
+
                                 x_min = min(dataset_x)
                                 x_max = max(dataset_x)
                                 delta_x = round(x_max - x_min, 4)
                                 y_min = min(dataset_y)
                                 y_max = max(dataset_y)
                                 delta_y = round(y_max - y_min, 4)
-                                #
+
                                 if delta_x < 1:
                                     n_digits_x = 3
+                                    x_factor = 0.9
                                 elif 1 <= delta_x < 5:
                                     n_digits_x = 2
+                                    x_factor = 0.5
                                 elif delta_x >= 5:
                                     n_digits_x = 0
+                                    x_factor = 0.1
+
                                 if delta_y < 1:
                                     n_digits_y = 3
+                                    y_factor = 0.9
+                                    var_dtype = float
                                 elif 1 <= delta_y < 5:
                                     n_digits_y = 2
+                                    y_factor = 0.5
+                                    var_dtype = float
                                 elif delta_y >= 5:
                                     n_digits_y = 0
-                                #
-                                x_min = round(x_min - 0.1*delta_x, n_digits_x)
-                                x_max = round(x_max + 0.1*delta_x, n_digits_x)
-                                y_min = round(y_min - 0.1*delta_y, n_digits_y)
-                                y_max = round(y_max + 0.1*delta_y, n_digits_y)
-                                #
+                                    y_factor = 0.1
+                                    var_dtype = int
+
+                                x_min = round(x_min - x_factor*delta_x, n_digits_x)
+                                x_max = round(x_max + x_factor*delta_x, n_digits_x)
+                                y_min = round(y_min - y_factor*delta_y, n_digits_y)
+                                y_max = round(y_max + y_factor*delta_y, n_digits_y)
+
+                                if key in ["rho"]:
+                                    x_min = round(round(min(dataset_x) - 25, -1) + 15, n_digits_x)
+                                    x_max = round(round(max(dataset_x) + 25, -1) - 15, n_digits_x)
+                                if key in ["vP", "vS"]:
+                                    y_min = round(round(min(dataset_y) - 150, -2), n_digits_y)
+                                    y_max = round(round(max(dataset_y) + 150, -2), n_digits_y)
+                                elif key in ["K", "G", "E", "GR"]:
+                                    y_min = round(round(min(dataset_y) - 15, -1) + 10, n_digits_y)
+                                    y_max = round(round(max(dataset_y) + 15, -1) - 10, n_digits_y)
+                                elif key in ["phi"]:
+                                    y_min = round(round(min(dataset_y) - 7, -1) + 5, n_digits_y)
+                                    y_max = round(round(max(dataset_y) + 7, -1) - 5, n_digits_y)
+                                elif key in ["PE", "vPvS", "nu"]:
+                                    y_min = round(round(min(dataset_y) - 0.005, 3), n_digits_y)
+                                    y_max = round(round(max(dataset_y) + 0.005, 3), n_digits_y)
+
+                                if key != "nu":
+                                    if x_min < 0:
+                                        x_min = 0
                                 if key != "nu":
                                     if y_min < 0:
                                         y_min = 0
-                                #
+
+                                step_x = (x_max - x_min)/4
+                                step_x = int(round(step_x, n_digits_x))
+                                x_ticks = np.arange(x_min, x_max + step_x, step_x)
+                                step_y = (y_max - y_min)/4
+                                if var_dtype == float:
+                                    step_y = round(step_y, n_digits_y)
+                                else:
+                                    step_y = int(round(step_y, n_digits_y))
+                                y_ticks = np.arange(y_min, y_max + step_y, step_y)
+
                                 ax_mp_scatter[i][j].set_xlim(left=x_min, right=x_max)
                                 ax_mp_scatter[i][j].set_ylim(bottom=y_min, top=y_max)
-                                ax_mp_scatter[i][j].set_xticks(np.around(
-                                    np.linspace(x_min, x_max, 4, dtype=float, endpoint=True), n_digits_x))
-                                ax_mp_scatter[i][j].set_yticks(np.around(
-                                    np.linspace(y_min, y_max, 4, dtype=float, endpoint=True), n_digits_y))
-                                ax_mp_scatter[i][j].xaxis.set_tick_params(labelsize=8)
-                                ax_mp_scatter[i][j].yaxis.set_tick_params(labelsize=8)
-                                ax_mp_scatter[i][j].set_xlabel("Density - kg/m$^3$", fontsize=8)
-                                ax_mp_scatter[i][j].set_ylabel(labels[i][j], labelpad=0.5, fontsize=8)
-                                ax_mp_scatter[i][j].grid(True)
+                                ax_mp_scatter[i][j].set_xticks(x_ticks)
+                                ax_mp_scatter[i][j].set_yticks(y_ticks)
+                                ax_mp_scatter[i][j].xaxis.set_tick_params(labelsize="x-small")
+                                ax_mp_scatter[i][j].yaxis.set_tick_params(labelsize="x-small")
+                                ax_mp_scatter[i][j].set_xlabel("Density - kg/m$^3$", fontsize="x-small")
+                                ax_mp_scatter[i][j].set_ylabel(labels[i][j], labelpad=0.5, fontsize="x-small")
+
+                                ax_mp_scatter[i][j].grid(which="major", axis="both", linestyle="-")
+                                ax_mp_scatter[i][j].grid(which="minor", axis="both", linestyle=":", alpha=0.5)
+                                ax_mp_scatter[i][j].minorticks_on()
+                                ax_mp_scatter[i][j].xaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(3))
+                                ax_mp_scatter[i][j].yaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(3))
                                 ax_mp_scatter[i][j].set_axisbelow(True)
-                        #
+
                         if "Mineralogy" not in self.gui_elements["Temporary"]["Canvas"]:
                             canvas_mineralogy = FigureCanvasTkAgg(fig_mineralogy, master=self.parent)
                             #
@@ -1432,10 +1481,22 @@ class GebPyGUI(tk.Frame):
                 self.tv_ma_results.insert("", tk.END, values=entries)
 
                 for element, dataset in self.data_mineral["chemistry"].items():
-                    entries = [str(element)+str(" (%)")]
+                    try:
+                        if element in self.data_mineral["major elements"]:
+                            entries = [str(element)+str(" (%)")]
+                            var_factor = 100
+                            n_digits = 2
+                        else:
+                            entries = [str(element) + str(" (ppm)")]
+                            var_factor = 1000000
+                            n_digits = 0
+                    except:
+                        entries = [str(element) + str(" (%)")]
+                        var_factor = 100
+                        n_digits = 2
 
-                    n_digits = 2
-                    var_factor = 100
+                    #n_digits = 2
+                    #var_factor = 100
 
                     var_entr_min = round(var_factor*min(dataset), n_digits)
                     var_entr_max = round(var_factor*max(dataset), n_digits)
@@ -1449,11 +1510,20 @@ class GebPyGUI(tk.Frame):
                 if "compounds" in self.data_mineral:
                     entries = ["-", "-", "-", "-", "-"]
                     self.tv_ma_results.insert("", tk.END, values=entries)
-                    for element, dataset in self.data_mineral["compounds"].items():
-                        entries = [str(element) + str(" (%)")]
+                    for compound, dataset in self.data_mineral["compounds"].items():
+                        try:
+                            if compound in self.data_mineral["major compounds"]:
+                                entries = [str(compound) + str(" (%)")]
+                                var_factor = 100
+                            else:
+                                entries = [str(compound) + str(" (ppm)")]
+                                var_factor = 1000000
+                        except:
+                            entries = [str(compound) + str(" (%)")]
+                            var_factor = 100
 
                         n_digits = 2
-                        var_factor = 100
+                        #var_factor = 100
 
                         var_entr_min = round(var_factor*min(dataset), n_digits)
                         var_entr_max = round(var_factor*max(dataset), n_digits)
