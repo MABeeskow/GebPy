@@ -6,7 +6,7 @@
 # Name:		sulfides.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		24.09.2022
+# Date:		09.10.2023
 
 # -----------------------------------------------
 
@@ -28,7 +28,25 @@ class Sulfides():
         self.impurity = impurity
         self.data_type = data_type
         self.mineral = mineral
-    #
+
+        # Chemistry
+        self.boron = ["B", 5, 10.806]
+        self.carbon = ["C", 6, 12.011]
+        self.oxygen = ["O", 8, 15.999]
+        self.sodium = ["Na", 11, 22.990]
+        self.aluminium = ["Al", 13, 26.982]
+        self.silicon = ["Si", 14, 28.085]
+        self.sulfur = ["S", 16, 32.059]
+        self.chlorine = ["Cl", 17, 35.450]
+        self.potassium = ["K", 19, 39.098]
+        self.calcium = ["Ca", 20, 40.078]
+        self.manganese = ["Mn", 25, 54.938]
+        self.iron = ["Fe", 26, 55.845]
+        self.copper = ["Cu", 29, 63.546]
+        self.arsenic = ["As", 33, 74.922]
+        self.antimony = ["Sb", 51, 121.76]
+        self.tungsten = ["W", 74, 183.84]
+
     def get_data(self, number=1): # ["Pyrite", "Chalcopyrite", "Bornite", "Covellite", "Molybdenite", "Sphalerite", "Galena", "Fahlore"]
         if self.mineral in ["Py", "Pyrite"]:
             if number > 1:
@@ -2601,12 +2619,8 @@ class Sulfides():
         return data
     #
     def create_fahlore(self):
+        name = "Fh"
         # Major elements
-        sulfur = PeriodicSystem(name="S").get_data()
-        iron = PeriodicSystem(name="Fe").get_data()
-        copper = PeriodicSystem(name="Cu").get_data()
-        arsenic = PeriodicSystem(name="As").get_data()
-        antimony = PeriodicSystem(name="Sb").get_data()
         majors_name = ["S", "Fe", "Cu", "As", "Sb"]
         # Minor elements
         traces_data = []
@@ -2633,26 +2647,56 @@ class Sulfides():
             if len(traces_data) > 0:
                 traces_data = np.array(traces_data, dtype=object)
                 traces_data = traces_data[traces_data[:, 1].argsort()]
-        #
-        name = "Fh"
-        #
         # Molar mass
         x = round(rd.uniform(0.75, 0.925), 4)
         y = round(rd.uniform(0, 1), 4)
-        majors_data = np.array([["S", sulfur[1], 13, sulfur[2]], ["Fe", iron[1], 12*(1-x), iron[2]],
-                                ["Cu", copper[1], 12*x, copper[2]], ["As", arsenic[1], 4*y, arsenic[2]],
-                                ["Sb", antimony[1], 4*(1-y), antimony[2]]], dtype=object)
-        molar_mass_pure = 12*(x*copper[2] + (1-x)*iron[2]) + 4*(y*arsenic[2] + (1-y)*antimony[2]) + 13*sulfur[2]
-        molar_mass, amounts = MineralChemistry(w_traces=traces_data, molar_mass_pure=molar_mass_pure,
-                                               majors=majors_data).calculate_molar_mass()
+        majors_data = np.array([
+            ["S", self.sulfur[1], 13, self.sulfur[2]], ["Fe", self.iron[1], 12*(1-x), self.iron[2]],
+            ["Cu", self.copper[1], 12*x, self.copper[2]], ["As", self.arsenic[1], 4*y, self.arsenic[2]],
+            ["Sb", self.antimony[1], 4*(1-y), self.antimony[2]]], dtype=object)
+        molar_mass_pure = (12*(x*self.copper[2] + (1-x)*self.iron[2]) + 4*(y*self.arsenic[2] + (1-y)*self.antimony[2]) +
+                           13*self.sulfur[2])
+        molar_mass, amounts = MineralChemistry(
+            w_traces=traces_data, molar_mass_pure=molar_mass_pure, majors=majors_data).calculate_molar_mass()
         element = [PeriodicSystem(name=amounts[i][0]).get_data() for i in range(len(amounts))]
+
+        majors_data_tn = np.array([
+            ["S", self.sulfur[1], 13, self.sulfur[2]], ["Fe", self.iron[1], 0, self.iron[2]],
+            ["Cu", self.copper[1], 12, self.copper[2]], ["As", self.arsenic[1], 4, self.arsenic[2]],
+            ["Sb", self.antimony[1], 0, self.antimony[2]]], dtype=object)
+        molar_mass_pure_tn = 12*self.copper[2] + 4*self.arsenic[2] + 13*self.sulfur[2]
+        molar_mass_tn, amounts_tn = MineralChemistry(
+            w_traces=traces_data, molar_mass_pure=molar_mass_pure_tn, majors=majors_data_tn).calculate_molar_mass()
+        element_tn = [PeriodicSystem(name=amounts_tn[i][0]).get_data() for i in range(len(amounts_tn))]
+
+        majors_data_td = np.array([
+            ["S", self.sulfur[1], 13, self.sulfur[2]], ["Fe", self.iron[1], 0, self.iron[2]],
+            ["Cu", self.copper[1], 12, self.copper[2]], ["As", self.arsenic[1], 0, self.arsenic[2]],
+            ["Sb", self.antimony[1], 4, self.antimony[2]]], dtype=object)
+        molar_mass_pure_td = 12*self.copper[2] + 4*self.antimony[2] + 13*self.sulfur[2]
+        molar_mass_td, amounts_td = MineralChemistry(
+            w_traces=traces_data, molar_mass_pure=molar_mass_pure_td, majors=majors_data_td).calculate_molar_mass()
+        element_td = [PeriodicSystem(name=amounts_td[i][0]).get_data() for i in range(len(amounts_td))]
         # Density
         dataV_tn = CrystalPhysics([[10.186], [], "cubic"])
+        V_tn = dataV_tn.calculate_volume()
+        Z_tn = 2
+        V_m_tn = MineralChemistry().calculate_molar_volume(volume_cell=V_tn, z=Z_tn)
+        dataRho_tn = CrystalPhysics([molar_mass_tn, Z_tn, V_tn])
+        rho_tn = dataRho_tn.calculate_bulk_density()
+        rho_e_tn = wg(amounts=amounts_tn, elements=element_tn, rho_b=rho_tn).calculate_electron_density()
+
         dataV_td = CrystalPhysics([[10.33], [], "cubic"])
-        V = y*dataV_tn.calculate_volume() + (1-y)*dataV_td.calculate_volume()
-        dataRho = CrystalPhysics([molar_mass_pure, 2, V])
-        rho = dataRho.calculate_bulk_density()
-        rho_e = wg(amounts=amounts, elements=element, rho_b=rho).calculate_electron_density()
+        V_td = dataV_td.calculate_volume()
+        Z_td = 2
+        V_m_td = MineralChemistry().calculate_molar_volume(volume_cell=V_td, z=Z_td)
+        dataRho_td = CrystalPhysics([molar_mass_td, Z_td, V_td])
+        rho_td = dataRho_td.calculate_bulk_density()
+        rho_e_td = wg(amounts=amounts_td, elements=element_td, rho_b=rho_td).calculate_electron_density()
+
+        V_m = y*V_m_tn + (1 - y)*V_m_td
+        rho = y*rho_tn + (1 - y)*rho_td
+        rho_e = y*rho_e_tn + (1 - y)*rho_e_td
         # Bulk modulus
         K_tn = 70.29*10**9
         K_td = 59*10**9
@@ -2678,48 +2722,35 @@ class Sulfides():
         U = pe*rho_e*10**(-3)
         # Electrical resistivity
         p = None
-        #
-        if self.data_type == False:
-            data = []
-            data.append(name)
-            data.append(round(molar_mass, 3))
-            data.append(round(rho, 2))
-            data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 4)])
-            data.append([round(vP, 2), round(vS, 2), round(vPvS, 2)])
-            data.append([round(gamma_ray, 2), round(pe, 2), round(U, 2), p])
-            data.append(amounts)
-            #
-            return data
+        # Results
+        results = {}
+        results["mineral"] = name
+        results["state"] = var_state
+        results["M"] = molar_mass
+        element_list = np.array(amounts)[:, 0]
+        results["chemistry"] = {}
+        for index, element in enumerate(element_list, start=0):
+            results["chemistry"][element] = amounts[index][2]
+        results["rho"] = round(rho, 4)
+        results["rho_e"] = round(rho_e, 4)
+        results["V"] = round(V_m, 4)
+        results["vP"] = round(vP, 4)
+        results["vS"] = round(vS, 4)
+        results["vP/vS"] = round(vPvS, 4)
+        results["G"] = round(G*10**(-9), 4)
+        results["K"] = round(K*10**(-9), 4)
+        results["E"] = round(E*10**(-9), 4)
+        results["nu"] = round(nu, 4)
+        results["GR"] = round(gamma_ray, 4)
+        results["PE"] = round(pe, 4)
+        results["U"] = round(U, 4)
+        if p != None:
+            results["p"] = round(p, 4)
         else:
-            #
-            results = {}
-            results["mineral"] = name
-            results["state"] = var_state
-            results["M"] = molar_mass
-            element_list = np.array(amounts)[:, 0]
-            results["chemistry"] = {}
-            for index, element in enumerate(element_list, start=0):
-                results["chemistry"][element] = amounts[index][2]
-            results["rho"] = round(rho, 4)
-            results["rho_e"] = round(rho_e, 4)
-            results["V"] = round(V, 4)
-            results["vP"] = round(vP, 4)
-            results["vS"] = round(vS, 4)
-            results["vP/vS"] = round(vPvS, 4)
-            results["G"] = round(G*10**(-9), 4)
-            results["K"] = round(K*10**(-9), 4)
-            results["E"] = round(E*10**(-9), 4)
-            results["nu"] = round(nu, 4)
-            results["GR"] = round(gamma_ray, 4)
-            results["PE"] = round(pe, 4)
-            results["U"] = round(U, 4)
-            if p != None:
-                results["p"] = round(p, 4)
-            else:
-                results["p"] = p
-            #
-            return results
-    #
+            results["p"] = p
+
+        return results
+
     def create_covellite(self):
         #
         name = "Cv"

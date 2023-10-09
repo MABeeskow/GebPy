@@ -233,7 +233,7 @@ class GebPyGUI(tk.Frame):
                     "Jacobsite", "Magnesioferrite", "Trevorite", "Franklinite", "Ulvospinel", "Fe-Spinel", "Uraninite",
                     "Litharge", "Massicot", "Minium", "Plattnerite", "Scrutinyite", "Zincite", "Columbite", "Tantalite",
                     "Coltan", "Crocoite", "Wulfenite", "Goethite", "Wolframite", "Huebnerite", "Ferberite", "Boehmite",
-                    "Gibbsite", "Au(III)-Oxide", "Brucite"]
+                    "Gibbsite", "Au(III)-Oxide", "Brucite", "Valentinite", "Senarmontite", "Ferberite-Huebnerite"]
                 self.oxide_minerals.sort()
                 for mineral in self.oxide_minerals:
                     sub_oxides.add_command(
@@ -972,9 +972,7 @@ class GebPyGUI(tk.Frame):
                                 ax_mp_histo[i][j].xaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(3))
                                 ax_mp_histo[i][j].yaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(3))
                                 ax_mp_histo[i][j].set_axisbelow(True)
-                                #ax_mp_histo[i][j].grid(True)
-                                #ax_mp_histo[i][j].set_axisbelow(True)
-                            #
+
                             canvas_mineralogy = FigureCanvasTkAgg(fig_mineralogy, master=self.parent)
                             canvas_mineralogy.get_tk_widget().grid(
                                 row=0, column=81, rowspan=int(self.n_rows - 3), columnspan=int(self.n_columns - 81),
@@ -1101,18 +1099,29 @@ class GebPyGUI(tk.Frame):
 
                                 step_x = (x_max - x_min)/4
                                 step_x = int(round(step_x, n_digits_x))
-                                x_ticks = np.arange(x_min, x_max + step_x, step_x)
+
+                                if step_x == 0:
+                                    x_value = (x_min + x_max)/2
+                                    x_min = 0.9*x_value
+                                    x_max = 1.1*x_value
+                                    x_ticks = np.linspace(x_min, x_max, 5)
+                                else:
+                                    x_ticks = np.arange(x_min, x_max + step_x, step_x)
+
                                 step_y = (y_max - y_min)/4
+
                                 if var_dtype == float:
                                     step_y = round(step_y, n_digits_y)
                                 else:
                                     step_y = int(round(step_y, n_digits_y))
+
                                 if step_y > 0:
                                     y_ticks = np.arange(y_min, y_max + step_y, step_y)
                                 else:
-                                    step_y = (1.1*y_max - 0.9*y_min)/10
-                                    y_ticks = np.arange(y_min - step_y, y_max + step_y, step_y)
-
+                                    y_value = (y_min + y_max)/2
+                                    y_min = 0.9*y_value
+                                    y_max = 1.1*y_value
+                                    y_ticks = np.linspace(y_min, y_max, 5)
                                 ax_mp_scatter[i][j].set_xlim(left=x_min, right=x_max)
                                 ax_mp_scatter[i][j].set_ylim(bottom=y_min, top=y_max)
                                 ax_mp_scatter[i][j].set_xticks(x_ticks)
@@ -1264,9 +1273,13 @@ class GebPyGUI(tk.Frame):
                         ax_mc_histo[i][j].yaxis.set_tick_params(labelsize=8)
                         ax_mc_histo[i][j].set_xlabel(labels[i][j], fontsize=8)
                         ax_mc_histo[i][j].set_ylabel("Frequency", labelpad=0.5, fontsize=8)
-                        ax_mc_histo[i][j].grid(True)
+
+                        ax_mc_histo[i][j].grid(which="major", axis="both", linestyle="-")
+                        ax_mc_histo[i][j].grid(which="minor", axis="both", linestyle=":", alpha=0.5)
+                        ax_mc_histo[i][j].minorticks_on()
+                        ax_mc_histo[i][j].xaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(3))
+                        ax_mc_histo[i][j].yaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(3))
                         ax_mc_histo[i][j].set_axisbelow(True)
-                #
                 if "Mineralogy" not in self.gui_elements["Temporary"]["Canvas"]:
                     canvas_mineralogy = FigureCanvasTkAgg(fig_mineralogy, master=self.parent)
                     #
@@ -1334,7 +1347,7 @@ class GebPyGUI(tk.Frame):
                     for j, key in enumerate(subcategories):
                         dataset_y = np.array(self.data_mineral[var_key][key])*10**2
                         ax_mc_scatter[i][j].scatter(
-                            dataset_x, dataset_y, color=self.colors_gebpy["Option"], edgecolor="black")
+                            dataset_x, dataset_y, color=self.colors_gebpy["Option"], edgecolor="black", alpha=0.5)
                         #
                         x_min = min(dataset_x)
                         x_max = max(dataset_x)
@@ -1369,7 +1382,17 @@ class GebPyGUI(tk.Frame):
                             y_min = 0
                         if y_max > 100:
                             y_max = 100
-                        #
+
+                        if x_min == x_max:
+                            x_value = (x_min + x_max)/2
+                            x_min = 0.9*x_value
+                            x_max = 1.1*x_value
+
+                        if y_min == y_max:
+                            y_value = (y_min + y_max)/2
+                            y_min = 0.9*y_value
+                            y_max = 1.1*y_value
+
                         ax_mc_scatter[i][j].set_xlim(left=x_min, right=x_max)
                         ax_mc_scatter[i][j].set_ylim(bottom=y_min, top=y_max)
                         ax_mc_scatter[i][j].set_xticks(
@@ -1380,7 +1403,12 @@ class GebPyGUI(tk.Frame):
                         ax_mc_scatter[i][j].yaxis.set_tick_params(labelsize=8)
                         ax_mc_scatter[i][j].set_xlabel(str(ref_key) + " (wt.%)", fontsize=8)
                         ax_mc_scatter[i][j].set_ylabel(labels[i][j], fontsize=8)
-                        ax_mc_scatter[i][j].grid(True)
+
+                        ax_mc_scatter[i][j].grid(which="major", axis="both", linestyle="-")
+                        ax_mc_scatter[i][j].grid(which="minor", axis="both", linestyle=":", alpha=0.5)
+                        ax_mc_scatter[i][j].minorticks_on()
+                        ax_mc_scatter[i][j].xaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(3))
+                        ax_mc_scatter[i][j].yaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(3))
                         ax_mc_scatter[i][j].set_axisbelow(True)
                 #
                 if "Mineralogy" not in self.gui_elements["Temporary"]["Canvas"]:
@@ -1695,7 +1723,7 @@ class GebPyGUI(tk.Frame):
                     ax_laicpms[0][0].set_xlabel("Time (s)", fontsize=9)
                     ax_laicpms[0][0].set_ylabel("Intensity (cps)", labelpad=0.5, fontsize=9)
                     ax_laicpms[0][0].set_xlim(0, 60)
-                    ax_laicpms[0][0].set_ylim(1, 10**9)
+                    ax_laicpms[0][0].set_ylim(1, 5*10**9)
                     ax_laicpms[0][0].set_xticks(np.arange(0, 60 + 5, 5))
                     ax_laicpms[0][0].set_yscale("log")
                     ax_laicpms[0][0].grid(True)
@@ -4290,10 +4318,10 @@ class GebPyGUI(tk.Frame):
                                         n_digits = 2
                                     elif delta_x >= 5:
                                         n_digits = 0
-                                    #
+
                                     x_min = round(x_min - 0.1*delta_x, n_digits)
                                     x_max = round(x_max + 0.1*delta_x, n_digits)
-                                    #
+
                                     if key != "nu":
                                         if x_min < 0:
                                             x_min = 0
@@ -4308,9 +4336,14 @@ class GebPyGUI(tk.Frame):
                                     ax_rp_histo[i][j].yaxis.set_tick_params(labelsize=8)
                                     ax_rp_histo[i][j].set_xlabel(labels[i][j], fontsize=8)
                                     ax_rp_histo[i][j].set_ylabel("Frequency", labelpad=0.5, fontsize=8)
-                                    ax_rp_histo[i][j].grid(True)
+
+                                    ax_rp_histo[i][j].grid(which="major", axis="both", linestyle="-")
+                                    ax_rp_histo[i][j].grid(which="minor", axis="both", linestyle=":", alpha=0.5)
+                                    ax_rp_histo[i][j].minorticks_on()
+                                    ax_rp_histo[i][j].xaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(3))
+                                    ax_rp_histo[i][j].yaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(3))
                                     ax_rp_histo[i][j].set_axisbelow(True)
-                                #
+
                                 canvas_petrology = FigureCanvasTkAgg(fig_petrology, master=self.parent)
                                 canvas_petrology.get_tk_widget().grid(
                                     row=0, column=81, rowspan=int(self.n_rows - 3), columnspan=int(self.n_columns - 81),
