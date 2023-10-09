@@ -6,7 +6,7 @@
 # Name:		gebpy_app.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		05.10.2023
+# Date:		09.10.2023
 
 #-----------------------------------------------
 
@@ -730,14 +730,15 @@ class GebPyGUI(tk.Frame):
             fg=self.colors_gebpy["Background"]).create_radiobutton(
             text="Without Trace Elements", var_rb=self.gui_variables["Radiobutton"]["Trace Elements"], value_rb=0,
             color_bg=self.colors_gebpy["Navigation"], command=lambda var_name=name: self.change_rb_traces(var_name))
-        rb_trace_with = SimpleElements(
-            parent=self.parent, row_id=13, column_id=16, n_rows=2, n_columns=15, bg=self.colors_gebpy["Navigation"],
-            fg=self.colors_gebpy["Background"]).create_radiobutton(
-            text="With Trace Elements", var_rb=self.gui_variables["Radiobutton"]["Trace Elements"], value_rb=1,
-            color_bg=self.colors_gebpy["Navigation"], command=lambda var_name=name: self.change_rb_traces(var_name))
-        #
-        self.gui_elements["Static"]["Radiobutton"].extend([rb_trace_without, rb_trace_with])
-        #
+        self.gui_elements["Static"]["Radiobutton"].extend([rb_trace_without])
+        if name in ["Quartz", "Orthoclase"]:
+            rb_trace_with = SimpleElements(
+                parent=self.parent, row_id=13, column_id=16, n_rows=2, n_columns=15, bg=self.colors_gebpy["Navigation"],
+                fg=self.colors_gebpy["Background"]).create_radiobutton(
+                text="With Trace Elements", var_rb=self.gui_variables["Radiobutton"]["Trace Elements"], value_rb=1,
+                color_bg=self.colors_gebpy["Navigation"], command=lambda var_name=name: self.change_rb_traces(var_name))
+            self.gui_elements["Static"]["Radiobutton"].extend([rb_trace_with])
+
         ## Buttons
         btn_generate_data = SimpleElements(
             parent=self.parent, row_id=18, column_id=16, n_rows=2, n_columns=15,
@@ -1973,7 +1974,6 @@ class GebPyGUI(tk.Frame):
             self.gui_elements["Temporary"]["Button"].append(self.btn_traces)
 
     def select_trace_elements(self, var_traces):
-        #
         self.window_trace_elements = tk.Toplevel(self.parent)
         self.window_trace_elements.title("Trace Elements")
         self.window_trace_elements.geometry("750x450")
@@ -2025,17 +2025,18 @@ class GebPyGUI(tk.Frame):
             text="Oxidation State", font_option="sans 12 bold", relief=tk.FLAT)
         #
         self.gui_elements_sub["Trace Elements"]["Static"]["Label"].append(lbl_title)
-        #
+
         self.oxidation_states = list(var_traces.keys())
         self.oxidation_states.remove("All")
         self.oxidation_states.sort(reverse=True)
         for index, oxidation_state in enumerate(self.oxidation_states):
+            dict_traces = var_traces
             rb_oxidation_state = SimpleElements(
                 parent=self.window_trace_elements, row_id=2*index + 2, column_id=0, n_rows=2, n_columns=12,
                 bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Background"]).create_radiobutton(
                 text="Mainly "+str(oxidation_state), var_rb=self.gui_variables["Radiobutton"]["Oxidation State"],
                 value_rb=index, color_bg=self.colors_gebpy["Navigation"],
-                command=lambda var_traces=var_traces: self.change_oxidation_state(var_traces))
+                command=lambda var_traces=dict_traces: self.change_oxidation_state(var_traces))
             #
             self.gui_elements_sub["Trace Elements"]["Static"]["Radiobutton"].append(rb_oxidation_state)
 
@@ -2326,10 +2327,11 @@ class GebPyGUI(tk.Frame):
         self.gui_elements["Static"]["Radiobutton"].extend([rb_geophysics, rb_geochemistry, rb_laicpms])
         #
         ## Button
+        name_mineral = var_name
         btn_export = SimpleElements(
             parent=self.parent, row_id=28, column_id=16, n_rows=2, n_columns=15, bg=self.colors_gebpy["Option"],
             fg=self.colors_gebpy["Navigation"]).create_button(
-            text="Export Data", command=lambda var_dataset=self.data_mineral, var_name=var_name:
+            text="Export Data", command=lambda var_dataset=self.data_mineral, var_name=name_mineral:
             self.export_mineral_data(var_dataset, var_name))
         #
         self.gui_elements["Static"]["Button"].append(btn_export)
@@ -2429,13 +2431,14 @@ class GebPyGUI(tk.Frame):
         self.gui_elements["Static"]["Entry"].extend([entr_samples, entr_phi_min, entr_phi_max])
         #
         ## Buttons
+        name_rock = var_name
         btn_simulation = SimpleElements(
             parent=self.parent, row_id=17, column_id=16, n_rows=2, n_columns=15,
             bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_button(
-            text="Run Simulation", command=lambda var_name=var_name: self.run_simulation_petrology(var_name))
-        #
+            text="Run Simulation", command=lambda var_name=name_rock: self.run_simulation_petrology(var_name))
+
         self.gui_elements["Static"]["Button"].extend([btn_simulation])
-        #
+
         ## TREEVIEWS
         list_categories = ["Category", "Minimum", "Maximum", "Mean", "Standard Deviation"]
         list_width = list(75*np.ones(len(list_categories)))
@@ -3027,16 +3030,17 @@ class GebPyGUI(tk.Frame):
             color_bg=self.colors_gebpy["Navigation"], command=self.change_rb_analysis_rocks)
         #
         self.gui_elements["Static"]["Radiobutton"].extend([rb_geophysics, rb_geochemistry, rb_geochemistry2])
-        #
+
         ## Button
+        name_rock = var_name
         btn_export = SimpleElements(
             parent=self.parent, row_id=29, column_id=16, n_rows=2, n_columns=15, bg=self.colors_gebpy["Option"],
             fg=self.colors_gebpy["Navigation"]).create_button(
-            text="Export Data", command=lambda var_dataset=self.data_rock, var_name=var_name:
+            text="Export Data", command=lambda var_dataset=self.data_rock, var_name=name_rock:
             self.export_rock_data(var_dataset, var_name))
-        #
+
         self.gui_elements["Static"]["Button"].append(btn_export)
-        #
+
         for key, gui_element in self.gui_elements["Temporary"].items():
             if key not in ["Canvas", "Button"]:
                 if type(gui_element) == list:
@@ -4119,10 +4123,11 @@ class GebPyGUI(tk.Frame):
         self.gui_elements["Rockbuilder Static"]["Label"].append(lbl_analysis)
         #
         ## Button
+        name_rock = var_name
         btn_export = SimpleElements(
             parent=self.parent, row_id=29, column_id=16, n_rows=2, n_columns=15, bg=self.colors_gebpy["Option"],
             fg=self.colors_gebpy["Navigation"]).create_button(
-            text="Export Data", command=lambda var_dataset=self.data_rock, var_name=var_name:
+            text="Export Data", command=lambda var_dataset=self.data_rock, var_name=name_rock:
             self.export_rock_data(var_dataset, var_name))
         #
         self.gui_elements["Rockbuilder Static"]["Button"].append(btn_export)
@@ -6116,8 +6121,7 @@ class GebPyGUI(tk.Frame):
         #
         ## ADDITIONAL FEATURES
         self.build_unit(var_unit=var_unit)
-        #
-    #
+
     def build_unit(self, var_unit):
         if var_unit == "Muschelkalk":
             ## LABELS
@@ -6182,10 +6186,11 @@ class GebPyGUI(tk.Frame):
             self.gui_elements["Temporary"]["Option Menu"].extend([opt_05a])
             #
             ## BUTTONS
+            name_unit = var_unit
             btn_06 = SimpleElements(
                 parent=self.parent, row_id=29, column_id=14, n_rows=2, n_columns=16,
                 bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_button(
-                text="Run Simulation", command=lambda var_unit=var_unit: self.generate_stratigraphic_data(var_unit))
+                text="Run Simulation", command=lambda var_unit=name_unit: self.generate_stratigraphic_data(var_unit))
             #
             self.gui_elements["Temporary"]["Button"].extend([btn_06])
             #
@@ -6262,10 +6267,11 @@ class GebPyGUI(tk.Frame):
             self.gui_elements["Temporary"]["Option Menu"].extend([opt_05a])
             #
             ## BUTTONS
+            name_unit = var_unit
             btn_06 = SimpleElements(
                 parent=self.parent, row_id=33, column_id=14, n_rows=2, n_columns=16,
                 bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_button(
-                text="Run Simulation", command=lambda var_unit=var_unit: self.generate_stratigraphic_data(var_unit))
+                text="Run Simulation", command=lambda var_unit=name_unit: self.generate_stratigraphic_data(var_unit))
             #
             self.gui_elements["Temporary"]["Button"].extend([btn_06])
             #
@@ -6332,18 +6338,19 @@ class GebPyGUI(tk.Frame):
             self.gui_elements["Temporary"]["Option Menu"].extend([opt_05a])
             #
             ## BUTTONS
+            name_unit = var_unit
             btn_06 = SimpleElements(
                 parent=self.parent, row_id=29, column_id=14, n_rows=2, n_columns=16,
                 bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_button(
-                text="Run Simulation", command=lambda var_unit=var_unit: self.generate_stratigraphic_data(var_unit))
-            #
+                text="Run Simulation", command=lambda var_unit=name_unit: self.generate_stratigraphic_data(var_unit))
+
             self.gui_elements["Temporary"]["Button"].extend([btn_06])
-        #
+
         ## INITIALIZATION
         self.generate_stratigraphic_data(var_unit=var_unit)
         self.stratigraphy_change_lithology(var_opt=self.gui_variables["Option Menu"]["Lithological Focus"].get())
         self.show_well_log_diagram()
-    #
+
     def generate_stratigraphic_data(self, var_unit):
         thickness_complete = rd.randrange(900, 1500, 100)
         #
