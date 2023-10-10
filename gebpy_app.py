@@ -6,7 +6,7 @@
 # Name:		gebpy_app.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		09.10.2023
+# Date:		10.10.2023
 
 #-----------------------------------------------
 
@@ -900,7 +900,91 @@ class GebPyGUI(tk.Frame):
         canvas_mineral_group = FigureCanvasTkAgg(fig_mineral_group, master=self.parent)
         canvas_mineral_group.get_tk_widget().grid(
             row=21, column=35, rowspan=int(self.n_rows - 21), columnspan=int(2*(self.n_rows - 21)), sticky="nesw")
-    #
+
+    def closest_number(self, n, m):
+        # Find the quotient
+        q = int(n/m)
+        # 1st possible closest number
+        n1 = m*q
+        # 2nd possible closest number
+        if ((n*m) > 0):
+            n2 = (m*(q + 1))
+        else:
+            n2 = (m*(q - 1))
+        # if true, then n1 is the required closest number
+        if (abs(n - n1) < abs(n - n2)):
+            return n1
+        # else n2 is the required closest number
+        return n2
+
+    def myround(self, x, prec=2, base=.05):
+        return round(base*round(float(x)/base), prec)
+
+    def improve_xlimits(self, x_min, x_max):
+        if x_min > 1:
+            if (x_max - x_min) < 0.5:
+                x_min = self.myround(x=x_min - 0.005, base=0.005)
+                x_max = self.myround(x=x_max + 0.005, base=0.005)
+            elif 0.5 <= (x_max - x_min) < 5:
+                x_min = self.myround(x=x_min - 2, base=5)
+                x_max = self.myround(x=x_max + 2, base=5)
+            elif 5 <= (x_max - x_min) < 10:
+                x_min = self.myround(x=x_min - 2, base=5)
+                x_max = self.myround(x=x_max + 2, base=5)
+            elif 10 <= (x_max - x_min) < 15:
+                x_min = self.myround(x=x_min - 3, base=2.5)
+                x_max = self.myround(x=x_max + 3, base=2.5)
+            elif 15 <= (x_max - x_min) < 25:
+                x_min = self.myround(x=x_min - 3.5, base=5)
+                x_max = self.myround(x=x_max + 3.5, base=5)
+            elif 25 <= (x_max - x_min) < 50:
+                x_min = self.myround(x=x_min - 5, base=5)
+                x_max = self.myround(x=x_max + 5, base=5)
+            elif 50 <= (x_max - x_min) < 100:
+                x_min = self.myround(x=x_min - 25, base=5)
+                x_max = self.myround(x=x_max + 25, base=5)
+            else:
+                x_min = self.myround(x=x_min - 50, base=5)
+                x_max = self.myround(x=x_max + 50, base=5)
+        else:
+            if 5 <= (x_max - x_min) < 10:
+                x_min = self.myround(x=x_min - 5, base=5)
+                x_max = self.myround(x=x_max + 5, base=5)
+            elif 1 <= (x_max - x_min) < 5:
+                x_min = self.myround(x=x_min - 0.5, base=0.5)
+                x_max = self.myround(x=x_max + 0.5, base=0.5)
+            elif 0.05 <= (x_max - x_min) < 0.5:
+                x_min = self.myround(x=x_min - 0.025, base=0.025)
+                x_max = self.myround(x=x_max + 0.025, base=0.025)
+            else:
+                x_min = self.myround(x=x_min - 0.005, base=0.005)
+                x_max = self.myround(x=x_max + 0.005, base=0.005)
+
+        return x_min, x_max
+
+    def improve_ylimits(self, y_min, y_max):
+        if (y_max - y_min) > 50:
+            y_min = self.myround(x=y_min - 10, base=5)
+            y_max = self.myround(x=y_max + 10, base=5)
+        elif 50 >= (y_max - y_min) > 25:
+            y_min = self.myround(x=y_min - 5, base=5)
+            y_max = self.myround(x=y_max + 5, base=5)
+        elif 25 >= (y_max - y_min) > 10:
+            y_min = self.myround(x=y_min - 2.5, base=2.5)
+            y_max = self.myround(x=y_max + 2.5, base=2.5)
+        else:
+            if y_min > 5:
+                y_min = self.myround(x=y_min - 5, base=0.5)
+                y_max = self.myround(x=y_max + 5, base=0.5)
+            else:
+                y_min = self.myround(x=y_min - 0.0005, base=0.005)
+                y_max = self.myround(x=y_max + 0.0005, base=0.005)
+
+        if y_min < 0:
+            y_min = 0
+
+        return y_min, y_max
+
     def change_rb_diagram(self):    # RB DIAGRAM MINERALOGY
         if self.gui_variables["Radiobutton"]["Analysis Mode"].get() == 0 \
                 and self.last_rb_analysis_mineral.get() not in [1, 2]:   # MINERAL PHYSICS
@@ -925,9 +1009,9 @@ class GebPyGUI(tk.Frame):
                         ax_mp_histo = fig_mineralogy.subplots(nrows=3, ncols=3)
                         #
                         categories = [["M", "V", "rho"], ["vP", "vS", "vP/vS"], ["GR", "PE", "nu"]]
-                        labels = [["M (kg/mol)", "V (A$^3$/mol", "rho (kg/m$^3$"], ["vP (m/s)", "vS (m/s)", "vP/vS (1)"],
-                                  ["GR (API)", "PE (barns/e$^-$)", "nu (1)"]]
-                        #
+                        labels = [["M (kg/mol)", "V (A$^3$/mol)", "rho (kg/m$^3$)"],
+                                  ["vP (m/s)", "vS (m/s)", "vP/vS (1)"], ["GR (API)", "PE (barns/e$^-$)", "nu (1)"]]
+
                         for i, subcategories in enumerate(categories):
                             for j, key in enumerate(subcategories):
                                 dataset_x = self.data_mineral[key]
@@ -947,20 +1031,20 @@ class GebPyGUI(tk.Frame):
                                     n_digits = 2
                                 elif delta_x >= 5:
                                     n_digits = 0
-                                #
-                                x_min = round(x_min - 0.1*delta_x, n_digits)
-                                x_max = round(x_max + 0.1*delta_x, n_digits)
-                                #
+
+                                x_min, x_max = self.improve_xlimits(x_min=x_min, x_max=x_max)
+                                y_min, y_max = self.improve_ylimits(y_min=y_min, y_max=y_max)
+
                                 if key != "nu":
                                     if x_min < 0:
                                         x_min = 0
-                                #
+
                                 ax_mp_histo[i][j].set_xlim(left=x_min, right=x_max)
                                 ax_mp_histo[i][j].set_ylim(bottom=y_min, top=y_max)
                                 ax_mp_histo[i][j].set_xticks(np.around(
-                                    np.linspace(x_min, x_max, 4, dtype=float, endpoint=True), n_digits))
+                                    np.linspace(x_min, x_max, 6, dtype=float, endpoint=True), n_digits))
                                 ax_mp_histo[i][j].set_yticks(np.around(
-                                    np.linspace(y_min, y_max, 4, dtype=float, endpoint=True), 1))
+                                    np.linspace(y_min, y_max, 6, dtype=float, endpoint=True), 1))
                                 ax_mp_histo[i][j].xaxis.set_tick_params(labelsize="x-small")
                                 ax_mp_histo[i][j].yaxis.set_tick_params(labelsize="x-small")
                                 ax_mp_histo[i][j].set_xlabel(labels[i][j], fontsize="x-small")
@@ -969,8 +1053,8 @@ class GebPyGUI(tk.Frame):
                                 ax_mp_histo[i][j].grid(which="major", axis="both", linestyle="-")
                                 ax_mp_histo[i][j].grid(which="minor", axis="both", linestyle=":", alpha=0.5)
                                 ax_mp_histo[i][j].minorticks_on()
-                                ax_mp_histo[i][j].xaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(3))
-                                ax_mp_histo[i][j].yaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(3))
+                                ax_mp_histo[i][j].xaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(2))
+                                ax_mp_histo[i][j].yaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(2))
                                 ax_mp_histo[i][j].set_axisbelow(True)
 
                             canvas_mineralogy = FigureCanvasTkAgg(fig_mineralogy, master=self.parent)
@@ -1027,8 +1111,8 @@ class GebPyGUI(tk.Frame):
                         ax_mp_scatter = fig_mineralogy.subplots(nrows=3, ncols=3)
                         #
                         categories = [["M", "V", "rho"], ["vP", "vS", "vP/vS"], ["GR", "PE", "nu"]]
-                        labels = [["M (kg/mol)", "V (A$^3$/mol", "rho (kg/m$^3$"], ["vP (m/s)", "vS (m/s)", "vP/vS (1)"],
-                                  ["GR (API)", "PE (barns/e$^-$)", "nu (1)"]]
+                        labels = [["M (kg/mol)", "V (A$^3$/mol)", "rho (kg/m$^3$)"],
+                                  ["vP (m/s)", "vS (m/s)", "vP/vS (1)"], ["GR (API)", "PE (barns/e$^-$)", "nu (1)"]]
                         #
                         dataset_x = self.data_mineral["rho"]
                         #
@@ -1068,6 +1152,13 @@ class GebPyGUI(tk.Frame):
                                     n_digits_y = 0
                                     y_factor = 0.1
                                     var_dtype = int
+
+                                # x_min, x_max = self.improve_xlimits(x_min=x_min, x_max=x_max)
+                                # y_min, y_max = self.improve_ylimits(y_min=y_min, y_max=y_max)
+                                #
+                                # if key != "nu":
+                                #     if x_min < 0:
+                                #         x_min = 0
 
                                 x_min = round(x_min - x_factor*delta_x, n_digits_x)
                                 x_max = round(x_max + x_factor*delta_x, n_digits_x)
@@ -1122,6 +1213,7 @@ class GebPyGUI(tk.Frame):
                                     y_min = 0.9*y_value
                                     y_max = 1.1*y_value
                                     y_ticks = np.linspace(y_min, y_max, 5)
+
                                 ax_mp_scatter[i][j].set_xlim(left=x_min, right=x_max)
                                 ax_mp_scatter[i][j].set_ylim(bottom=y_min, top=y_max)
                                 ax_mp_scatter[i][j].set_xticks(x_ticks)
@@ -1134,8 +1226,8 @@ class GebPyGUI(tk.Frame):
                                 ax_mp_scatter[i][j].grid(which="major", axis="both", linestyle="-")
                                 ax_mp_scatter[i][j].grid(which="minor", axis="both", linestyle=":", alpha=0.5)
                                 ax_mp_scatter[i][j].minorticks_on()
-                                ax_mp_scatter[i][j].xaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(3))
-                                ax_mp_scatter[i][j].yaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(3))
+                                ax_mp_scatter[i][j].xaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(2))
+                                ax_mp_scatter[i][j].yaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(2))
                                 ax_mp_scatter[i][j].set_axisbelow(True)
 
                         if "Mineralogy" not in self.gui_elements["Temporary"]["Canvas"]:

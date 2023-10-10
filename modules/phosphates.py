@@ -6,7 +6,7 @@
 # Name:		phosphates.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		20.09.2022
+# Date:		10.10.2023
 
 # -----------------------------------------------
 
@@ -44,8 +44,7 @@ class Phosphates:
                 data_mineral = self.create_aptite_oh()
             #
             for key, value in data_mineral.items():
-                if key in ["M", "rho", "rho_e", "V", "vP", "vS", "vP/vS", "K", "G", "E", "nu", "GR", "PE", "U",
-                           "p"]:
+                if key in ["M", "rho", "rho_e", "V", "vP", "vS", "vP/vS", "K", "G", "E", "nu", "GR", "PE", "U", "p"]:
                     if key not in dataset:
                         dataset[key] = [value]
                     else:
@@ -447,6 +446,7 @@ class Phosphates:
             return results
     #
     def create_aptite(self):   # Ca5 (F,Cl,OH) (PO4)3
+        mineral = "Ap"
         # Major elements
         hydrogen = PeriodicSystem(name="H").get_data()
         oxygen = PeriodicSystem(name="O").get_data()
@@ -482,20 +482,17 @@ class Phosphates:
         if len(traces_data) > 0:
             traces_data = np.array(traces_data, dtype=object)
             traces_data = traces_data[traces_data[:, 1].argsort()]
-        #
-        data = []
-        mineral = "Ap"
-        #
         # Molar mass
-        molar_mass_pure = 5*calcium[2] + a*fluorine[2] + b*chlorine[2] + c*(hydrogen[2] + oxygen[2]) + 3*(phosphorus[2] + 4*oxygen[2])
-        molar_mass, amounts = MineralChemistry(w_traces=traces_data, molar_mass_pure=molar_mass_pure,
-                                               majors=majors_data).calculate_molar_mass()
+        molar_mass_pure = (5*calcium[2] + a*fluorine[2] + b*chlorine[2] + c*(hydrogen[2] + oxygen[2]) + 3*
+                           (phosphorus[2] + 4*oxygen[2]))
+        molar_mass, amounts = MineralChemistry(
+            w_traces=traces_data, molar_mass_pure=molar_mass_pure, majors=majors_data).calculate_molar_mass()
         element = [PeriodicSystem(name=amounts[i][0]).get_data() for i in range(len(amounts))]
         # Density
         dataV_F = CrystalPhysics([[9.367, 6.884], [], "hexagonal"])
         V_F = dataV_F.calculate_volume()
         Z_F = 2
-        V_m_F = MineralChemistry().calculate_molar_volume(volume_cell=V_F, z=Z_F)
+        V_m_F = MineralChemistry().calculate_molar_volume(volume_cell=V_F, z=Z_F)*10**(6)
         dataRho_F = CrystalPhysics([molar_mass, Z_F, V_F*10**(6)])
         rho_F = dataRho_F.calculate_bulk_density()
         rho_e_F = wg(amounts=amounts, elements=element, rho_b=rho_F).calculate_electron_density()
@@ -503,7 +500,7 @@ class Phosphates:
         dataV_Cl = CrystalPhysics([[9.598, 6.776], [], "hexagonal"])
         V_Cl = dataV_Cl.calculate_volume()
         Z_Cl = 2
-        V_m_Cl = MineralChemistry().calculate_molar_volume(volume_cell=V_Cl, z=Z_Cl)
+        V_m_Cl = MineralChemistry().calculate_molar_volume(volume_cell=V_Cl, z=Z_Cl)*10**(6)
         dataRho_Cl = CrystalPhysics([molar_mass, Z_Cl, V_Cl*10**(6)])
         rho_Cl = dataRho_Cl.calculate_bulk_density()
         rho_e_Cl = wg(amounts=amounts, elements=element, rho_b=rho_Cl).calculate_electron_density()
@@ -511,7 +508,7 @@ class Phosphates:
         dataV_OH = CrystalPhysics([[9.418, 6.875], [], "hexagonal"])
         V_OH = dataV_OH.calculate_volume()
         Z_OH = 2
-        V_m_OH = MineralChemistry().calculate_molar_volume(volume_cell=V_OH, z=Z_OH)
+        V_m_OH = MineralChemistry().calculate_molar_volume(volume_cell=V_OH, z=Z_OH)*10**(6)
         dataRho_OH = CrystalPhysics([molar_mass, Z_OH, V_OH*10**(6)])
         rho_OH = dataRho_OH.calculate_bulk_density()
         rho_e_OH = wg(amounts=amounts, elements=element, rho_b=rho_OH).calculate_electron_density()
@@ -546,42 +543,30 @@ class Phosphates:
         U = pe*rho_e*10**(-3)
         # Electrical resistivity
         p = None
-        #
-        if self.data_type == False:
-            data.append(mineral)
-            data.append(round(molar_mass, 3))
-            data.append(round(rho, 2))
-            data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 4)])
-            data.append([round(vP, 2), round(vS, 2), round(vPvS, 2)])
-            data.append([round(gamma_ray, 2), round(pe, 2), round(U, 2), p])
-            data.append(amounts)
-            #
-            return data
+        # Results
+        results = {}
+        results["mineral"] = mineral
+        results["M"] = molar_mass
+        element_list = np.array(amounts)[:, 0]
+        results["chemistry"] = {}
+        for index, element in enumerate(element_list, start=0):
+            results["chemistry"][element] = amounts[index][2]
+        results["rho"] = round(rho, 4)
+        results["rho_e"] = round(rho_e, 4)
+        results["V"] = round(V_m, 4)
+        results["vP"] = round(vP, 4)
+        results["vS"] = round(vS, 4)
+        results["vP/vS"] = round(vPvS, 4)
+        results["G"] = round(G*10**(-9), 4)
+        results["K"] = round(K*10**(-9), 4)
+        results["E"] = round(E*10**(-9), 4)
+        results["nu"] = round(nu, 4)
+        results["GR"] = round(gamma_ray, 4)
+        results["PE"] = round(pe, 4)
+        results["U"] = round(U, 4)
+        if p != None:
+            results["p"] = round(p, 4)
         else:
-            #
-            results = {}
-            results["mineral"] = mineral
-            results["M"] = molar_mass
-            element_list = np.array(amounts)[:, 0]
-            results["chemistry"] = {}
-            for index, element in enumerate(element_list, start=0):
-                results["chemistry"][element] = amounts[index][2]
-            results["rho"] = round(rho, 4)
-            results["rho_e"] = round(rho_e, 4)
-            results["V"] = round(V_m, 4)
-            results["vP"] = round(vP, 4)
-            results["vS"] = round(vS, 4)
-            results["vP/vS"] = round(vPvS, 4)
-            results["G"] = round(G*10**(-9), 4)
-            results["K"] = round(K*10**(-9), 4)
-            results["E"] = round(E*10**(-9), 4)
-            results["nu"] = round(nu, 4)
-            results["GR"] = round(gamma_ray, 4)
-            results["PE"] = round(pe, 4)
-            results["U"] = round(U, 4)
-            if p != None:
-                results["p"] = round(p, 4)
-            else:
-                results["p"] = p
-            #
-            return results
+            results["p"] = p
+        #
+        return results

@@ -6,7 +6,7 @@
 # Name:		oxides.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		09.10.2023
+# Date:		10.10.2023
 
 # -----------------------------------------------
 
@@ -307,8 +307,7 @@ class Oxides():
                 data_mineral = self.create_senarmontite()
 
             for key, value in data_mineral.items():
-                if key in ["M", "rho", "rho_e", "V", "vP", "vS", "vP/vS", "K", "G", "E", "nu", "GR", "PE", "U",
-                           "p"]:
+                if key in ["M", "rho", "rho_e", "V", "vP", "vS", "vP/vS", "K", "G", "E", "nu", "GR", "PE", "U", "p"]:
                     if key not in dataset:
                         dataset[key] = [value]
                     else:
