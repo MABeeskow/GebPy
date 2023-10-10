@@ -4361,8 +4361,77 @@ class GebPyGUI(tk.Frame):
             entries.extend([var_entr_min, var_entr_max, var_entr_mean, var_entr_error])
             #
             self.tv_petrology_results.insert("", tk.END, values=entries)
-        #
-    #
+
+    def improve_xlimits_rock(self, delta_x, x_min, x_max):
+        if delta_x < 1:
+            n_digits = 3
+        elif 1 <= delta_x < 5:
+            n_digits = 2
+        elif delta_x >= 5:
+            n_digits = 0
+
+        x_min = round(x_min - 0.1*delta_x, n_digits)
+        x_max = round(x_max + 0.1*delta_x, n_digits)
+
+        if delta_x > 100:
+            delta = 10
+            x_min = self.myround(x=x_min - delta, prec=0, base=3)
+            x_max = self.myround(x=x_max + delta, prec=0, base=3)
+        elif 100 >= delta_x > 25:
+            delta = 3
+            x_min = self.myround(x=x_min - delta, prec=0, base=3)
+            x_max = self.myround(x=x_max + delta, prec=0, base=3)
+        elif 25 >= delta_x > 10:
+            delta = 2
+            x_min = self.myround(x=x_min - delta, prec=0, base=3)
+            x_max = self.myround(x=x_max + delta, prec=0, base=3)
+        elif 10 >= delta_x > 3:
+            delta = 1.5
+            x_min = self.myround(x=x_min - delta, prec=0, base=3)
+            x_max = self.myround(x=x_max + delta, prec=0, base=3)
+        elif 3 >= delta_x > 1:
+            delta = 0.9
+            x_min = self.myround(x=x_min - delta, prec=1, base=1.5)
+            x_max = self.myround(x=x_max + delta, prec=1, base=1.5)
+        else:
+            delta = 0.015
+            x_min = self.myround(x=x_min - delta, prec=3, base=0.003)
+            x_max = self.myround(x=x_max + delta, prec=3, base=0.003)
+
+        return x_min, x_max
+
+    def improve_ylimits_rock(self, y_min, y_max):
+        if (y_max - y_min) > 50:
+            delta = 9
+            y_min = self.myround(x=y_min - delta, base=3)
+            y_max = self.myround(x=y_max + delta, base=3)
+        elif 50 >= (y_max - y_min) > 25:
+            delta = 4.5
+            y_min = self.myround(x=y_min - delta, base=3)
+            y_max = self.myround(x=y_max + delta, base=3)
+        elif 25 >= (y_max - y_min) > 10:
+            delta = 3
+            y_min = self.myround(x=y_min - delta, base=3)
+            y_max = self.myround(x=y_max + delta, base=3)
+        else:
+            if y_min > 5:
+                delta = 3
+                y_min = self.myround(x=y_min - delta, base=1.5)
+                y_max = self.myround(x=y_max + delta, base=1.5)
+            elif 5 >= (y_max - y_min) > 1:
+                delta = 1.5
+                y_min = self.myround(x=y_min - delta, base=0.3)
+                y_max = self.myround(x=y_max + delta, base=0.3)
+            else:
+                delta = 0.015
+                y_min = self.myround(x=y_min - delta, base=0.003)
+                y_max = self.myround(x=y_max + delta, base=0.003)
+
+        if y_min < 0:
+            y_min = 0
+
+        return y_min, y_max
+
     def change_rb_diagram_rocks(self):  # RB DIAGRAM ROCKS
         if self.gui_variables["Radiobutton"]["Analysis Mode"].get() == 0:   # ROCK PHYSICS
             var_rb_diagram = self.gui_variables["Radiobutton"]["Diagram Type Rock"].get()
@@ -4411,13 +4480,13 @@ class GebPyGUI(tk.Frame):
                                     elif delta_x >= 5:
                                         n_digits = 0
 
-                                    x_min = round(x_min - 0.1*delta_x, n_digits)
-                                    x_max = round(x_max + 0.1*delta_x, n_digits)
+                                    x_min, x_max = self.improve_xlimits_rock(delta_x=delta_x, x_min=x_min, x_max=x_max)
+                                    y_min, y_max = self.improve_ylimits_rock(y_min=y_min, y_max=y_max)
 
                                     if key != "nu":
                                         if x_min < 0:
                                             x_min = 0
-                                    #
+
                                     ax_rp_histo[i][j].set_xlim(left=x_min, right=x_max)
                                     ax_rp_histo[i][j].set_ylim(bottom=y_min, top=y_max)
                                     ax_rp_histo[i][j].set_xticks(np.around(
@@ -4432,8 +4501,8 @@ class GebPyGUI(tk.Frame):
                                     ax_rp_histo[i][j].grid(which="major", axis="both", linestyle="-")
                                     ax_rp_histo[i][j].grid(which="minor", axis="both", linestyle=":", alpha=0.5)
                                     ax_rp_histo[i][j].minorticks_on()
-                                    ax_rp_histo[i][j].xaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(3))
-                                    ax_rp_histo[i][j].yaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(3))
+                                    ax_rp_histo[i][j].xaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(4))
+                                    ax_rp_histo[i][j].yaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(4))
                                     ax_rp_histo[i][j].set_axisbelow(True)
 
                                 canvas_petrology = FigureCanvasTkAgg(fig_petrology, master=self.parent)
@@ -4521,79 +4590,41 @@ class GebPyGUI(tk.Frame):
                                     ax_rp_scatter[i][j].scatter(
                                         dataset_x, dataset_y, color=self.colors_gebpy["Option"],
                                         edgecolor="black", alpha=0.5)
-                                    #
+
                                     x_min = min(dataset_x)
                                     x_max = max(dataset_x)
                                     delta_x = round(x_max - x_min, 4)
                                     y_min = min(dataset_y)
                                     y_max = max(dataset_y)
                                     delta_y = round(y_max - y_min, 4)
-                                    #
-                                    if delta_x < 1:
-                                        n_digits_x = 3
-                                        x_factor = 0.9
-                                    elif 1 <= delta_x < 5:
-                                        n_digits_x = 2
-                                        x_factor = 0.5
-                                    elif delta_x >= 5:
-                                        n_digits_x = 0
-                                        x_factor = 0.1
-                                    #
+
                                     if delta_y < 1:
                                         n_digits_y = 3
-                                        y_factor = 0.9
-                                        var_dtype = float
                                     elif 1 <= delta_y < 5:
                                         n_digits_y = 2
-                                        y_factor = 0.5
-                                        var_dtype = float
                                     elif delta_y >= 5:
                                         n_digits_y = 0
-                                        y_factor = 0.1
-                                        var_dtype = int
-                                    #
-                                    x_min = round(x_min - x_factor*delta_x, n_digits_x)
-                                    x_max = round(x_max + x_factor*delta_x, n_digits_x)
-                                    y_min = round(y_min - y_factor*delta_y, n_digits_y)
-                                    y_max = round(y_max + y_factor*delta_y, n_digits_y)
-                                    #
-                                    if x_key in ["rho"]:
-                                        x_min = round(round(min(dataset_x) - 150, -2), n_digits_x)
-                                        x_max = round(round(max(dataset_x) + 150, -2), n_digits_x)
-                                    if key in ["vP", "vS", "rho"]:
-                                        y_min = round(round(min(dataset_y) - 150, -2), n_digits_y)
-                                        y_max = round(round(max(dataset_y) + 150, -2), n_digits_y)
-                                    elif key in ["K", "G", "E", "GR"]:
-                                        y_min = round(round(min(dataset_y) - 15, -1) + 10, n_digits_y)
-                                        y_max = round(round(max(dataset_y) + 15, -1) - 10, n_digits_y)
-                                    elif key in ["phi"]:
-                                        y_min = round(round(min(dataset_y) - 7, -1) + 5, n_digits_y)
-                                        y_max = round(round(max(dataset_y) + 7, -1) - 5, n_digits_y)
-                                    elif key in ["PE", "vPvS", "nu"]:
-                                        y_min = round(round(min(dataset_y) - 0.005, 3), n_digits_y)
-                                        y_max = round(round(max(dataset_y) + 0.005, 3), n_digits_y)
-                                    #
+
+                                    x_min = 0.995*x_min
+                                    x_max = 1.005*x_max
+                                    x_min, x_max = self.improve_xlimits_rock(delta_x=delta_x, x_min=x_min, x_max=x_max)
+                                    y_min = 0.95*y_min
+                                    y_max = 1.05*y_max
+                                    y_min, y_max = self.improve_ylimits_rock(y_min=y_min, y_max=y_max)
+
                                     if key != "nu":
                                         if x_min < 0:
                                             x_min = 0
                                     if key != "nu":
                                         if y_min < 0:
                                             y_min = 0
-                                    #
-                                    step_x = (x_max - x_min)/4
-                                    step_x = int(round(step_x, n_digits_x))
-                                    x_ticks = np.arange(x_min, x_max + step_x, step_x)
-                                    step_y = (y_max - y_min)/4
-                                    if var_dtype == float:
-                                        step_y = round(step_y, n_digits_y)
-                                    else:
-                                        step_y = int(round(step_y, n_digits_y))
-                                    y_ticks = np.arange(y_min, y_max + step_y, step_y)
-                                    #
+
                                     ax_rp_scatter[i][j].set_xlim(left=x_min, right=x_max)
                                     ax_rp_scatter[i][j].set_ylim(bottom=y_min, top=y_max)
-                                    ax_rp_scatter[i][j].set_xticks(x_ticks)
-                                    ax_rp_scatter[i][j].set_yticks(y_ticks)
+                                    ax_rp_scatter[i][j].set_xticks(np.around(
+                                        np.linspace(x_min, x_max, 4, dtype=int, endpoint=True), 0))
+                                    ax_rp_scatter[i][j].set_yticks(np.around(
+                                        np.linspace(y_min, y_max, 4, dtype=float, endpoint=True), n_digits_y))
                                     ax_rp_scatter[i][j].xaxis.set_tick_params(labelsize=8)
                                     ax_rp_scatter[i][j].yaxis.set_tick_params(labelsize=8)
                                     ax_rp_scatter[i][j].set_xlabel("Density - kg/m$^3$", fontsize=8)
@@ -4602,8 +4633,8 @@ class GebPyGUI(tk.Frame):
                                     ax_rp_scatter[i][j].grid(which="major", axis="both", linestyle="-")
                                     ax_rp_scatter[i][j].grid(which="minor", axis="both", linestyle=":", alpha=0.5)
                                     ax_rp_scatter[i][j].minorticks_on()
-                                    ax_rp_scatter[i][j].xaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(3))
-                                    ax_rp_scatter[i][j].yaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(3))
+                                    ax_rp_scatter[i][j].xaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(4))
+                                    ax_rp_scatter[i][j].yaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(4))
                                     ax_rp_scatter[i][j].set_axisbelow(True)
                             #
                             if "Petrology" not in self.gui_elements["Temporary"]["Canvas"]:
