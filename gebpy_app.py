@@ -6,7 +6,7 @@
 # Name:		gebpy_app.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		10.10.2023
+# Date:		11.10.2023
 
 #-----------------------------------------------
 
@@ -233,7 +233,9 @@ class GebPyGUI(tk.Frame):
                     "Jacobsite", "Magnesioferrite", "Trevorite", "Franklinite", "Ulvospinel", "Fe-Spinel", "Uraninite",
                     "Litharge", "Massicot", "Minium", "Plattnerite", "Scrutinyite", "Zincite", "Columbite", "Tantalite",
                     "Coltan", "Crocoite", "Wulfenite", "Goethite", "Wolframite", "Huebnerite", "Ferberite", "Boehmite",
-                    "Gibbsite", "Au(III)-Oxide", "Brucite", "Valentinite", "Senarmontite", "Ferberite-Huebnerite"]
+                    "Gibbsite", "Au(III)-Oxide", "Brucite", "Valentinite", "Senarmontite", "Ferberite-Huebnerite",
+                    "Spinel", "Diaspore", "Cuprite", "Brookite", "Anatase", "Manganite", "Groutite", "Pyrophanite",
+                    "Geikielite", "Claudetite", "Arsenolite", "Bismite", "Sphaerobismite"]
                 self.oxide_minerals.sort()
                 for mineral in self.oxide_minerals:
                     sub_oxides.add_command(
@@ -4432,6 +4434,16 @@ class GebPyGUI(tk.Frame):
 
         return y_min, y_max
 
+    def calculate_delta_xy(self, dataset_x, dataset_y):
+        x_min = min(dataset_x)
+        x_max = max(dataset_x)
+        delta_x = round(x_max - x_min, 4)
+        y_min = min(dataset_y)
+        y_max = max(dataset_y)
+        delta_y = round(y_max - y_min, 4)
+
+        return x_min, x_max, delta_x, y_min, y_max, delta_y
+
     def change_rb_diagram_rocks(self):  # RB DIAGRAM ROCKS
         if self.gui_variables["Radiobutton"]["Analysis Mode"].get() == 0:   # ROCK PHYSICS
             var_rb_diagram = self.gui_variables["Radiobutton"]["Diagram Type Rock"].get()
@@ -4466,13 +4478,12 @@ class GebPyGUI(tk.Frame):
                                     y, x, _ = ax_rp_histo[i][j].hist(
                                         x=self.data_rock[key], color=self.colors_gebpy["Option"], edgecolor="black",
                                         bins=12)
-                                    #
-                                    x_min = min(x)
-                                    x_max = max(x)
-                                    delta_x = round(x_max - x_min, 4)
+
+                                    x_min, x_max, delta_x, y_min, y_max, delta_y = self.calculate_delta_xy(
+                                        dataset_x=x, dataset_y=y)
                                     y_min = 0
                                     y_max = round(1.05*max(y), 2)
-                                    #
+
                                     if delta_x < 1:
                                         n_digits = 3
                                     elif 1 <= delta_x < 5:
@@ -4591,12 +4602,8 @@ class GebPyGUI(tk.Frame):
                                         dataset_x, dataset_y, color=self.colors_gebpy["Option"],
                                         edgecolor="black", alpha=0.5)
 
-                                    x_min = min(dataset_x)
-                                    x_max = max(dataset_x)
-                                    delta_x = round(x_max - x_min, 4)
-                                    y_min = min(dataset_y)
-                                    y_max = max(dataset_y)
-                                    delta_y = round(y_max - y_min, 4)
+                                    x_min, x_max, delta_x, y_min, y_max, delta_y = self.calculate_delta_xy(
+                                        dataset_x=dataset_x, dataset_y=dataset_y)
 
                                     if delta_y < 1:
                                         n_digits_y = 3
@@ -4629,25 +4636,24 @@ class GebPyGUI(tk.Frame):
                                     ax_rp_scatter[i][j].yaxis.set_tick_params(labelsize=8)
                                     ax_rp_scatter[i][j].set_xlabel("Density - kg/m$^3$", fontsize=8)
                                     ax_rp_scatter[i][j].set_ylabel(labels[i][j], labelpad=0.5, fontsize=8)
-                                    #
+
                                     ax_rp_scatter[i][j].grid(which="major", axis="both", linestyle="-")
                                     ax_rp_scatter[i][j].grid(which="minor", axis="both", linestyle=":", alpha=0.5)
                                     ax_rp_scatter[i][j].minorticks_on()
                                     ax_rp_scatter[i][j].xaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(4))
                                     ax_rp_scatter[i][j].yaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(4))
                                     ax_rp_scatter[i][j].set_axisbelow(True)
-                            #
+
                             if "Petrology" not in self.gui_elements["Temporary"]["Canvas"]:
                                 canvas_petrology = FigureCanvasTkAgg(fig_petrology, master=self.parent)
                                 #
                             else:
                                 canvas_petrology = self.gui_elements["Temporary"]["Canvas"]["Petrology"]
-                            #
+
                             canvas_petrology.draw()
-                            #
+
                             self.gui_elements["Temporary"]["Axis"]["Rock Physics Scatter"] = ax_rp_scatter
                             self.gui_elements["Temporary"]["Canvas"]["Petrology"] = canvas_petrology
-                            #
                         else:
                             ## Cleaning
                             for gui_axes in self.gui_elements["Temporary"]["Axis"]["Rock Physics Scatter"]:
@@ -4763,29 +4769,28 @@ class GebPyGUI(tk.Frame):
                                 y, x, _ = ax_rc_histo[i][j].hist(
                                     x=np.array(self.data_rock["mineralogy"][key])*factor,
                                     color=self.colors_gebpy["Option"], edgecolor="black", bins=12)
-                                #
-                                x_min = min(x)
-                                x_max = max(x)
-                                delta_x = round(x_max - x_min, 4)
+
+                                x_min, x_max, delta_x, y_min, y_max, delta_y = self.calculate_delta_xy(
+                                    dataset_x=x, dataset_y=y)
                                 y_min = 0
                                 y_max = round(1.05*max(y), 2)
-                                #
+
                                 if delta_x < 1:
                                     n_digits = 3
                                 elif 1 <= delta_x < 5:
                                     n_digits = 2
                                 elif delta_x >= 5:
                                     n_digits = 0
-                                #
-                                x_min = round(x_min - 0.1*delta_x, n_digits)
-                                x_max = round(x_max + 0.1*delta_x, n_digits)
-                                #
+
+                                x_min, x_max = self.improve_xlimits_rock(delta_x=delta_x, x_min=x_min, x_max=x_max)
+                                y_min, y_max = self.improve_ylimits_rock(y_min=y_min, y_max=y_max)
+
                                 if x_min < 0:
                                     x_min = 0
                                 if key != "Urn":
                                     if x_max > 100:
                                         x_max = 100
-                                #
+
                                 ax_rc_histo[i][j].set_xlim(left=x_min, right=x_max)
                                 ax_rc_histo[i][j].set_ylim(bottom=y_min, top=y_max)
                                 ax_rc_histo[i][j].set_xticks(np.around(
@@ -4796,9 +4801,13 @@ class GebPyGUI(tk.Frame):
                                 ax_rc_histo[i][j].yaxis.set_tick_params(labelsize=8)
                                 ax_rc_histo[i][j].set_xlabel(labels[i][j], fontsize=8)
                                 ax_rc_histo[i][j].set_ylabel("Frequency", labelpad=0.5, fontsize=8)
-                                ax_rc_histo[i][j].grid(True)
+
+                                ax_rc_histo[i][j].grid(which="major", axis="both", linestyle="-")
+                                ax_rc_histo[i][j].grid(which="minor", axis="both", linestyle=":", alpha=0.5)
+                                ax_rc_histo[i][j].minorticks_on()
+                                ax_rc_histo[i][j].xaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(4))
+                                ax_rc_histo[i][j].yaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(4))
                                 ax_rc_histo[i][j].set_axisbelow(True)
-                            #
                             if "Petrology" not in self.gui_elements["Temporary"]["Canvas"]:
                                 canvas_petrology = FigureCanvasTkAgg(fig_petrology, master=self.parent)
                                 #
@@ -4934,14 +4943,13 @@ class GebPyGUI(tk.Frame):
                                     ax_rc_scatter[i][j].scatter(
                                         dataset_x, dataset_y, color=self.colors_gebpy["Option"], edgecolor="black",
                                         alpha=0.5)
-                                    #
-                                    x_min = min(dataset_x)
-                                    x_max = max(dataset_x)
-                                    delta_x = round(x_max - x_min, 4)
-                                    y_min = min(dataset_y)
-                                    y_max = max(dataset_y)
-                                    delta_y = round(y_max - y_min, 4)
-                                    #
+
+                                    x_min, x_max, delta_x, y_min, y_max, delta_y = self.calculate_delta_xy(
+                                        dataset_x=dataset_x, dataset_y=dataset_y)
+
+                                    x_min, x_max = self.improve_xlimits_rock(delta_x=delta_x, x_min=x_min, x_max=x_max)
+                                    y_min, y_max = self.improve_ylimits_rock(y_min=y_min, y_max=y_max)
+
                                     if delta_x < 1:
                                         n_digits_x = 3
                                     elif 1 <= delta_x < 5:
@@ -4955,12 +4963,7 @@ class GebPyGUI(tk.Frame):
                                         n_digits_y = 2
                                     elif delta_y >= 5:
                                         n_digits_y = 0
-                                    #
-                                    x_min = round(x_min - 0.1*delta_x, n_digits_x)
-                                    x_max = round(x_max + 0.1*delta_x, n_digits_x)
-                                    y_min = round(y_min - 0.1*delta_y, n_digits_y)
-                                    y_max = round(y_max + 0.1*delta_y, n_digits_y)
-                                    #
+
                                     if x_min < 0:
                                         x_min = 0
                                     if y_min < 0:
@@ -4981,7 +4984,12 @@ class GebPyGUI(tk.Frame):
                                     ax_rc_scatter[i][j].yaxis.set_tick_params(labelsize=8)
                                     ax_rc_scatter[i][j].set_xlabel(str(ref_mineral)+" (wt.%)", fontsize=8)
                                     ax_rc_scatter[i][j].set_ylabel(y_label, labelpad=0.5, fontsize=8)
-                                    ax_rc_scatter[i][j].grid(True)
+
+                                    ax_rc_scatter[i][j].grid(which="major", axis="both", linestyle="-")
+                                    ax_rc_scatter[i][j].grid(which="minor", axis="both", linestyle=":", alpha=0.5)
+                                    ax_rc_scatter[i][j].minorticks_on()
+                                    ax_rc_scatter[i][j].xaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(4))
+                                    ax_rc_scatter[i][j].yaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(4))
                                     ax_rc_scatter[i][j].set_axisbelow(True)
                             #
                             if "Petrology" not in self.gui_elements["Temporary"]["Canvas"]:
@@ -5106,33 +5114,32 @@ class GebPyGUI(tk.Frame):
                                     factor = 10**2
                                 else:
                                     factor = 10**6
-                                #
+
                                 y, x, _ = ax_rce_histo[i][j].hist(
                                     x=np.array(self.data_rock["chemistry"][key])*factor,
                                     color=self.colors_gebpy["Option"], edgecolor="black", bins=12)
-                                #
-                                x_min = min(x)
-                                x_max = max(x)
-                                delta_x = round(x_max - x_min, 4)
+
+                                x_min, x_max, delta_x, y_min, y_max, delta_y = self.calculate_delta_xy(
+                                    dataset_x=x, dataset_y=y)
                                 y_min = 0
                                 y_max = round(1.05*max(y), 2)
-                                #
+
                                 if delta_x < 1:
                                     n_digits = 3
                                 elif 1 <= delta_x < 5:
                                     n_digits = 2
                                 elif delta_x >= 5:
                                     n_digits = 0
-                                #
-                                x_min = round(x_min - 0.1*delta_x, n_digits)
-                                x_max = round(x_max + 0.1*delta_x, n_digits)
-                                #
+
+                                x_min, x_max = self.improve_xlimits_rock(delta_x=delta_x, x_min=x_min, x_max=x_max)
+                                y_min, y_max = self.improve_ylimits_rock(y_min=y_min, y_max=y_max)
+
                                 if x_min < 0:
                                     x_min = 0
                                 if key != "U":
                                     if x_max > 100:
                                         x_max = 100
-                                #
+
                                 ax_rce_histo[i][j].set_xlim(left=x_min, right=x_max)
                                 ax_rce_histo[i][j].set_ylim(bottom=y_min, top=y_max)
                                 ax_rce_histo[i][j].set_xticks(np.around(
@@ -5141,12 +5148,15 @@ class GebPyGUI(tk.Frame):
                                     np.linspace(y_min, y_max, 4, dtype=float, endpoint=True), 1))
                                 ax_rce_histo[i][j].xaxis.set_tick_params(labelsize=8)
                                 ax_rce_histo[i][j].yaxis.set_tick_params(labelsize=8)
-                                #ax_rce_histo[i][j].set_xlabel(str(key) + " (wt.%)", fontsize=8)
                                 ax_rce_histo[i][j].set_xlabel(labels[i][j], fontsize=8)
                                 ax_rce_histo[i][j].set_ylabel("Frequency", labelpad=0.5, fontsize=8)
-                                ax_rce_histo[i][j].grid(True)
+
+                                ax_rce_histo[i][j].grid(which="major", axis="both", linestyle="-")
+                                ax_rce_histo[i][j].grid(which="minor", axis="both", linestyle=":", alpha=0.5)
+                                ax_rce_histo[i][j].minorticks_on()
+                                ax_rce_histo[i][j].xaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(4))
+                                ax_rce_histo[i][j].yaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(4))
                                 ax_rce_histo[i][j].set_axisbelow(True)
-                            #
                             if "Petrology" not in self.gui_elements["Temporary"]["Canvas"]:
                                 canvas_petrology = FigureCanvasTkAgg(fig_petrology, master=self.parent)
                                 #
@@ -5221,7 +5231,7 @@ class GebPyGUI(tk.Frame):
                             else:
                                 fig_petrology = self.gui_elements["Temporary"]["Figure"]["Petrology"]
                             #
-                            ax_rc_scatter = fig_petrology.subplots(nrows=3, ncols=3)
+                            ax_rce_scatter = fig_petrology.subplots(nrows=3, ncols=3)
                             #
                             categories = []
                             labels = []
@@ -5276,39 +5286,32 @@ class GebPyGUI(tk.Frame):
                                     else:
                                         factor = 10**6
                                         y_label = str(key) + " (ppm)"
-                                    #
+
                                     dataset_y = np.array(self.data_rock["chemistry"][key])*factor
-                                    #
-                                    ax_rc_scatter[i][j].scatter(
+                                    ax_rce_scatter[i][j].scatter(
                                         dataset_x, dataset_y, color=self.colors_gebpy["Option"], edgecolor="black",
                                         alpha=0.5)
-                                    #
-                                    x_min = min(dataset_x)
-                                    x_max = max(dataset_x)
-                                    delta_x = round(x_max - x_min, 4)
-                                    y_min = min(dataset_y)
-                                    y_max = max(dataset_y)
-                                    delta_y = round(y_max - y_min, 4)
-                                    #
+
+                                    x_min, x_max, delta_x, y_min, y_max, delta_y = self.calculate_delta_xy(
+                                        dataset_x=dataset_x, dataset_y=dataset_y)
+
                                     if delta_x < 1:
                                         n_digits_x = 3
                                     elif 1 <= delta_x < 5:
                                         n_digits_x = 2
                                     elif delta_x >= 5:
                                         n_digits_x = 0
-                                    #
+
                                     if delta_y < 1:
                                         n_digits_y = 3
                                     elif 1 <= delta_y < 5:
                                         n_digits_y = 2
                                     elif delta_y >= 5:
                                         n_digits_y = 0
-                                    #
-                                    x_min = round(x_min - 0.1*delta_x, n_digits_x)
-                                    x_max = round(x_max + 0.1*delta_x, n_digits_x)
-                                    y_min = round(y_min - 0.1*delta_y, n_digits_y)
-                                    y_max = round(y_max + 0.1*delta_y, n_digits_y)
-                                    #
+
+                                    x_min, x_max = self.improve_xlimits_rock(delta_x=delta_x, x_min=x_min, x_max=x_max)
+                                    y_min, y_max = self.improve_ylimits_rock(y_min=y_min, y_max=y_max)
+
                                     if x_min < 0:
                                         x_min = 0
                                     if y_min < 0:
@@ -5318,38 +5321,42 @@ class GebPyGUI(tk.Frame):
                                             x_max = 100
                                         if y_max > 100:
                                             y_max = 100
-                                    #
-                                    ax_rc_scatter[i][j].set_xlim(left=x_min, right=x_max)
-                                    ax_rc_scatter[i][j].set_ylim(bottom=y_min, top=y_max)
-                                    ax_rc_scatter[i][j].set_xticks(np.around(
+
+                                    ax_rce_scatter[i][j].set_xlim(left=x_min, right=x_max)
+                                    ax_rce_scatter[i][j].set_ylim(bottom=y_min, top=y_max)
+                                    ax_rce_scatter[i][j].set_xticks(np.around(
                                         np.linspace(x_min, x_max, 4, dtype=float, endpoint=True), n_digits_x))
-                                    ax_rc_scatter[i][j].set_yticks(np.around(
+                                    ax_rce_scatter[i][j].set_yticks(np.around(
                                         np.linspace(y_min, y_max, 4, dtype=float, endpoint=True), n_digits_y))
-                                    ax_rc_scatter[i][j].xaxis.set_tick_params(labelsize=8)
-                                    ax_rc_scatter[i][j].yaxis.set_tick_params(labelsize=8)
-                                    ax_rc_scatter[i][j].set_xlabel(str(ref_element)+" (wt.%)", fontsize=8)
-                                    ax_rc_scatter[i][j].set_ylabel(y_label, labelpad=0.5, fontsize=8)
-                                    ax_rc_scatter[i][j].grid(True)
-                                    ax_rc_scatter[i][j].set_axisbelow(True)
-                            #
+                                    ax_rce_scatter[i][j].xaxis.set_tick_params(labelsize=8)
+                                    ax_rce_scatter[i][j].yaxis.set_tick_params(labelsize=8)
+                                    ax_rce_scatter[i][j].set_xlabel(str(ref_element)+" (wt.%)", fontsize=8)
+                                    ax_rce_scatter[i][j].set_ylabel(y_label, labelpad=0.5, fontsize=8)
+
+                                    ax_rce_scatter[i][j].grid(which="major", axis="both", linestyle="-")
+                                    ax_rce_scatter[i][j].grid(which="minor", axis="both", linestyle=":", alpha=0.5)
+                                    ax_rce_scatter[i][j].minorticks_on()
+                                    ax_rce_scatter[i][j].xaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(4))
+                                    ax_rce_scatter[i][j].yaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(4))
+                                    ax_rce_scatter[i][j].set_axisbelow(True)
+
                             if "Petrology" not in self.gui_elements["Temporary"]["Canvas"]:
                                 canvas_petrology = FigureCanvasTkAgg(fig_petrology, master=self.parent)
-                                #
                             else:
                                 canvas_petrology = self.gui_elements["Temporary"]["Canvas"]["Petrology"]
-                            #
+
                             canvas_petrology.draw()
-                            #
-                            self.gui_elements["Temporary"]["Axis"]["Rock Chemistry Scatter Element"] = ax_rc_scatter
+
+                            self.gui_elements["Temporary"]["Axis"]["Rock Chemistry Scatter Element"] = ax_rce_scatter
                             self.gui_elements["Temporary"]["Canvas"]["Petrology"] = canvas_petrology
-                            #
+
                         else:
                             ## Cleaning
                             for gui_axes in self.gui_elements["Temporary"]["Axis"]["Rock Chemistry Scatter Element"]:
                                 for gui_axis in gui_axes:
                                     gui_axis.axis("on")
                                     gui_axis.set_visible(True)
-                            #
+
                             categories = ["Rock Physics Histogram", "Rock Physics Scatter", "Rock Chemistry Histogram",
                                           "Rock Chemistry Scatter", "Rock Chemistry Histogram Element"]
                             for category in categories:
@@ -5358,19 +5365,18 @@ class GebPyGUI(tk.Frame):
                                         for gui_axis in gui_axes:
                                             gui_axis.axis("off")
                                             gui_axis.set_visible(False)
-                            #
+
                             self.gui_elements["Temporary"]["Canvas"]["Petrology"].draw()
-                        #
+
                     else:
                         pass
-                    #
                 else:
                     ## RECONSTRUCTION
                     for gui_axes in self.gui_elements["Temporary"]["Axis"]["Rock Chemistry Scatter Element"]:
                         for gui_axis in gui_axes:
                             gui_axis.axis("on")
                             gui_axis.set_visible(True)
-                    #
+
                     categories = ["Rock Physics Histogram", "Rock Physics Scatter", "Rock Chemistry Histogram",
                                   "Rock Chemistry Scatter", "Rock Chemistry Histogram Element"]
                     for category in categories:
@@ -5379,13 +5385,11 @@ class GebPyGUI(tk.Frame):
                                 for gui_axis in gui_axes:
                                     gui_axis.axis("off")
                                     gui_axis.set_visible(False)
-                    #
+
                     self.gui_elements["Temporary"]["Canvas"]["Petrology"].draw()
-            #
+
             self.last_rb_setting["Petrology"]["Rock Chemistry"].set(var_rb_diagram)
-            #
-        #
-    #
+
     def change_rb_analysis_rocks(self):
         start_column = 35
         var_rb_mode = self.gui_variables["Radiobutton"]["Analysis Mode"].get()

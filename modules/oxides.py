@@ -6,7 +6,7 @@
 # Name:		oxides.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		10.10.2023
+# Date:		11.10.2023
 
 # -----------------------------------------------
 
@@ -138,7 +138,7 @@ class Oxides():
             data = self.create_arsenolite()
         elif self.mineral == "Senarmontite":
             data = self.create_senarmontite()
-        elif self.mineral == "Valentite":
+        elif self.mineral == "Valentinite":
             data = self.create_valentinite()
         elif self.mineral == "Bismite":
             data = self.create_bismite()
@@ -195,8 +195,9 @@ class Oxides():
         return data
     #
     def generate_dataset(self, number):
+        pure_minerals = ["Quartz", "Hematite", "Corundum"]
+        solid_solutions = ["Al-Spinel", "Cr-Spinel", "Fe-Spinel"]
         dataset = {}
-        #
         for index in range(number):
             if self.mineral == "Quartz":
                 data_mineral = self.create_quartz()
@@ -236,6 +237,8 @@ class Oxides():
             # Boehmite Group
             elif self.mineral == "Boehmite":
                 data_mineral = self.create_boehmite()
+            elif self.mineral == "Diaspore":
+                data_mineral = self.create_diaspore()
             elif self.mineral == "Pyrolusite":
                 data_mineral = self.create_pyrolusite()
             elif self.mineral == "Magnesiochromite":
@@ -248,6 +251,8 @@ class Oxides():
                 data_mineral = self.create_chromium_spinel()
             elif self.mineral == "Cuprospinel":
                 data_mineral = self.create_cuprospinel()
+            elif self.mineral == "Spinel":
+                data_mineral = self.create_spinel()
             elif self.mineral == "Brucite":
                 data_mineral = self.create_brucite()
             elif self.mineral == "Jacobsite":
@@ -300,6 +305,26 @@ class Oxides():
                 data_mineral = self.create_gibbsite()
             elif self.mineral in ["Au2O3", "Au(III)-Oxide"]:
                 data_mineral = self.create_gold3oxide()
+            elif self.mineral == "Brookite":
+                data_mineral = self.create_brookite()
+            elif self.mineral == "Anatase":
+                data_mineral = self.create_anatase()
+            elif self.mineral == "Manganite":
+                data_mineral = self.create_manganite()
+            elif self.mineral == "Groutite":
+                data_mineral = self.create_groutite()
+            elif self.mineral == "Pyrophanite":
+                data_mineral = self.create_pyrophanite()
+            elif self.mineral == "Geikielite":
+                data_mineral = self.create_geikielite()
+            elif self.mineral == "Claudetite":
+                data_mineral = self.create_claudetite()
+            elif self.mineral == "Arsenolite":
+                data_mineral = self.create_arsenolite()
+            elif self.mineral == "Bismite":
+                data_mineral = self.create_bismite()
+            elif self.mineral == "Sphaerobismite":
+                data_mineral = self.create_sphaerobismite()
             # Hydroxides
             elif self.mineral == "Valentinite":
                 data_mineral = self.create_valentinite()
@@ -322,9 +347,12 @@ class Oxides():
                     else:
                         for key_2, value_2 in value.items():
                             dataset[key][key_2].append(value_2)
-        #
+
+            if len(self.traces_list) == 0 and self.mineral in pure_minerals:
+                break
+
         return dataset
-    #
+
     def create_quartz(self, var_T=298.15):
         ## General Information
         name = "Qz"
@@ -344,17 +372,17 @@ class Oxides():
             self.impurity == "pure"
             var_state = "fixed"
 
-        compositon_data = TraceElements(tracer=self.traces_list).calculate_composition_quartz()
+        composition_data = TraceElements(tracer=self.traces_list).calculate_composition_quartz()
         #
         ## Molar mass
         molar_mass_pure = self.silicon[2] + 2*self.oxygen[2]
         molar_mass = 0
         amounts = []
         #
-        for element in compositon_data:
+        for element in composition_data:
             chem_data = PeriodicSystem(name=element).get_data()
-            molar_mass += compositon_data[element]["x"]*chem_data[2]
-            amounts.append([chem_data[0], chem_data[1], compositon_data[element]["w"]])
+            molar_mass += composition_data[element]["x"]*chem_data[2]
+            amounts.append([chem_data[0], chem_data[1], composition_data[element]["w"]])
         #
         magic_factor = molar_mass/molar_mass_pure
         element = [PeriodicSystem(name=amounts[i][0]).get_data() for i in range(len(amounts))]
@@ -976,47 +1004,35 @@ class Oxides():
         U = pe*rho_e*10**(-3)
         # Electrical resistivity
         p = 28*10**(-8)
-        #
-        if self.data_type == False:
-            data = []
-            data.append(name)
-            data.append(round(molar_mass, 3))
-            data.append(round(rho, 2))
-            data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 4)])
-            data.append([round(vP, 2), round(vS, 2), round(vPvS, 2)])
-            data.append([round(gamma_ray, 2), round(pe, 2), round(U, 2), p])
-            data.append(amounts)
-            #
-            return data
+        # Results
+        results = {}
+        results["mineral"] = name
+        results["state"] = var_state
+        results["M"] = molar_mass
+        element_list = np.array(amounts)[:, 0]
+        results["chemistry"] = {}
+        for index, element in enumerate(element_list, start=0):
+            results["chemistry"][element] = amounts[index][2]
+        results["rho"] = round(rho, 4)
+        results["rho_e"] = round(rho_e, 4)
+        results["V"] = round(V_m, 4)
+        results["vP"] = round(vP, 4)
+        results["vS"] = round(vS, 4)
+        results["vP/vS"] = round(vPvS, 4)
+        results["G"] = round(G*10**(-9), 4)
+        results["K"] = round(K*10**(-9), 4)
+        results["E"] = round(E*10**(-9), 4)
+        results["nu"] = round(nu, 4)
+        results["GR"] = round(gamma_ray, 4)
+        results["PE"] = round(pe, 4)
+        results["U"] = round(U, 4)
+        results["trace elements"] = elements_traces
+        if p != None:
+            results["p"] = round(p, 4)
         else:
-            results = {}
-            results["mineral"] = name
-            results["state"] = var_state
-            results["M"] = molar_mass
-            element_list = np.array(amounts)[:, 0]
-            results["chemistry"] = {}
-            for index, element in enumerate(element_list, start=0):
-                results["chemistry"][element] = amounts[index][2]
-            results["rho"] = round(rho, 4)
-            results["rho_e"] = round(rho_e, 4)
-            results["V"] = round(V_m, 4)
-            results["vP"] = round(vP, 4)
-            results["vS"] = round(vS, 4)
-            results["vP/vS"] = round(vPvS, 4)
-            results["G"] = round(G*10**(-9), 4)
-            results["K"] = round(K*10**(-9), 4)
-            results["E"] = round(E*10**(-9), 4)
-            results["nu"] = round(nu, 4)
-            results["GR"] = round(gamma_ray, 4)
-            results["PE"] = round(pe, 4)
-            results["U"] = round(U, 4)
-            results["trace elements"] = elements_traces
-            if p != None:
-                results["p"] = round(p, 4)
-            else:
-                results["p"] = p
-            #
-            return results
+            results["p"] = p
+
+        return results
     #
     def create_magnetite(self):
         ## General Information
@@ -1117,7 +1133,7 @@ class Oxides():
             self.impurity == "pure"
             var_state = "fixed"
         #
-        compositon_data = TraceElements(
+        composition_data = TraceElements(
             tracer=self.traces_list).calculate_composition_oxides(
             var_oxides=oxides, var_composition=composition_oxides, var_mineral="Magnetite", var_elements=elements_list)
         #
@@ -1126,10 +1142,10 @@ class Oxides():
         molar_mass = 0
         amounts = []
         #
-        for element in compositon_data:
+        for element in composition_data:
             chem_data = PeriodicSystem(name=element).get_data()
-            molar_mass += compositon_data[element]["x"] * chem_data[2]
-            amounts.append([chem_data[0], chem_data[1], compositon_data[element]["w"]])
+            molar_mass += composition_data[element]["x"] * chem_data[2]
+            amounts.append([chem_data[0], chem_data[1], composition_data[element]["w"]])
         #
         magic_factor = molar_mass / molar_mass_pure
         element = [PeriodicSystem(name=amounts[i][0]).get_data() for i in range(len(amounts))]
@@ -1274,48 +1290,35 @@ class Oxides():
         U = pe*rho_e*10**(-3)
         # Electrical resistivity
         p = 5*10**6
-        #
-        if self.data_type == False:
-            data = []
-            data.append(name)
-            data.append(round(molar_mass, 3))
-            data.append(round(rho, 2))
-            data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 4)])
-            data.append([round(vP, 2), round(vS, 2), round(vPvS, 2)])
-            data.append([round(gamma_ray, 2), round(pe, 2), round(U, 2), p])
-            data.append(amounts)
-            #
-            return data
+        # Results
+        results = {}
+        results["mineral"] = name
+        results["state"] = var_state
+        results["M"] = molar_mass
+        element_list = np.array(amounts)[:, 0]
+        results["chemistry"] = {}
+        for index, element in enumerate(element_list, start=0):
+            results["chemistry"][element] = amounts[index][2]
+        results["rho"] = round(rho, 4)
+        results["rho_e"] = round(rho_e, 4)
+        results["V"] = round(V_m, 4)
+        results["vP"] = round(vP, 4)
+        results["vS"] = round(vS, 4)
+        results["vP/vS"] = round(vPvS, 4)
+        results["G"] = round(G*10**(-9), 4)
+        results["K"] = round(K*10**(-9), 4)
+        results["E"] = round(E*10**(-9), 4)
+        results["nu"] = round(nu, 4)
+        results["GR"] = round(gamma_ray, 4)
+        results["PE"] = round(pe, 4)
+        results["U"] = round(U, 4)
+        if p != None:
+            results["p"] = round(p, 4)
         else:
-            #
-            results = {}
-            results["mineral"] = name
-            results["state"] = var_state
-            results["M"] = molar_mass
-            element_list = np.array(amounts)[:, 0]
-            results["chemistry"] = {}
-            for index, element in enumerate(element_list, start=0):
-                results["chemistry"][element] = amounts[index][2]
-            results["rho"] = round(rho, 4)
-            results["rho_e"] = round(rho_e, 4)
-            results["V"] = round(V_m, 4)
-            results["vP"] = round(vP, 4)
-            results["vS"] = round(vS, 4)
-            results["vP/vS"] = round(vPvS, 4)
-            results["G"] = round(G*10**(-9), 4)
-            results["K"] = round(K*10**(-9), 4)
-            results["E"] = round(E*10**(-9), 4)
-            results["nu"] = round(nu, 4)
-            results["GR"] = round(gamma_ray, 4)
-            results["PE"] = round(pe, 4)
-            results["U"] = round(U, 4)
-            if p != None:
-                results["p"] = round(p, 4)
-            else:
-                results["p"] = p
-            #
-            return results
-    #
+            results["p"] = p
+
+        return results
+
     def create_corundum(self):   # Al2O3
         #
         name = "Crn"
@@ -1385,46 +1388,34 @@ class Oxides():
         U = pe*rho_e*10**(-3)
         # Electrical resistivity
         p = 5*10**6
-        #
-        if self.data_type == False:
-            data = []
-            data.append(name)
-            data.append(round(molar_mass, 2))
-            data.append(round(rho, 1))
-            data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 2), round(vPvS, 2)])
-            data.append([round(vP, 1), round(vS, 1)])
-            data.append([round(gamma_ray, 2), round(pe, 2), round(U, 2), p])
-            data.append(amounts)
-            #
-            return data
-        else:
-            results = {}
-            results["mineral"] = name
-            results["state"] = var_state
-            results["M"] = molar_mass
-            results["rho"] = round(rho, 4)
-            results["rho_e"] = round(rho_e, 4)
-            results["V"] = round(V_m, 4)
-            results["vP"] = round(vP, 4)
-            results["vS"] = round(vS, 4)
-            results["vP/vS"] = round(vPvS, 4)
-            results["G"] = round(G*10**(-9), 4)
-            results["K"] = round(K*10**(-9), 4)
-            results["E"] = round(E*10**(-9), 4)
-            results["nu"] = round(nu, 4)
-            results["GR"] = round(gamma_ray, 4)
-            results["PE"] = round(pe, 4)
-            results["U"] = round(U, 4)
-            try:
-                results["p"] = round(p, 4)
-            except:
-                results["p"] = p
-            element_list = np.array(amounts)[:, 0]
-            results["chemistry"] = {}
-            for index, element in enumerate(element_list, start=0):
-                results["chemistry"][element] = amounts[index][2]
-            #
-            return results
+        # Results
+        results = {}
+        results["mineral"] = name
+        results["state"] = var_state
+        results["M"] = molar_mass
+        results["rho"] = round(rho, 4)
+        results["rho_e"] = round(rho_e, 4)
+        results["V"] = round(V_m, 4)
+        results["vP"] = round(vP, 4)
+        results["vS"] = round(vS, 4)
+        results["vP/vS"] = round(vPvS, 4)
+        results["G"] = round(G*10**(-9), 4)
+        results["K"] = round(K*10**(-9), 4)
+        results["E"] = round(E*10**(-9), 4)
+        results["nu"] = round(nu, 4)
+        results["GR"] = round(gamma_ray, 4)
+        results["PE"] = round(pe, 4)
+        results["U"] = round(U, 4)
+        try:
+            results["p"] = round(p, 4)
+        except:
+            results["p"] = p
+        element_list = np.array(amounts)[:, 0]
+        results["chemistry"] = {}
+        for index, element in enumerate(element_list, start=0):
+            results["chemistry"][element] = amounts[index][2]
+
+        return results
     #
     def create_tistarite(self):   # Ti2O3
         #
@@ -1537,8 +1528,8 @@ class Oxides():
         chromium = PeriodicSystem(name="Cr").get_data()
         iron = PeriodicSystem(name="Fe").get_data()
         #
-        propabilities = list(np.around(np.random.dirichlet(np.ones(5), size=1)[0], 4))
-        for index, value in enumerate(propabilities):
+        probabilities = list(np.around(np.random.dirichlet(np.ones(5), size=1)[0], 4))
+        for index, value in enumerate(probabilities):
             if index == 0:
                 v = value
             elif index == 1:
@@ -1817,46 +1808,34 @@ class Oxides():
         U = pe*rho_e*10**(-3)
         # Electrical resistivity
         p = None
-        #
-        if self.data_type == False:
-            data = []
-            data.append(name)
-            data.append(round(molar_mass, 2))
-            data.append(round(rho, 1))
-            data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 2), round(vPvS, 2)])
-            data.append([round(vP, 1), round(vS, 1)])
-            data.append([round(gamma_ray, 2), round(pe, 2), round(U, 2), p])
-            data.append(amounts)
-            #
-            return data
-        else:
-            results = {}
-            results["mineral"] = name
-            results["state"] = var_state
-            results["M"] = molar_mass
-            results["rho"] = round(rho, 4)
-            results["rho_e"] = round(rho_e, 4)
-            results["V"] = round(V_m, 4)
-            results["vP"] = round(vP, 4)
-            results["vS"] = round(vS, 4)
-            results["vP/vS"] = round(vPvS, 4)
-            results["G"] = round(G*10**(-9), 4)
-            results["K"] = round(K*10**(-9), 4)
-            results["E"] = round(E*10**(-9), 4)
-            results["nu"] = round(nu, 4)
-            results["GR"] = round(gamma_ray, 4)
-            results["PE"] = round(pe, 4)
-            results["U"] = round(U, 4)
-            try:
-                results["p"] = round(p, 4)
-            except:
-                results["p"] = p
-            element_list = np.array(amounts)[:, 0]
-            results["chemistry"] = {}
-            for index, element in enumerate(element_list, start=0):
-                results["chemistry"][element] = amounts[index][2]
-            #
-            return results
+        # Results
+        results = {}
+        results["mineral"] = name
+        results["state"] = var_state
+        results["M"] = molar_mass
+        results["rho"] = round(rho, 4)
+        results["rho_e"] = round(rho_e, 4)
+        results["V"] = round(V_m, 4)
+        results["vP"] = round(vP, 4)
+        results["vS"] = round(vS, 4)
+        results["vP/vS"] = round(vPvS, 4)
+        results["G"] = round(G*10**(-9), 4)
+        results["K"] = round(K*10**(-9), 4)
+        results["E"] = round(E*10**(-9), 4)
+        results["nu"] = round(nu, 4)
+        results["GR"] = round(gamma_ray, 4)
+        results["PE"] = round(pe, 4)
+        results["U"] = round(U, 4)
+        try:
+            results["p"] = round(p, 4)
+        except:
+            results["p"] = p
+        element_list = np.array(amounts)[:, 0]
+        results["chemistry"] = {}
+        for index, element in enumerate(element_list, start=0):
+            results["chemistry"][element] = amounts[index][2]
+
+        return results
     #
     def create_spinel(self):   # MgAl2O4
         # Major elements
@@ -1867,9 +1846,18 @@ class Oxides():
         majors_data = np.array([["O", oxygen[1], 4, oxygen[2]], ["Mg", magnesium[1], 1, magnesium[2]],
                                 ["Al", aluminium[1], 2, aluminium[2]]], dtype=object)
         # Minor elements
+        element_traces = {
+            "4+": ["Ti"],
+            "3+": ["Fe",],
+            "2+": ["Mn", "Zn", "Ca"],
+            "All": ["Ti", "Fe", "Zn", "Mn", "Ca"]}
         traces_data = []
         if len(self.traces_list) > 0:
             self.impurity = "impure"
+            var_state = "variable"
+        else:
+            self.impurity = "pure"
+            var_state = "fixed"
         if self.impurity == "random":
             self.traces_list = []
             minors = ["Ti", "Fe", "Zn", "Mn", "Ca"]
@@ -1887,9 +1875,6 @@ class Oxides():
         if len(traces_data) > 0:
             traces_data = np.array(traces_data, dtype=object)
             traces_data = traces_data[traces_data[:, 1].argsort()]
-        #
-        data = []
-        #
         mineral = "Spl"
         #
         # Molar mass
@@ -1926,17 +1911,36 @@ class Oxides():
         U = pe*rho_e*10**(-3)
         # Electrical resistivity
         p = None
-        #
-        data.append(mineral)
-        data.append(round(molar_mass, 2))
-        data.append(round(rho, 1))
-        data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 2), round(vPvS, 2)])
-        data.append([round(vP, 1), round(vS, 1)])
-        data.append([round(gamma_ray, 2), round(pe, 2), round(U, 2), p])
-        data.append(amounts)
-        #
-        return data
-    #
+        # Results
+        results = {}
+        results["mineral"] = mineral
+        results["state"] = var_state
+        results["M"] = molar_mass
+        element_list = np.array(amounts)[:, 0]
+        results["chemistry"] = {}
+        for index, element in enumerate(element_list, start=0):
+            results["chemistry"][element] = amounts[index][2]
+        results["rho"] = round(rho, 4)
+        results["rho_e"] = round(rho_e, 4)
+        results["V"] = round(V_m, 4)
+        results["vP"] = round(vP, 4)
+        results["vS"] = round(vS, 4)
+        results["vP/vS"] = round(vPvS, 4)
+        results["G"] = round(G*10**(-9), 4)
+        results["K"] = round(K*10**(-9), 4)
+        results["E"] = round(E*10**(-9), 4)
+        results["nu"] = round(nu, 4)
+        results["GR"] = round(gamma_ray, 4)
+        results["PE"] = round(pe, 4)
+        results["U"] = round(U, 4)
+        results["trace elements"] = element_traces
+        if p != None:
+            results["p"] = round(p, 4)
+        else:
+            results["p"] = p
+
+        return results
+
     def create_boehmite(self):  # AlO(OH)
         ## General Information
         name = "Bhm"
@@ -2037,7 +2041,7 @@ class Oxides():
             self.impurity == "pure"
             var_state = "fixed"
         #
-        compositon_data = TraceElements(
+        composition_data = TraceElements(
             tracer=self.traces_list).calculate_composition_oxides(
             var_oxides=oxides, var_composition=composition_oxides, var_mineral="Boehmite", var_elements=elements_list)
         #
@@ -2046,10 +2050,10 @@ class Oxides():
         molar_mass = 0
         amounts = []
         #
-        for element in compositon_data:
+        for element in composition_data:
             chem_data = PeriodicSystem(name=element).get_data()
-            molar_mass += compositon_data[element]["x"] * chem_data[2]
-            amounts.append([chem_data[0], chem_data[1], compositon_data[element]["w"]])
+            molar_mass += composition_data[element]["x"] * chem_data[2]
+            amounts.append([chem_data[0], chem_data[1], composition_data[element]["w"]])
         #
         magic_factor = molar_mass / molar_mass_pure
         element = [PeriodicSystem(name=amounts[i][0]).get_data() for i in range(len(amounts))]
@@ -2116,6 +2120,7 @@ class Oxides():
         return results
     #
     def create_diaspore(self):  # AlO(OH)
+        mineral = "Dsp"
         # Major elements
         hydrogen = PeriodicSystem(name="H").get_data()
         oxygen = PeriodicSystem(name="O").get_data()
@@ -2124,9 +2129,19 @@ class Oxides():
         majors_data = np.array([["H", hydrogen[1], 1, hydrogen[2]], ["O", oxygen[1], 2, oxygen[2]],
                                 ["Al", aluminium[1], 1, aluminium[2]]], dtype=object)
         # Minor elements
+        element_traces = {
+            "4+": ["Si"],
+            "3+": ["Fe", "Cr"],
+            "2+": ["Mn"],
+            "All": ["Fe", "Mn", "Cr", "Si"]}
         traces_data = []
         if len(self.traces_list) > 0:
             self.impurity = "impure"
+            var_state = "variable"
+        else:
+            self.impurity = "pure"
+            var_state = "fixed"
+
         if self.impurity == "random":
             self.traces_list = []
             minors = ["Fe", "Mn", "Cr", "Si"]
@@ -2144,11 +2159,6 @@ class Oxides():
         if len(traces_data) > 0:
             traces_data = np.array(traces_data, dtype=object)
             traces_data = traces_data[traces_data[:, 1].argsort()]
-        #
-        data = []
-        #
-        mineral = "Dsp"
-        #
         # Molar mass
         molar_mass_pure = 1*aluminium[2] + 1*oxygen[2] + (oxygen[2]+hydrogen[2])
         molar_mass, amounts = MineralChemistry(w_traces=traces_data, molar_mass_pure=molar_mass_pure,
@@ -2183,16 +2193,35 @@ class Oxides():
         U = pe*rho_e*10**(-3)
         # Electrical resistivity
         p = None
-        #
-        data.append(mineral)
-        data.append(round(molar_mass, 2))
-        data.append(round(rho, 1))
-        data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 2), round(vPvS, 2)])
-        data.append([round(vP, 1), round(vS, 1)])
-        data.append([round(gamma_ray, 2), round(pe, 2), round(U, 2), p])
-        data.append(amounts)
-        #
-        return data
+        # Results
+        results = {}
+        results["mineral"] = mineral
+        results["state"] = var_state
+        results["M"] = molar_mass
+        element_list = np.array(amounts)[:, 0]
+        results["chemistry"] = {}
+        for index, element in enumerate(element_list, start=0):
+            results["chemistry"][element] = amounts[index][2]
+        results["rho"] = round(rho, 4)
+        results["rho_e"] = round(rho_e, 4)
+        results["V"] = round(V_m, 4)
+        results["vP"] = round(vP, 4)
+        results["vS"] = round(vS, 4)
+        results["vP/vS"] = round(vPvS, 4)
+        results["G"] = round(G*10**(-9), 4)
+        results["K"] = round(K*10**(-9), 4)
+        results["E"] = round(E*10**(-9), 4)
+        results["nu"] = round(nu, 4)
+        results["GR"] = round(gamma_ray, 4)
+        results["PE"] = round(pe, 4)
+        results["U"] = round(U, 4)
+        results["trace elements"] = element_traces
+        if p != None:
+            results["p"] = round(p, 4)
+        else:
+            results["p"] = p
+
+        return results
     #
     def create_gibbsite(self): # Al(OH)3
         #
@@ -2266,126 +2295,35 @@ class Oxides():
         U = pe*rho_e*10**(-3)
         # Electrical resistivity
         p = None
+        # Results
+        results = {}
+        results["mineral"] = name
+        results["state"] = var_state
+        results["M"] = molar_mass
+        results["rho"] = round(rho, 4)
+        results["rho_e"] = round(rho_e, 4)
+        results["V"] = round(V_m, 4)
+        results["vP"] = round(vP, 4)
+        results["vS"] = round(vS, 4)
+        results["vP/vS"] = round(vPvS, 4)
+        results["G"] = round(G*10**(-9), 4)
+        results["K"] = round(K*10**(-9), 4)
+        results["E"] = round(E*10**(-9), 4)
+        results["nu"] = round(nu, 4)
+        results["GR"] = round(gamma_ray, 4)
+        results["PE"] = round(pe, 4)
+        results["U"] = round(U, 4)
+        try:
+            results["p"] = round(p, 4)
+        except:
+            results["p"] = p
+        element_list = np.array(amounts)[:, 0]
+        results["chemistry"] = {}
+        for index, element in enumerate(element_list, start=0):
+            results["chemistry"][element] = amounts[index][2]
         #
-        if self.data_type == False:
-            data = []
-            data.append(name)
-            data.append(round(molar_mass, 2))
-            data.append(round(rho, 1))
-            data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 2), round(vPvS, 2)])
-            data.append([round(vP, 1), round(vS, 1)])
-            data.append([round(gamma_ray, 2), round(pe, 2), round(U, 2), p])
-            data.append(amounts)
-            #
-            return data
-        else:
-            results = {}
-            results["mineral"] = name
-            results["state"] = var_state
-            results["M"] = molar_mass
-            results["rho"] = round(rho, 4)
-            results["rho_e"] = round(rho_e, 4)
-            results["V"] = round(V_m, 4)
-            results["vP"] = round(vP, 4)
-            results["vS"] = round(vS, 4)
-            results["vP/vS"] = round(vPvS, 4)
-            results["G"] = round(G*10**(-9), 4)
-            results["K"] = round(K*10**(-9), 4)
-            results["E"] = round(E*10**(-9), 4)
-            results["nu"] = round(nu, 4)
-            results["GR"] = round(gamma_ray, 4)
-            results["PE"] = round(pe, 4)
-            results["U"] = round(U, 4)
-            try:
-                results["p"] = round(p, 4)
-            except:
-                results["p"] = p
-            element_list = np.array(amounts)[:, 0]
-            results["chemistry"] = {}
-            for index, element in enumerate(element_list, start=0):
-                results["chemistry"][element] = amounts[index][2]
-            #
-            return results
-    #
-    # def create_gibbsite(self):  # Al(OH)3
-    #     # Major elements
-    #     hydrogen = PeriodicSystem(name="H").get_data()
-    #     oxygen = PeriodicSystem(name="O").get_data()
-    #     aluminium = PeriodicSystem(name="Al").get_data()
-    #     majors_name = ["H", "O", "Al"]
-    #     majors_data = np.array([["H", hydrogen[1], 3, hydrogen[2]], ["O", oxygen[1], 3, oxygen[2]],
-    #                             ["Al", aluminium[1], 1, aluminium[2]]], dtype=object)
-    #     # Minor elements
-    #     traces_data = []
-    #     if len(self.traces_list) > 0:
-    #         self.impurity = "impure"
-    #     if self.impurity == "random":
-    #         self.traces_list = []
-    #         minors = ["Fe", "Ga"]
-    #         n = rd.randint(1, len(minors))
-    #         while len(self.traces_list) < n:
-    #             selection = rd.choice(minors)
-    #             if selection not in self.traces_list and selection not in majors_name:
-    #                 self.traces_list.append(selection)
-    #             else:
-    #                 continue
-    #     traces = [PeriodicSystem(name=i).get_data() for i in self.traces_list]
-    #     x_traces = [round(rd.uniform(0., 0.001), 6) for i in range(len(self.traces_list))]
-    #     for i in range(len(self.traces_list)):
-    #         traces_data.append([str(self.traces_list[i]), int(traces[i][1]), float(x_traces[i])])
-    #     if len(traces_data) > 0:
-    #         traces_data = np.array(traces_data, dtype=object)
-    #         traces_data = traces_data[traces_data[:, 1].argsort()]
-    #     #
-    #     data = []
-    #     #
-    #     mineral = "Gbs"
-    #     #
-    #     # Molar mass
-    #     molar_mass_pure = 1*aluminium[2] + 3*(oxygen[2]+hydrogen[2])
-    #     molar_mass, amounts = MineralChemistry(w_traces=traces_data, molar_mass_pure=molar_mass_pure,
-    #                                   majors=majors_data).calculate_molar_mass()
-    #     element = [PeriodicSystem(name=amounts[i][0]).get_data() for i in range(len(amounts))]
-    #     # Density
-    #     dataV = CrystalPhysics([[8.641, 5.07, 9.719], [94.566], "monoclinic"])
-    #     V = dataV.calculate_volume()
-    #     Z = 8
-    #     V_m = MineralChemistry().calculate_molar_volume(volume_cell=V, z=Z)
-    #     dataRho = CrystalPhysics([molar_mass, Z, V])
-    #     rho = dataRho.calculate_bulk_density()
-    #     rho_e = wg(amounts=amounts, elements=element, rho_b=rho).calculate_electron_density()
-    #     # Bulk modulus
-    #     K = 121.96*10**9
-    #     # Shear modulus
-    #     G = 67.82*10**9
-    #     # Young's modulus
-    #     E = (9*K*G)/(3*K + G)
-    #     # Poisson's ratio
-    #     nu = (3*K - 2*G)/(2*(3*K + G))
-    #     # vP/vS
-    #     vPvS = ((K + 4/3*G)/G)**0.5
-    #     # P-wave velocity
-    #     vP = ((K + 4/3*G)/rho)**0.5
-    #     # S-wave velocity
-    #     vS = (G/rho)**0.5
-    #     # Gamma ray
-    #     gamma_ray = wg(amounts=amounts, elements=element).calculate_gr()
-    #     # Photoelectricity
-    #     pe = wg(amounts=amounts, elements=element).calculate_pe()
-    #     U = pe*rho_e*10**(-3)
-    #     # Electrical resistivity
-    #     p = None
-    #     #
-    #     data.append(mineral)
-    #     data.append(round(molar_mass, 2))
-    #     data.append(round(rho, 1))
-    #     data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 2), round(vPvS, 2)])
-    #     data.append([round(vP, 1), round(vS, 1)])
-    #     data.append([round(gamma_ray, 2), round(pe, 2), round(U, 2), p])
-    #     data.append(amounts)
-    #     #
-    #     return data
-    #
+        return results
+
     def create_cuprite(self):  # Cu2O
         # Major elements
         oxygen = PeriodicSystem(name="O").get_data()
@@ -2393,9 +2331,15 @@ class Oxides():
         majors_name = ["O", "Cu"]
         majors_data = np.array([["O", oxygen[1], 1, oxygen[2]], ["Cu", copper[1], 2, copper[2]]], dtype=object)
         # Minor elements
+        element_traces = {"All": []}
         traces_data = []
         if len(self.traces_list) > 0:
             self.impurity = "impure"
+            var_state = "variable"
+        else:
+            self.impurity = "pure"
+            var_state = "fixed"
+
         if self.impurity == "random":
             self.traces_list = []
             minors = [None]
@@ -2413,9 +2357,7 @@ class Oxides():
         if len(traces_data) > 0:
             traces_data = np.array(traces_data, dtype=object)
             traces_data = traces_data[traces_data[:, 1].argsort()]
-        #
-        data = []
-        #
+
         mineral = "Cup"
         #
         # Molar mass
@@ -2452,131 +2394,36 @@ class Oxides():
         U = pe*rho_e*10**(-3)
         # Electrical resistivity
         p = None
-        #
-        data.append(mineral)
-        data.append(round(molar_mass, 2))
-        data.append(round(rho, 1))
-        data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 2), round(vPvS, 2)])
-        data.append([round(vP, 1), round(vS, 1)])
-        data.append([round(gamma_ray, 2), round(pe, 2), round(U, 2), p])
-        data.append(amounts)
-        #
-        return data
-    # #
-    # def create_goethite(self):  # FeO(OH)
-    #     #
-    #     name = "Goe"
-    #     #
-    #     # Major elements
-    #     hydrogen = PeriodicSystem(name="H").get_data()
-    #     oxygen = PeriodicSystem(name="O").get_data()
-    #     iron = PeriodicSystem(name="Fe").get_data()
-    #     majors_name = ["H", "O", "Fe"]
-    #     majors_data = np.array([["H", hydrogen[1], 1, hydrogen[2]], ["O", oxygen[1], 2, oxygen[2]],
-    #                             ["Fe", iron[1], 1, iron[2]]], dtype=object)
-    #     # Minor elements
-    #     traces_data = []
-    #     if len(self.traces_list) > 0:
-    #         self.impurity = "impure"
-    #     if self.impurity == "pure":
-    #         var_state = "fixed"
-    #     else:
-    #         var_state = "variable"
-    #         if len(self.traces_list) > 0:
-    #             self.impurity = "impure"
-    #         if self.impurity == "random":
-    #             self.traces_list = []
-    #             minors = ["Mn"]
-    #             n = rd.randint(1, len(minors))
-    #             while len(self.traces_list) < n:
-    #                 selection = rd.choice(minors)
-    #                 if selection not in self.traces_list and selection not in majors_name:
-    #                     self.traces_list.append(selection)
-    #                 else:
-    #                     continue
-    #     traces = [PeriodicSystem(name=i).get_data() for i in self.traces_list]
-    #     x_traces = [round(rd.uniform(0., 0.001), 6) for i in range(len(self.traces_list))]
-    #     for i in range(len(self.traces_list)):
-    #         traces_data.append([str(self.traces_list[i]), int(traces[i][1]), float(x_traces[i])])
-    #     if len(traces_data) > 0:
-    #         traces_data = np.array(traces_data, dtype=object)
-    #         traces_data = traces_data[traces_data[:, 1].argsort()]
-    #     #
-    #     # Molar mass
-    #     molar_mass_pure = iron[2] + oxygen[2] + (oxygen[2] + hydrogen[2])
-    #     molar_mass, amounts = MineralChemistry(
-    #         w_traces=traces_data, molar_mass_pure=molar_mass_pure, majors=majors_data).calculate_molar_mass()
-    #     element = [PeriodicSystem(name=amounts[i][0]).get_data() for i in range(len(amounts))]
-    #     # Density
-    #     dataV = CrystalPhysics([[4.596, 9.957, 3.021], [], "orthorhombic"])
-    #     V = dataV.calculate_volume()
-    #     Z = 4
-    #     V_m = MineralChemistry().calculate_molar_volume(volume_cell=V, z=Z)
-    #     dataRho = CrystalPhysics([molar_mass, Z, V])
-    #     rho = dataRho.calculate_bulk_density()
-    #     rho_e = wg(amounts=amounts, elements=element, rho_b=rho).calculate_electron_density()
-    #     # Bulk modulus
-    #     K = 131.14*10**9
-    #     # Shear modulus
-    #     G = 48.89*10**9
-    #     # Young's modulus
-    #     E = (9*K*G)/(3*K + G)
-    #     # Poisson's ratio
-    #     nu = (3*K - 2*G)/(2*(3*K + G))
-    #     # vP/vS
-    #     vPvS = ((K + 4/3*G)/G)**0.5
-    #     # P-wave velocity
-    #     vP = ((K + 4/3*G)/rho)**0.5
-    #     # S-wave velocity
-    #     vS = (G/rho)**0.5
-    #     # Gamma ray
-    #     gamma_ray = wg(amounts=amounts, elements=element).calculate_gr()
-    #     # Photoelectricity
-    #     pe = wg(amounts=amounts, elements=element).calculate_pe()
-    #     U = pe*rho_e*10**(-3)
-    #     # Electrical resistivity
-    #     p = None
-    #     #
-    #     if self.data_type == False:
-    #         data = []
-    #         data.append(name)
-    #         data.append(round(molar_mass, 2))
-    #         data.append(round(rho, 1))
-    #         data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 2), round(vPvS, 2)])
-    #         data.append([round(vP, 1), round(vS, 1)])
-    #         data.append([round(gamma_ray, 2), round(pe, 2), round(U, 2), p])
-    #         data.append(amounts)
-    #         #
-    #         return data
-    #     else:
-    #         results = {}
-    #         results["mineral"] = name
-    #         results["state"] = var_state
-    #         results["M"] = molar_mass
-    #         results["rho"] = round(rho, 4)
-    #         results["rho_e"] = round(rho_e, 4)
-    #         results["V"] = round(V_m, 4)
-    #         results["vP"] = round(vP, 4)
-    #         results["vS"] = round(vS, 4)
-    #         results["vP/vS"] = round(vPvS, 4)
-    #         results["G"] = round(G*10**(-9), 4)
-    #         results["K"] = round(K*10**(-9), 4)
-    #         results["E"] = round(E*10**(-9), 4)
-    #         results["nu"] = round(nu, 4)
-    #         results["GR"] = round(gamma_ray, 4)
-    #         results["PE"] = round(pe, 4)
-    #         results["U"] = round(U, 4)
-    #         try:
-    #             results["p"] = round(p, 4)
-    #         except:
-    #             results["p"] = p
-    #         element_list = np.array(amounts)[:, 0]
-    #         results["chemistry"] = {}
-    #         for index, element in enumerate(element_list, start=0):
-    #             results["chemistry"][element] = amounts[index][2]
-    #         #
-    #         return results
-    # #
+        # Results
+        results = {}
+        results["mineral"] = mineral
+        results["state"] = var_state
+        results["M"] = molar_mass
+        element_list = np.array(amounts)[:, 0]
+        results["chemistry"] = {}
+        for index, element in enumerate(element_list, start=0):
+            results["chemistry"][element] = amounts[index][2]
+        results["rho"] = round(rho, 4)
+        results["rho_e"] = round(rho_e, 4)
+        results["V"] = round(V_m, 4)
+        results["vP"] = round(vP, 4)
+        results["vS"] = round(vS, 4)
+        results["vP/vS"] = round(vPvS, 4)
+        results["G"] = round(G*10**(-9), 4)
+        results["K"] = round(K*10**(-9), 4)
+        results["E"] = round(E*10**(-9), 4)
+        results["nu"] = round(nu, 4)
+        results["GR"] = round(gamma_ray, 4)
+        results["PE"] = round(pe, 4)
+        results["U"] = round(U, 4)
+        results["trace elements"] = element_traces
+        if p != None:
+            results["p"] = round(p, 4)
+        else:
+            results["p"] = p
+
+        return results
+
     def create_ilmenite(self):  # FeTiO3
         #
         name = "Ilm"
@@ -2648,46 +2495,34 @@ class Oxides():
         U = pe*rho_e*10**(-3)
         # Electrical resistivity
         p = None
+        # Results
+        results = {}
+        results["mineral"] = name
+        results["state"] = var_state
+        results["M"] = molar_mass
+        results["rho"] = round(rho, 4)
+        results["rho_e"] = round(rho_e, 4)
+        results["V"] = round(V_m, 4)
+        results["vP"] = round(vP, 4)
+        results["vS"] = round(vS, 4)
+        results["vP/vS"] = round(vPvS, 4)
+        results["G"] = round(G*10**(-9), 4)
+        results["K"] = round(K*10**(-9), 4)
+        results["E"] = round(E*10**(-9), 4)
+        results["nu"] = round(nu, 4)
+        results["GR"] = round(gamma_ray, 4)
+        results["PE"] = round(pe, 4)
+        results["U"] = round(U, 4)
+        try:
+            results["p"] = round(p, 4)
+        except:
+            results["p"] = p
+        element_list = np.array(amounts)[:, 0]
+        results["chemistry"] = {}
+        for index, element in enumerate(element_list, start=0):
+            results["chemistry"][element] = amounts[index][2]
         #
-        if self.data_type == False:
-            data = []
-            data.append(name)
-            data.append(round(molar_mass, 2))
-            data.append(round(rho, 1))
-            data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 2), round(vPvS, 2)])
-            data.append([round(vP, 1), round(vS, 1)])
-            data.append([round(gamma_ray, 2), round(pe, 2), round(U, 2), p])
-            data.append(amounts)
-            #
-            return data
-        else:
-            results = {}
-            results["mineral"] = name
-            results["state"] = var_state
-            results["M"] = molar_mass
-            results["rho"] = round(rho, 4)
-            results["rho_e"] = round(rho_e, 4)
-            results["V"] = round(V_m, 4)
-            results["vP"] = round(vP, 4)
-            results["vS"] = round(vS, 4)
-            results["vP/vS"] = round(vPvS, 4)
-            results["G"] = round(G*10**(-9), 4)
-            results["K"] = round(K*10**(-9), 4)
-            results["E"] = round(E*10**(-9), 4)
-            results["nu"] = round(nu, 4)
-            results["GR"] = round(gamma_ray, 4)
-            results["PE"] = round(pe, 4)
-            results["U"] = round(U, 4)
-            try:
-                results["p"] = round(p, 4)
-            except:
-                results["p"] = p
-            element_list = np.array(amounts)[:, 0]
-            results["chemistry"] = {}
-            for index, element in enumerate(element_list, start=0):
-                results["chemistry"][element] = amounts[index][2]
-            #
-            return results
+        return results
     #
     def create_rutile(self):  # TiO2
         #
@@ -2804,9 +2639,18 @@ class Oxides():
         majors_name = ["O", "Ti"]
         majors_data = np.array([["O", oxygen[1], 2, oxygen[2]], ["Ti", titanium[1], 1, titanium[2]]], dtype=object)
         # Minor elements
+        element_traces = {
+            "5+": ["Ta", "Nb"],
+            "3+": ["Fe"],
+            "All": ["Fe", "Ta", "Nb"]}
         traces_data = []
         if len(self.traces_list) > 0:
             self.impurity = "impure"
+            var_state = "variable"
+        else:
+            self.impurity = "pure"
+            var_state = "fixed"
+
         if self.impurity == "random":
             self.traces_list = []
             minors = ["Fe", "Ta", "Nb"]
@@ -2824,9 +2668,7 @@ class Oxides():
         if len(traces_data) > 0:
             traces_data = np.array(traces_data, dtype=object)
             traces_data = traces_data[traces_data[:, 1].argsort()]
-        #
-        data = []
-        #
+
         mineral = "Brk"
         #
         # Molar mass
@@ -2863,17 +2705,36 @@ class Oxides():
         U = pe*rho_e*10**(-3)
         # Electrical resistivity
         p = None
-        #
-        data.append(mineral)
-        data.append(round(molar_mass, 2))
-        data.append(round(rho, 1))
-        data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 2), round(vPvS, 2)])
-        data.append([round(vP, 1), round(vS, 1)])
-        data.append([round(gamma_ray, 2), round(pe, 2), round(U, 2), p])
-        data.append(amounts)
-        #
-        return data
-    #
+        # Results
+        results = {}
+        results["mineral"] = mineral
+        results["state"] = var_state
+        results["M"] = molar_mass
+        element_list = np.array(amounts)[:, 0]
+        results["chemistry"] = {}
+        for index, element in enumerate(element_list, start=0):
+            results["chemistry"][element] = amounts[index][2]
+        results["rho"] = round(rho, 4)
+        results["rho_e"] = round(rho_e, 4)
+        results["V"] = round(V_m, 4)
+        results["vP"] = round(vP, 4)
+        results["vS"] = round(vS, 4)
+        results["vP/vS"] = round(vPvS, 4)
+        results["G"] = round(G*10**(-9), 4)
+        results["K"] = round(K*10**(-9), 4)
+        results["E"] = round(E*10**(-9), 4)
+        results["nu"] = round(nu, 4)
+        results["GR"] = round(gamma_ray, 4)
+        results["PE"] = round(pe, 4)
+        results["U"] = round(U, 4)
+        results["trace elements"] = element_traces
+        if p != None:
+            results["p"] = round(p, 4)
+        else:
+            results["p"] = p
+
+        return results
+
     def create_anatase(self):  # TiO2
         # Major elements
         oxygen = PeriodicSystem(name="O").get_data()
@@ -2881,9 +2742,19 @@ class Oxides():
         majors_name = ["O", "Ti"]
         majors_data = np.array([["O", oxygen[1], 2, oxygen[2]], ["Ti", titanium[1], 1, titanium[2]]], dtype=object)
         # Minor elements
+        element_traces = {
+            "5+": ["Ta", "Nb"],
+            "4+": ["Sn", "V"],
+            "3+": ["Fe"],
+            "All": ["Fe", "Sn", "V", "Nb"]}
         traces_data = []
         if len(self.traces_list) > 0:
             self.impurity = "impure"
+            var_state = "variable"
+        else:
+            self.impurity = "pure"
+            var_state = "fixed"
+
         if self.impurity == "random":
             self.traces_list = []
             minors = ["Fe", "Sn", "V", "Nb"]
@@ -2901,9 +2772,7 @@ class Oxides():
         if len(traces_data) > 0:
             traces_data = np.array(traces_data, dtype=object)
             traces_data = traces_data[traces_data[:, 1].argsort()]
-        #
-        data = []
-        #
+
         mineral = "Anat"
         #
         # Molar mass
@@ -2940,16 +2809,35 @@ class Oxides():
         U = pe*rho_e*10**(-3)
         # Electrical resistivity
         p = None
-        #
-        data.append(mineral)
-        data.append(round(molar_mass, 2))
-        data.append(round(rho, 1))
-        data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 2), round(vPvS, 2)])
-        data.append([round(vP, 1), round(vS, 1)])
-        data.append([round(gamma_ray, 2), round(pe, 2), round(U, 2), p])
-        data.append(amounts)
-        #
-        return data
+        # Results
+        results = {}
+        results["mineral"] = mineral
+        results["state"] = var_state
+        results["M"] = molar_mass
+        element_list = np.array(amounts)[:, 0]
+        results["chemistry"] = {}
+        for index, element in enumerate(element_list, start=0):
+            results["chemistry"][element] = amounts[index][2]
+        results["rho"] = round(rho, 4)
+        results["rho_e"] = round(rho_e, 4)
+        results["V"] = round(V_m, 4)
+        results["vP"] = round(vP, 4)
+        results["vS"] = round(vS, 4)
+        results["vP/vS"] = round(vPvS, 4)
+        results["G"] = round(G*10**(-9), 4)
+        results["K"] = round(K*10**(-9), 4)
+        results["E"] = round(E*10**(-9), 4)
+        results["nu"] = round(nu, 4)
+        results["GR"] = round(gamma_ray, 4)
+        results["PE"] = round(pe, 4)
+        results["U"] = round(U, 4)
+        results["trace elements"] = element_traces
+        if p != None:
+            results["p"] = round(p, 4)
+        else:
+            results["p"] = p
+
+        return results
     #
     def create_manganite(self):  # MnO(OH)
         # Major elements
@@ -2960,9 +2848,18 @@ class Oxides():
         majors_data = np.array([["H", hydrogen[1], 1, hydrogen[2]], ["O", oxygen[1], 2, oxygen[2]],
                                 ["Mn", manganese[1], 1, manganese[2]]], dtype=object)
         # Minor elements
+        element_traces = {
+            "3+": ["Fe", "Al"],
+            "2+": ["Pb", "Ba", "Cu", "Ca"],
+            "All": ["Fe", "Ba", "Pb", "Cu", "Al", "Ca"]}
         traces_data = []
         if len(self.traces_list) > 0:
             self.impurity = "impure"
+            var_state = "variable"
+        else:
+            self.impurity = "pure"
+            var_state = "fixed"
+
         if self.impurity == "random":
             self.traces_list = []
             minors = ["Fe", "Ba", "Pb", "Cu", "Al", "Ca"]
@@ -2980,9 +2877,7 @@ class Oxides():
         if len(traces_data) > 0:
             traces_data = np.array(traces_data, dtype=object)
             traces_data = traces_data[traces_data[:, 1].argsort()]
-        #
-        data = []
-        #
+
         mineral = "Man"
         #
         # Molar mass
@@ -3019,16 +2914,35 @@ class Oxides():
         U = pe*rho_e*10**(-3)
         # Electrical resistivity
         p = None
-        #
-        data.append(mineral)
-        data.append(round(molar_mass, 2))
-        data.append(round(rho, 1))
-        data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 2), round(vPvS, 2)])
-        data.append([round(vP, 1), round(vS, 1)])
-        data.append([round(gamma_ray, 2), round(pe, 2), round(U, 2), p])
-        data.append(amounts)
-        #
-        return data
+        # Results
+        results = {}
+        results["mineral"] = mineral
+        results["state"] = var_state
+        results["M"] = molar_mass
+        element_list = np.array(amounts)[:, 0]
+        results["chemistry"] = {}
+        for index, element in enumerate(element_list, start=0):
+            results["chemistry"][element] = amounts[index][2]
+        results["rho"] = round(rho, 4)
+        results["rho_e"] = round(rho_e, 4)
+        results["V"] = round(V_m, 4)
+        results["vP"] = round(vP, 4)
+        results["vS"] = round(vS, 4)
+        results["vP/vS"] = round(vPvS, 4)
+        results["G"] = round(G*10**(-9), 4)
+        results["K"] = round(K*10**(-9), 4)
+        results["E"] = round(E*10**(-9), 4)
+        results["nu"] = round(nu, 4)
+        results["GR"] = round(gamma_ray, 4)
+        results["PE"] = round(pe, 4)
+        results["U"] = round(U, 4)
+        results["trace elements"] = element_traces
+        if p != None:
+            results["p"] = round(p, 4)
+        else:
+            results["p"] = p
+
+        return results
     #
     def create_groutite(self):  # MnO(OH)
         # Major elements
@@ -3039,9 +2953,16 @@ class Oxides():
         majors_data = np.array([["H", hydrogen[1], 1, hydrogen[2]], ["O", oxygen[1], 2, oxygen[2]],
                                 ["Mn", manganese[1], 1, manganese[2]]], dtype=object)
         # Minor elements
+        element_traces = {
+            "All": []}
         traces_data = []
         if len(self.traces_list) > 0:
             self.impurity = "impure"
+            var_state = "variable"
+        else:
+            self.impurity = "pure"
+            var_state = "fixed"
+
         if self.impurity == "random":
             self.traces_list = []
             minors = [None]
@@ -3059,9 +2980,7 @@ class Oxides():
         if len(traces_data) > 0:
             traces_data = np.array(traces_data, dtype=object)
             traces_data = traces_data[traces_data[:, 1].argsort()]
-        #
-        data = []
-        #
+
         mineral = "Grou"
         #
         # Molar mass
@@ -3098,16 +3017,35 @@ class Oxides():
         U = pe*rho_e*10**(-3)
         # Electrical resistivity
         p = None
-        #
-        data.append(mineral)
-        data.append(round(molar_mass, 2))
-        data.append(round(rho, 1))
-        data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 2), round(vPvS, 2)])
-        data.append([round(vP, 1), round(vS, 1)])
-        data.append([round(gamma_ray, 2), round(pe, 2), round(U, 2), p])
-        data.append(amounts)
-        #
-        return data
+        # Results
+        results = {}
+        results["mineral"] = mineral
+        results["state"] = var_state
+        results["M"] = molar_mass
+        element_list = np.array(amounts)[:, 0]
+        results["chemistry"] = {}
+        for index, element in enumerate(element_list, start=0):
+            results["chemistry"][element] = amounts[index][2]
+        results["rho"] = round(rho, 4)
+        results["rho_e"] = round(rho_e, 4)
+        results["V"] = round(V_m, 4)
+        results["vP"] = round(vP, 4)
+        results["vS"] = round(vS, 4)
+        results["vP/vS"] = round(vPvS, 4)
+        results["G"] = round(G*10**(-9), 4)
+        results["K"] = round(K*10**(-9), 4)
+        results["E"] = round(E*10**(-9), 4)
+        results["nu"] = round(nu, 4)
+        results["GR"] = round(gamma_ray, 4)
+        results["PE"] = round(pe, 4)
+        results["U"] = round(U, 4)
+        results["trace elements"] = element_traces
+        if p != None:
+            results["p"] = round(p, 4)
+        else:
+            results["p"] = p
+
+        return results
     #
     def create_pyrophanite(self):  # MnTiO3
         # Major elements
@@ -3118,9 +3056,18 @@ class Oxides():
         majors_data = np.array([["O", oxygen[1], 3, oxygen[2]], ["Ti", titanium[1], 1, titanium[2]],
                                 ["Mn", manganese[1], 1, manganese[2]]], dtype=object)
         # Minor elements
+        element_traces = {
+            "3+": ["Fe"],
+            "2+": ["Zn"],
+            "All": ["Fe", "Zn"]}
         traces_data = []
         if len(self.traces_list) > 0:
             self.impurity = "impure"
+            var_state = "variable"
+        else:
+            self.impurity = "pure"
+            var_state = "fixed"
+
         if self.impurity == "random":
             self.traces_list = []
             minors = ["Fe", "Zn"]
@@ -3138,9 +3085,7 @@ class Oxides():
         if len(traces_data) > 0:
             traces_data = np.array(traces_data, dtype=object)
             traces_data = traces_data[traces_data[:, 1].argsort()]
-        #
-        data = []
-        #
+
         mineral = "Pyrph"
         #
         # Molar mass
@@ -3177,16 +3122,35 @@ class Oxides():
         U = pe*rho_e*10**(-3)
         # Electrical resistivity
         p = None
-        #
-        data.append(mineral)
-        data.append(round(molar_mass, 2))
-        data.append(round(rho, 1))
-        data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 2), round(vPvS, 2)])
-        data.append([round(vP, 1), round(vS, 1)])
-        data.append([round(gamma_ray, 2), round(pe, 2), round(U, 2), p])
-        data.append(amounts)
-        #
-        return data
+        # Results
+        results = {}
+        results["mineral"] = mineral
+        results["state"] = var_state
+        results["M"] = molar_mass
+        element_list = np.array(amounts)[:, 0]
+        results["chemistry"] = {}
+        for index, element in enumerate(element_list, start=0):
+            results["chemistry"][element] = amounts[index][2]
+        results["rho"] = round(rho, 4)
+        results["rho_e"] = round(rho_e, 4)
+        results["V"] = round(V_m, 4)
+        results["vP"] = round(vP, 4)
+        results["vS"] = round(vS, 4)
+        results["vP/vS"] = round(vPvS, 4)
+        results["G"] = round(G*10**(-9), 4)
+        results["K"] = round(K*10**(-9), 4)
+        results["E"] = round(E*10**(-9), 4)
+        results["nu"] = round(nu, 4)
+        results["GR"] = round(gamma_ray, 4)
+        results["PE"] = round(pe, 4)
+        results["U"] = round(U, 4)
+        results["trace elements"] = element_traces
+        if p != None:
+            results["p"] = round(p, 4)
+        else:
+            results["p"] = p
+
+        return results
     #
     def create_geikielite(self):  # MgTiO3
         # Major elements
@@ -3197,9 +3161,17 @@ class Oxides():
         majors_data = np.array([["O", oxygen[1], 3, oxygen[2]], ["Mg", magnesium[1], 1, magnesium[2]],
                                 ["Ti", titanium[1], 1, titanium[2]]], dtype=object)
         # Minor elements
+        element_traces = {
+            "3+": ["Fe", "Cr"],
+            "2+": ["Mn", "Ca"],
+            "All": ["Fe", "Cr", "Mn", "Ca"]}
         traces_data = []
         if len(self.traces_list) > 0:
             self.impurity = "impure"
+            var_state = "variable"
+        else:
+            self.impurity = "pure"
+            var_state = "fixed"
         if self.impurity == "random":
             self.traces_list = []
             minors = ["Fe", "Cr", "Mn", "Ca"]
@@ -3217,9 +3189,7 @@ class Oxides():
         if len(traces_data) > 0:
             traces_data = np.array(traces_data, dtype=object)
             traces_data = traces_data[traces_data[:, 1].argsort()]
-        #
-        data = []
-        #
+
         mineral = "Gkl"
         #
         # Molar mass
@@ -3256,16 +3226,35 @@ class Oxides():
         U = pe*rho_e*10**(-3)
         # Electrical resistivity
         p = None
-        #
-        data.append(mineral)
-        data.append(round(molar_mass, 2))
-        data.append(round(rho, 1))
-        data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 2), round(vPvS, 2)])
-        data.append([round(vP, 1), round(vS, 1)])
-        data.append([round(gamma_ray, 2), round(pe, 2), round(U, 2), p])
-        data.append(amounts)
-        #
-        return data
+        # Results
+        results = {}
+        results["mineral"] = mineral
+        results["state"] = var_state
+        results["M"] = molar_mass
+        element_list = np.array(amounts)[:, 0]
+        results["chemistry"] = {}
+        for index, element in enumerate(element_list, start=0):
+            results["chemistry"][element] = amounts[index][2]
+        results["rho"] = round(rho, 4)
+        results["rho_e"] = round(rho_e, 4)
+        results["V"] = round(V_m, 4)
+        results["vP"] = round(vP, 4)
+        results["vS"] = round(vS, 4)
+        results["vP/vS"] = round(vPvS, 4)
+        results["G"] = round(G*10**(-9), 4)
+        results["K"] = round(K*10**(-9), 4)
+        results["E"] = round(E*10**(-9), 4)
+        results["nu"] = round(nu, 4)
+        results["GR"] = round(gamma_ray, 4)
+        results["PE"] = round(pe, 4)
+        results["U"] = round(U, 4)
+        results["trace elements"] = element_traces
+        if p != None:
+            results["p"] = round(p, 4)
+        else:
+            results["p"] = p
+
+        return results
     #
     def create_eskolaite(self):  # Cr2O3
         # Major elements
@@ -3395,9 +3384,7 @@ class Oxides():
         if len(traces_data) > 0:
             traces_data = np.array(traces_data, dtype=object)
             traces_data = traces_data[traces_data[:, 1].argsort()]
-        #
-        data = []
-        #
+
         mineral = "Kar"
         #
         # Molar mass
@@ -3470,9 +3457,16 @@ class Oxides():
         majors_name = ["O", "As"]
         majors_data = np.array([["O", oxygen[1], 3, oxygen[2]], ["As", arsenic[1], 2, arsenic[2]]], dtype=object)
         # Minor elements
+        element_traces = {
+            "All": []}
         traces_data = []
         if len(self.traces_list) > 0:
             self.impurity = "impure"
+            var_state = "variable"
+        else:
+            self.impurity = "pure"
+            var_state = "fixed"
+
         if self.impurity == "random":
             self.traces_list = []
             minors = [None]
@@ -3490,9 +3484,7 @@ class Oxides():
         if len(traces_data) > 0:
             traces_data = np.array(traces_data, dtype=object)
             traces_data = traces_data[traces_data[:, 1].argsort()]
-        #
-        data = []
-        #
+
         mineral = "Clau"
         #
         # Molar mass
@@ -3529,16 +3521,35 @@ class Oxides():
         U = pe*rho_e*10**(-3)
         # Electrical resistivity
         p = None
-        #
-        data.append(mineral)
-        data.append(round(molar_mass, 2))
-        data.append(round(rho, 1))
-        data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 2), round(vPvS, 2)])
-        data.append([round(vP, 1), round(vS, 1)])
-        data.append([round(gamma_ray, 2), round(pe, 2), round(U, 2), p])
-        data.append(amounts)
-        #
-        return data
+        # Results
+        results = {}
+        results["mineral"] = mineral
+        results["state"] = var_state
+        results["M"] = molar_mass
+        element_list = np.array(amounts)[:, 0]
+        results["chemistry"] = {}
+        for index, element in enumerate(element_list, start=0):
+            results["chemistry"][element] = amounts[index][2]
+        results["rho"] = round(rho, 4)
+        results["rho_e"] = round(rho_e, 4)
+        results["V"] = round(V_m, 4)
+        results["vP"] = round(vP, 4)
+        results["vS"] = round(vS, 4)
+        results["vP/vS"] = round(vPvS, 4)
+        results["G"] = round(G*10**(-9), 4)
+        results["K"] = round(K*10**(-9), 4)
+        results["E"] = round(E*10**(-9), 4)
+        results["nu"] = round(nu, 4)
+        results["GR"] = round(gamma_ray, 4)
+        results["PE"] = round(pe, 4)
+        results["U"] = round(U, 4)
+        results["trace elements"] = element_traces
+        if p != None:
+            results["p"] = round(p, 4)
+        else:
+            results["p"] = p
+
+        return results
     #
     def create_arsenolite(self):  # As2O3
         # Major elements
@@ -3547,9 +3558,16 @@ class Oxides():
         majors_name = ["O", "As"]
         majors_data = np.array([["O", oxygen[1], 3, oxygen[2]], ["As", arsenic[1], 2, arsenic[2]]], dtype=object)
         # Minor elements
+        element_traces = {
+            "All": []}
         traces_data = []
         if len(self.traces_list) > 0:
             self.impurity = "impure"
+            var_state = "variable"
+        else:
+            self.impurity = "pure"
+            var_state = "fixed"
+
         if self.impurity == "random":
             self.traces_list = []
             minors = [None]
@@ -3567,9 +3585,7 @@ class Oxides():
         if len(traces_data) > 0:
             traces_data = np.array(traces_data, dtype=object)
             traces_data = traces_data[traces_data[:, 1].argsort()]
-        #
-        data = []
-        #
+
         mineral = "Arsens"
         #
         # Molar mass
@@ -3606,16 +3622,35 @@ class Oxides():
         U = pe*rho_e*10**(-3)
         # Electrical resistivity
         p = None
-        #
-        data.append(mineral)
-        data.append(round(molar_mass, 2))
-        data.append(round(rho, 1))
-        data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 2), round(vPvS, 2)])
-        data.append([round(vP, 1), round(vS, 1)])
-        data.append([round(gamma_ray, 2), round(pe, 2), round(U, 2), p])
-        data.append(amounts)
-        #
-        return data
+        # Results
+        results = {}
+        results["mineral"] = mineral
+        results["state"] = var_state
+        results["M"] = molar_mass
+        element_list = np.array(amounts)[:, 0]
+        results["chemistry"] = {}
+        for index, element in enumerate(element_list, start=0):
+            results["chemistry"][element] = amounts[index][2]
+        results["rho"] = round(rho, 4)
+        results["rho_e"] = round(rho_e, 4)
+        results["V"] = round(V_m, 4)
+        results["vP"] = round(vP, 4)
+        results["vS"] = round(vS, 4)
+        results["vP/vS"] = round(vPvS, 4)
+        results["G"] = round(G*10**(-9), 4)
+        results["K"] = round(K*10**(-9), 4)
+        results["E"] = round(E*10**(-9), 4)
+        results["nu"] = round(nu, 4)
+        results["GR"] = round(gamma_ray, 4)
+        results["PE"] = round(pe, 4)
+        results["U"] = round(U, 4)
+        results["trace elements"] = element_traces
+        if p != None:
+            results["p"] = round(p, 4)
+        else:
+            results["p"] = p
+
+        return results
 
     def create_valentinite(self):  # Sb2O3
         name = "Val"
@@ -3812,9 +3847,16 @@ class Oxides():
         majors_name = ["O", "Bi"]
         majors_data = np.array([["O", oxygen[1], 3, oxygen[2]], ["Bi", bismuth[1], 2, bismuth[2]]], dtype=object)
         # Minor elements
+        element_traces = {
+            "All": []}
         traces_data = []
         if len(self.traces_list) > 0:
             self.impurity = "impure"
+            var_state = "variable"
+        else:
+            self.impurity = "pure"
+            var_state = "fixed"
+
         if self.impurity == "random":
             self.traces_list = []
             minors = [None]
@@ -3832,9 +3874,7 @@ class Oxides():
         if len(traces_data) > 0:
             traces_data = np.array(traces_data, dtype=object)
             traces_data = traces_data[traces_data[:, 1].argsort()]
-        #
-        data = []
-        #
+
         mineral = "Bism"
         #
         # Molar mass
@@ -3871,16 +3911,35 @@ class Oxides():
         U = pe*rho_e*10**(-3)
         # Electrical resistivity
         p = None
-        #
-        data.append(mineral)
-        data.append(round(molar_mass, 2))
-        data.append(round(rho, 1))
-        data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 2), round(vPvS, 2)])
-        data.append([round(vP, 1), round(vS, 1)])
-        data.append([round(gamma_ray, 2), round(pe, 2), round(U, 2), p])
-        data.append(amounts)
-        #
-        return data
+        # Results
+        results = {}
+        results["mineral"] = mineral
+        results["state"] = var_state
+        results["M"] = molar_mass
+        element_list = np.array(amounts)[:, 0]
+        results["chemistry"] = {}
+        for index, element in enumerate(element_list, start=0):
+            results["chemistry"][element] = amounts[index][2]
+        results["rho"] = round(rho, 4)
+        results["rho_e"] = round(rho_e, 4)
+        results["V"] = round(V_m, 4)
+        results["vP"] = round(vP, 4)
+        results["vS"] = round(vS, 4)
+        results["vP/vS"] = round(vPvS, 4)
+        results["G"] = round(G*10**(-9), 4)
+        results["K"] = round(K*10**(-9), 4)
+        results["E"] = round(E*10**(-9), 4)
+        results["nu"] = round(nu, 4)
+        results["GR"] = round(gamma_ray, 4)
+        results["PE"] = round(pe, 4)
+        results["U"] = round(U, 4)
+        results["trace elements"] = element_traces
+        if p != None:
+            results["p"] = round(p, 4)
+        else:
+            results["p"] = p
+
+        return results
     #
     def create_sphaerobismite(self):  # Bi2O3
         # Major elements
@@ -3889,9 +3948,17 @@ class Oxides():
         majors_name = ["O", "Bi"]
         majors_data = np.array([["O", oxygen[1], 3, oxygen[2]], ["Bi", bismuth[1], 2, bismuth[2]]], dtype=object)
         # Minor elements
+        element_traces = {
+            "3+": ["As"],
+            "All": ["As"]}
         traces_data = []
         if len(self.traces_list) > 0:
             self.impurity = "impure"
+            var_state = "variable"
+        else:
+            self.impurity = "pure"
+            var_state = "fixed"
+
         if self.impurity == "random":
             self.traces_list = []
             minors = ["As"]
@@ -3909,9 +3976,7 @@ class Oxides():
         if len(traces_data) > 0:
             traces_data = np.array(traces_data, dtype=object)
             traces_data = traces_data[traces_data[:, 1].argsort()]
-        #
-        data = []
-        #
+
         mineral = "Sphbis"
         #
         # Molar mass
@@ -3948,16 +4013,35 @@ class Oxides():
         U = pe*rho_e*10**(-3)
         # Electrical resistivity
         p = None
-        #
-        data.append(mineral)
-        data.append(round(molar_mass, 2))
-        data.append(round(rho, 1))
-        data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 2), round(vPvS, 2)])
-        data.append([round(vP, 1), round(vS, 1)])
-        data.append([round(gamma_ray, 2), round(pe, 2), round(U, 2), p])
-        data.append(amounts)
-        #
-        return data
+        # Results
+        results = {}
+        results["mineral"] = mineral
+        results["state"] = var_state
+        results["M"] = molar_mass
+        element_list = np.array(amounts)[:, 0]
+        results["chemistry"] = {}
+        for index, element in enumerate(element_list, start=0):
+            results["chemistry"][element] = amounts[index][2]
+        results["rho"] = round(rho, 4)
+        results["rho_e"] = round(rho_e, 4)
+        results["V"] = round(V_m, 4)
+        results["vP"] = round(vP, 4)
+        results["vS"] = round(vS, 4)
+        results["vP/vS"] = round(vPvS, 4)
+        results["G"] = round(G*10**(-9), 4)
+        results["K"] = round(K*10**(-9), 4)
+        results["E"] = round(E*10**(-9), 4)
+        results["nu"] = round(nu, 4)
+        results["GR"] = round(gamma_ray, 4)
+        results["PE"] = round(pe, 4)
+        results["U"] = round(U, 4)
+        results["trace elements"] = element_traces
+        if p != None:
+            results["p"] = round(p, 4)
+        else:
+            results["p"] = p
+
+        return results
     #
     def create_pyrolusite(self):  # MnO2
         #
@@ -4128,46 +4212,34 @@ class Oxides():
         U = pe*rho_e*10**(-3)
         # Electrical resistivity
         p = None
+        # Results
+        results = {}
+        results["mineral"] = name
+        results["state"] = var_state
+        results["M"] = molar_mass
+        results["rho"] = round(rho, 4)
+        results["rho_e"] = round(rho_e, 4)
+        results["V"] = round(V_m, 4)
+        results["vP"] = round(vP, 4)
+        results["vS"] = round(vS, 4)
+        results["vP/vS"] = round(vPvS, 4)
+        results["G"] = round(G*10**(-9), 4)
+        results["K"] = round(K*10**(-9), 4)
+        results["E"] = round(E*10**(-9), 4)
+        results["nu"] = round(nu, 4)
+        results["GR"] = round(gamma_ray, 4)
+        results["PE"] = round(pe, 4)
+        results["U"] = round(U, 4)
+        try:
+            results["p"] = round(p, 4)
+        except:
+            results["p"] = p
+        element_list = np.array(amounts)[:, 0]
+        results["chemistry"] = {}
+        for index, element in enumerate(element_list, start=0):
+            results["chemistry"][element] = amounts[index][2]
         #
-        if self.data_type == False:
-            data = []
-            data.append(name)
-            data.append(round(molar_mass, 2))
-            data.append(round(rho, 1))
-            data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 2), round(vPvS, 2)])
-            data.append([round(vP, 1), round(vS, 1)])
-            data.append([round(gamma_ray, 2), round(pe, 2), round(U, 2), p])
-            data.append(amounts)
-            #
-            return data
-        else:
-            results = {}
-            results["mineral"] = name
-            results["state"] = var_state
-            results["M"] = molar_mass
-            results["rho"] = round(rho, 4)
-            results["rho_e"] = round(rho_e, 4)
-            results["V"] = round(V_m, 4)
-            results["vP"] = round(vP, 4)
-            results["vS"] = round(vS, 4)
-            results["vP/vS"] = round(vPvS, 4)
-            results["G"] = round(G*10**(-9), 4)
-            results["K"] = round(K*10**(-9), 4)
-            results["E"] = round(E*10**(-9), 4)
-            results["nu"] = round(nu, 4)
-            results["GR"] = round(gamma_ray, 4)
-            results["PE"] = round(pe, 4)
-            results["U"] = round(U, 4)
-            try:
-                results["p"] = round(p, 4)
-            except:
-                results["p"] = p
-            element_list = np.array(amounts)[:, 0]
-            results["chemistry"] = {}
-            for index, element in enumerate(element_list, start=0):
-                results["chemistry"][element] = amounts[index][2]
-            #
-            return results
+        return results
     #
     def create_aluminium_spinel(self):
         # Major elements
@@ -4284,47 +4356,34 @@ class Oxides():
         U = pe*rho_e*10**(-3)
         # Electrical resistivity
         p = None
-        #
-        if self.data_type == False:
-            data = []
-            data.append(name)
-            data.append(round(molar_mass, 3))
-            data.append(round(rho, 2))
-            data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 4)])
-            data.append([round(vP, 2), round(vS, 2), round(vPvS, 2)])
-            data.append([round(gamma_ray, 2), round(pe, 2), round(U, 2), p])
-            data.append(amounts)
-            #
-            return data
+        # Results
+        results = {}
+        results["mineral"] = name
+        results["state"] = var_state
+        results["M"] = molar_mass
+        element_list = np.array(amounts)[:, 0]
+        results["chemistry"] = {}
+        for index, element in enumerate(element_list, start=0):
+            results["chemistry"][element] = amounts[index][2]
+        results["rho"] = round(rho, 4)
+        results["rho_e"] = round(rho_e, 4)
+        results["V"] = round(V_m, 4)
+        results["vP"] = round(vP, 4)
+        results["vS"] = round(vS, 4)
+        results["vP/vS"] = round(vPvS, 4)
+        results["G"] = round(G*10**(-9), 4)
+        results["K"] = round(K*10**(-9), 4)
+        results["E"] = round(E*10**(-9), 4)
+        results["nu"] = round(nu, 4)
+        results["GR"] = round(gamma_ray, 4)
+        results["PE"] = round(pe, 4)
+        results["U"] = round(U, 4)
+        if p != None:
+            results["p"] = round(p, 4)
         else:
-            #
-            results = {}
-            results["mineral"] = name
-            results["state"] = var_state
-            results["M"] = molar_mass
-            element_list = np.array(amounts)[:, 0]
-            results["chemistry"] = {}
-            for index, element in enumerate(element_list, start=0):
-                results["chemistry"][element] = amounts[index][2]
-            results["rho"] = round(rho, 4)
-            results["rho_e"] = round(rho_e, 4)
-            results["V"] = round(V_m, 4)
-            results["vP"] = round(vP, 4)
-            results["vS"] = round(vS, 4)
-            results["vP/vS"] = round(vPvS, 4)
-            results["G"] = round(G*10**(-9), 4)
-            results["K"] = round(K*10**(-9), 4)
-            results["E"] = round(E*10**(-9), 4)
-            results["nu"] = round(nu, 4)
-            results["GR"] = round(gamma_ray, 4)
-            results["PE"] = round(pe, 4)
-            results["U"] = round(U, 4)
-            if p != None:
-                results["p"] = round(p, 4)
-            else:
-                results["p"] = p
-            #
-            return results
+            results["p"] = p
+        #
+        return results
     #
     def create_chromium_spinel(self):
         #
@@ -4430,46 +4489,34 @@ class Oxides():
         U = pe*rho_e*10**(-3)
         # Electrical resistivity
         p = None
-        #
-        if self.data_type == False:
-            data = []
-            data.append(name)
-            data.append(round(molar_mass, 3))
-            data.append(round(rho, 2))
-            data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 4)])
-            data.append([round(vP, 2), round(vS, 2), round(vPvS, 2)])
-            data.append([round(gamma_ray, 2), round(pe, 2), round(U, 2), p])
-            data.append(amounts)
-            #
-            return data
+        # Results
+        results = {}
+        results["mineral"] = name
+        results["state"] = var_state
+        results["M"] = molar_mass
+        element_list = np.array(amounts)[:, 0]
+        results["chemistry"] = {}
+        for index, element in enumerate(element_list, start=0):
+            results["chemistry"][element] = amounts[index][2]
+        results["rho"] = round(rho, 4)
+        results["rho_e"] = round(rho_e, 4)
+        results["V"] = round(V_m, 4)
+        results["vP"] = round(vP, 4)
+        results["vS"] = round(vS, 4)
+        results["vP/vS"] = round(vPvS, 4)
+        results["G"] = round(G*10**(-9), 4)
+        results["K"] = round(K*10**(-9), 4)
+        results["E"] = round(E*10**(-9), 4)
+        results["nu"] = round(nu, 4)
+        results["GR"] = round(gamma_ray, 4)
+        results["PE"] = round(pe, 4)
+        results["U"] = round(U, 4)
+        if p != None:
+            results["p"] = round(p, 4)
         else:
-            results = {}
-            results["mineral"] = name
-            results["state"] = var_state
-            results["M"] = molar_mass
-            element_list = np.array(amounts)[:, 0]
-            results["chemistry"] = {}
-            for index, element in enumerate(element_list, start=0):
-                results["chemistry"][element] = amounts[index][2]
-            results["rho"] = round(rho, 4)
-            results["rho_e"] = round(rho_e, 4)
-            results["V"] = round(V_m, 4)
-            results["vP"] = round(vP, 4)
-            results["vS"] = round(vS, 4)
-            results["vP/vS"] = round(vPvS, 4)
-            results["G"] = round(G*10**(-9), 4)
-            results["K"] = round(K*10**(-9), 4)
-            results["E"] = round(E*10**(-9), 4)
-            results["nu"] = round(nu, 4)
-            results["GR"] = round(gamma_ray, 4)
-            results["PE"] = round(pe, 4)
-            results["U"] = round(U, 4)
-            if p != None:
-                results["p"] = round(p, 4)
-            else:
-                results["p"] = p
-            #
-            return results
+            results["p"] = p
+        #
+        return results
     #
     def create_cassiterite(self):  # SnO2
         #
@@ -4641,46 +4688,34 @@ class Oxides():
         U = pe*rho_e*10**(-3)
         # Electrical resistivity
         p = None
+        # Results
+        results = {}
+        results["mineral"] = name
+        results["state"] = var_state
+        results["M"] = molar_mass
+        results["rho"] = round(rho, 4)
+        results["rho_e"] = round(rho_e, 4)
+        results["V"] = round(V_m, 4)
+        results["vP"] = round(vP, 4)
+        results["vS"] = round(vS, 4)
+        results["vP/vS"] = round(vPvS, 4)
+        results["G"] = round(G*10**(-9), 4)
+        results["K"] = round(K*10**(-9), 4)
+        results["E"] = round(E*10**(-9), 4)
+        results["nu"] = round(nu, 4)
+        results["GR"] = round(gamma_ray, 4)
+        results["PE"] = round(pe, 4)
+        results["U"] = round(U, 4)
+        try:
+            results["p"] = round(p, 4)
+        except:
+            results["p"] = p
+        element_list = np.array(amounts)[:, 0]
+        results["chemistry"] = {}
+        for index, element in enumerate(element_list, start=0):
+            results["chemistry"][element] = amounts[index][2]
         #
-        if self.data_type == False:
-            data = []
-            data.append(name)
-            data.append(round(molar_mass, 2))
-            data.append(round(rho, 1))
-            data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 2), round(vPvS, 2)])
-            data.append([round(vP, 1), round(vS, 1)])
-            data.append([round(gamma_ray, 2), round(pe, 2), round(U, 2), p])
-            data.append(amounts)
-            #
-            return data
-        else:
-            results = {}
-            results["mineral"] = name
-            results["state"] = var_state
-            results["M"] = molar_mass
-            results["rho"] = round(rho, 4)
-            results["rho_e"] = round(rho_e, 4)
-            results["V"] = round(V_m, 4)
-            results["vP"] = round(vP, 4)
-            results["vS"] = round(vS, 4)
-            results["vP/vS"] = round(vPvS, 4)
-            results["G"] = round(G*10**(-9), 4)
-            results["K"] = round(K*10**(-9), 4)
-            results["E"] = round(E*10**(-9), 4)
-            results["nu"] = round(nu, 4)
-            results["GR"] = round(gamma_ray, 4)
-            results["PE"] = round(pe, 4)
-            results["U"] = round(U, 4)
-            try:
-                results["p"] = round(p, 4)
-            except:
-                results["p"] = p
-            element_list = np.array(amounts)[:, 0]
-            results["chemistry"] = {}
-            for index, element in enumerate(element_list, start=0):
-                results["chemistry"][element] = amounts[index][2]
-            #
-            return results
+        return results
     #
     def create_zincochromite(self):  # ZnCr2O4
         #
@@ -4753,46 +4788,34 @@ class Oxides():
         U = pe*rho_e*10**(-3)
         # Electrical resistivity
         p = None
+        # Results
+        results = {}
+        results["mineral"] = name
+        results["state"] = var_state
+        results["M"] = molar_mass
+        results["rho"] = round(rho, 4)
+        results["rho_e"] = round(rho_e, 4)
+        results["V"] = round(V_m, 4)
+        results["vP"] = round(vP, 4)
+        results["vS"] = round(vS, 4)
+        results["vP/vS"] = round(vPvS, 4)
+        results["G"] = round(G*10**(-9), 4)
+        results["K"] = round(K*10**(-9), 4)
+        results["E"] = round(E*10**(-9), 4)
+        results["nu"] = round(nu, 4)
+        results["GR"] = round(gamma_ray, 4)
+        results["PE"] = round(pe, 4)
+        results["U"] = round(U, 4)
+        try:
+            results["p"] = round(p, 4)
+        except:
+            results["p"] = p
+        element_list = np.array(amounts)[:, 0]
+        results["chemistry"] = {}
+        for index, element in enumerate(element_list, start=0):
+            results["chemistry"][element] = amounts[index][2]
         #
-        if self.data_type == False:
-            data = []
-            data.append(name)
-            data.append(round(molar_mass, 2))
-            data.append(round(rho, 1))
-            data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 2), round(vPvS, 2)])
-            data.append([round(vP, 1), round(vS, 1)])
-            data.append([round(gamma_ray, 2), round(pe, 2), round(U, 2), p])
-            data.append(amounts)
-            #
-            return data
-        else:
-            results = {}
-            results["mineral"] = name
-            results["state"] = var_state
-            results["M"] = molar_mass
-            results["rho"] = round(rho, 4)
-            results["rho_e"] = round(rho_e, 4)
-            results["V"] = round(V_m, 4)
-            results["vP"] = round(vP, 4)
-            results["vS"] = round(vS, 4)
-            results["vP/vS"] = round(vPvS, 4)
-            results["G"] = round(G*10**(-9), 4)
-            results["K"] = round(K*10**(-9), 4)
-            results["E"] = round(E*10**(-9), 4)
-            results["nu"] = round(nu, 4)
-            results["GR"] = round(gamma_ray, 4)
-            results["PE"] = round(pe, 4)
-            results["U"] = round(U, 4)
-            try:
-                results["p"] = round(p, 4)
-            except:
-                results["p"] = p
-            element_list = np.array(amounts)[:, 0]
-            results["chemistry"] = {}
-            for index, element in enumerate(element_list, start=0):
-                results["chemistry"][element] = amounts[index][2]
-            #
-            return results
+        return results
     #
     def create_cuprospinel(self):  # CuFe2O4
         #
@@ -4865,46 +4888,34 @@ class Oxides():
         U = pe*rho_e*10**(-3)
         # Electrical resistivity
         p = None
+        # Results
+        results = {}
+        results["mineral"] = name
+        results["state"] = var_state
+        results["M"] = molar_mass
+        results["rho"] = round(rho, 4)
+        results["rho_e"] = round(rho_e, 4)
+        results["V"] = round(V_m, 4)
+        results["vP"] = round(vP, 4)
+        results["vS"] = round(vS, 4)
+        results["vP/vS"] = round(vPvS, 4)
+        results["G"] = round(G*10**(-9), 4)
+        results["K"] = round(K*10**(-9), 4)
+        results["E"] = round(E*10**(-9), 4)
+        results["nu"] = round(nu, 4)
+        results["GR"] = round(gamma_ray, 4)
+        results["PE"] = round(pe, 4)
+        results["U"] = round(U, 4)
+        try:
+            results["p"] = round(p, 4)
+        except:
+            results["p"] = p
+        element_list = np.array(amounts)[:, 0]
+        results["chemistry"] = {}
+        for index, element in enumerate(element_list, start=0):
+            results["chemistry"][element] = amounts[index][2]
         #
-        if self.data_type == False:
-            data = []
-            data.append(name)
-            data.append(round(molar_mass, 2))
-            data.append(round(rho, 1))
-            data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 2), round(vPvS, 2)])
-            data.append([round(vP, 1), round(vS, 1)])
-            data.append([round(gamma_ray, 2), round(pe, 2), round(U, 2), p])
-            data.append(amounts)
-            #
-            return data
-        else:
-            results = {}
-            results["mineral"] = name
-            results["state"] = var_state
-            results["M"] = molar_mass
-            results["rho"] = round(rho, 4)
-            results["rho_e"] = round(rho_e, 4)
-            results["V"] = round(V_m, 4)
-            results["vP"] = round(vP, 4)
-            results["vS"] = round(vS, 4)
-            results["vP/vS"] = round(vPvS, 4)
-            results["G"] = round(G*10**(-9), 4)
-            results["K"] = round(K*10**(-9), 4)
-            results["E"] = round(E*10**(-9), 4)
-            results["nu"] = round(nu, 4)
-            results["GR"] = round(gamma_ray, 4)
-            results["PE"] = round(pe, 4)
-            results["U"] = round(U, 4)
-            try:
-                results["p"] = round(p, 4)
-            except:
-                results["p"] = p
-            element_list = np.array(amounts)[:, 0]
-            results["chemistry"] = {}
-            for index, element in enumerate(element_list, start=0):
-                results["chemistry"][element] = amounts[index][2]
-            #
-            return results
+        return results
     #
     def create_jacobsite(self):  # MnFe2O4
         #
@@ -4977,46 +4988,34 @@ class Oxides():
         U = pe*rho_e*10**(-3)
         # Electrical resistivity
         p = None
+        # Results
+        results = {}
+        results["mineral"] = name
+        results["state"] = var_state
+        results["M"] = molar_mass
+        results["rho"] = round(rho, 4)
+        results["rho_e"] = round(rho_e, 4)
+        results["V"] = round(V_m, 4)
+        results["vP"] = round(vP, 4)
+        results["vS"] = round(vS, 4)
+        results["vP/vS"] = round(vPvS, 4)
+        results["G"] = round(G*10**(-9), 4)
+        results["K"] = round(K*10**(-9), 4)
+        results["E"] = round(E*10**(-9), 4)
+        results["nu"] = round(nu, 4)
+        results["GR"] = round(gamma_ray, 4)
+        results["PE"] = round(pe, 4)
+        results["U"] = round(U, 4)
+        try:
+            results["p"] = round(p, 4)
+        except:
+            results["p"] = p
+        element_list = np.array(amounts)[:, 0]
+        results["chemistry"] = {}
+        for index, element in enumerate(element_list, start=0):
+            results["chemistry"][element] = amounts[index][2]
         #
-        if self.data_type == False:
-            data = []
-            data.append(name)
-            data.append(round(molar_mass, 2))
-            data.append(round(rho, 1))
-            data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 2), round(vPvS, 2)])
-            data.append([round(vP, 1), round(vS, 1)])
-            data.append([round(gamma_ray, 2), round(pe, 2), round(U, 2), p])
-            data.append(amounts)
-            #
-            return data
-        else:
-            results = {}
-            results["mineral"] = name
-            results["state"] = var_state
-            results["M"] = molar_mass
-            results["rho"] = round(rho, 4)
-            results["rho_e"] = round(rho_e, 4)
-            results["V"] = round(V_m, 4)
-            results["vP"] = round(vP, 4)
-            results["vS"] = round(vS, 4)
-            results["vP/vS"] = round(vPvS, 4)
-            results["G"] = round(G*10**(-9), 4)
-            results["K"] = round(K*10**(-9), 4)
-            results["E"] = round(E*10**(-9), 4)
-            results["nu"] = round(nu, 4)
-            results["GR"] = round(gamma_ray, 4)
-            results["PE"] = round(pe, 4)
-            results["U"] = round(U, 4)
-            try:
-                results["p"] = round(p, 4)
-            except:
-                results["p"] = p
-            element_list = np.array(amounts)[:, 0]
-            results["chemistry"] = {}
-            for index, element in enumerate(element_list, start=0):
-                results["chemistry"][element] = amounts[index][2]
-            #
-            return results
+        return results
     #
     def create_magnesioferrite(self):  # MgFe2O4
         #
@@ -5089,46 +5088,34 @@ class Oxides():
         U = pe*rho_e*10**(-3)
         # Electrical resistivity
         p = None
+        # Results
+        results = {}
+        results["mineral"] = name
+        results["state"] = var_state
+        results["M"] = molar_mass
+        results["rho"] = round(rho, 4)
+        results["rho_e"] = round(rho_e, 4)
+        results["V"] = round(V_m, 4)
+        results["vP"] = round(vP, 4)
+        results["vS"] = round(vS, 4)
+        results["vP/vS"] = round(vPvS, 4)
+        results["G"] = round(G*10**(-9), 4)
+        results["K"] = round(K*10**(-9), 4)
+        results["E"] = round(E*10**(-9), 4)
+        results["nu"] = round(nu, 4)
+        results["GR"] = round(gamma_ray, 4)
+        results["PE"] = round(pe, 4)
+        results["U"] = round(U, 4)
+        try:
+            results["p"] = round(p, 4)
+        except:
+            results["p"] = p
+        element_list = np.array(amounts)[:, 0]
+        results["chemistry"] = {}
+        for index, element in enumerate(element_list, start=0):
+            results["chemistry"][element] = amounts[index][2]
         #
-        if self.data_type == False:
-            data = []
-            data.append(name)
-            data.append(round(molar_mass, 2))
-            data.append(round(rho, 1))
-            data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 2), round(vPvS, 2)])
-            data.append([round(vP, 1), round(vS, 1)])
-            data.append([round(gamma_ray, 2), round(pe, 2), round(U, 2), p])
-            data.append(amounts)
-            #
-            return data
-        else:
-            results = {}
-            results["mineral"] = name
-            results["state"] = var_state
-            results["M"] = molar_mass
-            results["rho"] = round(rho, 4)
-            results["rho_e"] = round(rho_e, 4)
-            results["V"] = round(V_m, 4)
-            results["vP"] = round(vP, 4)
-            results["vS"] = round(vS, 4)
-            results["vP/vS"] = round(vPvS, 4)
-            results["G"] = round(G*10**(-9), 4)
-            results["K"] = round(K*10**(-9), 4)
-            results["E"] = round(E*10**(-9), 4)
-            results["nu"] = round(nu, 4)
-            results["GR"] = round(gamma_ray, 4)
-            results["PE"] = round(pe, 4)
-            results["U"] = round(U, 4)
-            try:
-                results["p"] = round(p, 4)
-            except:
-                results["p"] = p
-            element_list = np.array(amounts)[:, 0]
-            results["chemistry"] = {}
-            for index, element in enumerate(element_list, start=0):
-                results["chemistry"][element] = amounts[index][2]
-            #
-            return results
+        return results
     #
     def create_trevorite(self):  # NiFe2O4
         #
@@ -5201,46 +5188,34 @@ class Oxides():
         U = pe*rho_e*10**(-3)
         # Electrical resistivity
         p = None
+        # Results
+        results = {}
+        results["mineral"] = name
+        results["state"] = var_state
+        results["M"] = molar_mass
+        results["rho"] = round(rho, 4)
+        results["rho_e"] = round(rho_e, 4)
+        results["V"] = round(V_m, 4)
+        results["vP"] = round(vP, 4)
+        results["vS"] = round(vS, 4)
+        results["vP/vS"] = round(vPvS, 4)
+        results["G"] = round(G*10**(-9), 4)
+        results["K"] = round(K*10**(-9), 4)
+        results["E"] = round(E*10**(-9), 4)
+        results["nu"] = round(nu, 4)
+        results["GR"] = round(gamma_ray, 4)
+        results["PE"] = round(pe, 4)
+        results["U"] = round(U, 4)
+        try:
+            results["p"] = round(p, 4)
+        except:
+            results["p"] = p
+        element_list = np.array(amounts)[:, 0]
+        results["chemistry"] = {}
+        for index, element in enumerate(element_list, start=0):
+            results["chemistry"][element] = amounts[index][2]
         #
-        if self.data_type == False:
-            data = []
-            data.append(name)
-            data.append(round(molar_mass, 2))
-            data.append(round(rho, 1))
-            data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 2), round(vPvS, 2)])
-            data.append([round(vP, 1), round(vS, 1)])
-            data.append([round(gamma_ray, 2), round(pe, 2), round(U, 2), p])
-            data.append(amounts)
-            #
-            return data
-        else:
-            results = {}
-            results["mineral"] = name
-            results["state"] = var_state
-            results["M"] = molar_mass
-            results["rho"] = round(rho, 4)
-            results["rho_e"] = round(rho_e, 4)
-            results["V"] = round(V_m, 4)
-            results["vP"] = round(vP, 4)
-            results["vS"] = round(vS, 4)
-            results["vP/vS"] = round(vPvS, 4)
-            results["G"] = round(G*10**(-9), 4)
-            results["K"] = round(K*10**(-9), 4)
-            results["E"] = round(E*10**(-9), 4)
-            results["nu"] = round(nu, 4)
-            results["GR"] = round(gamma_ray, 4)
-            results["PE"] = round(pe, 4)
-            results["U"] = round(U, 4)
-            try:
-                results["p"] = round(p, 4)
-            except:
-                results["p"] = p
-            element_list = np.array(amounts)[:, 0]
-            results["chemistry"] = {}
-            for index, element in enumerate(element_list, start=0):
-                results["chemistry"][element] = amounts[index][2]
-            #
-            return results
+        return results
     #
     def create_franklinite(self):  # ZnFe2O4
         #
@@ -5313,46 +5288,34 @@ class Oxides():
         U = pe*rho_e*10**(-3)
         # Electrical resistivity
         p = None
+        # Results
+        results = {}
+        results["mineral"] = name
+        results["state"] = var_state
+        results["M"] = molar_mass
+        results["rho"] = round(rho, 4)
+        results["rho_e"] = round(rho_e, 4)
+        results["V"] = round(V_m, 4)
+        results["vP"] = round(vP, 4)
+        results["vS"] = round(vS, 4)
+        results["vP/vS"] = round(vPvS, 4)
+        results["G"] = round(G*10**(-9), 4)
+        results["K"] = round(K*10**(-9), 4)
+        results["E"] = round(E*10**(-9), 4)
+        results["nu"] = round(nu, 4)
+        results["GR"] = round(gamma_ray, 4)
+        results["PE"] = round(pe, 4)
+        results["U"] = round(U, 4)
+        try:
+            results["p"] = round(p, 4)
+        except:
+            results["p"] = p
+        element_list = np.array(amounts)[:, 0]
+        results["chemistry"] = {}
+        for index, element in enumerate(element_list, start=0):
+            results["chemistry"][element] = amounts[index][2]
         #
-        if self.data_type == False:
-            data = []
-            data.append(name)
-            data.append(round(molar_mass, 2))
-            data.append(round(rho, 1))
-            data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 2), round(vPvS, 2)])
-            data.append([round(vP, 1), round(vS, 1)])
-            data.append([round(gamma_ray, 2), round(pe, 2), round(U, 2), p])
-            data.append(amounts)
-            #
-            return data
-        else:
-            results = {}
-            results["mineral"] = name
-            results["state"] = var_state
-            results["M"] = molar_mass
-            results["rho"] = round(rho, 4)
-            results["rho_e"] = round(rho_e, 4)
-            results["V"] = round(V_m, 4)
-            results["vP"] = round(vP, 4)
-            results["vS"] = round(vS, 4)
-            results["vP/vS"] = round(vPvS, 4)
-            results["G"] = round(G*10**(-9), 4)
-            results["K"] = round(K*10**(-9), 4)
-            results["E"] = round(E*10**(-9), 4)
-            results["nu"] = round(nu, 4)
-            results["GR"] = round(gamma_ray, 4)
-            results["PE"] = round(pe, 4)
-            results["U"] = round(U, 4)
-            try:
-                results["p"] = round(p, 4)
-            except:
-                results["p"] = p
-            element_list = np.array(amounts)[:, 0]
-            results["chemistry"] = {}
-            for index, element in enumerate(element_list, start=0):
-                results["chemistry"][element] = amounts[index][2]
-            #
-            return results
+        return results
     #
     def create_ulvoespinel(self):  # TiFe2O4
         #
@@ -5425,46 +5388,34 @@ class Oxides():
         U = pe*rho_e*10**(-3)
         # Electrical resistivity
         p = None
+        # Results
+        results = {}
+        results["mineral"] = name
+        results["state"] = var_state
+        results["M"] = molar_mass
+        results["rho"] = round(rho, 4)
+        results["rho_e"] = round(rho_e, 4)
+        results["V"] = round(V_m, 4)
+        results["vP"] = round(vP, 4)
+        results["vS"] = round(vS, 4)
+        results["vP/vS"] = round(vPvS, 4)
+        results["G"] = round(G*10**(-9), 4)
+        results["K"] = round(K*10**(-9), 4)
+        results["E"] = round(E*10**(-9), 4)
+        results["nu"] = round(nu, 4)
+        results["GR"] = round(gamma_ray, 4)
+        results["PE"] = round(pe, 4)
+        results["U"] = round(U, 4)
+        try:
+            results["p"] = round(p, 4)
+        except:
+            results["p"] = p
+        element_list = np.array(amounts)[:, 0]
+        results["chemistry"] = {}
+        for index, element in enumerate(element_list, start=0):
+            results["chemistry"][element] = amounts[index][2]
         #
-        if self.data_type == False:
-            data = []
-            data.append(name)
-            data.append(round(molar_mass, 2))
-            data.append(round(rho, 1))
-            data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 2), round(vPvS, 2)])
-            data.append([round(vP, 1), round(vS, 1)])
-            data.append([round(gamma_ray, 2), round(pe, 2), round(U, 2), p])
-            data.append(amounts)
-            #
-            return data
-        else:
-            results = {}
-            results["mineral"] = name
-            results["state"] = var_state
-            results["M"] = molar_mass
-            results["rho"] = round(rho, 4)
-            results["rho_e"] = round(rho_e, 4)
-            results["V"] = round(V_m, 4)
-            results["vP"] = round(vP, 4)
-            results["vS"] = round(vS, 4)
-            results["vP/vS"] = round(vPvS, 4)
-            results["G"] = round(G*10**(-9), 4)
-            results["K"] = round(K*10**(-9), 4)
-            results["E"] = round(E*10**(-9), 4)
-            results["nu"] = round(nu, 4)
-            results["GR"] = round(gamma_ray, 4)
-            results["PE"] = round(pe, 4)
-            results["U"] = round(U, 4)
-            try:
-                results["p"] = round(p, 4)
-            except:
-                results["p"] = p
-            element_list = np.array(amounts)[:, 0]
-            results["chemistry"] = {}
-            for index, element in enumerate(element_list, start=0):
-                results["chemistry"][element] = amounts[index][2]
-            #
-            return results
+        return results
     #
     def create_iron_spinel(self):
         #
@@ -5614,46 +5565,34 @@ class Oxides():
         U = pe*rho_e*10**(-3)
         # Electrical resistivity
         p = None
-        #
-        if self.data_type == False:
-            data = []
-            data.append(name)
-            data.append(round(molar_mass, 3))
-            data.append(round(rho, 2))
-            data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 4)])
-            data.append([round(vP, 2), round(vS, 2), round(vPvS, 2)])
-            data.append([round(gamma_ray, 2), round(pe, 2), round(U, 2), p])
-            data.append(amounts)
-            #
-            return data
+        # Results
+        results = {}
+        results["mineral"] = name
+        results["state"] = var_state
+        results["M"] = molar_mass
+        element_list = np.array(amounts)[:, 0]
+        results["chemistry"] = {}
+        for index, element in enumerate(element_list, start=0):
+            results["chemistry"][element] = amounts[index][2]
+        results["rho"] = round(rho, 4)
+        results["rho_e"] = round(rho_e, 4)
+        results["V"] = round(V_m, 4)
+        results["vP"] = round(vP, 4)
+        results["vS"] = round(vS, 4)
+        results["vP/vS"] = round(vPvS, 4)
+        results["G"] = round(G*10**(-9), 4)
+        results["K"] = round(K*10**(-9), 4)
+        results["E"] = round(E*10**(-9), 4)
+        results["nu"] = round(nu, 4)
+        results["GR"] = round(gamma_ray, 4)
+        results["PE"] = round(pe, 4)
+        results["U"] = round(U, 4)
+        if p != None:
+            results["p"] = round(p, 4)
         else:
-            results = {}
-            results["mineral"] = name
-            results["state"] = var_state
-            results["M"] = molar_mass
-            element_list = np.array(amounts)[:, 0]
-            results["chemistry"] = {}
-            for index, element in enumerate(element_list, start=0):
-                results["chemistry"][element] = amounts[index][2]
-            results["rho"] = round(rho, 4)
-            results["rho_e"] = round(rho_e, 4)
-            results["V"] = round(V_m, 4)
-            results["vP"] = round(vP, 4)
-            results["vS"] = round(vS, 4)
-            results["vP/vS"] = round(vPvS, 4)
-            results["G"] = round(G*10**(-9), 4)
-            results["K"] = round(K*10**(-9), 4)
-            results["E"] = round(E*10**(-9), 4)
-            results["nu"] = round(nu, 4)
-            results["GR"] = round(gamma_ray, 4)
-            results["PE"] = round(pe, 4)
-            results["U"] = round(U, 4)
-            if p != None:
-                results["p"] = round(p, 4)
-            else:
-                results["p"] = p
-            #
-            return results
+            results["p"] = p
+        #
+        return results
     #
     def create_litharge(self):  # PbO
         #
@@ -5724,46 +5663,34 @@ class Oxides():
         U = pe*rho_e*10**(-3)
         # Electrical resistivity
         p = None
+        # Results
+        results = {}
+        results["mineral"] = name
+        results["state"] = var_state
+        results["M"] = molar_mass
+        results["rho"] = round(rho, 4)
+        results["rho_e"] = round(rho_e, 4)
+        results["V"] = round(V_m, 4)
+        results["vP"] = round(vP, 4)
+        results["vS"] = round(vS, 4)
+        results["vP/vS"] = round(vPvS, 4)
+        results["G"] = round(G*10**(-9), 4)
+        results["K"] = round(K*10**(-9), 4)
+        results["E"] = round(E*10**(-9), 4)
+        results["nu"] = round(nu, 4)
+        results["GR"] = round(gamma_ray, 4)
+        results["PE"] = round(pe, 4)
+        results["U"] = round(U, 4)
+        try:
+            results["p"] = round(p, 4)
+        except:
+            results["p"] = p
+        element_list = np.array(amounts)[:, 0]
+        results["chemistry"] = {}
+        for index, element in enumerate(element_list, start=0):
+            results["chemistry"][element] = amounts[index][2]
         #
-        if self.data_type == False:
-            data = []
-            data.append(name)
-            data.append(round(molar_mass, 2))
-            data.append(round(rho, 1))
-            data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 2), round(vPvS, 2)])
-            data.append([round(vP, 1), round(vS, 1)])
-            data.append([round(gamma_ray, 2), round(pe, 2), round(U, 2), p])
-            data.append(amounts)
-            #
-            return data
-        else:
-            results = {}
-            results["mineral"] = name
-            results["state"] = var_state
-            results["M"] = molar_mass
-            results["rho"] = round(rho, 4)
-            results["rho_e"] = round(rho_e, 4)
-            results["V"] = round(V_m, 4)
-            results["vP"] = round(vP, 4)
-            results["vS"] = round(vS, 4)
-            results["vP/vS"] = round(vPvS, 4)
-            results["G"] = round(G*10**(-9), 4)
-            results["K"] = round(K*10**(-9), 4)
-            results["E"] = round(E*10**(-9), 4)
-            results["nu"] = round(nu, 4)
-            results["GR"] = round(gamma_ray, 4)
-            results["PE"] = round(pe, 4)
-            results["U"] = round(U, 4)
-            try:
-                results["p"] = round(p, 4)
-            except:
-                results["p"] = p
-            element_list = np.array(amounts)[:, 0]
-            results["chemistry"] = {}
-            for index, element in enumerate(element_list, start=0):
-                results["chemistry"][element] = amounts[index][2]
-            #
-            return results
+        return results
     #
     def create_massicot(self):  # PbO
         #
@@ -5834,46 +5761,34 @@ class Oxides():
         U = pe*rho_e*10**(-3)
         # Electrical resistivity
         p = None
+        # Results
+        results = {}
+        results["mineral"] = name
+        results["state"] = var_state
+        results["M"] = molar_mass
+        results["rho"] = round(rho, 4)
+        results["rho_e"] = round(rho_e, 4)
+        results["V"] = round(V_m, 4)
+        results["vP"] = round(vP, 4)
+        results["vS"] = round(vS, 4)
+        results["vP/vS"] = round(vPvS, 4)
+        results["G"] = round(G*10**(-9), 4)
+        results["K"] = round(K*10**(-9), 4)
+        results["E"] = round(E*10**(-9), 4)
+        results["nu"] = round(nu, 4)
+        results["GR"] = round(gamma_ray, 4)
+        results["PE"] = round(pe, 4)
+        results["U"] = round(U, 4)
+        try:
+            results["p"] = round(p, 4)
+        except:
+            results["p"] = p
+        element_list = np.array(amounts)[:, 0]
+        results["chemistry"] = {}
+        for index, element in enumerate(element_list, start=0):
+            results["chemistry"][element] = amounts[index][2]
         #
-        if self.data_type == False:
-            data = []
-            data.append(name)
-            data.append(round(molar_mass, 2))
-            data.append(round(rho, 1))
-            data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 2), round(vPvS, 2)])
-            data.append([round(vP, 1), round(vS, 1)])
-            data.append([round(gamma_ray, 2), round(pe, 2), round(U, 2), p])
-            data.append(amounts)
-            #
-            return data
-        else:
-            results = {}
-            results["mineral"] = name
-            results["state"] = var_state
-            results["M"] = molar_mass
-            results["rho"] = round(rho, 4)
-            results["rho_e"] = round(rho_e, 4)
-            results["V"] = round(V_m, 4)
-            results["vP"] = round(vP, 4)
-            results["vS"] = round(vS, 4)
-            results["vP/vS"] = round(vPvS, 4)
-            results["G"] = round(G*10**(-9), 4)
-            results["K"] = round(K*10**(-9), 4)
-            results["E"] = round(E*10**(-9), 4)
-            results["nu"] = round(nu, 4)
-            results["GR"] = round(gamma_ray, 4)
-            results["PE"] = round(pe, 4)
-            results["U"] = round(U, 4)
-            try:
-                results["p"] = round(p, 4)
-            except:
-                results["p"] = p
-            element_list = np.array(amounts)[:, 0]
-            results["chemistry"] = {}
-            for index, element in enumerate(element_list, start=0):
-                results["chemistry"][element] = amounts[index][2]
-            #
-            return results
+        return results
     #
     def create_minium(self):  # Pb3O4
         #
@@ -5944,46 +5859,34 @@ class Oxides():
         U = pe*rho_e*10**(-3)
         # Electrical resistivity
         p = None
+        # Results
+        results = {}
+        results["mineral"] = name
+        results["state"] = var_state
+        results["M"] = molar_mass
+        results["rho"] = round(rho, 4)
+        results["rho_e"] = round(rho_e, 4)
+        results["V"] = round(V_m, 4)
+        results["vP"] = round(vP, 4)
+        results["vS"] = round(vS, 4)
+        results["vP/vS"] = round(vPvS, 4)
+        results["G"] = round(G*10**(-9), 4)
+        results["K"] = round(K*10**(-9), 4)
+        results["E"] = round(E*10**(-9), 4)
+        results["nu"] = round(nu, 4)
+        results["GR"] = round(gamma_ray, 4)
+        results["PE"] = round(pe, 4)
+        results["U"] = round(U, 4)
+        try:
+            results["p"] = round(p, 4)
+        except:
+            results["p"] = p
+        element_list = np.array(amounts)[:, 0]
+        results["chemistry"] = {}
+        for index, element in enumerate(element_list, start=0):
+            results["chemistry"][element] = amounts[index][2]
         #
-        if self.data_type == False:
-            data = []
-            data.append(name)
-            data.append(round(molar_mass, 2))
-            data.append(round(rho, 1))
-            data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 2), round(vPvS, 2)])
-            data.append([round(vP, 1), round(vS, 1)])
-            data.append([round(gamma_ray, 2), round(pe, 2), round(U, 2), p])
-            data.append(amounts)
-            #
-            return data
-        else:
-            results = {}
-            results["mineral"] = name
-            results["state"] = var_state
-            results["M"] = molar_mass
-            results["rho"] = round(rho, 4)
-            results["rho_e"] = round(rho_e, 4)
-            results["V"] = round(V_m, 4)
-            results["vP"] = round(vP, 4)
-            results["vS"] = round(vS, 4)
-            results["vP/vS"] = round(vPvS, 4)
-            results["G"] = round(G*10**(-9), 4)
-            results["K"] = round(K*10**(-9), 4)
-            results["E"] = round(E*10**(-9), 4)
-            results["nu"] = round(nu, 4)
-            results["GR"] = round(gamma_ray, 4)
-            results["PE"] = round(pe, 4)
-            results["U"] = round(U, 4)
-            try:
-                results["p"] = round(p, 4)
-            except:
-                results["p"] = p
-            element_list = np.array(amounts)[:, 0]
-            results["chemistry"] = {}
-            for index, element in enumerate(element_list, start=0):
-                results["chemistry"][element] = amounts[index][2]
-            #
-            return results
+        return results
     #
     def create_plattnerite(self):  # PbO2
         #
@@ -6152,46 +6055,34 @@ class Oxides():
         U = pe*rho_e*10**(-3)
         # Electrical resistivity
         p = None
+        # Results
+        results = {}
+        results["mineral"] = name
+        results["state"] = var_state
+        results["M"] = molar_mass
+        results["rho"] = round(rho, 4)
+        results["rho_e"] = round(rho_e, 4)
+        results["V"] = round(V_m, 4)
+        results["vP"] = round(vP, 4)
+        results["vS"] = round(vS, 4)
+        results["vP/vS"] = round(vPvS, 4)
+        results["G"] = round(G*10**(-9), 4)
+        results["K"] = round(K*10**(-9), 4)
+        results["E"] = round(E*10**(-9), 4)
+        results["nu"] = round(nu, 4)
+        results["GR"] = round(gamma_ray, 4)
+        results["PE"] = round(pe, 4)
+        results["U"] = round(U, 4)
+        try:
+            results["p"] = round(p, 4)
+        except:
+            results["p"] = p
+        element_list = np.array(amounts)[:, 0]
+        results["chemistry"] = {}
+        for index, element in enumerate(element_list, start=0):
+            results["chemistry"][element] = amounts[index][2]
         #
-        if self.data_type == False:
-            data = []
-            data.append(name)
-            data.append(round(molar_mass, 2))
-            data.append(round(rho, 1))
-            data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 2), round(vPvS, 2)])
-            data.append([round(vP, 1), round(vS, 1)])
-            data.append([round(gamma_ray, 2), round(pe, 2), round(U, 2), p])
-            data.append(amounts)
-            #
-            return data
-        else:
-            results = {}
-            results["mineral"] = name
-            results["state"] = var_state
-            results["M"] = molar_mass
-            results["rho"] = round(rho, 4)
-            results["rho_e"] = round(rho_e, 4)
-            results["V"] = round(V_m, 4)
-            results["vP"] = round(vP, 4)
-            results["vS"] = round(vS, 4)
-            results["vP/vS"] = round(vPvS, 4)
-            results["G"] = round(G*10**(-9), 4)
-            results["K"] = round(K*10**(-9), 4)
-            results["E"] = round(E*10**(-9), 4)
-            results["nu"] = round(nu, 4)
-            results["GR"] = round(gamma_ray, 4)
-            results["PE"] = round(pe, 4)
-            results["U"] = round(U, 4)
-            try:
-                results["p"] = round(p, 4)
-            except:
-                results["p"] = p
-            element_list = np.array(amounts)[:, 0]
-            results["chemistry"] = {}
-            for index, element in enumerate(element_list, start=0):
-                results["chemistry"][element] = amounts[index][2]
-            #
-            return results
+        return results
     #
     def create_zincite(self):  # ZnO
         #
@@ -6262,46 +6153,34 @@ class Oxides():
         U = pe*rho_e*10**(-3)
         # Electrical resistivity
         p = None
+        # Results
+        results = {}
+        results["mineral"] = name
+        results["state"] = var_state
+        results["M"] = molar_mass
+        results["rho"] = round(rho, 4)
+        results["rho_e"] = round(rho_e, 4)
+        results["V"] = round(V_m, 4)
+        results["vP"] = round(vP, 4)
+        results["vS"] = round(vS, 4)
+        results["vP/vS"] = round(vPvS, 4)
+        results["G"] = round(G*10**(-9), 4)
+        results["K"] = round(K*10**(-9), 4)
+        results["E"] = round(E*10**(-9), 4)
+        results["nu"] = round(nu, 4)
+        results["GR"] = round(gamma_ray, 4)
+        results["PE"] = round(pe, 4)
+        results["U"] = round(U, 4)
+        try:
+            results["p"] = round(p, 4)
+        except:
+            results["p"] = p
+        element_list = np.array(amounts)[:, 0]
+        results["chemistry"] = {}
+        for index, element in enumerate(element_list, start=0):
+            results["chemistry"][element] = amounts[index][2]
         #
-        if self.data_type == False:
-            data = []
-            data.append(name)
-            data.append(round(molar_mass, 2))
-            data.append(round(rho, 1))
-            data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 2), round(vPvS, 2)])
-            data.append([round(vP, 1), round(vS, 1)])
-            data.append([round(gamma_ray, 2), round(pe, 2), round(U, 2), p])
-            data.append(amounts)
-            #
-            return data
-        else:
-            results = {}
-            results["mineral"] = name
-            results["state"] = var_state
-            results["M"] = molar_mass
-            results["rho"] = round(rho, 4)
-            results["rho_e"] = round(rho_e, 4)
-            results["V"] = round(V_m, 4)
-            results["vP"] = round(vP, 4)
-            results["vS"] = round(vS, 4)
-            results["vP/vS"] = round(vPvS, 4)
-            results["G"] = round(G*10**(-9), 4)
-            results["K"] = round(K*10**(-9), 4)
-            results["E"] = round(E*10**(-9), 4)
-            results["nu"] = round(nu, 4)
-            results["GR"] = round(gamma_ray, 4)
-            results["PE"] = round(pe, 4)
-            results["U"] = round(U, 4)
-            try:
-                results["p"] = round(p, 4)
-            except:
-                results["p"] = p
-            element_list = np.array(amounts)[:, 0]
-            results["chemistry"] = {}
-            for index, element in enumerate(element_list, start=0):
-                results["chemistry"][element] = amounts[index][2]
-            #
-            return results
+        return results
     #
     def create_columbite(self):  # (Fe,Mg,Mn) Nb2 O6
         # Major elements
@@ -6406,47 +6285,34 @@ class Oxides():
         U = pe*rho_e*10**(-3)
         # Electrical resistivity
         p = None
-        #
-        if self.data_type == False:
-            data = []
-            data.append(name)
-            data.append(round(molar_mass, 3))
-            data.append(round(rho, 2))
-            data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 4)])
-            data.append([round(vP, 2), round(vS, 2), round(vPvS, 2)])
-            data.append([round(gamma_ray, 2), round(pe, 2), round(U, 2), p])
-            data.append(amounts)
-            #
-            return data
+        # Results
+        results = {}
+        results["mineral"] = name
+        results["state"] = var_state
+        results["M"] = molar_mass
+        element_list = np.array(amounts)[:, 0]
+        results["chemistry"] = {}
+        for index, element in enumerate(element_list, start=0):
+            results["chemistry"][element] = amounts[index][2]
+        results["rho"] = round(rho, 4)
+        results["rho_e"] = round(rho_e, 4)
+        results["V"] = round(V_m, 4)
+        results["vP"] = round(vP, 4)
+        results["vS"] = round(vS, 4)
+        results["vP/vS"] = round(vPvS, 4)
+        results["G"] = round(G*10**(-9), 4)
+        results["K"] = round(K*10**(-9), 4)
+        results["E"] = round(E*10**(-9), 4)
+        results["nu"] = round(nu, 4)
+        results["GR"] = round(gamma_ray, 4)
+        results["PE"] = round(pe, 4)
+        results["U"] = round(U, 4)
+        if p != None:
+            results["p"] = round(p, 4)
         else:
-            #
-            results = {}
-            results["mineral"] = name
-            results["state"] = var_state
-            results["M"] = molar_mass
-            element_list = np.array(amounts)[:, 0]
-            results["chemistry"] = {}
-            for index, element in enumerate(element_list, start=0):
-                results["chemistry"][element] = amounts[index][2]
-            results["rho"] = round(rho, 4)
-            results["rho_e"] = round(rho_e, 4)
-            results["V"] = round(V_m, 4)
-            results["vP"] = round(vP, 4)
-            results["vS"] = round(vS, 4)
-            results["vP/vS"] = round(vPvS, 4)
-            results["G"] = round(G*10**(-9), 4)
-            results["K"] = round(K*10**(-9), 4)
-            results["E"] = round(E*10**(-9), 4)
-            results["nu"] = round(nu, 4)
-            results["GR"] = round(gamma_ray, 4)
-            results["PE"] = round(pe, 4)
-            results["U"] = round(U, 4)
-            if p != None:
-                results["p"] = round(p, 4)
-            else:
-                results["p"] = p
-            #
-            return results
+            results["p"] = p
+        #
+        return results
     #
     def create_tantalite(self):  # (Fe,Mg,Mn) Ta2 O6
         # Major elements
@@ -6551,47 +6417,34 @@ class Oxides():
         U = pe*rho_e*10**(-3)
         # Electrical resistivity
         p = None
-        #
-        if self.data_type == False:
-            data = []
-            data.append(name)
-            data.append(round(molar_mass, 3))
-            data.append(round(rho, 2))
-            data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 4)])
-            data.append([round(vP, 2), round(vS, 2), round(vPvS, 2)])
-            data.append([round(gamma_ray, 2), round(pe, 2), round(U, 2), p])
-            data.append(amounts)
-            #
-            return data
+        # Results
+        results = {}
+        results["mineral"] = name
+        results["state"] = var_state
+        results["M"] = molar_mass
+        element_list = np.array(amounts)[:, 0]
+        results["chemistry"] = {}
+        for index, element in enumerate(element_list, start=0):
+            results["chemistry"][element] = amounts[index][2]
+        results["rho"] = round(rho, 4)
+        results["rho_e"] = round(rho_e, 4)
+        results["V"] = round(V_m, 4)
+        results["vP"] = round(vP, 4)
+        results["vS"] = round(vS, 4)
+        results["vP/vS"] = round(vPvS, 4)
+        results["G"] = round(G*10**(-9), 4)
+        results["K"] = round(K*10**(-9), 4)
+        results["E"] = round(E*10**(-9), 4)
+        results["nu"] = round(nu, 4)
+        results["GR"] = round(gamma_ray, 4)
+        results["PE"] = round(pe, 4)
+        results["U"] = round(U, 4)
+        if p != None:
+            results["p"] = round(p, 4)
         else:
-            #
-            results = {}
-            results["mineral"] = name
-            results["state"] = var_state
-            results["M"] = molar_mass
-            element_list = np.array(amounts)[:, 0]
-            results["chemistry"] = {}
-            for index, element in enumerate(element_list, start=0):
-                results["chemistry"][element] = amounts[index][2]
-            results["rho"] = round(rho, 4)
-            results["rho_e"] = round(rho_e, 4)
-            results["V"] = round(V_m, 4)
-            results["vP"] = round(vP, 4)
-            results["vS"] = round(vS, 4)
-            results["vP/vS"] = round(vPvS, 4)
-            results["G"] = round(G*10**(-9), 4)
-            results["K"] = round(K*10**(-9), 4)
-            results["E"] = round(E*10**(-9), 4)
-            results["nu"] = round(nu, 4)
-            results["GR"] = round(gamma_ray, 4)
-            results["PE"] = round(pe, 4)
-            results["U"] = round(U, 4)
-            if p != None:
-                results["p"] = round(p, 4)
-            else:
-                results["p"] = p
-            #
-            return results
+            results["p"] = p
+        #
+        return results
     #
     def create_coltan(self):  # (Fe,Mg,Mn) (Nb,Ta)2 O6
         # Major elements
@@ -6735,47 +6588,34 @@ class Oxides():
         U = pe*rho_e*10**(-3)
         # Electrical resistivity
         p = None
-        #
-        if self.data_type == False:
-            data = []
-            data.append(name)
-            data.append(round(molar_mass, 3))
-            data.append(round(rho, 2))
-            data.append([round(K*10**(-9), 2), round(G*10**(-9), 2), round(E*10**(-9), 2), round(nu, 4)])
-            data.append([round(vP, 2), round(vS, 2), round(vPvS, 2)])
-            data.append([round(gamma_ray, 2), round(pe, 2), round(U, 2), p])
-            data.append(amounts)
-            #
-            return data
+        # Results
+        results = {}
+        results["mineral"] = name
+        results["state"] = var_state
+        results["M"] = round(molar_mass, 3)
+        element_list = np.array(amounts)[:, 0]
+        results["chemistry"] = {}
+        for index, element in enumerate(element_list, start=0):
+            results["chemistry"][element] = amounts[index][2]
+        results["rho"] = round(rho, 4)
+        results["rho_e"] = round(rho_e, 4)
+        results["V"] = round(V_m, 4)
+        results["vP"] = round(vP, 4)
+        results["vS"] = round(vS, 4)
+        results["vP/vS"] = round(vPvS, 4)
+        results["G"] = round(G*10**(-9), 4)
+        results["K"] = round(K*10**(-9), 4)
+        results["E"] = round(E*10**(-9), 4)
+        results["nu"] = round(nu, 4)
+        results["GR"] = round(gamma_ray, 4)
+        results["PE"] = round(pe, 4)
+        results["U"] = round(U, 4)
+        if p != None:
+            results["p"] = round(p, 4)
         else:
-            #
-            results = {}
-            results["mineral"] = name
-            results["state"] = var_state
-            results["M"] = round(molar_mass, 3)
-            element_list = np.array(amounts)[:, 0]
-            results["chemistry"] = {}
-            for index, element in enumerate(element_list, start=0):
-                results["chemistry"][element] = amounts[index][2]
-            results["rho"] = round(rho, 4)
-            results["rho_e"] = round(rho_e, 4)
-            results["V"] = round(V_m, 4)
-            results["vP"] = round(vP, 4)
-            results["vS"] = round(vS, 4)
-            results["vP/vS"] = round(vPvS, 4)
-            results["G"] = round(G*10**(-9), 4)
-            results["K"] = round(K*10**(-9), 4)
-            results["E"] = round(E*10**(-9), 4)
-            results["nu"] = round(nu, 4)
-            results["GR"] = round(gamma_ray, 4)
-            results["PE"] = round(pe, 4)
-            results["U"] = round(U, 4)
-            if p != None:
-                results["p"] = round(p, 4)
-            else:
-                results["p"] = p
-            #
-            return results
+            results["p"] = p
+        #
+        return results
     #
     def create_argutite(self):   # GeO2
         #
@@ -8600,8 +8440,8 @@ class RutileGroup:
         # Major elements
         list_X = ["Ge", "Sn", "Te", "Pb", "Mn", "Ti", "Si"]
         fractions_X = {}
-        propabilities = list(np.around(np.random.dirichlet(np.ones(7), size=1)[0], 4))
-        for index, value in enumerate(propabilities):
+        probabilities = list(np.around(np.random.dirichlet(np.ones(7), size=1)[0], 4))
+        for index, value in enumerate(probabilities):
             fractions_X[list_X[index]] = value
         #
         oxygen = PeriodicSystem(name="O").get_data()
@@ -8705,8 +8545,8 @@ class PericlaseGroup:
         # Major elements
         list_X = ["Mg", "Fe", "Mn", "Ni", "Cd", "Ca"]
         fractions_X = {}
-        propabilities = list(np.around(np.random.dirichlet(np.ones(len(list_X)), size=1)[0], 4))
-        for index, value in enumerate(propabilities):
+        probabilities = list(np.around(np.random.dirichlet(np.ones(len(list_X)), size=1)[0], 4))
+        for index, value in enumerate(probabilities):
             fractions_X[list_X[index]] = value
         #
         oxygen = PeriodicSystem(name="O").get_data()
@@ -8805,8 +8645,8 @@ class WulfeniteGroup:
         # Major elements
         list_X = ["Cr", "Mo", "W"]
         fractions_X = {}
-        propabilities = list(np.around(np.random.dirichlet(np.ones(len(list_X)), size=1)[0], 4))
-        for index, value in enumerate(propabilities):
+        probabilities = list(np.around(np.random.dirichlet(np.ones(len(list_X)), size=1)[0], 4))
+        for index, value in enumerate(probabilities):
             fractions_X[list_X[index]] = value
         #
         oxygen = PeriodicSystem(name="O").get_data()
@@ -8889,4 +8729,3 @@ class WulfeniteGroup:
             results["chemistry"][element] = amounts[index][2]
         #
         return results
-    #
