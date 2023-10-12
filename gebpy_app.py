@@ -6,7 +6,7 @@
 # Name:		gebpy_app.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		11.10.2023
+# Date:		12.10.2023
 
 #-----------------------------------------------
 
@@ -4020,14 +4020,16 @@ class GebPyGUI(tk.Frame):
                     fraction_ore = val_fraction_o
                     fraction_clay = val_fraction_c
                     fraction_rock_forming = np.zeros(n_datapoints)
-        #
+
         fractions = {
             "Rock Forming": np.around(fraction_rock_forming/100, n_digits),
             "Ore": np.around(fraction_ore/100, n_digits),
             "Clay": np.around(fraction_clay/100, n_digits)}
-        #
+
         mineral_list = list(selected_minerals.keys())
         mineral_list.sort()
+        pure_minerals = ["Qz"]
+        pure_minerals.sort()
         #
         ## Simulation
         self.data_rock = {}
@@ -4082,42 +4084,42 @@ class GebPyGUI(tk.Frame):
             elif mineral in self.phyllosilicate_minerals:
                 data_mineral = Phyllosilicates(
                     mineral=mineral, data_type=True, traces_list=[]).generate_dataset(number=n_datapoints)
-            #
+
             val_min = selected_minerals[mineral]["Min"]
             val_max = selected_minerals[mineral]["Max"]
             mean = (val_min + val_max)/2
             sigma = (mean - val_min)/3
-            #
+
             if mineral in self.rock_forming_minerals:
                 fraction_factor = self.minerals_helper["Rock Forming"][mineral]["Fraction"]/100
-                #
+
                 val_min = self.minerals_helper["Rock Forming"][mineral]["Min"]
                 val_max = self.minerals_helper["Rock Forming"][mineral]["Max"]
                 mean = (val_min + val_max)/2
                 sigma = (mean - val_min)/3
-                #
+
             elif mineral in self.ore_minerals:
                 fraction_factor = self.minerals_helper["Ore"][mineral]["Fraction"]/100
-                #
+
             elif mineral in self.clay_minerals:
                 fraction_factor = self.minerals_helper["Clay"][mineral]["Fraction"]/100
-            #
+
             amounts_raw = np.random.normal(loc=mean, scale=sigma, size=n_datapoints)
-            #
+
             amounts_ppm = np.array([int(fraction_factor*value) for index, value in enumerate(amounts_raw)])
             amounts_ppm[amounts_ppm < 0] = 0
             amounts_ppm[amounts_ppm == 0] = 1
-            #
+
             mineral_amounts[data_mineral["mineral"]] = list(amounts_ppm)
             mineral_data[data_mineral["mineral"]] = data_mineral
             mineral_names[mineral] = data_mineral["mineral"]
-            #
+
         data_amounts_minerals = self.calculate_mineral_fractions(
             var_minerals=list(mineral_data.keys()), var_data=self.minerals_helper, var_n=n_datapoints)
-        #
+
         for mineral, mineral_fractions in data_amounts_minerals.items():
             mineral_amounts[mineral_names[mineral]] = mineral_fractions
-        #
+
         n = 0
         while n < n_datapoints:
             porosity = round(rd.uniform(phi_min, phi_max)/100, 5)
@@ -4131,48 +4133,53 @@ class GebPyGUI(tk.Frame):
             elements_list = []
             phi_list = []
             phi_minerals = {}
-            velocities_minerals = {}
             velocity_solid = {"vP": 0, "vS": 0}
             amounts_minerals = {"mass": {}, "volume": {}}
             sum_amounts_w = 0
-            #
             for mineral, dataset in mineral_data.items():
                 if mineral not in self.data_rock["mineralogy"]:
                     self.data_rock["mineralogy"][mineral] = []
+
                 if mineral not in amounts_minerals["mass"]:
                     amounts_minerals["mass"][mineral] = []
                     amounts_minerals["volume"][mineral] = []
-                #
                 mineral_amount = round(mineral_amounts[mineral][n]*10**(-2), 6)
                 phi_minerals[mineral] = mineral_amount
-                sum_amounts_w += mineral_amount*dataset["rho"][n]
                 amounts_minerals["volume"][mineral].append(mineral_amount)
-                #
-                velocities_minerals[mineral] = {}
-                velocities_minerals[mineral]["vP"] = dataset["vP"][n]
-                velocities_minerals[mineral]["vS"] = dataset["vS"][n]
-                velocity_solid["vP"] += mineral_amount*dataset["vP"][n]
-                velocity_solid["vS"] += mineral_amount*dataset["vS"][n]
-                #
-                rho_solid += mineral_amount*dataset["rho"][n]
-                bulk_modulus += mineral_amount*dataset["K"][n]
-                shear_modulus += mineral_amount*dataset["G"][n]
-                gamma_ray += mineral_amount*dataset["GR"][n]
-                photoelectricity += mineral_amount*dataset["PE"][n]
                 phi_list.append(mineral_amount)
-                #
+                if mineral in pure_minerals:
+                    sum_amounts_w += mineral_amount*dataset["rho"][0]
+                    velocity_solid["vP"] += mineral_amount*dataset["vP"][0]
+                    velocity_solid["vS"] += mineral_amount*dataset["vS"][0]
+                    rho_solid += mineral_amount*dataset["rho"][0]
+                    bulk_modulus += mineral_amount*dataset["K"][0]
+                    shear_modulus += mineral_amount*dataset["G"][0]
+                    gamma_ray += mineral_amount*dataset["GR"][0]
+                    photoelectricity += mineral_amount*dataset["PE"][0]
+                else:
+                    sum_amounts_w += mineral_amount*dataset["rho"][n]
+                    velocity_solid["vP"] += mineral_amount*dataset["vP"][n]
+                    velocity_solid["vS"] += mineral_amount*dataset["vS"][n]
+                    rho_solid += mineral_amount*dataset["rho"][n]
+                    bulk_modulus += mineral_amount*dataset["K"][n]
+                    shear_modulus += mineral_amount*dataset["G"][n]
+                    gamma_ray += mineral_amount*dataset["GR"][n]
+                    photoelectricity += mineral_amount*dataset["PE"][n]
                 for element, value in dataset["chemistry"].items():
                     if element not in elements_list:
                         elements_list.append(element)
                         w_elements[element] = 0.0
-                    #
+
                     if element not in self.data_rock["chemistry"]:
                         self.data_rock["chemistry"][element] = []
-            #
+
             for mineral, dataset in mineral_data.items():
-                amount_w = round((mineral_amounts[mineral][n]*10**(-2)*dataset["rho"][n])/sum_amounts_w, 6)
+                if mineral in pure_minerals:
+                    amount_w = round((mineral_amounts[mineral][n]*10**(-2)*dataset["rho"][0])/sum_amounts_w, 6)
+                else:
+                    amount_w = round((mineral_amounts[mineral][n]*10**(-2)*dataset["rho"][n])/sum_amounts_w, 6)
                 amounts_minerals["mass"][mineral].append(amount_w)
-            #
+
             ## Density
             rho_solid = round(rho_solid, 3)
             rho = round((1 - porosity)*rho_solid + porosity*data_water[2], 3)
@@ -4190,13 +4197,17 @@ class GebPyGUI(tk.Frame):
             gamma_ray = round(gamma_ray, 3)
             ## Photoelectricity
             photoelectricity = round(photoelectricity, 3)
-            #
+
             for mineral, dataset in mineral_amounts.items():
-                mineral_amount = round(
-                    (mineral_amounts[mineral][n]*mineral_data[mineral]["rho"][n])/(100*rho_solid), n_digits)
+                if mineral in pure_minerals:
+                    mineral_amount = round(
+                        (mineral_amounts[mineral][n]*mineral_data[mineral]["rho"][0])/(100*rho_solid), n_digits)
+                else:
+                    mineral_amount = round(
+                        (mineral_amounts[mineral][n]*mineral_data[mineral]["rho"][n])/(100*rho_solid), n_digits)
                 w_minerals[mineral] = mineral_amount
                 self.data_rock["mineralogy"][mineral].append(mineral_amount)
-            #
+
             old_index = elements_list.index("O")
             elements_list += [elements_list.pop(old_index)]
             w_elements_total = 0.0
@@ -4204,19 +4215,22 @@ class GebPyGUI(tk.Frame):
                 if element != "O":
                     for mineral, w_mineral in w_minerals.items():
                         if element in mineral_data[mineral]["chemistry"]:
-                            value = round(w_mineral*mineral_data[mineral]["chemistry"][element][n], n_digits)
+                            if mineral in pure_minerals:
+                                value = round(w_mineral*mineral_data[mineral]["chemistry"][element][0], n_digits)
+                            else:
+                                value = round(w_mineral*mineral_data[mineral]["chemistry"][element][n], n_digits)
                             w_elements[element] += value
                             w_elements_total += value
-                            #
+
                             w_elements[element] = round(w_elements[element], n_digits)
                 elif element == "O":
                     w_elements[element] += round(1 - w_elements_total, n_digits)
-                    #
+
                     w_elements[element] = round(w_elements[element], n_digits)
-            #
+
             for element, value in w_elements.items():
                 self.data_rock["chemistry"][element].append(value)
-            #
+
             ## Results
             self.data_rock["rho_s"].append(rho_solid)
             self.data_rock["rho"].append(rho)
@@ -4235,7 +4249,7 @@ class GebPyGUI(tk.Frame):
             self.list_minerals_rock = list(w_minerals.keys())
             #
             n += 1
-        #
+
         ## Labels
         lbl_analysis = SimpleElements(
             parent=self.parent, row_id=22, column_id=0, n_rows=6, n_columns=14, bg=self.colors_gebpy["Navigation"],
@@ -5681,7 +5695,7 @@ class GebPyGUI(tk.Frame):
                         magicnumber = 0
                     #
                     order_fractions[index + magicnumber] = key
-            #
+
             for mineral, value in self.gui_variables["Checkbox"]["Mineralogy"].items():
                 if value.get() == 1:
                     var_min = self.gui_variables["Entry"]["Mineralogy"]["Minimum"][mineral].get()
@@ -5731,7 +5745,6 @@ class GebPyGUI(tk.Frame):
             w_effective = 0
             temp_min = 0
             temp_max = 0
-            #
             for index, (key, value) in enumerate(self.fractions_sum.items()):
                 if self.rock_fractions[key]["Size"] > 0:
                     if index < 2:
@@ -5739,46 +5752,19 @@ class GebPyGUI(tk.Frame):
                             (self.rock_fractions[key]["Min"] + self.rock_fractions[key]["Max"])/2, 4)
                         temp_min += self.rock_fractions[key]["Min"]
                         temp_max += self.rock_fractions[key]["Max"]
-                        #
                     else:
                         var_delta = 100 - w_effective
-                        #
                         value_min = 100 - temp_max
                         value_max = 100 - temp_min
+                        if value_min < 0:
+                            value_min = 0
+                        if value_max < 0:
+                            value_max = 0
                         value_eff = (value_min + value_max)/2
                         #
                         self.rock_fractions[key]["Min"] = round(value_min, 4)
                         self.rock_fractions[key]["Max"] = round(value_max, 4)
                         self.rock_fractions[key]["Effective"] = round(value_eff, 4)
-                        #
-                        # if float(self.rock_fractions[key]["Min"]) < var_delta < float(self.rock_fractions[key]["Max"]):
-                        #     delta_min = var_delta - self.rock_fractions[key]["Min"]
-                        #     delta_max = self.rock_fractions[key]["Max"] - var_delta
-                        #     #
-                        #     if delta_max < delta_min:
-                        #         self.rock_fractions[key]["Effective"] = round(100 - w_effective, 4)
-                        #         self.rock_fractions[key]["Min"] = round(
-                        #             2*self.rock_fractions[key]["Effective"] - self.rock_fractions[key]["Max"], 4)
-                        #     elif delta_min < delta_max:
-                        #         self.rock_fractions[key]["Effective"] = round(100 - w_effective, 4)
-                        #         self.rock_fractions[key]["Max"] = round(
-                        #             2*self.rock_fractions[key]["Effective"] - self.rock_fractions[key]["Min"], 4)
-                        #     else:
-                        #         self.rock_fractions[key]["Effective"] = round(var_delta, 4)
-                        #         self.rock_fractions[key]["Min"] = round(var_delta - delta_min, 4)
-                        #         self.rock_fractions[key]["Max"] = round(var_delta + delta_max, 4)
-                        #     #
-                        # elif var_delta < float(self.rock_fractions[key]["Min"]):
-                        #     self.rock_fractions[key]["Effective"] = round(100 - w_effective, 4)
-                        #     self.rock_fractions[key]["Min"] = round(
-                        #         2*self.rock_fractions[key]["Effective"] - self.rock_fractions[key]["Max"], 4)
-                        #     #
-                        # elif var_delta == float(self.rock_fractions[key]["Min"]) \
-                        #         or var_delta == float(self.rock_fractions[key]["Max"]):
-                        #     self.rock_fractions[key]["Effective"] = round(var_delta, 4)
-                        #     self.rock_fractions[key]["Min"] = round(var_delta, 4)
-                        #     self.rock_fractions[key]["Max"] = round(var_delta, 4)
-                    #
                 else:
                     self.rock_fractions[key]["Min"] = 0.0
                     self.rock_fractions[key]["Max"] = 0.0
@@ -5789,7 +5775,6 @@ class GebPyGUI(tk.Frame):
                 #
                 w_effective += self.rock_fractions[key]["Effective"]
                 previous_keys.append(key)
-            #
             amounts_fractions = {}
             last_amounts = 0
             for index, fraction in enumerate(fractions_mean):
@@ -5827,7 +5812,6 @@ class GebPyGUI(tk.Frame):
                     for mineral, values in self.selected_minerals.items():
                         if fraction == values["Group"]:
                             sorted_minerals[fraction][mineral] = values["Mean"]
-            #
             self.minerals_helper = {}
             for index_01, (key_01, value_01) in enumerate(self.fractions_sum.items()):
                 if value_01 > 0:
@@ -5836,12 +5820,10 @@ class GebPyGUI(tk.Frame):
                         if key_01 == value_02["Group"]:
                             main_mineral = self.find_maximum_in_dict(var_dict=sorted_minerals[key_01])
                             self.minerals_helper[key_01][key_02] = {}
-                            #
                             if value_01 == 1:
                                 value_min = self.rock_fractions[key_01]["Min"]*value_02["Min"]/100
                                 value_max = self.rock_fractions[key_01]["Max"]*value_02["Max"]/100
                                 value_eff = (value_min + value_max)/2
-                                #
                                 self.minerals_helper[key_01][key_02]["Min"] = round(value_min, 4)
                                 self.minerals_helper[key_01][key_02]["Max"] = round(value_max, 4)
                                 self.minerals_helper[key_01][key_02]["Effective"] = round(value_eff, 4)
@@ -5856,7 +5838,6 @@ class GebPyGUI(tk.Frame):
                                 value_min = self.rock_fractions[key_01]["Min"]*value_02["Min"]/100
                                 value_max = self.rock_fractions[key_01]["Max"]*value_02["Max"]/100
                                 value_eff = (value_min + value_max)/2
-                                #
                                 self.minerals_helper[key_01][key_02]["Min"] = round(value_min, 4)
                                 self.minerals_helper[key_01][key_02]["Max"] = round(value_max, 4)
                                 self.minerals_helper[key_01][key_02]["Effective"] = round(value_eff, 4)
@@ -5866,47 +5847,6 @@ class GebPyGUI(tk.Frame):
                                 self.selected_minerals[key_02]["Min"] = round(value_min, 4)
                                 self.selected_minerals[key_02]["Max"] = round(value_max, 4)
                                 self.selected_minerals[key_02]["Mean"] = round(value_eff, 4)
-            #
-            # amounts_helper = {}
-            # for group, value in self.fractions_sum.items():
-            #     index = 1
-            #     amount_now = 0
-            #     for mineral, dataset in self.selected_minerals.items():
-            #         if group == dataset["Group"]:
-            #             if group == "Rock Forming":
-            #                 if index == n_rock_forming:
-            #                     var_amount = amount_fraction_rf - amount_now
-            #                 elif index == 1:
-            #                     var_amount = amount_fraction_rf*(rd.uniform(
-            #                         self.selected_minerals[mineral]["Min"], self.selected_minerals[mineral]["Max"])/100)
-            #                 else:
-            #                     var_amount = amount_fraction_rf*(rd.uniform(
-            #                         self.selected_minerals[mineral]["Min"], (1 - amount_now)*100)/100)
-            #                 #
-            #                 amounts_helper[mineral] = round(var_amount, 4)
-            #                 amount_now += round(var_amount, 4)
-            #                 index += 1
-            #             elif group == "Ore":
-            #                 if index == n_ore:
-            #                     var_amount = amount_fraction_o - amount_now
-            #                 else:
-            #                     var_amount = amount_fraction_o*(rd.uniform(
-            #                         self.selected_minerals[mineral]["Min"], self.selected_minerals[mineral]["Max"])/100)
-            #                 #
-            #                 amounts_helper[mineral] = round(var_amount, 4)
-            #                 amount_now += round(var_amount, 4)
-            #                 index += 1
-            #             elif group == "Clay":
-            #                 if index == n_clay:
-            #                     var_amount = amount_fraction_c - amount_now
-            #                 else:
-            #                     var_amount = amount_fraction_c*(rd.uniform(
-            #                         self.selected_minerals[mineral]["Min"], self.selected_minerals[mineral]["Max"])/100)
-            #                 #
-            #                 amounts_helper[mineral] = round(var_amount, 4)
-            #                 amount_now += round(var_amount, 4)
-            #                 index += 1
-
         #
         ## TESTING
         # print("")
@@ -6144,18 +6084,15 @@ class GebPyGUI(tk.Frame):
         # print("var_data:", var_data)
         # print("var_n:", var_n)
         # print("selected_minerals:", self.selected_minerals)
-        #
+
         data_amounts = {}
-        #
         n_minerals = len(var_minerals)
         mineral_information = {}
-        #
         for key_group, group_data in var_data.items():
             for mineral, values in group_data.items():
                 if mineral not in data_amounts:
                     data_amounts[mineral] = []
                     mineral_information[mineral] = values
-        #
         n = 0
         while n < var_n:
             condition = False
@@ -6163,28 +6100,42 @@ class GebPyGUI(tk.Frame):
                 temp_values = {}
                 phi_total = 0
                 for index, (mineral, values) in enumerate(self.selected_minerals.items()):
+                    limit_lower = values["Min"]
+                    limit_upper = values["Max"]
+                    if limit_lower < 0:
+                        limit_lower = 0.0
+
+                    if limit_upper > 100:
+                        limit_upper = 100
+
                     if index < n_minerals - 1:
                         #value = round(0.01*values["Fraction"]*rd.randint(values["Min"], values["Max"]), 6)
                         value = round(rd.uniform(values["Min"], values["Max"]), 6)
                     else:
                         value = round(100 - phi_total, 6)
-                    #
+
                     # limit_lower = 0.01*values["Fraction"]*values["Min"]
                     # limit_upper = 0.01*values["Fraction"]*values["Max"]
-                    limit_lower = values["Min"]
-                    limit_upper = values["Max"]
+                    # limit_lower = values["Min"]
+                    # limit_upper = values["Max"]
                     #
+                    # if limit_lower < 0:
+                    #     limit_lower = 0.0
+                    #
+                    # if limit_upper > 100:
+                    #     limit_upper = 100
+
                     if limit_lower <= value <= limit_upper:
                         phi_total += value
                         temp_values[mineral] = value
-                #
+
                 mineral_total = list(temp_values.values())
                 if np.isclose(np.sum(mineral_total), 100.000000) == True:
                     for mineral, value in temp_values.items():
                         data_amounts[mineral].append(value)
                     n += 1
                     condition = True
-        #
+
         # print("RESULTS (data_amounts):")
         # for key, values in data_amounts.items():
         #     print(key, len(values))
