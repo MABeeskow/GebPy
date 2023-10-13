@@ -6,7 +6,7 @@
 # Name:		siliciclastics.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		07.08.2023
+# Date:		13.10.2023
 
 #-----------------------------------------------
 
@@ -311,9 +311,7 @@ class SiliciclasticRocks:
         self.data_oil = Hydrocarbons.oil("")
         self.data_gas = Hydrocarbons.natural_gas("")
     #
-    def create_sandstone(self, rock="Sandstone", number=1, composition=None, classification="Sandstone",
-                             porosity=None):
-        #
+    def create_sandstone(self, rock="Sandstone", number=1, composition=None, classification="Sandstone", porosity=None):
         results_container = {}
         results_container["rock"] = rock
         results_container["mineralogy"] = {}
@@ -332,42 +330,39 @@ class SiliciclasticRocks:
         results_container["nu"] = []
         results_container["GR"] = []
         results_container["PE"] = []
-        #
+
         n = 0
         while n < number:
             data_alkalifeldspar = Tectosilicates(impurity="pure", data_type=True).create_alkalifeldspar()
             data_plagioclase = Tectosilicates(impurity="pure", data_type=True).create_plagioclase()
-            #
             mineralogy = {"Qz": self.data_quartz, "Kfs": data_alkalifeldspar, "Pl": data_plagioclase,
                           "Kln": self.data_kaolinite, "Hem": self.data_hematite}
-            #
             minerals_list = list(mineralogy.keys())
-            #
+
             if minerals_list[0] not in results_container["mineralogy"]:
                 for mineral in minerals_list:
                     results_container["mineralogy"][mineral] = []
-            #
+
             condition = False
-            #
             while condition == False:
                 elements_list = []
                 phi_minerals = {}
                 w_minerals = {}
                 w_elements = {}
-                #
+
                 if composition != None:
                     phi_qz = composition["Qz"]
                     phi_kfs = composition["Kfs"]
                     phi_pl = composition["Pl"]
                     phi_kln = composition["Kln"]
                     phi_hem = composition["Hem"]
-                    #
+
                     phi_minerals["Qz"] = phi_qz
                     phi_minerals["Kfs"] = phi_kfs
                     phi_minerals["Pl"] = phi_pl
                     phi_minerals["Kln"] = phi_kln
                     phi_minerals["Hem"] = phi_hem
-                    #
+
                 else:
                     condition_2 = False
                     while condition_2 == False:
@@ -377,15 +372,15 @@ class SiliciclasticRocks:
                             pl_limits = [0.0, 0.25]
                             kln_limits = [0.0, 0.25]
                             hem_limits = [0.0, 0.05]
-                        #
+
                         phi_qz = round(rd.uniform(qz_limits[0], qz_limits[1]), 4)
                         phi_kfs = round(rd.uniform(kfs_limits[0], (1 - phi_qz)), 4)
                         phi_pl = round(rd.uniform(pl_limits[0], (1 - phi_qz - phi_kfs)), 4)
                         phi_kln = round(rd.uniform(kln_limits[0], (1 - phi_qz - phi_kfs - phi_pl)), 4)
                         phi_hem = round(1 - phi_qz - phi_kfs - phi_pl - phi_kln, 4)
-                        #
+
                         phi_total = phi_qz + phi_kfs + phi_pl + phi_kln + phi_hem
-                        #
+
                         if np.isclose(phi_total, 1.0000) == True:
                             if qz_limits[0] <= phi_qz <= qz_limits[1] \
                                     and kfs_limits[0] <= phi_kfs <= kfs_limits[1] \
@@ -393,41 +388,40 @@ class SiliciclasticRocks:
                                     and kln_limits[0] <= phi_kln <= kln_limits[1] \
                                     and hem_limits[0] <= phi_hem <= hem_limits[1]:
                                 condition_2 = True
-                        #
+
                     phi_minerals["Qz"] = phi_qz
                     phi_minerals["Kfs"] = phi_kfs
                     phi_minerals["Pl"] = phi_pl
                     phi_minerals["Kln"] = phi_kln
                     phi_minerals["Hem"] = phi_hem
-                #
+
                 rho_s = 0
                 for key, value in phi_minerals.items():
                     rho_s += phi_minerals[key]*mineralogy[key]["rho"]
-                    #
                     for element, value in mineralogy[key]["chemistry"].items():
                         if element not in elements_list:
                             elements_list.append(element)
                             w_elements[element] = 0.0
-                #
+
                 if elements_list[0] not in results_container["chemistry"]:
                     for element in elements_list:
                         results_container["chemistry"][element] = []
-                #
+
                 rho_s = round(rho_s, 3)
                 for key, value in phi_minerals.items():
                     if key == "Urn":
                         n_digits = 4
                     else:
                         n_digits = 4
-                    #
+
                     w_minerals[key] = round((phi_minerals[key]*mineralogy[key]["rho"])/rho_s, n_digits)
-                #
+
                 if self.fluid == "water":
                     data_fluid = self.data_water
-                #
+
                 old_index = elements_list.index("O")
                 elements_list += [elements_list.pop(old_index)]
-                #
+
                 w_elements_total = 0.0
                 for element in elements_list:
                     if element != "O":
@@ -437,28 +431,24 @@ class SiliciclasticRocks:
                                     n_digits = 4
                                 else:
                                     n_digits = 4
-                                #
+
                                 value = round(w_mineral*mineralogy[mineral]["chemistry"][element], n_digits)
                                 w_elements[element] += value
                                 w_elements_total += value
-                                #
                                 w_elements[element] = round(w_elements[element], n_digits)
                     elif element == "O":
                         w_elements[element] += round(1 - w_elements_total, 4)
-                        #
                         w_elements[element] = round(w_elements[element], 4)
-                #
+
                 total_w_minerals = round(sum(w_minerals.values()), 4)
                 total_w_elements = round(sum(w_elements.values()), 4)
                 if total_w_minerals == 1.0 and total_w_elements == 1.0:
                     for key, value in w_minerals.items():
                         w_minerals[key] = abs(value)
-                    #
                     for key, value in w_elements.items():
                         w_elements[key] = abs(value)
-                    #
                     condition = True
-            #
+
             velocity_solid = {"vP": 0, "vS": 0}
             gamma_ray = 0.0
             photoelectricity = 0.0
@@ -467,16 +457,14 @@ class SiliciclasticRocks:
                 velocity_solid["vS"] += phi_minerals[key]*mineralogy[key]["vS"]
                 gamma_ray += phi_minerals[key]*mineralogy[key]["GR"]
                 photoelectricity += phi_minerals[key]*mineralogy[key]["PE"]
-            #
+
             ## Bulk Density, Porosity, Seismic Velocities
             rho_solid = round(rho_s, 3)
             vP, vS, vPvS, rho, var_porosity = SeismicVelocities(
                 rho_solid=rho_solid, rho_fluid=self.data_water[2]).calculate_seismic_velocities(
                 rho_limits=[1800, 2800], vP_limits=[2800, 4800], vS_limits=[1500, 2500], delta=0.05,
                 porosity=porosity)
-            #
             phi_neutron = round((1900/rho)*0.15, 4)
-            #
             ## Elastic Parameters
             bulk_modulus, shear_modulus, youngs_modulus, poisson_ratio = SeismicVelocities(
                 rho_solid=None, rho_fluid=None).calculate_elastic_properties(
@@ -485,13 +473,11 @@ class SiliciclasticRocks:
             gamma_ray = round(gamma_ray, 3)
             ## Photoelectricity
             photoelectricity = round(photoelectricity, 3)
-            #
             for key, value in w_minerals.items():
                 results_container["mineralogy"][key].append(value)
-            #
             for key, value in w_elements.items():
                 results_container["chemistry"][key].append(value)
-            #
+            # Results
             results_container["phi"].append(phi_neutron)
             results_container["phi_true"].append(var_porosity)
             results_container["rho_s"].append(rho_s)
@@ -505,11 +491,10 @@ class SiliciclasticRocks:
             results_container["nu"].append(poisson_ratio)
             results_container["GR"].append(gamma_ray)
             results_container["PE"].append(photoelectricity)
-            #
             n += 1
-        #
+
         return results_container
-    #
+
     def create_mudstone_alt(self, rock="Mudstone", number=1, composition=None, classification="Mudstone",
                             porosity=None):
         #

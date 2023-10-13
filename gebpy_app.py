@@ -6,7 +6,7 @@
 # Name:		gebpy_app.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		12.10.2023
+# Date:		13.10.2023
 
 #-----------------------------------------------
 
@@ -2637,7 +2637,8 @@ class GebPyGUI(tk.Frame):
             text="Analysis Mode", font_option="sans 10 bold", relief=tk.FLAT)
         #
         self.gui_elements["Static"]["Label"].append(lbl_analysis)
-        #
+
+        time_start = datetime.now()
         ## Siliciclastic Rocks
         if var_name == "Sandstone":
             data = SiliciclasticRocks(fluid="water", actualThickness=0).create_sandstone(
@@ -3110,7 +3111,11 @@ class GebPyGUI(tk.Frame):
                     self.gui_variables["Entry"]["Porosity Min"].get()/100,
                     self.gui_variables["Entry"]["Porosity Max"].get()/100]).create_amphibolite_ortho(
                 number=self.gui_variables["Entry"]["Number Datapoints"].get())
-        #
+
+        time_end = datetime.now()
+        time_delta = (time_end - time_start)*1000
+        print(f"Taken time: {time_delta.total_seconds()} ms")
+
         self.data_rock = {}
         self.rock_data = {}
         categories = ["rho", "rho_s", "vP", "vS", "vP/vS", "K", "G", "E", "nu", "GR", "PE", "phi", "phi_true", "fluid",
