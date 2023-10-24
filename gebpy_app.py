@@ -451,7 +451,8 @@ class GebPyGUI(tk.Frame):
             if rock_group == "Sedimentary Rocks":
                 sub_sedimentary = tk.Menu(petrology_menu, tearoff=0)
                 sedimentary_rocks = {
-                    "Siliciclastic": ["Sandstone", "Shale", "Mudstone", "Conglomerate", "Greywacke (Huckenholz)"],
+                    "Siliciclastic": ["Sandstone", "Shale", "Mudstone", "Conglomerate", "Greywacke (Huckenholz)",
+                                      "Siltstone"],
                     "Carbonate": ["Limestone", "Dolostone", "Marl"]}
                 sedimentary_rocks = collections.OrderedDict(sorted(sedimentary_rocks.items()))
                 i = 1
@@ -2647,6 +2648,11 @@ class GebPyGUI(tk.Frame):
                           self.gui_variables["Entry"]["Porosity Max"].get()/100])
         elif var_name == "Conglomerate":
             data = SiliciclasticRocks(fluid="water", actualThickness=0).create_conglomerate(
+                number=self.gui_variables["Entry"]["Number Datapoints"].get(),
+                porosity=[self.gui_variables["Entry"]["Porosity Min"].get()/100,
+                          self.gui_variables["Entry"]["Porosity Max"].get()/100])
+        elif var_name == "Siltstone":
+            data = SiliciclasticRocks(fluid="water", actualThickness=0).create_siltstone(
                 number=self.gui_variables["Entry"]["Number Datapoints"].get(),
                 porosity=[self.gui_variables["Entry"]["Porosity Min"].get()/100,
                           self.gui_variables["Entry"]["Porosity Max"].get()/100])

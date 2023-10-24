@@ -18,6 +18,7 @@ from modules.silicates import Phyllosilicates, Tectosilicates, Nesosilicates, So
 from modules.oxides import Oxides
 from modules.carbonates import Carbonates
 from modules.sulfides import Sulfides
+from modules.phosphates import Phosphates
 from modules import fluids
 from modules.fluids import Water
 from modules.geophysics import Elasticity as elast
@@ -335,7 +336,7 @@ class OreRocks:
         #
         return results_container
 
-    def create_bandedironformation(self, rock="Banded Iron Formation", number=1, composition=None):
+    def create_bandedironformation(self, rock="Banded Iron Formation", number=1, composition=None, mode="random"):
         results_container = {}
         results_container["rock"] = rock
         results_container["mineralogy"] = {}
@@ -355,12 +356,17 @@ class OreRocks:
         results_container["GR"] = []
         results_container["PE"] = []
 
-        mineralogy = {"Qz": self.data_quartz, "Mag": self.data_magnetite, "Hem": self.data_hematite,
-                      "Kln": self.data_kaolinite}
-        minerals_list = list(mineralogy.keys())
-
         n = 0
+        w_last = None
+        list_ore_values = np.around(np.linspace(0.25, 0.5, number), 4)
+        list_ore_values_reverse = sorted(list_ore_values, reverse=True)
         while n < number:
+            data_apatite = Phosphates(data_type=True).create_aptite()
+            mineralogy = {
+                "Qz": self.data_quartz, "Mag": self.data_magnetite, "Hem": self.data_hematite,
+                "Kln": self.data_kaolinite, "Ap": data_apatite}
+            minerals_list = list(mineralogy.keys())
+
             if minerals_list[0] not in results_container["mineralogy"]:
                 for mineral in minerals_list:
                     results_container["mineralogy"][mineral] = []
@@ -377,43 +383,56 @@ class OreRocks:
                     phi_mag = composition["Mag"]
                     phi_hem = composition["Hem"]
                     phi_kln = composition["Kln"]
+                    phi_ap = composition["Ap"]
 
                     phi_minerals["Qz"] = phi_qz
                     phi_minerals["Mag"] = phi_mag
                     phi_minerals["Hem"] = phi_hem
                     phi_minerals["Kln"] = phi_kln
+                    phi_minerals["Ap"] = phi_ap
 
                 else:
                     condition_2 = False
                     while condition_2 == False:
-                        amount_ore = round(rd.uniform(0.25, 0.5), 4)
+                        if mode == "random":
+                            amount_ore = round(rd.uniform(0.25, 0.5), 4)
+                        elif mode == "increasing ore":
+                            amount_ore = list_ore_values[n]
+                        elif mode == "decreasing ore":
+                            amount_ore = list_ore_values_reverse[n]
+
                         amount_residuals = round(1 - amount_ore, 4)
                         amount_mag = round(rd.uniform(0.6, 0.8), 4)
-                        amount_qz = round(rd.uniform(0.75, 1.0), 4)
+                        amount_qz = round(rd.uniform(0.6, 1.0), 4)
+
                         qz_limits = [0.4, 0.75]
                         mag_limits = [0.15, 0.4]
                         hem_limits = [0.05, 0.20]
                         kln_limits = [0.0, 0.15]
+                        ap_limits = [0.0, 0.025]
                         # Ore minerals
                         phi_mag = round(amount_ore*amount_mag, 4)
                         phi_hem = round(amount_ore - phi_mag, 4)
                         # Other minerals
                         phi_qz = round(amount_residuals*amount_qz, 4)
-                        phi_kln = round(1 - phi_qz - phi_mag - phi_hem, 4)
+                        phi_ap = round(amount_residuals*rd.uniform(0, (1 - amount_qz)), 4)
+                        phi_kln = round(1 - phi_qz - phi_mag - phi_hem - phi_ap, 4)
 
-                        phi_total = phi_qz + phi_mag + phi_hem + phi_kln
+                        phi_total = phi_qz + phi_mag + phi_hem + phi_kln + phi_ap
 
                         if np.isclose(phi_total, 1.0000) == True:
-                            if qz_limits[0] <= phi_qz <= qz_limits[1] \
+                            if (qz_limits[0] <= phi_qz <= qz_limits[1] \
                                     and mag_limits[0] <= phi_mag <= mag_limits[1] \
                                     and hem_limits[0] <= phi_hem <= hem_limits[1] \
-                                    and kln_limits[0] <= phi_kln <= kln_limits[1]:
+                                    and kln_limits[0] <= phi_kln <= kln_limits[1]
+                                    and ap_limits[0] <= phi_ap <= ap_limits[1]):
                                 condition_2 = True
 
                     phi_minerals["Qz"] = phi_qz
                     phi_minerals["Mag"] = phi_mag
                     phi_minerals["Hem"] = phi_hem
                     phi_minerals["Kln"] = phi_kln
+                    phi_minerals["Ap"] = phi_ap
 
                 rho_s = 0
                 for key, value in phi_minerals.items():
@@ -497,6 +516,7 @@ class OreRocks:
                 results_container["mineralogy"][key].append(value)
             for key, value in w_elements.items():
                 results_container["chemistry"][key].append(value)
+            w_last = w_minerals
             # Results
             results_container["phi"].append(phi_neutron)
             results_container["phi_true"].append(var_porosity)
