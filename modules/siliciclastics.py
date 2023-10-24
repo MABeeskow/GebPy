@@ -6,7 +6,7 @@
 # Name:		siliciclastics.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		24.10.2023
+# Date:		25.10.2023
 
 #-----------------------------------------------
 
@@ -112,7 +112,6 @@ class Soil:
             #
             if sumMin == 1 and sumConc == 1:
                 cond = True
-                #composition.extend((["Qz", w_qz, round(quartz[1], 2)], ["Ilt", w_ilt, round(illite[1], 2)], ["Kln", w_kln, round(kaolinite[1], 2)], ["Org", w_org, round(organic[1], 2)]))
                 composition.extend((["Qz", "Ilt", "Kln", "Org"]))
                 concentrations = [w_H, w_C, w_O, w_Mg, w_Al, w_Si, w_K, w_Fe]
                 amounts = [w_qz, w_ilt, w_kln, w_org]
@@ -230,7 +229,6 @@ class Soil:
             #
             if sumMin == 1 and sumConc == 1:
                 cond = True
-                #composition.extend((["Qz", w_qz, round(quartz[1], 2)], ["Ilt", w_ilt, round(illite[1], 2)], ["Kln", w_kln, round(kaolinite[1], 2)], ["Org", w_org, round(organic[1], 2)]))
                 composition.extend((["Qz", "Ilt", "Kln", "Org"]))
                 concentrations = [w_H, w_C, w_O, w_Mg, w_Al, w_Si, w_K, w_Fe]
                 amounts = [w_qz, w_ilt, w_kln, w_org]
@@ -705,7 +703,7 @@ class SiliciclasticRocks:
         n = 0
         helper = [[], []]
         while n < number:
-            data_illite = Phyllosilicates(impurity="pure", data_type=True).create_illite()
+            data_illite = Phyllosilicates(impurity="pure", data_type=True).create_illite_simple()
             data_alkalifeldspar = Tectosilicates(impurity="pure", data_type=True).create_alkalifeldspar()
             data_plagioclase = Tectosilicates(impurity="pure", data_type=True).create_plagioclase()
             data_organics = Organics(data_type=True).create_organic_matter()
@@ -1215,7 +1213,7 @@ class SiliciclasticRocks:
         n = 0
         while n < number:
             data_montmorillonite = Phyllosilicates(impurity="pure", data_type=True).create_montmorillonite()
-            data_illite = Phyllosilicates(impurity="pure", data_type=True).create_illite()
+            data_illite = Phyllosilicates(impurity="pure", data_type=True).create_illite_simple()
             data_chlorite = Phyllosilicates(impurity="pure", data_type=True).create_chlorite()
             data_alkalifeldspar = Tectosilicates(impurity="pure", data_type=True).create_alkalifeldspar()
             data_organics = Organics(data_type=True).create_organic_matter()

@@ -6,7 +6,7 @@
 # Name:		silicates.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		04.10.2023
+# Date:		25.10.2023
 
 # -----------------------------------------------
 
@@ -1148,7 +1148,8 @@ class Phyllosilicates:
         for index in range(number):
             # Clay Minerals
             if self.mineral == "Illite":
-                data_mineral = self.create_illite()
+                #data_mineral = self.create_illite()
+                data_mineral = self.create_illite_simple()
             elif self.mineral == "Kaolinite":
                 data_mineral = self.create_kaolinite()
             elif self.mineral == "Montmorillonite":
@@ -1212,7 +1213,138 @@ class Phyllosilicates:
                             dataset[key][key_2].append(value_2)
         #
         return dataset
-    #
+
+    def create_illite_simple(self):    # K0.65 Al2 Al0.65 Si3.35 O10 (OH)2
+        name = "Ilt"
+        # Major Elements
+        majors_name = ["H", "O", "Al", "Si", "K"]
+        major_compounds = ["H2O", "Al2O3", "SiO2", "K2O"]
+        # Trace elements
+        element_traces = {
+            "2+": ["Mg", "Fe"],
+            "All": ["Fe", "Mg"]}
+
+        if len(self.traces_list) > 0:
+            self.impurity = "impure"
+            var_state = "variable"
+        else:
+            self.impurity = "pure"
+            var_state = "fixed"
+
+        # Molar mass
+        molar_mass_pure = round(0.65*self.potassium[2] + (2 + 0.65)*self.aluminium[2] + 3.35*self.silicon[2]
+                                + 10*self.oxygen[2] + 2*(self.oxygen[2] + self.hydrogen[2]), 3)
+        major_amounts = {"H": 2, "O": 12, "Al": 2.65, "Si": 3.35, "K": 0.65}
+        major_masses = {"H": self.hydrogen[2], "O": self.oxygen[2], "Al": self.aluminium[2], "Si": self.silicon[2],
+                        "K": self.potassium[2]}
+        major_data = {"H": self.hydrogen, "O": self.oxygen, "Al": self.aluminium, "Si": self.silicon,
+                      "K": self.potassium}
+        condition = False
+        while condition == False:
+            molar_mass = 0
+            amounts = []
+            if self.impurity == "impure":
+                compositon_data = TraceElements(tracer=self.traces_list).calculate_composition_illite()
+                for element in compositon_data:
+                    chem_data = PeriodicSystem(name=element).get_data()
+                    molar_mass += round(compositon_data[element]["x"]*chem_data[2], 3)
+                    amounts.append([chem_data[0], chem_data[1], compositon_data[element]["w"]])
+            else:
+                for element in majors_name:
+                    molar_mass += round(major_amounts[element]*major_masses[element], 3)
+                    amounts.append([element, major_data[element][1],
+                                    major_amounts[element]*major_masses[element]/molar_mass_pure])
+            magic_factor = round(molar_mass/molar_mass_pure, 6)
+            element = [PeriodicSystem(name=amounts[i][0]).get_data() for i in range(len(amounts))]
+            ## Oxide Composition
+            list_oxides = ["H2O", "Al2O3", "SiO2", "K2O"]
+            if len(self.traces_list) > 0:
+                for key in self.traces_list.keys():
+                    if key in ["Mg", "Fe"]:
+                        list_oxides.append(str(key) + "O")
+            composition_oxides = {}
+            w_oxide_total = 0
+            for index_oxide, var_oxide in enumerate(list_oxides):
+                if index_oxide < len(list_oxides) - 1:
+                    oxide_data = OxideCompounds(var_compound=var_oxide, var_amounts=amounts).get_composition()
+                    if self.impurity == "pure":
+                        composition_oxides[var_oxide] = round(oxide_data["Oxide"][1], 4)
+                    else:
+                        composition_oxides[var_oxide] = round(oxide_data["Oxide"][1], 6)
+                    w_oxide_total += composition_oxides[var_oxide]
+                else:
+                    if self.impurity == "pure":
+                        composition_oxides[var_oxide] = round(1 - w_oxide_total, 4)
+                    else:
+                        composition_oxides[var_oxide] = round(1 - w_oxide_total, 6)
+            if np.isclose(np.sum(list(composition_oxides.values())), 1.0000) == True:
+                condition = True
+            else:
+                pass
+        # Density
+        dataV = CrystalPhysics([[5.18, 8.98, 10.32], [101.83], "monoclinic"])
+        V = dataV.calculate_volume()
+        Z = 2
+        V_m = MineralChemistry().calculate_molar_volume(volume_cell=V, z=Z)*magic_factor
+        dataRho = CrystalPhysics([molar_mass, Z, V])
+        rho = dataRho.calculate_bulk_density()*magic_factor
+        rho_e = wg(amounts=amounts, elements=element, rho_b=rho).calculate_electron_density()
+        # Bulk modulus
+        K = (35.72 + (62.21-35.72)/(2.706-2.546)*(rho/1000-2.546))*10**9
+        # Shear modulus
+        G = (17.80 + (25.70-17.80)/(2.706-2.546)*(rho/1000-2.546))*10**9
+        # Young's modulus
+        E = (9*K*G)/(3*K + G)
+        # Poisson's ratio
+        nu = (3*K - 2*G)/(2*(3*K + G))
+        # vP/vS
+        vPvS = ((K + 4/3*G)/G)**0.5
+        # P-wave velocity
+        vP = ((K + 4/3*G)/rho)**0.5
+        # S-wave velocity
+        vS = (G/rho)**0.5
+        # Gamma ray
+        gamma_ray = wg(amounts=amounts, elements=element).calculate_gr()
+        # Photoelectricity
+        pe = wg(amounts=amounts, elements=element).calculate_pe()
+        U = pe*rho_e*10**(-3)
+        # Electrical resistivity
+        p = None
+        # Results
+        results = {}
+        results["mineral"] = name
+        results["state"] = var_state
+        results["M"] = molar_mass
+        element_list = np.array(amounts)[:, 0]
+        results["chemistry"] = {}
+        for index, element in enumerate(element_list, start=0):
+            results["chemistry"][element] = amounts[index][2]
+        results["compounds"] = {}
+        for index, oxide in enumerate(list_oxides, start=0):
+            results["compounds"][oxide] = composition_oxides[oxide]
+        results["rho"] = round(rho, 4)
+        results["rho_e"] = round(rho_e, 4)
+        results["V"] = round(V_m, 4)
+        results["vP"] = round(vP, 4)
+        results["vS"] = round(vS, 4)
+        results["vP/vS"] = round(vPvS, 4)
+        results["G"] = round(G*10**(-9), 4)
+        results["K"] = round(K*10**(-9), 4)
+        results["E"] = round(E*10**(-9), 4)
+        results["nu"] = round(nu, 4)
+        results["GR"] = round(gamma_ray, 4)
+        results["PE"] = round(pe, 4)
+        results["U"] = round(U, 4)
+        results["trace elements"] = element_traces
+        results["major elements"] = majors_name
+        results["major compounds"] = major_compounds
+        if p != None:
+            results["p"] = round(p, 4)
+        else:
+            results["p"] = p
+
+        return results
+
     def create_illite(self): # (K,H3O) (Al,Mg,Fe)2 (Si,Al)4 O10 (OH)2
         # Major elements
         majors_name = ["H", "O", "Mg", "Al", "Si", "K", "Fe"]

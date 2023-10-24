@@ -6,7 +6,7 @@
 # Name:		gebpy_app.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		24.10.2023
+# Date:		25.10.2023
 
 #-----------------------------------------------
 
@@ -959,9 +959,13 @@ class GebPyGUI(tk.Frame):
             elif 0.05 <= (x_max - x_min) < 0.5:
                 x_min = self.myround(x=x_min - 0.025, base=0.025)
                 x_max = self.myround(x=x_max + 0.025, base=0.025)
-            else:
+            elif 0.01 <= (x_max - x_min) < 0.05:
                 x_min = self.myround(x=x_min - 0.005, base=0.005)
                 x_max = self.myround(x=x_max + 0.005, base=0.005)
+            else:
+                delta_x = x_max - x_min
+                x_min = self.myround(x=x_min - 0.0005, base=0.0005)
+                x_max = self.myround(x=x_max + 0.0005, base=0.0005)
 
         return x_min, x_max
 
