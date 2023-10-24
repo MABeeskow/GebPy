@@ -6,7 +6,7 @@
 # Name:		gebpy_app.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		13.10.2023
+# Date:		24.10.2023
 
 #-----------------------------------------------
 
@@ -510,7 +510,7 @@ class GebPyGUI(tk.Frame):
                 ore_rocks = {
                     "Fe-Ore": ["Itabirite", "Compact Hematite", "Friable Hematite", "Goethite Hematite",
                                "Al-rich Itabirite", "Compact Quartz Itabirite", "Friable Quartz Itabirite",
-                               "Goethite Itabirite"]}
+                               "Goethite Itabirite", "Banded Iron Formation"]}
                 #
                 ore_rocks = collections.OrderedDict(sorted(ore_rocks.items()))
                 i = 1
@@ -3033,6 +3033,12 @@ class GebPyGUI(tk.Frame):
                     self.gui_variables["Entry"]["Porosity Max"].get()/100]).create_siliciclastic_itabirite(
                 rock="Compact Hematite", number=self.gui_variables["Entry"]["Number Datapoints"].get(),
                 classification=var_name)
+        elif var_name == "Banded Iron Formation":
+            data = OreRocks(
+                fluid="water", actual_thickness=0, porosity=[
+                    self.gui_variables["Entry"]["Porosity Min"].get()/100,
+                    self.gui_variables["Entry"]["Porosity Max"].get()/100]).create_bandedironformation(
+                rock="Banded Iron Formation", number=self.gui_variables["Entry"]["Number Datapoints"].get())
         elif var_name == "Friable Hematite":
             data = OreRocks(
                 fluid="water", actual_thickness=0, porosity=[
