@@ -1851,33 +1851,51 @@ class GebPyGUI(tk.Frame):
         #
         self.last_rb_analysis_mineral.set(self.gui_variables["Radiobutton"]["Analysis Mode"].get())
     #
-    def simulate_srm(self, var_srm="NIST 610 (GeoRem)"):
+    def simulate_srm(self, var_srm="NIST 610 (GeoRem)", var_is="Si"):
         data_srm = {}
         if var_srm == "NIST 610 (GeoRem)":
             concentration_data = {
-                "Li": 485, "Be": 466, "B": 356, "Na": 102970, "Mg": 465, "Al": 10791, "Si": 327091, "P": 409, "S": 570,
-                "Cl": 470, "K": 465, "Ca": 81833, "Sc": 452, "Ti": 460, "V": 442, "Cr": 405, "Mn": 433, "Fe": 457,
-                "Co": 405, "Ni": 459, "Cu": 430, "Zn": 456, "Ga": 438, "Ge": 426, "As": 317, "Se": 112, "Br": 33,
-                "Rb": 426, "Sr": 516, "Y": 458, "Zr": 437, "Nb": 485, "Mo": 410, "Rh": 1, "Pd": 1, "Ag": 239, "Cd": 259,
-                "In": 441, "Sn": 427, "Sb": 405, "Te": 327, "Cs": 357, "Ba": 454, "La": 440, "Ce": 458, "Pr": 443,
-                "Nd": 437, "Sm": 453, "Eu": 444, "Gd": 456, "Tb": 440, "Dy": 436, "Ho": 440, "Er": 456, "Tm": 423,
-                "Yb": 455, "Lu": 440, "Hf": 421, "Ta": 482, "W": 447, "Re": 50, "Pt": 3, "Au": 23, "Tl": 61, "Pb": 426,
-                "Bi": 358, "Th": 457, "U": 462}
-            #
+                "Li": 485, "Be": 466, "B": 356, "C": 0.0, "Na": 102970, "Mg": 465, "Al": 10791, "Si": 327091, "P": 409,
+                "S": 570, "Cl": 470, "K": 465, "Ca": 81833, "Sc": 452, "Ti": 460, "V": 442, "Cr": 405, "Mn": 433,
+                "Fe": 457, "Co": 405, "Ni": 459, "Cu": 430, "Zn": 456, "Ga": 438, "Ge": 426, "As": 317, "Se": 112,
+                "Br": 33, "Rb": 426, "Sr": 516, "Y": 458, "Zr": 437, "Nb": 485, "Mo": 410, "Rh": 1, "Pd": 1, "Ag": 239,
+                "Cd": 259, "In": 441, "Sn": 427, "Sb": 405, "Te": 327, "I": 0.0, "Cs": 357, "Ba": 454, "La": 440, "Ce": 458,
+                "Pr": 443, "Nd": 437, "Sm": 453, "Eu": 444, "Gd": 456, "Tb": 440, "Dy": 436, "Ho": 440, "Er": 456,
+                "Tm": 423, "Yb": 455, "Lu": 440, "Hf": 421, "Ta": 482, "W": 447, "Re": 50, "Pt": 3, "Au": 23, "Tl": 61,
+                "Pb": 426, "Bi": 358, "Th": 457, "U": 462}
+
             normalized_sensitivity_data = {
-                "Li": 2555, "Be": 348, "B": 408, "Na": 5400, "Al": 3825, "Si": 78, "K": 5000, "Ti": 462, "Mn": 8282,
-                "Fe": 340, "Sn": 3439}
-            #
+                "Li": 2718.7, "Be": 348, "B": 600.7, "C": 0.0, "Na": 4011.6, "Mg": 52.3, "Al": 2282.0, "Si": 59.7,
+                "Cl": 0.4, "K": 4938.7, "Ca": 126.2, "Ti": 13.3, "V": 5949.7, "Cr": 4862.2, "Mn": 2028.0, "Fe": 28.1,
+                "Co": 5592.8, "Ni": 1180.1, "Cu": 3006.2, "Zn": 517.9, "Br": 19.6, "Rb": 7764.4, "Sr": 9145.0,
+                "Sn": 3439, "I": 1298.6, "Cs": 11484.1, "Ba": 1198.2, "Pb": 3823.9}
+
             analytical_sensitivity_data = {
                 "Li": 32.96, "Be": 4.49, "B": 5.27, "Na": 69.66, "Al": 49.34, "Si": 1.00, "K": 2.25, "Ti": 5.95,
                 "Mn": 106.83, "Fe": 4.38, "Sn": 44.35}
-            #
+
+            intensity_ratio_data = {}
+
+            s_is = normalized_sensitivity_data[var_is]
+            concentration_is = concentration_data[var_is]
+            intensity_is = s_is*concentration_is
+            for key, value in normalized_sensitivity_data.items():
+                s_i = value
+                xi_i = round(s_i/s_is, 3)
+                analytical_sensitivity_data[key] = xi_i
+
+                concentration_i = concentration_data[key]
+                intensity_i = s_i*concentration_i
+                ratio_i = intensity_i/intensity_is
+                intensity_ratio_data[key] = ratio_i
+
         data_srm["Concentration"] = concentration_data
         data_srm["Normalized Sensitivity"] = normalized_sensitivity_data
         data_srm["Analytical Sensitivity"] = analytical_sensitivity_data
-        #
+        data_srm["Intensity Ratio"] = intensity_ratio_data
+
         return data_srm
-        #
+
     def change_chemical_composition(self, var_rb):
         if var_rb.get() == 0:   # Element Composition
             ## Cleaning
@@ -2021,7 +2039,6 @@ class GebPyGUI(tk.Frame):
 
                 mean_bg = np.random.randint(1, 100)
                 error_bg = np.random.uniform(0.1, 0.5)*mean_bg
-                mean_sig = np.mean(self.data_mineral["chemistry"][element])*total_ppm
                 if self.data_mineral["mineral"] == "Qz":
                     concentration_is = np.mean(self.data_mineral["chemistry"]["Si"])
                     concentration_i = np.mean(self.data_mineral["chemistry"][element])
@@ -2033,21 +2050,33 @@ class GebPyGUI(tk.Frame):
                 elif self.data_mineral["mineral"] in ["Kfs", "Pl", "Scp", "Nph", "Dnb"]:
                     oxide_is = self.data_mineral["LA-ICP-MS"]["Oxides"]["Si"]
                     oxide_i = self.data_mineral["LA-ICP-MS"]["Oxides"][element]
-                    concentration_is = np.mean(self.data_mineral["compounds"][oxide_is])
+                    #concentration_is = np.mean(self.data_mineral["compounds"][oxide_is])
+                    concentration_is = np.mean(self.data_mineral["chemistry"]["Si"])
+                    sensitivity_i = data_srm["Analytical Sensitivity"][element]
 
                     if oxide_i not in ["Cl", "F", "Br", "I", "At"]:
-                        concentration_i = np.mean(self.data_mineral["compounds"][oxide_i])
+                        #concentration_i = np.mean(self.data_mineral["compounds"][oxide_i])
+                        concentration_i = np.mean(self.data_mineral["chemistry"][element])
                     else:
                         concentration_i = np.mean(self.data_mineral["chemistry"][element])
 
                     if element == "Si":
                         mean_sig_is = np.mean(self.data_mineral["chemistry"][element])*10**6*self.data_mineral[
                             "LA-ICP-MS"][element]
+                        mean_sig = mean_sig_is
+                    elif element in ["H", "C"]:
+                        value = int(np.random.normal(loc=mean_bg, scale=error_bg, size=1)[0])
+                        if value < 0:
+                            value = 0
+                        mean_sig = value
                     else:
+                        #mean_sig = (concentration_i/concentration_is)*mean_sig_is*sensitivity_i
                         mean_sig = (concentration_i/concentration_is)*mean_sig_is
+                else:
+                    mean_sig = np.mean(self.data_mineral["chemistry"][element])*total_ppm
 
                 # error_sig = np.random.uniform(0, 0.025)*mean_sig
-                #
+
                 for time_value in time_data:
                     if time_value <= 10:
                         value = int(np.random.normal(loc=mean_bg, scale=error_bg, size=1)[0])
