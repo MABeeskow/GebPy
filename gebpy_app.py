@@ -2053,6 +2053,10 @@ class GebPyGUI(tk.Frame):
                     #concentration_is = np.mean(self.data_mineral["compounds"][oxide_is])
                     concentration_is = np.mean(self.data_mineral["chemistry"]["Si"])
                     sensitivity_i = data_srm["Analytical Sensitivity"][element]
+                    s_i = data_srm["Normalized Sensitivity"][element]
+                    s_is = data_srm["Normalized Sensitivity"]["Si"]
+                    concentration_std_is = data_srm["Concentration"]["Si"]
+                    intensity_std_is = s_is*concentration_std_is
 
                     if oxide_i not in ["Cl", "F", "Br", "I", "At"]:
                         #concentration_i = np.mean(self.data_mineral["compounds"][oxide_i])
@@ -2071,7 +2075,8 @@ class GebPyGUI(tk.Frame):
                         mean_sig = value
                     else:
                         #mean_sig = (concentration_i/concentration_is)*mean_sig_is*sensitivity_i
-                        mean_sig = (concentration_i/concentration_is)*mean_sig_is
+                        #mean_sig = (concentration_i/concentration_is)*mean_sig_is
+                        mean_sig = (mean_sig_is/intensity_std_is)*(concentration_std_is/concentration_is)*concentration_i*s_i
                 else:
                     mean_sig = np.mean(self.data_mineral["chemistry"][element])*total_ppm
 
