@@ -1829,11 +1829,11 @@ class GebPyGUI(tk.Frame):
                     #
                     ax_laicpms[0][0].grid(which="major", axis="both", linestyle="-")
                     ax_laicpms[0][0].minorticks_on()
-                    ax_laicpms[0][0].grid(which="minor", axis="both", linestyle="-", alpha=0.25)
+                    ax_laicpms[0][0].grid(which="minor", axis="both", linestyle="--", alpha=0.25)
                     #
                     ax_laicpms[0][0].set_axisbelow(True)
                     #
-                    ax_laicpms[0][0].legend()
+                    ax_laicpms[0][0].legend(fontsize="x-small", framealpha=1.0)
                     #
                     canvas_mineralogy = self.gui_elements["Temporary"]["Canvas"]["Mineralogy"]
                     #
@@ -1865,12 +1865,12 @@ class GebPyGUI(tk.Frame):
                 "Bi": 358, "Th": 457, "U": 462}
             #
             normalized_sensitivity_data = {
-                "Li": 2555, "Be": 348, "B": 408, "Na": 5400, "Al": 3825, "Si": 78, "Ti": 462, "Mn": 8282, "Fe": 340,
-                "Sn": 3439}
+                "Li": 2555, "Be": 348, "B": 408, "Na": 5400, "Al": 3825, "Si": 78, "K": 5000, "Ti": 462, "Mn": 8282,
+                "Fe": 340, "Sn": 3439}
             #
             analytical_sensitivity_data = {
-                "Li": 32.96, "Be": 4.49, "B": 5.27, "Na": 69.66, "Al": 49.34, "Si": 1.00, "Ti": 5.95, "Mn": 106.83,
-                "Fe": 4.38, "Sn": 44.35}
+                "Li": 32.96, "Be": 4.49, "B": 5.27, "Na": 69.66, "Al": 49.34, "Si": 1.00, "K": 2.25, "Ti": 5.95,
+                "Mn": 106.83, "Fe": 4.38, "Sn": 44.35}
             #
         data_srm["Concentration"] = concentration_data
         data_srm["Normalized Sensitivity"] = normalized_sensitivity_data
@@ -2004,7 +2004,7 @@ class GebPyGUI(tk.Frame):
         data_srm = self.simulate_srm()
         #
         intensity_data = {}
-        if self.data_mineral["mineral"] == "Qz":
+        if self.data_mineral["mineral"] in ["Qz", "Kfs", "Pl", "Scp", "Dnb", "Nph"]:
             target_id = self.list_elements.index("Si")
             self.list_elements.insert(0, self.list_elements.pop(target_id))
             var_list_element = self.list_elements
@@ -2018,17 +2018,34 @@ class GebPyGUI(tk.Frame):
             index_end2 = 0
             if element != "O":
                 intensity_data[element] = []
-                #
+
                 mean_bg = np.random.randint(1, 100)
                 error_bg = np.random.uniform(0.1, 0.5)*mean_bg
                 mean_sig = np.mean(self.data_mineral["chemistry"][element])*total_ppm
                 if self.data_mineral["mineral"] == "Qz":
+                    concentration_is = np.mean(self.data_mineral["chemistry"]["Si"])
+                    concentration_i = np.mean(self.data_mineral["chemistry"][element])
                     if element == "Si":
                         mean_sig_is = np.mean(self.data_mineral["chemistry"][element])*10**6*self.data_mineral[
                             "LA-ICP-MS"][element]
                     else:
-                        mean_sig = data_srm["Analytical Sensitivity"][element]*mean_sig_is*np.mean(
-                            self.data_mineral["chemistry"][element])/np.mean(self.data_mineral["chemistry"]["Si"])
+                        mean_sig = (concentration_i/concentration_is)*mean_sig_is
+                elif self.data_mineral["mineral"] in ["Kfs", "Pl", "Scp", "Nph", "Dnb"]:
+                    oxide_is = self.data_mineral["LA-ICP-MS"]["Oxides"]["Si"]
+                    oxide_i = self.data_mineral["LA-ICP-MS"]["Oxides"][element]
+                    concentration_is = np.mean(self.data_mineral["compounds"][oxide_is])
+
+                    if oxide_i not in ["Cl", "F", "Br", "I", "At"]:
+                        concentration_i = np.mean(self.data_mineral["compounds"][oxide_i])
+                    else:
+                        concentration_i = np.mean(self.data_mineral["chemistry"][element])
+
+                    if element == "Si":
+                        mean_sig_is = np.mean(self.data_mineral["chemistry"][element])*10**6*self.data_mineral[
+                            "LA-ICP-MS"][element]
+                    else:
+                        mean_sig = (concentration_i/concentration_is)*mean_sig_is
+
                 # error_sig = np.random.uniform(0, 0.025)*mean_sig
                 #
                 for time_value in time_data:
@@ -2048,28 +2065,20 @@ class GebPyGUI(tk.Frame):
                                 np.random.normal(loc=mean_sig, scale=error_sig, size=1)[0] + value_bg))
                         last_value_sig = value
                         index_sig += 1
-                    elif 50 < time_value <= 52:
-                        if last_value_sig > 10**4:
-                            value = int(amount_end[index_end]*(last_value_sig + np.random.randint(10**2, 10**3) + value_bg))
-                        else:
-                            value = int(amount_end[index_end]*(last_value_sig + np.random.randint(10**1, 10**2) + value_bg))
-                        last_value = value
+                    elif 50 < time_value <= 51:
+                        error_sig = np.random.uniform(0.025, 0.075)*last_value_sig
+                        value = int(amount_end[index_end]*(np.random.normal(
+                            loc=last_value_sig, scale=error_sig, size=1)[0] + value_bg))
                         index_end += 1
-                    elif 52 < time_value <= 54:
-                        if last_value_sig > 10**4:
-                            value = int(amount_end2[index_end2]*(last_value + np.random.randint(10**2, 10**5)) + value_bg)
-                        else:
-                            value = int(amount_end2[index_end2]*(last_value + np.random.randint(10**2, 10**3)) + value_bg)
-                        index_end2 += 1
-                    elif time_value > 54:
+                    elif time_value > 51:
                         value = int(np.random.normal(loc=mean_bg, scale=error_bg, size=1)[0])
                         if value < 0:
                             value = 0
-                    #
+
                     intensity_data[element].append(value)
-            #
+
         return time_data, intensity_data
-    #
+
     def change_rb_traces(self, var_name):
         if self.gui_variables["Radiobutton"]["Trace Elements"].get() == 0:
             ## Cleaning

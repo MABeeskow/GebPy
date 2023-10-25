@@ -11,6 +11,7 @@
 # -----------------------------------------------
 
 # MODULES
+import re
 import numpy as np
 import random as rd
 from scipy import stats
@@ -100,7 +101,7 @@ class Tectosilicates:
                         dataset[key] = [value]
                     else:
                         dataset[key].append(value)
-                elif (key in ["mineral", "state", "trace elements", "major elements", "major compounds"] and key
+                elif (key in ["mineral", "state", "trace elements", "major elements", "major compounds", "LA-ICP-MS"] and key
                       not in dataset):
                     dataset[key] = value
                 elif key in ["chemistry", "compounds"]:
@@ -230,7 +231,12 @@ class Tectosilicates:
         U = pe*rho_e*10**(-3)
         ## Electrical resistivity
         p = 5.5*10**11
-        #
+        ## LA-ICP-MS
+        normalized_sensitivity_Si = 44.54
+        dict_element_oxides = {}
+        for oxide in composition_oxides:
+            key = key = re.search("(\D+)(\d*)(\D+)(\d*)", oxide)
+            dict_element_oxides[key.group(1)] = oxide
         # RESULTS
         results = {}
         results["mineral"] = mineral
@@ -256,6 +262,7 @@ class Tectosilicates:
         results["GR"] = round(gamma_ray, 4)
         results["PE"] = round(pe, 4)
         results["U"] = round(U, 4)
+        results["LA-ICP-MS"] = {"Si": normalized_sensitivity_Si, "Oxides": dict_element_oxides}
         if p != None:
             results["p"] = round(p, 4)
         else:
@@ -380,6 +387,12 @@ class Tectosilicates:
         U = pe*rho_e*10**(-3)
         # Electrical resistivity
         p = 5.5*10**11
+        # LA-ICP-MS
+        normalized_sensitivity_Si = 44.54
+        dict_element_oxides = {}
+        for oxide in composition_oxides:
+            key = key = re.search("(\D+)(\d*)(\D+)(\d*)", oxide)
+            dict_element_oxides[key.group(1)] = oxide
         # RESULTS
         results = {}
         results["mineral"] = mineral
@@ -405,6 +418,7 @@ class Tectosilicates:
         results["GR"] = round(gamma_ray, 4)
         results["PE"] = round(pe, 4)
         results["U"] = round(U, 4)
+        results["LA-ICP-MS"] = {"Si": normalized_sensitivity_Si, "Oxides": dict_element_oxides}
         if p != None:
             results["p"] = round(p, 4)
         else:
@@ -566,6 +580,15 @@ class Tectosilicates:
         U = pe*rho_e*10**(-3)
         # Electrical resistivity
         p = None
+        # LA-ICP-MS
+        normalized_sensitivity_Si = 44.54
+        dict_element_oxides = {}
+        for oxide in composition_oxides:
+            if oxide != "Cl":
+                key = key = re.search("(\D+)(\d*)(\D+)(\d*)", oxide)
+                dict_element_oxides[key.group(1)] = oxide
+            else:
+                dict_element_oxides[oxide] = oxide
         # Results
         results = {}
         results["mineral"] = name
@@ -591,6 +614,7 @@ class Tectosilicates:
         results["GR"] = round(gamma_ray, 4)
         results["PE"] = round(pe, 4)
         results["U"] = round(U, 4)
+        results["LA-ICP-MS"] = {"Si": normalized_sensitivity_Si, "Oxides": dict_element_oxides}
         if p != None:
             results["p"] = round(p, 4)
         else:
@@ -684,6 +708,12 @@ class Tectosilicates:
         U = pe*rho_e*10**(-3)
         # Electrical resistivity
         p = None
+        # LA-ICP-MS
+        normalized_sensitivity_Si = 44.54
+        dict_element_oxides = {}
+        for oxide in composition_oxides:
+            key = key = re.search("(\D+)(\d*)(\D+)(\d*)", oxide)
+            dict_element_oxides[key.group(1)] = oxide
         # Results
         results = {}
         results["mineral"] = name
@@ -709,6 +739,7 @@ class Tectosilicates:
         results["GR"] = round(gamma_ray, 4)
         results["PE"] = round(pe, 4)
         results["U"] = round(U, 4)
+        results["LA-ICP-MS"] = {"Si": normalized_sensitivity_Si, "Oxides": dict_element_oxides}
         if p != None:
             results["p"] = round(p, 4)
         else:
@@ -717,7 +748,7 @@ class Tectosilicates:
         return results
 
     def create_orthoclase(self):    # K Al Si3 O8
-        name = "Fsp"
+        name = "Kfs"
         # Major Elements
         majors_name = ["O", "Al", "Si", "K"]
         major_compounds = ["Al2O3", "SiO2", "K2O"]
@@ -804,6 +835,12 @@ class Tectosilicates:
         U = pe*rho_e*10**(-3)
         # Electrical resistivity
         p = None
+        # LA-ICP-MS
+        normalized_sensitivity_Si = 44.54
+        dict_element_oxides = {}
+        for oxide in composition_oxides:
+            key = key = re.search("(\D+)(\d*)(\D+)(\d*)", oxide)
+            dict_element_oxides[key.group(1)] = oxide
         # Results
         results = {}
         results["mineral"] = name
@@ -832,6 +869,7 @@ class Tectosilicates:
         results["trace elements"] = element_traces
         results["major elements"] = majors_name
         results["major compounds"] = major_compounds
+        results["LA-ICP-MS"] = {"Si": normalized_sensitivity_Si, "Oxides": dict_element_oxides}
         if p != None:
             results["p"] = round(p, 4)
         else:
@@ -975,6 +1013,12 @@ class Tectosilicates:
         U = pe * rho_e * 10 ** (-3)
         # Electrical resistivity
         p = None
+        # LA-ICP-MS
+        normalized_sensitivity_Si = 44.54
+        dict_element_oxides = {}
+        for oxide in composition_oxides:
+            key = key = re.search("(\D+)(\d*)(\D+)(\d*)", oxide)
+            dict_element_oxides[key.group(1)] = oxide
         # Results
         results = {}
         results["mineral"] = name
@@ -1000,6 +1044,7 @@ class Tectosilicates:
         results["GR"] = round(gamma_ray, 4)
         results["PE"] = round(pe, 4)
         results["U"] = round(U, 4)
+        results["LA-ICP-MS"] = {"Si": normalized_sensitivity_Si, "Oxides": dict_element_oxides}
         if p != None:
             results["p"] = round(p, 4)
         else:
