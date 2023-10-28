@@ -6,7 +6,7 @@
 # Name:		gebpy_app.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		25.10.2023
+# Date:		28.10.2023
 
 #-----------------------------------------------
 
@@ -235,7 +235,8 @@ class GebPyGUI(tk.Frame):
                     "Coltan", "Crocoite", "Wulfenite", "Goethite", "Wolframite", "Huebnerite", "Ferberite", "Boehmite",
                     "Gibbsite", "Au(III)-Oxide", "Brucite", "Valentinite", "Senarmontite", "Ferberite-Huebnerite",
                     "Spinel", "Diaspore", "Cuprite", "Brookite", "Anatase", "Manganite", "Groutite", "Pyrophanite",
-                    "Geikielite", "Claudetite", "Arsenolite", "Bismite", "Sphaerobismite"]
+                    "Geikielite", "Claudetite", "Arsenolite", "Bismite", "Sphaerobismite", "Manganochromite",
+                    "Nichromite", "Cochromite"]
                 self.oxide_minerals.sort()
                 for mineral in self.oxide_minerals:
                     sub_oxides.add_command(
