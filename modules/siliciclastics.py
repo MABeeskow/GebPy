@@ -6,7 +6,7 @@
 # Name:		siliciclastics.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		28.04.2023
+# Date:		07.11.2023
 
 #-----------------------------------------------
 
@@ -4353,7 +4353,6 @@ class SiliciclasticRocks:
     #
     def create_benken_rock(self, rock="BENKEN", number=1, composition=None, classification="Felsic-rich",
                            porosity=None):
-        #
         results_container = {}
         results_container["rock"] = rock
         results_container["mineralogy"] = {}
@@ -4378,10 +4377,13 @@ class SiliciclasticRocks:
             data_plagioclase = Tectosilicates(impurity="pure", data_type=True).create_plagioclase()
             dat_organics = Organics(data_type=True).create_organic_matter()
             data_illite = Phyllosilicates(impurity="pure", data_type=True).create_illite()
+            data_montmorillonite = Phyllosilicates(impurity="pure", data_type=True).create_montmorillonite()
+            data_kaolinite = Phyllosilicates(impurity="pure", data_type=True).create_kaolinite()
             #
             mineralogy = {"Qz": self.data_quartz, "Kfs": data_alkalifeldspar, "Pl": data_plagioclase,
                           "Cal": self.data_calcite, "Dol": self.data_dolomite, "Sd": self.data_siderite,
-                          "Ilt": data_illite, "Org": dat_organics, "Py": self.data_pyrite, "Anh": self.data_anhydrite}
+                          "Ilt": data_illite, "Mnt": data_montmorillonite, "Kln": data_kaolinite, "Org": dat_organics,
+                          "Py": self.data_pyrite, "Anh": self.data_anhydrite}
             #
             minerals_list = list(mineralogy.keys())
             #
@@ -4405,6 +4407,8 @@ class SiliciclasticRocks:
                     phi_dol = composition["Dol"]
                     phi_sd = composition["Sd"]
                     phi_ilt = composition["Ilt"]
+                    phi_mnt = composition["Mnt"]
+                    phi_kln = composition["Kln"]
                     phi_org = composition["Org"]
                     phi_py = composition["Py"]
                     phi_anh = composition["Anh"]
@@ -4416,6 +4420,8 @@ class SiliciclasticRocks:
                     phi_minerals["Dol"] = phi_dol
                     phi_minerals["Sd"] = phi_sd
                     phi_minerals["Ilt"] = phi_ilt
+                    phi_minerals["Mnt"] = phi_mnt
+                    phi_minerals["Kln"] = phi_kln
                     phi_minerals["Org"] = phi_org
                     phi_minerals["Py"] = phi_py
                     phi_minerals["Anh"] = phi_anh
@@ -4431,21 +4437,44 @@ class SiliciclasticRocks:
                             dol_limits = [0.0, 0.025]
                             sd_limits = [0.0, 0.025]
                             ilt_limits = [0.075, 0.3]
+                            mnt_limits = [0.075, 0.3]
+                            kln_limits = [0.075, 0.3]
                             org_limits = [0.0, 0.025]
                             py_limits = [0.0, 0.025]
                             anh_limits = [0.0, 0.025]
-                            #
-                            phi_qz = round(rd.uniform(qz_limits[0], qz_limits[1]), 4)
-                            phi_kfs = round(rd.uniform(kfs_limits[0], (1 - phi_qz)), 4)
-                            phi_pl = round(rd.uniform(pl_limits[0], (1 - phi_qz - phi_kfs)), 4)
-                            phi_cal = round(rd.uniform(cal_limits[0], (1 - phi_qz - phi_kfs - phi_pl)), 4)
-                            phi_dol = round(rd.uniform(dol_limits[0], (1 - phi_qz - phi_kfs - phi_pl - phi_cal)), 4)
-                            phi_sd = round(rd.uniform(sd_limits[0], (1 - phi_qz - phi_kfs - phi_pl - phi_cal - phi_dol)), 4)
-                            phi_ilt = round(rd.uniform(ilt_limits[0], (1 - phi_qz - phi_kfs - phi_pl - phi_cal - phi_dol - phi_sd)), 4)
-                            phi_org = round(rd.uniform(org_limits[0], (1 - phi_qz - phi_kfs - phi_pl - phi_cal - phi_dol - phi_sd - phi_ilt)), 4)
-                            phi_py = round(rd.uniform(py_limits[0], (1 - phi_qz - phi_kfs - phi_pl - phi_cal - phi_dol - phi_sd - phi_ilt - phi_org)), 4)
-                            phi_anh = round(1 - phi_qz - phi_kfs - phi_pl - phi_cal - phi_dol - phi_sd - phi_ilt - phi_org - phi_py, 4)
-                            #
+
+                            limits_felsic = [0.40, 0.80]
+                            limits_argillicaeous = [0.05, 0.30]
+                            limits_carbonatic = [0.00, 0.35]
+                            limits_residuals = [0.00, 0.025]
+
+                            phi_complete = 1.0
+                            phi_felsic = round(phi_complete*rd.uniform(limits_felsic[0], limits_felsic[1]), 4)
+                            phi_complete -= phi_felsic
+                            phi_argillicaeous = round(rd.uniform(
+                                limits_argillicaeous[0], round(phi_complete, 4)), 4)
+                            phi_complete -= phi_argillicaeous
+                            phi_carbonatic = round(rd.uniform(
+                                limits_carbonatic[0], round(1 - phi_felsic - phi_argillicaeous, 4)), 4)
+                            phi_complete -= phi_carbonatic
+                            phi_residuals = round(phi_complete, 4)
+
+                            # Felsic minerals
+                            phi_qz = round(phi_felsic*rd.uniform(0.0, 1.0), 4)
+                            phi_kfs = round(rd.uniform(kfs_limits[0], phi_felsic - phi_qz), 4)
+                            phi_pl = round(phi_felsic - phi_qz - phi_kfs, 4)
+                            # Argillicaeous minerals
+                            phi_ilt = round(phi_argillicaeous*rd.uniform(0.0, 1.0), 4)
+                            phi_mnt = round(rd.uniform(0, phi_argillicaeous - phi_ilt), 4)
+                            phi_kln = round(phi_argillicaeous - phi_ilt - phi_mnt, 4)
+                            # Carbonate minerals
+                            phi_cal = round(phi_carbonatic*rd.uniform(0.0, 1.0), 4)
+                            phi_dol = round(rd.uniform(dol_limits[0], phi_carbonatic - phi_cal), 4)
+                            phi_sd = round(phi_carbonatic - phi_cal - phi_dol, 4)
+                            # Accessory minerals
+                            phi_org = round(phi_residuals*rd.uniform(0.0, 1.0), 4)
+                            phi_py = round(rd.uniform(py_limits[0], phi_residuals - phi_org), 4)
+                            phi_anh = round(phi_residuals - phi_org - phi_py, 4)
                         elif classification == "Clay-rich":
                             qz_limits = [0.1, 0.3]
                             kfs_limits = [0.0, 0.1]
@@ -4453,22 +4482,45 @@ class SiliciclasticRocks:
                             cal_limits = [0.0, 0.3]
                             dol_limits = [0.0, 0.05]
                             sd_limits = [0.0, 0.1]
-                            ilt_limits = [0.4, 0.7]
+                            ilt_limits = [0.0, 0.7]
+                            mnt_limits = [0.0, 0.7]
+                            kln_limits = [0.0, 0.7]
                             org_limits = [0.0, 0.025]
                             py_limits = [0.0, 0.05]
                             anh_limits = [0.0, 0.1]
-                            #
-                            phi_ilt = round(rd.uniform(ilt_limits[0], ilt_limits[1]), 4)
-                            phi_qz = round(rd.uniform(qz_limits[0], (1 - phi_ilt)), 4)
-                            phi_kfs = round(rd.uniform(kfs_limits[0], (1 - phi_ilt - phi_qz)), 4)
-                            phi_pl = round(rd.uniform(pl_limits[0], (1 - phi_ilt - phi_qz - phi_kfs)), 4)
-                            phi_cal = round(rd.uniform(cal_limits[0], (1 - phi_ilt - phi_qz - phi_kfs - phi_pl)), 4)
-                            phi_dol = round(rd.uniform(dol_limits[0], (1 - phi_ilt - phi_qz - phi_kfs - phi_pl - phi_cal)), 4)
-                            phi_sd = round(rd.uniform(sd_limits[0], (1 - phi_ilt - phi_qz - phi_kfs - phi_pl - phi_cal - phi_dol)), 4)
-                            phi_org = round(rd.uniform(org_limits[0], (1 - phi_ilt - phi_qz - phi_kfs - phi_pl - phi_cal - phi_dol - phi_sd)), 4)
-                            phi_py = round(rd.uniform(py_limits[0], (1 - phi_ilt - phi_qz - phi_kfs - phi_pl - phi_cal - phi_dol - phi_sd - phi_org)), 4)
-                            phi_anh = round(1 - phi_ilt - phi_qz - phi_kfs - phi_pl - phi_cal - phi_dol - phi_sd - phi_org - phi_py, 4)
-                            #
+
+                            limits_felsic = [0.10, 0.40]
+                            limits_argillicaeous = [0.35, 0.70]
+                            limits_carbonatic = [0.00, 0.35]
+                            limits_residuals = [0.00, 0.10]
+
+                            phi_complete = 1.0
+                            phi_felsic = round(phi_complete*rd.uniform(limits_felsic[0], limits_felsic[1]), 4)
+                            phi_complete -= phi_felsic
+                            phi_argillicaeous = round(rd.uniform(
+                                limits_argillicaeous[0], round(phi_complete, 4)), 4)
+                            phi_complete -= phi_argillicaeous
+                            phi_carbonatic = round(rd.uniform(
+                                limits_carbonatic[0], round(1 - phi_felsic - phi_argillicaeous, 4)), 4)
+                            phi_complete -= phi_carbonatic
+                            phi_residuals = round(phi_complete, 4)
+
+                            # Felsic minerals
+                            phi_qz = round(phi_felsic*rd.uniform(0.0, 1.0), 4)
+                            phi_kfs = round(rd.uniform(kfs_limits[0], phi_felsic - phi_qz), 4)
+                            phi_pl = round(phi_felsic - phi_qz - phi_kfs, 4)
+                            # Argillicaeous minerals
+                            phi_ilt = round(phi_argillicaeous*rd.uniform(0.0, 1.0), 4)
+                            phi_mnt = round(rd.uniform(0, phi_argillicaeous - phi_ilt), 4)
+                            phi_kln = round(phi_argillicaeous - phi_ilt - phi_mnt, 4)
+                            # Carbonate minerals
+                            phi_cal = round(phi_carbonatic*rd.uniform(0.0, 1.0), 4)
+                            phi_dol = round(rd.uniform(dol_limits[0], phi_carbonatic - phi_cal), 4)
+                            phi_sd = round(phi_carbonatic - phi_cal - phi_dol, 4)
+                            # Accessory minerals
+                            phi_org = round(phi_residuals*rd.uniform(0.0, 1.0), 4)
+                            phi_py = round(rd.uniform(py_limits[0], phi_residuals - phi_org), 4)
+                            phi_anh = round(phi_residuals - phi_org - phi_py, 4)
                         elif classification == "Carbonate-rich":
                             qz_limits = [0.0, 0.25]
                             kfs_limits = [0.0, 0.05]
@@ -4477,26 +4529,50 @@ class SiliciclasticRocks:
                             dol_limits = [0.0, 1.0]
                             sd_limits = [0.0, 0.025]
                             ilt_limits = [0.0, 0.4]
+                            mnt_limits = [0.0, 0.4]
+                            kln_limits = [0.0, 0.4]
                             org_limits = [0.0, 0.025]
                             py_limits = [0.0, 0.05]
                             anh_limits = [0.0, 0.025]
-                            #
-                            phi_cal = round(rd.uniform(cal_limits[0], cal_limits[1]), 4)
-                            phi_dol = round(rd.uniform(dol_limits[0], (1 - phi_cal)), 4)
-                            phi_sd = round(rd.uniform(sd_limits[0], (1 - phi_cal - phi_dol)), 4)
-                            phi_ilt = round(rd.uniform(ilt_limits[0], (1 - phi_cal - phi_dol - phi_sd)), 4)
-                            phi_qz = round(rd.uniform(qz_limits[0], (1 - phi_cal - phi_dol - phi_sd - phi_ilt)), 4)
-                            phi_kfs = round(rd.uniform(kfs_limits[0], (1 - phi_cal - phi_dol - phi_sd - phi_ilt - phi_qz)), 4)
-                            phi_pl = round(rd.uniform(pl_limits[0], (1 - phi_cal - phi_dol - phi_sd - phi_ilt - phi_qz - phi_kfs)), 4)
-                            phi_anh = round(rd.uniform(anh_limits[0], (1 - phi_cal - phi_dol - phi_sd - phi_ilt - phi_qz - phi_kfs - phi_pl)), 4)
-                            phi_py = round(rd.uniform(py_limits[0], (1 - phi_cal - phi_dol - phi_sd - phi_ilt - phi_qz - phi_kfs - phi_pl - phi_anh)), 4)
-                            phi_org = round(1 - phi_cal - phi_dol - phi_sd - phi_ilt - phi_qz - phi_kfs - phi_pl - phi_anh - phi_py, 4)
-                            #
-                        #
-                        phi_total = phi_qz + phi_kfs + phi_pl + phi_cal + phi_dol + phi_sd + phi_ilt + phi_org + phi_py + phi_anh
-                        #
+
+                            limits_felsic = [0.0, 0.3]
+                            limits_argillicaeous = [0.0, 0.4]
+                            limits_carbonatic = [0.4, 1.0]
+                            limits_residuals = [0.00, 0.025]
+
+                            phi_complete = 1.0
+                            phi_felsic = round(phi_complete*rd.uniform(limits_felsic[0], limits_felsic[1]), 4)
+                            phi_complete -= phi_felsic
+                            phi_argillicaeous = round(rd.uniform(
+                                limits_argillicaeous[0], round(phi_complete, 4)), 4)
+                            phi_complete -= phi_argillicaeous
+                            phi_carbonatic = round(rd.uniform(
+                                limits_carbonatic[0], round(1 - phi_felsic - phi_argillicaeous, 4)), 4)
+                            phi_complete -= phi_carbonatic
+                            phi_residuals = round(phi_complete, 4)
+
+                            # Felsic minerals
+                            phi_qz = round(phi_felsic*rd.uniform(0.0, 1.0), 4)
+                            phi_kfs = round(rd.uniform(kfs_limits[0], phi_felsic - phi_qz), 4)
+                            phi_pl = round(phi_felsic - phi_qz - phi_kfs, 4)
+                            # Argillicaeous minerals
+                            phi_ilt = round(phi_argillicaeous*rd.uniform(0.0, 1.0), 4)
+                            phi_mnt = round(rd.uniform(0, phi_argillicaeous - phi_ilt), 4)
+                            phi_kln = round(phi_argillicaeous - phi_ilt - phi_mnt, 4)
+                            # Carbonate minerals
+                            phi_cal = round(phi_carbonatic*rd.uniform(0.0, 1.0), 4)
+                            phi_dol = round(rd.uniform(dol_limits[0], phi_carbonatic - phi_cal), 4)
+                            phi_sd = round(phi_carbonatic - phi_cal - phi_dol, 4)
+                            # Accessory minerals
+                            phi_org = round(phi_residuals*rd.uniform(0.0, 1.0), 4)
+                            phi_py = round(rd.uniform(py_limits[0], phi_residuals - phi_org), 4)
+                            phi_anh = round(phi_residuals - phi_org - phi_py, 4)
+
+                        phi_total = round((phi_qz + phi_kfs + phi_pl + phi_cal + phi_dol + phi_sd + phi_ilt + phi_org +
+                                           phi_py + phi_anh + phi_mnt + phi_kln), 4)
+
                         if np.isclose(phi_total, 1.0000) == True:
-                            if qz_limits[0] <= phi_qz <= qz_limits[1] and kfs_limits[0] <= phi_kfs <= kfs_limits[1] \
+                            if (qz_limits[0] <= phi_qz <= qz_limits[1] and kfs_limits[0] <= phi_kfs <= kfs_limits[1] \
                                     and pl_limits[0] <= phi_pl <= pl_limits[1] \
                                     and cal_limits[0] <= phi_cal <= cal_limits[1] \
                                     and dol_limits[0] <= phi_dol <= dol_limits[1] \
@@ -4504,7 +4580,9 @@ class SiliciclasticRocks:
                                     and ilt_limits[0] <= phi_ilt <= ilt_limits[1] \
                                     and org_limits[0] <= phi_org <= org_limits[1] \
                                     and py_limits[0] <= phi_py <= py_limits[1] \
-                                    and anh_limits[0] <= phi_anh <= anh_limits[1]:
+                                    and anh_limits[0] <= phi_anh <= anh_limits[1]
+                                    and mnt_limits[0] <= phi_mnt <= mnt_limits[1]
+                                    and kln_limits[0] <= phi_kln <= kln_limits[1]):
                                 condition_2 = True
                         #
                     phi_minerals["Qz"] = phi_qz
@@ -4514,6 +4592,8 @@ class SiliciclasticRocks:
                     phi_minerals["Dol"] = phi_dol
                     phi_minerals["Sd"] = phi_sd
                     phi_minerals["Ilt"] = phi_ilt
+                    phi_minerals["Mnt"] = phi_mnt
+                    phi_minerals["Kln"] = phi_kln
                     phi_minerals["Org"] = phi_org
                     phi_minerals["Py"] = phi_py
                     phi_minerals["Anh"] = phi_anh
@@ -4597,8 +4677,8 @@ class SiliciclasticRocks:
             elif classification == "Clay-rich":
                 vP, vS, vPvS, rho, var_porosity = SeismicVelocities(
                     rho_solid=rho_solid, rho_fluid=self.data_water[2]).calculate_seismic_velocities(
-                    rho_limits=[2300, 2700], vP_limits=[2700, 4000], vS_limits=[1800, 2400], delta=0.05,
-                    porosity=porosity)
+                    rho_limits=[1800, 3000], vP_limits=[2000, 5000], vS_limits=[1000, 2400], delta=0.05,
+                    porosity=porosity) # rho_limits=[2300, 2700], vP_limits=[2700, 4000], vS_limits=[1800, 2400], delta=0.05,
                 #
             elif classification == "Carbonate-rich":
                 vP, vS, vPvS, rho, var_porosity = SeismicVelocities(
