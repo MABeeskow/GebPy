@@ -1218,24 +1218,100 @@ class PeriodicSystem():
 #
 class OxideCompounds:
     #
-    def __init__(self, var_compound, var_amounts):
+    def __init__(self, var_compound=None, var_amounts=None, var_list_elements=None):
         self.var_compound = var_compound
         self.var_amounts = var_amounts
+        self.var_list_elements = var_list_elements
         self.amounts_helper = {}
-        for item in self.var_amounts:
-            self.amounts_helper[item[0]] = item[2]
-        self.oxide_masses = {
-            "H2O": round(2*1.008 + 15.999, 3), "Li2O": round(2*6.938 + 15.999, 3),
-            "B2O3": round(2*10.806 + 3*15.999, 3), "CO2": round(12.009 + 2*15.999, 3), "F": round(18.998, 3),
-            "Na2O": round(2*22.990 + 15.999, 3), "MgO": round(24.304 + 15.999, 3),
-            "Al2O3": round(2*26.982 + 3*15.999, 3), "SiO2": round(28.084 + 2*15.999, 3),
-            "P2O5": round(2*30.974 + 5*15.999, 3), "Cl": round(35.45, 3), "K2O": round(2*39.098 + 15.999, 3),
-            "CaO": round(40.078 + 15.999, 3), "FeO": round(55.845 + 15.999, 3), "Fe2O3": round(2*55.845 + 3*15.999, 3),
-            "Rb2O": round(2*85.468 + 15.999, 3), "BaO": round(137.33 + 15.999, 3),
-            "N2O5": round(2*14.007 + 5*15.999, 3), "SO3": round(32.06 + 3*15.999, 3),
-            "Mn2O3": round(2*54.938 + 3*15.999, 3), "NiO": round(58.693 + 15.999, 3),
-            "UO2": round(238.03 + 2*15.999, 3)}
-    #
+        if self.var_amounts != None:
+            for item in self.var_amounts:
+                self.amounts_helper[item[0]] = item[2]
+            self.oxide_masses = {
+                "H2O": round(2*1.008 + 15.999, 3), "Li2O": round(2*6.938 + 15.999, 3),
+                "B2O3": round(2*10.806 + 3*15.999, 3), "CO2": round(12.009 + 2*15.999, 3), "F": round(18.998, 3),
+                "Na2O": round(2*22.990 + 15.999, 3), "MgO": round(24.304 + 15.999, 3),
+                "Al2O3": round(2*26.982 + 3*15.999, 3), "SiO2": round(28.084 + 2*15.999, 3),
+                "P2O5": round(2*30.974 + 5*15.999, 3), "Cl": round(35.45, 3), "K2O": round(2*39.098 + 15.999, 3),
+                "CaO": round(40.078 + 15.999, 3), "FeO": round(55.845 + 15.999, 3),
+                "Fe2O3": round(2*55.845 + 3*15.999, 3), "Rb2O": round(2*85.468 + 15.999, 3),
+                "BaO": round(137.33 + 15.999, 3), "N2O5": round(2*14.007 + 5*15.999, 3),
+                "SO3": round(32.06 + 3*15.999, 3), "Mn2O3": round(2*54.938 + 3*15.999, 3),
+                "NiO": round(58.693 + 15.999, 3), "UO2": round(238.03 + 2*15.999, 3),
+                "Cr2O3": round(2*51.996 + 3*15.999, 3), "V2O5": round(2*50.942 + 5*15.999, 3),
+                "BeO": round(9.0122 + 15.999, 3), "Sc2O3": round(2*44.956 + 3*15.999, 3),
+                "TiO2": round(47.867 + 2*15.999, 3), "CoO": round(58.933 + 15.999, 3), "CuO": round(63.546 + 15.999, 3),
+                "ZnO": round(65.38 + 15.999, 3), "Ga2O3": round(2*69.723 + 3*15.999, 3),
+                "GeO2": round(72.630 + 2*15.999, 3), "As2O3": round(2*74.922 + 3*15.999, 3),
+                "SeO2": round(78.971 + 2*15.999, 3), "Br": round(79.901, 3)}
+
+    def find_oxides(self):
+        list_oxides = []
+        for element in self.var_list_elements:
+            if element == "H":
+                list_oxides.append("H2O")
+            elif element == "Li":
+                list_oxides.append("Li2O")
+            elif element == "Be":
+                list_oxides.append("BeO")
+            elif element == "B":
+                list_oxides.append("B2O3")
+            elif element == "C":
+                list_oxides.append("CO2")
+            elif element == "N":
+                list_oxides.append("N2O5")
+            elif element == "F":
+                list_oxides.append("F")
+            elif element == "Na":
+                list_oxides.append("Na2O")
+            elif element == "Mg":
+                list_oxides.append("MgO")
+            elif element == "Al":
+                list_oxides.append("Al2O3")
+            elif element == "Si":
+                list_oxides.append("SiO2")
+            elif element == "P":
+                list_oxides.append("P2O5")
+            elif element == "S":
+                list_oxides.append("SO3")
+            elif element == "Cl":
+                list_oxides.append("Cl")
+            elif element == "K":
+                list_oxides.append("K2O")
+            elif element == "Ca":
+                list_oxides.append("CaO")
+            elif element == "Sc":
+                list_oxides.append("Sc2O3")
+            elif element == "Ti":
+                list_oxides.append("TiO2")
+            elif element == "V":
+                list_oxides.append("V2O5")
+            elif element == "Cr":
+                list_oxides.append("Cr2O3")
+            elif element == "Mn":
+                list_oxides.append("Mn2O3")
+            elif element == "Fe":
+                list_oxides.append("Fe2O3")
+            elif element == "Co":
+                list_oxides.append("CoO")
+            elif element == "Ni":
+                list_oxides.append("NiO")
+            elif element == "Cu":
+                list_oxides.append("CuO")
+            elif element == "Zn":
+                list_oxides.append("ZnO")
+            elif element == "Ga":
+                list_oxides.append("Ga2O3")
+            elif element == "Ge":
+                list_oxides.append("GeO2")
+            elif element == "As":
+                list_oxides.append("As2O3")
+            elif element == "Se":
+                list_oxides.append("SeO2")
+            elif element == "Br":
+                list_oxides.append("Br")
+
+        return list_oxides
+
     def get_composition(self): # see element to stoichiometric oxide conversion factors
         result = {"Oxide": [self.var_compound]}
         if self.var_compound not in ["F", "Cl", "Br", "I"]:
