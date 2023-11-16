@@ -6,7 +6,7 @@
 # Name:		chemistry.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		04.10.2023
+# Date:		16.11.2023
 
 # -----------------------------------------------
 
@@ -103,7 +103,7 @@ class PeriodicSystem():
             data = ["C", 6, mass_molar, density, bulk_mod, shear_mod, young_mod, v_p, v_s, resistivity,
                     thermal_cond]
         elif self.name in ["N", "Nitrogen", "nitrogen"] or self.atomicnumber == 7:
-            mass_molar = 14.006
+            mass_molar = 14.007
             density = 1.170
             bulk_mod = 2
             v_p = 333.6
@@ -213,7 +213,7 @@ class PeriodicSystem():
             data = ["P", 15, mass_molar, density, bulk_mod, shear_mod, young_mod, v_p, v_s, resistivity,
                     thermal_cond]
         elif self.name in ["S", "Sulfur", "sulfur"] or self.atomicnumber == 16:
-            mass_molar = 32.059
+            mass_molar = 32.06
             density = 2060
             bulk_mod = 6
             shear_mod = 4
@@ -225,7 +225,7 @@ class PeriodicSystem():
             data = ["S", 16, mass_molar, density, bulk_mod, shear_mod, young_mod, v_p, v_s, resistivity,
                     thermal_cond]
         elif self.name in ["Cl", "Chlorine", "chlorine"] or self.atomicnumber == 17:
-            mass_molar = 35.446
+            mass_molar = 35.45
             density = 2.95
             v_p = 206
             shear_mod = 0.0
@@ -359,7 +359,7 @@ class PeriodicSystem():
             data = ["Co", 27, mass_molar, density, bulk_mod, shear_mod, young_mod, v_p, v_s, resistivity,
                     thermal_cond]
         elif self.name in ["Ni", "Nickel", "nickel"] or self.atomicnumber == 28:
-            mass_molar = 58.639
+            mass_molar = 58.693
             density = 8910
             bulk_mod = 180
             shear_mod = 76
@@ -1226,39 +1226,51 @@ class OxideCompounds:
             self.amounts_helper[item[0]] = item[2]
         self.oxide_masses = {
             "H2O": round(2*1.008 + 15.999, 3), "Li2O": round(2*6.938 + 15.999, 3),
-            "B2O3": round(2*10.806 + 3*15.999, 3), "CO2": round(12.009 + 2*15.999, 3),
+            "B2O3": round(2*10.806 + 3*15.999, 3), "CO2": round(12.009 + 2*15.999, 3), "F": round(18.998, 3),
             "Na2O": round(2*22.990 + 15.999, 3), "MgO": round(24.304 + 15.999, 3),
             "Al2O3": round(2*26.982 + 3*15.999, 3), "SiO2": round(28.084 + 2*15.999, 3),
-            "K2O": round(2*39.098 + 15.999, 3), "CaO": round(40.078 + 15.999, 3), "FeO": round(55.845 + 15.999, 3),
-            "Fe2O3": round(2*55.845 + 3*15.999, 3), "Rb2O": round(2*85.468 + 15.999, 3),
-            "BaO": round(137.33 + 15.999, 3)}
+            "P2O5": round(2*30.974 + 5*15.999, 3), "Cl": round(35.45, 3), "K2O": round(2*39.098 + 15.999, 3),
+            "CaO": round(40.078 + 15.999, 3), "FeO": round(55.845 + 15.999, 3), "Fe2O3": round(2*55.845 + 3*15.999, 3),
+            "Rb2O": round(2*85.468 + 15.999, 3), "BaO": round(137.33 + 15.999, 3),
+            "N2O5": round(2*14.007 + 5*15.999, 3), "SO3": round(32.06 + 3*15.999, 3),
+            "Mn2O3": round(2*54.938 + 3*15.999, 3), "NiO": round(58.693 + 15.999, 3),
+            "UO2": round(238.03 + 2*15.999, 3)}
     #
     def get_composition(self): # see element to stoichiometric oxide conversion factors
         result = {"Oxide": [self.var_compound]}
-        key = re.search("(\D+)(\d*)(\D+)(\d*)", self.var_compound)
-        if key:
-            var_element_1 = key.group(1)
-            var_amount_1 = key.group(2)
-            var_element_2 = key.group(3)
-            var_amount_2 = key.group(4)
+        if self.var_compound not in ["F", "Cl", "Br", "I"]:
+            key = re.search("(\D+)(\d*)(\D+)(\d*)", self.var_compound)
 
-            if var_amount_1 == "":
-                var_amount_1 = 1
-            if var_amount_2 == "":
-                var_amount_2 = 1
+            if key:
+                var_element_1 = key.group(1)
+                var_amount_1 = key.group(2)
+                var_element_2 = key.group(3)
+                var_amount_2 = key.group(4)
 
-            var_amount_1 = int(var_amount_1)
-            var_amount_2 = int(var_amount_2)
+                if var_amount_1 == "":
+                    var_amount_1 = 1
+                if var_amount_2 == "":
+                    var_amount_2 = 1
 
+                var_amount_1 = int(var_amount_1)
+                var_amount_2 = int(var_amount_2)
+
+                molar_mass_total = self.oxide_masses[self.var_compound]
+                w_1 = round(var_amount_1*PeriodicSystem(name=var_element_1).get_data()[2]/molar_mass_total, 6)
+                w_2 = round(var_amount_2*PeriodicSystem(name=var_element_2).get_data()[2]/molar_mass_total, 6)
+                w_oxide = round(self.amounts_helper[var_element_1]*1/w_1, 6)
+
+                result["Oxide"] = [molar_mass_total, w_oxide]
+                result[var_element_1] = [int(var_amount_1), w_1]
+                result[var_element_2] = [int(var_amount_2), w_2]
+                result["Conversion"] = round(1/w_1, 6)
+        else:
             molar_mass_total = self.oxide_masses[self.var_compound]
-            w_1 = round(var_amount_1*PeriodicSystem(name=var_element_1).get_data()[2]/molar_mass_total, 6)
-            w_2 = round(var_amount_2*PeriodicSystem(name=var_element_2).get_data()[2]/molar_mass_total, 6)
-
-            w_oxide = round(self.amounts_helper[var_element_1]*1/w_1, 6)
+            w_1 = round(PeriodicSystem(name=self.var_compound).get_data()[2]/molar_mass_total, 6)
+            w_oxide = round(self.amounts_helper[self.var_compound]*1/w_1, 6)
 
             result["Oxide"] = [molar_mass_total, w_oxide]
-            result[var_element_1] = [int(var_amount_1), w_1]
-            result[var_element_2] = [int(var_amount_2), w_2]
+            result[self.var_compound] = [int(1), w_1]
             result["Conversion"] = round(1/w_1, 6)
 
         return result

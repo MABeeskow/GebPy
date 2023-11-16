@@ -6,7 +6,7 @@
 # Name:		carbonates.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		08.08.2023
+# Date:		16.11.2023
 
 #-----------------------------------------------
 
@@ -18,7 +18,7 @@ import random as rd
 from modules import minerals
 from modules import fluids
 from modules.geophysics import Elasticity as elast
-from modules.chemistry import PeriodicSystem, DataProcessing
+from modules.chemistry import PeriodicSystem, OxideCompounds
 from modules.minerals import CrystalPhysics
 from modules.geophysics import WellLog as wg
 from modules.geochemistry import MineralChemistry
@@ -61,6 +61,7 @@ class CarbonateRocks:
         #
         amounts_mineralogy = {}
         amounts_chemistry = {}
+        amounts_compounds = {}
         bulk_properties = {}
         properties = ["rho_s", "rho", "K", "G", "E", "nu", "vP", "vS", "vPvS", "GR", "PE", "phi"]
         for property in properties:
@@ -276,7 +277,25 @@ class CarbonateRocks:
             bulk_properties["vPvS"].append(float(vPvS))
             bulk_properties["GR"].append(float(gamma_ray))
             bulk_properties["PE"].append(float(photoelectricity))
-            #
+
+            amounts = []
+            for key, value in amounts_chemistry.items():
+                chem_data = PeriodicSystem(name=key).get_data()
+                amounts.append([key, chem_data[1], value[0]])
+
+            list_oxides = ["H2O", "CO2", "Na2O", "MgO", "Al2O3", "SiO2", "SO3", "K2O", "CaO", "Fe2O3"]
+            composition_oxides = {}
+            for var_oxide in list_oxides:
+                oxide_data = OxideCompounds(var_compound=var_oxide, var_amounts=amounts).get_composition()
+                composition_oxides[var_oxide] = round(oxide_data["Oxide"][1], 4)
+
+            if list_oxides[0] not in amounts_compounds:
+                for oxide in list_oxides:
+                    amounts_compounds[oxide] = []
+
+            for key, value in composition_oxides.items():
+                amounts_compounds[key].append(value)
+
             n += 1
         #
         ## EXPORT DATA
@@ -286,6 +305,7 @@ class CarbonateRocks:
         if number > 1:
             results["mineralogy"] = amounts_mineralogy
             results["chemistry"] = amounts_chemistry
+            results["compounds"] = amounts_compounds
             results["phi"] = bulk_properties["phi"]
             results["fluid"] = "water"
             results["rho_s"] = bulk_properties["rho_s"]
@@ -302,12 +322,16 @@ class CarbonateRocks:
         else:
             single_amounts_mineralogy = {}
             single_amounts_chemistry = {}
+            single_amounts_compounds = {}
             for mineral, value in w_minerals.items():
                 single_amounts_mineralogy[mineral] = float(value)
             for element, value in w_elements.items():
                 single_amounts_chemistry[element] = float(value)
+            for compound, value in amounts_compounds.items():
+                single_amounts_compounds[compound] = value[0]
             results["mineralogy"] = single_amounts_mineralogy
             results["chemistry"] = single_amounts_chemistry
+            results["compounds"] = single_amounts_compounds
             results["phi"] = float(var_porosity)
             results["fluid"] = "water"
             results["rho_s"] = float(rho_solid)
@@ -335,6 +359,7 @@ class CarbonateRocks:
         #
         amounts_mineralogy = {}
         amounts_chemistry = {}
+        amounts_compounds = {}
         bulk_properties = {}
         properties = ["rho_s", "rho", "K", "G", "E", "nu", "vP", "vS", "vPvS", "GR", "PE", "phi"]
         for property in properties:
@@ -560,16 +585,34 @@ class CarbonateRocks:
             bulk_properties["vPvS"].append(vPvS)
             bulk_properties["GR"].append(gamma_ray)
             bulk_properties["PE"].append(photoelectricity)
-            #
+
+            amounts = []
+            for key, value in amounts_chemistry.items():
+                chem_data = PeriodicSystem(name=key).get_data()
+                amounts.append([key, chem_data[1], value[0]])
+
+            list_oxides = ["H2O", "CO2", "Na2O", "MgO", "Al2O3", "SiO2", "SO3", "K2O", "CaO", "Fe2O3"]
+            composition_oxides = {}
+            for var_oxide in list_oxides:
+                oxide_data = OxideCompounds(var_compound=var_oxide, var_amounts=amounts).get_composition()
+                composition_oxides[var_oxide] = round(oxide_data["Oxide"][1], 4)
+
+            if list_oxides[0] not in amounts_compounds:
+                for oxide in list_oxides:
+                    amounts_compounds[oxide] = []
+
+            for key, value in composition_oxides.items():
+                amounts_compounds[key].append(value)
+
             n += 1
         #
         ## EXPORT DATA
-        #
         results = {}
         results["rock"] = "Dolostone"
         if number > 1:
             results["mineralogy"] = amounts_mineralogy
             results["chemistry"] = amounts_chemistry
+            results["compounds"] = amounts_compounds
             results["phi"] = bulk_properties["phi"]
             results["fluid"] = "water"
             results["rho_s"] = bulk_properties["rho_s"]
@@ -586,12 +629,16 @@ class CarbonateRocks:
         else:
             single_amounts_mineralogy = {}
             single_amounts_chemistry = {}
+            single_amounts_compounds = {}
             for mineral, value in w_minerals.items():
                 single_amounts_mineralogy[mineral] = value
             for element, value in w_elements.items():
                 single_amounts_chemistry[element] = value
+            for compound, value in amounts_compounds.items():
+                single_amounts_compounds[compound] = value[0]
             results["mineralogy"] = single_amounts_mineralogy
             results["chemistry"] = single_amounts_chemistry
+            results["compounds"] = single_amounts_compounds
             results["phi"] = var_porosity
             results["fluid"] = "water"
             results["rho_s"] = rho_solid
@@ -614,6 +661,7 @@ class CarbonateRocks:
         results_container["rock"] = rock
         results_container["mineralogy"] = {}
         results_container["chemistry"] = {}
+        results_container["compounds"] = {}
         results_container["phi"] = []
         results_container["fluid"] = self.fluid
         results_container["rho_s"] = []
@@ -773,13 +821,30 @@ class CarbonateRocks:
             gamma_ray = round(gamma_ray, 3)
             ## Photoelectricity
             photoelectricity = round(photoelectricity, 3)
-            #
+            # Composition data
             for key, value in w_minerals.items():
                 results_container["mineralogy"][key].append(value)
-            #
+
+            amounts = []
             for key, value in w_elements.items():
                 results_container["chemistry"][key].append(value)
-            #
+                chem_data = PeriodicSystem(name=key).get_data()
+                amounts.append([key, chem_data[1], value])
+
+            list_oxides = ["H2O", "CO2", "Na2O", "Al2O3", "SiO2", "K2O", "CaO"]
+            composition_oxides = {}
+            for var_oxide in list_oxides:
+                oxide_data = OxideCompounds(var_compound=var_oxide, var_amounts=amounts).get_composition()
+                composition_oxides[var_oxide] = round(oxide_data["Oxide"][1], 4)
+
+            if list_oxides[0] not in results_container["compounds"]:
+                for oxide in list_oxides:
+                    results_container["compounds"][oxide] = []
+
+            for key, value in composition_oxides.items():
+                results_container["compounds"][key].append(value)
+
+            # Results
             results_container["phi"].append(var_porosity)
             results_container["rho_s"].append(rho_s)
             results_container["rho"].append(rho)

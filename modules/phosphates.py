@@ -6,7 +6,7 @@
 # Name:		phosphates.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		10.10.2023
+# Date:		16.11.2023
 
 # -----------------------------------------------
 
@@ -14,7 +14,7 @@
 import numpy as np
 import random as rd
 from scipy import stats
-from modules.chemistry import PeriodicSystem, DataProcessing
+from modules.chemistry import PeriodicSystem, DataProcessing, OxideCompounds
 from modules.minerals import CrystalPhysics
 from modules.geophysics import BoreholeGeophysics as bg
 from modules.geophysics import WellLog as wg
@@ -51,7 +51,7 @@ class Phosphates:
                         dataset[key].append(value)
                 elif key in ["mineral", "state", "trace elements"] and key not in dataset:
                     dataset[key] = value
-                elif key in ["chemistry"]:
+                elif key in ["chemistry", "compounds"]:
                     if key not in dataset:
                         dataset[key] = {}
                         for key_2, value_2 in value.items():
@@ -488,6 +488,20 @@ class Phosphates:
         molar_mass, amounts = MineralChemistry(
             w_traces=traces_data, molar_mass_pure=molar_mass_pure, majors=majors_data).calculate_molar_mass()
         element = [PeriodicSystem(name=amounts[i][0]).get_data() for i in range(len(amounts))]
+        # Oxide Composition
+        list_oxides = ["H2O", "P2O5", "CaO", "Cl", "F"]
+        composition_oxides = {}
+        for var_oxide in list_oxides:
+            oxide_data = OxideCompounds(var_compound=var_oxide, var_amounts=amounts).get_composition()
+            if self.impurity == "pure":
+                composition_oxides[var_oxide] = round(oxide_data["Oxide"][1], 4)
+            else:
+                composition_oxides[var_oxide] = round(oxide_data["Oxide"][1], 6)
+
+        if np.isclose(np.sum(list(composition_oxides.values())), 1.0000) == True:
+            condition = True
+        else:
+            pass
         # Density
         dataV_F = CrystalPhysics([[9.367, 6.884], [], "hexagonal"])
         V_F = dataV_F.calculate_volume()
@@ -551,6 +565,9 @@ class Phosphates:
         results["chemistry"] = {}
         for index, element in enumerate(element_list, start=0):
             results["chemistry"][element] = amounts[index][2]
+        results["compounds"] = {}
+        for index, oxide in enumerate(list_oxides, start=0):
+            results["compounds"][oxide] = composition_oxides[oxide]
         results["rho"] = round(rho, 4)
         results["rho_e"] = round(rho_e, 4)
         results["V"] = round(V_m, 4)
