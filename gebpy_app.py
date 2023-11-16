@@ -609,7 +609,16 @@ class GebPyGUI(tk.Frame):
         menubar.add_cascade(
             label="Stratigraphy",
             menu=stratigraphy_menu)
-        #
+
+        ## EXPLORATION
+        exploration_menu = tk.Menu(menubar, tearoff=0)
+        exploration_menu.add_command(
+            label="Borehole data", command=lambda mode="Borehole data": self.select_exploration(mode))
+
+        menubar.add_cascade(
+            label="Exploration",
+            menu=exploration_menu)
+
         ## DATABASE
         database_menu = tk.Menu(menubar, tearoff=0)
         database_menu.add_command(
@@ -641,7 +650,28 @@ class GebPyGUI(tk.Frame):
             text="Restart GebPy", command=self.restart_gebpy)
         #
         #self.gui_elements["Static"]["Button"].extend([btn_quit, btn_restart])
-    #
+
+    ####################################################################################################################
+    ## EXPLORATION #####################################################################################################
+    ####################################################################################################################
+    def select_exploration(self, mode):
+        if mode == "Borehole data":
+            ## Labels
+            lbl_title = SimpleElements(
+                parent=self.parent, row_id=5, column_id=0, n_rows=2, n_columns=32, bg=self.colors_gebpy["Accent"],
+                fg=self.colors_gebpy["Navigation"]).create_label(
+                text="Borehole data", font_option="sans 14 bold", relief=tk.FLAT)
+            lbl_datapoints = SimpleElements(
+                parent=self.parent, row_id=7, column_id=0, n_rows=2, n_columns=16, bg=self.colors_gebpy["Navigation"],
+                fg=self.colors_gebpy["Background"]).create_label(
+                text="Number of data points", font_option="sans 10 bold", relief=tk.FLAT)
+            lbl_units = SimpleElements(
+                parent=self.parent, row_id=9, column_id=0, n_rows=2, n_columns=16, bg=self.colors_gebpy["Navigation"],
+                fg=self.colors_gebpy["Background"]).create_label(
+                text="Number of units", font_option="sans 10 bold", relief=tk.FLAT)
+
+
+
     #########################
     ## M i n e r a l o g y ##
     #########################
