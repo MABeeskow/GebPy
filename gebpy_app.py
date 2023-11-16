@@ -6017,38 +6017,50 @@ class GebPyGUI(tk.Frame):
         root.mainloop()
     #
     def export_mineral_data(self, var_dataset, var_name):
-        # for key, values in var_dataset.items():
-        #     print(key)
-        #     print(values)
         list_keys = list(var_dataset.keys())
         list_keys.remove("mineral")
         list_keys.remove("state")
         list_keys.remove("chemistry")
+
+        if "compounds" in list_keys:
+            list_keys.remove("compounds")
+        if "LA-ICP-MS" in list_keys:
+            list_keys.remove("LA-ICP-MS")
+
         list_keys = ["POISSON" if item == "nu" else item for item in list_keys]
         list_elements = list(var_dataset["chemistry"].keys())
-        #
-        report_file = filedialog.asksaveasfile(mode="w", initialfile="Report_Mineral", defaultextension=".csv")
-        #
+        if "compounds" in list_keys:
+            list_compounds = list(var_dataset["compounds"].keys())
+
+        report_file = filedialog.asksaveasfile(
+            mode="w", initialfile="Report_Mineral_"+str(var_name), defaultextension=".csv")
+
         ## General Data
         report_file.write("REPORT (MINERALOGY)"+"\n")
         report_file.write("Mineral"+";"+str(var_name)+"\n")
         report_file.write("\n")
-        #
+
         ## Geophysical Data
         report_file.write("MINERAL DATA" + "\n")
         raw_line = "ID;"
         for key in list_keys:
             raw_line += str(key)
             raw_line += str(";")
-        #
+
         raw_line += str(";")
-        #
         for element in list_elements:
             raw_line += str(element)
             raw_line += str(";")
+
+        if "compounds" in list_keys:
+            raw_line += str(";")
+            for compound in list_compounds:
+                raw_line += str(compound)
+                raw_line += str(";")
+
         raw_line += str("\n")
         report_file.write(raw_line)
-        #
+
         index = 0
         while index < len(var_dataset["rho"]):
             raw_line = str(index + 1) + ";"
@@ -6062,9 +6074,8 @@ class GebPyGUI(tk.Frame):
                 elif key == "nu":
                     raw_line += str(round(values[index], 3))
                     raw_line += str(";")
-            #
+
             raw_line += str(";")
-            #
             for element, values in var_dataset["chemistry"].items():
                 if element in list_elements:
                     if element not in ["U"]:
@@ -6073,61 +6084,72 @@ class GebPyGUI(tk.Frame):
                     else:
                         raw_line += str(round(values[index], 6))
                         raw_line += str(";")
-                #
+
+            if "compounds" in list_keys:
+                raw_line += str(";")
+                for compound, values in var_dataset["compounds"].items():
+                    if compound in list_compounds:
+                        raw_line += str(round(values[index], 4))
+                        raw_line += str(";")
+
             report_file.write(raw_line+"\n")
-            #
+
             index += 1
-        #
         report_file.write("\n")
-    #
+
     def export_rock_data(self, var_dataset, var_name):
-        # for key, values in var_dataset.items():
-        #     print(key)
-        #     print(values)
-        #
         list_keys = list(var_dataset.keys())
         list_keys.remove("mineralogy")
         list_keys.remove("chemistry")
+        if "compounds" in list_keys:
+            list_keys.remove("compounds")
         if "fluid" in list_keys:
             list_keys.remove("fluid")
-        #
+
         list_keys = ["POISSON" if item == "nu" else item for item in list_keys]
         list_minerals = list(var_dataset["mineralogy"].keys())
         list_elements = list(var_dataset["chemistry"].keys())
-        #
-        report_file = filedialog.asksaveasfile(mode="w", initialfile="Report_Rock", defaultextension=".csv")
-        #
+        if "compounds" in list_keys:
+            list_compounds = list(var_dataset["compounds"].keys())
+
+        report_file = filedialog.asksaveasfile(
+            mode="w", initialfile="Report_Rock_"+str(var_name), defaultextension=".csv")
+
         ## General Data
         report_file.write("REPORT (PETROLOGY)" + "\n")
         report_file.write("Rock" + ";" + str(var_name) + "\n")
         report_file.write("\n")
-        #
+
         ## Geophysical Data
         report_file.write("ROCK DATA" + "\n")
         raw_line = "ID;"
         for key in list_keys:
             raw_line += str(key)
             raw_line += str(";")
-        #
+
         raw_line += str(";")
-        #
         for mineral in list_minerals:
             raw_line += str(mineral)
             raw_line += str(";")
-        #
+
         raw_line += str(";")
-        #
         for element in list_elements:
             raw_line += str(element)
             raw_line += str(";")
-        #
+
+        if "compounds" in list_keys:
+            raw_line += str(";")
+            for compound in list_compounds:
+                raw_line += str(compound)
+                raw_line += str(";")
+
         raw_line += str("\n")
+
         report_file.write(raw_line)
-        #
+
         index = 0
         while index < len(var_dataset["rho"]):
             raw_line = str(index + 1) + ";"
-            #
             for key, values in var_dataset.items():
                 if key in list_keys:
                     try:
@@ -6138,9 +6160,9 @@ class GebPyGUI(tk.Frame):
                 elif key == "nu":
                     raw_line += str(round(values[index], 3))
                     raw_line += str(";")
-            #
+
             raw_line += str(";")
-            #
+
             for mineral, values in var_dataset["mineralogy"].items():
                 if mineral in list_minerals:
                     if mineral not in ["Urn"]:
@@ -6149,9 +6171,8 @@ class GebPyGUI(tk.Frame):
                     else:
                         raw_line += str(round(values[index], 6))
                         raw_line += str(";")
-            #
+
             raw_line += str(";")
-            #
             for element, values in var_dataset["chemistry"].items():
                 if element in list_elements:
                     if element not in ["U"]:
@@ -6160,14 +6181,20 @@ class GebPyGUI(tk.Frame):
                     else:
                         raw_line += str(round(values[index], 6))
                         raw_line += str(";")
-            #
+
+            if "compounds" in list_keys:
+                raw_line += str(";")
+                for compound, values in var_dataset["compounds"].items():
+                    if compound in list_compounds:
+                        raw_line += str(round(values[index], 4))
+                        raw_line += str(";")
+
             report_file.write(raw_line + "\n")
-            #
+
             index += 1
-        #
+
         report_file.write("\n")
-        #
-    #
+
     def calculate_mineral_fractions(self, var_minerals, var_data, var_n):
         ## Input
         # print("var_minerals:", var_minerals)
