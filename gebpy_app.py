@@ -6,7 +6,7 @@
 # Name:		gebpy_app.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		28.10.2023
+# Date:		16.11.2023
 
 #-----------------------------------------------
 
@@ -3178,13 +3178,18 @@ class GebPyGUI(tk.Frame):
 
         self.data_rock = {}
         self.rock_data = {}
+
         categories = ["rho", "rho_s", "vP", "vS", "vP/vS", "K", "G", "E", "nu", "GR", "PE", "phi", "phi_true", "fluid",
                       "mineralogy", "chemistry"]
+
+        if "compounds" in data:
+            categories.append("compounds")
+
         for category in categories:
             if category in ["rho", "rho_s", "vP", "vS", "vP/vS", "K", "G", "E", "nu", "GR", "PE"]:
                 self.data_rock[category] = data[category]
                 self.rock_data[category] = data[category]
-            elif category in ["mineralogy", "chemistry"]:
+            elif category in ["mineralogy", "chemistry", "compounds"]:
                 self.data_rock[category] = data[category]
                 self.rock_data[category] = data[category]
             elif category in ["phi", "phi_true"]:
@@ -3195,10 +3200,13 @@ class GebPyGUI(tk.Frame):
                     except:
                         self.data_rock[category] = [data[category]*100]
                         self.rock_data[category] = [data[category]*100]
-        #
+
         self.list_elements_rock = list(self.data_rock["chemistry"].keys())
         self.list_minerals_rock = list(self.data_rock["mineralogy"].keys())
-        #
+
+        if "compounds" in data:
+            self.list_compounds_rock = list(self.data_rock["compounds"].keys())
+
         ## Radiobuttons
         rb_geophysics = SimpleElements(
             parent=self.parent, row_id=22, column_id=14, n_rows=2, n_columns=16, bg=self.colors_gebpy["Navigation"],
@@ -3215,7 +3223,7 @@ class GebPyGUI(tk.Frame):
             fg=self.colors_gebpy["Background"]).create_radiobutton(
             text="Element Composition", var_rb=self.gui_variables["Radiobutton"]["Analysis Mode"], value_rb=2,
             color_bg=self.colors_gebpy["Navigation"], command=self.change_rb_analysis_rocks)
-        #
+
         self.gui_elements["Static"]["Radiobutton"].extend([rb_geophysics, rb_geochemistry, rb_geochemistry2])
 
         ## Button
@@ -3237,11 +3245,11 @@ class GebPyGUI(tk.Frame):
                 for key_2, gui_item in gui_element.items():
                     gui_item.get_tk_widget().grid_remove()
             gui_element.clear()
-        #
+
         self.gui_variables["Radiobutton"]["Analysis Mode"].set(0)
         self.last_rb_analysis_rock.set(42)
         self.change_rb_analysis_rocks()
-        #
+
         for mineral in self.list_minerals_rock:
             self.gui_variables["Entry"]["Minimum"][mineral] = tk.StringVar()
             self.gui_variables["Entry"]["Minimum"][mineral].set(0.0)
@@ -3251,7 +3259,7 @@ class GebPyGUI(tk.Frame):
             self.gui_variables["Entry"]["Mean"][mineral].set(0.0)
             self.gui_variables["Entry"]["Error"][mineral] = tk.StringVar()
             self.gui_variables["Entry"]["Error"][mineral].set(0.0)
-        #
+
         for element in self.list_elements_rock:
             self.gui_variables["Entry"]["Minimum"][element] = tk.StringVar()
             self.gui_variables["Entry"]["Minimum"][element].set(0.0)
@@ -3261,33 +3269,51 @@ class GebPyGUI(tk.Frame):
             self.gui_variables["Entry"]["Mean"][element].set(0.0)
             self.gui_variables["Entry"]["Error"][element] = tk.StringVar()
             self.gui_variables["Entry"]["Error"][element].set(0.0)
-        #
+
         if len(self.tv_petrology_results.get_children()) > 0:
             for item in self.tv_petrology_results.get_children():
                 self.tv_petrology_results.delete(item)
-        #
+
         for property, dataset in self.rock_data.items():
             entries = [property]
-            #
-            if property not in ["mineralogy", "chemistry"]:
+
+            if property not in ["mineralogy", "chemistry", "compounds"]:
                 n_digits = 2
-                #
+
                 var_entr_min = round(min(dataset), n_digits)
                 var_entr_max = round(max(dataset), n_digits)
                 var_entr_mean = round(np.mean(dataset), n_digits)
                 var_entr_error = round(np.std(dataset, ddof=1), n_digits)
-                #
+
                 entries.extend([var_entr_min, var_entr_max, var_entr_mean, var_entr_error])
-                #
+
                 self.tv_petrology_results.insert("", tk.END, values=entries)
-        #
+
         entries = ["-", "-", "-", "-", "-"]
         self.tv_petrology_results.insert("", tk.END, values=entries)
-        #
+
         for mineral in np.sort(self.list_minerals_rock):
             dataset = self.rock_data["mineralogy"][mineral]
             entries = [str(mineral)+str(" (%)")]
-            #
+
+            n_digits = 2
+            var_factor = 100
+
+            var_entr_min = round(var_factor*min(dataset), n_digits)
+            var_entr_max = round(var_factor*max(dataset), n_digits)
+            var_entr_mean = round(var_factor*np.mean(dataset), n_digits)
+            var_entr_error = round(var_factor*np.std(dataset, ddof=1), n_digits)
+
+            entries.extend([var_entr_min, var_entr_max, var_entr_mean, var_entr_error])
+
+            self.tv_petrology_results.insert("", tk.END, values=entries)
+
+        entries = ["-", "-", "-", "-", "-"]
+        self.tv_petrology_results.insert("", tk.END, values=entries)
+
+        for element in np.sort(self.list_elements_rock):
+            dataset = self.rock_data["chemistry"][element]
+            entries = [str(element)+str(" (%)")]
             n_digits = 2
             var_factor = 100
             #
@@ -3302,24 +3328,23 @@ class GebPyGUI(tk.Frame):
         #
         entries = ["-", "-", "-", "-", "-"]
         self.tv_petrology_results.insert("", tk.END, values=entries)
-        #
-        for element in np.sort(self.list_elements_rock):
-            dataset = self.rock_data["chemistry"][element]
-            entries = [str(element)+str(" (%)")]
-            #
-            n_digits = 2
-            var_factor = 100
-            #
-            var_entr_min = round(var_factor*min(dataset), n_digits)
-            var_entr_max = round(var_factor*max(dataset), n_digits)
-            var_entr_mean = round(var_factor*np.mean(dataset), n_digits)
-            var_entr_error = round(var_factor*np.std(dataset, ddof=1), n_digits)
-            #
-            entries.extend([var_entr_min, var_entr_max, var_entr_mean, var_entr_error])
-            #
-            self.tv_petrology_results.insert("", tk.END, values=entries)
-        #
-    #
+
+        if "compounds" in data:
+            for element in np.sort(self.list_compounds_rock):
+                dataset = self.rock_data["compounds"][element]
+                entries = [str(element) + str(" (%)")]
+                n_digits = 2
+                var_factor = 100
+
+                var_entr_min = round(var_factor*min(dataset), n_digits)
+                var_entr_max = round(var_factor*max(dataset), n_digits)
+                var_entr_mean = round(var_factor*np.mean(dataset), n_digits)
+                var_entr_error = round(var_factor*np.std(dataset, ddof=1), n_digits)
+
+                entries.extend([var_entr_min, var_entr_max, var_entr_mean, var_entr_error])
+
+                self.tv_petrology_results.insert("", tk.END, values=entries)
+
     def rock_comparison(self):
         ## Cleaning
         for category in ["Label", "Button", "Entry", "Radiobutton"]:

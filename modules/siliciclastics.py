@@ -6,7 +6,7 @@
 # Name:		siliciclastics.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		25.10.2023
+# Date:		16.11.2023
 
 #-----------------------------------------------
 
@@ -21,6 +21,7 @@ import random as rd
 from modules import minerals, oxides, fluids
 from modules.geophysics import Elasticity as elast
 from modules import oxides, carbonates, silicates
+from modules.chemistry import PeriodicSystem, OxideCompounds
 from modules.oxides import Oxides
 from modules.carbonates import Carbonates
 from modules.silicates import Phyllosilicates
@@ -315,6 +316,7 @@ class SiliciclasticRocks:
         results_container["rock"] = rock
         results_container["mineralogy"] = {}
         results_container["chemistry"] = {}
+        results_container["compounds"] = {}
         results_container["phi"] = []
         results_container["phi_true"] = []
         results_container["fluid"] = self.fluid
@@ -472,10 +474,29 @@ class SiliciclasticRocks:
             gamma_ray = round(gamma_ray, 3)
             ## Photoelectricity
             photoelectricity = round(photoelectricity, 3)
+            # Composition data
             for key, value in w_minerals.items():
                 results_container["mineralogy"][key].append(value)
+
+            amounts = []
             for key, value in w_elements.items():
                 results_container["chemistry"][key].append(value)
+                chem_data = PeriodicSystem(name=key).get_data()
+                amounts.append([key, chem_data[1], value])
+
+            list_oxides = ["H2O", "Na2O", "Al2O3", "SiO2", "K2O", "CaO", "Fe2O3"]
+            composition_oxides = {}
+            for var_oxide in list_oxides:
+                oxide_data = OxideCompounds(var_compound=var_oxide, var_amounts=amounts).get_composition()
+                composition_oxides[var_oxide] = round(oxide_data["Oxide"][1], 4)
+
+            if list_oxides[0] not in results_container["compounds"]:
+                for oxide in list_oxides:
+                    results_container["compounds"][oxide] = []
+
+            for key, value in composition_oxides.items():
+                results_container["compounds"][key].append(value)
+
             # Results
             results_container["phi"].append(phi_neutron)
             results_container["phi_true"].append(var_porosity)

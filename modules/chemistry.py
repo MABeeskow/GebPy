@@ -1230,7 +1230,8 @@ class OxideCompounds:
             "Na2O": round(2*22.990 + 15.999, 3), "MgO": round(24.304 + 15.999, 3),
             "Al2O3": round(2*26.982 + 3*15.999, 3), "SiO2": round(28.084 + 2*15.999, 3),
             "K2O": round(2*39.098 + 15.999, 3), "CaO": round(40.078 + 15.999, 3), "FeO": round(55.845 + 15.999, 3),
-            "Rb2O": round(2*85.468 + 15.999, 3), "BaO": round(137.33 + 15.999, 3)}
+            "Fe2O3": round(2*55.845 + 3*15.999, 3), "Rb2O": round(2*85.468 + 15.999, 3),
+            "BaO": round(137.33 + 15.999, 3)}
     #
     def get_composition(self): # see element to stoichiometric oxide conversion factors
         result = {"Oxide": [self.var_compound]}
