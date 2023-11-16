@@ -2489,13 +2489,13 @@ class GebPyGUI(tk.Frame):
             fg=self.colors_gebpy["Background"]).create_radiobutton(
             text="Mineral Chemistry", var_rb=self.gui_variables["Radiobutton"]["Analysis Mode"], value_rb=1,
             color_bg=self.colors_gebpy["Navigation"], command=self.change_rb_analysis)
-        rb_laicpms = SimpleElements(
-            parent=self.parent, row_id=25, column_id=14, n_rows=2, n_columns=16, bg=self.colors_gebpy["Navigation"],
-            fg=self.colors_gebpy["Background"]).create_radiobutton(
-            text="Synthetic LA-ICP-MS", var_rb=self.gui_variables["Radiobutton"]["Analysis Mode"], value_rb=2,
-            color_bg=self.colors_gebpy["Navigation"], command=self.change_rb_analysis)
+        # rb_laicpms = SimpleElements(
+        #     parent=self.parent, row_id=25, column_id=14, n_rows=2, n_columns=16, bg=self.colors_gebpy["Navigation"],
+        #     fg=self.colors_gebpy["Background"]).create_radiobutton(
+        #     text="Synthetic LA-ICP-MS", var_rb=self.gui_variables["Radiobutton"]["Analysis Mode"], value_rb=2,
+        #     color_bg=self.colors_gebpy["Navigation"], command=self.change_rb_analysis)
         #
-        self.gui_elements["Static"]["Radiobutton"].extend([rb_geophysics, rb_geochemistry, rb_laicpms])
+        self.gui_elements["Static"]["Radiobutton"].extend([rb_geophysics, rb_geochemistry])
         #
         ## Button
         name_mineral = var_name
