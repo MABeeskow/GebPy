@@ -6,7 +6,7 @@
 # Name:		gebpy_app.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		16.11.2023
+# Date:		17.11.2023
 
 #-----------------------------------------------
 
@@ -510,9 +510,10 @@ class GebPyGUI(tk.Frame):
             elif rock_group == "Ore Rocks":
                 sub_ore = tk.Menu(petrology_menu, tearoff=0)
                 ore_rocks = {
-                    "Fe-Ore": ["Itabirite", "Compact Hematite", "Friable Hematite", "Goethite Hematite",
+                    "Fe-ore": ["Itabirite", "Compact Hematite", "Friable Hematite", "Goethite Hematite",
                                "Al-rich Itabirite", "Compact Quartz Itabirite", "Friable Quartz Itabirite",
-                               "Goethite Itabirite", "Banded Iron Formation"]}
+                               "Goethite Itabirite", "Banded Iron Formation"],
+                    "Al-ore": ["Bauxite"]}
                 #
                 ore_rocks = collections.OrderedDict(sorted(ore_rocks.items()))
                 i = 1
@@ -3160,6 +3161,13 @@ class GebPyGUI(tk.Frame):
                     self.gui_variables["Entry"]["Porosity Min"].get()/100,
                     self.gui_variables["Entry"]["Porosity Max"].get()/100]).create_siliciclastic_itabirite(
                 rock=var_name, number=self.gui_variables["Entry"]["Number Datapoints"].get(), classification=var_name)
+        # Al-ore
+        elif var_name == "Bauxite":
+            data = OreRocks(
+                fluid="water", actual_thickness=0, porosity=[
+                    self.gui_variables["Entry"]["Porosity Min"].get()/100,
+                    self.gui_variables["Entry"]["Porosity Max"].get()/100]).create_bauxite(
+                rock="Bauxite", number=self.gui_variables["Entry"]["Number Datapoints"].get())
         #
         ## Metamorphic Rocks
         # Granulite-Facies

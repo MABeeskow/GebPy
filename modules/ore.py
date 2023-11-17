@@ -6,7 +6,7 @@
 # Name:		ore.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		24.10.2023
+# Date:		17.11.2023
 
 # -----------------------------------------------
 
@@ -22,7 +22,7 @@ from modules.phosphates import Phosphates
 from modules import fluids
 from modules.fluids import Water
 from modules.geophysics import Elasticity as elast
-from modules.chemistry import PeriodicSystem, DataProcessing
+from modules.chemistry import PeriodicSystem, OxideCompounds
 from modules.minerals import CrystalPhysics
 from modules.geophysics import BoreholeGeophysics as bg
 from modules.geophysics import WellLog as wg
@@ -44,6 +44,8 @@ class OreRocks:
         self.data_hematite = Oxides(data_type=True).create_hematite()
         self.data_goethite = Oxides(data_type=True).create_goethite()
         self.data_gibbsite = Oxides(data_type=True).create_gibbsite()
+        self.data_boehmite = Oxides(data_type=True).create_boehmite()
+        self.data_anatase = Oxides(data_type=True).create_anatase()
         self.data_calcite = Carbonates(data_type=True).create_calcite()
         self.data_siderite = Carbonates(data_type=True).create_siderite()
         self.data_kaolinite = Phyllosilicates(impurity="pure", data_type=True).create_kaolinite()
@@ -534,7 +536,234 @@ class OreRocks:
             n += 1
 
         return results_container
-    #
+
+    def create_bauxite(self, rock="Bauxite", number=1, composition=None, mode="random"):
+        results_container = {}
+        results_container["rock"] = rock
+        results_container["mineralogy"] = {}
+        results_container["chemistry"] = {}
+        results_container["compounds"] = {}
+        results_container["phi"] = []
+        results_container["phi_true"] = []
+        results_container["fluid"] = self.fluid
+        results_container["rho_s"] = []
+        results_container["rho"] = []
+        results_container["vP"] = []
+        results_container["vS"] = []
+        results_container["vP/vS"] = []
+        results_container["K"] = []
+        results_container["G"] = []
+        results_container["E"] = []
+        results_container["nu"] = []
+        results_container["GR"] = []
+        results_container["PE"] = []
+
+        mineralogy = {
+            "Gbs": self.data_gibbsite, "Bhm": self.data_boehmite, "Goe": self.data_goethite, "Hem": self.data_hematite,
+            "Kln": self.data_kaolinite, "Anat": self.data_anatase}
+        minerals_list = list(mineralogy.keys())
+        if minerals_list[0] not in results_container["mineralogy"]:
+            for mineral in minerals_list:
+                results_container["mineralogy"][mineral] = []
+
+        n = 0
+        w_last = None
+        list_ore_values = np.around(np.linspace(0.25, 0.5, number), 4)
+        list_ore_values_reverse = sorted(list_ore_values, reverse=True)
+        while n < number:
+            condition = False
+            while condition == False:
+                elements_list = []
+                phi_minerals = {}
+                w_minerals = {}
+                w_elements = {}
+
+                if composition != None:
+                    phi_gbs = composition["Gbs"]
+                    phi_bhm = composition["Bhm"]
+                    phi_goe = composition["Goe"]
+                    phi_hem = composition["Hem"]
+                    phi_kln = composition["Kln"]
+                    phi_anat = composition["Anat"]
+
+                    phi_minerals["Gbs"] = phi_gbs
+                    phi_minerals["Bhm"] = phi_bhm
+                    phi_minerals["Goe"] = phi_goe
+                    phi_minerals["Hem"] = phi_hem
+                    phi_minerals["Kln"] = phi_kln
+                    phi_minerals["Anat"] = phi_anat
+
+                else:
+                    condition_2 = False
+                    while condition_2 == False:
+                        if mode == "random":
+                            amount_al_ore = round(rd.uniform(0.35, 0.65), 4)
+                        elif mode == "increasing ore":
+                            amount_al_ore = list_ore_values[n]
+                        elif mode == "decreasing ore":
+                            amount_al_ore = list_ore_values_reverse[n]
+
+                        amount_fe_ore = round(rd.uniform(0.10, (1 - amount_al_ore)), 4)
+                        amount_residuals = round(1 - amount_al_ore - amount_fe_ore, 4)
+                        amount_gbs = round(rd.uniform(0.2, 0.8), 4)
+                        amount_goe = round(rd.uniform(0.7, 0.9), 4)
+                        amount_kln = round(rd.uniform(0.4, 0.9), 4)
+
+                        # Al ore minerals
+                        phi_gbs = round(amount_al_ore*amount_gbs, 4)
+                        phi_bhm = round(amount_al_ore - phi_gbs, 4)
+                        # Fe ore minerals
+                        phi_goe = round(amount_fe_ore*amount_goe, 4)
+                        phi_hem = round(amount_fe_ore - phi_goe, 4)
+                        # Other minerals
+
+                        phi_kln = round(amount_residuals*amount_kln, 4)
+                        phi_anat = round(1 - phi_gbs - phi_bhm - phi_goe - phi_hem - phi_kln, 4)
+
+                        phi_total = phi_gbs + phi_bhm + phi_goe + phi_hem + phi_kln + phi_anat
+
+                        gbs_limits = [0.2, 0.8]
+                        bhm_limits = [0.2, 0.6]
+                        goe_limits = [0.2, 0.5]
+                        hem_limits = [0.0, 0.25]
+                        kln_limits = [0.0, 0.3]
+                        anat_limits = [0.0, 0.10]
+
+                        if np.isclose(phi_total, 1.0000) == True:
+                            if (gbs_limits[0] <= phi_gbs <= gbs_limits[1] \
+                                    and bhm_limits[0] <= phi_bhm <= bhm_limits[1] \
+                                    and goe_limits[0] <= phi_goe <= goe_limits[1] \
+                                    and hem_limits[0] <= phi_hem <= hem_limits[1] \
+                                    and kln_limits[0] <= phi_kln <= kln_limits[1] \
+                                    and anat_limits[0] <= phi_kln <= anat_limits[1]):
+                                condition_2 = True
+
+                    phi_minerals["Gbs"] = phi_gbs
+                    phi_minerals["Bhm"] = phi_bhm
+                    phi_minerals["Goe"] = phi_goe
+                    phi_minerals["Hem"] = phi_hem
+                    phi_minerals["Kln"] = phi_kln
+                    phi_minerals["Anat"] = phi_anat
+
+                rho_s = 0
+                for key, value in phi_minerals.items():
+                    rho_s += phi_minerals[key]*mineralogy[key]["rho"]
+                    for element, value in mineralogy[key]["chemistry"].items():
+                        if element not in elements_list:
+                            elements_list.append(element)
+                            w_elements[element] = 0.0
+
+                if elements_list[0] not in results_container["chemistry"]:
+                    for element in elements_list:
+                        results_container["chemistry"][element] = []
+
+                rho_s = round(rho_s, 3)
+                for key, value in phi_minerals.items():
+                    if key == "Urn":
+                        n_digits = 4
+                    else:
+                        n_digits = 4
+
+                    w_minerals[key] = round((phi_minerals[key]*mineralogy[key]["rho"])/rho_s, n_digits)
+
+                if self.fluid == "water":
+                    data_fluid = self.data_water
+
+                old_index = elements_list.index("O")
+                elements_list += [elements_list.pop(old_index)]
+
+                w_elements_total = 0.0
+                for element in elements_list:
+                    if element != "O":
+                        for mineral, w_mineral in w_minerals.items():
+                            if element in mineralogy[mineral]["chemistry"]:
+                                if element == "U":
+                                    n_digits = 4
+                                else:
+                                    n_digits = 4
+
+                                value = round(w_mineral*mineralogy[mineral]["chemistry"][element], n_digits)
+                                w_elements[element] += value
+                                w_elements_total += value
+                                w_elements[element] = round(w_elements[element], n_digits)
+                    elif element == "O":
+                        w_elements[element] += round(1 - w_elements_total, 4)
+                        w_elements[element] = round(w_elements[element], 4)
+
+                total_w_minerals = round(sum(w_minerals.values()), 4)
+                total_w_elements = round(sum(w_elements.values()), 4)
+                if total_w_minerals == 1.0 and total_w_elements == 1.0:
+                    for key, value in w_minerals.items():
+                        w_minerals[key] = abs(value)
+                    for key, value in w_elements.items():
+                        w_elements[key] = abs(value)
+                    condition = True
+
+            velocity_solid = {"vP": 0, "vS": 0}
+            gamma_ray = 0.0
+            photoelectricity = 0.0
+            for key, value in phi_minerals.items():
+                velocity_solid["vP"] += phi_minerals[key]*mineralogy[key]["vP"]
+                velocity_solid["vS"] += phi_minerals[key]*mineralogy[key]["vS"]
+                gamma_ray += phi_minerals[key]*mineralogy[key]["GR"]
+                photoelectricity += phi_minerals[key]*mineralogy[key]["PE"]
+
+            ## Bulk Density, Porosity, Seismic Velocities
+            rho_solid = round(rho_s, 3)
+            vP, vS, vPvS, rho, var_porosity = SeismicVelocities(
+                rho_solid=rho_solid, rho_fluid=self.data_water[2]).calculate_seismic_velocities(
+                rho_limits=[2500, 4000], vP_limits=[3000, 5000], vS_limits=[1500, 3000], delta=0.05,
+                porosity=self.porosity)
+            phi_neutron = round((1900/rho)*0.15, 4)
+            ## Elastic Parameters
+            bulk_modulus, shear_modulus, youngs_modulus, poisson_ratio = SeismicVelocities(
+                rho_solid=None, rho_fluid=None).calculate_elastic_properties(
+                rho=rho, vP=vP, vS=vS)
+            ## Gamma Ray
+            gamma_ray = round(gamma_ray, 3)
+            ## Photoelectricity
+            photoelectricity = round(photoelectricity, 3)
+            # Composition data
+            for key, value in w_minerals.items():
+                results_container["mineralogy"][key].append(value)
+
+            amounts = []
+            for key, value in w_elements.items():
+                results_container["chemistry"][key].append(value)
+                chem_data = PeriodicSystem(name=key).get_data()
+                amounts.append([key, chem_data[1], value])
+
+            list_elements = list(w_elements.keys())
+            list_oxides = OxideCompounds(var_list_elements=list_elements).find_oxides()
+            composition_oxides = {}
+            for var_oxide in list_oxides:
+                oxide_data = OxideCompounds(var_compound=var_oxide, var_amounts=amounts).get_composition()
+                composition_oxides[var_oxide] = round(oxide_data["Oxide"][1], 4)
+
+            if list_oxides[0] not in results_container["compounds"]:
+                for oxide in list_oxides:
+                    results_container["compounds"][oxide] = []
+
+            for key, value in composition_oxides.items():
+                results_container["compounds"][key].append(value)
+            # Results
+            results_container["phi"].append(phi_neutron)
+            results_container["phi_true"].append(var_porosity)
+            results_container["rho_s"].append(rho_s)
+            results_container["rho"].append(rho)
+            results_container["vP"].append(vP)
+            results_container["vS"].append(vS)
+            results_container["vP/vS"].append(vPvS)
+            results_container["K"].append(bulk_modulus)
+            results_container["G"].append(shear_modulus)
+            results_container["E"].append(youngs_modulus)
+            results_container["nu"].append(poisson_ratio)
+            results_container["GR"].append(gamma_ray)
+            results_container["PE"].append(photoelectricity)
+            n += 1
+
+        return results_container
+
 class Ores:
     #
     def __init__(self, fluid, actualThickness, porosity=None, data_type=False):
