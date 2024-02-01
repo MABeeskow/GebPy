@@ -1,14 +1,15 @@
 #!/usr/bin/env python
 # -*-coding: utf-8 -*-
 
-#-----------------------------------------------
+# ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- -
 
 # Name:		gebpy_app.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		17.11.2023
+# Date:		01.02.2024
+# License:  GPL v3.0
 
-#-----------------------------------------------
+# ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- -
 
 ## MODULES
 # external
@@ -42,6 +43,7 @@ from modules.fluids import Water
 from modules.siliciclastics import SiliciclasticRocks, Geophysics
 from modules.ore import OreRocks
 from modules.metamorphics import GranuliteFacies, GreenschistFacies, AmphiboliteFacies
+from modules.exploration import ExplorationInterface
 # Sequence Stratigraphy
 from modules.series import Muschelkalk, Zechstein, Buntsandstein
 from modules.petrophysics import SeismicVelocities
@@ -656,6 +658,7 @@ class GebPyGUI(tk.Frame):
     ## EXPLORATION #####################################################################################################
     ####################################################################################################################
     def select_exploration(self, mode):
+        ExplorationInterface(parent=self.parent).create_subwindow_borehole_data()
         if mode == "Borehole data":
             ## Labels
             lbl_title = SimpleElements(
