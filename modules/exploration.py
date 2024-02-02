@@ -49,10 +49,17 @@ class ExplorationInterface:
         self.var_entr_bottom = tk.StringVar()
         self.var_entr_bottom.set("25.0")
 
+        self.var_opt_sedimentary = tk.StringVar()
+        self.var_opt_sedimentary.set("Select sedimentary rock")
+        self.var_opt_igneous = tk.StringVar()
+        self.var_opt_igneous.set("Select igneous rock")
+        self.var_opt_metamorphic = tk.StringVar()
+        self.var_opt_metamorphic.set("Select metamorphic rock")
+
     def create_subwindow_borehole_data(self):
         ## Window Settings
         window_width = 900
-        window_height = 600
+        window_height = 675
         var_geometry = str(window_width) + "x" + str(window_height) + "+" + str(0) + "+" + str(0)
 
         row_min = 25
@@ -79,31 +86,20 @@ class ExplorationInterface:
         for i in range(0, n_columns):
             self.subwindow_borehole_data.grid_columnconfigure(i, minsize=column_min)
 
+        self.start_row = 0
         self.n_columns_setup = 11
 
         ## Frames
         SimpleElements(
-            parent=self.subwindow_borehole_data, row_id=0, column_id=self.n_columns_setup + 1, n_rows=n_rows,
-            n_columns=n_columns - self.n_columns_setup - 1, bg=self.colors["Background"],
+            parent=self.subwindow_borehole_data, row_id=self.start_row, column_id=self.n_columns_setup + 1,
+            n_rows=n_rows, n_columns=n_columns - self.n_columns_setup - 1, bg=self.colors["Background"],
             fg=self.colors["Background"]).create_frame()
 
         ## Labels
         SimpleElements(
-            parent=self.subwindow_borehole_data, row_id=0, column_id=1, n_rows=1, n_columns=self.n_columns_setup - 1,
-            bg=self.colors["Navigation"], fg=self.colors["White"]).create_label(
-            text="Settings", relief=tk.FLAT, font_option="sans 16 bold", anchor_option=tk.W)
-
-        ## Radiobuttons
-        SimpleElements(
-            parent=self.subwindow_borehole_data, row_id=1, column_id=1, n_rows=1, n_columns=self.n_columns_setup - 1,
-            bg=self.colors["Navigation"], fg=self.colors["White"]).create_radiobutton(
-            text="Create new dataset", var_rb=self.var_rb_setup, value_rb=0, color_bg=self.colors["Navigation"],
-            command=self.select_dataset_setup)
-        SimpleElements(
-            parent=self.subwindow_borehole_data, row_id=2, column_id=1, n_rows=1, n_columns=self.n_columns_setup - 1,
-            bg=self.colors["Navigation"], fg=self.colors["White"]).create_radiobutton(
-            text="Load dataset", var_rb=self.var_rb_setup, value_rb=1, color_bg=self.colors["Navigation"],
-            command=self.select_dataset_setup)
+            parent=self.subwindow_borehole_data, row_id=self.start_row, column_id=1, n_rows=1,
+            n_columns=self.n_columns_setup - 1, bg=self.colors["Navigation"], fg=self.colors["White"]).create_label(
+            text="Settings", relief=tk.FLAT, font_option="sans 12 bold", anchor_option=tk.W)
 
         ## Initialization
         if self.initialization == False:
@@ -115,46 +111,47 @@ class ExplorationInterface:
         if self.var_rb_setup.get() == 0:
             ## Labels
             SimpleElements(
-                parent=self.subwindow_borehole_data, row_id=4, column_id=1, n_rows=1,
+                parent=self.subwindow_borehole_data, row_id=self.start_row + 1, column_id=1, n_rows=1,
                 n_columns=self.n_columns_setup - 1, bg=self.colors["Navigation"], fg=self.colors["White"]).create_label(
-                text="Number of boreholes (#)", relief=tk.FLAT, font_option="sans 14 bold", anchor_option=tk.W)
+                text="Number of boreholes (#)", relief=tk.FLAT, font_option="sans 10 bold", anchor_option=tk.W)
             SimpleElements(
-                parent=self.subwindow_borehole_data, row_id=6, column_id=1, n_rows=1,
+                parent=self.subwindow_borehole_data, row_id=self.start_row + 3, column_id=1, n_rows=1,
                 n_columns=self.n_columns_setup - 1, bg=self.colors["Navigation"], fg=self.colors["White"]).create_label(
-                text="Number of units (#)", relief=tk.FLAT, font_option="sans 14 bold", anchor_option=tk.W)
+                text="Number of units (#)", relief=tk.FLAT, font_option="sans 10 bold", anchor_option=tk.W)
             SimpleElements(
-                parent=self.subwindow_borehole_data, row_id=8, column_id=1, n_rows=1,
+                parent=self.subwindow_borehole_data, row_id=self.start_row + 5, column_id=1, n_rows=1,
                 n_columns=self.n_columns_setup - 1, bg=self.colors["Navigation"], fg=self.colors["White"]).create_label(
-                text="Maximum depth (m)", relief=tk.FLAT, font_option="sans 14 bold", anchor_option=tk.W)
+                text="Maximum depth (m)", relief=tk.FLAT, font_option="sans 10 bold", anchor_option=tk.W)
             SimpleElements(
-                parent=self.subwindow_borehole_data, row_id=10, column_id=1, n_rows=1,
+                parent=self.subwindow_borehole_data, row_id=self.start_row + 7, column_id=1, n_rows=1,
                 n_columns=self.n_columns_setup - 1, bg=self.colors["Navigation"], fg=self.colors["White"]).create_label(
-                text="Parts per unit (#)", relief=tk.FLAT, font_option="sans 14 bold", anchor_option=tk.W)
+                text="Parts per unit (#)", relief=tk.FLAT, font_option="sans 10 bold", anchor_option=tk.W)
 
             ## Entries
             SimpleElements(
-                parent=self.subwindow_borehole_data, row_id=5, column_id=1, n_rows=1,
+                parent=self.subwindow_borehole_data, row_id=self.start_row + 2, column_id=1, n_rows=1,
                 n_columns=self.n_columns_setup - 1, bg=self.colors["Background"],
                 fg=self.colors["Navigation"]).create_entry(var_entr=self.var_entr_boreholes)
             SimpleElements(
-                parent=self.subwindow_borehole_data, row_id=7, column_id=1, n_rows=1,
+                parent=self.subwindow_borehole_data, row_id=self.start_row + 4, column_id=1, n_rows=1,
                 n_columns=self.n_columns_setup - 1, bg=self.colors["Background"],
                 fg=self.colors["Navigation"]).create_entry(var_entr=self.var_entr_units)
             SimpleElements(
-                parent=self.subwindow_borehole_data, row_id=9, column_id=1, n_rows=1,
+                parent=self.subwindow_borehole_data, row_id=self.start_row + 6, column_id=1, n_rows=1,
                 n_columns=self.n_columns_setup - 1, bg=self.colors["Background"],
                 fg=self.colors["Navigation"]).create_entry(var_entr=self.var_entr_maximum_depth)
             SimpleElements(
-                parent=self.subwindow_borehole_data, row_id=11, column_id=1, n_rows=1,
+                parent=self.subwindow_borehole_data, row_id=self.start_row + 8, column_id=1, n_rows=1,
                 n_columns=self.n_columns_setup - 1, bg=self.colors["Background"],
                 fg=self.colors["Navigation"]).create_entry(var_entr=self.var_entr_parts)
 
             ## Buttons
-            SimpleElements(
-                parent=self.subwindow_borehole_data, row_id=13, column_id=1, n_rows=1,
-                n_columns=self.n_columns_setup - 1, bg=self.colors["Navigation"],
+            btn_01 = SimpleElements(
+                parent=self.subwindow_borehole_data, row_id=self.start_row + 10, column_id=1, n_rows=1,
+                n_columns=self.n_columns_setup - 1, bg=self.colors["Background"],
                 fg=self.colors["Navigation"]).create_button(
                 text="Update settings", command=lambda initialization=True: self.update_settings(initialization))
+            btn_01.configure(activebackground=self.colors["Accent"])
 
         elif self.var_rb_setup.get() == 1:
             print("Load dataset!")
@@ -187,59 +184,68 @@ class ExplorationInterface:
 
         ## Labels
         SimpleElements(
-            parent=self.subwindow_borehole_data, row_id=15, column_id=1, n_rows=1, n_columns=self.n_columns_setup - 1,
-            bg=self.colors["Navigation"], fg=self.colors["White"]).create_label(
-            text="Current borehole", relief=tk.FLAT, font_option="sans 14 bold", anchor_option=tk.W)
+            parent=self.subwindow_borehole_data, row_id=self.start_row + 12, column_id=1, n_rows=1,
+            n_columns=self.n_columns_setup - 1, bg=self.colors["Navigation"], fg=self.colors["White"]).create_label(
+            text="Current borehole", relief=tk.FLAT, font_option="sans 10 bold", anchor_option=tk.W)
         self.lbl_borehole_id = SimpleElements(
-            parent=self.subwindow_borehole_data, row_id=16, column_id=1, n_rows=1, n_columns=2,
+            parent=self.subwindow_borehole_data, row_id=self.start_row + 13, column_id=1, n_rows=1, n_columns=2,
             bg=self.colors["Navigation"], fg=self.colors["White"]).create_label(
-            text=self.current_borehole_id, relief=tk.FLAT, font_option="sans 14 bold")
+            text=self.current_borehole_id, relief=tk.FLAT, font_option="sans 10 bold")
         SimpleElements(
-            parent=self.subwindow_borehole_data, row_id=17, column_id=1, n_rows=1, n_columns=self.n_columns_setup - 1,
-            bg=self.colors["Navigation"], fg=self.colors["White"]).create_label(
-            text="Current unit", relief=tk.FLAT, font_option="sans 14 bold", anchor_option=tk.W)
+            parent=self.subwindow_borehole_data, row_id=self.start_row + 14, column_id=1, n_rows=1,
+            n_columns=self.n_columns_setup - 1, bg=self.colors["Navigation"], fg=self.colors["White"]).create_label(
+            text="Current unit", relief=tk.FLAT, font_option="sans 10 bold", anchor_option=tk.W)
         self.lbl_unit_id = SimpleElements(
-            parent=self.subwindow_borehole_data, row_id=18, column_id=1, n_rows=1, n_columns=2,
+            parent=self.subwindow_borehole_data, row_id=self.start_row + 15, column_id=1, n_rows=1, n_columns=2,
             bg=self.colors["Navigation"], fg=self.colors["White"]).create_label(
-            text=self.current_unit_id, relief=tk.FLAT, font_option="sans 14 bold")
+            text=self.current_unit_id, relief=tk.FLAT, font_option="sans 10 bold")
         SimpleElements(
-            parent=self.subwindow_borehole_data, row_id=19, column_id=1, n_rows=1, n_columns=5,
-            bg=self.colors["Navigation"], fg=self.colors["White"]).create_label(
-            text="Lithology", relief=tk.FLAT, font_option="sans 12 bold", anchor_option=tk.W)
+            parent=self.subwindow_borehole_data, row_id=self.start_row + 17, column_id=1, n_rows=1,
+            n_columns=self.n_columns_setup - 1, bg=self.colors["Navigation"], fg=self.colors["White"]).create_label(
+            text="Lithology", relief=tk.FLAT, font_option="sans 10 bold", anchor_option=tk.W)
         SimpleElements(
-            parent=self.subwindow_borehole_data, row_id=20, column_id=1, n_rows=1, n_columns=6,
+            parent=self.subwindow_borehole_data, row_id=self.start_row + 22, column_id=1, n_rows=1, n_columns=6,
             bg=self.colors["Navigation"], fg=self.colors["White"]).create_label(
-            text="Top depth (m)", relief=tk.FLAT, font_option="sans 12 bold", anchor_option=tk.W)
+            text="Top depth (m)", relief=tk.FLAT, font_option="sans 10 bold", anchor_option=tk.W)
         SimpleElements(
-            parent=self.subwindow_borehole_data, row_id=21, column_id=1, n_rows=1, n_columns=6,
+            parent=self.subwindow_borehole_data, row_id=self.start_row + 23, column_id=1, n_rows=1, n_columns=6,
             bg=self.colors["Navigation"], fg=self.colors["White"]).create_label(
-            text="Bottom depth (m)", relief=tk.FLAT, font_option="sans 12 bold", anchor_option=tk.W)
+            text="Bottom depth (m)", relief=tk.FLAT, font_option="sans 10 bold", anchor_option=tk.W)
 
         ## Buttons
-        SimpleElements(
-            parent=self.subwindow_borehole_data, row_id=16, column_id=3, n_rows=1, n_columns=4,
-            bg=self.colors["Navigation"], fg=self.colors["Navigation"]).create_button(
+        btn_02 = SimpleElements(
+            parent=self.subwindow_borehole_data, row_id=self.start_row + 13, column_id=3, n_rows=1, n_columns=4,
+            bg=self.colors["Background"], fg=self.colors["Navigation"]).create_button(
             text="Previous", command=lambda mode="previous": self.change_borehole(mode))
-        SimpleElements(
-            parent=self.subwindow_borehole_data, row_id=16, column_id=7, n_rows=1, n_columns=4,
-            bg=self.colors["Navigation"], fg=self.colors["Navigation"]).create_button(
+        btn_03 = SimpleElements(
+            parent=self.subwindow_borehole_data, row_id=self.start_row + 13, column_id=7, n_rows=1, n_columns=4,
+            bg=self.colors["Background"], fg=self.colors["Navigation"]).create_button(
             text="Next", command=lambda mode="next": self.change_borehole(mode))
-        SimpleElements(
-            parent=self.subwindow_borehole_data, row_id=18, column_id=3, n_rows=1, n_columns=4,
-            bg=self.colors["Navigation"], fg=self.colors["Navigation"]).create_button(
+        btn_04 = SimpleElements(
+            parent=self.subwindow_borehole_data, row_id=self.start_row + 15, column_id=3, n_rows=1, n_columns=4,
+            bg=self.colors["Background"], fg=self.colors["Navigation"]).create_button(
             text="Previous", command=lambda mode="previous": self.change_unit(mode))
-        SimpleElements(
-            parent=self.subwindow_borehole_data, row_id=18, column_id=7, n_rows=1, n_columns=4,
-            bg=self.colors["Navigation"], fg=self.colors["Navigation"]).create_button(
+        btn_05 = SimpleElements(
+            parent=self.subwindow_borehole_data, row_id=self.start_row + 15, column_id=7, n_rows=1, n_columns=4,
+            bg=self.colors["Background"], fg=self.colors["Navigation"]).create_button(
             text="Next", command=lambda mode="next": self.change_unit(mode))
+        btn_06 = SimpleElements(
+            parent=self.subwindow_borehole_data, row_id=self.start_row + 25, column_id=1, n_rows=1,
+            n_columns=self.n_columns_setup - 1, bg=self.colors["Background"],
+            fg=self.colors["Navigation"]).create_button(text="Export data")
+        btn_02.configure(activebackground=self.colors["Accent"])
+        btn_03.configure(activebackground=self.colors["Accent"])
+        btn_04.configure(activebackground=self.colors["Accent"])
+        btn_05.configure(activebackground=self.colors["Accent"])
+        btn_06.configure(activebackground=self.colors["Accent"])
 
         ## Entries
         self.entr_top = SimpleElements(
-            parent=self.subwindow_borehole_data, row_id=20, column_id=7, n_rows=1, n_columns=4,
+            parent=self.subwindow_borehole_data, row_id=self.start_row + 22, column_id=7, n_rows=1, n_columns=4,
             bg=self.colors["Background"], fg=self.colors["Navigation"]).create_entry(
             var_entr=self.dict_entr_top[self.current_borehole_id][self.current_unit_id])
         self.entr_bottom = SimpleElements(
-            parent=self.subwindow_borehole_data, row_id=21, column_id=7, n_rows=1, n_columns=4,
+            parent=self.subwindow_borehole_data, row_id=self.start_row + 23, column_id=7, n_rows=1, n_columns=4,
             bg=self.colors["Background"], fg=self.colors["Navigation"]).create_entry(
             var_entr=self.dict_entr_bottom[self.current_borehole_id][self.current_unit_id])
         self.entr_top.bind(
@@ -256,6 +262,32 @@ class ExplorationInterface:
             self.entr_bottom.configure(state="disabled")
         else:
             self.entr_bottom.configure(state="normal")
+
+        ## Option Menus
+        list_opt_sedimentary = ["Sandstone", "Limestone", "Shale"]
+        list_opt_igneous = ["Granite", "Basalt", "Gabbro"]
+        list_opt_metamorphic = ["Gneiss", "Marble"]
+        opt_sedimentary = SimpleElements(
+            parent=self.subwindow_borehole_data, row_id=self.start_row + 18, column_id=1, n_rows=1,
+            n_columns=self.n_columns_setup - 1, bg=self.colors["Background"],
+            fg=self.colors["Navigation"]).create_option_menu(
+            var_opt=self.var_opt_sedimentary, var_opt_set=self.var_opt_sedimentary.get(), opt_list=list_opt_sedimentary,
+            active_bg=self.colors["Accent"])
+        opt_igneous = SimpleElements(
+            parent=self.subwindow_borehole_data, row_id=self.start_row + 19, column_id=1, n_rows=1,
+            n_columns=self.n_columns_setup - 1, bg=self.colors["Background"],
+            fg=self.colors["Navigation"]).create_option_menu(
+            var_opt=self.var_opt_igneous, var_opt_set=self.var_opt_igneous.get(), opt_list=list_opt_igneous,
+            active_bg=self.colors["Accent"])
+        opt_metamorphic = SimpleElements(
+            parent=self.subwindow_borehole_data, row_id=self.start_row + 20, column_id=1, n_rows=1,
+            n_columns=self.n_columns_setup - 1, bg=self.colors["Background"],
+            fg=self.colors["Navigation"]).create_option_menu(
+            var_opt=self.var_opt_metamorphic, var_opt_set=self.var_opt_metamorphic.get(), opt_list=list_opt_metamorphic,
+            active_bg=self.colors["Accent"])
+        opt_sedimentary.configure(anchor=tk.W)
+        opt_igneous.configure(anchor=tk.W)
+        opt_metamorphic.configure(anchor=tk.W)
 
     def change_borehole(self, mode):
         if mode == "previous":
