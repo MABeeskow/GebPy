@@ -108,7 +108,7 @@ class ExplorationInterface:
         ## Initialization
         if self.initialization == False:
             self.select_dataset_setup()
-            self.update_settings()
+            self.update_settings(initialization=True)
             self.initialization = True
 
     def select_dataset_setup(self):
@@ -153,32 +153,37 @@ class ExplorationInterface:
             SimpleElements(
                 parent=self.subwindow_borehole_data, row_id=13, column_id=1, n_rows=1,
                 n_columns=self.n_columns_setup - 1, bg=self.colors["Navigation"],
-                fg=self.colors["Navigation"]).create_button(text="Update settings", command=self.update_settings)
+                fg=self.colors["Navigation"]).create_button(
+                text="Update settings", command=lambda initialization=True: self.update_settings(initialization))
 
         elif self.var_rb_setup.get() == 1:
             print("Load dataset!")
 
-    def update_settings(self):
+    def update_settings(self, initialization=False):
         ## Helper
-        self.list_boreholes = np.arange(self.var_entr_boreholes.get()) + 1
-        self.list_units = np.arange(self.var_entr_units.get()) + 1
-        self.current_borehole_id = self.list_boreholes[0]
-        self.current_unit_id = self.list_units[0]
-        average_thickness = round(self.var_entr_maximum_depth.get()/len(self.list_units), 2)
-        current_bottom_depth = 0
+        if initialization:
+            self.list_boreholes = np.arange(self.var_entr_boreholes.get()) + 1
+            self.list_units = np.arange(self.var_entr_units.get()) + 1
+            self.current_borehole_id = self.list_boreholes[0]
+            self.current_unit_id = self.list_units[0]
 
-        for index, element in enumerate(self.list_units):
-            self.dict_entr_top[element] = tk.IntVar()
-            self.dict_entr_bottom[element] = tk.IntVar()
+            for index_borehole, borehole_id in enumerate(self.list_boreholes):
+                self.dict_entr_top[borehole_id] = {}
+                self.dict_entr_bottom[borehole_id] = {}
+                average_thickness = round(self.var_entr_maximum_depth.get()/len(self.list_units), 2)
+                current_bottom_depth = 0
+                for index_unit, unit_id in enumerate(self.list_units):
+                    self.dict_entr_top[borehole_id][unit_id] = tk.IntVar()
+                    self.dict_entr_bottom[borehole_id][unit_id] = tk.IntVar()
 
-            if index == 0:
-                self.dict_entr_top[element].set(0)
-                current_bottom_depth += average_thickness
-                self.dict_entr_bottom[element].set(round(current_bottom_depth))
-            else:
-                self.dict_entr_top[element].set(round(current_bottom_depth))
-                current_bottom_depth += average_thickness
-                self.dict_entr_bottom[element].set(round(current_bottom_depth))
+                    if index_unit == 0:
+                        self.dict_entr_top[borehole_id][unit_id].set(0)
+                        current_bottom_depth += average_thickness
+                        self.dict_entr_bottom[borehole_id][unit_id].set(round(current_bottom_depth))
+                    else:
+                        self.dict_entr_top[borehole_id][unit_id].set(round(current_bottom_depth))
+                        current_bottom_depth += average_thickness
+                        self.dict_entr_bottom[borehole_id][unit_id].set(round(current_bottom_depth))
 
         ## Labels
         SimpleElements(
@@ -232,11 +237,11 @@ class ExplorationInterface:
         self.entr_top = SimpleElements(
             parent=self.subwindow_borehole_data, row_id=20, column_id=7, n_rows=1, n_columns=4,
             bg=self.colors["Background"], fg=self.colors["Navigation"]).create_entry(
-            var_entr=self.dict_entr_top[self.current_unit_id])
+            var_entr=self.dict_entr_top[self.current_borehole_id][self.current_unit_id])
         self.entr_bottom = SimpleElements(
             parent=self.subwindow_borehole_data, row_id=21, column_id=7, n_rows=1, n_columns=4,
             bg=self.colors["Background"], fg=self.colors["Navigation"]).create_entry(
-            var_entr=self.dict_entr_bottom[self.current_unit_id])
+            var_entr=self.dict_entr_bottom[self.current_borehole_id][self.current_unit_id])
         self.entr_top.bind(
             "<Return>", lambda event, mode="top": self.change_depth(mode, event))
         self.entr_bottom.bind(
@@ -264,6 +269,8 @@ class ExplorationInterface:
             else:
                 self.current_borehole_id += 1
         self.lbl_borehole_id.configure(text=self.current_borehole_id)
+        self.current_unit_id = self.list_units[0]
+        self.update_settings()
 
     def change_unit(self, mode):
         if mode == "previous":
@@ -272,8 +279,9 @@ class ExplorationInterface:
             else:
                 self.current_unit_id -= 1
 
-            self.entr_top.configure(textvariable=self.dict_entr_top[self.current_unit_id])
-            self.entr_bottom.configure(textvariable=self.dict_entr_bottom[self.current_unit_id])
+            self.entr_top.configure(textvariable=self.dict_entr_top[self.current_borehole_id][self.current_unit_id])
+            self.entr_bottom.configure(textvariable=self.dict_entr_bottom[self.current_borehole_id][
+                self.current_unit_id])
 
             if self.current_unit_id == 1:
                 self.entr_top.configure(state="disabled")
@@ -291,8 +299,9 @@ class ExplorationInterface:
             else:
                 self.current_unit_id += 1
 
-            self.entr_top.configure(textvariable=self.dict_entr_top[self.current_unit_id])
-            self.entr_bottom.configure(textvariable=self.dict_entr_bottom[self.current_unit_id])
+            self.entr_top.configure(textvariable=self.dict_entr_top[self.current_borehole_id][self.current_unit_id])
+            self.entr_bottom.configure(textvariable=self.dict_entr_bottom[self.current_borehole_id][
+                self.current_unit_id])
 
             if self.current_unit_id == 1:
                 self.entr_top.configure(state="disabled")
@@ -309,22 +318,26 @@ class ExplorationInterface:
     def change_depth(self, mode, event):
         if mode == "top":
             if self.current_unit_id >= 2:
-                new_depth = self.dict_entr_top[self.current_unit_id].get()
-                current_top_depth_above = self.dict_entr_top[self.current_unit_id - 1].get()
+                new_depth = self.dict_entr_top[self.current_borehole_id][self.current_unit_id].get()
+                current_top_depth_above = self.dict_entr_top[self.current_borehole_id][self.current_unit_id - 1].get()
 
                 if new_depth > current_top_depth_above:
-                    self.dict_entr_bottom[self.current_unit_id - 1].set(new_depth)
+                    self.dict_entr_bottom[self.current_borehole_id][self.current_unit_id - 1].set(new_depth)
                 else:
-                    self.dict_entr_top[self.current_unit_id].set(current_top_depth_above + 1)
-                    self.dict_entr_bottom[self.current_unit_id - 1].set(current_top_depth_above + 1)
+                    self.dict_entr_top[self.current_borehole_id][self.current_unit_id].set(current_top_depth_above + 1)
+                    self.dict_entr_bottom[self.current_borehole_id][self.current_unit_id - 1].set(
+                        current_top_depth_above + 1)
 
         elif mode == "bottom":
             if self.current_unit_id <= len(self.list_units):
-                new_depth = self.dict_entr_bottom[self.current_unit_id].get()
-                current_bottom_depth_below = self.dict_entr_bottom[self.current_unit_id + 1].get()
+                new_depth = self.dict_entr_bottom[self.current_borehole_id][self.current_unit_id].get()
+                current_bottom_depth_below = self.dict_entr_bottom[self.current_borehole_id][
+                    self.current_unit_id + 1].get()
 
                 if new_depth < current_bottom_depth_below:
-                    self.dict_entr_top[self.current_unit_id + 1].set(new_depth)
+                    self.dict_entr_top[self.current_borehole_id][self.current_unit_id + 1].set(new_depth)
                 else:
-                    self.dict_entr_bottom[self.current_unit_id].set(current_bottom_depth_below - 1)
-                    self.dict_entr_top[self.current_unit_id + 1].set(current_bottom_depth_below - 1)
+                    self.dict_entr_bottom[self.current_borehole_id][self.current_unit_id].set(
+                        current_bottom_depth_below - 1)
+                    self.dict_entr_top[self.current_borehole_id][self.current_unit_id + 1].set(
+                        current_bottom_depth_below - 1)
