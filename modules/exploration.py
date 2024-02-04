@@ -6,7 +6,7 @@
 # File:         exploration.py
 # Description:  Contains all necessary functions that are related to mineral exploration
 # Author:       Maximilian Beeskow
-# Last updated: 02.02.2024
+# Last updated: 04.02.2024
 # License:      GPL v3.0
 
 # ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- -
@@ -150,15 +150,24 @@ class ExplorationInterface:
                 parent=self.subwindow_borehole_data, row_id=self.start_row + 10, column_id=1, n_rows=1,
                 n_columns=self.n_columns_setup - 1, bg=self.colors["Background"],
                 fg=self.colors["Navigation"]).create_button(
-                text="Update settings", command=lambda initialization=True: self.update_settings(initialization))
+                text="Update settings", command=lambda initialization=False, update=True:
+                self.update_settings(initialization, update))
             btn_01.configure(activebackground=self.colors["Accent"])
 
         elif self.var_rb_setup.get() == 1:
             print("Load dataset!")
 
-    def update_settings(self, initialization=False):
+    def update_settings(self, initialization=False, update=False, changed_borehole=False):
+        """Updates the data for the borehole and unit data.
+        Arguments
+            initialization, boolean : specifies if the function runs the first time.
+            update, boolean : specifies if it has only to update already existing variables.
+            changed_borehole, boolean : specifies if only the ID of a borehole was changed.
+        Outputs
+            ---
+        """
         ## Helper
-        if initialization:
+        if initialization or update and changed_borehole == False:
             self.list_boreholes = np.arange(self.var_entr_boreholes.get()) + 1
             self.list_units = np.arange(self.var_entr_units.get()) + 1
             self.current_borehole_id = self.list_boreholes[0]
@@ -182,114 +191,134 @@ class ExplorationInterface:
                         current_bottom_depth += average_thickness
                         self.dict_entr_bottom[borehole_id][unit_id].set(round(current_bottom_depth))
 
-        ## Labels
-        SimpleElements(
-            parent=self.subwindow_borehole_data, row_id=self.start_row + 12, column_id=1, n_rows=1,
-            n_columns=self.n_columns_setup - 1, bg=self.colors["Navigation"], fg=self.colors["White"]).create_label(
-            text="Current borehole", relief=tk.FLAT, font_option="sans 10 bold", anchor_option=tk.W)
-        self.lbl_borehole_id = SimpleElements(
-            parent=self.subwindow_borehole_data, row_id=self.start_row + 13, column_id=1, n_rows=1, n_columns=2,
-            bg=self.colors["Navigation"], fg=self.colors["White"]).create_label(
-            text=self.current_borehole_id, relief=tk.FLAT, font_option="sans 10 bold")
-        SimpleElements(
-            parent=self.subwindow_borehole_data, row_id=self.start_row + 14, column_id=1, n_rows=1,
-            n_columns=self.n_columns_setup - 1, bg=self.colors["Navigation"], fg=self.colors["White"]).create_label(
-            text="Current unit", relief=tk.FLAT, font_option="sans 10 bold", anchor_option=tk.W)
-        self.lbl_unit_id = SimpleElements(
-            parent=self.subwindow_borehole_data, row_id=self.start_row + 15, column_id=1, n_rows=1, n_columns=2,
-            bg=self.colors["Navigation"], fg=self.colors["White"]).create_label(
-            text=self.current_unit_id, relief=tk.FLAT, font_option="sans 10 bold")
-        SimpleElements(
-            parent=self.subwindow_borehole_data, row_id=self.start_row + 17, column_id=1, n_rows=1,
-            n_columns=self.n_columns_setup - 1, bg=self.colors["Navigation"], fg=self.colors["White"]).create_label(
-            text="Lithology", relief=tk.FLAT, font_option="sans 10 bold", anchor_option=tk.W)
-        SimpleElements(
-            parent=self.subwindow_borehole_data, row_id=self.start_row + 22, column_id=1, n_rows=1, n_columns=6,
-            bg=self.colors["Navigation"], fg=self.colors["White"]).create_label(
-            text="Top depth (m)", relief=tk.FLAT, font_option="sans 10 bold", anchor_option=tk.W)
-        SimpleElements(
-            parent=self.subwindow_borehole_data, row_id=self.start_row + 23, column_id=1, n_rows=1, n_columns=6,
-            bg=self.colors["Navigation"], fg=self.colors["White"]).create_label(
-            text="Bottom depth (m)", relief=tk.FLAT, font_option="sans 10 bold", anchor_option=tk.W)
+        if initialization:
+            ## Labels
+            SimpleElements(
+                parent=self.subwindow_borehole_data, row_id=self.start_row + 12, column_id=1, n_rows=1,
+                n_columns=self.n_columns_setup - 1, bg=self.colors["Navigation"], fg=self.colors["White"]).create_label(
+                text="Current borehole", relief=tk.FLAT, font_option="sans 10 bold", anchor_option=tk.W)
+            self.lbl_borehole_id = SimpleElements(
+                parent=self.subwindow_borehole_data, row_id=self.start_row + 13, column_id=1, n_rows=1, n_columns=2,
+                bg=self.colors["Navigation"], fg=self.colors["White"]).create_label(
+                text=self.current_borehole_id, relief=tk.FLAT, font_option="sans 10 bold")
+            SimpleElements(
+                parent=self.subwindow_borehole_data, row_id=self.start_row + 14, column_id=1, n_rows=1,
+                n_columns=self.n_columns_setup - 1, bg=self.colors["Navigation"], fg=self.colors["White"]).create_label(
+                text="Current unit", relief=tk.FLAT, font_option="sans 10 bold", anchor_option=tk.W)
+            self.lbl_unit_id = SimpleElements(
+                parent=self.subwindow_borehole_data, row_id=self.start_row + 15, column_id=1, n_rows=1, n_columns=2,
+                bg=self.colors["Navigation"], fg=self.colors["White"]).create_label(
+                text=self.current_unit_id, relief=tk.FLAT, font_option="sans 10 bold")
+            SimpleElements(
+                parent=self.subwindow_borehole_data, row_id=self.start_row + 17, column_id=1, n_rows=1,
+                n_columns=self.n_columns_setup - 1, bg=self.colors["Navigation"], fg=self.colors["White"]).create_label(
+                text="Lithology", relief=tk.FLAT, font_option="sans 10 bold", anchor_option=tk.W)
+            SimpleElements(
+                parent=self.subwindow_borehole_data, row_id=self.start_row + 22, column_id=1, n_rows=1, n_columns=6,
+                bg=self.colors["Navigation"], fg=self.colors["White"]).create_label(
+                text="Top depth (m)", relief=tk.FLAT, font_option="sans 10 bold", anchor_option=tk.W)
+            SimpleElements(
+                parent=self.subwindow_borehole_data, row_id=self.start_row + 23, column_id=1, n_rows=1, n_columns=6,
+                bg=self.colors["Navigation"], fg=self.colors["White"]).create_label(
+                text="Bottom depth (m)", relief=tk.FLAT, font_option="sans 10 bold", anchor_option=tk.W)
 
-        ## Buttons
-        btn_02 = SimpleElements(
-            parent=self.subwindow_borehole_data, row_id=self.start_row + 13, column_id=3, n_rows=1, n_columns=4,
-            bg=self.colors["Background"], fg=self.colors["Navigation"]).create_button(
-            text="Previous", command=lambda mode="previous": self.change_borehole(mode))
-        btn_03 = SimpleElements(
-            parent=self.subwindow_borehole_data, row_id=self.start_row + 13, column_id=7, n_rows=1, n_columns=4,
-            bg=self.colors["Background"], fg=self.colors["Navigation"]).create_button(
-            text="Next", command=lambda mode="next": self.change_borehole(mode))
-        btn_04 = SimpleElements(
-            parent=self.subwindow_borehole_data, row_id=self.start_row + 15, column_id=3, n_rows=1, n_columns=4,
-            bg=self.colors["Background"], fg=self.colors["Navigation"]).create_button(
-            text="Previous", command=lambda mode="previous": self.change_unit(mode))
-        btn_05 = SimpleElements(
-            parent=self.subwindow_borehole_data, row_id=self.start_row + 15, column_id=7, n_rows=1, n_columns=4,
-            bg=self.colors["Background"], fg=self.colors["Navigation"]).create_button(
-            text="Next", command=lambda mode="next": self.change_unit(mode))
-        btn_06 = SimpleElements(
-            parent=self.subwindow_borehole_data, row_id=self.start_row + 25, column_id=1, n_rows=1,
-            n_columns=self.n_columns_setup - 1, bg=self.colors["Background"],
-            fg=self.colors["Navigation"]).create_button(text="Export data")
-        btn_02.configure(activebackground=self.colors["Accent"])
-        btn_03.configure(activebackground=self.colors["Accent"])
-        btn_04.configure(activebackground=self.colors["Accent"])
-        btn_05.configure(activebackground=self.colors["Accent"])
-        btn_06.configure(activebackground=self.colors["Accent"])
+            ## Buttons
+            btn_02 = SimpleElements(
+                parent=self.subwindow_borehole_data, row_id=self.start_row + 13, column_id=3, n_rows=1, n_columns=4,
+                bg=self.colors["Background"], fg=self.colors["Navigation"]).create_button(
+                text="Previous", command=lambda mode="previous": self.change_borehole(mode))
+            btn_03 = SimpleElements(
+                parent=self.subwindow_borehole_data, row_id=self.start_row + 13, column_id=7, n_rows=1, n_columns=4,
+                bg=self.colors["Background"], fg=self.colors["Navigation"]).create_button(
+                text="Next", command=lambda mode="next": self.change_borehole(mode))
+            btn_04 = SimpleElements(
+                parent=self.subwindow_borehole_data, row_id=self.start_row + 15, column_id=3, n_rows=1, n_columns=4,
+                bg=self.colors["Background"], fg=self.colors["Navigation"]).create_button(
+                text="Previous", command=lambda mode="previous": self.change_unit(mode))
+            btn_05 = SimpleElements(
+                parent=self.subwindow_borehole_data, row_id=self.start_row + 15, column_id=7, n_rows=1, n_columns=4,
+                bg=self.colors["Background"], fg=self.colors["Navigation"]).create_button(
+                text="Next", command=lambda mode="next": self.change_unit(mode))
+            btn_06 = SimpleElements(
+                parent=self.subwindow_borehole_data, row_id=self.start_row + 25, column_id=1, n_rows=1,
+                n_columns=self.n_columns_setup - 1, bg=self.colors["Background"],
+                fg=self.colors["Navigation"]).create_button(text="Export data")
+            btn_02.configure(activebackground=self.colors["Accent"])
+            btn_03.configure(activebackground=self.colors["Accent"])
+            btn_04.configure(activebackground=self.colors["Accent"])
+            btn_05.configure(activebackground=self.colors["Accent"])
+            btn_06.configure(activebackground=self.colors["Accent"])
 
-        ## Entries
-        self.entr_top = SimpleElements(
-            parent=self.subwindow_borehole_data, row_id=self.start_row + 22, column_id=7, n_rows=1, n_columns=4,
-            bg=self.colors["Background"], fg=self.colors["Navigation"]).create_entry(
-            var_entr=self.dict_entr_top[self.current_borehole_id][self.current_unit_id])
-        self.entr_bottom = SimpleElements(
-            parent=self.subwindow_borehole_data, row_id=self.start_row + 23, column_id=7, n_rows=1, n_columns=4,
-            bg=self.colors["Background"], fg=self.colors["Navigation"]).create_entry(
-            var_entr=self.dict_entr_bottom[self.current_borehole_id][self.current_unit_id])
-        self.entr_top.bind(
-            "<Return>", lambda event, mode="top": self.change_depth(mode, event))
-        self.entr_bottom.bind(
-            "<Return>", lambda event, mode="bottom": self.change_depth(mode, event))
+            ## Entries
+            self.entr_top = SimpleElements(
+                parent=self.subwindow_borehole_data, row_id=self.start_row + 22, column_id=7, n_rows=1, n_columns=4,
+                bg=self.colors["Background"], fg=self.colors["Navigation"]).create_entry(
+                var_entr=self.dict_entr_top[self.current_borehole_id][self.current_unit_id])
+            self.entr_bottom = SimpleElements(
+                parent=self.subwindow_borehole_data, row_id=self.start_row + 23, column_id=7, n_rows=1, n_columns=4,
+                bg=self.colors["Background"], fg=self.colors["Navigation"]).create_entry(
+                var_entr=self.dict_entr_bottom[self.current_borehole_id][self.current_unit_id])
+            self.entr_top.bind(
+                "<Return>", lambda event, mode="top": self.change_depth(mode, event))
+            self.entr_bottom.bind(
+                "<Return>", lambda event, mode="bottom": self.change_depth(mode, event))
 
-        if self.current_unit_id == 1:
-            self.entr_top.configure(state="disabled")
-        else:
-            self.entr_top.configure(state="normal")
+            if self.current_unit_id == 1:
+                self.entr_top.configure(state="disabled")
+            else:
+                self.entr_top.configure(state="normal")
 
-        if self.current_unit_id == self.list_units[-1]:
-            self.entr_bottom.configure(state="disabled")
-        else:
-            self.entr_bottom.configure(state="normal")
+            if self.current_unit_id == self.list_units[-1]:
+                self.entr_bottom.configure(state="disabled")
+            else:
+                self.entr_bottom.configure(state="normal")
 
-        ## Option Menus
-        list_opt_sedimentary = ["Sandstone", "Limestone", "Shale"]
-        list_opt_igneous = ["Granite", "Basalt", "Gabbro"]
-        list_opt_metamorphic = ["Gneiss", "Marble"]
-        opt_sedimentary = SimpleElements(
-            parent=self.subwindow_borehole_data, row_id=self.start_row + 18, column_id=1, n_rows=1,
-            n_columns=self.n_columns_setup - 1, bg=self.colors["Background"],
-            fg=self.colors["Navigation"]).create_option_menu(
-            var_opt=self.var_opt_sedimentary, var_opt_set=self.var_opt_sedimentary.get(), opt_list=list_opt_sedimentary,
-            active_bg=self.colors["Accent"])
-        opt_igneous = SimpleElements(
-            parent=self.subwindow_borehole_data, row_id=self.start_row + 19, column_id=1, n_rows=1,
-            n_columns=self.n_columns_setup - 1, bg=self.colors["Background"],
-            fg=self.colors["Navigation"]).create_option_menu(
-            var_opt=self.var_opt_igneous, var_opt_set=self.var_opt_igneous.get(), opt_list=list_opt_igneous,
-            active_bg=self.colors["Accent"])
-        opt_metamorphic = SimpleElements(
-            parent=self.subwindow_borehole_data, row_id=self.start_row + 20, column_id=1, n_rows=1,
-            n_columns=self.n_columns_setup - 1, bg=self.colors["Background"],
-            fg=self.colors["Navigation"]).create_option_menu(
-            var_opt=self.var_opt_metamorphic, var_opt_set=self.var_opt_metamorphic.get(), opt_list=list_opt_metamorphic,
-            active_bg=self.colors["Accent"])
-        opt_sedimentary.configure(anchor=tk.W)
-        opt_igneous.configure(anchor=tk.W)
-        opt_metamorphic.configure(anchor=tk.W)
+            ## Option Menus
+            list_opt_sedimentary = ["Sandstone", "Limestone", "Shale"]
+            list_opt_igneous = ["Granite", "Basalt", "Gabbro"]
+            list_opt_metamorphic = ["Gneiss", "Marble"]
+            opt_sedimentary = SimpleElements(
+                parent=self.subwindow_borehole_data, row_id=self.start_row + 18, column_id=1, n_rows=1,
+                n_columns=self.n_columns_setup - 1, bg=self.colors["Background"],
+                fg=self.colors["Navigation"]).create_option_menu(
+                var_opt=self.var_opt_sedimentary, var_opt_set=self.var_opt_sedimentary.get(),
+                opt_list=list_opt_sedimentary, active_bg=self.colors["Accent"],
+                command=lambda event, focus="sedimentary": self.select_lithology(focus, event))
+            opt_igneous = SimpleElements(
+                parent=self.subwindow_borehole_data, row_id=self.start_row + 19, column_id=1, n_rows=1,
+                n_columns=self.n_columns_setup - 1, bg=self.colors["Background"],
+                fg=self.colors["Navigation"]).create_option_menu(
+                var_opt=self.var_opt_igneous, var_opt_set=self.var_opt_igneous.get(), opt_list=list_opt_igneous,
+                active_bg=self.colors["Accent"], command=lambda event, focus="igneous":
+                self.select_lithology(focus, event))
+            opt_metamorphic = SimpleElements(
+                parent=self.subwindow_borehole_data, row_id=self.start_row + 20, column_id=1, n_rows=1,
+                n_columns=self.n_columns_setup - 1, bg=self.colors["Background"],
+                fg=self.colors["Navigation"]).create_option_menu(
+                var_opt=self.var_opt_metamorphic, var_opt_set=self.var_opt_metamorphic.get(),
+                opt_list=list_opt_metamorphic, active_bg=self.colors["Accent"],
+                command=lambda event, focus="metamorphic": self.select_lithology(focus, event))
+            opt_sedimentary.configure(anchor=tk.W)
+            opt_igneous.configure(anchor=tk.W)
+            opt_metamorphic.configure(anchor=tk.W)
+
+        if update:
+            self.lbl_borehole_id.configure(text=self.current_borehole_id)
+            self.lbl_unit_id.configure(text=self.current_unit_id)
+            self.entr_top.configure(textvariable=self.dict_entr_top[self.current_borehole_id][self.current_unit_id])
+            self.entr_bottom.configure(textvariable=self.dict_entr_bottom[self.current_borehole_id][
+                self.current_unit_id])
+            self.var_opt_sedimentary.set("Select sedimentary rock")
+            self.var_opt_igneous.set("Select igneous rock")
+            self.var_opt_metamorphic.set("Select metamorphic rock")
 
     def change_borehole(self, mode):
+        """Changes the borehole.
+        Arguments
+            mode, str : specifies which borehole was selected.
+        Outputs
+            ---
+        """
         if mode == "previous":
             if self.current_borehole_id == 1:
                 self.current_borehole_id = self.list_boreholes[-1]
@@ -300,11 +329,18 @@ class ExplorationInterface:
                 self.current_borehole_id = 1
             else:
                 self.current_borehole_id += 1
+
         self.lbl_borehole_id.configure(text=self.current_borehole_id)
         self.current_unit_id = self.list_units[0]
-        self.update_settings()
+        self.update_settings(initialization=False, update=True, changed_borehole=True)
 
     def change_unit(self, mode):
+        """Changes the unit within a borehole.
+        Arguments
+            mode, str : specifies which unit was selected.
+        Outputs
+            ---
+        """
         if mode == "previous":
             if self.current_unit_id == 1:
                 self.current_unit_id = self.list_units[-1]
@@ -348,6 +384,12 @@ class ExplorationInterface:
         self.lbl_unit_id.configure(text=self.current_unit_id)
 
     def change_depth(self, mode, event):
+        """Changes the depth of the top or bottom.
+        Arguments
+            mode, str : specifies if top or bottom was selected.
+        Outputs
+            ---
+        """
         if mode == "top":
             if self.current_unit_id >= 2:
                 new_depth = self.dict_entr_top[self.current_borehole_id][self.current_unit_id].get()
@@ -373,3 +415,20 @@ class ExplorationInterface:
                         current_bottom_depth_below - 1)
                     self.dict_entr_top[self.current_borehole_id][self.current_unit_id + 1].set(
                         current_bottom_depth_below - 1)
+
+    def select_lithology(self, focus, event):
+        """Selects a lithology (e.g. sandstone, granite, ...).
+        Arguments
+            focus, str : specifies which lithology was selected.
+        Outputs
+            ---
+        """
+        if focus == "sedimentary":
+            self.var_opt_igneous.set("Select igneous rock")
+            self.var_opt_metamorphic.set("Select metamorphic rock")
+        elif focus == "igneous":
+            self.var_opt_sedimentary.set("Select sedimentary rock")
+            self.var_opt_metamorphic.set("Select metamorphic rock")
+        elif focus == "metamorphic":
+            self.var_opt_sedimentary.set("Select sedimentary rock")
+            self.var_opt_igneous.set("Select igneous rock")
