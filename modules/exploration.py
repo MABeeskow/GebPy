@@ -18,6 +18,7 @@ import numpy as np
 # internal packages
 from modules.gui_elements import SimpleElements
 from modules.siliciclastics import SiliciclasticRocks
+from modules.carbonates import CarbonateRocks
 
 # ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- -
 
@@ -475,84 +476,115 @@ class ExplorationInterface:
         if focus == "sedimentary":
             self.var_opt_igneous.set("Select igneous rock")
             self.var_opt_metamorphic.set("Select metamorphic rock")
+
+            # Siliciclastic rocks
             if self.var_opt_sedimentary.get() == "Sandstone":
                 data = SiliciclasticRocks(fluid="water", actualThickness=0).create_sandstone(
-                    number=n_datapoints, porosity=[0.05, 0.35])
-
-                for index, category in enumerate(categories):
-                    entries = [category]
-
-                    if categories_short[index] == "vPvS":
-                        category_short = "vP/vS"
-                    elif categories_short[index] == "v":
-                        category_short = "nu"
-                    else:
-                        category_short = categories_short[index]
-
-                    n_digits = 3
-
-                    var_entr_min = round(min(data[category_short]), n_digits)
-                    var_entr_max = round(max(data[category_short]), n_digits)
-                    var_entr_mean = round(np.mean(data[category_short]), n_digits)
-                    var_entr_error = round(np.std(data[category_short], ddof=1), n_digits)
-
-                    entries.extend([var_entr_min, var_entr_max, var_entr_mean, var_entr_error])
-                    self.tv_lithology.insert("", tk.END, values=entries)
-
-                entries = ["-", "-", "-", "-", "-"]
-                self.tv_lithology.insert("", tk.END, values=entries)
-
-                for mineral, dataset in data["mineralogy"].items():
-                    entries = [str(mineral) + str(" (%)")]
-
-                    n_digits = 2
-                    var_factor = 100
-
-                    var_entr_min = round(var_factor*min(dataset), n_digits)
-                    var_entr_max = round(var_factor*max(dataset), n_digits)
-                    var_entr_mean = round(var_factor*np.mean(dataset), n_digits)
-                    var_entr_error = round(var_factor*np.std(dataset, ddof=1), n_digits)
-
-                    entries.extend([var_entr_min, var_entr_max, var_entr_mean, var_entr_error])
-                    self.tv_lithology.insert("", tk.END, values=entries)
-
-                entries = ["-", "-", "-", "-", "-"]
-                self.tv_lithology.insert("", tk.END, values=entries)
-
-                for element, dataset in data["chemistry"].items():
-                    entries = [str(element) + str(" (%)")]
-
-                    n_digits = 2
-                    var_factor = 100
-
-                    var_entr_min = round(var_factor*min(dataset), n_digits)
-                    var_entr_max = round(var_factor*max(dataset), n_digits)
-                    var_entr_mean = round(var_factor*np.mean(dataset), n_digits)
-                    var_entr_error = round(var_factor*np.std(dataset, ddof=1), n_digits)
-
-                    entries.extend([var_entr_min, var_entr_max, var_entr_mean, var_entr_error])
-                    self.tv_lithology.insert("", tk.END, values=entries)
-
-                entries = ["-", "-", "-", "-", "-"]
-                self.tv_lithology.insert("", tk.END, values=entries)
-
-                for compound, dataset in data["compounds"].items():
-                    entries = [str(compound) + str(" (%)")]
-
-                    n_digits = 2
-                    var_factor = 100
-
-                    var_entr_min = round(var_factor*min(dataset), n_digits)
-                    var_entr_max = round(var_factor*max(dataset), n_digits)
-                    var_entr_mean = round(var_factor*np.mean(dataset), n_digits)
-                    var_entr_error = round(var_factor*np.std(dataset, ddof=1), n_digits)
-
-                    entries.extend([var_entr_min, var_entr_max, var_entr_mean, var_entr_error])
-                    self.tv_lithology.insert("", tk.END, values=entries)
+                    number=n_datapoints, porosity=[0.0, 0.3])
+            elif self.var_opt_sedimentary.get() == "Conglomerate":
+                data = SiliciclasticRocks(fluid="water", actualThickness=0).create_conglomerate(
+                    number=n_datapoints, porosity=[0.0, 0.3])
+            elif self.var_opt_sedimentary.get() == "Siltstone":
+                data = SiliciclasticRocks(fluid="water", actualThickness=0).create_siltstone(
+                    number=n_datapoints, porosity=[0.0, 0.1])
+            elif self.var_opt_sedimentary.get() == "Mudstone":
+                data = SiliciclasticRocks(fluid="water", actualThickness=0).create_mudstone_alt(
+                    number=n_datapoints, porosity=[0.0, 0.1])
+            elif self.var_opt_sedimentary.get() == "Shale":
+                data = SiliciclasticRocks(fluid="water", actualThickness=0).create_shale_alt(
+                    number=n_datapoints, porosity=[0.0, 0.1])
+            elif self.var_opt_sedimentary.get() == "Greywacke (Huckenholz)":
+                data = SiliciclasticRocks(fluid="water", actualThickness=0).create_greywacke_huckenholz(
+                    rock="Greywacke", number=n_datapoints, porosity=[0.0, 0.1])
+            # Carbonate rocks
+            elif self.var_opt_sedimentary.get() == "Limestone":
+                data = CarbonateRocks(fluid="water", actualThickness=0).create_limestone(
+                    number=n_datapoints,  porosity=[0.0, 0.4])
+            elif self.var_opt_sedimentary.get() == "Dolostone":
+                data = CarbonateRocks(fluid="water", actualThickness=0).create_dolostone(
+                    number=n_datapoints, porosity=[0.0, 0.3])
+            elif self.var_opt_sedimentary.get() == "Marl":
+                data = CarbonateRocks(fluid="water", actualThickness=0).create_marl(
+                    number=n_datapoints, porosity=[0.0, 0.3])
 
         elif focus == "igneous":
             self.var_opt_sedimentary.set("Select sedimentary rock")
             self.var_opt_metamorphic.set("Select metamorphic rock")
+
         elif focus == "metamorphic":
             self.var_opt_sedimentary.set("Select sedimentary rock")
             self.var_opt_igneous.set("Select igneous rock")
+
+        self.fill_lithology_table(dataset=data, categories_long=categories, categories_short=categories_short)
+
+    def fill_lithology_table(self, dataset, categories_long, categories_short):
+        for index, category in enumerate(categories_long):
+            entries = [category]
+
+            if categories_short[index] == "vPvS":
+                category_short = "vP/vS"
+            elif categories_short[index] == "v":
+                category_short = "nu"
+            else:
+                category_short = categories_short[index]
+
+            n_digits = 3
+
+            var_entr_min = round(min(dataset[category_short]), n_digits)
+            var_entr_max = round(max(dataset[category_short]), n_digits)
+            var_entr_mean = round(np.mean(dataset[category_short]), n_digits)
+            var_entr_error = round(np.std(dataset[category_short], ddof=1), n_digits)
+
+            entries.extend([var_entr_min, var_entr_max, var_entr_mean, var_entr_error])
+            self.tv_lithology.insert("", tk.END, values=entries)
+
+        entries = ["-", "-", "-", "-", "-"]
+        self.tv_lithology.insert("", tk.END, values=entries)
+
+        for mineral, data_values in dataset["mineralogy"].items():
+            entries = [str(mineral) + str(" (%)")]
+
+            n_digits = 2
+            var_factor = 100
+
+            var_entr_min = round(var_factor*min(data_values), n_digits)
+            var_entr_max = round(var_factor*max(data_values), n_digits)
+            var_entr_mean = round(var_factor*np.mean(data_values), n_digits)
+            var_entr_error = round(var_factor*np.std(data_values, ddof=1), n_digits)
+
+            entries.extend([var_entr_min, var_entr_max, var_entr_mean, var_entr_error])
+            self.tv_lithology.insert("", tk.END, values=entries)
+
+        entries = ["-", "-", "-", "-", "-"]
+        self.tv_lithology.insert("", tk.END, values=entries)
+
+        for element, data_values in dataset["chemistry"].items():
+            entries = [str(element) + str(" (%)")]
+
+            n_digits = 2
+            var_factor = 100
+
+            var_entr_min = round(var_factor*min(data_values), n_digits)
+            var_entr_max = round(var_factor*max(data_values), n_digits)
+            var_entr_mean = round(var_factor*np.mean(data_values), n_digits)
+            var_entr_error = round(var_factor*np.std(data_values, ddof=1), n_digits)
+
+            entries.extend([var_entr_min, var_entr_max, var_entr_mean, var_entr_error])
+            self.tv_lithology.insert("", tk.END, values=entries)
+
+        entries = ["-", "-", "-", "-", "-"]
+        self.tv_lithology.insert("", tk.END, values=entries)
+
+        for compound, data_values in dataset["compounds"].items():
+            entries = [str(compound) + str(" (%)")]
+
+            n_digits = 2
+            var_factor = 100
+
+            var_entr_min = round(var_factor*min(data_values), n_digits)
+            var_entr_max = round(var_factor*max(data_values), n_digits)
+            var_entr_mean = round(var_factor*np.mean(data_values), n_digits)
+            var_entr_error = round(var_factor*np.std(data_values, ddof=1), n_digits)
+
+            entries.extend([var_entr_min, var_entr_max, var_entr_mean, var_entr_error])
+            self.tv_lithology.insert("", tk.END, values=entries)
