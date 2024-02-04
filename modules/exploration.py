@@ -17,6 +17,7 @@ from tkinter import ttk
 import numpy as np
 # internal packages
 from modules.gui_elements import SimpleElements
+from modules.siliciclastics import SiliciclasticRocks
 
 # ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- -
 
@@ -304,17 +305,15 @@ class ExplorationInterface:
             opt_metamorphic.configure(anchor=tk.W)
 
             ## Treeviews
-            categories = [
-                "M (kg/mol)", "V (\u00C5\u00B3/mol)", "rho (kg/m\u00B3)", "vP (m/s)", "vS (m/s)", "vP/vS (1)",
-                "K (GPa)", "G (GPa)", "E (GPa)", "nu (1)", "GR (API)", "PE (barns/e\u207B)", "U (barns/cm\u00B3)"]
-            categories_short = ["M", "V", "rho", "vP", "vS", "vP/vS", "K", "G", "E", "nu", "GR", "PE", "U"]
+            categories = ["rho (kg/m\u00B3)", "phi (%)", "vP (m/s)", "vS (m/s)", "vP/vS (1)", "K (GPa)", "G (GPa)",
+                          "E (GPa)", "nu (1)", "GR (API)", "PE (barns/e\u207B)"]
             list_categories = ["Category", "Minimum", "Maximum", "Mean", "Standard Deviation"]
             list_width = list(75*np.ones(len(list_categories)))
             list_width = [int(item) for item in list_width]
             list_width[0] = 90
-            list_width[-1] = 150
+            list_width[-1] = 135
 
-            tv_ma_results = SimpleElements(
+            self.tv_lithology = SimpleElements(
                 parent=self.subwindow_borehole_data, row_id=self.start_row, column_id=self.n_columns_setup + 1,
                 n_rows=self.n_rows - 1, n_columns=2*self.n_columns_setup + 1, fg=self.colors["Black"],
                 bg=self.colors["White"]).create_treeview(
@@ -322,9 +321,9 @@ class ExplorationInterface:
 
             scb_v = ttk.Scrollbar(self.subwindow_borehole_data, orient="vertical")
             scb_h = ttk.Scrollbar(self.subwindow_borehole_data, orient="horizontal")
-            tv_ma_results.configure(xscrollcommand=scb_h.set, yscrollcommand=scb_v.set)
-            scb_v.config(command=tv_ma_results.yview)
-            scb_h.config(command=tv_ma_results.xview)
+            self.tv_lithology.configure(xscrollcommand=scb_h.set, yscrollcommand=scb_v.set)
+            scb_v.config(command=self.tv_lithology.yview)
+            scb_h.config(command=self.tv_lithology.xview)
             scb_v.grid(
                 row=0, column=3*self.n_columns_setup + 2, rowspan=self.n_rows - 1, columnspan=1, sticky="ns")
             scb_h.grid(
@@ -333,12 +332,7 @@ class ExplorationInterface:
 
             for index, category in enumerate(categories):
                 entries = [category]
-
                 n_digits = 3
-                # var_entr_min = round(min(self.data_mineral[categories_short[index]]), n_digits)
-                # var_entr_max = round(max(self.data_mineral[categories_short[index]]), n_digits)
-                # var_entr_mean = round(np.mean(self.data_mineral[categories_short[index]]), n_digits)
-                # var_entr_error = round(np.std(self.data_mineral[categories_short[index]], ddof=1), n_digits)
                 var_entr_min = round(0, n_digits)
                 var_entr_max = round(0, n_digits)
                 var_entr_mean = round(0, n_digits)
@@ -346,7 +340,7 @@ class ExplorationInterface:
 
                 entries.extend([var_entr_min, var_entr_max, var_entr_mean, var_entr_error])
 
-                tv_ma_results.insert("", tk.END, values=entries)
+                self.tv_lithology.insert("", tk.END, values=entries)
 
         if update:
             self.lbl_borehole_id.configure(text=self.current_borehole_id)
@@ -469,9 +463,93 @@ class ExplorationInterface:
         Outputs
             ---
         """
+        if len(self.tv_lithology.get_children()) > 0:
+            for item in self.tv_lithology.get_children():
+                self.tv_lithology.delete(item)
+
+        n_datapoints = self.var_entr_parts.get()
+        categories = ["rho (kg/m\u00B3)", "phi (%)", "vP (m/s)", "vS (m/s)", "vP/vS (1)", "K (GPa)", "G (GPa)",
+                      "E (GPa)", "nu (1)", "GR (API)", "PE (barns/e\u207B)"]
+        categories_short = ["rho", "phi", "vP", "vS", "vPvS", "K", "G", "E", "v", "GR", "PE"]
+
         if focus == "sedimentary":
             self.var_opt_igneous.set("Select igneous rock")
             self.var_opt_metamorphic.set("Select metamorphic rock")
+            if self.var_opt_sedimentary.get() == "Sandstone":
+                data = SiliciclasticRocks(fluid="water", actualThickness=0).create_sandstone(
+                    number=n_datapoints, porosity=[0.05, 0.35])
+
+                for index, category in enumerate(categories):
+                    entries = [category]
+
+                    if categories_short[index] == "vPvS":
+                        category_short = "vP/vS"
+                    elif categories_short[index] == "v":
+                        category_short = "nu"
+                    else:
+                        category_short = categories_short[index]
+
+                    n_digits = 3
+
+                    var_entr_min = round(min(data[category_short]), n_digits)
+                    var_entr_max = round(max(data[category_short]), n_digits)
+                    var_entr_mean = round(np.mean(data[category_short]), n_digits)
+                    var_entr_error = round(np.std(data[category_short], ddof=1), n_digits)
+
+                    entries.extend([var_entr_min, var_entr_max, var_entr_mean, var_entr_error])
+                    self.tv_lithology.insert("", tk.END, values=entries)
+
+                entries = ["-", "-", "-", "-", "-"]
+                self.tv_lithology.insert("", tk.END, values=entries)
+
+                for mineral, dataset in data["mineralogy"].items():
+                    entries = [str(mineral) + str(" (%)")]
+
+                    n_digits = 2
+                    var_factor = 100
+
+                    var_entr_min = round(var_factor*min(dataset), n_digits)
+                    var_entr_max = round(var_factor*max(dataset), n_digits)
+                    var_entr_mean = round(var_factor*np.mean(dataset), n_digits)
+                    var_entr_error = round(var_factor*np.std(dataset, ddof=1), n_digits)
+
+                    entries.extend([var_entr_min, var_entr_max, var_entr_mean, var_entr_error])
+                    self.tv_lithology.insert("", tk.END, values=entries)
+
+                entries = ["-", "-", "-", "-", "-"]
+                self.tv_lithology.insert("", tk.END, values=entries)
+
+                for element, dataset in data["chemistry"].items():
+                    entries = [str(element) + str(" (%)")]
+
+                    n_digits = 2
+                    var_factor = 100
+
+                    var_entr_min = round(var_factor*min(dataset), n_digits)
+                    var_entr_max = round(var_factor*max(dataset), n_digits)
+                    var_entr_mean = round(var_factor*np.mean(dataset), n_digits)
+                    var_entr_error = round(var_factor*np.std(dataset, ddof=1), n_digits)
+
+                    entries.extend([var_entr_min, var_entr_max, var_entr_mean, var_entr_error])
+                    self.tv_lithology.insert("", tk.END, values=entries)
+
+                entries = ["-", "-", "-", "-", "-"]
+                self.tv_lithology.insert("", tk.END, values=entries)
+
+                for compound, dataset in data["compounds"].items():
+                    entries = [str(compound) + str(" (%)")]
+
+                    n_digits = 2
+                    var_factor = 100
+
+                    var_entr_min = round(var_factor*min(dataset), n_digits)
+                    var_entr_max = round(var_factor*max(dataset), n_digits)
+                    var_entr_mean = round(var_factor*np.mean(dataset), n_digits)
+                    var_entr_error = round(var_factor*np.std(dataset, ddof=1), n_digits)
+
+                    entries.extend([var_entr_min, var_entr_max, var_entr_mean, var_entr_error])
+                    self.tv_lithology.insert("", tk.END, values=entries)
+
         elif focus == "igneous":
             self.var_opt_sedimentary.set("Select sedimentary rock")
             self.var_opt_metamorphic.set("Select metamorphic rock")
