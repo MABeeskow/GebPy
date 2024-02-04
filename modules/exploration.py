@@ -13,6 +13,7 @@
 
 # external packages
 import tkinter as tk
+from tkinter import ttk
 import numpy as np
 # internal packages
 from modules.gui_elements import SimpleElements
@@ -63,7 +64,7 @@ class ExplorationInterface:
         var_geometry = str(window_width) + "x" + str(window_height) + "+" + str(0) + "+" + str(0)
 
         row_min = 25
-        n_rows = int(window_height/row_min)
+        self.n_rows = int(window_height/row_min)
         column_min = 20
         n_columns = int(window_width/column_min)
 
@@ -76,11 +77,11 @@ class ExplorationInterface:
 
         for x in range(n_columns):
             tk.Grid.columnconfigure(self.subwindow_borehole_data, x, weight=1)
-        for y in range(n_rows):
+        for y in range(self.n_rows):
             tk.Grid.rowconfigure(self.subwindow_borehole_data, y, weight=1)
 
         # Rows
-        for i in range(0, n_rows):
+        for i in range(0, self.n_rows):
             self.subwindow_borehole_data.grid_rowconfigure(i, minsize=row_min)
         # Columns
         for i in range(0, n_columns):
@@ -92,7 +93,7 @@ class ExplorationInterface:
         ## Frames
         SimpleElements(
             parent=self.subwindow_borehole_data, row_id=self.start_row, column_id=self.n_columns_setup + 1,
-            n_rows=n_rows, n_columns=n_columns - self.n_columns_setup - 1, bg=self.colors["Background"],
+            n_rows=self.n_rows, n_columns=n_columns - self.n_columns_setup - 1, bg=self.colors["Background"],
             fg=self.colors["Background"]).create_frame()
 
         ## Labels
@@ -301,6 +302,51 @@ class ExplorationInterface:
             opt_sedimentary.configure(anchor=tk.W)
             opt_igneous.configure(anchor=tk.W)
             opt_metamorphic.configure(anchor=tk.W)
+
+            ## Treeviews
+            categories = [
+                "M (kg/mol)", "V (\u00C5\u00B3/mol)", "rho (kg/m\u00B3)", "vP (m/s)", "vS (m/s)", "vP/vS (1)",
+                "K (GPa)", "G (GPa)", "E (GPa)", "nu (1)", "GR (API)", "PE (barns/e\u207B)", "U (barns/cm\u00B3)"]
+            categories_short = ["M", "V", "rho", "vP", "vS", "vP/vS", "K", "G", "E", "nu", "GR", "PE", "U"]
+            list_categories = ["Category", "Minimum", "Maximum", "Mean", "Standard Deviation"]
+            list_width = list(75*np.ones(len(list_categories)))
+            list_width = [int(item) for item in list_width]
+            list_width[0] = 90
+            list_width[-1] = 150
+
+            tv_ma_results = SimpleElements(
+                parent=self.subwindow_borehole_data, row_id=self.start_row, column_id=self.n_columns_setup + 1,
+                n_rows=self.n_rows - 1, n_columns=2*self.n_columns_setup + 1, fg=self.colors["Black"],
+                bg=self.colors["White"]).create_treeview(
+                n_categories=len(list_categories), text_n=list_categories, width_n=list_width, individual=True)
+
+            scb_v = ttk.Scrollbar(self.subwindow_borehole_data, orient="vertical")
+            scb_h = ttk.Scrollbar(self.subwindow_borehole_data, orient="horizontal")
+            tv_ma_results.configure(xscrollcommand=scb_h.set, yscrollcommand=scb_v.set)
+            scb_v.config(command=tv_ma_results.yview)
+            scb_h.config(command=tv_ma_results.xview)
+            scb_v.grid(
+                row=0, column=3*self.n_columns_setup + 2, rowspan=self.n_rows - 1, columnspan=1, sticky="ns")
+            scb_h.grid(
+                row=self.n_rows - 1, column=self.n_columns_setup + 1, rowspan=1, columnspan=2*self.n_columns_setup + 1,
+                sticky="ew")
+
+            for index, category in enumerate(categories):
+                entries = [category]
+
+                n_digits = 3
+                # var_entr_min = round(min(self.data_mineral[categories_short[index]]), n_digits)
+                # var_entr_max = round(max(self.data_mineral[categories_short[index]]), n_digits)
+                # var_entr_mean = round(np.mean(self.data_mineral[categories_short[index]]), n_digits)
+                # var_entr_error = round(np.std(self.data_mineral[categories_short[index]], ddof=1), n_digits)
+                var_entr_min = round(0, n_digits)
+                var_entr_max = round(0, n_digits)
+                var_entr_mean = round(0, n_digits)
+                var_entr_error = round(0, n_digits)
+
+                entries.extend([var_entr_min, var_entr_max, var_entr_mean, var_entr_error])
+
+                tv_ma_results.insert("", tk.END, values=entries)
 
         if update:
             self.lbl_borehole_id.configure(text=self.current_borehole_id)
