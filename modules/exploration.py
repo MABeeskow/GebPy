@@ -6,7 +6,7 @@
 # File:         exploration.py
 # Description:  Contains all necessary functions that are related to mineral exploration
 # Author:       Maximilian Beeskow
-# Last updated: 04.02.2024
+# Last updated: 13.02.2024
 # License:      GPL v3.0
 
 # ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- -
@@ -19,6 +19,7 @@ import numpy as np
 from modules.gui_elements import SimpleElements
 from modules.siliciclastics import SiliciclasticRocks
 from modules.carbonates import CarbonateRocks
+from modules.igneous import Plutonic, Volcanic, UltraMafic, Pyroclastic
 
 # ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- -
 
@@ -277,8 +278,14 @@ class ExplorationInterface:
                 self.entr_bottom.configure(state="normal")
 
             ## Option Menus
-            list_opt_sedimentary = ["Sandstone", "Limestone", "Shale"]
-            list_opt_igneous = ["Granite", "Basalt", "Gabbro"]
+            list_opt_sedimentary = [
+                "Sandstone", "Shale", "Siltstone", "Mudstone", "Greywacke (Huckenholz)", "Conglomerate", "Limestone",
+                "Dolostone", "Marl"]
+            list_opt_igneous = [
+                "Granite", "Granodiorite", "Tonalite", "Gabbro", "Norite", "Diorite", "Monzodiorite", "Monzogabbro",
+                "Monzonite", "Syenite", "Granitoid", "Quarzolite", "Foid-bearing Syenite", "Foid-bearing Monzonite",
+                "Foid-bearing Monzodiorite", "Foid-bearing Monzogabbro", "Foid Monzosyenite", "Foid Monzodiorite",
+                "Foid Monzogabbro", "Foidolite"]
             list_opt_metamorphic = ["Gneiss", "Marble"]
             opt_sedimentary = SimpleElements(
                 parent=self.subwindow_borehole_data, row_id=self.start_row + 18, column_id=1, n_rows=1,
@@ -510,6 +517,16 @@ class ExplorationInterface:
         elif focus == "igneous":
             self.var_opt_sedimentary.set("Select sedimentary rock")
             self.var_opt_metamorphic.set("Select metamorphic rock")
+            # Igneous rocks (Plutonic rocks) ["Granite", "Basalt", "Gabbro"]
+            if self.var_opt_igneous.get() in [
+                "Granite", "Granodiorite", "Tonalite", "Gabbro", "Norite", "Diorite", "Monzodiorite", "Monzogabbro",
+                "Monzonite", "Syenite", "Granitoid", "Quarzolite", "Foid-bearing Syenite", "Foid-bearing Monzonite",
+                "Foid-bearing Monzodiorite", "Foid-bearing Monzogabbro", "Foid Monzosyenite", "Foid Monzodiorite",
+                "Foid Monzogabbro", "Foidolite"]:
+                data = Plutonic(
+                    fluid="water", actualThickness=0, dict_output=True,
+                    porosity=[0.0, 0.1]).create_plutonic_rock_streckeisen(
+                    rock=self.var_opt_igneous.get(), number=n_datapoints, porosity=[0.0, 0.1])
 
         elif focus == "metamorphic":
             self.var_opt_sedimentary.set("Select sedimentary rock")
