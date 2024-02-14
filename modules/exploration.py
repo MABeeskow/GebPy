@@ -6,7 +6,7 @@
 # File:         exploration.py
 # Description:  Contains all necessary functions that are related to mineral exploration
 # Author:       Maximilian Beeskow
-# Last updated: 13.02.2024
+# Last updated: 14.02.2024
 # License:      GPL v3.0
 
 # ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- -
@@ -20,6 +20,7 @@ from modules.gui_elements import SimpleElements
 from modules.siliciclastics import SiliciclasticRocks
 from modules.carbonates import CarbonateRocks
 from modules.igneous import Plutonic, Volcanic, UltraMafic, Pyroclastic
+from modules.metamorphics import GranuliteFacies, GreenschistFacies, AmphiboliteFacies
 
 # ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- -
 
@@ -285,8 +286,12 @@ class ExplorationInterface:
                 "Granite", "Granodiorite", "Tonalite", "Gabbro", "Norite", "Diorite", "Monzodiorite", "Monzogabbro",
                 "Monzonite", "Syenite", "Granitoid", "Quarzolite", "Foid-bearing Syenite", "Foid-bearing Monzonite",
                 "Foid-bearing Monzodiorite", "Foid-bearing Monzogabbro", "Foid Monzosyenite", "Foid Monzodiorite",
-                "Foid Monzogabbro", "Foidolite"]
-            list_opt_metamorphic = ["Gneiss", "Marble"]
+                "Foid Monzogabbro", "Foidolite", "Rhyolite", "Dacite", "Trachyte", "Latite", "Andesite", "Basalt",
+                "Foid-bearing Trachyte", "Foid-bearing Latite", "Foid-bearing Andesite", "Foid-bearing Basalt",
+                "Phonolite", "Tephrite", "Foidite"]
+            list_opt_metamorphic = [
+                "Felsic Granulite", "Mafic Granulite", "Basaltic Greenschist", "Ultramafic Greenschist",
+                "Pelitic Greenschist", "Ortho-Amphibolite"]
             opt_sedimentary = SimpleElements(
                 parent=self.subwindow_borehole_data, row_id=self.start_row + 18, column_id=1, n_rows=1,
                 n_columns=self.n_columns_setup - 1, bg=self.colors["Background"],
@@ -527,10 +532,43 @@ class ExplorationInterface:
                     fluid="water", actualThickness=0, dict_output=True,
                     porosity=[0.0, 0.1]).create_plutonic_rock_streckeisen(
                     rock=self.var_opt_igneous.get(), number=n_datapoints, porosity=[0.0, 0.1])
+            elif self.var_opt_igneous.get() in ["Rhyolite", "Dacite", "Trachyte", "Latite", "Andesite", "Basalt",
+                "Foid-bearing Trachyte", "Foid-bearing Latite", "Foid-bearing Andesite", "Foid-bearing Basalt",
+                "Phonolite", "Tephrite", "Foidite"]:
+                data = Volcanic(
+                    fluid="water", actualThickness=0, dict_output=True,
+                    porosity=[0.0, 0.1]).create_volcanic_rock_streckeisen(
+                    rock=self.var_opt_igneous.get(), number=n_datapoints)
 
         elif focus == "metamorphic":
             self.var_opt_sedimentary.set("Select sedimentary rock")
             self.var_opt_igneous.set("Select igneous rock")
+
+            if self.var_opt_metamorphic.get() == "Felsic Granulite":
+                data = GranuliteFacies(
+                    fluid="water", actual_thickness=0, porosity=[0.0, 0.1]).create_granulite(
+                    number=n_datapoints, classification="felsic")
+            elif self.var_opt_metamorphic.get() == "Mafic Granulite":
+                data = GranuliteFacies(
+                    fluid="water", actual_thickness=0, porosity=[0.0, 0.1]).create_granulite(
+                    number=n_datapoints, classification="mafic")
+            elif self.var_opt_metamorphic.get() == "Basaltic Greenschist":
+                data = GreenschistFacies(
+                    fluid="water", actual_thickness=0, porosity=[0.0, 0.1]).create_greenschist_basaltic_alt(
+                    number=n_datapoints)
+            elif self.var_opt_metamorphic.get() == "Ultramafic Greenschist":
+                data = GreenschistFacies(
+                    fluid="water", actual_thickness=0, porosity=[0.0, 0.1]).create_greenschist_ultramafic_alt(
+                    number=n_datapoints)
+            elif self.var_opt_metamorphic.get() == "Pelitic Greenschist":
+                data = GreenschistFacies(
+                    fluid="water", actual_thickness=0, porosity=[0.0, 0.1]).create_greenschist_pelitic_alt(
+                    number=n_datapoints)
+            # Amphibolite-Facies
+            elif self.var_opt_metamorphic.get() == "Ortho-Amphibolite":
+                data = AmphiboliteFacies(
+                    fluid="water", actual_thickness=0, porosity=[0.0, 0.1]).create_amphibolite_ortho(
+                    number=n_datapoints)
 
         self.fill_lithology_table(dataset=data, categories_long=categories, categories_short=categories_short)
 
@@ -589,19 +627,20 @@ class ExplorationInterface:
             entries.extend([var_entr_min, var_entr_max, var_entr_mean, var_entr_error])
             self.tv_lithology.insert("", tk.END, values=entries)
 
-        entries = ["-", "-", "-", "-", "-"]
-        self.tv_lithology.insert("", tk.END, values=entries)
-
-        for compound, data_values in dataset["compounds"].items():
-            entries = [str(compound) + str(" (%)")]
-
-            n_digits = 2
-            var_factor = 100
-
-            var_entr_min = round(var_factor*min(data_values), n_digits)
-            var_entr_max = round(var_factor*max(data_values), n_digits)
-            var_entr_mean = round(var_factor*np.mean(data_values), n_digits)
-            var_entr_error = round(var_factor*np.std(data_values, ddof=1), n_digits)
-
-            entries.extend([var_entr_min, var_entr_max, var_entr_mean, var_entr_error])
+        if "compounds" in dataset:
+            entries = ["-", "-", "-", "-", "-"]
             self.tv_lithology.insert("", tk.END, values=entries)
+
+            for compound, data_values in dataset["compounds"].items():
+                entries = [str(compound) + str(" (%)")]
+
+                n_digits = 2
+                var_factor = 100
+
+                var_entr_min = round(var_factor*min(data_values), n_digits)
+                var_entr_max = round(var_factor*max(data_values), n_digits)
+                var_entr_mean = round(var_factor*np.mean(data_values), n_digits)
+                var_entr_error = round(var_factor*np.std(data_values, ddof=1), n_digits)
+
+                entries.extend([var_entr_min, var_entr_max, var_entr_mean, var_entr_error])
+                self.tv_lithology.insert("", tk.END, values=entries)
