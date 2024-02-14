@@ -21,6 +21,7 @@ from modules.siliciclastics import SiliciclasticRocks
 from modules.carbonates import CarbonateRocks
 from modules.igneous import Plutonic, Volcanic, UltraMafic, Pyroclastic
 from modules.metamorphics import GranuliteFacies, GreenschistFacies, AmphiboliteFacies
+from modules.ore import OreRocks
 
 # ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- -
 
@@ -56,6 +57,12 @@ class ExplorationInterface:
 
         self.var_opt_sedimentary = tk.StringVar()
         self.var_opt_sedimentary.set("Select sedimentary rock")
+        self.var_opt_plutonic = tk.StringVar()
+        self.var_opt_plutonic.set("Select plutonic rock")
+        self.var_opt_volcanic = tk.StringVar()
+        self.var_opt_volcanic.set("Select volcanic rock")
+        self.var_opt_ore = tk.StringVar()
+        self.var_opt_ore.set("Select ore rock")
         self.var_opt_igneous = tk.StringVar()
         self.var_opt_igneous.set("Select igneous rock")
         self.var_opt_metamorphic = tk.StringVar()
@@ -64,7 +71,7 @@ class ExplorationInterface:
     def create_subwindow_borehole_data(self):
         ## Window Settings
         window_width = 900
-        window_height = 675
+        window_height = 725
         var_geometry = str(window_width) + "x" + str(window_height) + "+" + str(0) + "+" + str(0)
 
         row_min = 25
@@ -219,11 +226,11 @@ class ExplorationInterface:
                 n_columns=self.n_columns_setup - 1, bg=self.colors["Navigation"], fg=self.colors["White"]).create_label(
                 text="Lithology", relief=tk.FLAT, font_option="sans 10 bold", anchor_option=tk.W)
             SimpleElements(
-                parent=self.subwindow_borehole_data, row_id=self.start_row + 22, column_id=1, n_rows=1, n_columns=6,
+                parent=self.subwindow_borehole_data, row_id=self.start_row + 24, column_id=1, n_rows=1, n_columns=6,
                 bg=self.colors["Navigation"], fg=self.colors["White"]).create_label(
                 text="Top depth (m)", relief=tk.FLAT, font_option="sans 10 bold", anchor_option=tk.W)
             SimpleElements(
-                parent=self.subwindow_borehole_data, row_id=self.start_row + 23, column_id=1, n_rows=1, n_columns=6,
+                parent=self.subwindow_borehole_data, row_id=self.start_row + 25, column_id=1, n_rows=1, n_columns=6,
                 bg=self.colors["Navigation"], fg=self.colors["White"]).create_label(
                 text="Bottom depth (m)", relief=tk.FLAT, font_option="sans 10 bold", anchor_option=tk.W)
 
@@ -245,7 +252,7 @@ class ExplorationInterface:
                 bg=self.colors["Background"], fg=self.colors["Navigation"]).create_button(
                 text="Next", command=lambda mode="next": self.change_unit(mode))
             btn_06 = SimpleElements(
-                parent=self.subwindow_borehole_data, row_id=self.start_row + 25, column_id=1, n_rows=1,
+                parent=self.subwindow_borehole_data, row_id=self.start_row + 27, column_id=1, n_rows=1,
                 n_columns=self.n_columns_setup - 1, bg=self.colors["Background"],
                 fg=self.colors["Navigation"]).create_button(text="Export data")
             btn_02.configure(activebackground=self.colors["Accent"])
@@ -256,11 +263,11 @@ class ExplorationInterface:
 
             ## Entries
             self.entr_top = SimpleElements(
-                parent=self.subwindow_borehole_data, row_id=self.start_row + 22, column_id=7, n_rows=1, n_columns=4,
+                parent=self.subwindow_borehole_data, row_id=self.start_row + 24, column_id=7, n_rows=1, n_columns=4,
                 bg=self.colors["Background"], fg=self.colors["Navigation"]).create_entry(
                 var_entr=self.dict_entr_top[self.current_borehole_id][self.current_unit_id])
             self.entr_bottom = SimpleElements(
-                parent=self.subwindow_borehole_data, row_id=self.start_row + 23, column_id=7, n_rows=1, n_columns=4,
+                parent=self.subwindow_borehole_data, row_id=self.start_row + 25, column_id=7, n_rows=1, n_columns=4,
                 bg=self.colors["Background"], fg=self.colors["Navigation"]).create_entry(
                 var_entr=self.dict_entr_bottom[self.current_borehole_id][self.current_unit_id])
             self.entr_top.bind(
@@ -282,6 +289,15 @@ class ExplorationInterface:
             list_opt_sedimentary = [
                 "Sandstone", "Shale", "Siltstone", "Mudstone", "Greywacke (Huckenholz)", "Conglomerate", "Limestone",
                 "Dolostone", "Marl"]
+            list_opt_plutonic = [
+                "Granite", "Granodiorite", "Tonalite", "Gabbro", "Norite", "Diorite", "Monzodiorite", "Monzogabbro",
+                "Monzonite", "Syenite", "Granitoid", "Quarzolite", "Foid-bearing Syenite", "Foid-bearing Monzonite",
+                "Foid-bearing Monzodiorite", "Foid-bearing Monzogabbro", "Foid Monzosyenite", "Foid Monzodiorite",
+                "Foid Monzogabbro", "Foidolite"]
+            list_opt_volcanic = [
+                "Rhyolite", "Dacite", "Trachyte", "Latite", "Andesite", "Basalt",
+                "Foid-bearing Trachyte", "Foid-bearing Latite", "Foid-bearing Andesite", "Foid-bearing Basalt",
+                "Phonolite", "Tephrite", "Foidite"]
             list_opt_igneous = [
                 "Granite", "Granodiorite", "Tonalite", "Gabbro", "Norite", "Diorite", "Monzodiorite", "Monzogabbro",
                 "Monzonite", "Syenite", "Granitoid", "Quarzolite", "Foid-bearing Syenite", "Foid-bearing Monzonite",
@@ -292,6 +308,8 @@ class ExplorationInterface:
             list_opt_metamorphic = [
                 "Felsic Granulite", "Mafic Granulite", "Basaltic Greenschist", "Ultramafic Greenschist",
                 "Pelitic Greenschist", "Ortho-Amphibolite"]
+            list_opt_ore = [
+                "Itabirite"]
             opt_sedimentary = SimpleElements(
                 parent=self.subwindow_borehole_data, row_id=self.start_row + 18, column_id=1, n_rows=1,
                 n_columns=self.n_columns_setup - 1, bg=self.colors["Background"],
@@ -299,23 +317,39 @@ class ExplorationInterface:
                 var_opt=self.var_opt_sedimentary, var_opt_set=self.var_opt_sedimentary.get(),
                 opt_list=list_opt_sedimentary, active_bg=self.colors["Accent"],
                 command=lambda event, focus="sedimentary": self.select_lithology(focus, event))
-            opt_igneous = SimpleElements(
+            opt_plutonic = SimpleElements(
                 parent=self.subwindow_borehole_data, row_id=self.start_row + 19, column_id=1, n_rows=1,
                 n_columns=self.n_columns_setup - 1, bg=self.colors["Background"],
                 fg=self.colors["Navigation"]).create_option_menu(
-                var_opt=self.var_opt_igneous, var_opt_set=self.var_opt_igneous.get(), opt_list=list_opt_igneous,
-                active_bg=self.colors["Accent"], command=lambda event, focus="igneous":
+                var_opt=self.var_opt_plutonic, var_opt_set=self.var_opt_plutonic.get(), opt_list=list_opt_plutonic,
+                active_bg=self.colors["Accent"], command=lambda event, focus="plutonic":
+                self.select_lithology(focus, event))
+            opt_volcanic = SimpleElements(
+                parent=self.subwindow_borehole_data, row_id=self.start_row + 20, column_id=1, n_rows=1,
+                n_columns=self.n_columns_setup - 1, bg=self.colors["Background"],
+                fg=self.colors["Navigation"]).create_option_menu(
+                var_opt=self.var_opt_volcanic, var_opt_set=self.var_opt_volcanic.get(), opt_list=list_opt_volcanic,
+                active_bg=self.colors["Accent"], command=lambda event, focus="volcanic":
                 self.select_lithology(focus, event))
             opt_metamorphic = SimpleElements(
-                parent=self.subwindow_borehole_data, row_id=self.start_row + 20, column_id=1, n_rows=1,
+                parent=self.subwindow_borehole_data, row_id=self.start_row + 21, column_id=1, n_rows=1,
                 n_columns=self.n_columns_setup - 1, bg=self.colors["Background"],
                 fg=self.colors["Navigation"]).create_option_menu(
                 var_opt=self.var_opt_metamorphic, var_opt_set=self.var_opt_metamorphic.get(),
                 opt_list=list_opt_metamorphic, active_bg=self.colors["Accent"],
                 command=lambda event, focus="metamorphic": self.select_lithology(focus, event))
+            opt_ore = SimpleElements(
+                parent=self.subwindow_borehole_data, row_id=self.start_row + 22, column_id=1, n_rows=1,
+                n_columns=self.n_columns_setup - 1, bg=self.colors["Background"],
+                fg=self.colors["Navigation"]).create_option_menu(
+                var_opt=self.var_opt_ore, var_opt_set=self.var_opt_ore.get(),
+                opt_list=list_opt_ore, active_bg=self.colors["Accent"],
+                command=lambda event, focus="ore": self.select_lithology(focus, event))
             opt_sedimentary.configure(anchor=tk.W)
-            opt_igneous.configure(anchor=tk.W)
+            opt_plutonic.configure(anchor=tk.W)
+            opt_volcanic.configure(anchor=tk.W)
             opt_metamorphic.configure(anchor=tk.W)
+            opt_ore.configure(anchor=tk.W)
 
             ## Treeviews
             categories = ["rho (kg/m\u00B3)", "phi (%)", "vP (m/s)", "vS (m/s)", "vP/vS (1)", "K (GPa)", "G (GPa)",
@@ -486,8 +520,10 @@ class ExplorationInterface:
         categories_short = ["rho", "phi", "vP", "vS", "vPvS", "K", "G", "E", "v", "GR", "PE"]
 
         if focus == "sedimentary":
-            self.var_opt_igneous.set("Select igneous rock")
+            self.var_opt_plutonic.set("Select plutonic rock")
+            self.var_opt_volcanic.set("Select volcanic rock")
             self.var_opt_metamorphic.set("Select metamorphic rock")
+            self.var_opt_ore.set("Select ore rock")
 
             # Siliciclastic rocks
             if self.var_opt_sedimentary.get() == "Sandstone":
@@ -519,11 +555,13 @@ class ExplorationInterface:
                 data = CarbonateRocks(fluid="water", actualThickness=0).create_marl(
                     number=n_datapoints, porosity=[0.0, 0.3])
 
-        elif focus == "igneous":
+        elif focus == "plutonic":
             self.var_opt_sedimentary.set("Select sedimentary rock")
+            self.var_opt_volcanic.set("Select volcanic rock")
             self.var_opt_metamorphic.set("Select metamorphic rock")
-            # Igneous rocks (Plutonic rocks) ["Granite", "Basalt", "Gabbro"]
-            if self.var_opt_igneous.get() in [
+            self.var_opt_ore.set("Select ore rock")
+
+            if self.var_opt_plutonic.get() in [
                 "Granite", "Granodiorite", "Tonalite", "Gabbro", "Norite", "Diorite", "Monzodiorite", "Monzogabbro",
                 "Monzonite", "Syenite", "Granitoid", "Quarzolite", "Foid-bearing Syenite", "Foid-bearing Monzonite",
                 "Foid-bearing Monzodiorite", "Foid-bearing Monzogabbro", "Foid Monzosyenite", "Foid Monzodiorite",
@@ -531,7 +569,7 @@ class ExplorationInterface:
                 data = Plutonic(
                     fluid="water", actualThickness=0, dict_output=True,
                     porosity=[0.0, 0.1]).create_plutonic_rock_streckeisen(
-                    rock=self.var_opt_igneous.get(), number=n_datapoints, porosity=[0.0, 0.1])
+                    rock=self.var_opt_plutonic.get(), number=n_datapoints, porosity=[0.0, 0.1])
             elif self.var_opt_igneous.get() in ["Rhyolite", "Dacite", "Trachyte", "Latite", "Andesite", "Basalt",
                 "Foid-bearing Trachyte", "Foid-bearing Latite", "Foid-bearing Andesite", "Foid-bearing Basalt",
                 "Phonolite", "Tephrite", "Foidite"]:
@@ -540,9 +578,25 @@ class ExplorationInterface:
                     porosity=[0.0, 0.1]).create_volcanic_rock_streckeisen(
                     rock=self.var_opt_igneous.get(), number=n_datapoints)
 
+        elif focus == "volcanic":
+            self.var_opt_sedimentary.set("Select sedimentary rock")
+            self.var_opt_plutonic.set("Select plutonic rock")
+            self.var_opt_metamorphic.set("Select metamorphic rock")
+            self.var_opt_ore.set("Select ore rock")
+
+            if self.var_opt_volcanic.get() in ["Rhyolite", "Dacite", "Trachyte", "Latite", "Andesite", "Basalt",
+                "Foid-bearing Trachyte", "Foid-bearing Latite", "Foid-bearing Andesite", "Foid-bearing Basalt",
+                "Phonolite", "Tephrite", "Foidite"]:
+                data = Volcanic(
+                    fluid="water", actualThickness=0, dict_output=True,
+                    porosity=[0.0, 0.1]).create_volcanic_rock_streckeisen(
+                    rock=self.var_opt_volcanic.get(), number=n_datapoints)
+
         elif focus == "metamorphic":
             self.var_opt_sedimentary.set("Select sedimentary rock")
-            self.var_opt_igneous.set("Select igneous rock")
+            self.var_opt_plutonic.set("Select plutonic rock")
+            self.var_opt_volcanic.set("Select volcanic rock")
+            self.var_opt_ore.set("Select ore rock")
 
             if self.var_opt_metamorphic.get() == "Felsic Granulite":
                 data = GranuliteFacies(
@@ -569,6 +623,17 @@ class ExplorationInterface:
                 data = AmphiboliteFacies(
                     fluid="water", actual_thickness=0, porosity=[0.0, 0.1]).create_amphibolite_ortho(
                     number=n_datapoints)
+
+        elif focus == "ore":
+            self.var_opt_sedimentary.set("Select sedimentary rock")
+            self.var_opt_plutonic.set("Select plutonic rock")
+            self.var_opt_volcanic.set("Select volcanic rock")
+            self.var_opt_metamorphic.set("Select metamorphic rock")
+
+            if self.var_opt_ore.get() == "Itabirite":
+                data = OreRocks(
+                    fluid="water", actual_thickness=0, porosity=[0.0, 0.1]).create_siliciclastic_itabirite(
+                    rock="Itabirite", number=n_datapoints)
 
         self.fill_lithology_table(dataset=data, categories_long=categories, categories_short=categories_short)
 
