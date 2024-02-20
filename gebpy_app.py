@@ -6,7 +6,7 @@
 # Name:		gebpy_app.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		01.02.2024
+# Date:		20.02.2024
 # License:  GPL v3.0
 
 # ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- -
@@ -568,6 +568,8 @@ class GebPyGUI(tk.Frame):
             label="Rock Comparison", command=self.rock_comparison)
         petrology_menu.add_command(
             label="Rock Builder", command=self.rock_builder)
+        petrology_menu.add_command(
+            label="Rock Builder (sedimentary)", command=self.rock_builder_sedimentary)
         #
         menubar.add_cascade(
             label="Petrology",
@@ -3401,8 +3403,123 @@ class GebPyGUI(tk.Frame):
             text="Rock Comparison", font_option="sans 14 bold", relief=tk.FLAT)
         #
         self.gui_elements["Static"]["Label"].extend([lbl_title])
-        #
-    #
+
+    def rock_builder_sedimentary(self):
+        ## Window Settings
+        window_width = 900
+        window_height = 800
+        var_geometry = str(window_width) + "x" + str(window_height) + "+" + str(0) + "+" + str(0)
+
+        row_min = 25
+        self.n_rows = int(window_height/row_min)
+        column_min = 20
+        n_columns = int(window_width/column_min)
+
+        str_title_window = "GebPy - Rock Builder (sedimentary)"
+        self.subwindow_rockbuilder_sedimentary = tk.Toplevel(self.parent)
+        self.subwindow_rockbuilder_sedimentary.title(str_title_window)
+        self.subwindow_rockbuilder_sedimentary.geometry(var_geometry)
+        self.subwindow_rockbuilder_sedimentary.resizable(False, False)
+        self.subwindow_rockbuilder_sedimentary["bg"] = self.colors_gebpy["Navigation"]
+
+        for x in range(n_columns):
+            tk.Grid.columnconfigure(self.subwindow_rockbuilder_sedimentary, x, weight=1)
+        for y in range(self.n_rows):
+            tk.Grid.rowconfigure(self.subwindow_rockbuilder_sedimentary, y, weight=1)
+
+        # Rows
+        for i in range(0, self.n_rows):
+            self.subwindow_rockbuilder_sedimentary.grid_rowconfigure(i, minsize=row_min)
+        # Columns
+        for i in range(0, n_columns):
+            self.subwindow_rockbuilder_sedimentary.grid_columnconfigure(i, minsize=column_min)
+
+        self.start_row = 0
+        self.n_columns_setup = 11
+
+        ## Frames
+        SimpleElements(
+            parent=self.subwindow_rockbuilder_sedimentary, row_id=self.start_row, column_id=self.n_columns_setup + 1,
+            n_rows=self.n_rows, n_columns=n_columns - self.n_columns_setup - 1, bg=self.colors_gebpy["Background"],
+            fg=self.colors_gebpy["Background"]).create_frame()
+
+        ## Labels
+        SimpleElements(
+            parent=self.subwindow_rockbuilder_sedimentary, row_id=self.start_row, column_id=1, n_rows=1,
+            n_columns=self.n_columns_setup - 1, bg=self.colors_gebpy["Navigation"],
+            fg=self.colors_gebpy["White"]).create_label(
+            text="Settings", relief=tk.FLAT, font_option="sans 12 bold", anchor_option=tk.W)
+        SimpleElements(
+            parent=self.subwindow_rockbuilder_sedimentary, row_id=self.start_row + 1, column_id=1, n_rows=1,
+            n_columns=self.n_columns_setup - 1, bg=self.colors_gebpy["Navigation"],
+            fg=self.colors_gebpy["White"]).create_label(
+            text="Total amount of Qz", relief=tk.FLAT, font_option="sans 10 bold", anchor_option=tk.W)
+        SimpleElements(
+            parent=self.subwindow_rockbuilder_sedimentary, row_id=self.start_row + 3, column_id=1, n_rows=1,
+            n_columns=self.n_columns_setup - 1, bg=self.colors_gebpy["Navigation"],
+            fg=self.colors_gebpy["White"]).create_label(
+            text="Total amount of Fsp (Kfs+Pl)", relief=tk.FLAT, font_option="sans 10 bold", anchor_option=tk.W)
+        SimpleElements(
+            parent=self.subwindow_rockbuilder_sedimentary, row_id=self.start_row + 5, column_id=1, n_rows=1,
+            n_columns=self.n_columns_setup - 1, bg=self.colors_gebpy["Navigation"],
+            fg=self.colors_gebpy["White"]).create_label(
+            text="Kfs/Pl ratio", relief=tk.FLAT, font_option="sans 10 bold", anchor_option=tk.W)
+        SimpleElements(
+            parent=self.subwindow_rockbuilder_sedimentary, row_id=self.start_row + 7, column_id=1, n_rows=1,
+            n_columns=self.n_columns_setup - 1, bg=self.colors_gebpy["Navigation"],
+            fg=self.colors_gebpy["White"]).create_label(
+            text="Total amount of Cal+Dol", relief=tk.FLAT, font_option="sans 10 bold", anchor_option=tk.W)
+        SimpleElements(
+            parent=self.subwindow_rockbuilder_sedimentary, row_id=self.start_row + 9, column_id=1, n_rows=1,
+            n_columns=self.n_columns_setup - 1, bg=self.colors_gebpy["Navigation"],
+            fg=self.colors_gebpy["White"]).create_label(
+            text="Cal/Dol ratio", relief=tk.FLAT, font_option="sans 10 bold", anchor_option=tk.W)
+        SimpleElements(
+            parent=self.subwindow_rockbuilder_sedimentary, row_id=self.start_row + 11, column_id=1, n_rows=1,
+            n_columns=self.n_columns_setup - 1, bg=self.colors_gebpy["Navigation"],
+            fg=self.colors_gebpy["White"]).create_label(
+            text="Total amount of Ilt+Mnt", relief=tk.FLAT, font_option="sans 10 bold", anchor_option=tk.W)
+        SimpleElements(
+            parent=self.subwindow_rockbuilder_sedimentary, row_id=self.start_row + 13, column_id=1, n_rows=1,
+            n_columns=self.n_columns_setup - 1, bg=self.colors_gebpy["Navigation"],
+            fg=self.colors_gebpy["White"]).create_label(
+            text="Ilt/Mnt ratio", relief=tk.FLAT, font_option="sans 10 bold", anchor_option=tk.W)
+        SimpleElements(
+            parent=self.subwindow_rockbuilder_sedimentary, row_id=self.start_row + 15, column_id=1, n_rows=1,
+            n_columns=self.n_columns_setup - 1, bg=self.colors_gebpy["Navigation"],
+            fg=self.colors_gebpy["White"]).create_label(
+            text="Total amount of Anh+Gp", relief=tk.FLAT, font_option="sans 10 bold", anchor_option=tk.W)
+        SimpleElements(
+            parent=self.subwindow_rockbuilder_sedimentary, row_id=self.start_row + 17, column_id=1, n_rows=1,
+            n_columns=self.n_columns_setup - 1, bg=self.colors_gebpy["Navigation"],
+            fg=self.colors_gebpy["White"]).create_label(
+            text="Anh/Gp ratio", relief=tk.FLAT, font_option="sans 10 bold", anchor_option=tk.W)
+        SimpleElements(
+            parent=self.subwindow_rockbuilder_sedimentary, row_id=self.start_row + 19, column_id=1, n_rows=1,
+            n_columns=self.n_columns_setup - 1, bg=self.colors_gebpy["Navigation"],
+            fg=self.colors_gebpy["White"]).create_label(
+            text="Total amount of Org", relief=tk.FLAT, font_option="sans 10 bold", anchor_option=tk.W)
+        SimpleElements(
+            parent=self.subwindow_rockbuilder_sedimentary, row_id=self.start_row + 21, column_id=1, n_rows=1,
+            n_columns=self.n_columns_setup - 1, bg=self.colors_gebpy["Navigation"],
+            fg=self.colors_gebpy["White"]).create_label(
+            text="Total amount of Py+Sd", relief=tk.FLAT, font_option="sans 10 bold", anchor_option=tk.W)
+        SimpleElements(
+            parent=self.subwindow_rockbuilder_sedimentary, row_id=self.start_row + 23, column_id=1, n_rows=1,
+            n_columns=self.n_columns_setup - 1, bg=self.colors_gebpy["Navigation"],
+            fg=self.colors_gebpy["White"]).create_label(
+            text="Py/Sd ratio", relief=tk.FLAT, font_option="sans 10 bold", anchor_option=tk.W)
+        SimpleElements(
+            parent=self.subwindow_rockbuilder_sedimentary, row_id=self.start_row + 25, column_id=1, n_rows=1,
+            n_columns=self.n_columns_setup - 1, bg=self.colors_gebpy["Navigation"],
+            fg=self.colors_gebpy["White"]).create_label(
+            text="Number of datapoints", relief=tk.FLAT, font_option="sans 10 bold", anchor_option=tk.W)
+        SimpleElements(
+            parent=self.subwindow_rockbuilder_sedimentary, row_id=self.start_row + 27, column_id=1, n_rows=1,
+            n_columns=self.n_columns_setup - 1, bg=self.colors_gebpy["Navigation"],
+            fg=self.colors_gebpy["White"]).create_label(
+            text="Range of porosity", relief=tk.FLAT, font_option="sans 10 bold", anchor_option=tk.W)
+
     def rock_builder(self):
         ## Initialization
         self.gui_variables["Entry"]["Number Datapoints"] = tk.IntVar()
