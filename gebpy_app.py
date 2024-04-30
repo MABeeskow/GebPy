@@ -6,7 +6,7 @@
 # Name:		gebpy_app.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		20.02.2024
+# Date:		30.04.2024
 # License:  GPL v3.0
 
 # ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- -
@@ -125,6 +125,12 @@ class GebPyGUI(tk.Frame):
         self.last_rb_setting["Petrology"]["Composition Minerals"].set(42)
         self.last_rb_setting["Petrology"]["Composition Elements"] = tk.IntVar()
         self.last_rb_setting["Petrology"]["Composition Elements"].set(42)
+
+        self.var_rb = {
+            "Rock analysis": {"Rock definition": tk.IntVar(), "External data": tk.IntVar(), "x-axis": tk.StringVar(),
+                              "y-axis": tk.StringVar()}}
+
+
         # Stratigraphy
         #
         ### General Settings
@@ -564,6 +570,8 @@ class GebPyGUI(tk.Frame):
             menu=sub_rock_groups)
         #
         petrology_menu.add_separator()
+        petrology_menu.add_command(
+            label="Rock Analysis", command=self.rock_analysis)
         petrology_menu.add_command(
             label="Rock Comparison", command=self.rock_comparison)
         petrology_menu.add_command(
@@ -3387,6 +3395,149 @@ class GebPyGUI(tk.Frame):
                 entries.extend([var_entr_min, var_entr_max, var_entr_mean, var_entr_error])
 
                 self.tv_petrology_results.insert("", tk.END, values=entries)
+
+    def rock_analysis(self):
+        rock_analysis = tk.Toplevel(self.parent)
+        rock_analysis.title("GebPy - Rock analysis")
+        rock_analysis.geometry("1350x825")
+        rock_analysis.resizable(False, False)
+        rock_analysis["bg"] = self.colors_gebpy["Background"]
+
+        ## Cleaning
+        categories = ["Frame", "Label", "Radiobutton", "Entry", "Checkbox"]
+        priorities = ["Static", "Temporary"]
+        for priority in priorities:
+            for category in categories:
+                if len(self.gui_elements_sub["Mineralogy"][priority][category]) > 0:
+                    self.gui_elements_sub["Mineralogy"][priority][category].clear()
+
+        ## Geometry and Layout
+        window_width = 1200
+        window_heigth = 800
+        row_min = 20
+        n_rows = int(window_heigth/row_min)
+        column_min = 20
+        n_columns = int(window_width/column_min)
+
+        for x in range(n_columns):
+            tk.Grid.columnconfigure(rock_analysis, x, weight=1)
+        for y in range(n_rows):
+            tk.Grid.rowconfigure(rock_analysis, y, weight=1)
+
+        # Rows
+        for i in range(0, n_rows):
+            rock_analysis.grid_rowconfigure(i, minsize=row_min)
+        # Columns
+        for i in range(0, n_columns):
+            rock_analysis.grid_columnconfigure(i, minsize=column_min)
+
+        ## FRAMES
+        SimpleElements(parent=rock_analysis, row_id=0, column_id=0, n_rows=n_rows, n_columns=15,
+                       bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Option"]).create_frame()
+
+        ## LABELS
+        lbl_01 = SimpleElements(
+            parent=rock_analysis, row_id=0, column_id=0, n_rows=1, n_columns=15, bg=self.colors_gebpy["Accent"],
+            fg=self.colors_gebpy["Navigation"]).create_label(
+            text="Rock analysis", font_option="sans 14 bold", relief=tk.FLAT)
+        lbl_02 = SimpleElements(
+            parent=rock_analysis, row_id=2, column_id=1, n_rows=1, n_columns=10, bg=self.colors_gebpy["Navigation"],
+            fg=self.colors_gebpy["Accent"]).create_label(
+            text="Rock definition", font_option="sans 14 bold", relief=tk.FLAT, anchor_option=tk.W)
+        lbl_03 = SimpleElements(
+            parent=rock_analysis, row_id=6, column_id=1, n_rows=1, n_columns=10, bg=self.colors_gebpy["Navigation"],
+            fg=self.colors_gebpy["Accent"]).create_label(
+            text="External data", font_option="sans 14 bold", relief=tk.FLAT, anchor_option=tk.W)
+        lbl_04 = SimpleElements(
+            parent=rock_analysis, row_id=10, column_id=1, n_rows=1, n_columns=10, bg=self.colors_gebpy["Navigation"],
+            fg=self.colors_gebpy["Accent"]).create_label(
+            text="Plotting options", font_option="sans 14 bold", relief=tk.FLAT, anchor_option=tk.W)
+        lbl_04a = SimpleElements(
+            parent=rock_analysis, row_id=11, column_id=1, n_rows=1, n_columns=7, bg=self.colors_gebpy["Navigation"],
+            fg=self.colors_gebpy["White"]).create_label(
+            text="Define x-axis", font_option="sans 12 bold", relief=tk.FLAT, anchor_option=tk.W)
+        lbl_04b = SimpleElements(
+            parent=rock_analysis, row_id=12, column_id=1, n_rows=1, n_columns=7, bg=self.colors_gebpy["Navigation"],
+            fg=self.colors_gebpy["White"]).create_label(
+            text="Define y-axis", font_option="sans 12 bold", relief=tk.FLAT, anchor_option=tk.W)
+
+        ## RADIOBUTTONS
+        var_rb_02 = self.var_rb["Rock analysis"]["Rock definition"]
+        var_rb_02.set(0)
+
+        rb_02a = SimpleElements(
+            parent=rock_analysis, row_id=3, column_id=1, n_rows=1, n_columns=9, bg=self.colors_gebpy["Navigation"],
+            fg=self.colors_gebpy["White"]).create_radiobutton(
+            text="Predefined rock", var_rb=var_rb_02, value_rb=0, color_bg=self.colors_gebpy["Accent"])
+        rb_02b = SimpleElements(
+            parent=rock_analysis, row_id=4, column_id=1, n_rows=1, n_columns=9, bg=self.colors_gebpy["Navigation"],
+            fg=self.colors_gebpy["White"]).create_radiobutton(
+            text="Custom rock", var_rb=var_rb_02, value_rb=1, color_bg=self.colors_gebpy["Accent"])
+
+        rb_02a.configure(
+            activebackground=self.colors_gebpy["Navigation"], activeforeground=self.colors_gebpy["Accent"],
+            font="sans 12 bold")
+        rb_02b.configure(
+            activebackground=self.colors_gebpy["Navigation"], activeforeground=self.colors_gebpy["Accent"],
+            font="sans 12 bold")
+
+        var_rb_03 = self.var_rb["Rock analysis"]["External data"]
+        var_rb_03.set(0)
+
+        rb_03a = SimpleElements(
+            parent=rock_analysis, row_id=7, column_id=1, n_rows=1, n_columns=9, bg=self.colors_gebpy["Navigation"],
+            fg=self.colors_gebpy["White"]).create_radiobutton(
+            text="Import data", var_rb=var_rb_03, value_rb=0, color_bg=self.colors_gebpy["Accent"])
+        rb_03b = SimpleElements(
+            parent=rock_analysis, row_id=8, column_id=1, n_rows=1, n_columns=9, bg=self.colors_gebpy["Navigation"],
+            fg=self.colors_gebpy["White"]).create_radiobutton(
+            text="Custom input", var_rb=var_rb_03, value_rb=1, color_bg=self.colors_gebpy["Accent"])
+
+        rb_03a.configure(
+            activebackground=self.colors_gebpy["Navigation"], activeforeground=self.colors_gebpy["Accent"],
+            font="sans 12 bold")
+        rb_03b.configure(
+            activebackground=self.colors_gebpy["Navigation"], activeforeground=self.colors_gebpy["Accent"],
+            font="sans 12 bold")
+
+        ## BUTTONS
+        btn_02 = SimpleElements(
+            parent=rock_analysis, row_id=3, column_id=9, n_rows=2, n_columns=5, bg=self.colors_gebpy["Option"],
+            fg=self.colors_gebpy["Navigation"]).create_button(text="Setup")
+        btn_03 = SimpleElements(
+            parent=rock_analysis, row_id=7, column_id=9, n_rows=2, n_columns=5, bg=self.colors_gebpy["Option"],
+            fg=self.colors_gebpy["Navigation"]).create_button(text="Setup")
+        btn_04 = SimpleElements(
+            parent=rock_analysis, row_id=n_rows - 2, column_id=1, n_rows=1, n_columns=13, bg=self.colors_gebpy["Option"],
+            fg=self.colors_gebpy["Navigation"]).create_button(text="Export data")
+
+        btn_02.configure(activebackground=self.colors_gebpy["Accent"], font="sans 12 bold")
+        btn_03.configure(activebackground=self.colors_gebpy["Accent"], font="sans 12 bold")
+        btn_04.configure(activebackground=self.colors_gebpy["Accent"], font="sans 12 bold")
+
+        ## OPTION MENUS
+        var_opt_04a = self.var_rb["Rock analysis"]["x-axis"]
+        var_opt_04a.set("Select parameter")
+        list_opt_04a = ["rho", "vP", "vS", "GR", "PE"]
+
+        opt_04a = SimpleElements(
+            parent=rock_analysis, row_id=11, column_id=9, n_rows=1, n_columns=5, bg=self.colors_gebpy["Option"],
+            fg=self.colors_gebpy["Navigation"]).create_option_menu(
+            var_opt=var_opt_04a, var_opt_set=var_opt_04a.get(), opt_list=list_opt_04a,
+            active_bg=self.colors_gebpy["Accent"])
+
+        var_opt_04b = self.var_rb["Rock analysis"]["y-axis"]
+        var_opt_04b.set("Select parameter")
+        list_opt_04b = ["rho", "vP", "vS", "GR", "PE"]
+
+        opt_04b = SimpleElements(
+            parent=rock_analysis, row_id=12, column_id=9, n_rows=1, n_columns=5, bg=self.colors_gebpy["Option"],
+            fg=self.colors_gebpy["Navigation"]).create_option_menu(
+            var_opt=var_opt_04b, var_opt_set=var_opt_04b.get(), opt_list=list_opt_04b,
+            active_bg=self.colors_gebpy["Accent"])
+
+        opt_04a.configure(font="sans 10 bold")
+        opt_04b.configure(font="sans 10 bold")
 
     def rock_comparison(self):
         ## Cleaning
