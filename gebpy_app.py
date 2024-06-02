@@ -6,7 +6,7 @@
 # Name:		gebpy_app.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		30.04.2024
+# Date:		02.06.2024
 # License:  GPL v3.0
 
 # ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- -
@@ -3557,7 +3557,7 @@ class GebPyGUI(tk.Frame):
 
     def rock_builder_sedimentary(self):
         ## Window Settings
-        window_width = 900
+        window_width = 1200
         window_height = 800
         var_geometry = str(window_width) + "x" + str(window_height) + "+" + str(0) + "+" + str(0)
 
@@ -3664,12 +3664,117 @@ class GebPyGUI(tk.Frame):
             parent=self.subwindow_rockbuilder_sedimentary, row_id=self.start_row + 25, column_id=1, n_rows=1,
             n_columns=self.n_columns_setup - 1, bg=self.colors_gebpy["Navigation"],
             fg=self.colors_gebpy["White"]).create_label(
-            text="Number of datapoints", relief=tk.FLAT, font_option="sans 10 bold", anchor_option=tk.W)
+            text="Range of porosity", relief=tk.FLAT, font_option="sans 10 bold", anchor_option=tk.W)
         SimpleElements(
             parent=self.subwindow_rockbuilder_sedimentary, row_id=self.start_row + 27, column_id=1, n_rows=1,
             n_columns=self.n_columns_setup - 1, bg=self.colors_gebpy["Navigation"],
             fg=self.colors_gebpy["White"]).create_label(
-            text="Range of porosity", relief=tk.FLAT, font_option="sans 10 bold", anchor_option=tk.W)
+            text="Number of datapoints", relief=tk.FLAT, font_option="sans 10 bold", anchor_option=tk.W)
+
+        ## ENTRIES
+        var_entr_01 = tk.StringVar()
+        var_entr_01.set("0.0")
+        var_entr_02 = tk.StringVar()
+        var_entr_02.set("0.0")
+        var_entr_03 = tk.StringVar()
+        var_entr_03.set("0.0")
+        var_entr_04 = tk.StringVar()
+        var_entr_04.set("0.0")
+        var_entr_05 = tk.StringVar()
+        var_entr_05.set("0.0")
+        var_entr_06 = tk.StringVar()
+        var_entr_06.set("0.0")
+        var_entr_07 = tk.StringVar()
+        var_entr_07.set("0.0")
+        var_entr_08 = tk.StringVar()
+        var_entr_08.set("0.0")
+        var_entr_09 = tk.StringVar()
+        var_entr_09.set("0.0")
+        var_entr_10 = tk.StringVar()
+        var_entr_10.set("0.0")
+        var_entr_11 = tk.StringVar()
+        var_entr_11.set("0.0")
+        var_entr_12 = tk.StringVar()
+        var_entr_12.set("0.0")
+        var_entr_13a = tk.IntVar()
+        var_entr_13a.set(0)
+        var_entr_13b = tk.IntVar()
+        var_entr_13b.set(10)
+        var_entr_14 = tk.IntVar()
+        var_entr_14.set(100)
+
+        SimpleElements(
+            parent=self.subwindow_rockbuilder_sedimentary, row_id=self.start_row + 2, column_id=1, n_rows=1,
+            n_columns=self.n_columns_setup - 1, bg=self.colors_gebpy["Background"],
+            fg=self.colors_gebpy["Navigation"]).create_entry(var_entr=var_entr_01)
+        SimpleElements(
+            parent=self.subwindow_rockbuilder_sedimentary, row_id=self.start_row + 4, column_id=1, n_rows=1,
+            n_columns=self.n_columns_setup - 1, bg=self.colors_gebpy["Background"],
+            fg=self.colors_gebpy["Navigation"]).create_entry(var_entr=var_entr_02)
+        SimpleElements(
+            parent=self.subwindow_rockbuilder_sedimentary, row_id=self.start_row + 6, column_id=1, n_rows=1,
+            n_columns=self.n_columns_setup - 1, bg=self.colors_gebpy["Background"],
+            fg=self.colors_gebpy["Navigation"]).create_entry(var_entr=var_entr_03)
+        SimpleElements(
+            parent=self.subwindow_rockbuilder_sedimentary, row_id=self.start_row + 8, column_id=1, n_rows=1,
+            n_columns=self.n_columns_setup - 1, bg=self.colors_gebpy["Background"],
+            fg=self.colors_gebpy["Navigation"]).create_entry(var_entr=var_entr_04)
+        SimpleElements(
+            parent=self.subwindow_rockbuilder_sedimentary, row_id=self.start_row + 10, column_id=1, n_rows=1,
+            n_columns=self.n_columns_setup - 1, bg=self.colors_gebpy["Background"],
+            fg=self.colors_gebpy["Navigation"]).create_entry(var_entr=var_entr_05)
+        SimpleElements(
+            parent=self.subwindow_rockbuilder_sedimentary, row_id=self.start_row + 12, column_id=1, n_rows=1,
+            n_columns=self.n_columns_setup - 1, bg=self.colors_gebpy["Background"],
+            fg=self.colors_gebpy["Navigation"]).create_entry(var_entr=var_entr_06)
+        SimpleElements(
+            parent=self.subwindow_rockbuilder_sedimentary, row_id=self.start_row + 14, column_id=1, n_rows=1,
+            n_columns=self.n_columns_setup - 1, bg=self.colors_gebpy["Background"],
+            fg=self.colors_gebpy["Navigation"]).create_entry(var_entr=var_entr_07)
+        SimpleElements(
+            parent=self.subwindow_rockbuilder_sedimentary, row_id=self.start_row + 16, column_id=1, n_rows=1,
+            n_columns=self.n_columns_setup - 1, bg=self.colors_gebpy["Background"],
+            fg=self.colors_gebpy["Navigation"]).create_entry(var_entr=var_entr_08)
+        SimpleElements(
+            parent=self.subwindow_rockbuilder_sedimentary, row_id=self.start_row + 18, column_id=1, n_rows=1,
+            n_columns=self.n_columns_setup - 1, bg=self.colors_gebpy["Background"],
+            fg=self.colors_gebpy["Navigation"]).create_entry(var_entr=var_entr_09)
+        SimpleElements(
+            parent=self.subwindow_rockbuilder_sedimentary, row_id=self.start_row + 20, column_id=1, n_rows=1,
+            n_columns=self.n_columns_setup - 1, bg=self.colors_gebpy["Background"],
+            fg=self.colors_gebpy["Navigation"]).create_entry(var_entr=var_entr_10)
+        SimpleElements(
+            parent=self.subwindow_rockbuilder_sedimentary, row_id=self.start_row + 22, column_id=1, n_rows=1,
+            n_columns=self.n_columns_setup - 1, bg=self.colors_gebpy["Background"],
+            fg=self.colors_gebpy["Navigation"]).create_entry(var_entr=var_entr_11)
+        SimpleElements(
+            parent=self.subwindow_rockbuilder_sedimentary, row_id=self.start_row + 24, column_id=1, n_rows=1,
+            n_columns=self.n_columns_setup - 1, bg=self.colors_gebpy["Background"],
+            fg=self.colors_gebpy["Navigation"]).create_entry(var_entr=var_entr_12)
+        SimpleElements(
+            parent=self.subwindow_rockbuilder_sedimentary, row_id=self.start_row + 26, column_id=1, n_rows=1,
+            n_columns=int((self.n_columns_setup - 1)/2), bg=self.colors_gebpy["Background"],
+            fg=self.colors_gebpy["Navigation"]).create_entry(var_entr=var_entr_13a)
+        SimpleElements(
+            parent=self.subwindow_rockbuilder_sedimentary, row_id=self.start_row + 26,
+            column_id=int((self.n_columns_setup - 1)/2) + 1, n_rows=1, n_columns=int((self.n_columns_setup - 1)/2),
+            bg=self.colors_gebpy["Background"], fg=self.colors_gebpy["Navigation"]).create_entry(var_entr=var_entr_13b)
+        SimpleElements(
+            parent=self.subwindow_rockbuilder_sedimentary, row_id=self.start_row + 28, column_id=1, n_rows=1,
+            n_columns=self.n_columns_setup - 1, bg=self.colors_gebpy["Background"],
+            fg=self.colors_gebpy["Navigation"]).create_entry(var_entr=var_entr_14)
+
+        ## BUTTONS
+        SimpleElements(
+            parent=self.subwindow_rockbuilder_sedimentary, row_id=self.start_row + 30, column_id=1, n_rows=1,
+            n_columns=int((self.n_columns_setup - 1)/2), bg=self.colors_gebpy["Option"],
+            fg=self.colors_gebpy["Navigation"]).create_button(text="Run calculation")
+        SimpleElements(
+            parent=self.subwindow_rockbuilder_sedimentary, row_id=self.start_row + 30,
+            column_id=int((self.n_columns_setup - 1)/2) + 1, n_rows=1, n_columns=int((self.n_columns_setup - 1)/2),
+            bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_button(text="Export results")
+
+        ## TREEVIEWS
 
     def rock_builder(self):
         ## Initialization
