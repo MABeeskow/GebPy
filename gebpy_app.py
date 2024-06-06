@@ -13,6 +13,7 @@
 
 ## MODULES
 # external
+import os, sys
 from datetime import datetime
 import tkinter as tk
 from tkinter import ttk
@@ -53,7 +54,9 @@ class GebPyGUI(tk.Frame):
     #
     def __init__(self, parent, var_screen_width, var_screen_height):
         tk.Frame.__init__(self, parent)
-        #
+
+        self.path_gebpy = os.path.dirname(os.path.realpath(sys.argv[0]))
+
         var_screen_width = var_screen_width
         var_screen_height = var_screen_height
         #
@@ -199,7 +202,7 @@ class GebPyGUI(tk.Frame):
         #
         ## Logo
         try:
-            gebpy_logo = tk.PhotoImage(file="documents/readme_images/GebPy_Logo_new.png")
+            gebpy_logo = tk.PhotoImage(file=self.path_gebpy + "/documents/readme_images/GebPy_Logo_new.png")
             gebpy_logo = gebpy_logo.subsample(5, 5)
             img = tk.Label(self.parent, image=gebpy_logo, bg=self.colors_gebpy["Navigation"])
             img.image = gebpy_logo
