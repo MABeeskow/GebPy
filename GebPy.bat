@@ -1,0 +1,1 @@
+C:\Users\MAB26\anaconda3\python.exe C:\Users\MAB26\PycharmProjects\GebPy\gebpy_app.py
