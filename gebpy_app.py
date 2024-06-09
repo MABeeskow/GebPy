@@ -3864,6 +3864,44 @@ class GebPyGUI(tk.Frame):
 
         print("Total amount (mineralogy):", w_total_mineralogy)
 
+        if round(w_total_mineralogy, 2) == 100.00:
+            ## Mineralogy
+            # Quartz
+            #
+            # Feldspar minerals
+            #
+            # Carbonate minerals
+            #
+            # Clay minerals
+            #
+            # Sulfate minerals
+            #
+            # Organic matter
+            #
+            # Sulfide minerals
+            #
+            ## Geophysical results
+            # Bulk density
+            #
+            # Molar volume
+            #
+            # Porosity
+            #
+            # Seismic velocities
+            #
+            # Elastic properties
+            #
+            # Gamma ray
+            #
+            # Photoelectricity
+            #
+            ## Geochemical results
+            # Element concentrations
+            #
+            # Oxide concentrations
+            #
+            pass
+
     def rock_builder(self):
         ## Initialization
         self.gui_variables["Entry"]["Number Datapoints"] = tk.IntVar()
