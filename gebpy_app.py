@@ -3686,7 +3686,7 @@ class GebPyGUI(tk.Frame):
 
         ## ENTRIES
         var_entr_01 = tk.StringVar()
-        var_entr_01.set("0.0")
+        var_entr_01.set("100.0")
         var_entr_02 = tk.StringVar()
         var_entr_02.set("0.0")
         var_entr_03 = tk.StringVar()
@@ -3820,39 +3820,49 @@ class GebPyGUI(tk.Frame):
             sticky="ew")
 
     def run_calculation_rockbuilder_sedimentary(self):
+        w_total_mineralogy = 0
         for key, item in self.helper_rockbuilder_sedimentary_variables.items():
             if key == "w(Qz)":
-                val_wQz = item.get()
+                val_wQz = float(item.get())
+                w_total_mineralogy += val_wQz
             elif key == "w(Kfs+Pl)":
-                val_wKfsPl = item.get()
+                val_wKfsPl = float(item.get())
+                w_total_mineralogy += val_wKfsPl
             elif key == "w(Kfs)/w(Pl)":
-                val_ratio_KfsPl = item.get()
+                val_ratio_KfsPl = float(item.get())
             elif key == "w(Cal+Dol)":
-                val_wCalDol = item.get()
+                val_wCalDol = float(item.get())
+                w_total_mineralogy += val_wCalDol
             elif key == "w(Cal)/w(Dol)":
-                val_ratio_CalDol = item.get()
+                val_ratio_CalDol = float(item.get())
             elif key == "w(Ilt+Mnt)":
-                val_wIltMnt = item.get()
+                val_wIltMnt = float(item.get())
+                w_total_mineralogy += val_wIltMnt
             elif key == "w(Ilt)/w(Mnt)":
-                val_ratio_IltMnt = item.get()
+                val_ratio_IltMnt = float(item.get())
             elif key == "w(Anh+Gp)":
-                val_wAnhGp = item.get()
+                val_wAnhGp = float(item.get())
+                w_total_mineralogy += val_wAnhGp
             elif key == "w(Anh)/w(Gp)":
-                val_ratio_AnhGp = item.get()
+                val_ratio_AnhGp = float(item.get())
             elif key == "w(org)":
-                val_wOrg = item.get()
+                val_wOrg = float(item.get())
+                w_total_mineralogy += val_wOrg
             elif key == "w(Py+Sd)":
-                val_wPySd = item.get()
+                val_wPySd = float(item.get())
+                w_total_mineralogy += val_wPySd
             elif key == "w(Py)/w(Sd)":
-                val_ratio_PySd = item.get()
+                val_ratio_PySd = float(item.get())
             elif key == "phi(min)":
-                val_phiMin = item.get()
+                val_phiMin = float(item.get())
             elif key == "phi(max)":
-                val_phiMax = item.get()
+                val_phiMax = float(item.get())
             elif key == "n(datapoints)":
-                val_nDatapoints = item.get()
+                val_nDatapoints = float(item.get())
 
-            print(key, item.get())
+            print(key, float(item.get()))
+
+        print("Total amount (mineralogy):", w_total_mineralogy)
 
     def rock_builder(self):
         ## Initialization
