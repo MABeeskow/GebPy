@@ -6,7 +6,7 @@
 # Name:		gebpy_app.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		09.06.2024
+# Date:		10.06.2024
 # License:  GPL v3.0
 
 # ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- -
@@ -207,6 +207,11 @@ class GebPyGUI(tk.Frame):
             img = tk.Label(self.parent, image=gebpy_logo, bg=self.colors_gebpy["Navigation"])
             img.image = gebpy_logo
             img.grid(row=0, column=0, rowspan=5, columnspan=32, sticky="nesw")
+
+            ## Icon
+            #pysills_icon = tk.PhotoImage(file=self.path_pysills + str("/documentation/images/PySILLS_Icon.png"))
+            gebpy_icon = tk.PhotoImage(file=self.path_gebpy + str("/GebPy_Logo.png"))
+            self.parent.iconphoto(False, gebpy_icon)
         except:
             print("Image not found!")
         #
