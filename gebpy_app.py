@@ -6,7 +6,7 @@
 # Name:		gebpy_app.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		10.06.2024
+# Date:		14.06.2024
 # License:  GPL v3.0
 
 # ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- -
@@ -3622,7 +3622,7 @@ class GebPyGUI(tk.Frame):
             parent=self.subwindow_rockbuilder_sedimentary, row_id=self.start_row + 5, column_id=1, n_rows=1,
             n_columns=self.n_columns_setup - 1, bg=self.colors_gebpy["Navigation"],
             fg=self.colors_gebpy["White"]).create_label(
-            text="Kfs/Pl ratio", relief=tk.FLAT, font_option="sans 10 bold", anchor_option=tk.W)
+            text="Kfs/(Kfs+Pl) ratio", relief=tk.FLAT, font_option="sans 10 bold", anchor_option=tk.W)
         SimpleElements(
             parent=self.subwindow_rockbuilder_sedimentary, row_id=self.start_row + 7, column_id=1, n_rows=1,
             n_columns=self.n_columns_setup - 1, bg=self.colors_gebpy["Navigation"],
@@ -3690,28 +3690,42 @@ class GebPyGUI(tk.Frame):
             text="Diagrams", relief=tk.FLAT, font_option="sans 10 bold", anchor_option=tk.W)
 
         ## ENTRIES
-        var_entr_01 = tk.StringVar()
-        var_entr_01.set("100.0")
-        var_entr_02 = tk.StringVar()
-        var_entr_02.set("0.0")
+        var_entr_01a = tk.StringVar()
+        var_entr_01a.set("0.0")
+        var_entr_01b = tk.StringVar()
+        var_entr_01b.set("100.0")
+        var_entr_02a = tk.StringVar()
+        var_entr_02a.set("0.0")
+        var_entr_02b = tk.StringVar()
+        var_entr_02b.set("0.0")
         var_entr_03 = tk.StringVar()
         var_entr_03.set("0.0")
-        var_entr_04 = tk.StringVar()
-        var_entr_04.set("0.0")
+        var_entr_04a = tk.StringVar()
+        var_entr_04a.set("0.0")
+        var_entr_04b = tk.StringVar()
+        var_entr_04b.set("0.0")
         var_entr_05 = tk.StringVar()
         var_entr_05.set("0.0")
-        var_entr_06 = tk.StringVar()
-        var_entr_06.set("0.0")
+        var_entr_06a = tk.StringVar()
+        var_entr_06a.set("0.0")
+        var_entr_06b = tk.StringVar()
+        var_entr_06b.set("0.0")
         var_entr_07 = tk.StringVar()
         var_entr_07.set("0.0")
-        var_entr_08 = tk.StringVar()
-        var_entr_08.set("0.0")
+        var_entr_08a = tk.StringVar()
+        var_entr_08a.set("0.0")
+        var_entr_08b = tk.StringVar()
+        var_entr_08b.set("0.0")
         var_entr_09 = tk.StringVar()
         var_entr_09.set("0.0")
-        var_entr_10 = tk.StringVar()
-        var_entr_10.set("0.0")
-        var_entr_11 = tk.StringVar()
-        var_entr_11.set("0.0")
+        var_entr_10a = tk.StringVar()
+        var_entr_10a.set("0.0")
+        var_entr_10b = tk.StringVar()
+        var_entr_10b.set("0.0")
+        var_entr_11a = tk.StringVar()
+        var_entr_11a.set("0.0")
+        var_entr_11b = tk.StringVar()
+        var_entr_11b.set("0.0")
         var_entr_12 = tk.StringVar()
         var_entr_12.set("0.0")
         var_entr_13a = tk.IntVar()
@@ -3722,56 +3736,87 @@ class GebPyGUI(tk.Frame):
         var_entr_14.set(100)
 
         self.helper_rockbuilder_sedimentary_variables = {
-            "w(Qz)": var_entr_01, "w(Kfs+Pl)": var_entr_02, "w(Kfs)/w(Pl)": var_entr_03, "w(Cal+Dol)": var_entr_04,
-            "w(Cal)/w(Dol)": var_entr_05, "w(Ilt+Mnt)": var_entr_06, "w(Ilt)/w(Mnt)": var_entr_07,
-            "w(Anh+Gp)": var_entr_08, "w(Anh)/w(Gp)": var_entr_09, "w(org)": var_entr_10, "w(Py+Sd)": var_entr_11,
+            "w(Qz,min)": var_entr_01a, "w(Qz,max)": var_entr_01b, "w(Kfs+Pl,min)": var_entr_02a,
+            "w(Kfs+Pl,max)": var_entr_02b, "w(Kfs)/w(Kfs+Pl)": var_entr_03, "w(Cal+Dol,min)": var_entr_04a,
+            "w(Cal+Dol,max)": var_entr_04b, "w(Cal)/w(Cal+Dol)": var_entr_05, "w(Ilt+Mnt,min)": var_entr_06a,
+            "w(Ilt+Mnt,max)": var_entr_06b, "w(Ilt)/w(Ilt+Mnt)": var_entr_07, "w(Anh+Gp,min)": var_entr_08a,
+            "w(Anh+Gp,max)": var_entr_08b, "w(Anh)/w(Anh+Gp)": var_entr_09, "w(org,min)": var_entr_10a,
+            "w(org,max)": var_entr_10b, "w(Py+Sd,min)": var_entr_11a, "w(Py+Sd,max)": var_entr_11b,
             "w(Py)/w(Sd)": var_entr_12, "phi(min)": var_entr_13a, "phi(max)": var_entr_13b,
             "n(datapoints)": var_entr_14}
 
         SimpleElements(
             parent=self.subwindow_rockbuilder_sedimentary, row_id=self.start_row + 2, column_id=1, n_rows=1,
-            n_columns=self.n_columns_setup - 1, bg=self.colors_gebpy["White"],
-            fg=self.colors_gebpy["Navigation"]).create_entry(var_entr=var_entr_01)
+            n_columns=int((self.n_columns_setup - 1)/2), bg=self.colors_gebpy["White"],
+            fg=self.colors_gebpy["Navigation"]).create_entry(var_entr=var_entr_01a)
+        SimpleElements(
+            parent=self.subwindow_rockbuilder_sedimentary, row_id=self.start_row + 2,
+            column_id=int((self.n_columns_setup - 1)/2) + 1, n_rows=1, n_columns=int((self.n_columns_setup - 1)/2),
+            bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(var_entr=var_entr_01b)
         SimpleElements(
             parent=self.subwindow_rockbuilder_sedimentary, row_id=self.start_row + 4, column_id=1, n_rows=1,
-            n_columns=self.n_columns_setup - 1, bg=self.colors_gebpy["White"],
-            fg=self.colors_gebpy["Navigation"]).create_entry(var_entr=var_entr_02)
+            n_columns=int((self.n_columns_setup - 1)/2), bg=self.colors_gebpy["White"],
+            fg=self.colors_gebpy["Navigation"]).create_entry(var_entr=var_entr_02a)
+        SimpleElements(
+            parent=self.subwindow_rockbuilder_sedimentary, row_id=self.start_row + 4,
+            column_id=int((self.n_columns_setup - 1)/2) + 1, n_rows=1, n_columns=int((self.n_columns_setup - 1)/2),
+            bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(var_entr=var_entr_02b)
         SimpleElements(
             parent=self.subwindow_rockbuilder_sedimentary, row_id=self.start_row + 6, column_id=1, n_rows=1,
             n_columns=self.n_columns_setup - 1, bg=self.colors_gebpy["White"],
             fg=self.colors_gebpy["Navigation"]).create_entry(var_entr=var_entr_03)
         SimpleElements(
             parent=self.subwindow_rockbuilder_sedimentary, row_id=self.start_row + 8, column_id=1, n_rows=1,
-            n_columns=self.n_columns_setup - 1, bg=self.colors_gebpy["White"],
-            fg=self.colors_gebpy["Navigation"]).create_entry(var_entr=var_entr_04)
+            n_columns=int((self.n_columns_setup - 1)/2), bg=self.colors_gebpy["White"],
+            fg=self.colors_gebpy["Navigation"]).create_entry(var_entr=var_entr_04a)
+        SimpleElements(
+            parent=self.subwindow_rockbuilder_sedimentary, row_id=self.start_row + 8,
+            column_id=int((self.n_columns_setup - 1)/2) + 1, n_rows=1, n_columns=int((self.n_columns_setup - 1)/2),
+            bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(var_entr=var_entr_04b)
         SimpleElements(
             parent=self.subwindow_rockbuilder_sedimentary, row_id=self.start_row + 10, column_id=1, n_rows=1,
             n_columns=self.n_columns_setup - 1, bg=self.colors_gebpy["White"],
             fg=self.colors_gebpy["Navigation"]).create_entry(var_entr=var_entr_05)
         SimpleElements(
             parent=self.subwindow_rockbuilder_sedimentary, row_id=self.start_row + 12, column_id=1, n_rows=1,
-            n_columns=self.n_columns_setup - 1, bg=self.colors_gebpy["White"],
-            fg=self.colors_gebpy["Navigation"]).create_entry(var_entr=var_entr_06)
+            n_columns=int((self.n_columns_setup - 1)/2), bg=self.colors_gebpy["White"],
+            fg=self.colors_gebpy["Navigation"]).create_entry(var_entr=var_entr_06a)
+        SimpleElements(
+            parent=self.subwindow_rockbuilder_sedimentary, row_id=self.start_row + 12,
+            column_id=int((self.n_columns_setup - 1)/2) + 1, n_rows=1, n_columns=int((self.n_columns_setup - 1)/2),
+            bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(var_entr=var_entr_06b)
         SimpleElements(
             parent=self.subwindow_rockbuilder_sedimentary, row_id=self.start_row + 14, column_id=1, n_rows=1,
             n_columns=self.n_columns_setup - 1, bg=self.colors_gebpy["White"],
             fg=self.colors_gebpy["Navigation"]).create_entry(var_entr=var_entr_07)
         SimpleElements(
             parent=self.subwindow_rockbuilder_sedimentary, row_id=self.start_row + 16, column_id=1, n_rows=1,
-            n_columns=self.n_columns_setup - 1, bg=self.colors_gebpy["White"],
-            fg=self.colors_gebpy["Navigation"]).create_entry(var_entr=var_entr_08)
+            n_columns=int((self.n_columns_setup - 1)/2), bg=self.colors_gebpy["White"],
+            fg=self.colors_gebpy["Navigation"]).create_entry(var_entr=var_entr_08a)
+        SimpleElements(
+            parent=self.subwindow_rockbuilder_sedimentary, row_id=self.start_row + 16,
+            column_id=int((self.n_columns_setup - 1)/2) + 1, n_rows=1, n_columns=int((self.n_columns_setup - 1)/2),
+            bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(var_entr=var_entr_08b)
         SimpleElements(
             parent=self.subwindow_rockbuilder_sedimentary, row_id=self.start_row + 18, column_id=1, n_rows=1,
             n_columns=self.n_columns_setup - 1, bg=self.colors_gebpy["White"],
             fg=self.colors_gebpy["Navigation"]).create_entry(var_entr=var_entr_09)
         SimpleElements(
             parent=self.subwindow_rockbuilder_sedimentary, row_id=self.start_row + 20, column_id=1, n_rows=1,
-            n_columns=self.n_columns_setup - 1, bg=self.colors_gebpy["White"],
-            fg=self.colors_gebpy["Navigation"]).create_entry(var_entr=var_entr_10)
+            n_columns=int((self.n_columns_setup - 1)/2), bg=self.colors_gebpy["White"],
+            fg=self.colors_gebpy["Navigation"]).create_entry(var_entr=var_entr_10a)
+        SimpleElements(
+            parent=self.subwindow_rockbuilder_sedimentary, row_id=self.start_row + 20,
+            column_id=int((self.n_columns_setup - 1)/2) + 1, n_rows=1, n_columns=int((self.n_columns_setup - 1)/2),
+            bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(var_entr=var_entr_10b)
         SimpleElements(
             parent=self.subwindow_rockbuilder_sedimentary, row_id=self.start_row + 22, column_id=1, n_rows=1,
-            n_columns=self.n_columns_setup - 1, bg=self.colors_gebpy["White"],
-            fg=self.colors_gebpy["Navigation"]).create_entry(var_entr=var_entr_11)
+            n_columns=int((self.n_columns_setup - 1)/2), bg=self.colors_gebpy["White"],
+            fg=self.colors_gebpy["Navigation"]).create_entry(var_entr=var_entr_11a)
+        SimpleElements(
+            parent=self.subwindow_rockbuilder_sedimentary, row_id=self.start_row + 22,
+            column_id=int((self.n_columns_setup - 1)/2) + 1, n_rows=1, n_columns=int((self.n_columns_setup - 1)/2),
+            bg=self.colors_gebpy["White"], fg=self.colors_gebpy["Navigation"]).create_entry(var_entr=var_entr_11b)
         SimpleElements(
             parent=self.subwindow_rockbuilder_sedimentary, row_id=self.start_row + 24, column_id=1, n_rows=1,
             n_columns=self.n_columns_setup - 1, bg=self.colors_gebpy["White"],
@@ -3825,37 +3870,43 @@ class GebPyGUI(tk.Frame):
             sticky="ew")
 
     def run_calculation_rockbuilder_sedimentary(self):
-        w_total_mineralogy = 0
         for key, item in self.helper_rockbuilder_sedimentary_variables.items():
-            if key == "w(Qz)":
-                val_wQz = float(item.get())
-                w_total_mineralogy += val_wQz
-            elif key == "w(Kfs+Pl)":
-                val_wKfsPl = float(item.get())
-                w_total_mineralogy += val_wKfsPl
-            elif key == "w(Kfs)/w(Pl)":
+            if key == "w(Qz,min)":
+                val_wQz_min = float(item.get())
+            elif key == "w(Qz,max)":
+                val_wQz_max = float(item.get())
+            elif key == "w(Kfs+Pl,min)":
+                val_wKfsPl_min = float(item.get())
+            elif key == "w(Kfs+Pl,max)":
+                val_wKfsPl_max = float(item.get())
+            elif key == "w(Kfs)/w(Kfs+Pl)":
                 val_ratio_KfsPl = float(item.get())
-            elif key == "w(Cal+Dol)":
-                val_wCalDol = float(item.get())
-                w_total_mineralogy += val_wCalDol
+            elif key == "w(Cal+Dol,min)":
+                val_wCalDol_min = float(item.get())
+            elif key == "w(Cal+Dol,max)":
+                val_wCalDol_max = float(item.get())
             elif key == "w(Cal)/w(Dol)":
                 val_ratio_CalDol = float(item.get())
-            elif key == "w(Ilt+Mnt)":
-                val_wIltMnt = float(item.get())
-                w_total_mineralogy += val_wIltMnt
+            elif key == "w(Ilt+Mnt,min)":
+                val_wIltMnt_min = float(item.get())
+            elif key == "w(Ilt+Mnt,max)":
+                val_wIltMnt_max = float(item.get())
             elif key == "w(Ilt)/w(Mnt)":
                 val_ratio_IltMnt = float(item.get())
-            elif key == "w(Anh+Gp)":
-                val_wAnhGp = float(item.get())
-                w_total_mineralogy += val_wAnhGp
+            elif key == "w(Anh+Gp,min)":
+                val_wAnhGp_min = float(item.get())
+            elif key == "w(Anh+Gp,max)":
+                val_wAnhGp_max = float(item.get())
             elif key == "w(Anh)/w(Gp)":
                 val_ratio_AnhGp = float(item.get())
-            elif key == "w(org)":
-                val_wOrg = float(item.get())
-                w_total_mineralogy += val_wOrg
-            elif key == "w(Py+Sd)":
-                val_wPySd = float(item.get())
-                w_total_mineralogy += val_wPySd
+            elif key == "w(org,min)":
+                val_wOrg_min = float(item.get())
+            elif key == "w(org,max)":
+                val_wOrg_max = float(item.get())
+            elif key == "w(Py+Sd,min)":
+                val_wPySd_min = float(item.get())
+            elif key == "w(Py+Sd,max)":
+                val_wPySd_max = float(item.get())
             elif key == "w(Py)/w(Sd)":
                 val_ratio_PySd = float(item.get())
             elif key == "phi(min)":
@@ -3863,18 +3914,38 @@ class GebPyGUI(tk.Frame):
             elif key == "phi(max)":
                 val_phiMax = float(item.get())
             elif key == "n(datapoints)":
-                val_nDatapoints = float(item.get())
+                val_nDatapoints = int(item.get())
 
             print(key, float(item.get()))
 
-        print("Total amount (mineralogy):", w_total_mineralogy)
-
-        if round(w_total_mineralogy, 2) == 100.00:
+        ## Results
+        val_rho = 0
+        ## Mineralogy
+        # Quartz
+        data_quartz = Oxides(mineral="Quartz", data_type=True, traces_list=[]).generate_dataset(number=1)
+        for index in range(val_nDatapoints):
             ## Mineralogy
+            # Amounts
+            w_qz = round(np.random.uniform(val_wQz_min/100, val_wQz_max/100), 4)
+            w_fsp = round(np.random.uniform(val_wKfsPl_min/100, val_wKfsPl_max/100), 4)
+            w_carb = round(np.random.uniform(val_wCalDol_min/100, val_wCalDol_max/100), 4)
+            w_clay = round(np.random.uniform(val_wIltMnt_min/100, val_wIltMnt_max/100), 4)
+            w_sulfat = round(np.random.uniform(val_wAnhGp_min/100, val_wAnhGp_max/100), 4)
+            w_org = round(np.random.uniform(val_wOrg_min/100, val_wOrg_max/100), 4)
+            w_sulfid = round(np.random.uniform(val_wPySd_min/100, val_wPySd_max/100), 4)
             # Quartz
-            #
+            print(index, w_qz, data_quartz["mineral"], data_quartz)
             # Feldspar minerals
-            #
+            # Alkaline feldspar
+            w_kfs = round(val_ratio_KfsPl*w_fsp, 4)
+            data_alkaline_feldspar = Tectosilicates(
+                mineral="Alkali Feldspar", data_type=True, traces_list=[]).generate_dataset(number=1)
+            print(index, w_kfs, data_alkaline_feldspar["mineral"], data_alkaline_feldspar)
+            # Plagioclase
+            w_pl = round(w_fsp - w_kfs, 4)
+            data_plagioclase = Tectosilicates(
+                mineral="Plagioclase", data_type=True, traces_list=[]).generate_dataset(number=1)
+            print(index, w_pl, data_plagioclase["mineral"], data_plagioclase)
             # Carbonate minerals
             #
             # Clay minerals
@@ -3905,7 +3976,51 @@ class GebPyGUI(tk.Frame):
             #
             # Oxide concentrations
             #
-            pass
+            self.find_mineral_amounts()
+
+    def find_mineral_amounts(self):
+        for key, item in self.helper_rockbuilder_sedimentary_variables.items():
+            if key == "w(Qz,min)":
+                val_wQz_min = float(item.get())
+            elif key == "w(Qz,max)":
+                val_wQz_max = float(item.get())
+            elif key == "w(Kfs+Pl,min)":
+                val_wKfsPl_min = float(item.get())
+            elif key == "w(Kfs+Pl,max)":
+                val_wKfsPl_max = float(item.get())
+            elif key == "w(Cal+Dol,min)":
+                val_wCalDol_min = float(item.get())
+            elif key == "w(Cal+Dol,max)":
+                val_wCalDol_max = float(item.get())
+            elif key == "w(Ilt+Mnt,min)":
+                val_wIltMnt_min = float(item.get())
+            elif key == "w(Ilt+Mnt,max)":
+                val_wIltMnt_max = float(item.get())
+            elif key == "w(Anh+Gp,min)":
+                val_wAnhGp_min = float(item.get())
+            elif key == "w(Anh+Gp,max)":
+                val_wAnhGp_max = float(item.get())
+            elif key == "w(org,min)":
+                val_wOrg_min = float(item.get())
+            elif key == "w(org,max)":
+                val_wOrg_max = float(item.get())
+            elif key == "w(Py+Sd,min)":
+                val_wPySd_min = float(item.get())
+            elif key == "w(Py+Sd,max)":
+                val_wPySd_max = float(item.get())
+
+        w_qz_mean = (val_wQz_min + val_wQz_max)/2
+        w_fsp_mean = (val_wKfsPl_min + val_wKfsPl_max)/2
+        w_carb_mean = (val_wCalDol_min + val_wCalDol_max)/2
+        w_clay_mean = (val_wIltMnt_min + val_wIltMnt_max)/2
+        w_sulfat_mean = (val_wAnhGp_min + val_wAnhGp_max)/2
+        w_org_mean = (val_wOrg_min + val_wOrg_max)/2
+        w_sulfid_mean = (val_wPySd_min + val_wPySd_max)/2
+
+        dict_mean = {"Qz": w_qz_mean, "Fsp": w_fsp_mean, "Carb": w_carb_mean, "Clay": w_clay_mean,
+                     "Sulfat": w_sulfat_mean, "Org": w_org_mean, "Sulfid": w_sulfid_mean}
+        dict_mean_sorted = dict(sorted(dict_mean.items(), key=lambda item: item[1], reverse=True))
+        print(dict_mean_sorted)
 
     def rock_builder(self):
         ## Initialization

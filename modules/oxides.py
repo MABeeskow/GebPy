@@ -6,7 +6,7 @@
 # Name:		oxides.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		28.10.2023
+# Date:		13.06.2024
 
 # -----------------------------------------------
 
@@ -414,9 +414,11 @@ class Oxides():
         x = rd.uniform(0, 1)
         ## Bulk modulus
         K_raw = 1.7*x + 36.5
+        #K_raw = 38
         K = K_raw*10**9*magic_factor
         ## Shear modulus
         G_raw = -2.3*x + 45.6
+        #G_raw = 44
         G = G_raw*10**9*magic_factor
         ## Young's modulus
         E = (9*K*G)/(3*K + G)
