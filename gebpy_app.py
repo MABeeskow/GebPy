@@ -3871,43 +3871,15 @@ class GebPyGUI(tk.Frame):
 
     def run_calculation_rockbuilder_sedimentary(self):
         for key, item in self.helper_rockbuilder_sedimentary_variables.items():
-            if key == "w(Qz,min)":
-                val_wQz_min = float(item.get())
-            elif key == "w(Qz,max)":
-                val_wQz_max = float(item.get())
-            elif key == "w(Kfs+Pl,min)":
-                val_wKfsPl_min = float(item.get())
-            elif key == "w(Kfs+Pl,max)":
-                val_wKfsPl_max = float(item.get())
-            elif key == "w(Kfs)/w(Kfs+Pl)":
+            if key == "w(Kfs)/w(Kfs+Pl)":
                 val_ratio_KfsPl = float(item.get())
-            elif key == "w(Cal+Dol,min)":
-                val_wCalDol_min = float(item.get())
-            elif key == "w(Cal+Dol,max)":
-                val_wCalDol_max = float(item.get())
-            elif key == "w(Cal)/w(Dol)":
+            elif key == "w(Cal)/w(Cal+Dol)":
                 val_ratio_CalDol = float(item.get())
-            elif key == "w(Ilt+Mnt,min)":
-                val_wIltMnt_min = float(item.get())
-            elif key == "w(Ilt+Mnt,max)":
-                val_wIltMnt_max = float(item.get())
-            elif key == "w(Ilt)/w(Mnt)":
+            elif key == "w(Ilt)/w(Ilt+Mnt)":
                 val_ratio_IltMnt = float(item.get())
-            elif key == "w(Anh+Gp,min)":
-                val_wAnhGp_min = float(item.get())
-            elif key == "w(Anh+Gp,max)":
-                val_wAnhGp_max = float(item.get())
-            elif key == "w(Anh)/w(Gp)":
+            elif key == "w(Anh)/w(Anh+Gp)":
                 val_ratio_AnhGp = float(item.get())
-            elif key == "w(org,min)":
-                val_wOrg_min = float(item.get())
-            elif key == "w(org,max)":
-                val_wOrg_max = float(item.get())
-            elif key == "w(Py+Sd,min)":
-                val_wPySd_min = float(item.get())
-            elif key == "w(Py+Sd,max)":
-                val_wPySd_max = float(item.get())
-            elif key == "w(Py)/w(Sd)":
+            elif key == "w(Py)/w(Py+Sd)":
                 val_ratio_PySd = float(item.get())
             elif key == "phi(min)":
                 val_phiMin = float(item.get())
@@ -3923,16 +3895,22 @@ class GebPyGUI(tk.Frame):
         ## Mineralogy
         # Quartz
         data_quartz = Oxides(mineral="Quartz", data_type=True, traces_list=[]).generate_dataset(number=1)
+        data_calcite = Carbonates(mineral="Calcite", data_type=True, traces_list=[]).generate_dataset(number=1)
+        data_dolomite = Carbonates(mineral="Dolomite", data_type=True, traces_list=[]).generate_dataset(number=1)
+        data_illite = Phyllosilicates(mineral="Illite", data_type=True, traces_list=[]).generate_dataset(number=1)
+        data_anhydrite = Sulfates(mineral="Anhydrite", data_type=True, traces_list=[]).generate_dataset(number=1)
+        data_gypsum = Sulfates(mineral="Gypsum", data_type=True, traces_list=[]).generate_dataset(number=1)
         for index in range(val_nDatapoints):
             ## Mineralogy
             # Amounts
-            w_qz = round(np.random.uniform(val_wQz_min/100, val_wQz_max/100), 4)
-            w_fsp = round(np.random.uniform(val_wKfsPl_min/100, val_wKfsPl_max/100), 4)
-            w_carb = round(np.random.uniform(val_wCalDol_min/100, val_wCalDol_max/100), 4)
-            w_clay = round(np.random.uniform(val_wIltMnt_min/100, val_wIltMnt_max/100), 4)
-            w_sulfat = round(np.random.uniform(val_wAnhGp_min/100, val_wAnhGp_max/100), 4)
-            w_org = round(np.random.uniform(val_wOrg_min/100, val_wOrg_max/100), 4)
-            w_sulfid = round(np.random.uniform(val_wPySd_min/100, val_wPySd_max/100), 4)
+            amounts_minerals = self.find_mineral_amounts()
+            w_qz = amounts_minerals["Qz"]
+            w_fsp = amounts_minerals["Fsp"]
+            w_carb = amounts_minerals["Carb"]
+            w_clay = amounts_minerals["Clay"]
+            w_sulfat = amounts_minerals["Sulfat"]
+            w_org = amounts_minerals["Org"]
+            w_sulfid = amounts_minerals["Sulfid"]
             # Quartz
             print(index, w_qz, data_quartz["mineral"], data_quartz)
             # Feldspar minerals
@@ -3947,11 +3925,28 @@ class GebPyGUI(tk.Frame):
                 mineral="Plagioclase", data_type=True, traces_list=[]).generate_dataset(number=1)
             print(index, w_pl, data_plagioclase["mineral"], data_plagioclase)
             # Carbonate minerals
-            #
+            # Calcite
+            w_cal = round(val_ratio_CalDol*w_carb, 4)
+            print(index, w_cal, data_calcite["mineral"], data_calcite)
+            # Dolomite
+            w_dol = round(w_carb - w_cal, 4)
+            print(index, w_dol, data_dolomite["mineral"], data_dolomite)
             # Clay minerals
-            #
+            # Illite
+            w_ilt = round(val_ratio_IltMnt*w_clay, 4)
+            print(index, w_ilt, data_illite["mineral"], data_illite)
+            # Montmorillonite
+            w_mnt = round(w_clay - w_ilt, 4)
+            data_montmorillonite = Phyllosilicates(
+                mineral="Montmorillonite", data_type=True, traces_list=[]).generate_dataset(number=1)
+            print(index, w_mnt, data_montmorillonite["mineral"], data_montmorillonite)
             # Sulfate minerals
-            #
+            # Anhydrite
+            w_anh = round(val_ratio_AnhGp*w_sulfat, 4)
+            print(index, w_anh, data_anhydrite["mineral"], data_anhydrite)
+            # Gypsum
+            w_gp = round(w_sulfat - w_anh, 4)
+            print(index, w_gp, data_gypsum["mineral"], data_gypsum)
             # Organic matter
             #
             # Sulfide minerals
@@ -3976,7 +3971,6 @@ class GebPyGUI(tk.Frame):
             #
             # Oxide concentrations
             #
-            self.find_mineral_amounts()
 
     def find_mineral_amounts(self):
         for key, item in self.helper_rockbuilder_sedimentary_variables.items():
@@ -4017,10 +4011,48 @@ class GebPyGUI(tk.Frame):
         w_org_mean = (val_wOrg_min + val_wOrg_max)/2
         w_sulfid_mean = (val_wPySd_min + val_wPySd_max)/2
 
+        helper_data = {
+            "Qz": [val_wQz_min, val_wQz_max], "Fsp": [val_wKfsPl_min, val_wKfsPl_max],
+            "Carb": [val_wCalDol_min, val_wCalDol_max], "Clay": [val_wIltMnt_min, val_wIltMnt_max],
+            "Sulfat": [val_wAnhGp_min, val_wAnhGp_max], "Org": [val_wOrg_min, val_wOrg_max],
+            "Sulfid": [val_wPySd_min, val_wPySd_max]}
         dict_mean = {"Qz": w_qz_mean, "Fsp": w_fsp_mean, "Carb": w_carb_mean, "Clay": w_clay_mean,
                      "Sulfat": w_sulfat_mean, "Org": w_org_mean, "Sulfid": w_sulfid_mean}
         dict_mean_sorted = dict(sorted(dict_mean.items(), key=lambda item: item[1], reverse=True))
-        print(dict_mean_sorted)
+
+        n_minerals = len(dict_mean_sorted)
+        condition = False
+        while condition == False:
+            helper_results = {}
+            helper_total_amount = 100
+            for index, (key, value) in enumerate(dict_mean_sorted.items()):
+                values = helper_data[key]
+                if index == 0:
+                    val_amount = round(np.random.uniform(values[0], values[1]), 4)
+                    helper_total_amount -= val_amount
+                    helper_results[key] = val_amount
+                else:
+                    if index < n_minerals - 1:
+                        if values[1] < helper_total_amount and values[1] != 0.0:
+                            val_amount = round(np.random.uniform(values[0], values[1]), 4)
+                        else:
+                            val_amount = round(np.random.uniform(values[0], helper_total_amount), 4)
+
+                        helper_total_amount -= val_amount
+                        helper_results[key] = val_amount
+                    else:
+                        val_amount = round(helper_total_amount, 4)
+                        helper_results[key] = val_amount
+
+            helper_total_amount = 0
+            for index, (key, value) in enumerate(helper_results.items()):
+                helper_total_amount += value
+
+            if round(helper_total_amount, 4) == 100.0:
+                print(helper_results)
+                condition = True
+
+        return helper_results
 
     def rock_builder(self):
         ## Initialization
