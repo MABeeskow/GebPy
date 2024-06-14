@@ -6,7 +6,7 @@
 # Name:		chemistry.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		16.11.2023
+# Date:		14.06.2024
 
 # -----------------------------------------------
 
@@ -189,7 +189,7 @@ class PeriodicSystem():
             data = ["Al", 13, mass_molar, density, bulk_mod, shear_mod, young_mod, v_p, v_s, resistivity,
                     thermal_cond]
         elif self.name in ["Si", "Silicon", "silicon"] or self.atomicnumber == 14:
-            mass_molar = 28.084
+            mass_molar = 28.085
             density = 2330
             bulk_mod = 100
             young_mod = 47

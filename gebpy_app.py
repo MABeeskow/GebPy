@@ -133,6 +133,167 @@ class GebPyGUI(tk.Frame):
             "Rock analysis": {"Rock definition": tk.IntVar(), "External data": tk.IntVar(), "x-axis": tk.StringVar(),
                               "y-axis": tk.StringVar()}}
 
+        self.chemistry_data = {
+            "O": 15.999, "Na": 22.990, "Mg": 24.305, "Al": 26.982, "Si": 28.085, "P": 30.974, "K": 39.098, "Ca": 40.078,
+            "Ti": 47.867, "Cr": 51.996, "Mn": 54.938, "Fe": 55.845, "Ga": 69.723, "Ge": 72.630, "Zr": 91.224,
+            "Ba": 137.33, "B": 10.81, "Ag": 107.87, "As": 74.922, "Li": 6.94, "Rb": 85.468, "Cs": 132.91, "Sr": 87.62,
+            "Sc": 44.956, "Y": 88.906, "Hf": 178.49, "V": 50.942, "Nb": 92.906, "Ta": 180.95, "Mo": 95.962, "W": 183.84,
+            "Tc": 98.906, "Re": 186.21, "Ru": 101.07, "Os": 190.23, "Co": 58.933, "Rh": 102.91, "Ir": 192.22,
+            "Ni": 58.693, "Pd": 106.42, "Pt": 195.08, "Cu": 63.546, "Au": 196.97, "Zn": 65.38, "Cd": 112.41,
+            "Hg": 200.59, "In": 114.82, "Tl": 204.38, "C": 12.011, "Sn": 118.71, "Pb": 207.2, "N": 14.007, "Sb": 121.76,
+            "Bi": 208.98, "S": 32.06, "Se": 78.96, "Te": 127.60, "Po": 209.98, "Cl": 35.45, "Br": 79.904, "I": 126.90,
+            "At": 210.99, "La": 138.91, "Ce": 140.12, "Pr": 140.91, "Nd": 144.24, "Pm": 146.92, "Sm": 150.36,
+            "Eu": 151.96, "Gd": 157.25, "Tb": 158.93, "Dy": 162.50, "Ho": 164.93, "Er": 167.26, "Tm": 168.93,
+            "Yb": 173.05, "Lu": 174.97, "Ac": 227.03, "Th": 232.04, "Pa": 231.04, "U": 238.05, "Be": 9.0122,
+            "F": 18.998, "H": 1.008}
+        self.chemistry_data_sills = {
+            "O": 16.000, "Na": 22.990, "Mg": 24.300, "Al": 26.980, "Si": 28.090, "P": 30.970, "K": 39.100, "Ca": 40.080,
+            "Ti": 47.870, "Cr": 52.000, "Mn": 54.940, "Fe": 55.850, "Ga": 69.720, "Ge": 72.610, "Zr": 91.220,
+            "Ba": 137.300}
+        self.chemistry_data_oxides = {
+            "SiO2": 60.083, "Al2O3": 101.961, "Fe2O3": 159.687, "FeO": 71.844, "Na2O": 61.979, "TiO2": 79.865,
+            "MnO": 70.937, "Mn2O3": 157.873, "SnO": 134.709, "Li2O": 29.879, "Ga2O3": 187.443, "B2O3": 69.617,
+            "BeO": 25.0112, "GeO2": 104.628, "CaO": 56.077, "Rb2O": 186.935, "AgO": 123.869, "As2O3": 197.841,
+            "Au2O": 409.939, "BaO": 153.32, "Br2O": 175.807, "Cl2O": 86.899, "Cs2O": 281.819, "CuO": 79.545,
+            "PbO": 223.199, "SO3": 80.057, "Sb2O3": 291.517, "SrO": 103.619, "WO3": 231.837, "ZnO": 81.379,
+            "MgO": 40.304, "K2O": 55.097, "SnO2": 150.708, "Ag2O": 231.739, "Bi2O5": 497.955, "CO2": 44.009,
+            "CdO": 128.409, "Ce2O3": 328.237, "CeO2": 172.118, "CoO": 74.932, "Cr2O3": 151.989, "Dy2O3": 372.997,
+            "Er2O3": 382.517, "Eu2O3": 351.917, "Gd2O3": 362.497, "HfO2": 404.977, "HgO": 216.589, "Ho2O3": 377.857,
+            "In2O3": 277.637, "IrO": 208.219, "La2O3": 325.817, "Lu2O3": 397.937, "MnO2": 86.936, "MoO3": 143.959,
+            "N2O5": 108.009, "Nb2O5": 265.807, "Nd2O3": 336.477, "NiO": 74.692, "OsO": 206.229, "P2O5": 141.943,
+            "PbO2": 239.198, "PdO": 122.419, "Pr2O3": 329.817, "Pr6O11": 1021.449, "PtO": 211.079, "ReO": 202.209,
+            "RhO": 118.909, "RuO": 117.069, "SO4": 96.056, "Sb2O5": 323.515, "Sc2O3": 137.909, "SeO3": 126.957,
+            "Sm2O3": 348.717, "Ta2O5": 441.895, "Tb2O3": 365.857, "Tb4O7": 747.713, "TeO3": 175.597, "ThO2": 264.038,
+            "Tl2O3": 456.757, "Tm2O3": 385.857, "UO2": 270.048, "UO3": 286.047, "U3O8": 842.142, "V2O5": 181.879,
+            "Y2O3": 225.809, "Yb2O3": 394.097, "ZrO2": 123.222, "I2O4": 317.796, "I2O5": 333.795, "I4O9": 651.591,
+            "I2O": 269.799, "Ni2O3": 165.383, "Co2O3": 165.863, "CrO": 67.995, "H2O": 18.015, "SO2": 64.058}
+
+        self.conversion_factors = {
+            "SiO2": (self.chemistry_data["Si"]/self.chemistry_data_oxides["SiO2"])**(-1),
+            "Al2O3": (2*self.chemistry_data["Al"]/self.chemistry_data_oxides["Al2O3"])**(-1),
+            "Fe2O3": (2*self.chemistry_data["Fe"]/self.chemistry_data_oxides["Fe2O3"])**(-1),
+            "FeO": (self.chemistry_data["Fe"]/self.chemistry_data_oxides["FeO"])**(-1),
+            "Na2O": (2*self.chemistry_data["Na"]/self.chemistry_data_oxides["Na2O"])**(-1),
+            "TiO2": (self.chemistry_data["Ti"]/self.chemistry_data_oxides["TiO2"])**(-1),
+            "MnO": (self.chemistry_data["Mn"]/self.chemistry_data_oxides["MnO"])**(-1),
+            "Mn2O3": (2*self.chemistry_data["Mn"]/self.chemistry_data_oxides["Mn2O3"])**(-1),
+            "SnO": (self.chemistry_data["Sn"]/self.chemistry_data_oxides["SnO"])**(-1),
+            "Li2O": (2*self.chemistry_data["Li"]/self.chemistry_data_oxides["Li2O"])**(-1),
+            "Ga2O3": (2*self.chemistry_data["Ga"]/self.chemistry_data_oxides["Ga2O3"])**(-1),
+            "B2O3": (2*self.chemistry_data["B"]/self.chemistry_data_oxides["B2O3"])**(-1),
+            "BeO": (self.chemistry_data["Be"]/self.chemistry_data_oxides["BeO"])**(-1),
+            "GeO2": (self.chemistry_data["Ge"]/self.chemistry_data_oxides["GeO2"])**(-1),
+            "CaO": (self.chemistry_data["Ca"]/self.chemistry_data_oxides["CaO"])**(-1),
+            "Rb2O": (2*self.chemistry_data["Rb"]/self.chemistry_data_oxides["Rb2O"])**(-1),
+            "AgO": (self.chemistry_data["Ag"]/self.chemistry_data_oxides["AgO"])**(-1),
+            "As2O3": (2*self.chemistry_data["As"]/self.chemistry_data_oxides["As2O3"])**(-1),
+            "Au2O": (2*self.chemistry_data["Au"]/self.chemistry_data_oxides["Au2O"])**(-1),
+            "BaO": (self.chemistry_data["Ba"]/self.chemistry_data_oxides["BaO"])**(-1),
+            "Br2O": (2*self.chemistry_data["Br"]/self.chemistry_data_oxides["Br2O"])**(-1),
+            "Cl2O": (2*self.chemistry_data["Cl"]/self.chemistry_data_oxides["Cl2O"])**(-1),
+            "Cs2O": (2*self.chemistry_data["Cs"]/self.chemistry_data_oxides["Cs2O"])**(-1),
+            "CuO": (self.chemistry_data["Cu"]/self.chemistry_data_oxides["CuO"])**(-1),
+            "PbO": (self.chemistry_data["Pb"]/self.chemistry_data_oxides["PbO"])**(-1),
+            "SO3": (self.chemistry_data["S"]/self.chemistry_data_oxides["SO3"])**(-1),
+            "Sb2O3": (2*self.chemistry_data["Sb"]/self.chemistry_data_oxides["Sb2O3"])**(-1),
+            "SrO": (self.chemistry_data["Sr"]/self.chemistry_data_oxides["SrO"])**(-1),
+            "WO3": (self.chemistry_data["W"]/self.chemistry_data_oxides["WO3"])**(-1),
+            "ZnO": (self.chemistry_data["Zn"]/self.chemistry_data_oxides["ZnO"])**(-1),
+            "MgO": (self.chemistry_data["Mg"]/self.chemistry_data_oxides["MgO"])**(-1),
+            "K2O": (2*self.chemistry_data["K"]/self.chemistry_data_oxides["K2O"])**(-1),
+            "SnO2": (self.chemistry_data["Sn"]/self.chemistry_data_oxides["SnO2"])**(-1),
+            "Ag2O": (2*self.chemistry_data["Ag"]/self.chemistry_data_oxides["Ag2O"])**(-1),
+            "Bi2O5": (2*self.chemistry_data["Bi"]/self.chemistry_data_oxides["Bi2O5"])**(-1),
+            "CO2": (self.chemistry_data["C"]/self.chemistry_data_oxides["CO2"])**(-1),
+            "CdO": (self.chemistry_data["Cd"]/self.chemistry_data_oxides["CdO"])**(-1),
+            "Ce2O3": (2*self.chemistry_data["Ce"]/self.chemistry_data_oxides["Ce2O3"])**(-1),
+            "CeO2": (self.chemistry_data["Ce"]/self.chemistry_data_oxides["CeO2"])**(-1),
+            "CoO": (self.chemistry_data["Co"]/self.chemistry_data_oxides["CoO"])**(-1),
+            "CrO": (self.chemistry_data["Cr"]/self.chemistry_data_oxides["CrO"])**(-1),
+            "Cr2O3": (2*self.chemistry_data["Cr"]/self.chemistry_data_oxides["Cr2O3"])**(-1),
+            "Dy2O3": (2*self.chemistry_data["Dy"]/self.chemistry_data_oxides["Dy2O3"])**(-1),
+            "Er2O3": (2*self.chemistry_data["Er"]/self.chemistry_data_oxides["Er2O3"])**(-1),
+            "Eu2O3": (2*self.chemistry_data["Eu"]/self.chemistry_data_oxides["Eu2O3"])**(-1),
+            "Gd2O3": (2*self.chemistry_data["Gd"]/self.chemistry_data_oxides["Gd2O3"])**(-1),
+            "HfO2": (self.chemistry_data["Hf"]/self.chemistry_data_oxides["HfO2"])**(-1),
+            "HgO": (self.chemistry_data["Hg"]/self.chemistry_data_oxides["HgO"])**(-1),
+            "Ho2O3": (2*self.chemistry_data["Ho"]/self.chemistry_data_oxides["Ho2O3"])**(-1),
+            "In2O3": (2*self.chemistry_data["In"]/self.chemistry_data_oxides["In2O3"])**(-1),
+            "IrO": (self.chemistry_data["Ir"]/self.chemistry_data_oxides["IrO"])**(-1),
+            "La2O3": (2*self.chemistry_data["La"]/self.chemistry_data_oxides["La2O3"])**(-1),
+            "Lu2O3": (2*self.chemistry_data["Lu"]/self.chemistry_data_oxides["Lu2O3"])**(-1),
+            "MnO2": (self.chemistry_data["Mn"]/self.chemistry_data_oxides["MnO2"])**(-1),
+            "MoO3": (self.chemistry_data["Mo"]/self.chemistry_data_oxides["MoO3"])**(-1),
+            "N2O5": (2*self.chemistry_data["N"]/self.chemistry_data_oxides["N2O5"])**(-1),
+            "Nb2O5": (2*self.chemistry_data["Nb"]/self.chemistry_data_oxides["Nb2O5"])**(-1),
+            "Nd2O3": (2*self.chemistry_data["Nd"]/self.chemistry_data_oxides["Nd2O3"])**(-1),
+            "NiO": (self.chemistry_data["Ni"]/self.chemistry_data_oxides["NiO"])**(-1),
+            "OsO": (self.chemistry_data["Os"]/self.chemistry_data_oxides["OsO"])**(-1),
+            "P2O5": (2*self.chemistry_data["P"]/self.chemistry_data_oxides["P2O5"])**(-1),
+            "PbO2": (self.chemistry_data["Pb"]/self.chemistry_data_oxides["PbO2"])**(-1),
+            "PdO": (self.chemistry_data["Pd"]/self.chemistry_data_oxides["PdO"])**(-1),
+            "Pr2O3": (2*self.chemistry_data["Pr"]/self.chemistry_data_oxides["Pr2O3"])**(-1),
+            "Pr6O11": (6*self.chemistry_data["Pr"]/self.chemistry_data_oxides["Pr6O11"])**(-1),
+            "PtO": (self.chemistry_data["Pt"]/self.chemistry_data_oxides["PtO"])**(-1),
+            "ReO": (self.chemistry_data["Re"]/self.chemistry_data_oxides["ReO"])**(-1),
+            "RhO": (self.chemistry_data["Rh"]/self.chemistry_data_oxides["RhO"])**(-1),
+            "RuO": (self.chemistry_data["Ru"]/self.chemistry_data_oxides["RuO"])**(-1),
+            "SO4": (self.chemistry_data["S"]/self.chemistry_data_oxides["SO4"])**(-1),
+            "Sb2O5": (2*self.chemistry_data["Sb"]/self.chemistry_data_oxides["Sb2O5"])**(-1),
+            "Sc2O3": (2*self.chemistry_data["Sc"]/self.chemistry_data_oxides["Sc2O3"])**(-1),
+            "SeO3": (self.chemistry_data["Se"]/self.chemistry_data_oxides["SeO3"])**(-1),
+            "Sm2O3": (2*self.chemistry_data["Sm"]/self.chemistry_data_oxides["Sm2O3"])**(-1),
+            "Ta2O5": (2*self.chemistry_data["Ta"]/self.chemistry_data_oxides["Ta2O5"])**(-1),
+            "Tb2O3": (2*self.chemistry_data["Tb"]/self.chemistry_data_oxides["Tb2O3"])**(-1),
+            "Tb4O7": (4*self.chemistry_data["Tb"]/self.chemistry_data_oxides["Tb4O7"])**(-1),
+            "TeO3": (self.chemistry_data["Te"]/self.chemistry_data_oxides["TeO3"])**(-1),
+            "ThO2": (self.chemistry_data["Th"]/self.chemistry_data_oxides["ThO2"])**(-1),
+            "Tl2O3": (2*self.chemistry_data["Tl"]/self.chemistry_data_oxides["Tl2O3"])**(-1),
+            "Tm2O3": (2*self.chemistry_data["Tm"]/self.chemistry_data_oxides["Tm2O3"])**(-1),
+            "UO2": (self.chemistry_data["U"]/self.chemistry_data_oxides["UO2"])**(-1),
+            "UO3": (self.chemistry_data["U"]/self.chemistry_data_oxides["UO3"])**(-1),
+            "U3O8": (3*self.chemistry_data["U"]/self.chemistry_data_oxides["U3O8"])**(-1),
+            "V2O5": (2*self.chemistry_data["V"]/self.chemistry_data_oxides["V2O5"])**(-1),
+            "Y2O3": (2*self.chemistry_data["Y"]/self.chemistry_data_oxides["Y2O3"])**(-1),
+            "Yb2O3": (2*self.chemistry_data["Yb"]/self.chemistry_data_oxides["Yb2O3"])**(-1),
+            "ZrO2": (self.chemistry_data["Zr"]/self.chemistry_data_oxides["ZrO2"])**(-1),
+            "I2O4": (2*self.chemistry_data["I"]/self.chemistry_data_oxides["I2O4"])**(-1),
+            "I2O5": (2*self.chemistry_data["I"]/self.chemistry_data_oxides["I2O5"])**(-1),
+            "I4O9": (4*self.chemistry_data["I"]/self.chemistry_data_oxides["I4O9"])**(-1),
+            "I2O": (2*self.chemistry_data["I"]/self.chemistry_data_oxides["I2O"])**(-1),
+            "Co2O3": (2*self.chemistry_data["Co"]/self.chemistry_data_oxides["Co2O3"])**(-1),
+            "Ni2O3": (2*self.chemistry_data["Ni"]/self.chemistry_data_oxides["Ni2O3"])**(-1),
+            "H2O": (2*self.chemistry_data["H"]/self.chemistry_data_oxides["H2O"])**(-1),
+            "SO2": (self.chemistry_data["S"]/self.chemistry_data_oxides["SO2"])**(-1)}
+
+        self.chemistry_oxides_sorted = {
+            "H": ["H2O"], "Li": ["Li2O"], "Be": ["BeO"], "B": ["B2O3"], "C": ["CO", "CO2"],
+            "N": ["NO", "N2O3", "NO2", "N2O5"], "Na": ["Na2O"], "Mg": ["MgO"], "Al": ["Al2O3"], "Si": ["SiO2"],
+            "P": ["P2O3", "P2O5"], "S": ["SO", "SO2", "SO3"], "Cl": ["Cl2O", "ClO2", "Cl2O3", "Cl2O5", "Cl2O7"],
+            "K": ["K2O"], "Ca": ["CaO"], "Sc": ["Sc2O3"], "Ti": ["Ti2O3", "TiO2"], "V": ["VO", "V2O3", "VO2", "V2O5"],
+            "Cr": ["CrO", "Cr2O3", "CrO3"], "Mn": ["MnO", "Mn2O3", "MnO2", "MnO3", "Mn2O7"],
+            "Fe": ["FeO", "Fe2O3", "FeO3"], "Co": ["CoO", "Co2O3"], "Ni": ["NiO", "Ni2O3"], "Cu": ["Cu2O", "CuO"],
+            "Zn": ["ZnO"], "Ga": ["Ga2O3"], "Ge": ["GeO2"], "As": ["As2O3", "As2O5"], "Se": ["SeO2", "SiO3"],
+            "Br": ["Br2O", "Br2O3", "Br2O5", "Br2O7"], "Kr": ["KrO"], "Rb": ["Rb2O"], "Sr": ["SrO"], "Y": ["Y2O3"],
+            "Zr": ["ZrO2"], "Nb": ["Nb2O3", "Nb2O5"], "Mo": ["MoO", "Mo2O3", "MoO2", "Mo2O5", "MoO3"], "Tc": ["Tc2O7"],
+            "Ru": ["RuO", "Ru2O3", "RuO2", "RuO3", "RuO4"], "Rh": ["Rh2O", "RhO", "Rh2O3", "RhO2", "Rh2O5"],
+            "Pd": ["PdO", "PdO2"], "Ag": ["Ag2O", "AgO"], "Cd": ["CdO"], "In": ["In2O3"], "Sn": ["SnO", "SnO2"],
+            "Sb": ["Sb2O3", "Sb2O5"], "Te": ["TeO2", "TeO3"], "I": ["I2O", "I2O4", "I2O5", "I4O9"],
+            "Xe": ["XeO", "XeO2", "XeO3"], "Cs": ["Cs2O"], "Ba": ["BaO"], "La": ["La2O3"], "Ce": ["Ce2O3", "CeO2"],
+            "Pr": ["Pr2O3", "PrO2"], "Nd": ["Nd2O3"], "Pm": ["Pm2O3"], "Sm": ["SmO", "Sm2O3"], "Eu": ["EuO", "Eu2O3"],
+            "Gd": ["Gd2O3"], "Tb": ["Tb2O3", "TbO2"], "Dy": ["Dy2O3"], "Ho": ["Ho2O3"], "Er": ["Er2O3"],
+            "Tm": ["TmO", "Tm2O3"], "Yb": ["YbO", "Yb2O3"], "Lu": ["Lu2O3"], "Hf": ["HfO2"], "Ta": ["Ta2O5"],
+            "W": ["WO", "WO2O3", "WO2", "W2O5", "WO3"], "Re": ["ReO", "ReO2", "ReO3", "Re2O7"],
+            "Os": ["OsO", "Os2O3", "OsO2", "OsO3", "OsO4"], "Ir": ["Ir2O", "IrO", "Ir2O3", "IrO2", "IrO3"],
+            "Pt": ["PtO", "PtO2"], "Au": ["Au2O", "Au2O3"], "Hg": ["Hg2O", "HgO"], "Tl": ["Tl2O", "Tl2O3"],
+            "Pb": ["PbO", "PbO2"], "Bi": ["Bi2O3", "B2O5"], "Po": ["PoO", "PoO2", "PoO3"],
+            "At": ["At2O", "At2O3", "At2O5", "At2O7"], "Rn": ["RnO"], "Fr": ["Fr2O"], "Ra": ["RaO"], "Ac": ["Ac2O3"],
+            "Th": ["ThO2"], "Pa": ["PaO2", "Pa2O5"], "U": ["U2O3", "UO2", "U2O5", "UO3"],
+            "Np": ["Np2O3", "NpO2", "Np2O5", "NpO3"], "Pu": ["Pu2O3", "PuO2", "Pu2O5", "PuO3"],
+            "Am": ["Am2O3", "AmO2", "Am2O5", "AmO3"], "Cm": ["Cm2O3", "CmO2"], "Bk": ["Bk2O3", "BkO2"],
+            "Cf": ["Cf2O3", "CfO2"], "Es": ["Es2O3"], "Fm": ["Fm2O3"], "Md": ["Md2O3"], "No": ["NoO", "No2O3"],
+            "Lr": ["Lr2O3"]}
+
 
         # Stratigraphy
         #
@@ -662,11 +823,11 @@ class GebPyGUI(tk.Frame):
         #
         ## Buttons
         btn_quit = SimpleElements(
-            parent=self.parent, row_id=n_rows - 3, column_id=16, n_rows=3, n_columns=15,
+            parent=self.parent, row_id=n_rows - 5, column_id=16, n_rows=3, n_columns=15,
             bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_button(
             text="Quit GebPy", command=self.parent.quit)
         btn_restart = SimpleElements(
-            parent=self.parent, row_id=n_rows - 3, column_id=1, n_rows=3, n_columns=15,
+            parent=self.parent, row_id=n_rows - 5, column_id=1, n_rows=3, n_columns=15,
             bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_button(
             text="Restart GebPy", command=self.restart_gebpy)
         #
@@ -3691,7 +3852,7 @@ class GebPyGUI(tk.Frame):
 
         ## ENTRIES
         var_entr_01a = tk.StringVar()
-        var_entr_01a.set("0.0")
+        var_entr_01a.set("90.0")
         var_entr_01b = tk.StringVar()
         var_entr_01b.set("100.0")
         var_entr_02a = tk.StringVar()
@@ -3742,7 +3903,7 @@ class GebPyGUI(tk.Frame):
             "w(Ilt+Mnt,max)": var_entr_06b, "w(Ilt)/w(Ilt+Mnt)": var_entr_07, "w(Anh+Gp,min)": var_entr_08a,
             "w(Anh+Gp,max)": var_entr_08b, "w(Anh)/w(Anh+Gp)": var_entr_09, "w(org,min)": var_entr_10a,
             "w(org,max)": var_entr_10b, "w(Py+Sd,min)": var_entr_11a, "w(Py+Sd,max)": var_entr_11b,
-            "w(Py)/w(Sd)": var_entr_12, "phi(min)": var_entr_13a, "phi(max)": var_entr_13b,
+            "w(Py)/w(Py+Sd)": var_entr_12, "phi(min)": var_entr_13a, "phi(max)": var_entr_13b,
             "n(datapoints)": var_entr_14}
 
         SimpleElements(
@@ -3888,89 +4049,447 @@ class GebPyGUI(tk.Frame):
             elif key == "n(datapoints)":
                 val_nDatapoints = int(item.get())
 
-            print(key, float(item.get()))
-
         ## Results
-        val_rho = 0
-        ## Mineralogy
-        # Quartz
         data_quartz = Oxides(mineral="Quartz", data_type=True, traces_list=[]).generate_dataset(number=1)
         data_calcite = Carbonates(mineral="Calcite", data_type=True, traces_list=[]).generate_dataset(number=1)
         data_dolomite = Carbonates(mineral="Dolomite", data_type=True, traces_list=[]).generate_dataset(number=1)
         data_illite = Phyllosilicates(mineral="Illite", data_type=True, traces_list=[]).generate_dataset(number=1)
         data_anhydrite = Sulfates(mineral="Anhydrite", data_type=True, traces_list=[]).generate_dataset(number=1)
         data_gypsum = Sulfates(mineral="Gypsum", data_type=True, traces_list=[]).generate_dataset(number=1)
+        data_pyrite = Sulfides(mineral="Pyrite", data_type=True, traces_list=[]).generate_dataset(number=1)
+        data_siderite = Carbonates(mineral="Siderite", data_type=True, traces_list=[]).generate_dataset(number=1)
+        data_water = Water.water("")
+
+        helper_results = {
+            "rho(solid)": [], "rho": [], "\u03C6": [], "V(molar)": [], "K": [], "G": [], "E": [], "\u03BB": [],
+            "\u03BD": [], "M": [], "vP": [], "vS": [], "vP/vS": [], "GR": [], "PE": []}
+        helper_results_minerals = {}
+        helper_results_chemistry = {}
+        helper_results_elements = {
+            "O": [], "Si": [], "Na": [], "Al": [], "K": [], "Ca": [], "C": [], "Mg": [], "H": [], "S": [], "N": [],
+            "Fe": []}
+        helper_results_oxides = {
+            "SiO2": [], "Na2O": [], "Al2O3": [], "K2O": [], "CaO": [], "CO2": [], "MgO": [], "H2O": [], "SO2": [],
+            "NO2": [], "Fe2O3": []}
+
         for index in range(val_nDatapoints):
+            phi = round(np.random.uniform(val_phiMin, val_phiMax)/100, 4)
+            helper_rho_s = []
+            helper_vol = []
+            helper_bulkmod = []
+            helper_shearmod = []
+            helper_poisson = []
+            helper_gr = []
+            helper_pe = []
+            helper_u = []
+            helper_results_chemistry = {}
             ## Mineralogy
             # Amounts
             amounts_minerals = self.find_mineral_amounts()
-            w_qz = amounts_minerals["Qz"]
-            w_fsp = amounts_minerals["Fsp"]
-            w_carb = amounts_minerals["Carb"]
-            w_clay = amounts_minerals["Clay"]
-            w_sulfat = amounts_minerals["Sulfat"]
-            w_org = amounts_minerals["Org"]
-            w_sulfid = amounts_minerals["Sulfid"]
+            w_qz = amounts_minerals["Qz"]/100
+            w_fsp = round(amounts_minerals["Fsp"]/100, 4)
+            w_carb = round(amounts_minerals["Carb"]/100, 4)
+            w_clay = round(amounts_minerals["Clay"]/100, 4)
+            w_sulfat = round(amounts_minerals["Sulfat"]/100, 4)
+            w_org = round(amounts_minerals["Org"]/100, 4)
+            w_sulfid = round(amounts_minerals["Sulfid"]/100, 4)
             # Quartz
-            print(index, w_qz, data_quartz["mineral"], data_quartz)
+            helper_rho_s.append(w_qz*data_quartz["rho"][0])
+            helper_vol.append(w_qz*data_quartz["V"][0])
+            helper_bulkmod.append(w_qz*data_quartz["K"][0])
+            helper_shearmod.append(w_qz*data_quartz["G"][0])
+            helper_poisson.append(w_qz*data_quartz["nu"][0])
+            helper_gr.append(w_qz*data_quartz["GR"][0])
+            helper_pe.append(w_qz*data_quartz["PE"][0])
+            helper_u.append(w_qz*data_quartz["U"][0])
+            if "Qz" not in helper_results_minerals:
+                helper_results_minerals["Qz"] = []
+            helper_results_minerals["Qz"].append(100*w_qz)
+            for element, value in data_quartz["chemistry"].items():
+                if element not in helper_results_chemistry:
+                    helper_results_chemistry[element] = []
+                if w_qz > 0:
+                    helper_results_chemistry[element].append(w_qz*value[0])
             # Feldspar minerals
             # Alkaline feldspar
             w_kfs = round(val_ratio_KfsPl*w_fsp, 4)
             data_alkaline_feldspar = Tectosilicates(
                 mineral="Alkali Feldspar", data_type=True, traces_list=[]).generate_dataset(number=1)
-            print(index, w_kfs, data_alkaline_feldspar["mineral"], data_alkaline_feldspar)
+            helper_rho_s.append(w_kfs*data_alkaline_feldspar["rho"][0])
+            helper_vol.append(w_kfs*data_alkaline_feldspar["V"][0])
+            helper_bulkmod.append(w_kfs*data_alkaline_feldspar["K"][0])
+            helper_shearmod.append(w_kfs*data_alkaline_feldspar["G"][0])
+            helper_poisson.append(w_kfs*data_alkaline_feldspar["nu"][0])
+            helper_gr.append(w_kfs*data_alkaline_feldspar["GR"][0])
+            helper_pe.append(w_kfs*data_alkaline_feldspar["PE"][0])
+            helper_u.append(w_kfs*data_alkaline_feldspar["U"][0])
+            if "Kfs" not in helper_results_minerals:
+                helper_results_minerals["Kfs"] = []
+            helper_results_minerals["Kfs"].append(100*w_kfs)
+            for element, value in data_alkaline_feldspar["chemistry"].items():
+                if element not in helper_results_chemistry:
+                    helper_results_chemistry[element] = []
+                if w_kfs > 0:
+                    helper_results_chemistry[element].append(w_kfs*value[0])
             # Plagioclase
             w_pl = round(w_fsp - w_kfs, 4)
             data_plagioclase = Tectosilicates(
                 mineral="Plagioclase", data_type=True, traces_list=[]).generate_dataset(number=1)
-            print(index, w_pl, data_plagioclase["mineral"], data_plagioclase)
+            helper_rho_s.append(w_pl*data_plagioclase["rho"][0])
+            helper_vol.append(w_pl*data_plagioclase["V"][0])
+            helper_bulkmod.append(w_pl*data_plagioclase["K"][0])
+            helper_shearmod.append(w_pl*data_plagioclase["G"][0])
+            helper_poisson.append(w_pl*data_plagioclase["nu"][0])
+            helper_gr.append(w_pl*data_plagioclase["GR"][0])
+            helper_pe.append(w_pl*data_plagioclase["PE"][0])
+            helper_u.append(w_pl*data_plagioclase["U"][0])
+            if "Pl" not in helper_results_minerals:
+                helper_results_minerals["Pl"] = []
+            helper_results_minerals["Pl"].append(100*w_pl)
+            for element, value in data_plagioclase["chemistry"].items():
+                if element not in helper_results_chemistry:
+                    helper_results_chemistry[element] = []
+                if w_pl > 0:
+                    helper_results_chemistry[element].append(w_pl*value[0])
             # Carbonate minerals
             # Calcite
             w_cal = round(val_ratio_CalDol*w_carb, 4)
-            print(index, w_cal, data_calcite["mineral"], data_calcite)
+            helper_rho_s.append(w_cal*data_calcite["rho"][0])
+            helper_vol.append(w_cal*data_calcite["V"][0])
+            helper_bulkmod.append(w_cal*data_calcite["K"][0])
+            helper_shearmod.append(w_cal*data_calcite["G"][0])
+            helper_poisson.append(w_cal*data_calcite["nu"][0])
+            helper_gr.append(w_cal*data_calcite["GR"][0])
+            helper_pe.append(w_cal*data_calcite["PE"][0])
+            helper_u.append(w_cal*data_calcite["U"][0])
+            if "Cal" not in helper_results_minerals:
+                helper_results_minerals["Cal"] = []
+            helper_results_minerals["Cal"].append(100*w_cal)
+            for element, value in data_calcite["chemistry"].items():
+                if element not in helper_results_chemistry:
+                    helper_results_chemistry[element] = []
+                if w_cal > 0:
+                    helper_results_chemistry[element].append(w_cal*value[0])
             # Dolomite
             w_dol = round(w_carb - w_cal, 4)
-            print(index, w_dol, data_dolomite["mineral"], data_dolomite)
+            helper_rho_s.append(w_dol*data_dolomite["rho"][0])
+            helper_vol.append(w_dol*data_dolomite["V"][0])
+            helper_bulkmod.append(w_dol*data_dolomite["K"][0])
+            helper_shearmod.append(w_dol*data_dolomite["G"][0])
+            helper_poisson.append(w_dol*data_dolomite["nu"][0])
+            helper_gr.append(w_dol*data_dolomite["GR"][0])
+            helper_pe.append(w_dol*data_dolomite["PE"][0])
+            helper_u.append(w_dol*data_dolomite["U"][0])
+            if "Dol" not in helper_results_minerals:
+                helper_results_minerals["Dol"] = []
+            helper_results_minerals["Dol"].append(100*w_dol)
+            for element, value in data_dolomite["chemistry"].items():
+                if element not in helper_results_chemistry:
+                    helper_results_chemistry[element] = []
+                if w_dol > 0:
+                    helper_results_chemistry[element].append(w_dol*value[0])
             # Clay minerals
             # Illite
             w_ilt = round(val_ratio_IltMnt*w_clay, 4)
-            print(index, w_ilt, data_illite["mineral"], data_illite)
+            helper_rho_s.append(w_ilt*data_illite["rho"][0])
+            helper_vol.append(w_ilt*data_illite["V"][0])
+            helper_bulkmod.append(w_ilt*data_illite["K"][0])
+            helper_shearmod.append(w_ilt*data_illite["G"][0])
+            helper_poisson.append(w_ilt*data_illite["nu"][0])
+            helper_gr.append(w_ilt*data_illite["GR"][0])
+            helper_pe.append(w_ilt*data_illite["PE"][0])
+            helper_u.append(w_ilt*data_illite["U"][0])
+            if "Ilt" not in helper_results_minerals:
+                helper_results_minerals["Ilt"] = []
+            helper_results_minerals["Ilt"].append(100*w_ilt)
+            for element, value in data_illite["chemistry"].items():
+                if element not in helper_results_chemistry:
+                    helper_results_chemistry[element] = []
+                if w_ilt > 0:
+                    helper_results_chemistry[element].append(w_ilt*value[0])
             # Montmorillonite
             w_mnt = round(w_clay - w_ilt, 4)
             data_montmorillonite = Phyllosilicates(
                 mineral="Montmorillonite", data_type=True, traces_list=[]).generate_dataset(number=1)
-            print(index, w_mnt, data_montmorillonite["mineral"], data_montmorillonite)
+            helper_rho_s.append(w_mnt*data_montmorillonite["rho"][0])
+            helper_vol.append(w_mnt*data_montmorillonite["V"][0])
+            helper_bulkmod.append(w_mnt*data_montmorillonite["K"][0])
+            helper_shearmod.append(w_mnt*data_montmorillonite["G"][0])
+            helper_poisson.append(w_mnt*data_montmorillonite["nu"][0])
+            helper_gr.append(w_mnt*data_montmorillonite["GR"][0])
+            helper_pe.append(w_mnt*data_montmorillonite["PE"][0])
+            helper_u.append(w_mnt*data_montmorillonite["U"][0])
+            if "Mnt" not in helper_results_minerals:
+                helper_results_minerals["Mnt"] = []
+            helper_results_minerals["Mnt"].append(100*w_mnt)
+            for element, value in data_montmorillonite["chemistry"].items():
+                if element not in helper_results_chemistry:
+                    helper_results_chemistry[element] = []
+                if w_mnt > 0:
+                    helper_results_chemistry[element].append(w_mnt*value[0])
             # Sulfate minerals
             # Anhydrite
             w_anh = round(val_ratio_AnhGp*w_sulfat, 4)
-            print(index, w_anh, data_anhydrite["mineral"], data_anhydrite)
+            helper_rho_s.append(w_anh*data_anhydrite["rho"][0])
+            helper_vol.append(w_anh*data_anhydrite["V"][0])
+            helper_bulkmod.append(w_anh*data_anhydrite["K"][0])
+            helper_shearmod.append(w_anh*data_anhydrite["G"][0])
+            helper_poisson.append(w_anh*data_anhydrite["nu"][0])
+            helper_gr.append(w_anh*data_anhydrite["GR"][0])
+            helper_pe.append(w_anh*data_anhydrite["PE"][0])
+            helper_u.append(w_anh*data_anhydrite["U"][0])
+            if "Anh" not in helper_results_minerals:
+                helper_results_minerals["Anh"] = []
+            helper_results_minerals["Anh"].append(100*w_anh)
+            for element, value in data_anhydrite["chemistry"].items():
+                if element not in helper_results_chemistry:
+                    helper_results_chemistry[element] = []
+                if w_anh > 0:
+                    helper_results_chemistry[element].append(w_anh*value[0])
             # Gypsum
             w_gp = round(w_sulfat - w_anh, 4)
-            print(index, w_gp, data_gypsum["mineral"], data_gypsum)
+            helper_rho_s.append(w_gp*data_gypsum["rho"][0])
+            helper_vol.append(w_gp*data_gypsum["V"][0])
+            helper_bulkmod.append(w_gp*data_gypsum["K"][0])
+            helper_shearmod.append(w_gp*data_gypsum["G"][0])
+            helper_poisson.append(w_gp*data_gypsum["nu"][0])
+            helper_gr.append(w_gp*data_gypsum["GR"][0])
+            helper_pe.append(w_gp*data_gypsum["PE"][0])
+            helper_u.append(w_gp*data_gypsum["U"][0])
+            if "Gp" not in helper_results_minerals:
+                helper_results_minerals["Gp"] = []
+            helper_results_minerals["Gp"].append(100*w_gp)
+            for element, value in data_gypsum["chemistry"].items():
+                if element not in helper_results_chemistry:
+                    helper_results_chemistry[element] = []
+                if w_gp > 0:
+                    helper_results_chemistry[element].append(w_gp*value[0])
             # Organic matter
-            #
+            data_organic_matter = Organics(
+                mineral="Organic Matter", data_type=True, traces_list=[]).generate_dataset(number=1)
+            helper_rho_s.append(w_org*data_organic_matter["rho"][0])
+            helper_vol.append(w_org*data_organic_matter["V"][0])
+            helper_bulkmod.append(w_org*data_organic_matter["K"][0])
+            helper_shearmod.append(w_org*data_organic_matter["G"][0])
+            helper_poisson.append(w_org*data_organic_matter["nu"][0])
+            helper_gr.append(w_org*data_organic_matter["GR"][0])
+            helper_pe.append(w_org*data_organic_matter["PE"][0])
+            helper_u.append(w_org*data_organic_matter["U"][0])
+            if "Org" not in helper_results_minerals:
+                helper_results_minerals["Org"] = []
+            helper_results_minerals["Org"].append(100*w_org)
+            for element, value in data_organic_matter["chemistry"].items():
+                if element not in helper_results_chemistry:
+                    helper_results_chemistry[element] = []
+                if w_org > 0:
+                    helper_results_chemistry[element].append(w_org*value[0])
             # Sulfide minerals
-            #
+            # Pyrite
+            w_py = round(val_ratio_PySd*w_sulfid, 4)
+            helper_rho_s.append(w_py*data_pyrite["rho"][0])
+            helper_vol.append(w_py*data_pyrite["V"][0])
+            helper_bulkmod.append(w_py*data_pyrite["K"][0])
+            helper_shearmod.append(w_py*data_pyrite["G"][0])
+            helper_poisson.append(w_py*data_pyrite["nu"][0])
+            helper_gr.append(w_py*data_pyrite["GR"][0])
+            helper_pe.append(w_py*data_pyrite["PE"][0])
+            helper_u.append(w_py*data_pyrite["U"][0])
+            if "Py" not in helper_results_minerals:
+                helper_results_minerals["Py"] = []
+            helper_results_minerals["Py"].append(100*w_py)
+            for element, value in data_pyrite["chemistry"].items():
+                if element not in helper_results_chemistry:
+                    helper_results_chemistry[element] = []
+                if w_py > 0:
+                    helper_results_chemistry[element].append(w_py*value[0])
+            # Siderite
+            w_sd = round(w_sulfid - w_py, 4)
+            helper_rho_s.append(w_sd*data_siderite["rho"][0])
+            helper_vol.append(w_sd*data_siderite["V"][0])
+            helper_bulkmod.append(w_sd*data_siderite["K"][0])
+            helper_shearmod.append(w_sd*data_siderite["G"][0])
+            helper_poisson.append(w_sd*data_siderite["nu"][0])
+            helper_gr.append(w_sd*data_siderite["GR"][0])
+            helper_pe.append(w_sd*data_siderite["PE"][0])
+            helper_u.append(w_sd*data_siderite["U"][0])
+            if "Sd" not in helper_results_minerals:
+                helper_results_minerals["Sd"] = []
+            helper_results_minerals["Sd"].append(100*w_sd)
+            for element, value in data_siderite["chemistry"].items():
+                if element not in helper_results_chemistry:
+                    helper_results_chemistry[element] = []
+                if w_sd > 0:
+                    helper_results_chemistry[element].append(w_sd*value[0])
             ## Geophysical results
-            # Bulk density
-            #
-            # Molar volume
-            #
             # Porosity
-            #
-            # Seismic velocities
-            #
+            helper_results["\u03C6"].append(phi)
+            # Bulk density (solid)
+            rho_s = round(np.sum(helper_rho_s), 3)
+            helper_results["rho(solid)"].append(rho_s)
+            # Bulk density (solid)
+            rho = round((1 - phi)*rho_s + phi*data_water[2], 3)
+            helper_results["rho"].append(rho)
+            # Molar volume
+            molar_vol = round(np.sum(helper_vol), 3)
+            helper_results["V(molar)"].append(molar_vol)
             # Elastic properties
-            #
+            bulkmod = round(np.sum(helper_bulkmod), 3)
+            shearmod = round(np.sum(helper_shearmod), 3)
+            youngs_mod = round((9*bulkmod*shearmod)/(3*bulkmod + shearmod), 3)
+            lame = round(bulkmod - 2/3*shearmod, 3)
+            vpmod = round(bulkmod + 4/3*shearmod, 3)
+            poisson = round((3*bulkmod - 2*shearmod)/(2*(3*bulkmod + shearmod)), 3)
+            helper_results["K"].append(bulkmod)
+            helper_results["G"].append(shearmod)
+            helper_results["E"].append(youngs_mod)
+            helper_results["\u03BB"].append(lame)
+            helper_results["\u03BD"].append(poisson)
+            helper_results["M"].append(vpmod)
+            # Seismic velocities
+            v_p = round(((bulkmod*10**9 + 4/3*shearmod*10**9)/(rho))**0.5, 3)
+            v_s = round(((shearmod*10**9)/(rho))**0.5, 3)
+            v_ps_ratio = round(v_p/v_s, 3)
+            helper_results["vP"].append(v_p)
+            helper_results["vS"].append(v_s)
+            helper_results["vP/vS"].append(v_ps_ratio)
             # Gamma ray
-            #
+            gr = round(np.sum(helper_gr), 3)
+            helper_results["GR"].append(gr)
             # Photoelectricity
-            #
+            pe = round(np.sum(helper_pe), 3)
+            helper_results["PE"].append(pe)
             ## Geochemical results
             # Element concentrations
-            #
+            # Oxygen
+            val_o = round(np.sum(helper_results_chemistry["O"]), 3)
+            helper_results_elements["O"].append(val_o)
+            # Silicon
+            val_si = np.sum(helper_results_chemistry["Si"])
+            helper_results_elements["Si"].append(val_si)
+            # Sodium
+            val_na = round(np.sum(helper_results_chemistry["Na"]), 3)
+            helper_results_elements["Na"].append(val_na)
+            # Aluminium
+            val_al = round(np.sum(helper_results_chemistry["Al"]), 3)
+            helper_results_elements["Al"].append(val_al)
+            # Potassium
+            val_k = round(np.sum(helper_results_chemistry["K"]), 3)
+            helper_results_elements["K"].append(val_k)
+            # Calcium
+            val_ca = round(np.sum(helper_results_chemistry["Ca"]), 3)
+            helper_results_elements["Ca"].append(val_ca)
+            # Carbon
+            val_c = round(np.sum(helper_results_chemistry["C"]), 3)
+            helper_results_elements["C"].append(val_c)
+            # Magnesium
+            val_mg = round(np.sum(helper_results_chemistry["Mg"]), 3)
+            helper_results_elements["Mg"].append(val_mg)
+            # Hydrogen
+            val_h = round(np.sum(helper_results_chemistry["H"]), 3)
+            helper_results_elements["H"].append(val_h)
+            # Sulfur
+            val_s = round(np.sum(helper_results_chemistry["S"]), 3)
+            helper_results_elements["S"].append(val_s)
+            # Nitrogen
+            val_n = round(np.sum(helper_results_chemistry["N"]), 3)
+            helper_results_elements["N"].append(val_n)
+            # Iron
+            val_fe = round(np.sum(helper_results_chemistry["Fe"]), 3)
+            helper_results_elements["Fe"].append(val_fe)
             # Oxide concentrations
-            #
+            # SiO2
+            value = val_si*self.conversion_factors["SiO2"]
+            # if round(w_qz, 4) == 1.0:
+            #     value = 1.0
+            helper_results_oxides["SiO2"].append(value)
+            # Na2O
+            value = val_na*self.conversion_factors["Na2O"]
+            helper_results_oxides["Na2O"].append(value)
+            # Al2O3
+            value = val_al*self.conversion_factors["Al2O3"]
+            helper_results_oxides["Al2O3"].append(value)
+            # K2O
+            value = val_k*self.conversion_factors["K2O"]
+            helper_results_oxides["K2O"].append(value)
+            # CaO
+            value = val_ca*self.conversion_factors["CaO"]
+            helper_results_oxides["CaO"].append(value)
+            # CO2
+            value = val_c*self.conversion_factors["CO2"]
+            helper_results_oxides["CO2"].append(value)
+            # MgO
+            value = val_mg*self.conversion_factors["MgO"]
+            helper_results_oxides["MgO"].append(value)
+            # H2O
+            value = val_h*self.conversion_factors["H2O"]
+            helper_results_oxides["H2O"].append(value)
+            # SO2
+            value = val_s*self.conversion_factors["SO2"]
+            helper_results_oxides["SO2"].append(value)
+            # Fe2O3
+            value = val_fe*self.conversion_factors["Fe2O3"]
+            helper_results_oxides["Fe2O3"].append(value)
+
+        if len(self.tv_rockbuilder_01.get_children()) > 0:
+            for item in self.tv_rockbuilder_01.get_children():
+                self.tv_rockbuilder_01.delete(item)
+
+        for category, dataset in helper_results.items():
+            val_min = round(min(dataset), 3)
+            val_max = round(max(dataset), 3)
+            val_mean = round(np.mean(dataset), 3)
+            val_std = round(np.std(dataset, ddof=1), 3)
+            entries = [category, val_min, val_max, val_mean, val_std]
+            self.tv_rockbuilder_01.insert("", tk.END, values=entries)
+
+        entries = ["---", "---", "---", "---", "---"]
+        self.tv_rockbuilder_01.insert("", tk.END, values=entries)
+
+        for category, dataset in helper_results_minerals.items():
+            val_min = round(min(dataset), 2)
+            val_max = round(max(dataset), 2)
+            val_mean = round(np.mean(dataset), 2)
+            val_std = round(np.std(dataset, ddof=1), 2)
+            entries = [category, val_min, val_max, val_mean, val_std]
+            self.tv_rockbuilder_01.insert("", tk.END, values=entries)
+
+        entries = ["---", "---", "---", "---", "---"]
+        self.tv_rockbuilder_01.insert("", tk.END, values=entries)
+
+        for category, dataset in helper_results_oxides.items():
+            if len(dataset) > 0:
+                val_min = round(min(dataset)*100, 2)
+                val_max = round(max(dataset)*100, 2)
+                val_mean = round(np.mean(dataset)*100, 2)
+                val_std = round(np.std(dataset, ddof=1)*100, 2)
+                entries = [category, val_min, val_max, val_mean, val_std]
+                self.tv_rockbuilder_01.insert("", tk.END, values=entries)
+            else:
+                val_min = "-"
+                val_max = "-"
+                val_mean = "-"
+                val_std = "-"
+                entries = [category, val_min, val_max, val_mean, val_std]
+                self.tv_rockbuilder_01.insert("", tk.END, values=entries)
+
+        entries = ["---", "---", "---", "---", "---"]
+        self.tv_rockbuilder_01.insert("", tk.END, values=entries)
+
+        for category, dataset in helper_results_elements.items():
+            if len(dataset) > 0:
+                val_min = round(min(dataset)*100, 2)
+                val_max = round(max(dataset)*100, 2)
+                val_mean = round(np.mean(dataset)*100, 2)
+                val_std = round(np.std(dataset*100, ddof=1), 2)
+                entries = [category, val_min, val_max, val_mean, val_std]
+                self.tv_rockbuilder_01.insert("", tk.END, values=entries)
+            else:
+                val_min = "-"
+                val_max = "-"
+                val_mean = "-"
+                val_std = "-"
+                entries = [category, val_min, val_max, val_mean, val_std]
+                self.tv_rockbuilder_01.insert("", tk.END, values=entries)
 
     def find_mineral_amounts(self):
         for key, item in self.helper_rockbuilder_sedimentary_variables.items():
@@ -4049,7 +4568,6 @@ class GebPyGUI(tk.Frame):
                 helper_total_amount += value
 
             if round(helper_total_amount, 4) == 100.0:
-                print(helper_results)
                 condition = True
 
         return helper_results
