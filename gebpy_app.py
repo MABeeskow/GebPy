@@ -4561,7 +4561,7 @@ class GebPyGUI(tk.Frame):
 
         ## Initialization
         categories = [["rho", "GR", "PE"], ["vP", "vS", "vP/vS"], ["K", "G", "poisson"]]
-        labels = [["kg/m^3", "API", "barns"], ["m/s", "m/s", "1"], ["GPa", "GPa", "1"]]
+        labels = [["kg/m^3", "API", "barns/e-"], ["m/s", "m/s", "1"], ["GPa", "GPa", "1"]]
         self.create_3x3_diagram(
             var_parent=self.subwindow_rockbuilder_sedimentary, var_categories=categories, var_labels=labels)
 
