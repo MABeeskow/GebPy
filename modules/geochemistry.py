@@ -1320,8 +1320,8 @@ class TraceElements:
             # print("Families:", trace_combinations)
             #
             results = Compounds(formula=oxides).split_formula()
-            print("Composition:", composition)
-            print("Results:", results)
+            # print("Composition:", composition)
+            # print("Results:", results)
             M = 0
             for oxide in composition:
                 M += composition[oxide]*10**(-6) * results[oxide]["Total"]

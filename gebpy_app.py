@@ -129,6 +129,10 @@ class GebPyGUI(tk.Frame):
         self.last_rb_setting["Petrology"]["Composition Elements"] = tk.IntVar()
         self.last_rb_setting["Petrology"]["Composition Elements"].set(42)
 
+        self.container_variables = {"Radiobuttons": {"Category Diagram": tk.IntVar(), "Category Data": tk.IntVar()}}
+        self.container_variables["Radiobuttons"]["Category Diagram"].set(0)
+        self.container_variables["Radiobuttons"]["Category Data"].set(0)
+
         self.var_rb = {
             "Rock analysis": {"Rock definition": tk.IntVar(), "External data": tk.IntVar(), "x-axis": tk.StringVar(),
                               "y-axis": tk.StringVar()}}
@@ -3726,7 +3730,7 @@ class GebPyGUI(tk.Frame):
 
     def rock_builder_sedimentary(self):
         ## Window Settings
-        window_width = 1300
+        window_width = 1600
         window_height = 800
         var_geometry = str(window_width) + "x" + str(window_height) + "+" + str(0) + "+" + str(0)
 
@@ -3734,6 +3738,8 @@ class GebPyGUI(tk.Frame):
         n_rows = int(window_height/row_min)
         column_min = 20
         n_columns = int(window_width/column_min)
+        self.n_rows_rbs = n_rows
+        self.n_columns_rbs = n_columns
 
         str_title_window = "GebPy - Rock Builder (sedimentary)"
         self.subwindow_rockbuilder_sedimentary = tk.Toplevel(self.parent)
@@ -3762,6 +3768,10 @@ class GebPyGUI(tk.Frame):
             parent=self.subwindow_rockbuilder_sedimentary, row_id=self.start_row, column_id=self.n_columns_setup + 1,
             n_rows=self.n_rows, n_columns=n_columns - self.n_columns_setup - 1, bg=self.colors_gebpy["Background"],
             fg=self.colors_gebpy["Background"]).create_frame()
+        SimpleElements(
+            parent=self.subwindow_rockbuilder_sedimentary, row_id=self.start_row + 1,
+            column_id=3*self.n_columns_setup + 6, n_rows=1, n_columns=self.n_columns_rbs - (3*self.n_columns_setup + 6),
+            bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Navigation"]).create_frame()
 
         ## Labels
         SimpleElements(
@@ -3846,9 +3856,39 @@ class GebPyGUI(tk.Frame):
             text="Results", relief=tk.FLAT, font_option="sans 10 bold", anchor_option=tk.W)
         SimpleElements(
             parent=self.subwindow_rockbuilder_sedimentary, row_id=self.start_row, column_id=3*self.n_columns_setup + 6,
-            n_rows=1, n_columns=2*self.n_columns_setup + 4, bg=self.colors_gebpy["Navigation"],
+            n_rows=1, n_columns=self.n_columns_rbs - (3*self.n_columns_setup + 6), bg=self.colors_gebpy["Navigation"],
             fg=self.colors_gebpy["White"]).create_label(
             text="Diagrams", relief=tk.FLAT, font_option="sans 10 bold", anchor_option=tk.W)
+
+        ## RADIOBUTTONS
+        var_rb_01 = self.container_variables["Radiobuttons"]["Category Diagram"]
+        var_rb_02 = self.container_variables["Radiobuttons"]["Category Data"]
+
+        self.rb_01a = SimpleElements(
+            parent=self.subwindow_rockbuilder_sedimentary, row_id=self.start_row + 1,
+            column_id=3*self.n_columns_setup + 6, n_rows=1, n_columns=5, bg=self.colors_gebpy["Navigation"],
+            fg=self.colors_gebpy["White"]).create_radiobutton(
+            text="Histogram", var_rb=var_rb_01, value_rb=0, color_bg=self.colors_gebpy["Accent"])
+        self.rb_01b = SimpleElements(
+            parent=self.subwindow_rockbuilder_sedimentary, row_id=self.start_row + 1,
+            column_id=3*self.n_columns_setup + 11, n_rows=1, n_columns=5, bg=self.colors_gebpy["Navigation"],
+            fg=self.colors_gebpy["White"]).create_radiobutton(
+            text="Scatter", var_rb=var_rb_01, value_rb=1, color_bg=self.colors_gebpy["Accent"])
+        self.rb_02a = SimpleElements(
+            parent=self.subwindow_rockbuilder_sedimentary, row_id=self.start_row + 1,
+            column_id=3*self.n_columns_setup + 16, n_rows=1, n_columns=8, bg=self.colors_gebpy["Navigation"],
+            fg=self.colors_gebpy["White"]).create_radiobutton(
+            text="Geophysical data", var_rb=var_rb_02, value_rb=0, color_bg=self.colors_gebpy["Accent"])
+        self.rb_02b = SimpleElements(
+            parent=self.subwindow_rockbuilder_sedimentary, row_id=self.start_row + 1,
+            column_id=3*self.n_columns_setup + 24, n_rows=1, n_columns=8, bg=self.colors_gebpy["Navigation"],
+            fg=self.colors_gebpy["White"]).create_radiobutton(
+            text="Geochemical data", var_rb=var_rb_02, value_rb=1, color_bg=self.colors_gebpy["Accent"])
+
+        self.rb_01a.configure(state="disabled")
+        self.rb_01b.configure(state="disabled")
+        self.rb_02a.configure(state="disabled")
+        self.rb_02b.configure(state="disabled")
 
         ## ENTRIES
         var_entr_01a = tk.StringVar()
@@ -4031,6 +4071,15 @@ class GebPyGUI(tk.Frame):
             sticky="ew")
 
     def run_calculation_rockbuilder_sedimentary(self):
+        self.rb_01a.configure(state="normal")
+        self.rb_01b.configure(state="normal")
+        self.rb_02a.configure(state="normal")
+        self.rb_02b.configure(state="normal")
+
+        self.helper_results_geophysics = {
+            "rho": [], "rho(solid)": [], "V(molar)": [], "vP": [], "vS": [], "vP/vS": [], "GR": [], "PE": [], "phi": [],
+            "K": [], "G": [], "E": [], "M": [], "lame": [], "poisson": []}
+
         for key, item in self.helper_rockbuilder_sedimentary_variables.items():
             if key == "w(Kfs)/w(Kfs+Pl)":
                 val_ratio_KfsPl = float(item.get())
@@ -4325,15 +4374,19 @@ class GebPyGUI(tk.Frame):
             ## Geophysical results
             # Porosity
             helper_results["\u03C6"].append(phi)
+            self.helper_results_geophysics["phi"].append(phi)
             # Bulk density (solid)
             rho_s = round(np.sum(helper_rho_s), 3)
             helper_results["rho(solid)"].append(rho_s)
+            self.helper_results_geophysics["rho(solid)"].append(rho_s)
             # Bulk density (solid)
             rho = round((1 - phi)*rho_s + phi*data_water[2], 3)
             helper_results["rho"].append(rho)
+            self.helper_results_geophysics["rho"].append(rho)
             # Molar volume
             molar_vol = round(np.sum(helper_vol), 3)
             helper_results["V(molar)"].append(molar_vol)
+            self.helper_results_geophysics["V(molar)"].append(molar_vol)
             # Elastic properties
             bulkmod = round(np.sum(helper_bulkmod), 3)
             shearmod = round(np.sum(helper_shearmod), 3)
@@ -4347,6 +4400,12 @@ class GebPyGUI(tk.Frame):
             helper_results["\u03BB"].append(lame)
             helper_results["\u03BD"].append(poisson)
             helper_results["M"].append(vpmod)
+            self.helper_results_geophysics["K"].append(bulkmod)
+            self.helper_results_geophysics["G"].append(shearmod)
+            self.helper_results_geophysics["E"].append(youngs_mod)
+            self.helper_results_geophysics["M"].append(vpmod)
+            self.helper_results_geophysics["lame"].append(lame)
+            self.helper_results_geophysics["poisson"].append(poisson)
             # Seismic velocities
             v_p = round(((bulkmod*10**9 + 4/3*shearmod*10**9)/(rho))**0.5, 3)
             v_s = round(((shearmod*10**9)/(rho))**0.5, 3)
@@ -4354,12 +4413,17 @@ class GebPyGUI(tk.Frame):
             helper_results["vP"].append(v_p)
             helper_results["vS"].append(v_s)
             helper_results["vP/vS"].append(v_ps_ratio)
+            self.helper_results_geophysics["vP"].append(v_p)
+            self.helper_results_geophysics["vS"].append(v_s)
+            self.helper_results_geophysics["vP/vS"].append(v_ps_ratio)
             # Gamma ray
             gr = round(np.sum(helper_gr), 3)
             helper_results["GR"].append(gr)
+            self.helper_results_geophysics["GR"].append(gr)
             # Photoelectricity
             pe = round(np.sum(helper_pe), 3)
             helper_results["PE"].append(pe)
+            self.helper_results_geophysics["PE"].append(pe)
             ## Geochemical results
             # Element concentrations
             # Oxygen
@@ -4494,6 +4558,35 @@ class GebPyGUI(tk.Frame):
                 val_std = "-"
                 entries = [category, val_min, val_max, val_mean, val_std]
                 self.tv_rockbuilder_01.insert("", tk.END, values=entries)
+
+        ## Initialization
+        categories = [["rho", "GR", "PE"], ["vP", "vS", "vP/vS"], ["K", "G", "poisson"]]
+        labels = [["kg/m^3", "API", "barns"], ["m/s", "m/s", "1"], ["GPa", "GPa", "1"]]
+        self.create_3x3_diagram(
+            var_parent=self.subwindow_rockbuilder_sedimentary, var_categories=categories, var_labels=labels)
+
+    def create_3x3_diagram(self, var_parent, var_categories, var_labels): # sex
+        fig_3x3 = Figure(figsize=(6, 6), tight_layout=True, facecolor=self.colors_gebpy["Background"])
+        ax_3x3 = fig_3x3.subplots(nrows=3, ncols=3)
+
+        for i, subcategories in enumerate(var_categories):
+            for j, subcategory in enumerate(subcategories):
+                if self.container_variables["Radiobuttons"]["Category Data"].get() == 0:
+                    if subcategory in self.helper_results_geophysics:
+                        ax_3x3[i][j].hist(self.helper_results_geophysics[subcategory], bins=16, edgecolor="black",
+                                          facecolor=self.colors_gebpy["Option"])
+
+                if self.container_variables["Radiobuttons"]["Category Diagram"].get() == 0:
+                    ax_3x3[i][j].set_xlabel(subcategory + " (" + var_labels[i][j] + ")", fontsize=9)
+                if self.container_variables["Radiobuttons"]["Category Diagram"].get() == 0:
+                    ax_3x3[i][j].set_ylabel("Frequency (#)", labelpad=0.5, fontsize=9)
+                ax_3x3[i][j].grid(True)
+                ax_3x3[i][j].set_axisbelow(True)
+
+        canvas_3x3 = FigureCanvasTkAgg(fig_3x3, master=var_parent)
+        canvas_3x3.get_tk_widget().grid(
+            row=self.start_row + 2, column=3*self.n_columns_setup + 6, rowspan=self.n_rows_rbs - 2,
+            columnspan=self.n_columns_rbs - (3*self.n_columns_setup + 6), sticky="nesw")
 
     def find_mineral_amounts(self):
         for key, item in self.helper_rockbuilder_sedimentary_variables.items():
