@@ -6,7 +6,7 @@
 # Name:		silicates.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		25.10.2023
+# Date:		17.06.2024
 
 # -----------------------------------------------
 
@@ -32,15 +32,25 @@ class Tectosilicates:
         self.mineral = mineral
 
         ## Chemistry
-        self.boron = ["B", 5, 10.806]
-        self.carbon = ["C", 6, 12.011]
-        self.oxygen = ["O", 8, 15.999]
-        self.sodium = ["Na", 11, 22.990]
-        self.aluminium = ["Al", 13, 26.982]
-        self.silicon = ["Si", 14, 28.085]
-        self.chlorine = ["Cl", 17, 35.450]
-        self.potassium = ["K", 19, 39.098]
-        self.calcium = ["Ca", 20, 40.078]
+        boron = PeriodicSystem(name="B").get_data()
+        carbon = PeriodicSystem(name="C").get_data()
+        oxygen = PeriodicSystem(name="O").get_data()
+        sodium = PeriodicSystem(name="Na").get_data()
+        aluminium = PeriodicSystem(name="Al").get_data()
+        silicon = PeriodicSystem(name="Si").get_data()
+        chlorine = PeriodicSystem(name="Cl").get_data()
+        potassium = PeriodicSystem(name="K").get_data()
+        calcium = PeriodicSystem(name="Ca").get_data()
+
+        self.boron = ["B", 5, boron[2]]
+        self.carbon = ["C", 6, carbon[2]]
+        self.oxygen = ["O", 8, oxygen[2]]
+        self.sodium = ["Na", 11, sodium[2]]
+        self.aluminium = ["Al", 13, aluminium[2]]
+        self.silicon = ["Si", 14, silicon[2]]
+        self.chlorine = ["Cl", 17, chlorine[2]]
+        self.potassium = ["K", 19, potassium[2]]
+        self.calcium = ["Ca", 20, calcium[2]]
     #
     def get_data(self, number=1):
         if self.mineral in ["Afs", "Kfs", "Alkali Feldspar"]:

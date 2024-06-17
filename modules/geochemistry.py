@@ -6,7 +6,7 @@
 # Name:		geochemistry.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		24.09.2022
+# Date:		17.06.2024
 
 #-----------------------------------------------
 
@@ -1063,8 +1063,10 @@ class Compounds:
                     compound[key.group()]["Total"] += round(int(key.group(4))*PeriodicSystem(name=key.group(3)).get_data()[2], 3)
                 #
                 compound[key.group()]["Total"] = round(compound[key.group()]["Total"], 3)
-                compound[key.group()][key.group(1)].append(round(compound[key.group()][key.group(1)][0]*chemistry[key.group(1)]/compound[key.group()]["Total"], 4))
-                compound[key.group()][key.group(3)].append(round(compound[key.group()][key.group(3)][0]*chemistry[key.group(3)]/compound[key.group()]["Total"], 4))
+                compound[key.group()][key.group(1)].append(
+                    compound[key.group()][key.group(1)][0]*chemistry[key.group(1)]/compound[key.group()]["Total"])
+                compound[key.group()][key.group(3)].append(compound[key.group()][key.group(3)][0]*
+                                                           chemistry[key.group(3)]/compound[key.group()]["Total"])
             elif len(key.groups()) == 2:
                 compound[key.group()] = {}
                 compound[key.group()]["Total"] = 0
@@ -1318,8 +1320,8 @@ class TraceElements:
             # print("Families:", trace_combinations)
             #
             results = Compounds(formula=oxides).split_formula()
-            # print("Composition:", composition)
-            # print("Results:", results)
+            print("Composition:", composition)
+            print("Results:", results)
             M = 0
             for oxide in composition:
                 M += composition[oxide]*10**(-6) * results[oxide]["Total"]

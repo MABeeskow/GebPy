@@ -6,7 +6,7 @@
 # Name:		oxides.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		13.06.2024
+# Date:		17.06.2024
 
 # -----------------------------------------------
 
@@ -29,19 +29,33 @@ class Oxides():
         self.mineral = mineral
 
         # Chemistry
-        self.boron = ["B", 5, 10.806]
-        self.carbon = ["C", 6, 12.011]
-        self.oxygen = ["O", 8, 15.999]
-        self.sodium = ["Na", 11, 22.990]
-        self.aluminium = ["Al", 13, 26.982]
-        self.silicon = ["Si", 14, 28.085]
-        self.chlorine = ["Cl", 17, 35.450]
-        self.potassium = ["K", 19, 39.098]
-        self.calcium = ["Ca", 20, 40.078]
-        self.manganese = ["Mn", 25, 54.938]
-        self.iron = ["Fe", 26, 55.845]
-        self.antimony = ["Sb", 51, 121.76]
-        self.tungsten = ["W", 74, 183.84]
+        boron = PeriodicSystem(name="B").get_data()
+        carbon = PeriodicSystem(name="C").get_data()
+        oxygen = PeriodicSystem(name="O").get_data()
+        sodium = PeriodicSystem(name="Na").get_data()
+        aluminium = PeriodicSystem(name="Al").get_data()
+        silicon = PeriodicSystem(name="Si").get_data()
+        chlorine = PeriodicSystem(name="Cl").get_data()
+        potassium = PeriodicSystem(name="K").get_data()
+        calcium = PeriodicSystem(name="Ca").get_data()
+        manganese = PeriodicSystem(name="Mn").get_data()
+        iron = PeriodicSystem(name="Fe").get_data()
+        antimony = PeriodicSystem(name="Sb").get_data()
+        tungsten = PeriodicSystem(name="W").get_data()
+
+        self.boron = ["B", 5, boron[2]]
+        self.carbon = ["C", 6, carbon[2]]
+        self.oxygen = ["O", 8, oxygen[2]]
+        self.sodium = ["Na", 11, sodium[2]]
+        self.aluminium = ["Al", 13, aluminium[2]]
+        self.silicon = ["Si", 14, silicon[2]]
+        self.chlorine = ["Cl", 17, chlorine[2]]
+        self.potassium = ["K", 19, potassium[2]]
+        self.calcium = ["Ca", 20, calcium[2]]
+        self.manganese = ["Mn", 25, manganese[2]]
+        self.iron = ["Fe", 26, iron[2]]
+        self.antimony = ["Sb", 51, antimony[2]]
+        self.tungsten = ["W", 74, tungsten[2]]
 
     def get_data(self, number=1):
         if self.mineral == "Quartz":
@@ -387,20 +401,20 @@ class Oxides():
             var_state = "fixed"
 
         composition_data = TraceElements(tracer=self.traces_list).calculate_composition_quartz()
-        #
+
         ## Molar mass
         molar_mass_pure = self.silicon[2] + 2*self.oxygen[2]
         molar_mass = 0
         amounts = []
-        #
+
         for element in composition_data:
             chem_data = PeriodicSystem(name=element).get_data()
             molar_mass += composition_data[element]["x"]*chem_data[2]
             amounts.append([chem_data[0], chem_data[1], composition_data[element]["w"]])
-        #
+
         magic_factor = molar_mass/molar_mass_pure
         element = [PeriodicSystem(name=amounts[i][0]).get_data() for i in range(len(amounts))]
-        #
+
         ## Density
         dataV = CrystalPhysics([[4.9135, 5.4050], [], "trigonal"])
         V = dataV.calculate_volume()
@@ -409,7 +423,7 @@ class Oxides():
         dataRho = CrystalPhysics([molar_mass, Z, V])
         rho = dataRho.calculate_bulk_density()*magic_factor
         rho_e = wg(amounts=amounts, elements=element, rho_b=rho).calculate_electron_density()
-        #
+
         ## ELASTICITY
         x = rd.uniform(0, 1)
         ## Bulk modulus
@@ -445,7 +459,7 @@ class Oxides():
         CpT = 39.62 + 44.78*10**(-3)*var_T - 7.45*10**5*var_T**(-2)
         ## LA-ICP-MS
         normalized_sensitivity_Si = 44.54
-        #
+
         ## Data Export
         results = {}
         results["mineral"] = name

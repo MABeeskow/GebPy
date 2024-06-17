@@ -4110,6 +4110,8 @@ class GebPyGUI(tk.Frame):
                     helper_results_chemistry[element] = []
                 if w_qz > 0:
                     helper_results_chemistry[element].append(w_qz*value[0])
+                    if round(w_qz, 4) == 1.0:
+                        print(w_qz, w_qz*value[0])
             # Feldspar minerals
             # Alkaline feldspar
             w_kfs = round(val_ratio_KfsPl*w_fsp, 4)
@@ -4399,6 +4401,8 @@ class GebPyGUI(tk.Frame):
             # Oxide concentrations
             # SiO2
             value = val_si*self.conversion_factors["SiO2"]
+            if round(w_qz, 4) == 1.0:
+                print(w_qz, val_si, self.conversion_factors["SiO2"], value)
             # if round(w_qz, 4) == 1.0:
             #     value = 1.0
             helper_results_oxides["SiO2"].append(value)
