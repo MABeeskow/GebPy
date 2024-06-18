@@ -4587,9 +4587,11 @@ class GebPyGUI(tk.Frame):
                                           facecolor=self.colors_gebpy["Option"])
                 elif self.container_variables["Radiobuttons"]["Category Data"].get() == 1:
                     if subcategory in self.helper_results_geophysics:
+                        if subcategory == "rho":
+                            subcategory = "V(molar)"
                         self.ax_3x3[i][j].scatter(
                             self.helper_results_geophysics["rho"], self.helper_results_geophysics[subcategory],
-                            edgecolor="black", color=self.colors_gebpy["Option"], alpha=0.8)
+                            edgecolor="black", color=self.colors_gebpy["Option"], alpha=0.75, s=50)
 
                 if self.container_variables["Radiobuttons"]["Category Diagram"].get() == 0:
                     self.ax_3x3[i][j].set_xlabel(subcategory + " (" + var_labels[i][j] + ")", fontsize=9)
