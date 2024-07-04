@@ -3861,19 +3861,24 @@ class GebPyGUI(tk.Frame):
             text="Diagrams", relief=tk.FLAT, font_option="sans 10 bold", anchor_option=tk.W)
 
         ## RADIOBUTTONS
-        var_rb_01 = self.container_variables["Radiobuttons"]["Category Diagram"]
         var_rb_02 = self.container_variables["Radiobuttons"]["Category Data"]
 
         self.rb_01a = SimpleElements(
             parent=self.subwindow_rockbuilder_sedimentary, row_id=self.start_row + 1,
             column_id=3*self.n_columns_setup + 6, n_rows=1, n_columns=5, bg=self.colors_gebpy["Navigation"],
             fg=self.colors_gebpy["White"]).create_radiobutton(
-            text="Histogram", var_rb=var_rb_01, value_rb=0, color_bg=self.colors_gebpy["Accent"])
+            text="Histogram", var_rb=self.container_variables["Radiobuttons"]["Category Diagram"], value_rb=0,
+            color_bg=self.colors_gebpy["Accent"],
+            command=lambda var_rb=self.container_variables["Radiobuttons"]["Category Diagram"]:
+            self.change_diagram_category(var_rb))
         self.rb_01b = SimpleElements(
             parent=self.subwindow_rockbuilder_sedimentary, row_id=self.start_row + 1,
             column_id=3*self.n_columns_setup + 11, n_rows=1, n_columns=5, bg=self.colors_gebpy["Navigation"],
             fg=self.colors_gebpy["White"]).create_radiobutton(
-            text="Scatter", var_rb=var_rb_01, value_rb=1, color_bg=self.colors_gebpy["Accent"])
+            text="Scatter", var_rb=self.container_variables["Radiobuttons"]["Category Diagram"], value_rb=1,
+            color_bg=self.colors_gebpy["Accent"],
+            command=lambda var_rb=self.container_variables["Radiobuttons"]["Category Diagram"]:
+            self.change_diagram_category(var_rb))
         self.rb_02a = SimpleElements(
             parent=self.subwindow_rockbuilder_sedimentary, row_id=self.start_row + 1,
             column_id=3*self.n_columns_setup + 16, n_rows=1, n_columns=8, bg=self.colors_gebpy["Navigation"],
@@ -4562,29 +4567,47 @@ class GebPyGUI(tk.Frame):
         ## Initialization
         categories = [["rho", "GR", "PE"], ["vP", "vS", "vP/vS"], ["K", "G", "poisson"]]
         labels = [["kg/m^3", "API", "barns/e-"], ["m/s", "m/s", "1"], ["GPa", "GPa", "1"]]
-        self.create_3x3_diagram(
-            var_parent=self.subwindow_rockbuilder_sedimentary, var_categories=categories, var_labels=labels)
+        self.create_3x3_diagram(var_categories=categories, var_labels=labels)
 
-    def create_3x3_diagram(self, var_parent, var_categories, var_labels): # sex
-        fig_3x3 = Figure(figsize=(6, 6), tight_layout=True, facecolor=self.colors_gebpy["Background"])
-        ax_3x3 = fig_3x3.subplots(nrows=3, ncols=3)
+    def change_diagram_category(self, var_rb):
+        self.container_variables["Radiobuttons"]["Category Data"].set(var_rb.get())
+        categories = [["rho", "GR", "PE"], ["vP", "vS", "vP/vS"], ["K", "G", "poisson"]]
+        labels = [["kg/m^3", "API", "barns/e-"], ["m/s", "m/s", "1"], ["GPa", "GPa", "1"]]
+        self.create_3x3_diagram(var_categories=categories, var_labels=labels)
+
+    def create_3x3_diagram(self, var_categories, var_labels): # sex
+        self.fig_3x3 = Figure(figsize=(6, 6), tight_layout=True, facecolor=self.colors_gebpy["Background"])
+        self.ax_3x3 = self.fig_3x3.subplots(nrows=3, ncols=3)
 
         for i, subcategories in enumerate(var_categories):
             for j, subcategory in enumerate(subcategories):
                 if self.container_variables["Radiobuttons"]["Category Data"].get() == 0:
                     if subcategory in self.helper_results_geophysics:
-                        ax_3x3[i][j].hist(self.helper_results_geophysics[subcategory], bins=16, edgecolor="black",
+                        self.ax_3x3[i][j].hist(self.helper_results_geophysics[subcategory], bins=16, edgecolor="black",
                                           facecolor=self.colors_gebpy["Option"])
+                elif self.container_variables["Radiobuttons"]["Category Data"].get() == 1:
+                    if subcategory in self.helper_results_geophysics:
+                        if subcategory == "rho":
+                            subcategory = "V(molar)"
+                        self.ax_3x3[i][j].scatter(
+                            self.helper_results_geophysics["rho"], self.helper_results_geophysics[subcategory],
+                            edgecolor="black", color=self.colors_gebpy["Option"], alpha=0.75, s=50)
 
                 if self.container_variables["Radiobuttons"]["Category Diagram"].get() == 0:
-                    ax_3x3[i][j].set_xlabel(subcategory + " (" + var_labels[i][j] + ")", fontsize=9)
-                if self.container_variables["Radiobuttons"]["Category Diagram"].get() == 0:
-                    ax_3x3[i][j].set_ylabel("Frequency (#)", labelpad=0.5, fontsize=9)
-                ax_3x3[i][j].grid(True)
-                ax_3x3[i][j].set_axisbelow(True)
+                    self.ax_3x3[i][j].set_xlabel(subcategory + " (" + var_labels[i][j] + ")", fontsize=9)
+                else:
+                    self.ax_3x3[i][j].set_xlabel("rho (kg/m^3)", fontsize=9)
 
-        canvas_3x3 = FigureCanvasTkAgg(fig_3x3, master=var_parent)
-        canvas_3x3.get_tk_widget().grid(
+                if self.container_variables["Radiobuttons"]["Category Diagram"].get() == 0:
+                    self.ax_3x3[i][j].set_ylabel("Frequency (#)", labelpad=0.5, fontsize=9)
+                else:
+                    self.ax_3x3[i][j].set_ylabel(subcategory + " (" + var_labels[i][j] + ")", labelpad=0.5, fontsize=9)
+
+                self.ax_3x3[i][j].grid(True)
+                self.ax_3x3[i][j].set_axisbelow(True)
+
+        self.canvas_3x3 = FigureCanvasTkAgg(self.fig_3x3, master=self.subwindow_rockbuilder_sedimentary)
+        self.canvas_3x3.get_tk_widget().grid(
             row=self.start_row + 2, column=3*self.n_columns_setup + 6, rowspan=self.n_rows_rbs - 2,
             columnspan=self.n_columns_rbs - (3*self.n_columns_setup + 6), sticky="nesw")
 
