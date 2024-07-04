@@ -6,7 +6,7 @@
 # Name:		gebpy_app.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		14.06.2024
+# Date:		04.07.2024
 # License:  GPL v3.0
 
 # ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- -
@@ -7325,9 +7325,12 @@ class GebPyGUI(tk.Frame):
     #
     def export_mineral_data(self, var_dataset, var_name):
         list_keys = list(var_dataset.keys())
-        list_keys.remove("mineral")
-        list_keys.remove("state")
-        list_keys.remove("chemistry")
+        if "mineral" in list_keys:
+            list_keys.remove("mineral")
+        if "state" in list_keys:
+            list_keys.remove("state")
+        if "chemistry" in list_keys:
+            list_keys.remove("chemistry")
 
         if "compounds" in list_keys:
             list_keys.remove("compounds")
