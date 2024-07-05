@@ -6,7 +6,7 @@
 # Name:		gebpy_app.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		04.07.2024
+# Date:		05.07.2024
 # License:  GPL v3.0
 
 # ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- -
@@ -1264,10 +1264,16 @@ class GebPyGUI(tk.Frame):
                                     if x_min < 0:
                                         x_min = 0
 
-                                ax_mp_histo[i][j].set_xlim(left=x_min, right=x_max)
+                                if x_max - x_min == 0:
+                                    pass
+                                else:
+                                    ax_mp_histo[i][j].set_xlim(left=x_min, right=x_max)
                                 ax_mp_histo[i][j].set_ylim(bottom=y_min, top=y_max)
-                                ax_mp_histo[i][j].set_xticks(np.around(
-                                    np.linspace(x_min, x_max, 6, dtype=float, endpoint=True), n_digits))
+                                if x_max - x_min == 0:
+                                    pass
+                                else:
+                                    ax_mp_histo[i][j].set_xticks(np.around(
+                                        np.linspace(x_min, x_max, 6, dtype=float, endpoint=True), n_digits))
                                 ax_mp_histo[i][j].set_yticks(np.around(
                                     np.linspace(y_min, y_max, 6, dtype=float, endpoint=True), 1))
                                 ax_mp_histo[i][j].xaxis.set_tick_params(labelsize="x-small")
@@ -3730,8 +3736,8 @@ class GebPyGUI(tk.Frame):
 
     def rock_builder_sedimentary(self):
         ## Window Settings
-        window_width = 1600
-        window_height = 800
+        window_width = 1800
+        window_height = 900
         var_geometry = str(window_width) + "x" + str(window_height) + "+" + str(0) + "+" + str(0)
 
         row_min = 25
@@ -3769,7 +3775,7 @@ class GebPyGUI(tk.Frame):
             n_rows=self.n_rows, n_columns=n_columns - self.n_columns_setup - 1, bg=self.colors_gebpy["Background"],
             fg=self.colors_gebpy["Background"]).create_frame()
         SimpleElements(
-            parent=self.subwindow_rockbuilder_sedimentary, row_id=self.start_row + 1,
+            parent=self.subwindow_rockbuilder_sedimentary, row_id=self.start_row,
             column_id=3*self.n_columns_setup + 6, n_rows=1, n_columns=self.n_columns_rbs - (3*self.n_columns_setup + 6),
             bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Navigation"]).create_frame()
 
@@ -3851,44 +3857,48 @@ class GebPyGUI(tk.Frame):
             text="Number of datapoints", relief=tk.FLAT, font_option="sans 10 bold", anchor_option=tk.W)
         SimpleElements(
             parent=self.subwindow_rockbuilder_sedimentary, row_id=self.start_row, column_id=self.n_columns_setup + 2,
-            n_rows=1, n_columns=2*self.n_columns_setup + 3, bg=self.colors_gebpy["Navigation"],
-            fg=self.colors_gebpy["White"]).create_label(
+            n_rows=1, n_columns=2*self.n_columns_setup + 3, bg=self.colors_gebpy["Background"],
+            fg=self.colors_gebpy["Black"]).create_label(
             text="Results", relief=tk.FLAT, font_option="sans 10 bold", anchor_option=tk.W)
         SimpleElements(
             parent=self.subwindow_rockbuilder_sedimentary, row_id=self.start_row, column_id=3*self.n_columns_setup + 6,
-            n_rows=1, n_columns=self.n_columns_rbs - (3*self.n_columns_setup + 6), bg=self.colors_gebpy["Navigation"],
-            fg=self.colors_gebpy["White"]).create_label(
+            n_rows=1, n_columns=self.n_columns_rbs - (3*self.n_columns_setup + 6), bg=self.colors_gebpy["Background"],
+            fg=self.colors_gebpy["Black"]).create_label(
             text="Diagrams", relief=tk.FLAT, font_option="sans 10 bold", anchor_option=tk.W)
 
         ## RADIOBUTTONS
-        var_rb_02 = self.container_variables["Radiobuttons"]["Category Data"]
-
         self.rb_01a = SimpleElements(
             parent=self.subwindow_rockbuilder_sedimentary, row_id=self.start_row + 1,
-            column_id=3*self.n_columns_setup + 6, n_rows=1, n_columns=5, bg=self.colors_gebpy["Navigation"],
-            fg=self.colors_gebpy["White"]).create_radiobutton(
+            column_id=3*self.n_columns_setup + 6, n_rows=1, n_columns=5, bg=self.colors_gebpy["Background"],
+            fg=self.colors_gebpy["Black"]).create_radiobutton(
             text="Histogram", var_rb=self.container_variables["Radiobuttons"]["Category Diagram"], value_rb=0,
             color_bg=self.colors_gebpy["Accent"],
-            command=lambda var_rb=self.container_variables["Radiobuttons"]["Category Diagram"]:
-            self.change_diagram_category(var_rb))
+            command=lambda var_rb=self.container_variables["Radiobuttons"]["Category Diagram"], key="Category Diagram":
+            self.change_diagram_category(var_rb, key))
         self.rb_01b = SimpleElements(
             parent=self.subwindow_rockbuilder_sedimentary, row_id=self.start_row + 1,
-            column_id=3*self.n_columns_setup + 11, n_rows=1, n_columns=5, bg=self.colors_gebpy["Navigation"],
-            fg=self.colors_gebpy["White"]).create_radiobutton(
+            column_id=3*self.n_columns_setup + 11, n_rows=1, n_columns=5, bg=self.colors_gebpy["Background"],
+            fg=self.colors_gebpy["Black"]).create_radiobutton(
             text="Scatter", var_rb=self.container_variables["Radiobuttons"]["Category Diagram"], value_rb=1,
             color_bg=self.colors_gebpy["Accent"],
-            command=lambda var_rb=self.container_variables["Radiobuttons"]["Category Diagram"]:
-            self.change_diagram_category(var_rb))
+            command=lambda var_rb=self.container_variables["Radiobuttons"]["Category Diagram"], key="Category Diagram":
+            self.change_diagram_category(var_rb, key))
         self.rb_02a = SimpleElements(
             parent=self.subwindow_rockbuilder_sedimentary, row_id=self.start_row + 1,
-            column_id=3*self.n_columns_setup + 16, n_rows=1, n_columns=8, bg=self.colors_gebpy["Navigation"],
-            fg=self.colors_gebpy["White"]).create_radiobutton(
-            text="Geophysical data", var_rb=var_rb_02, value_rb=0, color_bg=self.colors_gebpy["Accent"])
+            column_id=3*self.n_columns_setup + 16, n_rows=1, n_columns=8, bg=self.colors_gebpy["Background"],
+            fg=self.colors_gebpy["Black"]).create_radiobutton(
+            text="Geophysical data", var_rb=self.container_variables["Radiobuttons"]["Category Data"], value_rb=0,
+            color_bg=self.colors_gebpy["Accent"],
+            command=lambda var_rb=self.container_variables["Radiobuttons"]["Category Data"], key="Category Data":
+            self.change_diagram_category(var_rb, key))
         self.rb_02b = SimpleElements(
             parent=self.subwindow_rockbuilder_sedimentary, row_id=self.start_row + 1,
-            column_id=3*self.n_columns_setup + 24, n_rows=1, n_columns=8, bg=self.colors_gebpy["Navigation"],
-            fg=self.colors_gebpy["White"]).create_radiobutton(
-            text="Geochemical data", var_rb=var_rb_02, value_rb=1, color_bg=self.colors_gebpy["Accent"])
+            column_id=3*self.n_columns_setup + 24, n_rows=1, n_columns=8, bg=self.colors_gebpy["Background"],
+            fg=self.colors_gebpy["Black"]).create_radiobutton(
+            text="Geochemical data", var_rb=self.container_variables["Radiobuttons"]["Category Data"], value_rb=1,
+            color_bg=self.colors_gebpy["Accent"],
+            command=lambda var_rb=self.container_variables["Radiobuttons"]["Category Data"], key="Category Data":
+            self.change_diagram_category(var_rb, key))
 
         self.rb_01a.configure(state="disabled")
         self.rb_01b.configure(state="disabled")
@@ -4084,6 +4094,9 @@ class GebPyGUI(tk.Frame):
         self.helper_results_geophysics = {
             "rho": [], "rho(solid)": [], "V(molar)": [], "vP": [], "vS": [], "vP/vS": [], "GR": [], "PE": [], "phi": [],
             "K": [], "G": [], "E": [], "M": [], "lame": [], "poisson": []}
+        self.helper_results_minerals = {
+            "Qz": [], "Kfs": [], "Pl": [], "Cal": [], "Dol": [], "Ilt": [], "Mnt": [], "Gp": [], "Anh": [],
+            "Org": [], "Py": [], "Sd": []}
 
         for key, item in self.helper_rockbuilder_sedimentary_variables.items():
             if key == "w(Kfs)/w(Kfs+Pl)":
@@ -4159,6 +4172,7 @@ class GebPyGUI(tk.Frame):
             if "Qz" not in helper_results_minerals:
                 helper_results_minerals["Qz"] = []
             helper_results_minerals["Qz"].append(100*w_qz)
+            self.helper_results_minerals["Qz"].append(100*w_qz)
             for element, value in data_quartz["chemistry"].items():
                 if element not in helper_results_chemistry:
                     helper_results_chemistry[element] = []
@@ -4182,6 +4196,7 @@ class GebPyGUI(tk.Frame):
             if "Kfs" not in helper_results_minerals:
                 helper_results_minerals["Kfs"] = []
             helper_results_minerals["Kfs"].append(100*w_kfs)
+            self.helper_results_minerals["Kfs"].append(100*w_kfs)
             for element, value in data_alkaline_feldspar["chemistry"].items():
                 if element not in helper_results_chemistry:
                     helper_results_chemistry[element] = []
@@ -4202,6 +4217,7 @@ class GebPyGUI(tk.Frame):
             if "Pl" not in helper_results_minerals:
                 helper_results_minerals["Pl"] = []
             helper_results_minerals["Pl"].append(100*w_pl)
+            self.helper_results_minerals["Pl"].append(100*w_pl)
             for element, value in data_plagioclase["chemistry"].items():
                 if element not in helper_results_chemistry:
                     helper_results_chemistry[element] = []
@@ -4221,6 +4237,7 @@ class GebPyGUI(tk.Frame):
             if "Cal" not in helper_results_minerals:
                 helper_results_minerals["Cal"] = []
             helper_results_minerals["Cal"].append(100*w_cal)
+            self.helper_results_minerals["Cal"].append(100*w_cal)
             for element, value in data_calcite["chemistry"].items():
                 if element not in helper_results_chemistry:
                     helper_results_chemistry[element] = []
@@ -4239,6 +4256,7 @@ class GebPyGUI(tk.Frame):
             if "Dol" not in helper_results_minerals:
                 helper_results_minerals["Dol"] = []
             helper_results_minerals["Dol"].append(100*w_dol)
+            self.helper_results_minerals["Dol"].append(100*w_dol)
             for element, value in data_dolomite["chemistry"].items():
                 if element not in helper_results_chemistry:
                     helper_results_chemistry[element] = []
@@ -4258,6 +4276,7 @@ class GebPyGUI(tk.Frame):
             if "Ilt" not in helper_results_minerals:
                 helper_results_minerals["Ilt"] = []
             helper_results_minerals["Ilt"].append(100*w_ilt)
+            self.helper_results_minerals["Ilt"].append(100*w_ilt)
             for element, value in data_illite["chemistry"].items():
                 if element not in helper_results_chemistry:
                     helper_results_chemistry[element] = []
@@ -4278,6 +4297,7 @@ class GebPyGUI(tk.Frame):
             if "Mnt" not in helper_results_minerals:
                 helper_results_minerals["Mnt"] = []
             helper_results_minerals["Mnt"].append(100*w_mnt)
+            self.helper_results_minerals["Mnt"].append(100*w_mnt)
             for element, value in data_montmorillonite["chemistry"].items():
                 if element not in helper_results_chemistry:
                     helper_results_chemistry[element] = []
@@ -4297,6 +4317,7 @@ class GebPyGUI(tk.Frame):
             if "Anh" not in helper_results_minerals:
                 helper_results_minerals["Anh"] = []
             helper_results_minerals["Anh"].append(100*w_anh)
+            self.helper_results_minerals["Anh"].append(100*w_anh)
             for element, value in data_anhydrite["chemistry"].items():
                 if element not in helper_results_chemistry:
                     helper_results_chemistry[element] = []
@@ -4315,6 +4336,7 @@ class GebPyGUI(tk.Frame):
             if "Gp" not in helper_results_minerals:
                 helper_results_minerals["Gp"] = []
             helper_results_minerals["Gp"].append(100*w_gp)
+            self.helper_results_minerals["Gp"].append(100*w_gp)
             for element, value in data_gypsum["chemistry"].items():
                 if element not in helper_results_chemistry:
                     helper_results_chemistry[element] = []
@@ -4334,6 +4356,7 @@ class GebPyGUI(tk.Frame):
             if "Org" not in helper_results_minerals:
                 helper_results_minerals["Org"] = []
             helper_results_minerals["Org"].append(100*w_org)
+            self.helper_results_minerals["Org"].append(100*w_org)
             for element, value in data_organic_matter["chemistry"].items():
                 if element not in helper_results_chemistry:
                     helper_results_chemistry[element] = []
@@ -4353,6 +4376,7 @@ class GebPyGUI(tk.Frame):
             if "Py" not in helper_results_minerals:
                 helper_results_minerals["Py"] = []
             helper_results_minerals["Py"].append(100*w_py)
+            self.helper_results_minerals["Py"].append(100*w_py)
             for element, value in data_pyrite["chemistry"].items():
                 if element not in helper_results_chemistry:
                     helper_results_chemistry[element] = []
@@ -4371,6 +4395,7 @@ class GebPyGUI(tk.Frame):
             if "Sd" not in helper_results_minerals:
                 helper_results_minerals["Sd"] = []
             helper_results_minerals["Sd"].append(100*w_sd)
+            self.helper_results_minerals["Sd"].append(100*w_sd)
             for element, value in data_siderite["chemistry"].items():
                 if element not in helper_results_chemistry:
                     helper_results_chemistry[element] = []
@@ -4565,27 +4590,146 @@ class GebPyGUI(tk.Frame):
                 self.tv_rockbuilder_01.insert("", tk.END, values=entries)
 
         ## Initialization
+        self.container_variables["Radiobuttons"]["Category Diagram"].set(0)
+        self.container_variables["Radiobuttons"]["Category Data"].set(0)
+
         categories = [["rho", "GR", "PE"], ["vP", "vS", "vP/vS"], ["K", "G", "poisson"]]
         labels = [["kg/m^3", "API", "barns/e-"], ["m/s", "m/s", "1"], ["GPa", "GPa", "1"]]
         self.create_3x3_diagram(var_categories=categories, var_labels=labels)
 
-    def change_diagram_category(self, var_rb):
-        self.container_variables["Radiobuttons"]["Category Data"].set(var_rb.get())
-        categories = [["rho", "GR", "PE"], ["vP", "vS", "vP/vS"], ["K", "G", "poisson"]]
-        labels = [["kg/m^3", "API", "barns/e-"], ["m/s", "m/s", "1"], ["GPa", "GPa", "1"]]
-        self.create_3x3_diagram(var_categories=categories, var_labels=labels)
+    def change_diagram_category(self, var_rb, key):
+        self.container_variables["Radiobuttons"][key].set(var_rb.get())
+        if self.container_variables["Radiobuttons"]["Category Data"].get() == 0:    # Geophysical data
+            categories = [["rho", "GR", "PE"], ["vP", "vS", "vP/vS"], ["K", "G", "poisson"]]
+            labels = [["kg/m^3", "API", "barns/e-"], ["m/s", "m/s", "1"], ["GPa", "GPa", "1"]]
 
-    def create_3x3_diagram(self, var_categories, var_labels): # sex
+            self.create_3x3_diagram(var_categories=categories, var_labels=labels)
+        else:                                                                       # Geochemical data
+            categories = [["Qz", "Kfs", "Pl"], ["Cal", "Dol", "Ilt"], ["Mnt", "Gp", "Anh"], ["Org", "Py", "Sd"]]
+            labels = [["wt.%", "wt.%", "wt.%"], ["wt.%", "wt.%", "wt.%"], ["wt.%", "wt.%", "wt.%"],
+                      ["wt.%", "wt.%", "wt.%"]]
+
+            max_avg = 0
+            for mineral, values in sorted(self.helper_results_minerals.items()):
+                avg = np.mean(values)
+                if avg >= max_avg:
+                    max_name = mineral
+                    max_avg = avg
+
+            self.create_4x3_diagram(var_categories=categories, var_labels=labels, max_key=max_name)
+
+    def create_4x3_diagram(self, var_categories, var_labels, max_key="Qz"):
+        self.fig_4x3 = Figure(figsize=(6, 6), tight_layout=True, facecolor=self.colors_gebpy["Background"])
+        self.ax_4x3 = self.fig_4x3.subplots(nrows=4, ncols=3)
+
+        min_max_key = np.min(self.helper_results_minerals[max_key])//5*5
+        max_max_key = (np.max(self.helper_results_minerals[max_key]) + 5 - 1)//5*5
+        if max_max_key > 100:
+            max_max_key = 100
+
+        delta_max_key = max_max_key - min_max_key
+
+        if delta_max_key < 11:
+            if delta_max_key < 6:
+                stepsize_max_key = 1
+            else:
+                stepsize_max_key = 2
+        elif delta_max_key < 21:
+            if delta_max_key < 16:
+                stepsize_max_key = 3
+            else:
+                stepsize_max_key = 4
+        else:
+            stepsize_max_key = 5
+
+        lower_limit_x = min_max_key - stepsize_max_key
+        if lower_limit_x < 0:
+            lower_limit_x = 0
+
+        upper_limit_x = max_max_key + stepsize_max_key
+        if upper_limit_x > 100:
+            upper_limit_x = 100
+
+        for i, subcategories in enumerate(var_categories):
+            for j, subcategory in enumerate(subcategories):
+                if self.container_variables["Radiobuttons"]["Category Diagram"].get() == 0:    # Histogram
+                    if subcategory in self.helper_results_minerals:
+                        self.ax_4x3[i][j].hist(
+                            self.helper_results_minerals[subcategory], bins=16, edgecolor="black",
+                            facecolor=self.colors_gebpy["Option"])
+
+                    self.ax_4x3[i][j].set_xlabel(subcategory + " (" + var_labels[i][j] + ")", fontsize=9)
+                    self.ax_4x3[i][j].set_ylabel("Frequency (#)", labelpad=0.5, fontsize=9)
+                elif self.container_variables["Radiobuttons"]["Category Diagram"].get() == 1:  # Scatter
+                    if subcategory in self.helper_results_minerals:
+                        self.ax_4x3[i][j].scatter(
+                            self.helper_results_minerals[max_key], self.helper_results_minerals[subcategory],
+                            edgecolor="black", color=self.colors_gebpy["Option"], alpha=0.75, s=50)
+
+                    self.ax_4x3[i][j].set_xlabel(max_key + " (" + var_labels[i][j] + ")", fontsize=9)
+                    self.ax_4x3[i][j].set_ylabel(subcategory + " (" + var_labels[i][j] + ")", labelpad=0.5, fontsize=9)
+
+                    min_subcategory = np.min(self.helper_results_minerals[subcategory])//5*5
+                    max_subcategory = (np.max(self.helper_results_minerals[subcategory]) + 5 - 1)//5*5
+
+                    if min_subcategory < 0:
+                        min_subcategory = 0
+                    if max_subcategory > 100:
+                        max_subcategory = 100
+
+                    delta_subcategory = max_subcategory - min_subcategory
+
+                    if delta_subcategory < 11:
+                        if delta_subcategory < 6:
+                            stepsize = 1
+                        else:
+                            stepsize = 2
+                    elif delta_subcategory < 21:
+                        if delta_subcategory < 16:
+                            stepsize = 3
+                        else:
+                            stepsize = 4
+                    else:
+                        stepsize = 5
+
+                    lower_limit_subcategory = min_subcategory - stepsize
+                    if lower_limit_subcategory < 0:
+                        lower_limit_subcategory = 0
+
+                    upper_limit_subcategory = max_subcategory + stepsize
+                    if upper_limit_subcategory > 100:
+                        upper_limit_subcategory = 100
+
+                    self.ax_4x3[i][j].set_xlim(lower_limit_x, upper_limit_x)
+                    self.ax_4x3[i][j].set_xticks(
+                        np.arange(lower_limit_x, upper_limit_x + stepsize_max_key, stepsize_max_key))
+                    self.ax_4x3[i][j].set_ylim(lower_limit_subcategory, upper_limit_subcategory)
+                    self.ax_4x3[i][j].set_yticks(
+                        np.arange(lower_limit_subcategory, upper_limit_subcategory + stepsize, stepsize))
+
+                self.ax_4x3[i][j].grid(True)
+                self.ax_4x3[i][j].set_axisbelow(True)
+
+        self.canvas_4x3 = FigureCanvasTkAgg(self.fig_4x3, master=self.subwindow_rockbuilder_sedimentary)
+        self.canvas_4x3.get_tk_widget().grid(
+            row=self.start_row + 2, column=3*self.n_columns_setup + 6, rowspan=self.n_rows_rbs - 2,
+            columnspan=self.n_columns_rbs - (3*self.n_columns_setup + 6), sticky="nesw")
+
+    def create_3x3_diagram(self, var_categories, var_labels):
         self.fig_3x3 = Figure(figsize=(6, 6), tight_layout=True, facecolor=self.colors_gebpy["Background"])
         self.ax_3x3 = self.fig_3x3.subplots(nrows=3, ncols=3)
 
         for i, subcategories in enumerate(var_categories):
             for j, subcategory in enumerate(subcategories):
-                if self.container_variables["Radiobuttons"]["Category Data"].get() == 0:
+                if self.container_variables["Radiobuttons"]["Category Diagram"].get() == 0:    # Histogram
                     if subcategory in self.helper_results_geophysics:
-                        self.ax_3x3[i][j].hist(self.helper_results_geophysics[subcategory], bins=16, edgecolor="black",
-                                          facecolor=self.colors_gebpy["Option"])
-                elif self.container_variables["Radiobuttons"]["Category Data"].get() == 1:
+                        self.ax_3x3[i][j].hist(
+                            self.helper_results_geophysics[subcategory], bins=16, edgecolor="black",
+                            facecolor=self.colors_gebpy["Option"])
+
+                    self.ax_3x3[i][j].set_xlabel(subcategory + " (" + var_labels[i][j] + ")", fontsize=9)
+                    self.ax_3x3[i][j].set_ylabel("Frequency (#)", labelpad=0.5, fontsize=9)
+                elif self.container_variables["Radiobuttons"]["Category Diagram"].get() == 1:  # Scatter
                     if subcategory in self.helper_results_geophysics:
                         if subcategory == "rho":
                             subcategory = "V(molar)"
@@ -4593,14 +4737,7 @@ class GebPyGUI(tk.Frame):
                             self.helper_results_geophysics["rho"], self.helper_results_geophysics[subcategory],
                             edgecolor="black", color=self.colors_gebpy["Option"], alpha=0.75, s=50)
 
-                if self.container_variables["Radiobuttons"]["Category Diagram"].get() == 0:
-                    self.ax_3x3[i][j].set_xlabel(subcategory + " (" + var_labels[i][j] + ")", fontsize=9)
-                else:
                     self.ax_3x3[i][j].set_xlabel("rho (kg/m^3)", fontsize=9)
-
-                if self.container_variables["Radiobuttons"]["Category Diagram"].get() == 0:
-                    self.ax_3x3[i][j].set_ylabel("Frequency (#)", labelpad=0.5, fontsize=9)
-                else:
                     self.ax_3x3[i][j].set_ylabel(subcategory + " (" + var_labels[i][j] + ")", labelpad=0.5, fontsize=9)
 
                 self.ax_3x3[i][j].grid(True)
