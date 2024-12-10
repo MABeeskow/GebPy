@@ -60,7 +60,7 @@ class GebPyGUI(tk.Frame):
         var_screen_width = var_screen_width
         var_screen_height = var_screen_height
 
-        self.str_version_number = "1.0.0"
+        self.str_version_number = "1.0.1"
         self.val_version = "GebPy: " + self.str_version_number + " - 10.12.2024"
 
         ### Container

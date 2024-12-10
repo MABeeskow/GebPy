@@ -4,8 +4,8 @@ with open("README.md", "r", encoding="latin-1") as f:
     description = f.read()
 
 setup(
-    name="GebPy",
-    version="1.0.0",
+    name="gebpy",
+    version="1.0.1",
     packages=find_packages(),
     url="https://github.com/MABeeskow/GebPy",
     license="LGPL-3.0",
