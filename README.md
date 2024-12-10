@@ -1,7 +1,7 @@
 [![Python 3.7](https://img.shields.io/badge/python-3.7-blue.svg)](https://www.python.org/downloads/release/python-370/) [![License: LGPL v3](https://img.shields.io/badge/License-LGPL%20v3-blue.svg)](https://www.gnu.org/licenses/lgpl-3.0)
 
 <a href="https://github.com/MABeeskow/GebPy">
-  <img src="documents/readme_images/readme_header.png" width="67%">
+  <img src="https://raw.githubusercontent.com/MABeeskow/GebPy/master/documents/readme_images/readme_header.png" width="67%">
 </a>
 
 developed by Maximilian Alexander Beeskow

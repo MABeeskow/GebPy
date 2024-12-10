@@ -1,28 +1,25 @@
-from setuptools import setup
+from setuptools import setup, find_packages
+
+with open("README.md", "r", encoding="latin-1") as f:
+    description = f.read()
 
 setup(
-	name="modules", 
-	packages=["modules"]
+    name="GebPy",
+    version="0.9.1",
+    packages=find_packages(),
+    url="https://github.com/MABeeskow/GebPy",
+    license="LGPL-3.0",
+    author="Maximilian Alexander Beeskow",
+    author_email="maximilian.beeskow@rwth-aachen.com",
+    description="GebPy is a Python-based, open source tool for the generation of geological data of minerals, rocks "
+                "and complete lithological sequences. The data can be generated randomly or with respect to "
+                "user-defined constraints, for example a specific element concentration within minerals and rocks or "
+                "the order of units within a complete lithological profile.",
+    keywords=["geophysics, geochemistry, mineralogy, petrology, seismology, stratigraphy, geology, geosciences"],
+    install_requires=["numpy", "scipy", "pandas", "matplotlib"],
+    entry_points={"console_scripts": ["gebpy = gebpy.gebpy_app:gebpy"]},
+    include_package_data=True,
+    package_data={"": ["lib/images/*.png"]},
+    long_description=description,
+    long_description_content_type="text/markdown",
 )
-
-setup(
-	name="GebPy", 
-	packages=["documents"],
-	package_data={"documents": ["*.png", "dir/*"]}
-)
-
-import modules
-from modules.gui_elements import SimpleElements as SE
-from modules.sulfates import Sulfates
-from modules.oxides import Oxides
-from modules.sulfides import Sulfides
-from modules.carbonates import Carbonates
-from modules.halides import Halogenes
-from modules.silicates import Tectosilicates, Phyllosilicates, Nesosilicates, Sorosilicates, Inosilicates
-from modules.phosphates import Phosphates
-from modules.siliciclastics import sandstone, shale
-from modules.carbonates import limestone, dolomite
-from modules.ore import Ores
-from modules.igneous import Plutonic
-from modules.evaporites import Evaporites
-from modules.sequences import DataProcessing as DP
