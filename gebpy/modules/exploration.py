@@ -6,7 +6,7 @@
 # File:         exploration.py
 # Description:  Contains all necessary functions that are related to mineral exploration feature
 # Author:       Maximilian Beeskow
-# Last updated: 10.12.2024
+# Last updated: 11.12.2024
 # License:      GPL v3.0
 
 # ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- -
@@ -72,7 +72,7 @@ class ExplorationInterface:
 
     def create_subwindow_borehole_data(self):
         ## Window Settings
-        window_width = 900
+        window_width = 1200
         window_height = 750
         var_geometry = str(window_width) + "x" + str(window_height) + "+" + str(0) + "+" + str(0)
 
@@ -116,6 +116,8 @@ class ExplorationInterface:
             text="Settings", relief=tk.FLAT, font_option="sans 12 bold", anchor_option=tk.W)
 
         ## Initialization
+        self.container_borehole_lithology = {}
+        self.container_lithology_data = {}
         if self.initialization == False:
             self.select_dataset_setup()
             self.update_settings(initialization=True)
@@ -256,7 +258,7 @@ class ExplorationInterface:
             btn_06 = SimpleElements(
                 parent=self.subwindow_borehole_data, row_id=self.start_row + 28, column_id=1, n_rows=1,
                 n_columns=self.n_columns_setup - 1, bg=self.colors["Background"],
-                fg=self.colors["Navigation"]).create_button(text="Export data")
+                fg=self.colors["Navigation"]).create_button(text="Export data", command=self.export_borehole_data)
             btn_02.configure(activebackground=self.colors["Accent"])
             btn_03.configure(activebackground=self.colors["Accent"])
             btn_04.configure(activebackground=self.colors["Accent"])
@@ -358,8 +360,8 @@ class ExplorationInterface:
             opt_metamorphic.configure(anchor=tk.W)
             opt_ore.configure(anchor=tk.W)
 
-            ## Treeviews
-            categories = ["rho (kg/m\u00B3)", "phi (%)", "vP (m/s)", "vS (m/s)", "vP/vS (1)", "K (GPa)", "G (GPa)",
+            ## Treeviews (Rock data)
+            self.categories = ["rho (kg/m\u00B3)", "phi (%)", "vP (m/s)", "vS (m/s)", "vP/vS (1)", "K (GPa)", "G (GPa)",
                           "E (GPa)", "nu (1)", "GR (API)", "PE (barns/e\u207B)"]
             list_categories = ["Category", "Minimum", "Maximum", "Mean", "Standard Deviation"]
             list_width = list(75*np.ones(len(list_categories)))
@@ -384,7 +386,7 @@ class ExplorationInterface:
                 row=self.n_rows - 1, column=self.n_columns_setup + 1, rowspan=1, columnspan=2*self.n_columns_setup + 1,
                 sticky="ew")
 
-            for index, category in enumerate(categories):
+            for index, category in enumerate(self.categories):
                 entries = [category]
                 n_digits = 3
                 var_entr_min = round(0, n_digits)
@@ -396,6 +398,52 @@ class ExplorationInterface:
 
                 self.tv_lithology.insert("", tk.END, values=entries)
 
+            ## Treeviews (Borehole data)
+            list_categories = ["Borehole", "Unit", "Top", "Bottom", "Lithology"]
+            list_width = list(75*np.ones(len(list_categories)))
+            list_width = [int(item) for item in list_width]
+            list_width[0] = 75
+            list_width[-1] = 150
+
+            self.tv_borehole = SimpleElements(
+                parent=self.subwindow_borehole_data, row_id=self.start_row, column_id=3*self.n_columns_setup + 3,
+                n_rows=self.n_rows - 1, n_columns=2*self.n_columns_setup + 1, fg=self.colors["Black"],
+                bg=self.colors["White"]).create_treeview(
+                n_categories=len(list_categories), text_n=list_categories, width_n=list_width, individual=True)
+
+            scb_v = ttk.Scrollbar(self.subwindow_borehole_data, orient="vertical")
+            scb_h = ttk.Scrollbar(self.subwindow_borehole_data, orient="horizontal")
+            self.tv_borehole.configure(xscrollcommand=scb_h.set, yscrollcommand=scb_v.set)
+            scb_v.config(command=self.tv_borehole.yview)
+            scb_h.config(command=self.tv_borehole.xview)
+            scb_v.grid(
+                row=0, column=5*self.n_columns_setup + 4, rowspan=self.n_rows - 1, columnspan=1, sticky="ns")
+            scb_h.grid(
+                row=self.n_rows - 1, column=3*self.n_columns_setup + 3, rowspan=1,
+                columnspan=2*self.n_columns_setup + 1, sticky="ew")
+
+            n = 0
+            for i in self.list_boreholes:
+                if i not in self.container_borehole_lithology:
+                    self.container_borehole_lithology[i] = {}
+                if n == 4:
+                    entries = ["-", "-", "-", "-", "-"]
+                    self.tv_borehole.insert("", tk.END, values=entries)
+                    n = 0
+                for j in self.list_units:
+                    name = "undefined"
+
+                    if j not in self.container_borehole_lithology[i]:
+                        self.container_borehole_lithology[i][j] = tk.StringVar()
+                        self.container_borehole_lithology[i][j].set(name)
+
+                    var_entr_top = self.dict_entr_top[i][j].get()
+                    var_entr_bottom = self.dict_entr_bottom[i][j].get()
+                    var_entr_name = self.container_borehole_lithology[i][j].get()
+                    entries = [i, j, var_entr_top, var_entr_bottom, var_entr_name]
+                    self.tv_borehole.insert("", tk.END, values=entries)
+                    n += 1
+
         if update:
             self.lbl_borehole_id.configure(text=self.current_borehole_id)
             self.lbl_unit_id.configure(text=self.current_unit_id)
@@ -405,6 +453,7 @@ class ExplorationInterface:
             self.var_opt_sedimentary.set("Select sedimentary rock")
             self.var_opt_igneous.set("Select igneous rock")
             self.var_opt_metamorphic.set("Select metamorphic rock")
+            self.update_borehole_table()
 
     def change_borehole(self, mode):
         """Changes the borehole.
@@ -426,6 +475,7 @@ class ExplorationInterface:
 
         self.lbl_borehole_id.configure(text=self.current_borehole_id)
         self.current_unit_id = self.list_units[0]
+        self.fill_lithology_table(dataset=self.data, categories_long=self.categories)
         self.update_settings(initialization=False, update=True, changed_borehole=True)
 
     def change_unit(self, mode):
@@ -476,7 +526,8 @@ class ExplorationInterface:
                 self.entr_bottom.configure(state="normal")
 
         self.lbl_unit_id.configure(text=self.current_unit_id)
-
+        self.fill_lithology_table(dataset=self.data, categories_long=self.categories)
+        
     def change_depth(self, mode, event):
         """Changes the depth of the top or bottom.
         Arguments
@@ -510,6 +561,8 @@ class ExplorationInterface:
                     self.dict_entr_top[self.current_borehole_id][self.current_unit_id + 1].set(
                         current_bottom_depth_below - 1)
 
+        self.update_borehole_table()
+
     def select_lithology(self, focus, event):
         """Selects a lithology (e.g. sandstone, granite, ...).
         Arguments
@@ -522,9 +575,11 @@ class ExplorationInterface:
                 self.tv_lithology.delete(item)
 
         n_datapoints = self.var_entr_parts.get()
-        categories = ["rho (kg/m\u00B3)", "phi (%)", "vP (m/s)", "vS (m/s)", "vP/vS (1)", "K (GPa)", "G (GPa)",
+        self.categories = ["rho (kg/m\u00B3)", "phi (%)", "vP (m/s)", "vS (m/s)", "vP/vS (1)", "K (GPa)", "G (GPa)",
                       "E (GPa)", "nu (1)", "GR (API)", "PE (barns/e\u207B)"]
-        categories_short = ["rho", "phi", "vP", "vS", "vPvS", "K", "G", "E", "v", "GR", "PE"]
+        self.categories_short = ["rho", "phi", "vP", "vS", "vPvS", "K", "G", "E", "v", "GR", "PE"]
+        borehole_id = self.current_borehole_id
+        unit_id = self.current_unit_id
 
         if focus == "sedimentary":
             self.var_opt_plutonic.set("Select plutonic rock")
@@ -535,34 +590,38 @@ class ExplorationInterface:
 
             # Siliciclastic rocks
             if self.var_opt_sedimentary.get() == "Sandstone":
-                data = SiliciclasticRocks(fluid="water", actualThickness=0).create_sandstone(
+                self.data = SiliciclasticRocks(fluid="water", actualThickness=0).create_sandstone(
                     number=n_datapoints, porosity=[0.0, 0.3])
             elif self.var_opt_sedimentary.get() == "Conglomerate":
-                data = SiliciclasticRocks(fluid="water", actualThickness=0).create_conglomerate(
+                self.data = SiliciclasticRocks(fluid="water", actualThickness=0).create_conglomerate(
                     number=n_datapoints, porosity=[0.0, 0.3])
             elif self.var_opt_sedimentary.get() == "Siltstone":
-                data = SiliciclasticRocks(fluid="water", actualThickness=0).create_siltstone(
+                self.data = SiliciclasticRocks(fluid="water", actualThickness=0).create_siltstone(
                     number=n_datapoints, porosity=[0.0, 0.1])
             elif self.var_opt_sedimentary.get() == "Mudstone":
-                data = SiliciclasticRocks(fluid="water", actualThickness=0).create_mudstone_alt(
+                self.data = SiliciclasticRocks(fluid="water", actualThickness=0).create_mudstone_alt(
                     number=n_datapoints, porosity=[0.0, 0.1])
             elif self.var_opt_sedimentary.get() == "Shale":
-                data = SiliciclasticRocks(fluid="water", actualThickness=0).create_shale_alt(
+                self.data = SiliciclasticRocks(fluid="water", actualThickness=0).create_shale_alt(
                     number=n_datapoints, porosity=[0.0, 0.1])
             elif self.var_opt_sedimentary.get() == "Greywacke (Huckenholz)":
-                data = SiliciclasticRocks(fluid="water", actualThickness=0).create_greywacke_huckenholz(
+                self.data = SiliciclasticRocks(fluid="water", actualThickness=0).create_greywacke_huckenholz(
                     rock="Greywacke", number=n_datapoints, porosity=[0.0, 0.1])
             # Carbonate rocks
             elif self.var_opt_sedimentary.get() == "Limestone":
-                data = CarbonateRocks(fluid="water", actualThickness=0).create_limestone(
+                self.data = CarbonateRocks(fluid="water", actualThickness=0).create_limestone(
                     number=n_datapoints,  porosity=[0.0, 0.4])
             elif self.var_opt_sedimentary.get() == "Dolostone":
-                data = CarbonateRocks(fluid="water", actualThickness=0).create_dolostone(
+                self.data = CarbonateRocks(fluid="water", actualThickness=0).create_dolostone(
                     number=n_datapoints, porosity=[0.0, 0.3])
             elif self.var_opt_sedimentary.get() == "Marl":
-                data = CarbonateRocks(fluid="water", actualThickness=0).create_marl(
+                self.data = CarbonateRocks(fluid="water", actualThickness=0).create_marl(
                     number=n_datapoints, porosity=[0.0, 0.3])
 
+            self.container_borehole_lithology[borehole_id][unit_id].set(self.var_opt_sedimentary.get())
+
+            if self.var_opt_sedimentary.get() not in self.container_lithology_data:
+                self.container_lithology_data[self.var_opt_sedimentary.get()] = self.data.copy()
         elif focus == "plutonic":
             self.var_opt_sedimentary.set("Select sedimentary rock")
             self.var_opt_volcanic.set("Select volcanic rock")
@@ -579,13 +638,13 @@ class ExplorationInterface:
                     "Foid-bearing Syenite", "Foid-bearing Monzonite", "Foid-bearing Monzodiorite",
                     "Foid-bearing Monzogabbro", "Foid Monzosyenite", "Foid Monzodiorite", "Foid Monzogabbro",
                     "Foidolite"]:
-                    data = Plutonic(
+                    self.data = Plutonic(
                         fluid="water", actualThickness=0, dict_output=True,
                         porosity=[0.0, 0.1]).create_plutonic_rock_streckeisen(
                         rock=self.var_opt_plutonic.get(), number=n_datapoints, porosity=[0.0, 0.1],
                         upper_streckeisen=False)
                 else:
-                    data = Plutonic(
+                    self.data = Plutonic(
                         fluid="water", actualThickness=0, dict_output=True,
                         porosity=[0.0, 0.1]).create_plutonic_rock_streckeisen(
                         rock=self.var_opt_plutonic.get(), number=n_datapoints, porosity=[0.0, 0.1])
@@ -595,16 +654,20 @@ class ExplorationInterface:
                 if self.var_opt_igneous.get() in [
                     "Foid-bearing Trachyte", "Foid-bearing Latite", "Foid-bearing Andesite", "Foid-bearing Basalt",
                     "Phonolite", "Tephrite", "Foidite"]:
-                    data = Volcanic(
+                    self.data = Volcanic(
                         fluid="water", actualThickness=0, dict_output=True,
                         porosity=[0.0, 0.1]).create_volcanic_rock_streckeisen(
                         rock=self.var_opt_igneous.get(), number=n_datapoints, upper_streckeisen=False)
                 else:
-                    data = Volcanic(
+                    self.data = Volcanic(
                         fluid="water", actualThickness=0, dict_output=True,
                         porosity=[0.0, 0.1]).create_volcanic_rock_streckeisen(
                         rock=self.var_opt_igneous.get(), number=n_datapoints)
 
+            self.container_borehole_lithology[borehole_id][unit_id].set(self.var_opt_plutonic.get())
+
+            if self.var_opt_plutonic.get() not in self.container_lithology_data:
+                self.container_lithology_data[self.var_opt_plutonic.get()] = self.data.copy()
         elif focus == "volcanic":
             self.var_opt_sedimentary.set("Select sedimentary rock")
             self.var_opt_plutonic.set("Select plutonic rock")
@@ -618,16 +681,20 @@ class ExplorationInterface:
                 if self.var_opt_volcanic.get() in [
                     "Foid-bearing Trachyte", "Foid-bearing Latite", "Foid-bearing Andesite", "Foid-bearing Basalt",
                     "Phonolite", "Tephrite", "Foidite"]:
-                    data = Volcanic(
+                    self.data = Volcanic(
                         fluid="water", actualThickness=0, dict_output=True,
                         porosity=[0.0, 0.1]).create_volcanic_rock_streckeisen(
                         rock=self.var_opt_volcanic.get(), number=n_datapoints, upper_streckeisen=False)
                 else:
-                    data = Volcanic(
+                    self.data = Volcanic(
                         fluid="water", actualThickness=0, dict_output=True,
                         porosity=[0.0, 0.1]).create_volcanic_rock_streckeisen(
                         rock=self.var_opt_volcanic.get(), number=n_datapoints)
 
+            self.container_borehole_lithology[borehole_id][unit_id].set(self.var_opt_volcanic.get())
+
+            if self.var_opt_volcanic.get() not in self.container_lithology_data:
+                self.container_lithology_data[self.var_opt_volcanic.get()] = self.data.copy()
         elif focus == "ultramafic":
             self.var_opt_sedimentary.set("Select sedimentary rock")
             self.var_opt_plutonic.set("Select plutonic rock")
@@ -638,10 +705,14 @@ class ExplorationInterface:
             if self.var_opt_ultramafic.get() in [
                 "Orthopyroxenite", "Clinopyroxenite", "Dunite", "Harzburgite", "Wehrlite", "Websterite", "Lherzolite",
                 "Olivine-Websterite", "Olivine-Orthopyroxenite", "Olivine-Clinopyroxenite", "Peridotite", "Pyroxenite"]:
-                data = UltraMafic(
+                self.data = UltraMafic(
                     fluid="water", actualThickness=0, dict_output=True, porosity=[0.0, 0.1]).create_ultramafic_rock(
                     rock=self.var_opt_ultramafic.get(), number=n_datapoints)
 
+            self.container_borehole_lithology[borehole_id][unit_id].set(self.var_opt_ultramafic.get())
+
+            if self.var_opt_ultramafic.get() not in self.container_lithology_data:
+                self.container_lithology_data[self.var_opt_ultramafic.get()] = self.data.copy()
         elif focus == "metamorphic":
             self.var_opt_sedimentary.set("Select sedimentary rock")
             self.var_opt_plutonic.set("Select plutonic rock")
@@ -650,31 +721,35 @@ class ExplorationInterface:
             self.var_opt_ore.set("Select ore rock")
 
             if self.var_opt_metamorphic.get() == "Felsic Granulite":
-                data = GranuliteFacies(
+                self.data = GranuliteFacies(
                     fluid="water", actual_thickness=0, porosity=[0.0, 0.1]).create_granulite(
                     number=n_datapoints, classification="felsic")
             elif self.var_opt_metamorphic.get() == "Mafic Granulite":
-                data = GranuliteFacies(
+                self.data = GranuliteFacies(
                     fluid="water", actual_thickness=0, porosity=[0.0, 0.1]).create_granulite(
                     number=n_datapoints, classification="mafic")
             elif self.var_opt_metamorphic.get() == "Basaltic Greenschist":
-                data = GreenschistFacies(
+                self.data = GreenschistFacies(
                     fluid="water", actual_thickness=0, porosity=[0.0, 0.1]).create_greenschist_basaltic_alt(
                     number=n_datapoints)
             elif self.var_opt_metamorphic.get() == "Ultramafic Greenschist":
-                data = GreenschistFacies(
+                self.data = GreenschistFacies(
                     fluid="water", actual_thickness=0, porosity=[0.0, 0.1]).create_greenschist_ultramafic_alt(
                     number=n_datapoints)
             elif self.var_opt_metamorphic.get() == "Pelitic Greenschist":
-                data = GreenschistFacies(
+                self.data = GreenschistFacies(
                     fluid="water", actual_thickness=0, porosity=[0.0, 0.1]).create_greenschist_pelitic_alt(
                     number=n_datapoints)
             # Amphibolite-Facies
             elif self.var_opt_metamorphic.get() == "Ortho-Amphibolite":
-                data = AmphiboliteFacies(
+                self.data = AmphiboliteFacies(
                     fluid="water", actual_thickness=0, porosity=[0.0, 0.1]).create_amphibolite_ortho(
                     number=n_datapoints)
 
+            self.container_borehole_lithology[borehole_id][unit_id].set(self.var_opt_metamorphic.get())
+
+            if self.var_opt_metamorphic.get() not in self.container_lithology_data:
+                self.container_lithology_data[self.var_opt_metamorphic.get()] = self.data.copy()
         elif focus == "ore":
             self.var_opt_sedimentary.set("Select sedimentary rock")
             self.var_opt_plutonic.set("Select plutonic rock")
@@ -685,29 +760,82 @@ class ExplorationInterface:
             if self.var_opt_ore.get() in [
                 "Itabirite", "Banded Iron Formation", "Compact Hematite", "Friable Hematite", "Goethite Hematite",
                 "Al-rich Itabirite", "Compact Quartz Itabirite", "Friable Quartz Itabirite", "Goethite Itabirite"]:
-                data = OreRocks(
+                self.data = OreRocks(
                     fluid="water", actual_thickness=0, porosity=[0.0, 0.1]).create_siliciclastic_itabirite(
                     rock=self.var_opt_ore.get(), number=n_datapoints)
 
-        self.fill_lithology_table(dataset=data, categories_long=categories, categories_short=categories_short)
+            self.container_borehole_lithology[borehole_id][unit_id].set(self.var_opt_ore.get())
 
-    def fill_lithology_table(self, dataset, categories_long, categories_short):
+            if self.var_opt_ore.get() not in self.container_lithology_data:
+                self.container_lithology_data[self.var_opt_ore.get()] = self.data.copy()
+
+        self.fill_lithology_table(dataset=self.data, categories_long=self.categories)
+        self.update_borehole_table()
+
+    def update_borehole_table(self):
+        if len(self.tv_borehole.get_children()) > 0:
+            for item in self.tv_borehole.get_children():
+                self.tv_borehole.delete(item)
+
+        n = 0
+        for i in self.list_boreholes:
+            if i not in self.container_borehole_lithology:
+                self.container_borehole_lithology[i] = {}
+            if n == len(self.list_units):
+                entries = ["-", "-", "-", "-", "-"]
+                self.tv_borehole.insert("", tk.END, values=entries)
+                n = 0
+            for j in self.list_units:
+                if j in self.container_borehole_lithology[i]:
+                    name = self.container_borehole_lithology[i][j]
+                else:
+                    name = "undefined"
+
+                if j not in self.container_borehole_lithology[i]:
+                    self.container_borehole_lithology[i][j] = tk.StringVar()
+                    self.container_borehole_lithology[i][j].set(name)
+
+                var_entr_top = self.dict_entr_top[i][j].get()
+                var_entr_bottom = self.dict_entr_bottom[i][j].get()
+                var_entr_name = self.container_borehole_lithology[i][j].get()
+                entries = [i, j, var_entr_top, var_entr_bottom, var_entr_name]
+                self.tv_borehole.insert("", tk.END, values=entries)
+                n += 1
+
+    def fill_lithology_table(self, dataset, categories_long):
+        borehole_id = self.current_borehole_id
+        unit_id = self.current_unit_id
+        rockname = self.container_borehole_lithology[borehole_id][unit_id].get()
+
+        if rockname != "undefined":
+            dataset = self.container_lithology_data[rockname]
+
+        if len(self.tv_lithology.get_children()) > 0:
+            for item in self.tv_lithology.get_children():
+                self.tv_lithology.delete(item)
+
         for index, category in enumerate(categories_long):
             entries = [category]
 
-            if categories_short[index] == "vPvS":
+            if self.categories_short[index] == "vPvS":
                 category_short = "vP/vS"
-            elif categories_short[index] == "v":
+            elif self.categories_short[index] == "v":
                 category_short = "nu"
             else:
-                category_short = categories_short[index]
+                category_short = self.categories_short[index]
 
             n_digits = 3
 
-            var_entr_min = round(min(dataset[category_short]), n_digits)
-            var_entr_max = round(max(dataset[category_short]), n_digits)
-            var_entr_mean = round(np.mean(dataset[category_short]), n_digits)
-            var_entr_error = round(np.std(dataset[category_short], ddof=1), n_digits)
+            if rockname == "undefined":
+                var_entr_min = round(0, n_digits)
+                var_entr_max = round(0, n_digits)
+                var_entr_mean = round(0, n_digits)
+                var_entr_error = round(0, n_digits)
+            else:
+                var_entr_min = round(min(dataset[category_short]), n_digits)
+                var_entr_max = round(max(dataset[category_short]), n_digits)
+                var_entr_mean = round(np.mean(dataset[category_short]), n_digits)
+                var_entr_error = round(np.std(dataset[category_short], ddof=1), n_digits)
 
             entries.extend([var_entr_min, var_entr_max, var_entr_mean, var_entr_error])
             self.tv_lithology.insert("", tk.END, values=entries)
@@ -721,10 +849,16 @@ class ExplorationInterface:
             n_digits = 2
             var_factor = 100
 
-            var_entr_min = round(var_factor*min(data_values), n_digits)
-            var_entr_max = round(var_factor*max(data_values), n_digits)
-            var_entr_mean = round(var_factor*np.mean(data_values), n_digits)
-            var_entr_error = round(var_factor*np.std(data_values, ddof=1), n_digits)
+            if rockname == "undefined":
+                var_entr_min = round(0, n_digits)
+                var_entr_max = round(0, n_digits)
+                var_entr_mean = round(0, n_digits)
+                var_entr_error = round(0, n_digits)
+            else:
+                var_entr_min = round(var_factor*min(data_values), n_digits)
+                var_entr_max = round(var_factor*max(data_values), n_digits)
+                var_entr_mean = round(var_factor*np.mean(data_values), n_digits)
+                var_entr_error = round(var_factor*np.std(data_values, ddof=1), n_digits)
 
             entries.extend([var_entr_min, var_entr_max, var_entr_mean, var_entr_error])
             self.tv_lithology.insert("", tk.END, values=entries)
@@ -738,10 +872,16 @@ class ExplorationInterface:
             n_digits = 2
             var_factor = 100
 
-            var_entr_min = round(var_factor*min(data_values), n_digits)
-            var_entr_max = round(var_factor*max(data_values), n_digits)
-            var_entr_mean = round(var_factor*np.mean(data_values), n_digits)
-            var_entr_error = round(var_factor*np.std(data_values, ddof=1), n_digits)
+            if rockname == "undefined":
+                var_entr_min = round(0, n_digits)
+                var_entr_max = round(0, n_digits)
+                var_entr_mean = round(0, n_digits)
+                var_entr_error = round(0, n_digits)
+            else:
+                var_entr_min = round(var_factor*min(data_values), n_digits)
+                var_entr_max = round(var_factor*max(data_values), n_digits)
+                var_entr_mean = round(var_factor*np.mean(data_values), n_digits)
+                var_entr_error = round(var_factor*np.std(data_values, ddof=1), n_digits)
 
             entries.extend([var_entr_min, var_entr_max, var_entr_mean, var_entr_error])
             self.tv_lithology.insert("", tk.END, values=entries)
@@ -756,10 +896,19 @@ class ExplorationInterface:
                 n_digits = 2
                 var_factor = 100
 
-                var_entr_min = round(var_factor*min(data_values), n_digits)
-                var_entr_max = round(var_factor*max(data_values), n_digits)
-                var_entr_mean = round(var_factor*np.mean(data_values), n_digits)
-                var_entr_error = round(var_factor*np.std(data_values, ddof=1), n_digits)
+                if rockname == "undefined":
+                    var_entr_min = round(0, n_digits)
+                    var_entr_max = round(0, n_digits)
+                    var_entr_mean = round(0, n_digits)
+                    var_entr_error = round(0, n_digits)
+                else:
+                    var_entr_min = round(var_factor*min(data_values), n_digits)
+                    var_entr_max = round(var_factor*max(data_values), n_digits)
+                    var_entr_mean = round(var_factor*np.mean(data_values), n_digits)
+                    var_entr_error = round(var_factor*np.std(data_values, ddof=1), n_digits)
 
                 entries.extend([var_entr_min, var_entr_max, var_entr_mean, var_entr_error])
                 self.tv_lithology.insert("", tk.END, values=entries)
+
+    def export_borehole_data(self):
+        print("Still under construction!")
