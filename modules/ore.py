@@ -6,7 +6,7 @@
 # Name:		ore.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		17.11.2023
+# Date:		10.12.2024
 
 # -----------------------------------------------
 
@@ -61,6 +61,7 @@ class OreRocks:
         results_container["rock"] = rock
         results_container["mineralogy"] = {}
         results_container["chemistry"] = {}
+        results_container["compounds"] = {}
         results_container["phi"] = []
         results_container["fluid"] = self.fluid
         results_container["rho_s"] = []
@@ -74,8 +75,11 @@ class OreRocks:
         results_container["nu"] = []
         results_container["GR"] = []
         results_container["PE"] = []
-        #
+
         n = 0
+
+        classification = rock
+
         while n < number:
             data_biotite = Phyllosilicates(impurity="pure", data_type=True).create_biotite()
             #
@@ -127,11 +131,11 @@ class OreRocks:
                             bt_limits = [0.0, 0.05]
                         elif classification == "Banded Iron Formation":
                             gbs_limits = [0.0, 0.05]
-                            qz_limits = [0.4, 0.6]
-                            mag_limits = [0.3, 0.4]
-                            hem_limits = [0.2, 0.3]
+                            qz_limits = [0.4, 0.75]
+                            mag_limits = [0.15, 0.4]
+                            hem_limits = [0.05, 0.20]
                             goe_limits = [0.0, 0.05]
-                            kln_limits = [0.0, 0.1]
+                            kln_limits = [0.0, 0.15]
                             bt_limits = [0.0, 0.05]
                         elif classification == "Compact Hematite":
                             gbs_limits = [0.0, 0.05]
@@ -317,10 +321,34 @@ class OreRocks:
             #
             for key, value in w_minerals.items():
                 results_container["mineralogy"][key].append(value)
-            #
+
+            amounts = []
             for key, value in w_elements.items():
                 results_container["chemistry"][key].append(value)
-            #
+                chem_data = PeriodicSystem(name=key).get_data()
+                amounts.append([key, chem_data[1], value])
+
+            list_elements = list(w_elements.keys())
+            list_oxides = OxideCompounds(var_list_elements=list_elements).find_oxides()
+            composition_oxides = {}
+            for var_oxide in list_oxides:
+                oxide_data = OxideCompounds(var_compound=var_oxide, var_amounts=amounts).get_composition()
+                composition_oxides[var_oxide] = round(oxide_data["Oxide"][1], 4)
+
+            if list_oxides[0] not in results_container["compounds"]:
+                for oxide in list_oxides:
+                    results_container["compounds"][oxide] = []
+
+            for key, value in composition_oxides.items():
+                results_container["compounds"][key].append(value)
+
+            results_container["mineralogy"] = dict(sorted(
+                results_container["mineralogy"].items(), key=lambda item: sum(item[1])/len(item[1]), reverse=True))
+            results_container["chemistry"] = dict(sorted(
+                results_container["chemistry"].items(), key=lambda item: sum(item[1])/len(item[1]), reverse=True))
+            results_container["compounds"] = dict(sorted(
+                results_container["compounds"].items(), key=lambda item: sum(item[1])/len(item[1]), reverse=True))
+
             results_container["phi"].append(var_porosity)
             results_container["rho_s"].append(rho_s)
             results_container["rho"].append(rho)
@@ -343,6 +371,7 @@ class OreRocks:
         results_container["rock"] = rock
         results_container["mineralogy"] = {}
         results_container["chemistry"] = {}
+        results_container["compounds"] = {}
         results_container["phi"] = []
         results_container["phi_true"] = []
         results_container["fluid"] = self.fluid
@@ -514,11 +543,40 @@ class OreRocks:
             gamma_ray = round(gamma_ray, 3)
             ## Photoelectricity
             photoelectricity = round(photoelectricity, 3)
+
             for key, value in w_minerals.items():
                 results_container["mineralogy"][key].append(value)
+            # for key, value in w_elements.items():
+            #     results_container["chemistry"][key].append(value)
+            # w_last = w_minerals
+
+            amounts = []
             for key, value in w_elements.items():
                 results_container["chemistry"][key].append(value)
-            w_last = w_minerals
+                chem_data = PeriodicSystem(name=key).get_data()
+                amounts.append([key, chem_data[1], value])
+
+            list_elements = list(w_elements.keys())
+            list_oxides = OxideCompounds(var_list_elements=list_elements).find_oxides()
+            composition_oxides = {}
+            for var_oxide in list_oxides:
+                oxide_data = OxideCompounds(var_compound=var_oxide, var_amounts=amounts).get_composition()
+                composition_oxides[var_oxide] = round(oxide_data["Oxide"][1], 4)
+
+            if list_oxides[0] not in results_container["compounds"]:
+                for oxide in list_oxides:
+                    results_container["compounds"][oxide] = []
+
+            for key, value in composition_oxides.items():
+                results_container["compounds"][key].append(value)
+
+            results_container["mineralogy"] = dict(sorted(
+                results_container["mineralogy"].items(), key=lambda item: sum(item[1])/len(item[1]), reverse=True))
+            results_container["chemistry"] = dict(sorted(
+                results_container["chemistry"].items(), key=lambda item: sum(item[1])/len(item[1]), reverse=True))
+            results_container["compounds"] = dict(sorted(
+                results_container["compounds"].items(), key=lambda item: sum(item[1])/len(item[1]), reverse=True))
+
             # Results
             results_container["phi"].append(phi_neutron)
             results_container["phi_true"].append(var_porosity)

@@ -285,6 +285,13 @@ class UltraMafic:
             for key, value in composition_oxides.items():
                 results_container["compounds"][key].append(value)
 
+            results_container["mineralogy"] = dict(sorted(
+                results_container["mineralogy"].items(), key=lambda item: sum(item[1])/len(item[1]), reverse=True))
+            results_container["chemistry"] = dict(sorted(
+                results_container["chemistry"].items(), key=lambda item: sum(item[1])/len(item[1]), reverse=True))
+            results_container["compounds"] = dict(sorted(
+                results_container["compounds"].items(), key=lambda item: sum(item[1])/len(item[1]), reverse=True))
+
             # Results
             results_container["phi"].append(var_porosity)
             results_container["rho_s"].append(rho_s)

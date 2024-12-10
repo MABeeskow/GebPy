@@ -59,7 +59,10 @@ class GebPyGUI(tk.Frame):
 
         var_screen_width = var_screen_width
         var_screen_height = var_screen_height
-        #
+
+        self.str_version_number = "0.9.0"
+        self.val_version = "GebPy: " + self.str_version_number + " - 10.12.2024"
+
         ### Container
         self.gui_elements = {}
         self.gui_elements_sub = {}
@@ -824,18 +827,22 @@ class GebPyGUI(tk.Frame):
         menubar.add_cascade(
             label="Help",
             menu=help_menu)
-        #
+
+        ## Labels
+        lbl_title = SimpleElements(
+            parent=self.parent, row_id=n_rows - 2, column_id=1, n_rows=1, n_columns=30,
+            bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Option"]).create_label(
+            text=self.val_version, font_option="sans 11 bold", relief=tk.FLAT)
+
         ## Buttons
         btn_quit = SimpleElements(
-            parent=self.parent, row_id=n_rows - 5, column_id=16, n_rows=3, n_columns=15,
+            parent=self.parent, row_id=n_rows - 6, column_id=16, n_rows=3, n_columns=15,
             bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_button(
             text="Quit GebPy", command=self.parent.quit)
         btn_restart = SimpleElements(
-            parent=self.parent, row_id=n_rows - 5, column_id=1, n_rows=3, n_columns=15,
+            parent=self.parent, row_id=n_rows - 6, column_id=1, n_rows=3, n_columns=15,
             bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_button(
             text="Restart GebPy", command=self.restart_gebpy)
-        #
-        #self.gui_elements["Static"]["Button"].extend([btn_quit, btn_restart])
 
     ####################################################################################################################
     ## EXPLORATION #####################################################################################################
