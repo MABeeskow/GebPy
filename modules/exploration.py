@@ -4,9 +4,9 @@
 # ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- -
 
 # File:         exploration.py
-# Description:  Contains all necessary functions that are related to mineral exploration
+# Description:  Contains all necessary functions that are related to mineral exploration feature
 # Author:       Maximilian Beeskow
-# Last updated: 14.02.2024
+# Last updated: 10.12.2024
 # License:      GPL v3.0
 
 # ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- -
@@ -566,17 +566,35 @@ class ExplorationInterface:
                 "Monzonite", "Syenite", "Granitoid", "Quarzolite", "Foid-bearing Syenite", "Foid-bearing Monzonite",
                 "Foid-bearing Monzodiorite", "Foid-bearing Monzogabbro", "Foid Monzosyenite", "Foid Monzodiorite",
                 "Foid Monzogabbro", "Foidolite"]:
-                data = Plutonic(
-                    fluid="water", actualThickness=0, dict_output=True,
-                    porosity=[0.0, 0.1]).create_plutonic_rock_streckeisen(
-                    rock=self.var_opt_plutonic.get(), number=n_datapoints, porosity=[0.0, 0.1])
+                if self.var_opt_plutonic.get() in [
+                    "Foid-bearing Syenite", "Foid-bearing Monzonite", "Foid-bearing Monzodiorite",
+                    "Foid-bearing Monzogabbro", "Foid Monzosyenite", "Foid Monzodiorite", "Foid Monzogabbro",
+                    "Foidolite"]:
+                    data = Plutonic(
+                        fluid="water", actualThickness=0, dict_output=True,
+                        porosity=[0.0, 0.1]).create_plutonic_rock_streckeisen(
+                        rock=self.var_opt_plutonic.get(), number=n_datapoints, porosity=[0.0, 0.1],
+                        upper_streckeisen=False)
+                else:
+                    data = Plutonic(
+                        fluid="water", actualThickness=0, dict_output=True,
+                        porosity=[0.0, 0.1]).create_plutonic_rock_streckeisen(
+                        rock=self.var_opt_plutonic.get(), number=n_datapoints, porosity=[0.0, 0.1])
             elif self.var_opt_igneous.get() in ["Rhyolite", "Dacite", "Trachyte", "Latite", "Andesite", "Basalt",
                 "Foid-bearing Trachyte", "Foid-bearing Latite", "Foid-bearing Andesite", "Foid-bearing Basalt",
                 "Phonolite", "Tephrite", "Foidite"]:
-                data = Volcanic(
-                    fluid="water", actualThickness=0, dict_output=True,
-                    porosity=[0.0, 0.1]).create_volcanic_rock_streckeisen(
-                    rock=self.var_opt_igneous.get(), number=n_datapoints)
+                if self.var_opt_igneous.get() in [
+                    "Foid-bearing Trachyte", "Foid-bearing Latite", "Foid-bearing Andesite", "Foid-bearing Basalt",
+                    "Phonolite", "Tephrite", "Foidite"]:
+                    data = Volcanic(
+                        fluid="water", actualThickness=0, dict_output=True,
+                        porosity=[0.0, 0.1]).create_volcanic_rock_streckeisen(
+                        rock=self.var_opt_igneous.get(), number=n_datapoints, upper_streckeisen=False)
+                else:
+                    data = Volcanic(
+                        fluid="water", actualThickness=0, dict_output=True,
+                        porosity=[0.0, 0.1]).create_volcanic_rock_streckeisen(
+                        rock=self.var_opt_igneous.get(), number=n_datapoints)
 
         elif focus == "volcanic":
             self.var_opt_sedimentary.set("Select sedimentary rock")
@@ -587,10 +605,18 @@ class ExplorationInterface:
             if self.var_opt_volcanic.get() in ["Rhyolite", "Dacite", "Trachyte", "Latite", "Andesite", "Basalt",
                 "Foid-bearing Trachyte", "Foid-bearing Latite", "Foid-bearing Andesite", "Foid-bearing Basalt",
                 "Phonolite", "Tephrite", "Foidite"]:
-                data = Volcanic(
-                    fluid="water", actualThickness=0, dict_output=True,
-                    porosity=[0.0, 0.1]).create_volcanic_rock_streckeisen(
-                    rock=self.var_opt_volcanic.get(), number=n_datapoints)
+                if self.var_opt_volcanic.get() in [
+                    "Foid-bearing Trachyte", "Foid-bearing Latite", "Foid-bearing Andesite", "Foid-bearing Basalt",
+                    "Phonolite", "Tephrite", "Foidite"]:
+                    data = Volcanic(
+                        fluid="water", actualThickness=0, dict_output=True,
+                        porosity=[0.0, 0.1]).create_volcanic_rock_streckeisen(
+                        rock=self.var_opt_volcanic.get(), number=n_datapoints, upper_streckeisen=False)
+                else:
+                    data = Volcanic(
+                        fluid="water", actualThickness=0, dict_output=True,
+                        porosity=[0.0, 0.1]).create_volcanic_rock_streckeisen(
+                        rock=self.var_opt_volcanic.get(), number=n_datapoints)
 
         elif focus == "metamorphic":
             self.var_opt_sedimentary.set("Select sedimentary rock")

@@ -6,7 +6,7 @@
 # Name:		carbonates.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		16.11.2023
+# Date:		10.12.2024
 
 #-----------------------------------------------
 
@@ -259,12 +259,12 @@ class CarbonateRocks:
                 gamma_ray = round(gamma_ray, 3)
                 ## Photoelectricity
                 photoelectricity = round(photoelectricity, 3)
-            #
+
             for mineral, value in w_minerals.items():
                 amounts_mineralogy[mineral].append(float(value))
             for element, value in w_elements.items():
                 amounts_chemistry[element].append(float(value))
-            #
+
             bulk_properties["rho_s"].append(float(rho_solid))
             bulk_properties["rho"].append(float(rho))
             bulk_properties["phi"].append(float(var_porosity))
@@ -279,9 +279,10 @@ class CarbonateRocks:
             bulk_properties["PE"].append(float(photoelectricity))
 
             amounts = []
-            for key, value in amounts_chemistry.items():
+            for key, value in w_elements.items():
+                amounts_chemistry[key].append(value)
                 chem_data = PeriodicSystem(name=key).get_data()
-                amounts.append([key, chem_data[1], value[0]])
+                amounts.append([key, chem_data[1], value])
 
             list_oxides = ["H2O", "CO2", "Na2O", "MgO", "Al2O3", "SiO2", "SO3", "K2O", "CaO", "Fe2O3"]
             composition_oxides = {}
@@ -297,7 +298,13 @@ class CarbonateRocks:
                 amounts_compounds[key].append(value)
 
             n += 1
-        #
+        amounts_mineralogy = dict(sorted(
+            amounts_mineralogy.items(), key=lambda item: sum(item[1])/len(item[1]), reverse=True))
+        amounts_chemistry = dict(sorted(
+            amounts_chemistry.items(), key=lambda item: sum(item[1])/len(item[1]), reverse=True))
+        amounts_compounds = dict(sorted(
+            amounts_compounds.items(), key=lambda item: sum(item[1])/len(item[1]), reverse=True))
+
         ## EXPORT DATA
         #
         results = {}
@@ -587,9 +594,10 @@ class CarbonateRocks:
             bulk_properties["PE"].append(photoelectricity)
 
             amounts = []
-            for key, value in amounts_chemistry.items():
+            for key, value in w_elements.items():
+                amounts_chemistry[key].append(value)
                 chem_data = PeriodicSystem(name=key).get_data()
-                amounts.append([key, chem_data[1], value[0]])
+                amounts.append([key, chem_data[1], value])
 
             list_oxides = ["H2O", "CO2", "Na2O", "MgO", "Al2O3", "SiO2", "SO3", "K2O", "CaO", "Fe2O3"]
             composition_oxides = {}
@@ -605,7 +613,14 @@ class CarbonateRocks:
                 amounts_compounds[key].append(value)
 
             n += 1
-        #
+
+        amounts_mineralogy = dict(sorted(
+            amounts_mineralogy.items(), key=lambda item: sum(item[1])/len(item[1]), reverse=True))
+        amounts_chemistry = dict(sorted(
+            amounts_chemistry.items(), key=lambda item: sum(item[1])/len(item[1]), reverse=True))
+        amounts_compounds = dict(sorted(
+            amounts_compounds.items(), key=lambda item: sum(item[1])/len(item[1]), reverse=True))
+
         ## EXPORT DATA
         results = {}
         results["rock"] = "Dolostone"
@@ -843,6 +858,13 @@ class CarbonateRocks:
 
             for key, value in composition_oxides.items():
                 results_container["compounds"][key].append(value)
+
+            results_container["mineralogy"] = dict(sorted(
+                results_container["mineralogy"].items(), key=lambda item: sum(item[1])/len(item[1]), reverse=True))
+            results_container["chemistry"] = dict(sorted(
+                results_container["chemistry"].items(), key=lambda item: sum(item[1])/len(item[1]), reverse=True))
+            results_container["compounds"] = dict(sorted(
+                results_container["compounds"].items(), key=lambda item: sum(item[1])/len(item[1]), reverse=True))
 
             # Results
             results_container["phi"].append(var_porosity)

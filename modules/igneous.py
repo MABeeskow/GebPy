@@ -6,7 +6,7 @@
 # Name:		igneous.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		16.11.2023
+# Date:		10.12.2024
 
 #-----------------------------------------------
 
@@ -831,46 +831,54 @@ class Plutonic:
                         ## LOWER STRECKEISEN DIAGRAM
                         #
                         elif rock == "Foid-bearing Syenite":
+                            upper_streckeisen = False
                             nph_limits = [0.0, 0.1]
                             kfs_limits = [0.58, 1.0]
                             pl_limits = [0.0, 0.42]
                             bt_limits = [0.0, 0.05]
                         elif rock == "Foid-bearing Monzonite":
+                            upper_streckeisen = False
                             nph_limits = [0.0, 0.1]
                             kfs_limits = [0.32, 0.65]
                             pl_limits = [0.32, 0.65]
                             bt_limits = [0.0, 0.05]
                         elif rock == "Foid-bearing Monzodiorite":
+                            upper_streckeisen = False
                             nph_limits = [0.0, 0.1]
                             kfs_limits = [0.0, 0.35]
                             pl_limits = [0.58, 1.0]
                             bt_limits = [0.0, 0.05]
                         elif rock == "Foid-bearing Monzogabbro":
+                            upper_streckeisen = False
                             nph_limits = [0.0, 0.1]
                             kfs_limits = [0.0, 0.35]
                             pl_limits = [0.58, 1.0]
                             bt_limits = [0.0, 0.05]
                         elif rock == "Foid Monzosyenite":
+                            upper_streckeisen = False
                             nph_limits = [0.1, 0.6]
                             kfs_limits = [0.2, 0.9]
                             pl_limits = [0.0, 0.45]
                             bt_limits = [0.0, 0.05]
                         elif rock == "Foid Monzodiorite":
+                            upper_streckeisen = False
                             nph_limits = [0.1, 0.6]
                             kfs_limits = [0.0, 0.45]
                             pl_limits = [0.2, 0.9]
                             bt_limits = [0.0, 0.05]
                         elif rock == "Foid Monzogabbro":
+                            upper_streckeisen = False
                             nph_limits = [0.1, 0.6]
                             kfs_limits = [0.0, 0.45]
                             pl_limits = [0.2, 0.9]
                             bt_limits = [0.0, 0.05]
                         elif rock == "Foidolite":
+                            upper_streckeisen = False
                             nph_limits = [0.6, 1.0]
                             kfs_limits = [0.0, 0.4]
                             pl_limits = [0.0, 0.4]
                             bt_limits = [0.0, 0.05]
-                        #
+
                         if upper_streckeisen == True:
                             phi_qz = round(rd.uniform(qz_limits[0], qz_limits[1]), 4)
                             phi_kfs = round(rd.uniform(kfs_limits[0], (1.0 - phi_qz)), 4)
@@ -1021,6 +1029,13 @@ class Plutonic:
 
             for key, value in composition_oxides.items():
                 results_container["compounds"][key].append(value)
+
+            results_container["mineralogy"] = dict(sorted(
+                results_container["mineralogy"].items(), key=lambda item: sum(item[1])/len(item[1]), reverse=True))
+            results_container["chemistry"] = dict(sorted(
+                results_container["chemistry"].items(), key=lambda item: sum(item[1])/len(item[1]), reverse=True))
+            results_container["compounds"] = dict(sorted(
+                results_container["compounds"].items(), key=lambda item: sum(item[1])/len(item[1]), reverse=True))
 
             # Results
             results_container["phi"].append(var_porosity)
@@ -1515,41 +1530,48 @@ class Volcanic:
                         ## LOWER STRECKEISEN DIAGRAM
                         #
                         elif rock == "Foid-bearing Trachyte":
+                            upper_streckeisen = False
                             nph_limits = [0.0, 0.1]
                             kfs_limits = [0.58, 1.0]
                             pl_limits = [0.0, 0.35]
                             bt_limits = [0.0, 0.05]
                         elif rock == "Foid-bearing Latite":
+                            upper_streckeisen = False
                             nph_limits = [0.0, 0.1]
                             kfs_limits = [0.32, 0.65]
                             pl_limits = [0.35, 0.68]
                             bt_limits = [0.0, 0.05]
                         elif rock == "Foid-bearing Andesite":
+                            upper_streckeisen = False
                             nph_limits = [0.0, 0.1]
                             kfs_limits = [0.0, 0.35]
                             pl_limits = [0.58, 1.0]
                             bt_limits = [0.0, 0.05]
                         elif rock == "Foid-bearing Basalt":
+                            upper_streckeisen = False
                             nph_limits = [0.0, 0.1]
                             kfs_limits = [0.0, 0.35]
                             pl_limits = [0.58, 1.0]
                             bt_limits = [0.0, 0.05]
                         elif rock == "Phonolite":
+                            upper_streckeisen = False
                             nph_limits = [0.1, 0.6]
                             kfs_limits = [0.2, 0.9]
                             pl_limits = [0.0, 0.45]
                             bt_limits = [0.0, 0.05]
                         elif rock == "Tephrite":
+                            upper_streckeisen = False
                             nph_limits = [0.1, 0.6]
                             kfs_limits = [0.0, 0.45]
                             pl_limits = [0.2, 0.9]
                             bt_limits = [0.0, 0.05]
                         elif rock == "Foidite":
+                            upper_streckeisen = False
                             nph_limits = [0.6, 1.0]
                             kfs_limits = [0.0, 0.4]
                             pl_limits = [0.0, 0.4]
                             bt_limits = [0.0, 0.05]
-                        #
+
                         if upper_streckeisen == True:
                             phi_qz = round(rd.uniform(qz_limits[0], qz_limits[1]), 4)
                             phi_kfs = round(rd.uniform(kfs_limits[0], (1.0 - phi_qz)), 4)
@@ -1710,6 +1732,13 @@ class Volcanic:
 
             for key, value in composition_oxides.items():
                 results_container["compounds"][key].append(value)
+
+            results_container["mineralogy"] = dict(sorted(
+                results_container["mineralogy"].items(), key=lambda item: sum(item[1])/len(item[1]), reverse=True))
+            results_container["chemistry"] = dict(sorted(
+                results_container["chemistry"].items(), key=lambda item: sum(item[1])/len(item[1]), reverse=True))
+            results_container["compounds"] = dict(sorted(
+                results_container["compounds"].items(), key=lambda item: sum(item[1])/len(item[1]), reverse=True))
 
             # Results
             results_container["phi"].append(var_porosity)

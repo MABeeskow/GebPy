@@ -6,7 +6,7 @@
 # Name:		siliciclastics.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		16.11.2023
+# Date:		10.12.2024
 
 #-----------------------------------------------
 
@@ -497,6 +497,13 @@ class SiliciclasticRocks:
             for key, value in composition_oxides.items():
                 results_container["compounds"][key].append(value)
 
+            results_container["mineralogy"] = dict(sorted(
+                results_container["mineralogy"].items(), key=lambda item: sum(item[1])/len(item[1]), reverse=True))
+            results_container["chemistry"] = dict(sorted(
+                results_container["chemistry"].items(), key=lambda item: sum(item[1])/len(item[1]), reverse=True))
+            results_container["compounds"] = dict(sorted(
+                results_container["compounds"].items(), key=lambda item: sum(item[1])/len(item[1]), reverse=True))
+
             # Results
             results_container["phi"].append(phi_neutron)
             results_container["phi_true"].append(var_porosity)
@@ -701,6 +708,13 @@ class SiliciclasticRocks:
 
             for key, value in composition_oxides.items():
                 results_container["compounds"][key].append(value)
+
+            results_container["mineralogy"] = dict(sorted(
+                results_container["mineralogy"].items(), key=lambda item: sum(item[1])/len(item[1]), reverse=True))
+            results_container["chemistry"] = dict(sorted(
+                results_container["chemistry"].items(), key=lambda item: sum(item[1])/len(item[1]), reverse=True))
+            results_container["compounds"] = dict(sorted(
+                results_container["compounds"].items(), key=lambda item: sum(item[1])/len(item[1]), reverse=True))
 
             # Results
             results_container["phi"].append(phi_neutron)
@@ -957,6 +971,13 @@ class SiliciclasticRocks:
             for key, value in composition_oxides.items():
                 results_container["compounds"][key].append(value)
 
+            results_container["mineralogy"] = dict(sorted(
+                results_container["mineralogy"].items(), key=lambda item: sum(item[1])/len(item[1]), reverse=True))
+            results_container["chemistry"] = dict(sorted(
+                results_container["chemistry"].items(), key=lambda item: sum(item[1])/len(item[1]), reverse=True))
+            results_container["compounds"] = dict(sorted(
+                results_container["compounds"].items(), key=lambda item: sum(item[1])/len(item[1]), reverse=True))
+
             # Results
             results_container["phi"].append(var_porosity)
             results_container["rho_s"].append(rho_s)
@@ -1145,6 +1166,7 @@ class SiliciclasticRocks:
             if sum(amounts_helper.values()) == 1.0:
                 for key, value in amounts_helper.items():
                     amounts_chemistry[key].append(round(value, 4))
+
                 for mineral in mineral_list:
                     if mineral == "Qz":
                         rho_s_helper += round(amounts_mineralogy[mineral][n] * self.data_quartz["rho"], 3)
@@ -1210,7 +1232,7 @@ class SiliciclasticRocks:
                 amounts = []
                 for key, value in amounts_chemistry.items():
                     chem_data = PeriodicSystem(name=key).get_data()
-                    amounts.append([key, chem_data[1], value[0]])
+                    amounts.append([key, chem_data[1], value[-1]])
 
                 list_oxides = ["H2O", "CO2", "Na2O", "MgO", "Al2O3", "SiO2", "K2O", "CaO", "Fe2O3"]
                 composition_oxides = {}
@@ -1226,7 +1248,14 @@ class SiliciclasticRocks:
                     amounts_compounds[key].append(value)
 
                 n += 1
-        #
+
+        amounts_mineralogy = dict(sorted(
+            amounts_mineralogy.items(), key=lambda item: sum(item[1])/len(item[1]), reverse=True))
+        amounts_chemistry = dict(sorted(
+            amounts_chemistry.items(), key=lambda item: sum(item[1])/len(item[1]), reverse=True))
+        amounts_compounds = dict(sorted(
+            amounts_compounds.items(), key=lambda item: sum(item[1])/len(item[1]), reverse=True))
+
         results = {}
         results["rock"] = "Conglomerate"
         if number > 1:
@@ -1485,6 +1514,13 @@ class SiliciclasticRocks:
 
             for key, value in composition_oxides.items():
                 results_container["compounds"][key].append(value)
+
+            results_container["mineralogy"] = dict(sorted(
+                results_container["mineralogy"].items(), key=lambda item: sum(item[1])/len(item[1]), reverse=True))
+            results_container["chemistry"] = dict(sorted(
+                results_container["chemistry"].items(), key=lambda item: sum(item[1])/len(item[1]), reverse=True))
+            results_container["compounds"] = dict(sorted(
+                results_container["compounds"].items(), key=lambda item: sum(item[1])/len(item[1]), reverse=True))
 
             ## Results
             results_container["phi"].append(var_porosity)
@@ -1762,6 +1798,13 @@ class SiliciclasticRocks:
 
             for key, value in composition_oxides.items():
                 results_container["compounds"][key].append(value)
+
+            results_container["mineralogy"] = dict(sorted(
+                results_container["mineralogy"].items(), key=lambda item: sum(item[1])/len(item[1]), reverse=True))
+            results_container["chemistry"] = dict(sorted(
+                results_container["chemistry"].items(), key=lambda item: sum(item[1])/len(item[1]), reverse=True))
+            results_container["compounds"] = dict(sorted(
+                results_container["compounds"].items(), key=lambda item: sum(item[1])/len(item[1]), reverse=True))
 
             # Results
             results_container["phi"].append(var_porosity)

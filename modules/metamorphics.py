@@ -6,13 +6,14 @@
 # Name:		metamorphics.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		23.05.2023
+# Date:		10.12.2024
 
 # -----------------------------------------------
 
 ## MODULES
 import numpy as np
 import random as rd
+from modules.chemistry import PeriodicSystem, OxideCompounds
 from modules.oxides import Oxides
 from modules.silicates import Tectosilicates, Nesosilicates, Sorosilicates, Phyllosilicates, Inosilicates
 from modules.fluids import Water
@@ -43,6 +44,7 @@ class GranuliteFacies:
         results_container["rock"] = "Granulite"
         results_container["mineralogy"] = {}
         results_container["chemistry"] = {}
+        results_container["compounds"] = {}
         results_container["phi"] = []
         results_container["fluid"] = self.fluid
         results_container["rho_s"] = []
@@ -269,13 +271,38 @@ class GranuliteFacies:
             vP = round(((bulk_mod*10**9 + 4/3*shear_mod*10**9)/(rho))**0.5, 3)
             vS = round(((shear_mod*10**9)/(rho))**0.5, 3)
             vPvS = round(vP/vS, 6)
-            #
+
             for key, value in w_minerals.items():
                 results_container["mineralogy"][key].append(value)
-            #
+
+            amounts = []
             for key, value in w_elements.items():
                 results_container["chemistry"][key].append(value)
-            #
+                chem_data = PeriodicSystem(name=key).get_data()
+                amounts.append([key, chem_data[1], value])
+
+            list_elements = list(w_elements.keys())
+            list_oxides = OxideCompounds(var_list_elements=list_elements).find_oxides()
+            composition_oxides = {}
+
+            for var_oxide in list_oxides:
+                oxide_data = OxideCompounds(var_compound=var_oxide, var_amounts=amounts).get_composition()
+                composition_oxides[var_oxide] = round(oxide_data["Oxide"][1], 4)
+
+            if list_oxides[0] not in results_container["compounds"]:
+                for oxide in list_oxides:
+                    results_container["compounds"][oxide] = []
+
+            for key, value in composition_oxides.items():
+                results_container["compounds"][key].append(value)
+
+            results_container["mineralogy"] = dict(sorted(
+                results_container["mineralogy"].items(), key=lambda item: sum(item[1])/len(item[1]), reverse=True))
+            results_container["chemistry"] = dict(sorted(
+                results_container["chemistry"].items(), key=lambda item: sum(item[1])/len(item[1]), reverse=True))
+            results_container["compounds"] = dict(sorted(
+                results_container["compounds"].items(), key=lambda item: sum(item[1])/len(item[1]), reverse=True))
+
             results_container["phi"].append(var_porosity)
             results_container["rho_s"].append(rho_s)
             results_container["rho"].append(rho)
@@ -622,6 +649,7 @@ class GreenschistFacies:
         results_container["rock"] = "Greenschist"
         results_container["mineralogy"] = {}
         results_container["chemistry"] = {}
+        results_container["compounds"] = {}
         results_container["phi"] = []
         results_container["fluid"] = self.fluid
         results_container["rho_s"] = []
@@ -791,14 +819,39 @@ class GreenschistFacies:
             vP = round(((bulk_mod*10**9 + 4/3*shear_mod*10**9)/(rho))**0.5, 3)
             vS = round(((shear_mod*10**9)/(rho))**0.5, 3)
             vPvS = round(vP/vS, 3)
-            #
+
             ## RESULTS
             for key, value in w_minerals.items():
                 results_container["mineralogy"][key].append(value)
-            #
+
+            amounts = []
             for key, value in w_elements.items():
                 results_container["chemistry"][key].append(value)
-            #
+                chem_data = PeriodicSystem(name=key).get_data()
+                amounts.append([key, chem_data[1], value])
+
+            list_elements = list(w_elements.keys())
+            list_oxides = OxideCompounds(var_list_elements=list_elements).find_oxides()
+            composition_oxides = {}
+
+            for var_oxide in list_oxides:
+                oxide_data = OxideCompounds(var_compound=var_oxide, var_amounts=amounts).get_composition()
+                composition_oxides[var_oxide] = round(oxide_data["Oxide"][1], 4)
+
+            if list_oxides[0] not in results_container["compounds"]:
+                for oxide in list_oxides:
+                    results_container["compounds"][oxide] = []
+
+            for key, value in composition_oxides.items():
+                results_container["compounds"][key].append(value)
+
+            results_container["mineralogy"] = dict(sorted(
+                results_container["mineralogy"].items(), key=lambda item: sum(item[1])/len(item[1]), reverse=True))
+            results_container["chemistry"] = dict(sorted(
+                results_container["chemistry"].items(), key=lambda item: sum(item[1])/len(item[1]), reverse=True))
+            results_container["compounds"] = dict(sorted(
+                results_container["compounds"].items(), key=lambda item: sum(item[1])/len(item[1]), reverse=True))
+
             results_container["phi"].append(phi_helper)
             results_container["rho_s"].append(rho_s)
             results_container["rho"].append(rho)
@@ -821,6 +874,7 @@ class GreenschistFacies:
         results_container["rock"] = "Greenschist"
         results_container["mineralogy"] = {}
         results_container["chemistry"] = {}
+        results_container["compounds"] = {}
         results_container["phi"] = []
         results_container["fluid"] = self.fluid
         results_container["rho_s"] = []
@@ -1006,14 +1060,39 @@ class GreenschistFacies:
             vP = round(((bulk_mod*10**9 + 4/3*shear_mod*10**9)/(rho))**0.5, 3)
             vS = round(((shear_mod*10**9)/(rho))**0.5, 3)
             vPvS = round(vP/vS, 3)
-            #
+
             ## RESULTS
             for key, value in w_minerals.items():
                 results_container["mineralogy"][key].append(value)
-            #
+
+            amounts = []
             for key, value in w_elements.items():
                 results_container["chemistry"][key].append(value)
-            #
+                chem_data = PeriodicSystem(name=key).get_data()
+                amounts.append([key, chem_data[1], value])
+
+            list_elements = list(w_elements.keys())
+            list_oxides = OxideCompounds(var_list_elements=list_elements).find_oxides()
+            composition_oxides = {}
+
+            for var_oxide in list_oxides:
+                oxide_data = OxideCompounds(var_compound=var_oxide, var_amounts=amounts).get_composition()
+                composition_oxides[var_oxide] = round(oxide_data["Oxide"][1], 4)
+
+            if list_oxides[0] not in results_container["compounds"]:
+                for oxide in list_oxides:
+                    results_container["compounds"][oxide] = []
+
+            for key, value in composition_oxides.items():
+                results_container["compounds"][key].append(value)
+
+            results_container["mineralogy"] = dict(sorted(
+                results_container["mineralogy"].items(), key=lambda item: sum(item[1])/len(item[1]), reverse=True))
+            results_container["chemistry"] = dict(sorted(
+                results_container["chemistry"].items(), key=lambda item: sum(item[1])/len(item[1]), reverse=True))
+            results_container["compounds"] = dict(sorted(
+                results_container["compounds"].items(), key=lambda item: sum(item[1])/len(item[1]), reverse=True))
+
             results_container["phi"].append(phi_helper)
             results_container["rho_s"].append(rho_s)
             results_container["rho"].append(rho)
@@ -1036,6 +1115,7 @@ class GreenschistFacies:
         results_container["rock"] = "Greenschist"
         results_container["mineralogy"] = {}
         results_container["chemistry"] = {}
+        results_container["compounds"] = {}
         results_container["phi"] = []
         results_container["fluid"] = self.fluid
         results_container["rho_s"] = []
@@ -1231,14 +1311,39 @@ class GreenschistFacies:
             vP = round(((bulk_mod*10**9 + 4/3*shear_mod*10**9)/(rho))**0.5, 3)
             vS = round(((shear_mod*10**9)/(rho))**0.5, 3)
             vPvS = round(vP/vS, 3)
-            #
+
             ## RESULTS
             for key, value in w_minerals.items():
                 results_container["mineralogy"][key].append(value)
-            #
+
+            amounts = []
             for key, value in w_elements.items():
                 results_container["chemistry"][key].append(value)
-            #
+                chem_data = PeriodicSystem(name=key).get_data()
+                amounts.append([key, chem_data[1], value])
+
+            list_elements = list(w_elements.keys())
+            list_oxides = OxideCompounds(var_list_elements=list_elements).find_oxides()
+            composition_oxides = {}
+
+            for var_oxide in list_oxides:
+                oxide_data = OxideCompounds(var_compound=var_oxide, var_amounts=amounts).get_composition()
+                composition_oxides[var_oxide] = round(oxide_data["Oxide"][1], 4)
+
+            if list_oxides[0] not in results_container["compounds"]:
+                for oxide in list_oxides:
+                    results_container["compounds"][oxide] = []
+
+            for key, value in composition_oxides.items():
+                results_container["compounds"][key].append(value)
+
+            results_container["mineralogy"] = dict(sorted(
+                results_container["mineralogy"].items(), key=lambda item: sum(item[1])/len(item[1]), reverse=True))
+            results_container["chemistry"] = dict(sorted(
+                results_container["chemistry"].items(), key=lambda item: sum(item[1])/len(item[1]), reverse=True))
+            results_container["compounds"] = dict(sorted(
+                results_container["compounds"].items(), key=lambda item: sum(item[1])/len(item[1]), reverse=True))
+
             results_container["phi"].append(phi_helper)
             results_container["rho_s"].append(rho_s)
             results_container["rho"].append(rho)
@@ -2336,6 +2441,7 @@ class AmphiboliteFacies:
         results_container["rock"] = "Ortho-Amphibolite"
         results_container["mineralogy"] = {}
         results_container["chemistry"] = {}
+        results_container["compounds"] = {}
         results_container["phi"] = []
         results_container["fluid"] = self.fluid
         results_container["rho_s"] = []
@@ -2524,14 +2630,42 @@ class AmphiboliteFacies:
             vP = round(((bulk_mod*10**9 + 4/3*shear_mod*10**9)/(rho))**0.5, 3)
             vS = round(((shear_mod*10**9)/(rho))**0.5, 3)
             vPvS = round(vP/vS, 3)
-            #
+
             ## RESULTS
             for key, value in w_minerals.items():
                 results_container["mineralogy"][key].append(value)
-            #
+
             for key, value in w_elements.items():
                 results_container["chemistry"][key].append(value)
-            #
+
+            amounts = []
+            for key, value in w_elements.items():
+                results_container["chemistry"][key].append(value)
+                chem_data = PeriodicSystem(name=key).get_data()
+                amounts.append([key, chem_data[1], value])
+
+            list_elements = list(w_elements.keys())
+            list_oxides = OxideCompounds(var_list_elements=list_elements).find_oxides()
+            composition_oxides = {}
+
+            for var_oxide in list_oxides:
+                oxide_data = OxideCompounds(var_compound=var_oxide, var_amounts=amounts).get_composition()
+                composition_oxides[var_oxide] = round(oxide_data["Oxide"][1], 4)
+
+            if list_oxides[0] not in results_container["compounds"]:
+                for oxide in list_oxides:
+                    results_container["compounds"][oxide] = []
+
+            for key, value in composition_oxides.items():
+                results_container["compounds"][key].append(value)
+
+            results_container["mineralogy"] = dict(sorted(
+                results_container["mineralogy"].items(), key=lambda item: sum(item[1])/len(item[1]), reverse=True))
+            results_container["chemistry"] = dict(sorted(
+                results_container["chemistry"].items(), key=lambda item: sum(item[1])/len(item[1]), reverse=True))
+            results_container["compounds"] = dict(sorted(
+                results_container["compounds"].items(), key=lambda item: sum(item[1])/len(item[1]), reverse=True))
+
             results_container["phi"].append(phi_helper)
             results_container["rho_s"].append(rho_s)
             results_container["rho"].append(rho)
