@@ -590,34 +590,7 @@ class ExplorationInterface:
             self.var_opt_ore.set("Select ore rock")
 
             # Siliciclastic rocks
-            if self.var_opt_sedimentary.get() == "Sandstone":
-                self.data = SiliciclasticRocks(fluid="water", actualThickness=0).create_sandstone(
-                    number=n_datapoints, porosity=[0.0, 0.3])
-            elif self.var_opt_sedimentary.get() == "Conglomerate":
-                self.data = SiliciclasticRocks(fluid="water", actualThickness=0).create_conglomerate(
-                    number=n_datapoints, porosity=[0.0, 0.3])
-            elif self.var_opt_sedimentary.get() == "Siltstone":
-                self.data = SiliciclasticRocks(fluid="water", actualThickness=0).create_siltstone(
-                    number=n_datapoints, porosity=[0.0, 0.1])
-            elif self.var_opt_sedimentary.get() == "Mudstone":
-                self.data = SiliciclasticRocks(fluid="water", actualThickness=0).create_mudstone_alt(
-                    number=n_datapoints, porosity=[0.0, 0.1])
-            elif self.var_opt_sedimentary.get() == "Shale":
-                self.data = SiliciclasticRocks(fluid="water", actualThickness=0).create_shale_alt(
-                    number=n_datapoints, porosity=[0.0, 0.1])
-            elif self.var_opt_sedimentary.get() == "Greywacke (Huckenholz)":
-                self.data = SiliciclasticRocks(fluid="water", actualThickness=0).create_greywacke_huckenholz(
-                    rock="Greywacke", number=n_datapoints, porosity=[0.0, 0.1])
-            # Carbonate rocks
-            elif self.var_opt_sedimentary.get() == "Limestone":
-                self.data = CarbonateRocks(fluid="water", actualThickness=0).create_limestone(
-                    number=n_datapoints,  porosity=[0.0, 0.4])
-            elif self.var_opt_sedimentary.get() == "Dolostone":
-                self.data = CarbonateRocks(fluid="water", actualThickness=0).create_dolostone(
-                    number=n_datapoints, porosity=[0.0, 0.3])
-            elif self.var_opt_sedimentary.get() == "Marl":
-                self.data = CarbonateRocks(fluid="water", actualThickness=0).create_marl(
-                    number=n_datapoints, porosity=[0.0, 0.3])
+            self.data = self.generate_rock_data(rockname=self.var_opt_sedimentary.get())
 
             self.container_borehole_lithology[borehole_id][unit_id].set(self.var_opt_sedimentary.get())
 
@@ -630,40 +603,7 @@ class ExplorationInterface:
             self.var_opt_metamorphic.set("Select metamorphic rock")
             self.var_opt_ore.set("Select ore rock")
 
-            if self.var_opt_plutonic.get() in [
-                "Granite", "Granodiorite", "Tonalite", "Gabbro", "Norite", "Diorite", "Monzodiorite", "Monzogabbro",
-                "Monzonite", "Syenite", "Granitoid", "Quarzolite", "Foid-bearing Syenite", "Foid-bearing Monzonite",
-                "Foid-bearing Monzodiorite", "Foid-bearing Monzogabbro", "Foid Monzosyenite", "Foid Monzodiorite",
-                "Foid Monzogabbro", "Foidolite"]:
-                if self.var_opt_plutonic.get() in [
-                    "Foid-bearing Syenite", "Foid-bearing Monzonite", "Foid-bearing Monzodiorite",
-                    "Foid-bearing Monzogabbro", "Foid Monzosyenite", "Foid Monzodiorite", "Foid Monzogabbro",
-                    "Foidolite"]:
-                    self.data = Plutonic(
-                        fluid="water", actualThickness=0, dict_output=True,
-                        porosity=[0.0, 0.1]).create_plutonic_rock_streckeisen(
-                        rock=self.var_opt_plutonic.get(), number=n_datapoints, porosity=[0.0, 0.1],
-                        upper_streckeisen=False)
-                else:
-                    self.data = Plutonic(
-                        fluid="water", actualThickness=0, dict_output=True,
-                        porosity=[0.0, 0.1]).create_plutonic_rock_streckeisen(
-                        rock=self.var_opt_plutonic.get(), number=n_datapoints, porosity=[0.0, 0.1])
-            elif self.var_opt_igneous.get() in ["Rhyolite", "Dacite", "Trachyte", "Latite", "Andesite", "Basalt",
-                "Foid-bearing Trachyte", "Foid-bearing Latite", "Foid-bearing Andesite", "Foid-bearing Basalt",
-                "Phonolite", "Tephrite", "Foidite"]:
-                if self.var_opt_igneous.get() in [
-                    "Foid-bearing Trachyte", "Foid-bearing Latite", "Foid-bearing Andesite", "Foid-bearing Basalt",
-                    "Phonolite", "Tephrite", "Foidite"]:
-                    self.data = Volcanic(
-                        fluid="water", actualThickness=0, dict_output=True,
-                        porosity=[0.0, 0.1]).create_volcanic_rock_streckeisen(
-                        rock=self.var_opt_igneous.get(), number=n_datapoints, upper_streckeisen=False)
-                else:
-                    self.data = Volcanic(
-                        fluid="water", actualThickness=0, dict_output=True,
-                        porosity=[0.0, 0.1]).create_volcanic_rock_streckeisen(
-                        rock=self.var_opt_igneous.get(), number=n_datapoints)
+            self.data = self.generate_rock_data(rockname=self.var_opt_plutonic.get())
 
             self.container_borehole_lithology[borehole_id][unit_id].set(self.var_opt_plutonic.get())
 
@@ -676,21 +616,7 @@ class ExplorationInterface:
             self.var_opt_metamorphic.set("Select metamorphic rock")
             self.var_opt_ore.set("Select ore rock")
 
-            if self.var_opt_volcanic.get() in ["Rhyolite", "Dacite", "Trachyte", "Latite", "Andesite", "Basalt",
-                "Foid-bearing Trachyte", "Foid-bearing Latite", "Foid-bearing Andesite", "Foid-bearing Basalt",
-                "Phonolite", "Tephrite", "Foidite"]:
-                if self.var_opt_volcanic.get() in [
-                    "Foid-bearing Trachyte", "Foid-bearing Latite", "Foid-bearing Andesite", "Foid-bearing Basalt",
-                    "Phonolite", "Tephrite", "Foidite"]:
-                    self.data = Volcanic(
-                        fluid="water", actualThickness=0, dict_output=True,
-                        porosity=[0.0, 0.1]).create_volcanic_rock_streckeisen(
-                        rock=self.var_opt_volcanic.get(), number=n_datapoints, upper_streckeisen=False)
-                else:
-                    self.data = Volcanic(
-                        fluid="water", actualThickness=0, dict_output=True,
-                        porosity=[0.0, 0.1]).create_volcanic_rock_streckeisen(
-                        rock=self.var_opt_volcanic.get(), number=n_datapoints)
+            self.data = self.generate_rock_data(rockname=self.var_opt_volcanic.get())
 
             self.container_borehole_lithology[borehole_id][unit_id].set(self.var_opt_volcanic.get())
 
@@ -703,12 +629,7 @@ class ExplorationInterface:
             self.var_opt_metamorphic.set("Select metamorphic rock")
             self.var_opt_ore.set("Select ore rock")
 
-            if self.var_opt_ultramafic.get() in [
-                "Orthopyroxenite", "Clinopyroxenite", "Dunite", "Harzburgite", "Wehrlite", "Websterite", "Lherzolite",
-                "Olivine-Websterite", "Olivine-Orthopyroxenite", "Olivine-Clinopyroxenite", "Peridotite", "Pyroxenite"]:
-                self.data = UltraMafic(
-                    fluid="water", actualThickness=0, dict_output=True, porosity=[0.0, 0.1]).create_ultramafic_rock(
-                    rock=self.var_opt_ultramafic.get(), number=n_datapoints)
+            self.data = self.generate_rock_data(rockname=self.var_opt_ultramafic.get())
 
             self.container_borehole_lithology[borehole_id][unit_id].set(self.var_opt_ultramafic.get())
 
@@ -721,31 +642,7 @@ class ExplorationInterface:
             self.var_opt_ultramafic.set("Select ultramafic rock")
             self.var_opt_ore.set("Select ore rock")
 
-            if self.var_opt_metamorphic.get() == "Felsic Granulite":
-                self.data = GranuliteFacies(
-                    fluid="water", actual_thickness=0, porosity=[0.0, 0.1]).create_granulite(
-                    number=n_datapoints, classification="felsic")
-            elif self.var_opt_metamorphic.get() == "Mafic Granulite":
-                self.data = GranuliteFacies(
-                    fluid="water", actual_thickness=0, porosity=[0.0, 0.1]).create_granulite(
-                    number=n_datapoints, classification="mafic")
-            elif self.var_opt_metamorphic.get() == "Basaltic Greenschist":
-                self.data = GreenschistFacies(
-                    fluid="water", actual_thickness=0, porosity=[0.0, 0.1]).create_greenschist_basaltic_alt(
-                    number=n_datapoints)
-            elif self.var_opt_metamorphic.get() == "Ultramafic Greenschist":
-                self.data = GreenschistFacies(
-                    fluid="water", actual_thickness=0, porosity=[0.0, 0.1]).create_greenschist_ultramafic_alt(
-                    number=n_datapoints)
-            elif self.var_opt_metamorphic.get() == "Pelitic Greenschist":
-                self.data = GreenschistFacies(
-                    fluid="water", actual_thickness=0, porosity=[0.0, 0.1]).create_greenschist_pelitic_alt(
-                    number=n_datapoints)
-            # Amphibolite-Facies
-            elif self.var_opt_metamorphic.get() == "Ortho-Amphibolite":
-                self.data = AmphiboliteFacies(
-                    fluid="water", actual_thickness=0, porosity=[0.0, 0.1]).create_amphibolite_ortho(
-                    number=n_datapoints)
+            self.data = self.generate_rock_data(rockname=self.var_opt_metamorphic.get())
 
             self.container_borehole_lithology[borehole_id][unit_id].set(self.var_opt_metamorphic.get())
 
@@ -758,12 +655,7 @@ class ExplorationInterface:
             self.var_opt_ultramafic.set("Select ultramafic rock")
             self.var_opt_metamorphic.set("Select metamorphic rock")
 
-            if self.var_opt_ore.get() in [
-                "Itabirite", "Banded Iron Formation", "Compact Hematite", "Friable Hematite", "Goethite Hematite",
-                "Al-rich Itabirite", "Compact Quartz Itabirite", "Friable Quartz Itabirite", "Goethite Itabirite"]:
-                self.data = OreRocks(
-                    fluid="water", actual_thickness=0, porosity=[0.0, 0.1]).create_siliciclastic_itabirite(
-                    rock=self.var_opt_ore.get(), number=n_datapoints)
+            self.data = self.generate_rock_data(rockname=self.var_opt_ore.get())
 
             self.container_borehole_lithology[borehole_id][unit_id].set(self.var_opt_ore.get())
 
@@ -929,7 +821,7 @@ class ExplorationInterface:
                 rockname = self.container_borehole_lithology[borehole_id][unit_id].get()
 
                 if rockname != "undefined":
-                    dataset = self.container_lithology_data[rockname]
+                    dataset = self.generate_rock_data(rockname=rockname)
                     n_samples = len(dataset["rho"])
                 else:
                     n_samples = 0
@@ -1014,3 +906,111 @@ class ExplorationInterface:
                     report_file.write(raw_line + "\n")
 
                 raw_line = "BOREHOLE;UNIT;SAMPLE;TOP;BOTTOM;"
+
+    def generate_rock_data(self, rockname):
+        n_samples = self.var_entr_parts.get()
+
+        ## Sedimentary rocks
+        # Siliciclastic rocks
+        if rockname == "Sandstone":
+            dataset = SiliciclasticRocks(fluid="water", actualThickness=0).create_sandstone(
+                number=n_samples, porosity=[0.0, 0.3])
+        elif rockname == "Conglomerate":
+            dataset = SiliciclasticRocks(fluid="water", actualThickness=0).create_conglomerate(
+                number=n_samples, porosity=[0.0, 0.3])
+        elif rockname == "Siltstone":
+            dataset = SiliciclasticRocks(fluid="water", actualThickness=0).create_siltstone(
+                number=n_samples, porosity=[0.0, 0.1])
+        elif rockname == "Mudstone":
+            dataset = SiliciclasticRocks(fluid="water", actualThickness=0).create_mudstone_alt(
+                number=n_samples, porosity=[0.0, 0.1])
+        elif rockname == "Shale":
+            dataset = SiliciclasticRocks(fluid="water", actualThickness=0).create_shale_alt(
+                number=n_samples, porosity=[0.0, 0.1])
+        elif rockname == "Greywacke (Huckenholz)":
+            dataset = SiliciclasticRocks(fluid="water", actualThickness=0).create_greywacke_huckenholz(
+                rock="Greywacke", number=n_samples, porosity=[0.0, 0.1])
+        # Carbonate rocks
+        elif rockname == "Limestone":
+            dataset = CarbonateRocks(fluid="water", actualThickness=0).create_limestone(
+                number=n_samples,  porosity=[0.0, 0.4])
+        elif rockname == "Dolostone":
+            dataset = CarbonateRocks(fluid="water", actualThickness=0).create_dolostone(
+                number=n_samples, porosity=[0.0, 0.3])
+        elif rockname == "Marl":
+            dataset = CarbonateRocks(fluid="water", actualThickness=0).create_marl(
+                number=n_samples, porosity=[0.0, 0.3])
+
+        ## Igneous rocks (plutonic)
+        elif rockname in [
+            "Foid-bearing Syenite", "Foid-bearing Monzonite", "Foid-bearing Monzodiorite",
+            "Foid-bearing Monzogabbro", "Foid Monzosyenite", "Foid Monzodiorite", "Foid Monzogabbro",
+            "Foidolite"]:
+            dataset = Plutonic(
+                fluid="water", actualThickness=0, dict_output=True,
+                porosity=[0.0, 0.1]).create_plutonic_rock_streckeisen(
+                rock=rockname, number=n_samples, porosity=[0.0, 0.1], upper_streckeisen=False)
+        elif rockname in [
+                "Granite", "Granodiorite", "Tonalite", "Gabbro", "Norite", "Diorite", "Monzodiorite", "Monzogabbro",
+                "Monzonite", "Syenite", "Granitoid", "Quarzolite"]:
+            dataset = Plutonic(
+                fluid="water", actualThickness=0, dict_output=True,
+                porosity=[0.0, 0.1]).create_plutonic_rock_streckeisen(
+                rock=rockname, number=n_samples, porosity=[0.0, 0.1])
+
+        ## Igneous rocks (volcanic)
+        elif rockname in [
+            "Foid-bearing Trachyte", "Foid-bearing Latite", "Foid-bearing Andesite", "Foid-bearing Basalt",
+            "Phonolite", "Tephrite", "Foidite"]:
+            dataset = Volcanic(
+                fluid="water", actualThickness=0, dict_output=True,
+                porosity=[0.0, 0.1]).create_volcanic_rock_streckeisen(
+                rock=rockname, number=n_samples, upper_streckeisen=False)
+        elif rockname in ["Rhyolite", "Dacite", "Trachyte", "Latite", "Andesite", "Basalt"]:
+            dataset = Volcanic(
+                fluid="water", actualThickness=0, dict_output=True,
+                porosity=[0.0, 0.1]).create_volcanic_rock_streckeisen(rock=rockname, number=n_samples)
+
+        ## Ultramafic rocks
+        elif rockname in [
+            "Orthopyroxenite", "Clinopyroxenite", "Dunite", "Harzburgite", "Wehrlite", "Websterite", "Lherzolite",
+            "Olivine-Websterite", "Olivine-Orthopyroxenite", "Olivine-Clinopyroxenite", "Peridotite", "Pyroxenite"]:
+            dataset = UltraMafic(
+                fluid="water", actualThickness=0, dict_output=True, porosity=[0.0, 0.1]).create_ultramafic_rock(
+                rock=rockname, number=n_samples)
+
+        ## Metamorphic rocks
+        elif rockname == "Felsic Granulite":
+            dataset = GranuliteFacies(fluid="water", actual_thickness=0, porosity=[0.0, 0.1]).create_granulite(
+                number=n_samples, classification="felsic")
+        elif rockname == "Mafic Granulite":
+            dataset = GranuliteFacies(fluid="water", actual_thickness=0, porosity=[0.0, 0.1]).create_granulite(
+                number=n_samples, classification="mafic")
+        elif rockname == "Basaltic Greenschist":
+            dataset = GreenschistFacies(
+                fluid="water", actual_thickness=0, porosity=[0.0, 0.1]).create_greenschist_basaltic_alt(
+                number=n_samples)
+        elif rockname == "Ultramafic Greenschist":
+            dataset = GreenschistFacies(
+                fluid="water", actual_thickness=0, porosity=[0.0, 0.1]).create_greenschist_ultramafic_alt(
+                number=n_samples)
+        elif rockname == "Pelitic Greenschist":
+            dataset = GreenschistFacies(
+                fluid="water", actual_thickness=0, porosity=[0.0, 0.1]).create_greenschist_pelitic_alt(
+                number=n_samples)
+        # Amphibolite-Facies
+        elif rockname == "Ortho-Amphibolite":
+            dataset = AmphiboliteFacies(
+                fluid="water", actual_thickness=0, porosity=[0.0, 0.1]).create_amphibolite_ortho(
+                number=n_samples)
+
+        ## Ore rocks
+        if rockname in [
+            "Itabirite", "Banded Iron Formation", "Compact Hematite", "Friable Hematite", "Goethite Hematite",
+            "Al-rich Itabirite", "Compact Quartz Itabirite", "Friable Quartz Itabirite", "Goethite Itabirite"]:
+            dataset = OreRocks(fluid="water", actual_thickness=0, porosity=[0.0, 0.1]).create_siliciclastic_itabirite(
+                rock=rockname, number=n_samples)
+
+        ## Evaporite rocks
+
+        return dataset
