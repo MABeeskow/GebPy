@@ -6,7 +6,7 @@
 # Name:		gebpy_app.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0.0
-# Date:		10.12.2024
+# Date:		18.12.2024
 # License:  GPL v3.0
 
 # ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- -
@@ -60,8 +60,8 @@ class GebPyGUI(tk.Frame):
         var_screen_width = var_screen_width
         var_screen_height = var_screen_height
 
-        self.str_version_number = "1.0.1"
-        self.val_version = "GebPy: " + self.str_version_number + " - 10.12.2024"
+        self.str_version_number = "1.0.2"
+        self.val_version = "GebPy: " + self.str_version_number + " - 18.12.2024"
 
         ### Container
         self.gui_elements = {}

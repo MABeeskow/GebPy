@@ -6,7 +6,7 @@
 # File:         exploration.py
 # Description:  Contains all necessary functions that are related to mineral exploration feature
 # Author:       Maximilian Beeskow
-# Last updated: 11.12.2024
+# Last updated: 18.12.2024
 # License:      GPL v3.0
 
 # ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- -
@@ -14,6 +14,7 @@
 # external packages
 import tkinter as tk
 from tkinter import ttk
+from tkinter import filedialog
 import numpy as np
 # internal packages
 from modules.gui_elements import SimpleElements
@@ -911,4 +912,105 @@ class ExplorationInterface:
                 self.tv_lithology.insert("", tk.END, values=entries)
 
     def export_borehole_data(self):
-        print("Still under construction!")
+        report_file = filedialog.asksaveasfile(
+            mode="w", initialfile="Report_Borehole-Data_" + str(len(self.list_boreholes)) + str(len(self.list_units)),
+            defaultextension=".csv")
+
+        ## General Data
+        report_file.write("REPORT (BOREHOLE DATA)" + "\n")
+        report_file.write("\n")
+
+        ## Geophysical Data
+        report_file.write("ROCK DATA" + "\n")
+        raw_line = "BOREHOLE;UNIT;SAMPLE;TOP;BOTTOM;"
+
+        for borehole_id in self.list_boreholes:
+            for unit_id in self.list_units:
+                rockname = self.container_borehole_lithology[borehole_id][unit_id].get()
+
+                if rockname != "undefined":
+                    dataset = self.container_lithology_data[rockname]
+                    n_samples = len(dataset["rho"])
+                else:
+                    n_samples = 0
+
+                list_keys = list(dataset.keys())
+                list_keys.remove("mineralogy")
+                list_keys.remove("chemistry")
+
+                if "compounds" in list_keys:
+                    list_keys.remove("compounds")
+                if "fluid" in list_keys:
+                    list_keys.remove("fluid")
+                if "phi_true" in list_keys:
+                    list_keys.remove("phi_true")
+
+                list_keys = ["POISSON" if item == "nu" else item for item in list_keys]
+                list_minerals = list(dataset["mineralogy"].keys())
+                list_elements = list(dataset["chemistry"].keys())
+                list_compounds = list(dataset["compounds"].keys())
+
+                for key in list_keys:
+                    raw_line += str(key)
+                    raw_line += str(";")
+
+                for mineral in list_minerals:
+                    raw_line += str(mineral)
+                    raw_line += str(";")
+
+                for element in list_elements:
+                    raw_line += str(element)
+                    raw_line += str(";")
+
+                for compound in list_compounds:
+                    raw_line += str(compound)
+                    raw_line += str(";")
+
+                raw_line += str("\n")
+
+                report_file.write(raw_line)
+
+                raw_line = ""
+                for index in range(n_samples):
+                    raw_line = (str(borehole_id) + ";" + str(unit_id) + ";" + str(index + 1) + ";" +
+                                str(self.dict_entr_top[borehole_id][unit_id].get()) + ";" +
+                                str(self.dict_entr_bottom[borehole_id][unit_id].get()) + ";")
+                    for key, values in dataset.items():
+                        if key in list_keys:
+                            if key in ["phi", "rho_s", "rho", "vP", "vS", "vP/vS", "K", "G", "E", "GR", "PE"]:
+                                raw_line += str(round(values[index], 3))
+                            else:
+                                raw_line += str(values)
+
+                            raw_line += str(";")
+                        elif key == "nu":
+                            raw_line += str(round(values[index], 3))
+                            raw_line += str(";")
+
+                    for mineral in list_minerals:
+                        if mineral not in ["Urn"]:
+                            value = dataset["mineralogy"][mineral][index]
+                            raw_line += str(round(value, 4))
+                            raw_line += str(";")
+                        else:
+                            raw_line += str(round(value, 6))
+                            raw_line += str(";")
+
+                    for element, values in dataset["chemistry"].items():
+                        if element in list_elements:
+                            if element not in ["U"]:
+                                raw_line += str(round(values[index], 4))
+                                raw_line += str(";")
+                            else:
+                                raw_line += str(round(values[index], 6))
+                                raw_line += str(";")
+
+                    if "compounds" in dataset:
+                        for compound, values in dataset["compounds"].items():
+                            if compound in list_compounds:
+                                raw_line += str(round(values[index], 4))
+                                raw_line += str(";")
+
+                    report_file.write(raw_line + "\n")
+
+                raw_line = "BOREHOLE;UNIT;SAMPLE;TOP;BOTTOM;"
