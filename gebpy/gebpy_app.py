@@ -5,7 +5,7 @@
 
 # Name:		gebpy_app.py
 # Author:	Maximilian A. Beeskow
-# Version:	1.0.4
+# Version:	1.0.5
 # Date:		19.12.2024
 # License:  GPL v3.0
 
@@ -22,34 +22,31 @@ import collections
 import numpy as np
 import random as rd
 import matplotlib.pyplot as plt
-
-#from build.lib.gebpy.modules.metamorphics import MetamorphicRocks
-from modules.geophysics import Elasticity as elast
 import matplotlib as mpl
 from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, NavigationToolbar2Tk)
 import matplotlib.patches as mpatches
 from matplotlib.figure import Figure
 # internal
-from modules.gui_elements import SimpleElements
-from modules.oxides import Oxides
-from modules.carbonates import Carbonates, CarbonateRocks
-from modules.igneous import Plutonic, Volcanic, UltraMafic, Pyroclastic
-from modules.sulfides import Sulfides
-from modules.sulfates import Sulfates
-from modules.halides import Halides
-from modules.phospides import Phospides
-from modules.phosphates import Phosphates
-from modules.silicates import Phyllosilicates, Tectosilicates, Inosilicates, Nesosilicates, Sorosilicates, \
+from gebpy.modules.gui_elements import SimpleElements
+from gebpy.modules.oxides import Oxides
+from gebpy.modules.carbonates import Carbonates, CarbonateRocks
+from gebpy.modules.igneous import Plutonic, Volcanic, UltraMafic, Pyroclastic
+from gebpy.modules.sulfides import Sulfides
+from gebpy.modules.sulfates import Sulfates
+from gebpy.modules.halides import Halides
+from gebpy.modules.phospides import Phospides
+from gebpy.modules.phosphates import Phosphates
+from gebpy.modules.silicates import Phyllosilicates, Tectosilicates, Inosilicates, Nesosilicates, Sorosilicates, \
     Cyclosilicates
-from modules.organics import Organics
-from modules.fluids import Water
-from modules.siliciclastics import SiliciclasticRocks, Geophysics
-from modules.ore import OreRocks
-from modules.metamorphics import GranuliteFacies, GreenschistFacies, AmphiboliteFacies, MetamorphicRocks
-from modules.exploration import ExplorationInterface
+from gebpy.modules.organics import Organics
+from gebpy.modules.fluids import Water
+from gebpy.modules.siliciclastics import SiliciclasticRocks, Geophysics
+from gebpy.modules.ore import OreRocks
+from gebpy.modules.metamorphics import GranuliteFacies, GreenschistFacies, AmphiboliteFacies
+from gebpy.modules.exploration import ExplorationInterface
 # Sequence Stratigraphy
-from modules.series import Muschelkalk, Zechstein, Buntsandstein
-from modules.petrophysics import SeismicVelocities
+from gebpy.modules.series import Muschelkalk, Zechstein, Buntsandstein
+from gebpy.modules.petrophysics import SeismicVelocities
 
 ## GUI
 class GebPyGUI(tk.Frame):
@@ -62,7 +59,7 @@ class GebPyGUI(tk.Frame):
         var_screen_width = var_screen_width
         var_screen_height = var_screen_height
 
-        self.str_version_number = "1.0.4"
+        self.str_version_number = "1.0.5"
         self.val_version = "GebPy: " + self.str_version_number + " - 19.12.2024"
 
         ### Container
@@ -3537,8 +3534,8 @@ class GebPyGUI(tk.Frame):
         entries = ["-", "-", "-", "-", "-"]
         self.tv_petrology_results.insert("", tk.END, values=entries)
 
-        for mineral in np.sort(self.list_minerals_rock):
-            dataset = self.rock_data["mineralogy"][mineral]
+        for mineral in list(data["mineralogy"].keys()):
+            dataset = data["mineralogy"][mineral]
             entries = [str(mineral)+str(" (%)")]
 
             n_digits = 2
@@ -3556,8 +3553,8 @@ class GebPyGUI(tk.Frame):
         entries = ["-", "-", "-", "-", "-"]
         self.tv_petrology_results.insert("", tk.END, values=entries)
 
-        for element in np.sort(self.list_elements_rock):
-            dataset = self.rock_data["chemistry"][element]
+        for element in list(data["chemistry"].keys()):
+            dataset = data["chemistry"][element]
             entries = [str(element)+str(" (%)")]
             n_digits = 2
             var_factor = 100
@@ -3575,8 +3572,8 @@ class GebPyGUI(tk.Frame):
         self.tv_petrology_results.insert("", tk.END, values=entries)
 
         if "compounds" in data:
-            for element in np.sort(self.list_compounds_rock):
-                dataset = self.rock_data["compounds"][element]
+            for element in list(data["compounds"].keys()):
+                dataset = data["compounds"][element]
                 entries = [str(element) + str(" (%)")]
                 n_digits = 2
                 var_factor = 100

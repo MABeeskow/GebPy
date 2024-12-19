@@ -14,21 +14,21 @@
 import time
 import numpy as np
 import random as rd
-from modules.silicates import Phyllosilicates, Tectosilicates, Nesosilicates, Sorosilicates, Inosilicates, Cyclosilicates
-from modules.oxides import Oxides
-from modules.carbonates import Carbonates
-from modules.sulfides import Sulfides
-from modules.phosphates import Phosphates
-from modules import fluids
-from modules.fluids import Water
-from modules.geophysics import Elasticity as elast
-from modules.chemistry import PeriodicSystem, OxideCompounds
-from modules.minerals import CrystalPhysics
-from modules.geophysics import BoreholeGeophysics as bg
-from modules.geophysics import WellLog as wg
-from modules.geochemistry import MineralChemistry
-from modules.pyllosilicates import Pyllosilicates
-from modules.petrophysics import SeismicVelocities
+from gebpy.modules.silicates import Phyllosilicates, Tectosilicates, Nesosilicates, Sorosilicates, Inosilicates, Cyclosilicates
+from gebpy.modules.oxides import Oxides
+from gebpy.modules.carbonates import Carbonates
+from gebpy.modules.sulfides import Sulfides
+from gebpy.modules.phosphates import Phosphates
+from gebpy.modules import fluids
+from gebpy.modules.fluids import Water
+from gebpy.modules.geophysics import Elasticity as elast
+from gebpy.modules.chemistry import PeriodicSystem, OxideCompounds
+from gebpy.modules.minerals import CrystalPhysics
+from gebpy.modules.geophysics import BoreholeGeophysics as bg
+from gebpy.modules.geophysics import WellLog as wg
+from gebpy.modules.geochemistry import MineralChemistry
+from gebpy.modules.pyllosilicates import Pyllosilicates
+from gebpy.modules.petrophysics import SeismicVelocities
 
 class OreRocks:
     #

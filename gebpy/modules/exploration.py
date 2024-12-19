@@ -20,12 +20,12 @@ import pandas as pd
 import os
 
 # internal packages
-from modules.gui_elements import SimpleElements
-from modules.siliciclastics import SiliciclasticRocks
-from modules.carbonates import CarbonateRocks
-from modules.igneous import Plutonic, Volcanic, UltraMafic, Pyroclastic
-from modules.metamorphics import GranuliteFacies, GreenschistFacies, AmphiboliteFacies
-from modules.ore import OreRocks
+from gebpy.modules.gui_elements import SimpleElements
+from gebpy.modules.siliciclastics import SiliciclasticRocks
+from gebpy.modules.carbonates import CarbonateRocks
+from gebpy.modules.igneous import Plutonic, Volcanic, UltraMafic, Pyroclastic
+from gebpy.modules.metamorphics import GranuliteFacies, GreenschistFacies, AmphiboliteFacies
+from gebpy.modules.ore import OreRocks
 
 # ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- -
 
@@ -484,7 +484,12 @@ class ExplorationInterface:
 
         self.lbl_borehole_id.configure(text=self.current_borehole_id)
         self.current_unit_id = self.list_units[0]
-        self.fill_lithology_table(dataset=self.data, categories_long=self.categories)
+
+        try:
+            self.fill_lithology_table(dataset=self.data, categories_long=self.categories)
+        except:
+            print("Please select first a lithology.")
+
         self.update_settings(initialization=False, update=True, changed_borehole=True)
 
     def change_unit(self, mode):
@@ -535,7 +540,11 @@ class ExplorationInterface:
                 self.entr_bottom.configure(state="normal")
 
         self.lbl_unit_id.configure(text=self.current_unit_id)
-        self.fill_lithology_table(dataset=self.data, categories_long=self.categories)
+
+        try:
+            self.fill_lithology_table(dataset=self.data, categories_long=self.categories)
+        except:
+            print("Please select first a lithology.")
         
     def change_depth(self, mode, event):
         """Changes the depth of the top or bottom.
@@ -670,7 +679,11 @@ class ExplorationInterface:
             if self.var_opt_ore.get() not in self.container_lithology_data:
                 self.container_lithology_data[self.var_opt_ore.get()] = self.data.copy()
 
-        self.fill_lithology_table(dataset=self.data, categories_long=self.categories)
+        try:
+            self.fill_lithology_table(dataset=self.data, categories_long=self.categories)
+        except:
+            print("Please select first a lithology.")
+
         self.update_borehole_table()
 
     def update_borehole_table(self):
@@ -709,7 +722,11 @@ class ExplorationInterface:
         rockname = self.container_borehole_lithology[borehole_id][unit_id].get()
 
         if rockname != "undefined":
-            dataset = self.container_lithology_data[rockname]
+            if rockname in self.container_lithology_data:
+                dataset = self.container_lithology_data[rockname]
+            else:
+                dataset = self.generate_rock_data(rockname=rockname)
+                self.container_lithology_data[rockname] = dataset
 
         if len(self.tv_lithology.get_children()) > 0:
             for item in self.tv_lithology.get_children():
@@ -812,9 +829,14 @@ class ExplorationInterface:
                 self.tv_lithology.insert("", tk.END, values=entries)
 
     def export_borehole_data(self):
-        report_file = filedialog.asksaveasfile(
-            mode="w", initialfile="Report_Borehole-Data_" + str(len(self.list_boreholes)) + str(len(self.list_units)),
-            defaultextension=".csv")
+        if self.list_units.all() != None:
+            report_file = filedialog.asksaveasfile(
+                mode="w",
+                initialfile="Report_Borehole-Data_" + str(len(self.list_boreholes)) + str(len(self.list_units)),
+                defaultextension=".csv")
+        else:
+            report_file = filedialog.asksaveasfile(
+                mode="w", initialfile="Report_Borehole-Data", defaultextension=".csv")
 
         ## General Data
         report_file.write("REPORT (BOREHOLE DATA)" + "\n")
@@ -825,7 +847,11 @@ class ExplorationInterface:
         raw_line = "BOREHOLE;UNIT;SAMPLE;TOP;BOTTOM;"
 
         for borehole_id in self.list_boreholes:
-            for unit_id in self.list_units:
+            if self.list_units.all() == None:
+                list_units = self.dict_indices[borehole_id]
+            else:
+                list_units = self.list_units
+            for unit_id in list_units:
                 rockname = self.container_borehole_lithology[borehole_id][unit_id].get()
 
                 if rockname != "undefined":
@@ -1031,9 +1057,82 @@ class ExplorationInterface:
         filename = filedialog.askopenfilenames(
             parent=self.parent,
             filetypes=(("csv files", "*.csv"), ("txt files", "*.txt"), ("all files", "*.*")), initialdir=os.getcwd())
-        print(filename[0])
+
         df = pd.read_csv(filename[0])
-        print(df.describe())
-        print(df["BOREHOLE"])
-        print(df["TOP"])
-        print(df["BOTTOM"])
+        borehole_indices = self.get_borehole_indices(dataset=df["BOREHOLE"])
+        helper_indices = {}
+        for borehole_id in borehole_indices:
+            list_indices = self.get_borehole_id_indices(dataset=df["BOREHOLE"], value=borehole_id)
+            helper_indices[borehole_id] = list_indices
+
+        self.list_units = None
+        self.dict_indices = helper_indices
+
+        if len(self.tv_borehole.get_children()) > 0:
+            for item in self.tv_borehole.get_children():
+                self.tv_borehole.delete(item)
+
+        n = 0
+        for i in borehole_indices:
+            if i not in self.container_borehole_lithology:
+                self.container_borehole_lithology[i] = {}
+            if i not in self.dict_entr_top:
+                self.dict_entr_top[i] = {}
+            if i not in self.dict_entr_bottom:
+                self.dict_entr_bottom[i] = {}
+            for j in helper_indices[i]:
+                if j in self.container_borehole_lithology[i]:
+                    name = self.container_borehole_lithology[i][j]
+                else:
+                    name = "undefined"
+
+                if j not in self.container_borehole_lithology[i]:
+                    self.container_borehole_lithology[i][j] = tk.StringVar()
+                    self.container_borehole_lithology[i][j].set(name)
+                if j not in self.dict_entr_top:
+                    self.dict_entr_top[i][j] = tk.StringVar()
+                if j not in self.dict_entr_bottom:
+                    self.dict_entr_bottom[i][j] = tk.StringVar()
+
+                var_entr_top = df["TOP"].iloc[j]
+                var_entr_bottom = df["BOTTOM"].iloc[j]
+                var_entr_name = df["LITHOLOGY"].iloc[j]
+
+                rockname = self.convert_name(name=var_entr_name)
+                self.container_borehole_lithology[i][j].set(rockname)
+                self.dict_entr_top[i][j].set(round(var_entr_top, 1))
+                self.dict_entr_bottom[i][j].set(round(var_entr_bottom, 1))
+                entries = [i, j, "{:.1f}".format(var_entr_top), "{:.1f}".format(var_entr_bottom), rockname]
+                self.tv_borehole.insert("", tk.END, values=entries)
+                n += 1
+
+                if n == len(helper_indices[i]):
+                    entries = ["-", "-", "-", "-", "-"]
+                    self.tv_borehole.insert("", tk.END, values=entries)
+                    n = 0
+
+    def get_borehole_indices(self, dataset):
+        """Creates a list containing the unique numbers of a given input list.
+        Arguments
+            dataset, list : contains the data.
+        Outputs
+            borehole_indices, list : contains a list of the unique numbers of the given input list
+        """
+        unique_numbers = dataset.unique()
+        borehole_indices = unique_numbers.tolist()
+        self.list_boreholes = borehole_indices
+
+        return borehole_indices
+
+    def get_borehole_id_indices(self, dataset, value):
+        list_indices = dataset.index[dataset == value].tolist()
+
+        return list_indices
+
+    def convert_name(self, name):
+        if name in ["BIF", "bif"]:
+            rockname = "Banded Iron Formation"
+        elif name in ["GSB", "GS", "gsb", "gs"]:
+            rockname = "Greenstone"
+
+        return rockname

@@ -2419,6 +2419,11 @@ class GreenschistFacies:
             results["PE"] = bulk_properties["PE"][0]
         #
         return results
+
+    def create_greenstone(self, number):
+        pass
+
+
 #
 class AmphiboliteFacies:
     #

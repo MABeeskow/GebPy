@@ -13,13 +13,13 @@
 ## MODULES
 import numpy as np
 import random as rd
-from modules.chemistry import PeriodicSystem, OxideCompounds
-from modules.oxides import Oxides
-from modules.carbonates import Carbonates
-from modules.silicates import Tectosilicates, Nesosilicates, Sorosilicates, Phyllosilicates, Inosilicates
-from modules.phosphates import Phosphates
-from modules.fluids import Water
-from modules.geophysics import Elasticity as elast
+from gebpy.modules.chemistry import PeriodicSystem, OxideCompounds
+from gebpy.modules.oxides import Oxides
+from gebpy.modules.carbonates import Carbonates
+from gebpy.modules.silicates import Tectosilicates, Nesosilicates, Sorosilicates, Phyllosilicates, Inosilicates
+from gebpy.modules.phosphates import Phosphates
+from gebpy.modules.fluids import Water
+from gebpy.modules.geophysics import Elasticity as elast
 
 #######################
 ## METAMORPHIC ROCKS ##
@@ -909,7 +909,7 @@ class GreenschistFacies:
 
     def create_greenstone(self, number=1, composition=None):
         results_container = {}
-        results_container["rock"] = "Greenschist"
+        results_container["rock"] = "Greenstone"
         results_container["mineralogy"] = {}
         results_container["chemistry"] = {}
         results_container["compounds"] = {}
