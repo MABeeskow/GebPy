@@ -5,7 +5,7 @@
 
 # Name:		gebpy_app.py
 # Author:	Maximilian A. Beeskow
-# Version:	1.0.3
+# Version:	1.0.4
 # Date:		19.12.2024
 # License:  GPL v3.0
 
@@ -23,7 +23,7 @@ import numpy as np
 import random as rd
 import matplotlib.pyplot as plt
 
-from build.lib.gebpy.modules.metamorphics import MetamorphicRocks
+#from build.lib.gebpy.modules.metamorphics import MetamorphicRocks
 from modules.geophysics import Elasticity as elast
 import matplotlib as mpl
 from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, NavigationToolbar2Tk)
@@ -62,7 +62,7 @@ class GebPyGUI(tk.Frame):
         var_screen_width = var_screen_width
         var_screen_height = var_screen_height
 
-        self.str_version_number = "1.0.3"
+        self.str_version_number = "1.0.4"
         self.val_version = "GebPy: " + self.str_version_number + " - 19.12.2024"
 
         ### Container
