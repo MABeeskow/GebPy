@@ -5,8 +5,8 @@
 
 # Name:		gebpy_app.py
 # Author:	Maximilian A. Beeskow
-# Version:	1.0.0
-# Date:		18.12.2024
+# Version:	1.0.3
+# Date:		19.12.2024
 # License:  GPL v3.0
 
 # ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- -
@@ -22,6 +22,8 @@ import collections
 import numpy as np
 import random as rd
 import matplotlib.pyplot as plt
+
+from build.lib.gebpy.modules.metamorphics import MetamorphicRocks
 from modules.geophysics import Elasticity as elast
 import matplotlib as mpl
 from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, NavigationToolbar2Tk)
@@ -43,7 +45,7 @@ from modules.organics import Organics
 from modules.fluids import Water
 from modules.siliciclastics import SiliciclasticRocks, Geophysics
 from modules.ore import OreRocks
-from modules.metamorphics import GranuliteFacies, GreenschistFacies, AmphiboliteFacies
+from modules.metamorphics import GranuliteFacies, GreenschistFacies, AmphiboliteFacies, MetamorphicRocks
 from modules.exploration import ExplorationInterface
 # Sequence Stratigraphy
 from modules.series import Muschelkalk, Zechstein, Buntsandstein
@@ -60,8 +62,8 @@ class GebPyGUI(tk.Frame):
         var_screen_width = var_screen_width
         var_screen_height = var_screen_height
 
-        self.str_version_number = "1.0.2"
-        self.val_version = "GebPy: " + self.str_version_number + " - 18.12.2024"
+        self.str_version_number = "1.0.3"
+        self.val_version = "GebPy: " + self.str_version_number + " - 19.12.2024"
 
         ### Container
         self.gui_elements = {}
@@ -718,7 +720,8 @@ class GebPyGUI(tk.Frame):
                 sub_metamorphic = tk.Menu(petrology_menu, tearoff=0)
                 metamorphic_rocks = {
                     "Granulite-Facies": ["Felsic Granulite", "Mafic Granulite"],
-                    "Greenschist-Facies": ["Basaltic Greenschist", "Ultramafic Greenschist", "Pelitic Greenschist"],
+                    "Greenschist-Facies": ["Basaltic Greenschist", "Ultramafic Greenschist", "Pelitic Greenschist",
+                                           "Greenstone"],
                     "Amphibolite-Facies": ["Ortho-Amphibolite"]}
                 #
                 metamorphic_rocks = collections.OrderedDict(sorted(metamorphic_rocks.items()))
@@ -831,7 +834,7 @@ class GebPyGUI(tk.Frame):
         lbl_title = SimpleElements(
             parent=self.parent, row_id=n_rows - 2, column_id=1, n_rows=1, n_columns=30,
             bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Option"]).create_label(
-            text=self.val_version, font_option="sans 11 bold", relief=tk.FLAT)
+            text=self.val_version, font_option="sans 10 bold", relief=tk.FLAT)
 
         ## Buttons
         btn_quit = SimpleElements(
@@ -3399,6 +3402,12 @@ class GebPyGUI(tk.Frame):
                 fluid="water", actual_thickness=0, porosity=[
                     self.gui_variables["Entry"]["Porosity Min"].get()/100,
                     self.gui_variables["Entry"]["Porosity Max"].get()/100]).create_greenschist_pelitic_alt(
+                number=self.gui_variables["Entry"]["Number Datapoints"].get())
+        elif var_name == "Greenstone":
+            data = GreenschistFacies(
+                fluid="water", actual_thickness=0, porosity=[
+                    self.gui_variables["Entry"]["Porosity Min"].get()/100,
+                    self.gui_variables["Entry"]["Porosity Max"].get()/100]).create_greenstone(
                 number=self.gui_variables["Entry"]["Number Datapoints"].get())
         # Amphibolite-Facies
         elif var_name == "Ortho-Amphibolite":

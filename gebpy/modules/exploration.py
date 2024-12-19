@@ -6,7 +6,7 @@
 # File:         exploration.py
 # Description:  Contains all necessary functions that are related to mineral exploration feature
 # Author:       Maximilian Beeskow
-# Last updated: 18.12.2024
+# Last updated: 19.12.2024
 # License:      GPL v3.0
 
 # ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- -
@@ -16,6 +16,9 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import filedialog
 import numpy as np
+import pandas as pd
+import os
+
 # internal packages
 from modules.gui_elements import SimpleElements
 from modules.siliciclastics import SiliciclasticRocks
@@ -74,7 +77,7 @@ class ExplorationInterface:
     def create_subwindow_borehole_data(self):
         ## Window Settings
         window_width = 1200
-        window_height = 750
+        window_height = 775
         var_geometry = str(window_width) + "x" + str(window_height) + "+" + str(0) + "+" + str(0)
 
         row_min = 25
@@ -259,12 +262,17 @@ class ExplorationInterface:
             btn_06 = SimpleElements(
                 parent=self.subwindow_borehole_data, row_id=self.start_row + 28, column_id=1, n_rows=1,
                 n_columns=self.n_columns_setup - 1, bg=self.colors["Background"],
+                fg=self.colors["Navigation"]).create_button(text="Load drilling data", command=self.load_drilling_data)
+            btn_07 = SimpleElements(
+                parent=self.subwindow_borehole_data, row_id=self.start_row + 29, column_id=1, n_rows=1,
+                n_columns=self.n_columns_setup - 1, bg=self.colors["Background"],
                 fg=self.colors["Navigation"]).create_button(text="Export data", command=self.export_borehole_data)
             btn_02.configure(activebackground=self.colors["Accent"])
             btn_03.configure(activebackground=self.colors["Accent"])
             btn_04.configure(activebackground=self.colors["Accent"])
             btn_05.configure(activebackground=self.colors["Accent"])
             btn_06.configure(activebackground=self.colors["Accent"])
+            btn_07.configure(activebackground=self.colors["Accent"])
 
             ## Entries
             self.entr_top = SimpleElements(
@@ -308,7 +316,7 @@ class ExplorationInterface:
                 "Olivine-Websterite", "Olivine-Orthopyroxenite", "Olivine-Clinopyroxenite", "Peridotite", "Pyroxenite"]
             list_opt_metamorphic = [
                 "Felsic Granulite", "Mafic Granulite", "Basaltic Greenschist", "Ultramafic Greenschist",
-                "Pelitic Greenschist", "Ortho-Amphibolite"]
+                "Pelitic Greenschist", "Greenstone", "Ortho-Amphibolite"]
             list_opt_ore = [
                 "Itabirite", "Banded Iron Formation", "Compact Hematite", "Friable Hematite", "Goethite Hematite",
                 "Al-rich Itabirite", "Compact Quartz Itabirite", "Friable Quartz Itabirite", "Goethite Itabirite"]
@@ -998,6 +1006,10 @@ class ExplorationInterface:
             dataset = GreenschistFacies(
                 fluid="water", actual_thickness=0, porosity=[0.0, 0.1]).create_greenschist_pelitic_alt(
                 number=n_samples)
+        elif rockname == "Greenstone":
+            dataset = GreenschistFacies(
+                fluid="water", actual_thickness=0, porosity=[0.0, 0.1]).create_greenstone(
+                number=n_samples)
         # Amphibolite-Facies
         elif rockname == "Ortho-Amphibolite":
             dataset = AmphiboliteFacies(
@@ -1014,3 +1026,14 @@ class ExplorationInterface:
         ## Evaporite rocks
 
         return dataset
+
+    def load_drilling_data(self):
+        filename = filedialog.askopenfilenames(
+            parent=self.parent,
+            filetypes=(("csv files", "*.csv"), ("txt files", "*.txt"), ("all files", "*.*")), initialdir=os.getcwd())
+        print(filename[0])
+        df = pd.read_csv(filename[0])
+        print(df.describe())
+        print(df["BOREHOLE"])
+        print(df["TOP"])
+        print(df["BOTTOM"])
