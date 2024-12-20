@@ -5,8 +5,8 @@
 
 # Name:		gebpy_app.py
 # Author:	Maximilian A. Beeskow
-# Version:	1.0.5
-# Date:		19.12.2024
+# Version:	1.0.6
+# Date:		20.12.2024
 # License:  GPL v3.0
 
 # ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- -
@@ -27,26 +27,48 @@ from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, NavigationTool
 import matplotlib.patches as mpatches
 from matplotlib.figure import Figure
 # internal
-from gebpy.modules.gui_elements import SimpleElements
-from gebpy.modules.oxides import Oxides
-from gebpy.modules.carbonates import Carbonates, CarbonateRocks
-from gebpy.modules.igneous import Plutonic, Volcanic, UltraMafic, Pyroclastic
-from gebpy.modules.sulfides import Sulfides
-from gebpy.modules.sulfates import Sulfates
-from gebpy.modules.halides import Halides
-from gebpy.modules.phospides import Phospides
-from gebpy.modules.phosphates import Phosphates
-from gebpy.modules.silicates import Phyllosilicates, Tectosilicates, Inosilicates, Nesosilicates, Sorosilicates, \
-    Cyclosilicates
-from gebpy.modules.organics import Organics
-from gebpy.modules.fluids import Water
-from gebpy.modules.siliciclastics import SiliciclasticRocks, Geophysics
-from gebpy.modules.ore import OreRocks
-from gebpy.modules.metamorphics import GranuliteFacies, GreenschistFacies, AmphiboliteFacies
-from gebpy.modules.exploration import ExplorationInterface
-# Sequence Stratigraphy
-from gebpy.modules.series import Muschelkalk, Zechstein, Buntsandstein
-from gebpy.modules.petrophysics import SeismicVelocities
+try:
+    from gebpy.modules.gui_elements import SimpleElements
+    from gebpy.modules.oxides import Oxides
+    from gebpy.modules.carbonates import Carbonates, CarbonateRocks
+    from gebpy.modules.igneous import Plutonic, Volcanic, UltraMafic, Pyroclastic
+    from gebpy.modules.sulfides import Sulfides
+    from gebpy.modules.sulfates import Sulfates
+    from gebpy.modules.halides import Halides
+    from gebpy.modules.phospides import Phospides
+    from gebpy.modules.phosphates import Phosphates
+    from gebpy.modules.silicates import Phyllosilicates, Tectosilicates, Inosilicates, Nesosilicates, Sorosilicates, \
+        Cyclosilicates
+    from gebpy.modules.organics import Organics
+    from gebpy.modules.fluids import Water
+    from gebpy.modules.siliciclastics import SiliciclasticRocks, Geophysics
+    from gebpy.modules.ore import OreRocks
+    from gebpy.modules.metamorphics import GranuliteFacies, GreenschistFacies, AmphiboliteFacies
+    from gebpy.modules.exploration import ExplorationInterface
+    # Sequence Stratigraphy
+    from gebpy.modules.series import Muschelkalk, Zechstein, Buntsandstein
+    from gebpy.modules.petrophysics import SeismicVelocities
+except:
+    from modules.gui_elements import SimpleElements
+    from modules.oxides import Oxides
+    from modules.carbonates import Carbonates, CarbonateRocks
+    from modules.igneous import Plutonic, Volcanic, UltraMafic, Pyroclastic
+    from modules.sulfides import Sulfides
+    from modules.sulfates import Sulfates
+    from modules.halides import Halides
+    from modules.phospides import Phospides
+    from modules.phosphates import Phosphates
+    from modules.silicates import Phyllosilicates, Tectosilicates, Inosilicates, Nesosilicates, Sorosilicates, \
+        Cyclosilicates
+    from modules.organics import Organics
+    from modules.fluids import Water
+    from modules.siliciclastics import SiliciclasticRocks, Geophysics
+    from modules.ore import OreRocks
+    from modules.metamorphics import GranuliteFacies, GreenschistFacies, AmphiboliteFacies
+    from modules.exploration import ExplorationInterface
+    # Sequence Stratigraphy
+    from modules.series import Muschelkalk, Zechstein, Buntsandstein
+    from modules.petrophysics import SeismicVelocities
 
 ## GUI
 class GebPyGUI(tk.Frame):
@@ -59,7 +81,7 @@ class GebPyGUI(tk.Frame):
         var_screen_width = var_screen_width
         var_screen_height = var_screen_height
 
-        self.str_version_number = "1.0.5"
+        self.str_version_number = "1.0.6"
         self.val_version = "GebPy: " + self.str_version_number + " - 19.12.2024"
 
         ### Container

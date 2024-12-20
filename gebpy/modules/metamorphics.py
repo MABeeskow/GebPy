@@ -6,20 +6,30 @@
 # Name:		metamorphics.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		19.12.2024
+# Date:		20.12.2024
 
 # -----------------------------------------------
 
 ## MODULES
 import numpy as np
 import random as rd
-from gebpy.modules.chemistry import PeriodicSystem, OxideCompounds
-from gebpy.modules.oxides import Oxides
-from gebpy.modules.carbonates import Carbonates
-from gebpy.modules.silicates import Tectosilicates, Nesosilicates, Sorosilicates, Phyllosilicates, Inosilicates
-from gebpy.modules.phosphates import Phosphates
-from gebpy.modules.fluids import Water
-from gebpy.modules.geophysics import Elasticity as elast
+# internal
+try:
+    from gebpy.modules.chemistry import PeriodicSystem, OxideCompounds
+    from gebpy.modules.oxides import Oxides
+    from gebpy.modules.carbonates import Carbonates
+    from gebpy.modules.silicates import Tectosilicates, Nesosilicates, Sorosilicates, Phyllosilicates, Inosilicates
+    from gebpy.modules.phosphates import Phosphates
+    from gebpy.modules.fluids import Water
+    from gebpy.modules.geophysics import Elasticity as elast
+except:
+    from modules.chemistry import PeriodicSystem, OxideCompounds
+    from modules.oxides import Oxides
+    from modules.carbonates import Carbonates
+    from modules.silicates import Tectosilicates, Nesosilicates, Sorosilicates, Phyllosilicates, Inosilicates
+    from modules.phosphates import Phosphates
+    from modules.fluids import Water
+    from modules.geophysics import Elasticity as elast
 
 #######################
 ## METAMORPHIC ROCKS ##

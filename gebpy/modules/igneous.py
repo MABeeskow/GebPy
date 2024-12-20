@@ -6,7 +6,7 @@
 # Name:		igneous.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		19.12.2024
+# Date:		20.12.2024
 
 #-----------------------------------------------
 
@@ -15,14 +15,25 @@ import numpy as np
 from numpy import round
 from random import *
 import random as rd
-from gebpy.modules.chemistry import PeriodicSystem, OxideCompounds
-from gebpy.modules import minerals, geochemistry, oxides
-from gebpy.modules import fluids
-from gebpy.modules.geophysics import Elasticity as elast
-from gebpy.modules.oxides import Oxides
-from gebpy.modules.silicates import Tectosilicates, Phyllosilicates, Inosilicates, Nesosilicates
-from gebpy.modules.fluids import Water, Hydrocarbons
-from gebpy.modules.petrophysics import SeismicVelocities
+# internal
+try:
+    from gebpy.modules.chemistry import PeriodicSystem, OxideCompounds
+    from gebpy.modules import minerals, geochemistry, oxides
+    from gebpy.modules import fluids
+    from gebpy.modules.geophysics import Elasticity as elast
+    from gebpy.modules.oxides import Oxides
+    from gebpy.modules.silicates import Tectosilicates, Phyllosilicates, Inosilicates, Nesosilicates
+    from gebpy.modules.fluids import Water, Hydrocarbons
+    from gebpy.modules.petrophysics import SeismicVelocities
+except:
+    from modules.chemistry import PeriodicSystem, OxideCompounds
+    from modules import minerals, geochemistry, oxides
+    from modules import fluids
+    from modules.geophysics import Elasticity as elast
+    from modules.oxides import Oxides
+    from modules.silicates import Tectosilicates, Phyllosilicates, Inosilicates, Nesosilicates
+    from modules.fluids import Water, Hydrocarbons
+    from modules.petrophysics import SeismicVelocities
 
 ## CLASSES
 class UltraMafic:

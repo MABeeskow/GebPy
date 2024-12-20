@@ -6,7 +6,7 @@
 # File:         exploration.py
 # Description:  Contains all necessary functions that are related to mineral exploration feature
 # Author:       Maximilian Beeskow
-# Last updated: 19.12.2024
+# Last updated: 20.12.2024
 # License:      GPL v3.0
 
 # ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- -
@@ -18,14 +18,21 @@ from tkinter import filedialog
 import numpy as np
 import pandas as pd
 import os
-
 # internal packages
-from gebpy.modules.gui_elements import SimpleElements
-from gebpy.modules.siliciclastics import SiliciclasticRocks
-from gebpy.modules.carbonates import CarbonateRocks
-from gebpy.modules.igneous import Plutonic, Volcanic, UltraMafic, Pyroclastic
-from gebpy.modules.metamorphics import GranuliteFacies, GreenschistFacies, AmphiboliteFacies
-from gebpy.modules.ore import OreRocks
+try:
+    from gebpy.modules.gui_elements import SimpleElements
+    from gebpy.modules.siliciclastics import SiliciclasticRocks
+    from gebpy.modules.carbonates import CarbonateRocks
+    from gebpy.modules.igneous import Plutonic, Volcanic, UltraMafic, Pyroclastic
+    from gebpy.modules.metamorphics import GranuliteFacies, GreenschistFacies, AmphiboliteFacies
+    from gebpy.modules.ore import OreRocks
+except:
+    from modules.gui_elements import SimpleElements
+    from modules.siliciclastics import SiliciclasticRocks
+    from modules.carbonates import CarbonateRocks
+    from modules.igneous import Plutonic, Volcanic, UltraMafic, Pyroclastic
+    from modules.metamorphics import GranuliteFacies, GreenschistFacies, AmphiboliteFacies
+    from modules.ore import OreRocks
 
 # ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- -
 

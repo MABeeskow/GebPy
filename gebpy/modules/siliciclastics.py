@@ -6,7 +6,7 @@
 # Name:		siliciclastics.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		19.12.2024
+# Date:		20.12.2024
 
 #-----------------------------------------------
 
@@ -18,19 +18,35 @@ import numpy as np
 from numpy import round
 from random import *
 import random as rd
-from gebpy.modules import minerals, oxides, fluids
-from gebpy.modules.geophysics import Elasticity as elast
-from gebpy.modules import oxides, carbonates, silicates
-from gebpy.modules.chemistry import PeriodicSystem, OxideCompounds
-from gebpy.modules.oxides import Oxides
-from gebpy.modules.carbonates import Carbonates
-from gebpy.modules.silicates import Phyllosilicates
-from gebpy.modules.silicates import Tectosilicates
-from gebpy.modules.sulfides import Sulfides
-from gebpy.modules.organics import Organics
-from gebpy.modules.phosphates import Phosphates
-from gebpy.modules.fluids import Water, Hydrocarbons
-from gebpy.modules.petrophysics import SeismicVelocities
+# internal
+try:
+    from gebpy.modules import minerals, oxides, fluids
+    from gebpy.modules.geophysics import Elasticity as elast
+    from gebpy.modules import oxides, carbonates, silicates
+    from gebpy.modules.chemistry import PeriodicSystem, OxideCompounds
+    from gebpy.modules.oxides import Oxides
+    from gebpy.modules.carbonates import Carbonates
+    from gebpy.modules.silicates import Phyllosilicates
+    from gebpy.modules.silicates import Tectosilicates
+    from gebpy.modules.sulfides import Sulfides
+    from gebpy.modules.organics import Organics
+    from gebpy.modules.phosphates import Phosphates
+    from gebpy.modules.fluids import Water, Hydrocarbons
+    from gebpy.modules.petrophysics import SeismicVelocities
+except:
+    from modules import minerals, oxides, fluids
+    from modules.geophysics import Elasticity as elast
+    from modules import oxides, carbonates, silicates
+    from modules.chemistry import PeriodicSystem, OxideCompounds
+    from modules.oxides import Oxides
+    from modules.carbonates import Carbonates
+    from modules.silicates import Phyllosilicates
+    from modules.silicates import Tectosilicates
+    from modules.sulfides import Sulfides
+    from modules.organics import Organics
+    from modules.phosphates import Phosphates
+    from modules.fluids import Water, Hydrocarbons
+    from modules.petrophysics import SeismicVelocities
 
 class Geophysics:
     #
