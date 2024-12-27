@@ -851,17 +851,17 @@ class GebPyGUI(tk.Frame):
 
         ## Labels
         lbl_title = SimpleElements(
-            parent=self.parent, row_id=n_rows - 2, column_id=1, n_rows=1, n_columns=30,
+            parent=self.parent, row_id=n_rows - 3, column_id=1, n_rows=1, n_columns=30,
             bg=self.colors_gebpy["Navigation"], fg=self.colors_gebpy["Option"]).create_label(
             text=self.val_version, font_option="sans 10 bold", relief=tk.FLAT)
 
         ## Buttons
         btn_quit = SimpleElements(
-            parent=self.parent, row_id=n_rows - 6, column_id=16, n_rows=3, n_columns=15,
+            parent=self.parent, row_id=n_rows - 7, column_id=16, n_rows=3, n_columns=15,
             bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_button(
             text="Quit GebPy", command=self.parent.quit)
         btn_restart = SimpleElements(
-            parent=self.parent, row_id=n_rows - 6, column_id=1, n_rows=3, n_columns=15,
+            parent=self.parent, row_id=n_rows - 7, column_id=1, n_rows=3, n_columns=15,
             bg=self.colors_gebpy["Option"], fg=self.colors_gebpy["Navigation"]).create_button(
             text="Restart GebPy", command=self.restart_gebpy)
 

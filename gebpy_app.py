@@ -4726,6 +4726,21 @@ class GebPyGUI(tk.Frame):
         self.fig_3x3 = Figure(figsize=(6, 6), tight_layout=True, facecolor=self.colors_gebpy["Background"])
         self.ax_3x3 = self.fig_3x3.subplots(nrows=3, ncols=3)
 
+        dataset_x = self.helper_results_geophysics["rho"]
+        x_min = min(dataset_x)
+        x_max = max(dataset_x)
+        delta_x = round(x_max - x_min, 4)
+
+        if delta_x < 1:
+            n_digits_x = 3
+            x_factor = 0.9
+        elif 1 <= delta_x < 5:
+            n_digits_x = 2
+            x_factor = 0.5
+        elif delta_x >= 5:
+            n_digits_x = 0
+            x_factor = 0.1
+
         for i, subcategories in enumerate(var_categories):
             for j, subcategory in enumerate(subcategories):
                 if self.container_variables["Radiobuttons"]["Category Diagram"].get() == 0:    # Histogram
@@ -4740,9 +4755,67 @@ class GebPyGUI(tk.Frame):
                     if subcategory in self.helper_results_geophysics:
                         if subcategory == "rho":
                             subcategory = "V(molar)"
-                        self.ax_3x3[i][j].scatter(
-                            self.helper_results_geophysics["rho"], self.helper_results_geophysics[subcategory],
-                            edgecolor="black", color=self.colors_gebpy["Option"], alpha=0.75, s=50)
+
+                        dataset_y = self.helper_results_geophysics[subcategory]
+                        self.ax_3x3[i][j].scatter(dataset_x, dataset_y, edgecolor="black",
+                                                  color=self.colors_gebpy["Option"], alpha=0.75, s=50)
+
+                        x_min = round(x_min - x_factor*delta_x, n_digits_x)
+                        x_max = round(x_max + x_factor*delta_x, n_digits_x)
+                        # y_min = round(y_min - y_factor*delta_y, n_digits_y)
+                        # y_max = round(y_max + y_factor*delta_y, n_digits_y)
+
+                        if subcategory in ["rho"]:
+                            x_min = round(round(min(dataset_x) - 25, -1) + 15, n_digits_x)
+                            x_max = round(round(max(dataset_x) + 25, -1) - 15, n_digits_x)
+                        # if subcategory in ["vP", "vS"]:
+                        #     y_min = round(round(min(dataset_y) - 150, -2), n_digits_y)
+                        #     y_max = round(round(max(dataset_y) + 150, -2), n_digits_y)
+                        # elif subcategory in ["K", "G", "E", "GR"]:
+                        #     y_min = round(round(min(dataset_y) - 15, -1) + 10, n_digits_y)
+                        #     y_max = round(round(max(dataset_y) + 15, -1) - 10, n_digits_y)
+                        # elif subcategory in ["phi"]:
+                        #     y_min = round(round(min(dataset_y) - 7, -1) + 5, n_digits_y)
+                        #     y_max = round(round(max(dataset_y) + 7, -1) - 5, n_digits_y)
+                        # elif subcategory in ["PE", "vPvS", "nu"]:
+                        #     y_min = round(round(min(dataset_y) - 0.005, 3), n_digits_y)
+                        #     y_max = round(round(max(dataset_y) + 0.005, 3), n_digits_y)
+
+                        if subcategory != "nu":
+                            if x_min < 0:
+                                x_min = 0
+                        # if subcategory != "nu":
+                        #     if y_min < 0:
+                        #         y_min = 0
+
+                        step_x = (x_max - x_min)/4
+                        step_x = int(round(step_x, n_digits_x))
+
+                        if step_x == 0:
+                            x_value = (x_min + x_max)/2
+                            x_min = 0.9*x_value
+                            x_max = 1.1*x_value
+                            x_ticks = np.linspace(x_min, x_max, 5)
+                        else:
+                            x_ticks = np.arange(x_min, x_max + step_x, step_x)
+
+                        # step_y = (y_max - y_min)/4
+
+                        # if var_dtype == float:
+                        #     step_y = round(step_y, n_digits_y)
+                        # else:
+                        #     step_y = int(round(step_y, n_digits_y))
+
+                        # if step_y > 0:
+                        #     y_ticks = np.arange(y_min, y_max + step_y, step_y)
+                        # else:
+                        #     y_value = (y_min + y_max)/2
+                        #     y_min = 0.9*y_value
+                        #     y_max = 1.1*y_value
+                        #     y_ticks = np.linspace(y_min, y_max, 5)
+
+                        self.ax_3x3[i][j].set_xlim(left=x_min, right=x_max)
+                        # self.ax_3x3[i][j].set_ylim(bottom=y_min, top=y_max)
 
                     self.ax_3x3[i][j].set_xlabel("rho (kg/m^3)", fontsize=9)
                     self.ax_3x3[i][j].set_ylabel(subcategory + " (" + var_labels[i][j] + ")", labelpad=0.5, fontsize=9)
