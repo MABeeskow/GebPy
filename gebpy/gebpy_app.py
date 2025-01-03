@@ -6,7 +6,7 @@
 # Name:		gebpy_app.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0.6
-# Date:		20.12.2024
+# Date:		03.01.2025
 # License:  GPL v3.0
 
 # ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- -
@@ -82,7 +82,7 @@ class GebPyGUI(tk.Frame):
         var_screen_height = var_screen_height
 
         self.str_version_number = "1.0.6"
-        self.val_version = "GebPy: " + self.str_version_number + " - 19.12.2024"
+        self.val_version = "GebPy: " + self.str_version_number + " - 03.01.2025"
 
         ### Container
         self.gui_elements = {}
@@ -677,14 +677,16 @@ class GebPyGUI(tk.Frame):
             elif rock_group == "Igneous Rocks":
                 sub_igneous = tk.Menu(petrology_menu, tearoff=0)
                 igneous_rocks = {
-                    "Plutonic": ["Granite (Streckeisen)", "Granodiorite (Streckeisen)", "Tonalite (Streckeisen)",
-                                 "Gabbro (Streckeisen)", "Diorite (Streckeisen)", "Monzonite (Streckeisen)",
-                                 "Syenite (Streckeisen)", "Granitoid (Streckeisen)", "Quarzolite (Streckeisen)",
-                                 "Foid-bearing Syenite (Streckeisen)", "Foid-bearing Monzonite (Streckeisen)",
-                                 "Foid-bearing Monzodiorite (Streckeisen)", "Foid-bearing Monzogabbro (Streckeisen)",
-                                 "Foid Monzosyenite (Streckeisen)", "Foid Monzodiorite (Streckeisen)",
-                                 "Foid Monzogabbro (Streckeisen)", "Foidolite (Streckeisen)", "Norite (Streckeisen)",
-                                 "Monzodiorite (Streckeisen)", "Monzogabbro (Streckeisen)"],
+                    "Plutonic": [
+                        "Granite (Streckeisen)", "alpha-Granite (Streckeisen)", "beta-Granite (Streckeisen)",
+                        "Granodiorite (Streckeisen)", "Tonalite (Streckeisen)", "Gabbro (Streckeisen)",
+                        "Diorite (Streckeisen)", "Monzonite (Streckeisen)", "Syenite (Streckeisen)",
+                        "Granitoid (Streckeisen)", "Quarzolite (Streckeisen)",
+                        "Foid-bearing Syenite (Streckeisen)", "Foid-bearing Monzonite (Streckeisen)",
+                        "Foid-bearing Monzodiorite (Streckeisen)", "Foid-bearing Monzogabbro (Streckeisen)",
+                        "Foid Monzosyenite (Streckeisen)", "Foid Monzodiorite (Streckeisen)",
+                        "Foid Monzogabbro (Streckeisen)", "Foidolite (Streckeisen)", "Norite (Streckeisen)",
+                        "Monzodiorite (Streckeisen)", "Monzogabbro (Streckeisen)"],
                     "Volcanic": ["Rhyolite (Streckeisen)", "Dacite (Streckeisen)", "Trachyte (Streckeisen)",
                                  "Latite (Streckeisen)", "Andesite (Streckeisen)", "Basalt (Streckeisen)",
                                  "Phonolite (Streckeisen)", "Tephrite (Streckeisen)", "Foidite (Streckeisen)",
@@ -2995,6 +2997,22 @@ class GebPyGUI(tk.Frame):
                     self.gui_variables["Entry"]["Porosity Min"].get()/100,
                     self.gui_variables["Entry"]["Porosity Max"].get()/100]).create_plutonic_rock_streckeisen(
                 rock="Granite", number=self.gui_variables["Entry"]["Number Datapoints"].get(),
+                porosity=[self.gui_variables["Entry"]["Porosity Min"].get()/100,
+                          self.gui_variables["Entry"]["Porosity Max"].get()/100])
+        elif var_name == "alpha-Granite (Streckeisen)":
+            data = Plutonic(
+                fluid="water", actualThickness=0, dict_output=True, porosity=[
+                    self.gui_variables["Entry"]["Porosity Min"].get()/100,
+                    self.gui_variables["Entry"]["Porosity Max"].get()/100]).create_plutonic_rock_streckeisen(
+                rock="alpha-Granite", number=self.gui_variables["Entry"]["Number Datapoints"].get(),
+                porosity=[self.gui_variables["Entry"]["Porosity Min"].get()/100,
+                          self.gui_variables["Entry"]["Porosity Max"].get()/100])
+        elif var_name == "beta-Granite (Streckeisen)":
+            data = Plutonic(
+                fluid="water", actualThickness=0, dict_output=True, porosity=[
+                    self.gui_variables["Entry"]["Porosity Min"].get()/100,
+                    self.gui_variables["Entry"]["Porosity Max"].get()/100]).create_plutonic_rock_streckeisen(
+                rock="beta-Granite", number=self.gui_variables["Entry"]["Number Datapoints"].get(),
                 porosity=[self.gui_variables["Entry"]["Porosity Min"].get()/100,
                           self.gui_variables["Entry"]["Porosity Max"].get()/100])
         elif var_name == "Granodiorite (Streckeisen)":
@@ -8176,7 +8194,7 @@ class GebPyGUI(tk.Frame):
                     elif var_rock in ["Shale", "Mudstone"]:
                         if var_rock not in self.unit_sections:
                             self.unit_sections[var_rock] = {"Intervals": [], "Color": "olivedrab"}
-                    elif var_rock in ["Granite", "Gabbro", "Diorite"]:
+                    elif var_rock in ["Granite", "alpha-Granite", "beta-Granite", "Gabbro", "Diorite"]:
                         if var_rock not in self.unit_sections:
                             self.unit_sections[var_rock] = {"Intervals": [], "Color": "darkorange"}
                     elif var_rock == "Kupferschiefer":
@@ -8518,7 +8536,7 @@ class GebPyGUI(tk.Frame):
                     units_sorted[-1].append("tan")
                 elif rock in ["Shale", "Mudstone"]:
                     units_sorted[-1].append("olivedrab")
-                elif rock in ["Granite", "Gabbro", "Diorite"]:
+                elif rock in ["Granite", "alpha-Granite", "beta-Granite", "Gabbro", "Diorite"]:
                     units_sorted[-1].append("darkorange")
                 elif rock == "Kupferschiefer":
                     units_sorted[-1].append("gray")

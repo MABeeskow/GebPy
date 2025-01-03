@@ -6,7 +6,7 @@
 # Name:		igneous.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		20.12.2024
+# Date:		03.01.2025
 
 #-----------------------------------------------
 
@@ -789,6 +789,16 @@ class Plutonic:
                             qz_limits = [0.2, 0.6]
                             kfs_limits = [0.15, 0.8]
                             pl_limits = [0.0, 0.52]
+                            bt_limits = [0.0, 0.05]
+                        elif rock == "alpha-Granite":
+                            qz_limits = [0.2, 0.6]
+                            kfs_limits = [0.267, 0.717]
+                            pl_limits = [0.04, 0.35]
+                            bt_limits = [0.0, 0.05]
+                        elif rock == "beta-Granite":
+                            qz_limits = [0.2, 0.6]
+                            kfs_limits = [0.14, 0.517]
+                            pl_limits = [0.14, 0.65]
                             bt_limits = [0.0, 0.05]
                         elif rock == "Granodiorite":
                             qz_limits = [0.2, 0.6]
