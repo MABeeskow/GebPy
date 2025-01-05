@@ -82,7 +82,7 @@ class GebPyGUI(tk.Frame):
         var_screen_height = var_screen_height
 
         self.str_version_number = "1.0.6"
-        self.val_version = "GebPy: " + self.str_version_number + " - 03.01.2025"
+        self.val_version = "GebPy: " + self.str_version_number + " - 05.01.2025"
 
         ### Container
         self.gui_elements = {}

@@ -6,7 +6,7 @@
 # Name:		igneous.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		03.01.2025
+# Date:		05.01.2025
 
 #-----------------------------------------------
 
@@ -792,13 +792,13 @@ class Plutonic:
                             bt_limits = [0.0, 0.05]
                         elif rock == "alpha-Granite":
                             qz_limits = [0.2, 0.6]
-                            kfs_limits = [0.267, 0.717]
-                            pl_limits = [0.04, 0.35]
+                            kfs_limits = [0.25, 0.725]
+                            pl_limits = [0.04, 0.275]
                             bt_limits = [0.0, 0.05]
                         elif rock == "beta-Granite":
                             qz_limits = [0.2, 0.6]
-                            kfs_limits = [0.14, 0.517]
-                            pl_limits = [0.14, 0.65]
+                            kfs_limits = [0.15, 0.525]
+                            pl_limits = [0.15, 0.525]
                             bt_limits = [0.0, 0.05]
                         elif rock == "Granodiorite":
                             qz_limits = [0.2, 0.6]
@@ -909,18 +909,42 @@ class Plutonic:
 
                         if upper_streckeisen == True:
                             phi_qz = round(rd.uniform(qz_limits[0], qz_limits[1]), 4)
-                            phi_kfs = round(rd.uniform(kfs_limits[0], (1.0 - phi_qz)), 4)
-                            phi_pl = round(rd.uniform(0.0, (1.0 - phi_qz - phi_kfs)), 4)
+                            if rock not in ["alpha-Granite", "beta-Granite", "Granite"]:
+                                phi_kfs = round(rd.uniform(kfs_limits[0], (1.0 - phi_qz)), 4)
+                                phi_pl = round(rd.uniform(0.0, (1.0 - phi_qz - phi_kfs)), 4)
+                            else:
+                                if rock == "alpha-Granite":
+                                    limit_upper_pl = (-1.823*10**(-1)*phi_qz**3 + 2.5*10**(-1)*phi_qz**2 -
+                                                      4.177*10**(-1)*phi_qz + 3.5*10**(-1))
+                                    limit_lower_pl = (-1.823*10**(-1)*phi_qz**3 + 2.5*10**(-1)*phi_qz**2 -
+                                                      1.677*10**(-1)*phi_qz + 1.0*10**(-1))
+                                    phi_pl = round(rd.uniform(limit_lower_pl, limit_upper_pl), 4)
+                                    phi_kfs = round(rd.uniform(kfs_limits[0], (1.0 - phi_qz - phi_pl)), 4)
+                                elif rock == "beta-Granite":
+                                    limit_upper_pl = (1.823*10**(-1)*phi_qz**3 - 2.5*10**(-1)*phi_qz**2 -
+                                                      5.823*10**(-1)*phi_qz + 6.5*10**(-1))
+                                    limit_lower_pl = (-1.823*10**(-1)*phi_qz**3 + 2.5*10**(-1)*phi_qz**2 -
+                                                      4.177*10**(-1)*phi_qz + 3.5*10**(-1))
+                                    phi_pl = round(rd.uniform(limit_lower_pl, limit_upper_pl), 4)
+                                    phi_kfs = round(rd.uniform(kfs_limits[0], (1.0 - phi_qz - phi_pl)), 4)
+                                elif rock == "Granite":
+                                    limit_upper_pl = (1.823*10**(-1)*phi_qz**3 - 2.5*10**(-1)*phi_qz**2 -
+                                                      5.823*10**(-1)*phi_qz + 6.5*10**(-1))
+                                    limit_lower_pl = (-1.823*10**(-1)*phi_qz**3 + 2.5*10**(-1)*phi_qz**2 -
+                                                      1.677*10**(-1)*phi_qz + 1.0*10**(-1))
+                                    phi_pl = round(rd.uniform(limit_lower_pl, limit_upper_pl), 4)
+                                    phi_kfs = round(rd.uniform(kfs_limits[0], (1.0 - phi_qz - phi_pl)), 4)
+
                             phi_bt = round(1 - phi_qz - phi_kfs - phi_pl, 4)
                             phi_total = phi_qz + phi_kfs + phi_pl + phi_bt
-                            #
+
                             if np.isclose(phi_total, 1.0000) == True:
                                 if qz_limits[0] <= phi_qz <= qz_limits[1] \
                                         and kfs_limits[0] <= phi_kfs <= kfs_limits[1] \
                                         and pl_limits[0] <= phi_pl <= pl_limits[1] \
                                         and bt_limits[0] <= phi_bt <= bt_limits[1]:
                                     condition_2 = True
-                            #
+
                         elif upper_streckeisen == False:
                             phi_nph = round(rd.uniform(nph_limits[0], nph_limits[1]), 4)
                             phi_kfs = round(rd.uniform(kfs_limits[0], (1.0 - phi_nph)), 4)
