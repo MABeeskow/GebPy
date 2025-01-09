@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="latin-1") as f:
 
 setup(
     name="gebpy",
-    version="1.0.6",
+    version="1.0.7",
     packages=find_packages(),
     url="https://github.com/MABeeskow/GebPy",
     license="LGPL-3.0",

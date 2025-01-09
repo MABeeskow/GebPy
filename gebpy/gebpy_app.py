@@ -48,6 +48,7 @@ try:
     # Sequence Stratigraphy
     from gebpy.modules.series import Muschelkalk, Zechstein, Buntsandstein
     from gebpy.modules.petrophysics import SeismicVelocities
+    from gebpy.modules.geophysics import Seismology
 except:
     from modules.gui_elements import SimpleElements
     from modules.oxides import Oxides
@@ -8513,7 +8514,10 @@ class GebPyGUI(tk.Frame):
             step_depth = 100
         elif max_thickness > 1500:
             step_depth = 200
-        #
+
+        data_seismic = Seismology().create_seismic_trace_new(data_reflection=self.rock_data["All Rocks"]["Physics"][
+            "RC"])
+
         self.fig, (self.ax1, self.ax2, self.ax3, self.ax4, self.ax5, self.ax6, self.ax7) = plt.subplots(
             1, 7, sharey="row", gridspec_kw={"wspace": 0.25}, figsize=(12, 24),
             facecolor=self.colors_gebpy["Background"])
@@ -8614,13 +8618,25 @@ class GebPyGUI(tk.Frame):
         plt.gca().invert_yaxis()
         plt.rc('axes', axisbelow=True)
         # 6
-        RC = np.asarray(self.rock_data["All Rocks"]["Physics"]["RC"])
-        self.ax6.plot(RC, self.stratigraphy_data["Top"], color="#006165", linewidth=2)
-        self.ax6.set_xlabel("RC (-)")
-        self.ax6.set_xlim(-0.5, 0.5)
-        self.ax6.set_xticks(np.around(np.linspace(-0.5, 0.5, 3, endpoint=True), decimals=1))
+        # RC = np.asarray(self.rock_data["All Rocks"]["Physics"]["RC"])
+        # self.ax6.plot(RC, self.stratigraphy_data["Top"], color="#006165", linewidth=2)
+        # self.ax6.set_xlabel("RC (-)")
+        # self.ax6.set_xlim(-0.5, 0.5)
+        # self.ax6.set_xticks(np.around(np.linspace(-0.5, 0.5, 3, endpoint=True), decimals=1))
+        # self.ax6.set_ylim(0, max_thickness)
+        # self.ax6.set_yticks(np.arange(0, max_thickness+step_depth, step_depth))
+        # self.ax6.grid(color="grey", linestyle="dashed")
+        # self.ax6.minorticks_on()
+        # plt.gca().invert_yaxis()
+        # plt.rc('axes', axisbelow=True)
+        self.ax6.plot(data_seismic, self.stratigraphy_data["Top"], color="black", linewidth=1)
+        self.ax6.fill_betweenx(self.stratigraphy_data["Top"], 0.0, data_seismic, where=(data_seismic > 0.0),
+                               color="royalblue")
+        self.ax6.fill_betweenx(self.stratigraphy_data["Top"], 0.0, data_seismic, where=(data_seismic < 0.0),
+                               color="indianred")
+        self.ax6.set_xlabel("Seismic trace")
         self.ax6.set_ylim(0, max_thickness)
-        self.ax6.set_yticks(np.arange(0, max_thickness+step_depth, step_depth))
+        self.ax6.set_yticks(np.arange(0, max_thickness + step_depth, step_depth))
         self.ax6.grid(color="grey", linestyle="dashed")
         self.ax6.minorticks_on()
         plt.gca().invert_yaxis()
@@ -8685,12 +8701,12 @@ class GebPyGUI(tk.Frame):
         self.ax7.margins(0.3, 0.0)
         plt.gca().invert_yaxis()
         plt.rc("axes", axisbelow=True)
-        self.ax7.legend(handles=legend_lithology, loc="lower left", bbox_to_anchor=(0, -0.125), shadow=False, ncol=2,
+        self.ax7.legend(handles=legend_lithology, loc="lower left", bbox_to_anchor=(-0.25, -0.125), shadow=False, ncol=2,
                         prop={'size': 7}, frameon=False)
         # #plt.tight_layout()
 
         self.canvas = FigureCanvasTkAgg(self.fig, master=self.parent)
-        self.canvas.get_tk_widget().grid(row=0, column=81, rowspan=self.n_rows, columnspan=self.n_columns - 80,
+        self.canvas.get_tk_widget().grid(row=0, column=82, rowspan=self.n_rows, columnspan=self.n_columns - 81,
                                          sticky="nesw")
         self.canvas.draw()
 #

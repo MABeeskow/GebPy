@@ -6,7 +6,7 @@
 # Name:		geophysics.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		06.12.2022
+# Date:		09.01.2025
 
 #-----------------------------------------------
 
@@ -185,6 +185,20 @@ class Seismology:
         wavelet = signal.ricker(points, width)
         data = signal.convolve(reflection, wavelet, mode="same")
         #
+        return data
+
+    def create_seismic_trace_new(self, data_reflection):
+        """Returns an array that contains the seismic trace based on the input data.
+        **Arguments**:
+            data_reflection: array, list of reflection coefficient values
+        **Outputs**:
+            data: array of seismic trace values
+        """
+        points = len(data_reflection)
+        width = points/100
+        wavelet = signal.ricker(points, width)
+        data = signal.convolve(data_reflection, wavelet, mode="same")
+
         return data
 #
 class Mixing:
