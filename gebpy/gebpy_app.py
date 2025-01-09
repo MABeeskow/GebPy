@@ -5,8 +5,8 @@
 
 # Name:		gebpy_app.py
 # Author:	Maximilian A. Beeskow
-# Version:	1.0.6
-# Date:		03.01.2025
+# Version:	1.0.7
+# Date:		09.01.2025
 # License:  GPL v3.0
 
 # ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- -
@@ -81,8 +81,8 @@ class GebPyGUI(tk.Frame):
         var_screen_width = var_screen_width
         var_screen_height = var_screen_height
 
-        self.str_version_number = "1.0.6"
-        self.val_version = "GebPy: " + self.str_version_number + " - 05.01.2025"
+        self.str_version_number = "1.0.7"
+        self.val_version = "GebPy: " + self.str_version_number + " - 09.01.2025"
 
         ### Container
         self.gui_elements = {}
@@ -3468,7 +3468,7 @@ class GebPyGUI(tk.Frame):
             categories.append("compounds")
 
         for category in categories:
-            if category in ["rho", "rho_s", "vP", "vS", "vP/vS", "K", "G", "E", "nu", "GR", "PE"]:
+            if category in ["rho", "rho_s", "vP", "vS", "vP/vS", "K", "G", "E", "nu", "GR", "PE", "AI", "RC"]:
                 self.data_rock[category] = data[category]
                 self.rock_data[category] = data[category]
             elif category in ["mineralogy", "chemistry", "compounds"]:
@@ -7919,7 +7919,7 @@ class GebPyGUI(tk.Frame):
             for rock in list_rocks:
                 self.rock_data[rock] = {
                     "Physics": {"rho": [], "rho_s": [], "phi": [], "vP": [], "vS": [], "vPvS": [], "K": [], "G": [],
-                                "E": [], "v": [], "GR": [], "PE": []},
+                                "E": [], "v": [], "GR": [], "PE": [], "AI": [], "RC": []},
                     "Mineralogy": {}, "Chemistry": {}}
             #
             self.stratigraphy_data = {"Lithology": [], "Bottom": [], "Top": [], "Thickness": []}
@@ -8000,7 +8000,7 @@ class GebPyGUI(tk.Frame):
             for rock in list_rocks:
                 self.rock_data[rock] = {
                     "Physics": {"rho": [], "rho_s": [], "phi": [], "vP": [], "vS": [], "vPvS": [], "K": [], "G": [],
-                                "E": [], "v": [], "GR": [], "PE": []},
+                                "E": [], "v": [], "GR": [], "PE": [], "AI": [], "RC": []},
                     "Mineralogy": {}, "Chemistry": {}}
             #
             self.stratigraphy_data = {"Lithology": [], "Bottom": [], "Top": [], "Thickness": []}
@@ -8071,7 +8071,7 @@ class GebPyGUI(tk.Frame):
             for rock in list_rocks:
                 self.rock_data[rock] = {
                     "Physics": {"rho": [], "rho_s": [], "phi": [], "vP": [], "vS": [], "vPvS": [], "K": [], "G": [],
-                                "E": [], "v": [], "GR": [], "PE": []},
+                                "E": [], "v": [], "GR": [], "PE": [], "AI": [], "RC": []},
                     "Mineralogy": {}, "Chemistry": {}}
             #
             self.stratigraphy_data = {"Lithology": [], "Bottom": [], "Top": [], "Thickness": []}
@@ -8181,6 +8181,7 @@ class GebPyGUI(tk.Frame):
         self.unit_sections = {}
         #
         n = 0
+        list_rocks = []
         for index, item in enumerate(data_units):
             for key, subitem in item.items():
                 var_rock = subitem["rock"]
@@ -8188,6 +8189,9 @@ class GebPyGUI(tk.Frame):
                 var_elements_list = list(subitem["chemistry"].keys())
                 #
                 if var_rock != "All Rocks":
+                    if var_rock not in list_rocks:
+                        list_rocks.append(var_rock)
+
                     if var_rock == "Sandstone":
                         if var_rock not in self.unit_sections:
                             self.unit_sections[var_rock] = {"Intervals": [], "Color": "tan"}
@@ -8248,7 +8252,8 @@ class GebPyGUI(tk.Frame):
                     self.rock_data[var_rock]["Physics"]["v"].extend(subitem["nu"])
                     self.rock_data[var_rock]["Physics"]["GR"].extend(subitem["GR"])
                     self.rock_data[var_rock]["Physics"]["PE"].extend(subitem["PE"])
-                    #
+                    self.rock_data[var_rock]["Physics"]["AI"].extend(subitem["rho"]*subitem["vP"])
+
                     self.rock_data["All Rocks"]["Physics"]["rho"].extend(subitem["rho"])
                     self.rock_data["All Rocks"]["Physics"]["rho_s"].extend(subitem["rho_s"])
                     self.rock_data["All Rocks"]["Physics"]["phi"].extend(subitem["phi"])
@@ -8261,33 +8266,107 @@ class GebPyGUI(tk.Frame):
                     self.rock_data["All Rocks"]["Physics"]["v"].extend(subitem["nu"])
                     self.rock_data["All Rocks"]["Physics"]["GR"].extend(subitem["GR"])
                     self.rock_data["All Rocks"]["Physics"]["PE"].extend(subitem["PE"])
+                    self.rock_data["All Rocks"]["Physics"]["AI"].extend(subitem["rho"]*subitem["vP"])
                 except:
-                    self.rock_data[var_rock]["Physics"]["rho"].append(subitem["rho"])
-                    self.rock_data[var_rock]["Physics"]["rho_s"].append(subitem["rho_s"])
-                    self.rock_data[var_rock]["Physics"]["phi"].append(subitem["phi"])
-                    self.rock_data[var_rock]["Physics"]["vP"].append(subitem["vP"])
-                    self.rock_data[var_rock]["Physics"]["vS"].append(subitem["vS"])
-                    self.rock_data[var_rock]["Physics"]["vPvS"].append(subitem["vP/vS"])
-                    self.rock_data[var_rock]["Physics"]["K"].append(subitem["K"])
-                    self.rock_data[var_rock]["Physics"]["G"].append(subitem["G"])
-                    self.rock_data[var_rock]["Physics"]["E"].append(subitem["E"])
-                    self.rock_data[var_rock]["Physics"]["v"].append(subitem["nu"])
-                    self.rock_data[var_rock]["Physics"]["GR"].append(subitem["GR"])
-                    self.rock_data[var_rock]["Physics"]["PE"].append(subitem["PE"])
-                    #
-                    self.rock_data["All Rocks"]["Physics"]["rho"].append(subitem["rho"])
-                    self.rock_data["All Rocks"]["Physics"]["rho_s"].append(subitem["rho_s"])
-                    self.rock_data["All Rocks"]["Physics"]["phi"].append(subitem["phi"])
-                    self.rock_data["All Rocks"]["Physics"]["vP"].append(subitem["vP"])
-                    self.rock_data["All Rocks"]["Physics"]["vS"].append(subitem["vS"])
-                    self.rock_data["All Rocks"]["Physics"]["vPvS"].append(subitem["vP/vS"])
-                    self.rock_data["All Rocks"]["Physics"]["K"].append(subitem["K"])
-                    self.rock_data["All Rocks"]["Physics"]["G"].append(subitem["G"])
-                    self.rock_data["All Rocks"]["Physics"]["E"].append(subitem["E"])
-                    self.rock_data["All Rocks"]["Physics"]["v"].append(subitem["nu"])
-                    self.rock_data["All Rocks"]["Physics"]["GR"].append(subitem["GR"])
-                    self.rock_data["All Rocks"]["Physics"]["PE"].append(subitem["PE"])
-                    #
+                    if type(subitem["rho"]) == list:
+                        value_rho = subitem["rho"][0]
+                    else:
+                        value_rho = subitem["rho"]
+
+                    if type(subitem["rho_s"]) == list:
+                        value_rho_s = subitem["rho_s"][0]
+                    else:
+                        value_rho_s = subitem["rho_s"]
+
+                    if type(subitem["phi"]) == list:
+                        value_phi = subitem["phi"][0]
+                    else:
+                        value_phi = subitem["phi"]
+
+                    if type(subitem["vP"]) == list:
+                        value_vp = subitem["vP"][0]
+                    else:
+                        value_vp = subitem["vP"]
+
+                    if type(subitem["vS"]) == list:
+                        value_vs = subitem["vS"][0]
+                    else:
+                        value_vs = subitem["vS"]
+
+                    if type(subitem["vP/vS"]) == list:
+                        value_vpvs = subitem["vP/vS"][0]
+                    else:
+                        value_vpvs = subitem["vP/vS"]
+
+                    if type(subitem["K"]) == list:
+                        value_k = subitem["K"][0]
+                    else:
+                        value_k = subitem["K"]
+
+                    if type(subitem["G"]) == list:
+                        value_g = subitem["G"][0]
+                    else:
+                        value_g = subitem["G"]
+
+                    if type(subitem["E"]) == list:
+                        value_e = subitem["E"][0]
+                    else:
+                        value_e = subitem["E"]
+
+                    if type(subitem["nu"]) == list:
+                        value_v = subitem["nu"][0]
+                    else:
+                        value_v = subitem["nu"]
+
+                    if type(subitem["GR"]) == list:
+                        value_gr = subitem["GR"][0]
+                    else:
+                        value_gr = subitem["GR"]
+
+                    if type(subitem["PE"]) == list:
+                        value_pe = subitem["PE"][0]
+                    else:
+                        value_pe = subitem["PE"]
+
+                    value_ai = value_rho*value_vp
+
+                    if n == 1:
+                        last_value_ai = 0
+                    else:
+                        last_value_ai = self.rock_data["All Rocks"]["Physics"]["AI"][-1]
+
+                    value_rc = (value_ai - last_value_ai)/(value_ai + last_value_ai)
+
+                    self.rock_data[var_rock]["Physics"]["rho"].append(value_rho)
+                    self.rock_data[var_rock]["Physics"]["rho_s"].append(value_rho_s)
+                    self.rock_data[var_rock]["Physics"]["phi"].append(value_phi)
+                    self.rock_data[var_rock]["Physics"]["vP"].append(value_vp)
+                    self.rock_data[var_rock]["Physics"]["vS"].append(value_vs)
+                    self.rock_data[var_rock]["Physics"]["vPvS"].append(value_vpvs)
+                    self.rock_data[var_rock]["Physics"]["K"].append(value_k)
+                    self.rock_data[var_rock]["Physics"]["G"].append(value_g)
+                    self.rock_data[var_rock]["Physics"]["E"].append(value_e)
+                    self.rock_data[var_rock]["Physics"]["v"].append(value_v)
+                    self.rock_data[var_rock]["Physics"]["GR"].append(value_gr)
+                    self.rock_data[var_rock]["Physics"]["PE"].append(value_pe)
+                    self.rock_data[var_rock]["Physics"]["AI"].append(value_ai)
+                    self.rock_data[var_rock]["Physics"]["RC"].append(value_rc)
+
+                    self.rock_data["All Rocks"]["Physics"]["rho"].append(value_rho)
+                    self.rock_data["All Rocks"]["Physics"]["rho_s"].append(value_rho_s)
+                    self.rock_data["All Rocks"]["Physics"]["phi"].append(value_phi)
+                    self.rock_data["All Rocks"]["Physics"]["vP"].append(value_vp)
+                    self.rock_data["All Rocks"]["Physics"]["vS"].append(value_vs)
+                    self.rock_data["All Rocks"]["Physics"]["vPvS"].append(value_vpvs)
+                    self.rock_data["All Rocks"]["Physics"]["K"].append(value_k)
+                    self.rock_data["All Rocks"]["Physics"]["G"].append(value_g)
+                    self.rock_data["All Rocks"]["Physics"]["E"].append(value_e)
+                    self.rock_data["All Rocks"]["Physics"]["v"].append(value_v)
+                    self.rock_data["All Rocks"]["Physics"]["GR"].append(value_gr)
+                    self.rock_data["All Rocks"]["Physics"]["PE"].append(value_pe)
+                    self.rock_data["All Rocks"]["Physics"]["AI"].append(value_ai)
+                    self.rock_data["All Rocks"]["Physics"]["RC"].append(value_rc)
+
                 ## Mineralogy
                 for mineral in var_minerals_list:
                     if mineral not in self.rock_data[var_rock]["Mineralogy"]:
@@ -8326,7 +8405,11 @@ class GebPyGUI(tk.Frame):
                         except:
                             self.rock_data[var_rock]["Chemistry"][element].append(subitem["chemistry"][element])
                             self.rock_data["All Rocks"]["Chemistry"][element].append(subitem["chemistry"][element])
-        #
+
+        # Adjustments
+        self.rock_data[list_rocks[0]]["Physics"]["RC"][0] = 0
+        self.rock_data["All Rocks"]["Physics"]["RC"][0] = 0
+
         ## TREE VIEW
         categories = ["rho (kg/m\u00B3)", "phi (%)", "vP (m/s)", "vS (m/s)", "vP/vS (1)", "K (GPa)", "G (GPa)",
                       "E (GPa)", "nu (1)", "GR (API)", "PE (barns/e\u207B)"]
@@ -8356,20 +8439,20 @@ class GebPyGUI(tk.Frame):
         if len(self.tv_strat_results.get_children()) > 0:
             for item in self.tv_strat_results.get_children():
                 self.tv_strat_results.delete(item)
-        #
+
         categories = ["rho (kg/m\u00B3)", "phi (%)", "vP (m/s)", "vS (m/s)", "vP/vS (1)", "K (GPa)", "G (GPa)",
                       "E (GPa)", "nu (1)", "GR (API)", "PE (barns/e\u207B)"]
         categories_short = ["rho", "phi", "vP", "vS", "vPvS", "K", "G", "E", "v", "GR", "PE"]
-        #
+
         for index, category in enumerate(categories):
             entries = [category]
-            #
+
             n_digits = 2
             if categories_short[index] == "phi":
                 var_factor = 100
             else:
                 var_factor = 1
-                #
+
             var_entr_min = round(
                 var_factor*min(self.rock_data[var_opt]["Physics"][categories_short[index]]), n_digits)
             var_entr_max = round(
@@ -8378,14 +8461,14 @@ class GebPyGUI(tk.Frame):
                 var_factor*np.mean(self.rock_data[var_opt]["Physics"][categories_short[index]]), n_digits)
             var_entr_error = round(
                 var_factor*np.std(self.rock_data[var_opt]["Physics"][categories_short[index]], ddof=1), n_digits)
-            #
+
             entries.extend([var_entr_min, var_entr_max, var_entr_mean, var_entr_error])
-            #
+
             self.tv_strat_results.insert("", tk.END, values=entries)
-        #
+
         entries = ["-", "-", "-", "-", "-"]
         self.tv_strat_results.insert("", tk.END, values=entries)
-        #
+
         for mineral, dataset in self.rock_data[var_opt]["Mineralogy"].items():
             entries = [str(mineral)+str(" (%)")]
             #
@@ -8431,8 +8514,8 @@ class GebPyGUI(tk.Frame):
         elif max_thickness > 1500:
             step_depth = 200
         #
-        self.fig, (self.ax1, self.ax2, self.ax3, self.ax4, self.ax5) = plt.subplots(
-            1, 5, sharey="row", gridspec_kw={"wspace": 0.25}, figsize=(12, 24),
+        self.fig, (self.ax1, self.ax2, self.ax3, self.ax4, self.ax5, self.ax6, self.ax7) = plt.subplots(
+            1, 7, sharey="row", gridspec_kw={"wspace": 0.25}, figsize=(12, 24),
             facecolor=self.colors_gebpy["Background"])
         self.fig.subplots_adjust(wspace=0.25)
         # 1
@@ -8518,7 +8601,31 @@ class GebPyGUI(tk.Frame):
         self.ax4.grid(color="grey", linestyle="dashed")
         plt.gca().invert_yaxis()
         plt.rc("axes", axisbelow=True)
-        # # 5
+        # 5
+        AI = np.asarray(self.rock_data["All Rocks"]["Physics"]["AI"])/10**6
+        self.ax5.plot(AI, self.stratigraphy_data["Top"], color="#006165", linewidth=2)
+        self.ax5.set_xlabel("AI (kNs/m$^3$)")
+        self.ax5.set_xlim(0, 25)
+        self.ax5.set_xticks(np.around(np.linspace(0, 25, 6, endpoint=True), decimals=0))
+        self.ax5.set_ylim(0, max_thickness)
+        self.ax5.set_yticks(np.arange(0, max_thickness+step_depth, step_depth))
+        self.ax5.grid(color="grey", linestyle="dashed")
+        self.ax5.minorticks_on()
+        plt.gca().invert_yaxis()
+        plt.rc('axes', axisbelow=True)
+        # 6
+        RC = np.asarray(self.rock_data["All Rocks"]["Physics"]["RC"])
+        self.ax6.plot(RC, self.stratigraphy_data["Top"], color="#006165", linewidth=2)
+        self.ax6.set_xlabel("RC (-)")
+        self.ax6.set_xlim(-0.5, 0.5)
+        self.ax6.set_xticks(np.around(np.linspace(-0.5, 0.5, 3, endpoint=True), decimals=1))
+        self.ax6.set_ylim(0, max_thickness)
+        self.ax6.set_yticks(np.arange(0, max_thickness+step_depth, step_depth))
+        self.ax6.grid(color="grey", linestyle="dashed")
+        self.ax6.minorticks_on()
+        plt.gca().invert_yaxis()
+        plt.rc('axes', axisbelow=True)
+        # 7
         if self.unit_sections == None:
             n_units = []
             units_sorted = []
@@ -8558,7 +8665,7 @@ class GebPyGUI(tk.Frame):
                                                        label=units_sorted[i][0]))
             for i in range(len(n_units)):
                 for j in range(1, len(units_sorted[i])-1):
-                    self.ax5.hist(x=np.linspace(units_sorted[i][j][0], units_sorted[i][j][1]), bins=len(n_units),
+                    self.ax7.hist(x=np.linspace(units_sorted[i][j][0], units_sorted[i][j][1]), bins=len(n_units),
                                   color=units_sorted[i][-1], orientation="horizontal")
         else:
             n_units = len(self.unit_sections)
@@ -8568,20 +8675,20 @@ class GebPyGUI(tk.Frame):
                     mpatches.Patch(facecolor=value["Color"], edgecolor="black", hatch="", label=key))
             for key, value in self.unit_sections.items():
                 for interval in value["Intervals"]:
-                    self.ax5.hist(x=np.linspace(interval[0], interval[1]), bins=n_units,
+                    self.ax7.hist(x=np.linspace(interval[0], interval[1]), bins=n_units,
                                   color=value["Color"], orientation="horizontal")
-        self.ax5.set_xlabel("Lithology")
-        self.ax5.set_xlim(0, 5)
-        self.ax5.set_xticks([])
-        self.ax5.set_ylim(0, max_thickness)
-        self.ax5.set_yticks(np.arange(0, max_thickness+step_depth, step_depth))
-        self.ax5.margins(0.3, 0.0)
+        self.ax7.set_xlabel("Lithology")
+        self.ax7.set_xlim(0, 5)
+        self.ax7.set_xticks([])
+        self.ax7.set_ylim(0, max_thickness)
+        self.ax7.set_yticks(np.arange(0, max_thickness+step_depth, step_depth))
+        self.ax7.margins(0.3, 0.0)
         plt.gca().invert_yaxis()
         plt.rc("axes", axisbelow=True)
-        self.ax5.legend(handles=legend_lithology, loc="lower left", bbox_to_anchor=(0, -0.125), shadow=False, ncol=2,
+        self.ax7.legend(handles=legend_lithology, loc="lower left", bbox_to_anchor=(0, -0.125), shadow=False, ncol=2,
                         prop={'size': 7}, frameon=False)
         # #plt.tight_layout()
-        #
+
         self.canvas = FigureCanvasTkAgg(self.fig, master=self.parent)
         self.canvas.get_tk_widget().grid(row=0, column=81, rowspan=self.n_rows, columnspan=self.n_columns - 80,
                                          sticky="nesw")
