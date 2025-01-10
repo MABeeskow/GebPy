@@ -6,7 +6,7 @@
 # File:         exploration.py
 # Description:  Contains all necessary functions that are related to mineral exploration feature
 # Author:       Maximilian Beeskow
-# Last updated: 10.09.2025
+# Last updated: 10.01.2025
 # License:      GPL v3.0
 
 # ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- -
@@ -18,6 +18,11 @@ from tkinter import filedialog
 import numpy as np
 import pandas as pd
 import os
+import matplotlib.pyplot as plt
+import matplotlib as mpl
+from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, NavigationToolbar2Tk)
+import matplotlib.patches as mpatches
+from matplotlib.figure import Figure
 # internal packages
 try:
     from gebpy.modules.gui_elements import SimpleElements
@@ -26,6 +31,7 @@ try:
     from gebpy.modules.igneous import Plutonic, Volcanic, UltraMafic, Pyroclastic
     from gebpy.modules.metamorphics import GranuliteFacies, GreenschistFacies, AmphiboliteFacies
     from gebpy.modules.ore import OreRocks
+    from gebpy.modules.geophysics import Seismology
 except:
     from modules.gui_elements import SimpleElements
     from modules.siliciclastics import SiliciclasticRocks
@@ -80,6 +86,9 @@ class ExplorationInterface:
         self.var_opt_metamorphic.set("Select metamorphic rock")
         self.var_opt_ultramafic = tk.StringVar()
         self.var_opt_ultramafic.set("Select ultramafic rock")
+        self.colors_gebpy = {
+            "Background": "#EFEFEF", "Navigation": "#252422", "Accent": "#EB5E28", "Option": "#CCC5B9",
+            "White": "#FFFFFF", "Black": "#000000", "Accent Blue": "#118AB2"}
 
     def create_subwindow_borehole_data(self):
         ## Window Settings
@@ -1154,11 +1163,12 @@ class ExplorationInterface:
 
     def create_final_dataset(self):
         data_borehole = {}
+        self.color_lithology = {}
         for borehole_id in self.list_boreholes:
             data_borehole[borehole_id] = {
                 "Lithology": [], "Top": [], "Bottom": [], "rho": [], "rho_s": [], "fluid": [], "vP": [], "vS": [],
                 "K": [], "G": [], "E": [], "nu": [], "GR": [], "PE": [], "phi": [], "mineralogy": {}, "chemistry": {},
-                "compounds": {}}
+                "compounds": {}, "AI": [], "RC": []}
             list_all_minerals = []
             list_all_elements = []
             list_all_compounds = []
@@ -1170,7 +1180,57 @@ class ExplorationInterface:
 
             for unit_id in list_units:
                 str_lithology = self.container_borehole_lithology[borehole_id][unit_id].get()
+
                 if str_lithology != "undefined":
+                    if str_lithology not in self.color_lithology:
+                        self.color_lithology[str_lithology] = {"Color": None}
+
+                        ## Sedimentary rocks
+                        # Siliciclastic rocks
+                        if str_lithology in ["Sandstone", "Siltstone"]:
+                            self.color_lithology[str_lithology] = {"Color": "tan"}
+                        elif str_lithology in ["Shale", "Mudstone"]:
+                            self.color_lithology[str_lithology] = {"Color": "olivedrab"}
+                        elif str_lithology in ["Conglomerate"]:
+                            self.color_lithology[str_lithology] = {"Color": "tan"}
+                        elif "Greywacke" in str_lithology:
+                            self.color_lithology[str_lithology] = {"Color": "tan"}
+                        # Carbonate rocks
+                        elif str_lithology in ["Limestone"]:
+                            self.color_lithology[str_lithology] = {"Color": "skyblue"}
+                        elif str_lithology in ["Limestone"]:
+                            self.color_lithology[str_lithology] = {"Color": "lightcyan"}
+                        elif str_lithology in ["Marl"]:
+                            self.color_lithology[str_lithology] = {"Color": "moccasin"}
+                        # Evaporitic rocks
+                        elif str_lithology in ["Anhydrite"]:
+                            self.color_lithology[str_lithology] = {"Color": "orchid"}
+                        elif str_lithology in ["Rock Salt"]:
+                            self.color_lithology[str_lithology] = {"Color": "lavender"}
+                        elif str_lithology in ["Potash"]:
+                            self.color_lithology[str_lithology] = {"Color": "yellowgreen"}
+                        ## Igneous rocks
+                        elif str_lithology in ["Granite", "alpha-Granite", "beta-Granite", "Gabbro", "Diorite"]:
+                            self.color_lithology[str_lithology] = {"Color": "darkorange"}
+                        ## Metamorphic rocks
+                        elif str_lithology in ["Basaltic Greenschist", "Ultramafic Greenschist", "Pelitic Greenschist",
+                                               "Greenstone"]:
+                            self.color_lithology[str_lithology] = {"Color": "darkgreen"}
+                        elif str_lithology in ["Felsic Granulite", "Mafic Granulite"]:
+                            self.color_lithology[str_lithology] = {"Color": "silver"}
+                        elif str_lithology in ["Ortho-Amphibolite"]:
+                            self.color_lithology[str_lithology] = {"Color": "teal"}
+                        ## Ore rocks
+                        elif str_lithology in [
+                            "Itabirite", "Compact Hematite", "Friable Hematite", "Goethite Hematite",
+                            "Al-rich Itabirite", "Compact Quartz Itabirite", "Friable Quartz Itabirite",
+                            "Goethite Itabirite", "Banded Iron Formation"]:
+                            self.color_lithology[str_lithology] = {"Color": "gray"}
+                        elif str_lithology in ["Bauxite"]:
+                            self.color_lithology[str_lithology] = {"Color": "peachpuff"}
+
+
+
                     dataset = self.generate_rock_data(rockname=str_lithology, test=True)
                     list_minerals = list(dataset["mineralogy"].keys())
                     list_elements = list(dataset["chemistry"].keys())
@@ -1212,13 +1272,22 @@ class ExplorationInterface:
                         str_fluid = dataset["fluid"]
                         val_vP = round(dataset["vP"][index], 3)
                         val_vS = round(dataset["vS"][index], 3)
-                        val_k = round(dataset["K"][index], 3)
-                        val_g = round(dataset["G"][index], 3)
-                        val_e = round(dataset["E"][index], 3)
+                        val_K = round(dataset["K"][index], 3)
+                        val_G = round(dataset["G"][index], 3)
+                        val_E = round(dataset["E"][index], 3)
                         val_poisson = dataset["nu"][index]
-                        val_gr = round(dataset["GR"][index], 3)
-                        val_pe = round(dataset["PE"][index], 3)
+                        val_GR = round(dataset["GR"][index], 3)
+                        val_PE = round(dataset["PE"][index], 3)
                         val_phi = dataset["phi"][index]
+                        val_AI = round(val_rho*val_vP, 3)
+
+                        if len(data_borehole[borehole_id]["AI"]) > 0:
+                            val_last_AI = data_borehole[borehole_id]["AI"][-1]
+                        else:
+                            val_last_AI = 0
+
+                        val_RC = (val_last_AI - val_AI)/(val_last_AI + val_AI)
+
                         list_minerals = list(dataset["mineralogy"].keys())
                         list_elements = list(dataset["chemistry"].keys())
                         list_compounds = list(dataset["compounds"].keys())
@@ -1231,13 +1300,19 @@ class ExplorationInterface:
                         data_borehole[borehole_id]["fluid"].append(str_fluid)
                         data_borehole[borehole_id]["vP"].append(val_vP)
                         data_borehole[borehole_id]["vS"].append(val_vS)
-                        data_borehole[borehole_id]["K"].append(val_k)
-                        data_borehole[borehole_id]["G"].append(val_g)
-                        data_borehole[borehole_id]["E"].append(val_e)
+                        data_borehole[borehole_id]["K"].append(val_K)
+                        data_borehole[borehole_id]["G"].append(val_G)
+                        data_borehole[borehole_id]["E"].append(val_E)
                         data_borehole[borehole_id]["nu"].append(val_poisson)
-                        data_borehole[borehole_id]["GR"].append(val_gr)
-                        data_borehole[borehole_id]["PE"].append(val_pe)
+                        data_borehole[borehole_id]["GR"].append(val_GR)
+                        data_borehole[borehole_id]["PE"].append(val_PE)
                         data_borehole[borehole_id]["phi"].append(val_phi)
+                        data_borehole[borehole_id]["AI"].append(val_AI)
+
+                        if len(data_borehole[borehole_id]["RC"]) > 0:
+                            data_borehole[borehole_id]["RC"].append(val_RC)
+                        else:
+                            data_borehole[borehole_id]["RC"].append(0.0)
 
                         for mineral in list_all_minerals:
                             if mineral in list_minerals:
@@ -1265,4 +1340,220 @@ class ExplorationInterface:
         return data_borehole
 
     def show_data(self):
-        data_borehole = self.create_final_dataset()
+        ## Window Settings
+        window_width = 1200
+        window_height = 800
+        var_geometry = str(window_width) + "x" + str(window_height) + "+" + str(0) + "+" + str(0)
+
+        row_min = 25
+        self.n_rows_diagram = int(window_height/row_min)
+        column_min = 20
+        self.n_columns_diagram = int(window_width/column_min)
+
+        str_title_window = "GebPy - Borehole data"
+        self.subwindow_borehole_diagrams = tk.Toplevel(self.parent)
+        self.subwindow_borehole_diagrams.title(str_title_window)
+        self.subwindow_borehole_diagrams.geometry(var_geometry)
+        self.subwindow_borehole_diagrams.resizable(False, False)
+        self.subwindow_borehole_diagrams["bg"] = self.colors["Navigation"]
+
+        for x in range(self.n_columns_diagram):
+            tk.Grid.columnconfigure(self.subwindow_borehole_diagrams, x, weight=1)
+        for y in range(self.n_rows_diagram):
+            tk.Grid.rowconfigure(self.subwindow_borehole_diagrams, y, weight=1)
+
+        # Rows
+        for i in range(0, self.n_rows_diagram):
+            self.subwindow_borehole_diagrams.grid_rowconfigure(i, minsize=row_min)
+        # Columns
+        for i in range(0, self.n_columns_diagram):
+            self.subwindow_borehole_diagrams.grid_columnconfigure(i, minsize=column_min)
+
+        self.start_row = 0
+        self.n_columns_setup = 11
+
+        ## Frames
+        SimpleElements(
+            parent=self.subwindow_borehole_diagrams, row_id=self.start_row, column_id=self.n_columns_setup + 1,
+            n_rows=self.n_rows, n_columns=self.n_columns_diagram - self.n_columns_setup - 1,
+            bg=self.colors["Background"], fg=self.colors["Background"]).create_frame()
+
+        ## Labels
+        SimpleElements(
+            parent=self.subwindow_borehole_diagrams, row_id=self.start_row, column_id=1, n_rows=1,
+            n_columns=self.n_columns_setup - 1, bg=self.colors["Navigation"], fg=self.colors["White"]).create_label(
+            text="Settings", relief=tk.FLAT, font_option="sans 12 bold", anchor_option=tk.W)
+
+        self.data_borehole = self.create_final_dataset()
+        self.show_well_log_diagram()
+
+    def show_well_log_diagram(self, borehole_id=1):
+        self.canvas = None
+        max_thickness = max(self.data_borehole[borehole_id]["Bottom"])
+
+        if max_thickness <= 100:
+            step_depth = 10
+        elif 100 < max_thickness <= 500:
+            step_depth = 50
+        elif 500 < max_thickness <= 1500:
+            step_depth = 100
+        elif max_thickness > 1500:
+            step_depth = 200
+
+        data_seismic = Seismology().create_seismic_trace_new(data_reflection=self.data_borehole[borehole_id]["RC"])
+
+        self.fig, (self.ax1, self.ax2, self.ax3, self.ax4, self.ax5, self.ax6, self.ax7) = plt.subplots(
+            1, 7, sharey="row", gridspec_kw={"wspace": 0.25}, figsize=(12, 24),
+            facecolor=self.colors_gebpy["Background"])
+        self.fig.subplots_adjust(wspace=0.25)
+        # 1
+        self.ax1.plot(self.data_borehole[borehole_id]["GR"], self.data_borehole[borehole_id]["Top"], color="#00549F",
+                      linewidth=2)
+        self.ax1.set_xlabel("GR [API]")
+        self.ax1.set_ylabel("Depth [m]")
+
+        if max(self.data_borehole[borehole_id]["GR"]) > 200:
+            self.ax1.set_xlim(-0.5, max(self.data_borehole[borehole_id]["GR"]))
+            self.ax1.set_xticks(np.arange(-0.5, max(self.data_borehole[borehole_id]["GR"]) + 200, 200))
+            self.ax1.set_xscale("symlog")
+        elif 50 < max(self.data_borehole[borehole_id]["GR"]) < 100:
+            self.ax1.set_xlim(-0.5, max(self.data_borehole[borehole_id]["GR"]))
+            self.ax1.set_xticks(np.arange(-0.5, max(self.data_borehole[borehole_id]["GR"]) + 20, 20))
+            self.ax1.set_xscale("symlog")
+        else:
+            self.ax1.set_xlim(-1, max(self.data_borehole[borehole_id]["GR"]))
+            self.ax1.set_xticks(np.arange(0, max(self.data_borehole[borehole_id]["GR"]) + 10, 10))
+
+        self.ax1.set_ylim(0, max_thickness)
+        self.ax1.set_yticks(np.arange(0, max_thickness + step_depth, step_depth))
+        self.ax1.grid(color="grey", linestyle="dashed")
+        plt.gca().invert_yaxis()
+        plt.rc("axes", axisbelow=True)
+        # 2
+        vP_edit = np.array(self.data_borehole[borehole_id]["vP"])/1000
+        vS_edit = np.array(self.data_borehole[borehole_id]["vS"])/1000
+        self.ax2.plot(vP_edit, self.data_borehole[borehole_id]["Top"], color="#00549F", linewidth=2)
+        self.ax2.set_xlabel("$v_P$ [km/s]")
+        self.ax2.set_xlim(0, max(vP_edit))
+        self.ax2.set_xticks(np.arange(0, max(vP_edit) + 2.0, 2.0))
+        self.ax2.xaxis.label.set_color("#00549F")
+        self.ax2.set_ylim(0, max_thickness)
+        self.ax2.set_yticks(np.arange(0, max_thickness + step_depth, step_depth))
+        self.ax2.grid(color="grey", linestyle="dashed")
+        self.ax2_2 = self.ax2.twiny()
+        self.ax2_2.plot(vS_edit, self.data_borehole[borehole_id]["Top"], color="#CC071E", linewidth=2)
+        self.ax2_2.set_xlabel("$v_S$ [km/s]")
+        self.ax2_2.set_xlim(0, max(vP_edit))
+        self.ax2_2.set_xticks(np.arange(0, max(vP_edit) + 2.0, 2.0))
+        self.ax2_2.minorticks_on()
+        self.ax2_2.xaxis.label.set_color("#CC071E")
+        self.ax2_2.grid(color="grey", linestyle="dashed")
+        plt.gca().invert_yaxis()
+        plt.rc("axes", axisbelow=True)
+        # # 3
+        phi_edit = np.array(self.data_borehole[borehole_id]["phi"])*100
+        self.ax3.plot(np.array(self.data_borehole[borehole_id]["rho"])/1000, self.data_borehole[borehole_id]["Top"],
+                      color="#57AB27", linewidth=2)
+        self.ax3.set_xlabel("$\\varrho$ [g/cm$^3$]")
+        self.ax3.set_xlim(1.7, 3.2)
+        self.ax3.set_xticks(np.around(np.linspace(1.7, 3.2, 4, endpoint=True), decimals=1))
+        self.ax3.xaxis.label.set_color("#57AB27")
+        self.ax3.set_ylim(0, max_thickness)
+        self.ax3.set_yticks(np.arange(0, max_thickness + step_depth, step_depth))
+        self.ax3.grid(color="grey", linestyle="dashed")
+        self.ax3_2 = self.ax3.twiny()
+        self.ax3_2.plot(phi_edit, self.data_borehole[borehole_id]["Top"], color="#00549F", linewidth=2)
+        self.ax3_2.set_xlabel("$\\varphi$ [1]")
+        self.ax3_2.set_xlim(60, -30)
+        self.ax3_2.set_xticks(np.around(np.linspace(60, -30, 6, endpoint=True), decimals=0))
+        self.ax3_2.minorticks_on()
+        self.ax3_2.xaxis.label.set_color("#00549F")
+        self.ax3_2.grid(color="grey", linestyle="dashed")
+        plt.gca().invert_yaxis()
+        plt.rc("axes", axisbelow=True)
+        # # 4
+        self.ax4.plot(self.data_borehole[borehole_id]["PE"], self.data_borehole[borehole_id]["Top"], color="#00549F",
+                      linewidth=2)
+        self.ax4.set_xlabel("PE [barns/electron]")
+
+        if max(self.data_borehole[borehole_id]["PE"]) > 10:
+            self.ax4.set_xlim(-0.5, max(self.data_borehole[borehole_id]["PE"]))
+            self.ax4.set_xticks(np.arange(-0.5, len(str(int(max(self.data_borehole[borehole_id]["PE"])))), 3))
+            self.ax4.set_xscale("symlog")
+        else:
+            self.ax4.set_xlim(0, max(self.data_borehole[borehole_id]["PE"]))
+            self.ax4.set_xticks(np.arange(0, max(self.data_borehole[borehole_id]["PE"]) + 1, 1))
+
+        self.ax4.set_ylim(0, max_thickness)
+        self.ax4.set_yticks(np.arange(0, max_thickness + step_depth, step_depth))
+        self.ax4.grid(color="grey", linestyle="dashed")
+        plt.gca().invert_yaxis()
+        plt.rc("axes", axisbelow=True)
+        # 5
+        AI = np.asarray(self.data_borehole[borehole_id]["AI"])/10**6
+        self.ax5.plot(AI, self.data_borehole[borehole_id]["Top"], color="#006165", linewidth=2)
+        self.ax5.set_xlabel("AI (kNs/m$^3$)")
+        self.ax5.set_xlim(0, 25)
+        self.ax5.set_xticks(np.around(np.linspace(0, 25, 6, endpoint=True), decimals=0))
+        self.ax5.set_ylim(0, max_thickness)
+        self.ax5.set_yticks(np.arange(0, max_thickness + step_depth, step_depth))
+        self.ax5.grid(color="grey", linestyle="dashed")
+        self.ax5.minorticks_on()
+        plt.gca().invert_yaxis()
+        plt.rc('axes', axisbelow=True)
+        # 6
+        # RC = np.asarray(self.rock_data["All Rocks"]["Physics"]["RC"])
+        # self.ax6.plot(RC, self.stratigraphy_data["Top"], color="#006165", linewidth=2)
+        # self.ax6.set_xlabel("RC (-)")
+        # self.ax6.set_xlim(-0.5, 0.5)
+        # self.ax6.set_xticks(np.around(np.linspace(-0.5, 0.5, 3, endpoint=True), decimals=1))
+        # self.ax6.set_ylim(0, max_thickness)
+        # self.ax6.set_yticks(np.arange(0, max_thickness+step_depth, step_depth))
+        # self.ax6.grid(color="grey", linestyle="dashed")
+        # self.ax6.minorticks_on()
+        # plt.gca().invert_yaxis()
+        # plt.rc('axes', axisbelow=True)
+        self.ax6.plot(data_seismic, self.data_borehole[borehole_id]["Top"], color="black", linewidth=1)
+        self.ax6.fill_betweenx(self.data_borehole[borehole_id]["Top"], 0.0, data_seismic, where=(data_seismic > 0.0),
+                               color="royalblue")
+        self.ax6.fill_betweenx(self.data_borehole[borehole_id]["Top"], 0.0, data_seismic, where=(data_seismic < 0.0),
+                               color="indianred")
+        self.ax6.set_xlabel("Seismic trace")
+        self.ax6.set_ylim(0, max_thickness)
+        self.ax6.set_yticks(np.arange(0, max_thickness + step_depth, step_depth))
+        self.ax6.grid(color="grey", linestyle="dashed")
+        self.ax6.minorticks_on()
+        plt.gca().invert_yaxis()
+        plt.rc('axes', axisbelow=True)
+        # 7
+        n_units = len(self.data_borehole[borehole_id]["Lithology"])
+        legend_lithology = []
+
+        for key, item in self.color_lithology.items():
+            legend_lithology.append(
+                mpatches.Patch(facecolor=item["Color"], edgecolor="black", hatch="", label=key))
+
+        for index, val_top in enumerate(self.data_borehole[borehole_id]["Top"]):
+            str_lithology = self.data_borehole[borehole_id]["Lithology"][index]
+            val_bottom = self.data_borehole[borehole_id]["Bottom"][index]
+            self.ax7.hist(
+                x=np.linspace(val_top, val_bottom), bins=2, color=self.color_lithology[str_lithology]["Color"],
+                orientation="horizontal")
+
+        self.ax7.set_xlabel("Lithology")
+        self.ax7.set_xlim(0, 5)
+        self.ax7.set_xticks([])
+        self.ax7.set_ylim(0, max_thickness)
+        self.ax7.set_yticks(np.arange(0, max_thickness + step_depth, step_depth))
+        self.ax7.margins(0.3, 0.0)
+        plt.gca().invert_yaxis()
+        plt.rc("axes", axisbelow=True)
+        self.ax7.legend(handles=legend_lithology, loc="lower left", bbox_to_anchor=(-0.25, -0.125), shadow=False,
+                        ncol=2, prop={'size': 7}, frameon=False)
+        # #plt.tight_layout()
+
+        self.canvas = FigureCanvasTkAgg(self.fig, master=self.subwindow_borehole_diagrams)
+        self.canvas.get_tk_widget().grid(
+            row=0, column=self.n_columns_setup + 1, rowspan=self.n_rows_diagram,
+            columnspan=self.n_columns_diagram - self.n_columns_setup - 1, sticky="nesw")
+        self.canvas.draw()
