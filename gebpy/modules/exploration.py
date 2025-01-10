@@ -6,7 +6,7 @@
 # File:         exploration.py
 # Description:  Contains all necessary functions that are related to mineral exploration feature
 # Author:       Maximilian Beeskow
-# Last updated: 20.12.2024
+# Last updated: 10.09.2025
 # License:      GPL v3.0
 
 # ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- -
@@ -84,7 +84,7 @@ class ExplorationInterface:
     def create_subwindow_borehole_data(self):
         ## Window Settings
         window_width = 1200
-        window_height = 775
+        window_height = 800
         var_geometry = str(window_width) + "x" + str(window_height) + "+" + str(0) + "+" + str(0)
 
         row_min = 25
@@ -273,6 +273,10 @@ class ExplorationInterface:
             btn_07 = SimpleElements(
                 parent=self.subwindow_borehole_data, row_id=self.start_row + 29, column_id=1, n_rows=1,
                 n_columns=self.n_columns_setup - 1, bg=self.colors["Background"],
+                fg=self.colors["Navigation"]).create_button(text="Show data", command=self.show_data)
+            btn_08 = SimpleElements(
+                parent=self.subwindow_borehole_data, row_id=self.start_row + 30, column_id=1, n_rows=1,
+                n_columns=self.n_columns_setup - 1, bg=self.colors["Background"],
                 fg=self.colors["Navigation"]).create_button(text="Export data", command=self.export_borehole_data)
             btn_02.configure(activebackground=self.colors["Accent"])
             btn_03.configure(activebackground=self.colors["Accent"])
@@ -280,6 +284,7 @@ class ExplorationInterface:
             btn_05.configure(activebackground=self.colors["Accent"])
             btn_06.configure(activebackground=self.colors["Accent"])
             btn_07.configure(activebackground=self.colors["Accent"])
+            btn_08.configure(activebackground=self.colors["Accent"])
 
             ## Entries
             self.entr_top = SimpleElements(
@@ -948,8 +953,11 @@ class ExplorationInterface:
 
                 raw_line = "BOREHOLE;UNIT;SAMPLE;TOP;BOTTOM;"
 
-    def generate_rock_data(self, rockname):
-        n_samples = self.var_entr_parts.get()
+    def generate_rock_data(self, rockname, test=False):
+        if test == False:
+            n_samples = self.var_entr_parts.get()
+        else:
+            n_samples = 1
 
         ## Sedimentary rocks
         # Siliciclastic rocks
@@ -1143,3 +1151,118 @@ class ExplorationInterface:
             rockname = "Greenstone"
 
         return rockname
+
+    def create_final_dataset(self):
+        data_borehole = {}
+        for borehole_id in self.list_boreholes:
+            data_borehole[borehole_id] = {
+                "Lithology": [], "Top": [], "Bottom": [], "rho": [], "rho_s": [], "fluid": [], "vP": [], "vS": [],
+                "K": [], "G": [], "E": [], "nu": [], "GR": [], "PE": [], "phi": [], "mineralogy": {}, "chemistry": {},
+                "compounds": {}}
+            list_all_minerals = []
+            list_all_elements = []
+            list_all_compounds = []
+
+            if self.list_units.all() == None:
+                list_units = self.dict_indices[borehole_id]
+            else:
+                list_units = self.list_units
+
+            for unit_id in list_units:
+                str_lithology = self.container_borehole_lithology[borehole_id][unit_id].get()
+                if str_lithology != "undefined":
+                    dataset = self.generate_rock_data(rockname=str_lithology, test=True)
+                    list_minerals = list(dataset["mineralogy"].keys())
+                    list_elements = list(dataset["chemistry"].keys())
+                    list_compounds = list(dataset["compounds"].keys())
+
+                    for mineral in list_minerals:
+                        if mineral not in list_all_minerals:
+                            list_all_minerals.append(mineral)
+                            data_borehole[borehole_id]["mineralogy"][mineral] = []
+
+                    for element in list_elements:
+                        if element not in list_all_elements:
+                            list_all_elements.append(element)
+                            data_borehole[borehole_id]["chemistry"][element] = []
+
+                    for compound in list_compounds:
+                        if compound not in list_all_compounds:
+                            list_all_compounds.append(compound)
+                            data_borehole[borehole_id]["compounds"][compound] = []
+
+            for unit_id in list_units:
+                str_lithology = self.container_borehole_lithology[borehole_id][unit_id].get()
+                val_top = float(self.dict_entr_top[borehole_id][unit_id].get())
+                val_bottom = float(self.dict_entr_bottom[borehole_id][unit_id].get())
+
+                if str_lithology != "undefined":
+                    dataset = self.generate_rock_data(rockname=str_lithology)
+                    n_samples = len(dataset["rho"])
+                else:
+                    n_samples = 0
+
+                if n_samples > 0:
+                    val_step = round((val_bottom - val_top)/n_samples, 2)
+                    for index in range(n_samples):
+                        val_sub_top = val_top + index*val_step
+                        val_sub_bottom = val_top + (index + 1)*val_step
+                        val_rho = round(dataset["rho"][index], 3)
+                        val_rho_s = round(dataset["rho_s"][index], 3)
+                        str_fluid = dataset["fluid"]
+                        val_vP = round(dataset["vP"][index], 3)
+                        val_vS = round(dataset["vS"][index], 3)
+                        val_k = round(dataset["K"][index], 3)
+                        val_g = round(dataset["G"][index], 3)
+                        val_e = round(dataset["E"][index], 3)
+                        val_poisson = dataset["nu"][index]
+                        val_gr = round(dataset["GR"][index], 3)
+                        val_pe = round(dataset["PE"][index], 3)
+                        val_phi = dataset["phi"][index]
+                        list_minerals = list(dataset["mineralogy"].keys())
+                        list_elements = list(dataset["chemistry"].keys())
+                        list_compounds = list(dataset["compounds"].keys())
+
+                        data_borehole[borehole_id]["Lithology"].append(str_lithology)
+                        data_borehole[borehole_id]["Top"].append(val_sub_top)
+                        data_borehole[borehole_id]["Bottom"].append(val_sub_bottom)
+                        data_borehole[borehole_id]["rho"].append(val_rho)
+                        data_borehole[borehole_id]["rho_s"].append(val_rho_s)
+                        data_borehole[borehole_id]["fluid"].append(str_fluid)
+                        data_borehole[borehole_id]["vP"].append(val_vP)
+                        data_borehole[borehole_id]["vS"].append(val_vS)
+                        data_borehole[borehole_id]["K"].append(val_k)
+                        data_borehole[borehole_id]["G"].append(val_g)
+                        data_borehole[borehole_id]["E"].append(val_e)
+                        data_borehole[borehole_id]["nu"].append(val_poisson)
+                        data_borehole[borehole_id]["GR"].append(val_gr)
+                        data_borehole[borehole_id]["PE"].append(val_pe)
+                        data_borehole[borehole_id]["phi"].append(val_phi)
+
+                        for mineral in list_all_minerals:
+                            if mineral in list_minerals:
+                                val_mineral = dataset["mineralogy"][mineral][index]
+                                data_borehole[borehole_id]["mineralogy"][mineral].append(val_mineral)
+                            else:
+                                data_borehole[borehole_id]["mineralogy"][mineral].append(0.0)
+
+                        for element in list_all_elements:
+                            if element in list_elements:
+                                val_element = dataset["chemistry"][element][index]
+                                data_borehole[borehole_id]["chemistry"][element].append(val_element)
+                            else:
+                                data_borehole[borehole_id]["chemistry"][element].append(0.0)
+
+                        for compound in list_all_compounds:
+                            if compound in list_compounds:
+                                val_compound = dataset["compounds"][compound][index]
+                                data_borehole[borehole_id]["compounds"][compound].append(val_compound)
+                            else:
+                                data_borehole[borehole_id]["compounds"][compound].append(0.0)
+                else:
+                    pass
+
+        return data_borehole
+
+    def show_data(self):
+        data_borehole = self.create_final_dataset()
