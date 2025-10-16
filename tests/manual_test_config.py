@@ -1,0 +1,14 @@
+from src.gebpy.core.minerals.config import MineralConfiguration, DEFAULT_CONFIG
+
+print("DEFAULT_CONFIG:", DEFAULT_CONFIG)
+
+cfg = MineralConfiguration("Olivine", 500)
+print("Created:", cfg)
+
+cfg.set_random_seed(None)
+print("After removing seed:", cfg)
+
+try:
+    cfg.set_number_of_datapoints(-5)
+except ValueError as e:
+    print("Caught expected error:", e)
