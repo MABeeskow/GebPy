@@ -16,7 +16,9 @@ Generates the synthetic mineral data based on the settings of the previous confi
 """
 
 # PACKAGES
+import pandas as pd
 from typing import Optional
+from functools import cached_property
 
 # MODULES
 from src.gebpy.core.minerals.config import DEFAULT_CONFIG
@@ -72,6 +74,13 @@ class MineralDataGeneration:
     list_tectosilicates = {
         "Alkali Feldspar", "Danburite", "Nepheline", "Orthoclase", "Plagioclase", "Scapolite"}
 
+    mineral_groups = {
+        "carbonates": list_carbonates, "cyclosilicates": list_cyclosilicates, "halides": list_halides,
+        "inosilicates": list_inosilicates, "miscellaneous": list_miscellaneous, "nesosilicates": list_nesosilicates,
+        "oxides": list_oxides, "phosphates": list_phosphates, "phospides": list_phospides,
+        "phyllosilicates": list_phyllosilicates, "sorosilicates": list_sorosilicates, "sulfates": list_sulfates,
+        "sulfides": list_sulfides, "tectosilicates": list_tectosilicates}
+
     def __init__(self,
                  name: Optional[str] = None,
                  n_datapoints: Optional[int] = None,
@@ -96,6 +105,36 @@ class MineralDataGeneration:
         f"random_seed={self.random_seed}>"
         )
 
+    @cached_property
+    def mineral_map(self):
+        from gebpy.modules.carbonates import Carbonates
+        from gebpy.modules.halides import Halides
+        from gebpy.modules.oxides import Oxides
+        from gebpy.modules.silicates import (
+            Cyclosilicates, Inosilicates, Nesosilicates, Phyllosilicates, Sorosilicates, Tectosilicates)
+        from gebpy.modules.phosphates import Phosphates
+        from gebpy.modules.sulfides import Sulfides
+        from gebpy.modules.sulfates import Sulfates
+        from gebpy.modules.organics import Organics
+        from gebpy.modules.phospides import Phospides
+
+        return {
+            "carbonates": Carbonates,
+            "cyclosilicates": Cyclosilicates,
+            "halides": Halides,
+            "inosilicates": Inosilicates,
+            "miscellaneous": Organics,
+            "nesosilicates": Nesosilicates,
+            "oxides": Oxides,
+            "phosphates": Phosphates,
+            "phospides": Phospides,
+            "phyllosilicates": Phyllosilicates,
+            "sorosilicates": Sorosilicates,
+            "sulfates": Sulfates,
+            "sulfides": Sulfides,
+            "tectosilicates": Tectosilicates
+        }
+
     def assign_mineral_group(self,
             name: Optional[str] = None,
             n_datapoints: Optional[int] = None
@@ -104,69 +143,55 @@ class MineralDataGeneration:
             name = self.name
             n_datapoints = self.n_datapoints
 
-        if name in self.list_carbonates:
-            from gebpy.modules.carbonates import Carbonates
-            data_mineral = Carbonates(
-                mineral=name, data_type=True, traces_list=self.trace_elements).generate_dataset(number=n_datapoints)
-        elif name in self.list_cyclosilicates:
-            from gebpy.modules.silicates import Cyclosilicates
-            data_mineral = Cyclosilicates(
-                mineral=name, data_type=True, traces_list=self.trace_elements).generate_dataset(number=n_datapoints)
-        elif name in self.list_halides:
-            from gebpy.modules.halides import Halides
-            data_mineral = Halides(
-                mineral=name, traces_list=self.trace_elements).generate_dataset(number=n_datapoints)
-        elif name in self.list_inosilicates:
-            from gebpy.modules.silicates import Inosilicates
-            data_mineral = Inosilicates(
-                mineral=name, data_type=True, traces_list=self.trace_elements).generate_dataset(number=n_datapoints)
-        elif name in self.list_miscellaneous:
-            from gebpy.modules.organics import Organics
-            data_mineral = Organics(
-                mineral=name, data_type=True, traces_list=self.trace_elements).generate_dataset(number=n_datapoints)
-        elif name in self.list_nesosilicates:
-            from gebpy.modules.silicates import Nesosilicates
-            data_mineral = Nesosilicates(
-                mineral=name, data_type=True, traces_list=self.trace_elements).generate_dataset(number=n_datapoints)
-        elif name in self.list_oxides:
-            from gebpy.modules.oxides import Oxides
-            data_mineral = Oxides(
-                mineral=name, data_type=True, traces_list=self.trace_elements).generate_dataset(number=n_datapoints)
-        elif name in self.list_phosphates:
-            from gebpy.modules.phosphates import Phosphates
-            data_mineral = Phosphates(
-                mineral=name, traces_list=self.trace_elements).generate_dataset(number=n_datapoints)
-        elif name in self.list_phospides:
-            from gebpy.modules.phospides import Phospides
-            data_mineral = Phospides(
-                mineral=name, traces_list=self.trace_elements).generate_dataset(number=n_datapoints)
-        elif name in self.list_phyllosilicates:
-            from gebpy.modules.silicates import Phyllosilicates
-            data_mineral = Phyllosilicates(
-                mineral=name, data_type=True, traces_list=self.trace_elements).generate_dataset(number=n_datapoints)
-        elif name in self.list_sorosilicates:
-            from gebpy.modules.silicates import Sorosilicates
-            data_mineral = Sorosilicates(
-                mineral=name, data_type=True, traces_list=self.trace_elements).generate_dataset(number=n_datapoints)
-        elif name in self.list_sulfates:
-            from gebpy.modules.sulfates import Sulfates
-            data_mineral = Sulfates(
-                mineral=name, traces_list=self.trace_elements).generate_dataset(number=n_datapoints)
-        elif name in self.list_sulfides:
-            from gebpy.modules.sulfides import Sulfides
-            data_mineral = Sulfides(
-                mineral=name, traces_list=self.trace_elements).generate_dataset(number=n_datapoints)
-        elif name in self.list_tectosilicates:
-            from gebpy.modules.silicates import Tectosilicates
-            data_mineral = Tectosilicates(
-                mineral=name, data_type=True, traces_list=self.trace_elements).generate_dataset(number=n_datapoints)
+        for group, list_group in self.mineral_groups.items():
+            if name in list_group:
+                cls = self.mineral_map[group]
+                return cls(mineral=name, data_type=True, traces_list=self.trace_elements).generate_dataset(
+                    number=n_datapoints)
+        raise ValueError(f"Unknown mineral '{name}'. Please check available groups.")
 
+    def generate_data(self, as_dataframe: bool = True) -> pd.DataFrame | dict:
+        data_dict = self.assign_mineral_group(self.name, self.n_datapoints)
+        if not as_dataframe:
+            return data_dict
+
+        data_mineral = self.dict_to_dataframe_fast(data_dict)
+        data_mineral = data_mineral.astype("float32", errors="ignore").round(5)
         return data_mineral
 
-    def generate_data(self):
-        data_mineral = self.assign_mineral_group(self.name, self.n_datapoints)
+    def dict_to_dataframe_fast(self, data: dict) -> pd.DataFrame:
+        """
+        Convert nested mineral dataset dictionaries (with lists and subdicts)
+        into a flat pandas DataFrame. Handles scalar values gracefully by
+        repeating them to match the maximum list length.
+        """
+        columns = {}
 
-        return data_mineral
+        # Schritt 1: maximale Listenlänge bestimmen
+        max_len = 1
+        for val in data.values():
+            if isinstance(val, dict):
+                for subval in val.values():
+                    if isinstance(subval, list):
+                        max_len = max(max_len, len(subval))
+            elif isinstance(val, list):
+                max_len = max(max_len, len(val))
+
+        # Schritt 2: flaches Dictionary aufbauen
+        for key, val in data.items():
+            if isinstance(val, dict):
+                for subkey, subval in val.items():
+                    col_name = f"{key}.{subkey}"
+                    if isinstance(subval, list):
+                        columns[col_name] = subval
+                    else:
+                        columns[col_name] = [subval] * max_len
+            elif isinstance(val, list):
+                columns[key] = val
+            else:
+                columns[key] = [val] * max_len
+
+        return pd.DataFrame(columns)
 
 # DEFAULT EXAMPLE
 data_config = DEFAULT_CONFIG
