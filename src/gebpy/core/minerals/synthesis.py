@@ -17,7 +17,7 @@ Generates the synthetic mineral data based on the settings of the previous confi
 
 # PACKAGES
 import pandas as pd
-from typing import Optional
+from typing import Optional, Union
 from functools import cached_property
 
 # MODULES
@@ -135,6 +135,9 @@ class MineralDataGeneration:
             "tectosilicates": Tectosilicates
         }
 
+    def get_all_minerals(self):
+        return self.mineral_groups
+
     def assign_mineral_group(self,
             name: Optional[str] = None,
             n_datapoints: Optional[int] = None
@@ -150,7 +153,7 @@ class MineralDataGeneration:
                     number=n_datapoints)
         raise ValueError(f"Unknown mineral '{name}'. Please check available groups.")
 
-    def generate_data(self, as_dataframe: bool = True) -> pd.DataFrame | dict:
+    def generate_data(self, as_dataframe: bool = True) -> Union[pd.DataFrame, dict]:
         data_dict = self.assign_mineral_group(self.name, self.n_datapoints)
         if not as_dataframe:
             return data_dict
