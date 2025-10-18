@@ -73,5 +73,5 @@ class MineralConfiguration:
         if self.random_seed < 0:
             raise ValueError("The random number seed must be >= 0 or None.")
 
-# DEFAULT SETTINGS
-DEFAULT_CONFIG = MineralConfiguration(name="Olivine", n_datapoints=1000)
+# DEFAULT EXAMPLE
+DEFAULT_CONFIG = MineralConfiguration(name="Olivine", n_datapoints=100)
