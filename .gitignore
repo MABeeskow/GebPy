@@ -15,3 +15,6 @@ __pycache__/
 notebooks/.ipynb_checkpoints/
 tests/.ipynb_checkpoints/
 outputs/
+
+examples/notebooks/.ipynb_checkpoints
+examples/notebooks/*.csv
