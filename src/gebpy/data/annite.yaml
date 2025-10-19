@@ -6,6 +6,14 @@ metadata:
   key: "Ann"
   crystal_system: "monoclinic"
 
+chemistry:
+  K: 1
+  Fe: 3
+  Al: 1
+  Si: 3
+  O: 12
+  H: 2
+
 physical_properties:
   K:
     value: 114.72e9

@@ -6,7 +6,7 @@
 # Name:		phyllosilicates.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		19.10.2025
+# Date:		20.10.2025
 
 #-----------------------------------------------
 
@@ -26,6 +26,7 @@ from modules.chemistry import PeriodicSystem
 from modules.geochemistry import MineralChemistry
 from modules.geophysics import WellLog as wg
 from modules.minerals import CrystalPhysics
+from src.gebpy.core.minerals.common import GeophysicalProperties, CrystallographicProperties
 
 # CODE
 class Phyllosilicates:
@@ -40,15 +41,25 @@ class Phyllosilicates:
         self.elements = {
             "H": PeriodicSystem(name="H").get_data(),
             "O": PeriodicSystem(name="O").get_data(),
+            "Mg": PeriodicSystem(name="Mg").get_data(),
             "Al": PeriodicSystem(name="Al").get_data(),
             "Si": PeriodicSystem(name="Si").get_data(),
             "K": PeriodicSystem(name="K").get_data(),
             "Fe": PeriodicSystem(name="Fe").get_data(),
         }
 
+        # Geophysics
+        self.geophysical_properties = GeophysicalProperties()
+
         # Mineral-specific data
         if self.name == "Annite":
             self.yaml_data = self._load_yaml("annite")
+        elif self.name == "Phlogopite":
+            self.yaml_data = self._load_yaml("phlogopite")
+        elif self.name == "Siderophyllite":
+            self.yaml_data = self._load_yaml("siderophyllite")
+        elif self.name == "Eastonite":
+            self.yaml_data = self._load_yaml("eastonite")
 
     def _load_yaml(self, mineral_name: str) -> dict:
         yaml_file = self.data_path / f"{mineral_name.lower()}.yaml"
@@ -71,11 +82,11 @@ class Phyllosilicates:
 
     def generate_dataset(self, number: int = 1) -> None:
         generators = {
-        "Annite": self.create_annite,
+        "Annite": self.create_mineral_data_fixed_composition,
         "Biotite": self.create_biotite,
-        "Eastonite": self.create_eastonite,
-        "Phlogopite": self.create_phlogopite,
-        "Siderophyllite": self.create_siderophyllite
+        "Eastonite": self.create_mineral_data_fixed_composition,
+        "Phlogopite": self.create_mineral_data_fixed_composition,
+        "Siderophyllite": self.create_mineral_data_fixed_composition,
         }
 
         if self.name not in generators:
@@ -83,7 +94,7 @@ class Phyllosilicates:
 
         dataset = {}
         for index in range(number):
-            self.current_seed = hash((self.random_seed, index))%(2**32)
+            self.current_seed = np.uint32(self.random_seed + index)
             data_mineral = generators[self.name]()
 
             for key, value in data_mineral.items():
@@ -105,122 +116,110 @@ class Phyllosilicates:
 
         return dataset
 
-    def create_annite(self) -> None:
+    def create_mineral_data_fixed_composition(self):
         """
-        Synthetic mineral data generation for annite.
+        Synthetic mineral data generation for an user-selected mineral.
         All mechanical properties (K, G, E) are stored in Pascals internally.
         For output, they are converted to GPa.
         """
-        # Random number generator
-        rng = np.random.default_rng(self.current_seed)
-
-        # Reading and assigning the mineral-specific information from the YAML file
-        val_key = self._get_value(self.yaml_data, ["metadata", "key"])
-        val_system = self._get_value(self.yaml_data, ["metadata", "crystal_system"])
-        val_K = self._get_value(self.yaml_data, ["physical_properties", "K"])
-        val_G = self._get_value(self.yaml_data, ["physical_properties", "G"])
-        val_a = self._get_value(self.yaml_data, ["cell_data", "a"])
-        val_b = self._get_value(self.yaml_data, ["cell_data", "b"])
-        val_c = self._get_value(self.yaml_data, ["cell_data", "c"])
-        val_beta = self._get_value(self.yaml_data, ["cell_data", "beta"])
-        val_Z = self._get_value(self.yaml_data, ["cell_data", "Z"])
-
+        name_lower = self.name.lower()
         # Chemistry
         val_state = "fixed"
         traces_data = []
-        # Major elements
-        hydrogen = self.elements["H"]
-        oxygen = self.elements["O"]
-        aluminium = self.elements["Al"]
-        silicon = self.elements["Si"]
-        potassium = self.elements["K"]
-        iron = self.elements["Fe"]
-        majors_name = ["H", "O", "Al", "Si", "K", "Fe"]
-
-        majors_data = np.array([["H", hydrogen[1], 2, hydrogen[2]], ["O", oxygen[1], 10+2, oxygen[2]],
-                                ["Al", aluminium[1], 1, aluminium[2]],
-                                ["Si", silicon[1], 3, silicon[2]], ["K", potassium[1], 1, potassium[2]],
-                                ["Fe", iron[1], 3, iron[2]]], dtype=object)
-
         # Molar mass, elemental amounts
-        molar_mass_pure = potassium[2] + 3*iron[2] + aluminium[2] + 3*silicon[2] + 10*oxygen[2] + 2*(oxygen[2]+hydrogen[2])
+        majors_data = []
+        molar_mass_pure = 0
+        for element, amount in self.yaml_data["chemistry"].items():
+            n_order = int(self.elements[element][1])
+            val_amount = int(amount)
+            molar_mass = float(self.elements[element][2])
+            majors_data.append([element, n_order, val_amount, molar_mass])
+            molar_mass_pure += val_amount*molar_mass
+        majors_data.sort(key=lambda x: x[1])
 
         if not hasattr(self, "cache"):
             self.cache = {}
-        if "annite" not in self.cache:
-            self.cache["annite"] = {
+
+        if name_lower not in self.cache:
+            vals = {}
+            for key in ["K", "G", "a", "b", "c", "beta", "Z"]:
+                vals[key] = self._get_value(self.yaml_data, ["physical_properties", key]) \
+                            if key in ["K", "G"] else \
+                            self._get_value(self.yaml_data, ["cell_data", key])
+            for key in ["key", "crystal_system"]:
+                vals[key] = self._get_value(self.yaml_data, ["metadata", key])
+
+            constr_minchem = MineralChemistry(w_traces=traces_data, molar_mass_pure=molar_mass_pure, majors=majors_data)
+
+            self.cache[name_lower] = {
                 "majors_data": majors_data,
-                "molar_mass_pure": molar_mass_pure
+                "molar_mass_pure": molar_mass_pure,
+                "constants": vals,
+                "MineralChemistry": constr_minchem
             }
         else:
-            majors_data = self.cache["annite"]["majors_data"]
+            vals = self.cache[name_lower]["constants"]
+            constr_minchem = self.cache[name_lower]["MineralChemistry"]
+            constr_electr_density = self.cache[name_lower]["const_electron_density"]
+            constr_vol = self.cache[name_lower]["constr_volume"]
+            constr_density = self.cache[name_lower]["constr_density"]
+            constr_radiation = self.cache[name_lower]["constr_radiation"]
 
-        molar_mass, amounts = MineralChemistry(w_traces=traces_data, molar_mass_pure=molar_mass_pure,
-                                               majors=majors_data).calculate_molar_mass()
+        # Reading and assigning the mineral-specific information from the YAML file
+        val_key = vals["key"]
+        val_system = vals["crystal_system"]
+        val_K = vals["K"]
+        val_G = vals["G"]
+        val_a = vals["a"]
+        val_b = vals["b"]
+        val_c = vals["c"]
+        val_beta = vals["beta"]
+        val_Z = vals["Z"]
+
+        molar_mass, amounts = constr_minchem.calculate_molar_mass()
         element = [self.elements[name] for name, *_ in amounts]
-        # Density, volume
-        dataV = CrystalPhysics([[val_a, val_b, val_c], [val_beta], val_system])
-        V = dataV.calculate_volume()
-        V_m = MineralChemistry().calculate_molar_volume(volume_cell=V, z=val_Z)
-        dataRho = CrystalPhysics([molar_mass, val_Z, V])
-        rho = dataRho.calculate_bulk_density()
-        rho_e = wg(amounts=amounts, elements=element, rho_b=rho).calculate_electron_density()
-        # Young's modulus
-        E = (9*val_K*val_G)/(3*val_K + val_G)
-        # Poisson's ratio
-        nu = (3*val_K - 2*val_G)/(2*(3*val_K + val_G))
-        # vP/vS
-        vPvS = ((val_K + 4/3*val_G)/val_G)**0.5
-        # P-wave velocity
-        vP = ((val_K + 4/3*val_G)/rho)**0.5
-        # S-wave velocity
-        vS = (val_G/rho)**0.5
-        # Gamma ray
-        gamma_ray = wg(amounts=amounts, elements=element).calculate_gr()
-        # Photoelectricity
-        pe = wg(amounts=amounts, elements=element).calculate_pe()
-        U = pe*rho_e*10**(-3)
+        # (Molar) Volume
+        if "constr_volume" not in self.cache[name_lower]:
+            constr_vol = CrystalPhysics([[val_a, val_b, val_c], [val_beta], val_system])
+            self.cache[name_lower]["constr_volume"] = constr_vol
+
+        V, V_m = CrystallographicProperties().calculate_molar_volume(
+            constr_volume=constr_vol, constr_molar_volume=constr_minchem, cell_z=val_Z)
+        # Density
+        if "constr_density" not in self.cache[name_lower]:
+            constr_density = CrystalPhysics([molar_mass, val_Z, V])
+            self.cache[name_lower]["constr_density"] = constr_density
+
+        rho = CrystallographicProperties().calculate_mineral_density(constr_density=constr_density)
+
+        if "const_electron_density" not in self.cache[name_lower]:
+            constr_electr_density = wg(amounts=amounts, elements=element, rho_b=rho)
+            self.cache[name_lower]["const_electron_density"] = constr_electr_density
+
+        rho_e = CrystallographicProperties().calculate_electron_density(constr_electron_density=constr_electr_density)
+        # Elastic properties
+        E, nu = self.geophysical_properties.calculate_elastic_properties(bulk_mod=val_K, shear_mod=val_G)
+        # Seismic properties
+        vPvS, vP, vS = self.geophysical_properties.calculate_seismic_velocities(
+            bulk_mod=val_K, shear_mod=val_G, rho=rho)
+        # Radiation properties
+        if "constr_radiation" not in self.cache[name_lower]:
+            constr_radiation = wg(amounts=amounts, elements=element)
+            self.cache[name_lower]["constr_radiation"] = constr_radiation
+
+        gamma_ray, pe, U = self.geophysical_properties.calculate_radiation_properties(
+            constr_radiation=constr_radiation, rho_electron=rho_e)
         # Electrical resistivity
         p = None
-
-        results = {}
-        results["mineral"] = val_key
-        results["state"] = val_state
-        results["M"] = molar_mass
-        element_list = np.array(amounts)[:, 0]
-        results["chemistry"] = {}
-        for index, element in enumerate(element_list, start=0):
-            results["chemistry"][element] = amounts[index][2]
-        results["rho"] = rho
-        results["rho_e"] = rho_e
-        results["V"] = V_m
-        results["vP"] = vP
-        results["vS"] = vS
-        results["vP/vS"] = vPvS
-        results["G"] = val_G*10**(-9)
-        results["K"] = val_K*10**(-9)
-        results["E"] = E*10**(-9)
-        results["nu"] = nu
-        results["GR"] = gamma_ray
-        results["PE"] = pe
-        results["U"] = U
-        if p != None:
-            results["p"] = p
-        else:
-            results["p"] = p
-
+        # Results
+        results = {
+            "mineral": val_key, "state": val_state, "M": molar_mass,
+            "chemistry": {name: val[1] for name, *val in amounts}, "rho": rho, "rho_e": rho_e, "V": V_m, "vP": vP,
+            "vS": vS, "vP/vS": vPvS, "K": val_K*10**(-9), "G": val_G*10**(-9), "E": E*10**(-9), "nu": nu,
+            "GR": gamma_ray, "PE": pe, "U": U, "p": p}
         return results
 
     def create_biotite(self) -> None:
-        pass
-
-    def create_eastonite(self) -> None:
-        pass
-
-    def create_phlogopite(self) -> None:
-        pass
-
-    def create_siderophyllite(self) -> None:
         pass
 
 # TEST

@@ -3,8 +3,16 @@ group: Phyllosilicates
 formula: KMg2Al3Si2O10(OH)2
 
 metadata:
-  key: "Sdp"
+  key: "Eas"
   crystal_system: "monoclinic"
+
+chemistry:
+  K: 1
+  Mg: 2
+  Al: 3
+  Si: 2
+  O: 12
+  H: 2
 
 physical_properties:
   K:
