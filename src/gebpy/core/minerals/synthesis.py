@@ -6,7 +6,7 @@
 # Name:		synthesis.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		18.10.2025
+# Date:		19.10.2025
 
 #-----------------------------------------------
 
@@ -149,8 +149,14 @@ class MineralDataGeneration:
         for group, list_group in self.mineral_groups.items():
             if name in list_group:
                 cls = self.mineral_map[group]
-                return cls(mineral=name, data_type=True, traces_list=self.trace_elements).generate_dataset(
-                    number=n_datapoints)
+                try:
+                    return cls(
+                        mineral=name, data_type=True, traces_list=self.trace_elements,
+                        random_seed=self.random_seed).generate_dataset(
+                        number=n_datapoints)
+                except:
+                    return cls(mineral=name, data_type=True, traces_list=self.trace_elements).generate_dataset(
+                        number=n_datapoints)
         raise ValueError(f"Unknown mineral '{name}'. Please check available groups.")
 
     def generate_data(self, as_dataframe: bool = True) -> Union[pd.DataFrame, dict]:

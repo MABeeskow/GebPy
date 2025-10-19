@@ -6,7 +6,7 @@
 # Name:		silicates.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		17.06.2024
+# Date:		19.10.2025
 
 # -----------------------------------------------
 
@@ -1065,11 +1065,14 @@ class Tectosilicates:
 class Phyllosilicates:
     """ Class that generates geophysical and geochemical data of phyllosilicate minerals"""
 
-    def __init__(self, traces_list=[], impurity="pure", data_type=False, mineral=None):
+    def __init__(self, traces_list=[], impurity="pure", data_type=False, mineral=None, random_seed=None):
         self.traces_list = traces_list
         self.impurity = impurity
         self.data_type = data_type
         self.mineral = mineral
+        self.rng = np.random.default_rng(random_seed)
+        self.random_seed = random_seed
+        self.current_seed = np.round(self.rng.uniform(0, 1000), 0)
 
         self.hydrogen = ["H", 1, 1.008]
         self.carbon = ["C", 6, 12.011]
@@ -1201,6 +1204,7 @@ class Phyllosilicates:
     def generate_dataset(self, number):
         dataset = {}
         for index in range(number):
+            self.current_seed = hash((self.random_seed, index))%(2**32)
             # Clay Minerals
             if self.mineral == "Illite":
                 #data_mineral = self.create_illite()
@@ -3284,6 +3288,8 @@ class Phyllosilicates:
             return results
 
     def create_biotite(self, enrichment=None, x_value=None, y_value=None):
+        # Random number generator
+        rng = np.random.default_rng(self.current_seed)
         # Major Elements
         majors_name = ["H", "O", "Mg", "Al", "Si", "K", "Fe"]
         # Minor elements
@@ -3297,15 +3303,15 @@ class Phyllosilicates:
             if self.impurity == "random":
                 self.traces_list = []
                 minors = minors = ["Ti", "Mn", "Mg", "Ca", "Li", "Na", "Rb", "Cs", "Cl"]
-                n = rd.randint(1, len(minors))
+                n = rng.integers(1, len(minors))
                 while len(self.traces_list) < n:
-                    selection = rd.choice(minors)
+                    selection = rng.choice(minors)
                     if selection not in self.traces_list and selection not in majors_name:
                         self.traces_list.append(selection)
                     else:
                         continue
             traces = [PeriodicSystem(name=i).get_data() for i in self.traces_list]
-            x_traces = [round(rd.uniform(0., 0.001), 6) for i in range(len(self.traces_list))]
+            x_traces = np.round(rng.uniform(0., 0.001, len(self.traces_list)), 6)
             for i in range(len(self.traces_list)):
                 traces_data.append([str(self.traces_list[i]), int(traces[i][1]), float(x_traces[i])])
             if len(traces_data) > 0:
@@ -3317,14 +3323,14 @@ class Phyllosilicates:
         while condition == False:
             if x_value == None and y_value == None:
                 if enrichment == None:
-                    x = round(rd.uniform(0, 1), 2)
-                    y = round(rd.uniform(0, 1), 2)
+                    x = np.round(rng.uniform(0, 1), 2)
+                    y = np.round(rng.uniform(0, 1), 2)
                 elif enrichment == "Na":
-                    x = round(rd.uniform(0, 1), 2)
-                    y = round(rd.uniform(0, 1), 2)
+                    x = np.round(rng.uniform(0, 1), 2)
+                    y = np.round(rng.uniform(0, 1), 2)
                 elif enrichment == "Ca":
-                    x = round(rd.uniform(0, 1), 2)
-                    y = round(rd.uniform(0, 1), 2)
+                    x = np.round(rng.uniform(0, 1), 2)
+                    y = np.round(rng.uniform(0, 1), 2)
             else:
                 x = x_value
                 y = y_value
@@ -3404,54 +3410,46 @@ class Phyllosilicates:
             else:
                 pass
 
-        # Density
-        dataV_Ann = CrystalPhysics([[5.39, 9.334, 10.29], [100], "monoclinic"])
-        V_Ann = dataV_Ann.calculate_volume()
-        Z_Ann = 2
-        V_m_Ann = MineralChemistry().calculate_molar_volume(volume_cell=V_Ann, z=Z_Ann)
-        dataRho_Ann = CrystalPhysics([molar_mass_Ann, Z_Ann, V_Ann])
-        rho_Ann = dataRho_Ann.calculate_bulk_density()
-        rho_e_Ann = wg(amounts=amounts_Ann, elements=element_Ann, rho_b=rho_Ann).calculate_electron_density()
+        # Endmember
+        endmembers = {
+            "Ann": {"data": majors_data_Ann, "M": molar_mass_pure_Ann, "V": [5.39, 9.334, 10.29], "beta": 100.0,
+                    "K": 114.72e9, "G": 58.61e9},
+            "Phl": {"data": majors_data_Phl, "M": molar_mass_pure_Phl, "V": [5.39, 9.334, 10.29], "beta": 100.0,
+                    "K": 103.78e9, "G": 61.69e9},
+            "Eas": {"data": majors_data_Eas, "M": molar_mass_pure_Eas, "V": [5.27, 9.13, 10.15], "beta": 99.54,
+                    "K": 100.44e9, "G": 62.77e9},
+            "Sdp": {"data": majors_data_Sdp, "M": molar_mass_pure_Sdp, "V": [5.369, 9.297, 10.268], "beta": 100.06,
+                    "K": 110.91e9, "G": 59.61e9}
+        }
+        # Density, volume, elastic parameters
+        results_sub = {}
+        for key, data_key in endmembers.items():
+            molar_mass_key, amounts_key = MineralChemistry(
+                w_traces=traces_data, molar_mass_pure=data_key["M"], majors=data_key["data"]
+            ).calculate_molar_mass()
+            elements_key = [PeriodicSystem(name=amounts_key[i][0]).get_data() for i in range(len(amounts_key))]
+            V_key = CrystalPhysics([[*data_key["V"]], [data_key["beta"]], "monoclinic"]).calculate_volume()
+            V_m_key = MineralChemistry().calculate_molar_volume(volume_cell=V_key, z=2)
+            rho_key = CrystalPhysics([molar_mass_key, 2, V_key]).calculate_bulk_density()
+            rho_e_key = wg(amounts=amounts_key, elements=elements_key, rho_b=rho_key).calculate_electron_density()
+            results_sub[key] = {
+                "rho": rho_key, "rho_e": rho_e_key, "K": data_key["K"], "G": data_key["G"], "V": V_m_key,
+                "M": molar_mass_key, "w": amounts_key}
 
-        dataV_Phl = CrystalPhysics([[5.39, 9.334, 10.29], [100], "monoclinic"])
-        V_Phl = dataV_Phl.calculate_volume()
-        Z_Phl = 2
-        V_m_Phl = MineralChemistry().calculate_molar_volume(volume_cell=V_Phl, z=Z_Phl)
-        dataRho_Phl = CrystalPhysics([molar_mass_Phl, Z_Phl, V_Phl])
-        rho_Phl = dataRho_Phl.calculate_bulk_density()
-        rho_e_Phl = wg(amounts=amounts_Phl, elements=element_Phl, rho_b=rho_Phl).calculate_electron_density()
+        results_bulk_sub = {}
+        for key in ["M", "V", "rho", "rho_e", "K", "G"]:
+            key_ann = results_sub["Ann"][key]
+            key_sdp = results_sub["Sdp"][key]
+            key_phl = results_sub["Phl"][key]
+            key_eas = results_sub["Eas"][key]
+            results_bulk_sub[key] = x*(y*key_ann + (1 - y)*key_sdp) + (1 - x)*(y*key_phl + (1 - y)*key_eas)
 
-        dataV_Eas = CrystalPhysics([[5.27, 9.13, 10.15], [99.54], "monoclinic"])
-        V_Eas = dataV_Eas.calculate_volume()
-        Z_Eas = 2
-        V_m_Eas = MineralChemistry().calculate_molar_volume(volume_cell=V_Eas, z=Z_Eas)
-        dataRho_Eas = CrystalPhysics([molar_mass_Eas, Z_Eas, V_Eas])
-        rho_Eas = dataRho_Eas.calculate_bulk_density()
-        rho_e_Eas = wg(amounts=amounts_Eas, elements=element_Eas, rho_b=rho_Eas).calculate_electron_density()
-
-        dataV_Sdp = CrystalPhysics([[5.369, 9.297, 10.268], [100.06], "monoclinic"])
-        V_Sdp = dataV_Sdp.calculate_volume()
-        Z_Sdp = 2
-        V_m_Sdp = MineralChemistry().calculate_molar_volume(volume_cell=V_Sdp, z=Z_Sdp)
-        dataRho_Sdp = CrystalPhysics([molar_mass_Sdp, Z_Sdp, V_Sdp])
-        rho_Sdp = dataRho_Sdp.calculate_bulk_density()
-        rho_e_Sdp = wg(amounts=amounts_Sdp, elements=element_Sdp, rho_b=rho_Sdp).calculate_electron_density()
-
-        V_m = x*(y*V_m_Ann + (1 - y)*V_m_Sdp) + (1 - x)*(y*V_m_Phl + (1 - y)*V_m_Eas)
-        rho = x*(y*rho_Ann + (1 - y)*rho_Sdp) + (1 - x)*(y*rho_Phl + (1 - y)*rho_Eas)
-        rho_e = x*(y*rho_e_Ann + (1 - y)*rho_e_Sdp) + (1 - x)*(y*rho_e_Phl + (1 - y)*rho_e_Eas)
-        # Bulk modulus
-        K_Ann = 114.72*10**9
-        K_Phl = 103.78*10**9
-        K_Sdp = 110.91*10**9
-        K_Eas = 100.44*10**9
-        K = x*(y*K_Ann + (1 - y)*K_Sdp) + (1 - x)*(y*K_Phl + (1 - y)*K_Eas)
-        # Shear modulus
-        G_Ann = 58.61*10**9
-        G_Phl = 61.69*10**9
-        G_Sdp = 59.61*10**9
-        G_Eas = 62.77*10**9
-        G = x*(y*G_Ann + (1 - y)*G_Sdp) + (1 - x)*(y*G_Phl + (1 - y)*G_Eas)
+        V_m = results_bulk_sub["V"]
+        rho = results_bulk_sub["rho"]
+        rho_e = results_bulk_sub["rho_e"]
+        K = results_bulk_sub["K"]
+        G = results_bulk_sub["G"]
+        M = results_bulk_sub["M"]
         # Young's modulus
         E = (9*K*G)/(3*K + G)
         # Poisson's ratio
@@ -3469,7 +3467,7 @@ class Phyllosilicates:
         U = pe*rho_e*10**(-3)
         # Electrical resistivity
         p = None
-        #
+
         # RESULTS
         results = {}
         results["mineral"] = mineral
@@ -3499,7 +3497,8 @@ class Phyllosilicates:
             results["p"] = round(p, 4)
         else:
             results["p"] = p
-        #
+        results["seed"] = int(self.current_seed)
+
         return results
 
     def create_muscovite(self): # K Al3 Si3 O10 (F,OH)2
