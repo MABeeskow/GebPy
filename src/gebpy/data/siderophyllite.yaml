@@ -1,0 +1,41 @@
+mineral: Siderophyllite
+group: Phyllosilicates
+formula: KFe2Al3Si2O10(OH)2
+
+metadata:
+  key: "Sdp"
+  crystal_system: "monoclinic"
+
+physical_properties:
+  K:
+    value: 110.91e9
+    ref: "unknown"
+  G:
+    value: 59.61e9
+    ref: "unknown"
+
+cell_data:
+  space_group:
+    value: "C2/m"
+    ref: "www.handbookofmineralogy.org"
+  a:
+    value: 5.348
+    ref: "www.handbookofmineralogy.org"
+  b:
+    value: 9.261
+    ref: "www.handbookofmineralogy.org"
+  c:
+    value: 10.263
+    ref: "www.handbookofmineralogy.org"
+  beta:
+    value: 100.19
+    ref: "www.handbookofmineralogy.org"
+  Z:
+    value: 2
+    ref: "www.handbookofmineralogy.org"
+
+sources:
+  - author: "John W. Anthony, Richard A. Bideaux, Kenneth W. Bladh, and Monte C. Nichols"
+    title: "Handbook of Mineralogy"
+    publisher: "Mineralogical Society of America, Chantilly, VA"
+    url: "http://www.handbookofmineralogy.org/"

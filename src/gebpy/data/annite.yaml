@@ -1,0 +1,41 @@
+mineral: Annite
+group: Phyllosilicates
+formula: KFe3AlSi3O10(OH)2
+
+metadata:
+  key: "Ann"
+  crystal_system: "monoclinic"
+
+physical_properties:
+  K:
+    value: 114.72e9
+    ref: "unknown"
+  G:
+    value: 58.61e9
+    ref: "unknown"
+
+cell_data:
+  space_group:
+    value: "C2/m"
+    ref: "www.handbookofmineralogy.org"
+  a:
+    value: 5.3860
+    ref: "www.handbookofmineralogy.org"
+  b:
+    value: 9.3241
+    ref: "www.handbookofmineralogy.org"
+  c:
+    value: 10.2683
+    ref: "www.handbookofmineralogy.org"
+  beta:
+    value: 100.63
+    ref: "www.handbookofmineralogy.org"
+  Z:
+    value: 2
+    ref: "www.handbookofmineralogy.org"
+
+sources:
+  - author: "John W. Anthony, Richard A. Bideaux, Kenneth W. Bladh, and Monte C. Nichols"
+    title: "Handbook of Mineralogy"
+    publisher: "Mineralogical Society of America, Chantilly, VA"
+    url: "http://www.handbookofmineralogy.org/"

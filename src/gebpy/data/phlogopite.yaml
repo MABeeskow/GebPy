@@ -1,0 +1,41 @@
+mineral: Phlogopite
+group: Phyllosilicates
+formula: KMg3AlSi3O10(OH)2
+
+metadata:
+  key: "Phl"
+  crystal_system: "monoclinic"
+
+physical_properties:
+  K:
+    value: 103.78e9
+    ref: "unknown"
+  G:
+    value: 61.69e9
+    ref: "unknown"
+
+cell_data:
+  space_group:
+    value: "C2/m"
+    ref: "www.handbookofmineralogy.org"
+  a:
+    value: 5.3078
+    ref: "www.handbookofmineralogy.org"
+  b:
+    value: 9.1901
+    ref: "www.handbookofmineralogy.org"
+  c:
+    value: 10.1547
+    ref: "www.handbookofmineralogy.org"
+  beta:
+    value: 100.08
+    ref: "www.handbookofmineralogy.org"
+  Z:
+    value: 2
+    ref: "www.handbookofmineralogy.org"
+
+sources:
+  - author: "John W. Anthony, Richard A. Bideaux, Kenneth W. Bladh, and Monte C. Nichols"
+    title: "Handbook of Mineralogy"
+    publisher: "Mineralogical Society of America, Chantilly, VA"
+    url: "http://www.handbookofmineralogy.org/"

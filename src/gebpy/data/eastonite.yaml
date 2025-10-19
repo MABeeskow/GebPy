@@ -1,0 +1,41 @@
+mineral: Eastonite
+group: Phyllosilicates
+formula: KMg2Al3Si2O10(OH)2
+
+metadata:
+  key: "Sdp"
+  crystal_system: "monoclinic"
+
+physical_properties:
+  K:
+    value: 100.44e9
+    ref: "unknown"
+  G:
+    value: 62.77e9
+    ref: "unknown"
+
+cell_data:
+  space_group:
+    value: "C2/m"
+    ref: "unknown"
+  a:
+    value: 5.27
+    ref: "unknown"
+  b:
+    value: 9.13
+    ref: "unknown"
+  c:
+    value: 10.15
+    ref: "unknown"
+  beta:
+    value: 99.54
+    ref: "unknown"
+  Z:
+    value: 2
+    ref: "unknown"
+
+sources:
+  - author: "unknown"
+    title: "unknown"
+    publisher: "unknown"
+    url: "unknown"
