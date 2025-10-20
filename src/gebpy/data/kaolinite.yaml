@@ -1,0 +1,53 @@
+mineral: Kaolinite
+group: Phyllosilicates
+formula: Al2(OH)4Si2O5
+
+metadata:
+  key: "Kln"
+  crystal_system: "triclinic"
+
+chemistry:
+  Al: 2
+  Si: 2
+  O: 9
+  H: 4
+
+physical_properties:
+  K:
+    value: 122.54e9
+    ref: "unknown"
+  G:
+    value: 66.63e9
+    ref: "unknown"
+
+cell_data:
+  space_group:
+    value: "C2/m"
+    ref: "www.webmineral.com"
+  a:
+    value: 5.13
+    ref: "www.webmineral.com"
+  b:
+    value: 8.89
+    ref: "www.webmineral.com"
+  c:
+    value: 7.25
+    ref: "www.webmineral.com"
+  alpha:
+    value: 90.0
+    ref: "www.webmineral.com"
+  beta:
+    value: 104.5
+    ref: "www.webmineral.com"
+  gamma:
+    value: 89.8
+    ref: "www.webmineral.com"
+  Z:
+    value: 2
+    ref: "www.webmineral.com"
+
+sources:
+  - author: "unknown"
+    title: "unknown"
+    publisher: "www.webmineral.com"
+    url: "www.webmineral.com"

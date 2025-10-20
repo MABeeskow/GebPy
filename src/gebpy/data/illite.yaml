@@ -1,0 +1,48 @@
+mineral: Illite
+group: Phyllosilicates
+formula: K0.65Al2Al0.65Si3.35O10(OH)2
+
+metadata:
+  key: "Ilt"
+  crystal_system: "monoclinic"
+
+chemistry:
+  K: 0.65
+  Al: 2.65
+  Si: 3.35
+  O: 12
+  H: 2
+
+physical_properties:
+  K:
+    value: 64.75e9
+    ref: "unknown"
+  G:
+    value: 26.46e9
+    ref: "unknown"
+
+cell_data:
+  space_group:
+    value: "C2/m"
+    ref: "www.webmineral.com"
+  a:
+    value: 5.18
+    ref: "www.webmineral.com"
+  b:
+    value: 8.98
+    ref: "www.webmineral.com"
+  c:
+    value: 10.32
+    ref: "www.webmineral.com"
+  beta:
+    value: 101.83
+    ref: "www.webmineral.com"
+  Z:
+    value: 2
+    ref: "www.webmineral.com"
+
+sources:
+  - author: "unknown"
+    title: "unknown"
+    publisher: "www.webmineral.com"
+    url: "www.webmineral.com"

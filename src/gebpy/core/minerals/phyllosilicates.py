@@ -6,7 +6,7 @@
 # Name:		phyllosilicates.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		20.10.2025
+# Date:		21.10.2025
 
 #-----------------------------------------------
 
@@ -54,12 +54,16 @@ class Phyllosilicates:
         # Mineral-specific data
         if self.name == "Annite":
             self.yaml_data = self._load_yaml("annite")
+        elif self.name == "Eastonite":
+            self.yaml_data = self._load_yaml("eastonite")
+        elif self.name == "Illite":
+            self.yaml_data = self._load_yaml("illite")
+        elif self.name == "Kaolinite":
+            self.yaml_data = self._load_yaml("kaolinite")
         elif self.name == "Phlogopite":
             self.yaml_data = self._load_yaml("phlogopite")
         elif self.name == "Siderophyllite":
             self.yaml_data = self._load_yaml("siderophyllite")
-        elif self.name == "Eastonite":
-            self.yaml_data = self._load_yaml("eastonite")
 
     def _load_yaml(self, mineral_name: str) -> dict:
         yaml_file = self.data_path / f"{mineral_name.lower()}.yaml"
@@ -82,11 +86,13 @@ class Phyllosilicates:
 
     def generate_dataset(self, number: int = 1) -> None:
         generators = {
-        "Annite": self.create_mineral_data_fixed_composition,
-        "Biotite": self.create_biotite,
-        "Eastonite": self.create_mineral_data_fixed_composition,
-        "Phlogopite": self.create_mineral_data_fixed_composition,
-        "Siderophyllite": self.create_mineral_data_fixed_composition,
+            "Annite": self.create_mineral_data_fixed_composition,
+            "Biotite": self.create_biotite,
+            "Eastonite": self.create_mineral_data_fixed_composition,
+            "Illite": self.create_mineral_data_fixed_composition,
+            "Kaolinite": self.create_mineral_data_fixed_composition,
+            "Phlogopite": self.create_mineral_data_fixed_composition,
+            "Siderophyllite": self.create_mineral_data_fixed_composition,
         }
 
         if self.name not in generators:
@@ -131,7 +137,7 @@ class Phyllosilicates:
         molar_mass_pure = 0
         for element, amount in self.yaml_data["chemistry"].items():
             n_order = int(self.elements[element][1])
-            val_amount = int(amount)
+            val_amount = float(amount)
             molar_mass = float(self.elements[element][2])
             majors_data.append([element, n_order, val_amount, molar_mass])
             molar_mass_pure += val_amount*molar_mass
@@ -142,10 +148,11 @@ class Phyllosilicates:
 
         if name_lower not in self.cache:
             vals = {}
-            for key in ["K", "G", "a", "b", "c", "beta", "Z"]:
-                vals[key] = self._get_value(self.yaml_data, ["physical_properties", key]) \
-                            if key in ["K", "G"] else \
-                            self._get_value(self.yaml_data, ["cell_data", key])
+            for key in ["K", "G", "a", "b", "c", "alpha", "beta", "gamma", "Z"]:
+                if key in self.yaml_data["cell_data"] or key in self.yaml_data["physical_properties"]:
+                    vals[key] = self._get_value(self.yaml_data, ["physical_properties", key]) \
+                                if key in ["K", "G"] else \
+                                self._get_value(self.yaml_data, ["cell_data", key])
             for key in ["key", "crystal_system"]:
                 vals[key] = self._get_value(self.yaml_data, ["metadata", key])
 
@@ -176,11 +183,19 @@ class Phyllosilicates:
         val_beta = vals["beta"]
         val_Z = vals["Z"]
 
+        if "alpha" in vals:
+            val_alpha = vals["alpha"]
+        if "gamma" in vals:
+            val_gamma = vals["gamma"]
+
         molar_mass, amounts = constr_minchem.calculate_molar_mass()
         element = [self.elements[name] for name, *_ in amounts]
         # (Molar) Volume
         if "constr_volume" not in self.cache[name_lower]:
-            constr_vol = CrystalPhysics([[val_a, val_b, val_c], [val_beta], val_system])
+            if "alpha" in vals and "gamma" in vals:
+                constr_vol = CrystalPhysics([[val_a, val_b, val_c], [val_alpha, val_beta, val_gamma], val_system])
+            else:
+                constr_vol = CrystalPhysics([[val_a, val_b, val_c], [val_beta], val_system])
             self.cache[name_lower]["constr_volume"] = constr_vol
 
         V, V_m = CrystallographicProperties().calculate_molar_volume(

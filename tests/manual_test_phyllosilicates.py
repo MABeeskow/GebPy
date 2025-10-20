@@ -6,7 +6,7 @@
 # Name:		manual_test_phyllosilicates.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		20.10.2025
+# Date:		21.10.2025
 
 #-----------------------------------------------
 
@@ -75,6 +75,26 @@ if n_datasets < 20:
 print(f"\nDATA (EASTONITE):")
 start = time.time()
 DEFAULT_DATA = Phyllosilicates(name="Eastonite", random_seed=42).generate_dataset(number=n_datasets)
+end = time.time()
+delta_new = end - start
+print(f"Runtime: {delta_new:.3f} seconds")
+
+if n_datasets < 20:
+    print("Results:", DEFAULT_DATA)
+
+print(f"\nDATA (ILLITE):")
+start = time.time()
+DEFAULT_DATA = Phyllosilicates(name="Illite", random_seed=42).generate_dataset(number=n_datasets)
+end = time.time()
+delta_new = end - start
+print(f"Runtime: {delta_new:.3f} seconds")
+
+if n_datasets < 20:
+    print("Results:", DEFAULT_DATA)
+
+print(f"\nDATA (KAOLINITE):")
+start = time.time()
+DEFAULT_DATA = Phyllosilicates(name="Kaolinite", random_seed=42).generate_dataset(number=n_datasets)
 end = time.time()
 delta_new = end - start
 print(f"Runtime: {delta_new:.3f} seconds")
