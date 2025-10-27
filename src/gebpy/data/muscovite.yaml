@@ -1,0 +1,48 @@
+mineral: Muscovite
+group: Phyllosilicates
+formula: K Al3 Si3 O10 (OH)2
+
+metadata:
+  key: "Ms"
+  crystal_system: "monoclinic"
+
+chemistry:
+  K: 1
+  Al: 3
+  Si: 3
+  O: 12
+  H: 2
+
+physical_properties:
+  K:
+    value: 112.65e9
+    ref: "unknown"
+  G:
+    value: 68.35e9
+    ref: "unknown"
+
+cell_data:
+  space_group:
+    value: "C2/c"
+    ref: "www.handbookofmineralogy.org"
+  a:
+    value: 5.19
+    ref: "www.handbookofmineralogy.org"
+  b:
+    value: 9.04
+    ref: "www.handbookofmineralogy.org"
+  c:
+    value: 20.08
+    ref: "www.handbookofmineralogy.org"
+  beta:
+    value: 95.30
+    ref: "www.handbookofmineralogy.org"
+  Z:
+    value: 4
+    ref: "www.handbookofmineralogy.org"
+
+sources:
+  - author: "unknown"
+    title: "unknown"
+    publisher: "www.handbookofmineralogy.org"
+    url: "www.handbookofmineralogy.org"

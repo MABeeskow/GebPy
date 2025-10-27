@@ -1,0 +1,47 @@
+mineral: Talc
+group: Phyllosilicates
+formula: Mg3 Si4 O10 (OH)2
+
+metadata:
+  key: "Tlc"
+  crystal_system: "monoclinic"
+
+chemistry:
+  Mg: 3
+  Si: 4
+  O: 12
+  H: 2
+
+physical_properties:
+  K:
+    value: 47.0e9
+    ref: "unknown"
+  G:
+    value: 25.0e9
+    ref: "unknown"
+
+cell_data:
+  space_group:
+    value: "C2/c"
+    ref: "www.handbookofmineralogy.org"
+  a:
+    value: 5.287
+    ref: "www.handbookofmineralogy.org"
+  b:
+    value: 9.158
+    ref: "www.handbookofmineralogy.org"
+  c:
+    value: 18.95
+    ref: "www.handbookofmineralogy.org"
+  beta:
+    value: 99.30
+    ref: "www.handbookofmineralogy.org"
+  Z:
+    value: 4
+    ref: "www.handbookofmineralogy.org"
+
+sources:
+  - author: "unknown"
+    title: "unknown"
+    publisher: "www.handbookofmineralogy.org"
+    url: "www.handbookofmineralogy.org"

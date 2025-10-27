@@ -1,0 +1,48 @@
+mineral: Chamosite
+group: Phyllosilicates
+formula: Fe5 Al2 Si3 O10 (OH)8
+
+metadata:
+  key: "Chm"
+  crystal_system: "monoclinic"
+
+chemistry:
+  Fe: 5
+  Al: 2
+  Si: 3
+  O: 18
+  H: 8
+
+physical_properties:
+  K:
+    value: 194.667e9
+    ref: "unknown"
+  G:
+    value: 26.766e9
+    ref: "unknown"
+
+cell_data:
+  space_group:
+    value: "C2/m"
+    ref: "www.handbookofmineralogy.org"
+  a:
+    value: 5.373
+    ref: "www.handbookofmineralogy.org"
+  b:
+    value: 9.306
+    ref: "www.handbookofmineralogy.org"
+  c:
+    value: 14.222
+    ref: "www.handbookofmineralogy.org"
+  beta:
+    value: 97.53
+    ref: "www.handbookofmineralogy.org"
+  Z:
+    value: 2
+    ref: "www.handbookofmineralogy.org"
+
+sources:
+  - author: "unknown"
+    title: "unknown"
+    publisher: "www.handbookofmineralogy.org"
+    url: "www.handbookofmineralogy.org"

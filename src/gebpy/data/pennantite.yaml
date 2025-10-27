@@ -1,0 +1,54 @@
+mineral: Pennantite
+group: Phyllosilicates
+formula: Mn5 Al2 Si3 O10 (OH)8
+
+metadata:
+  key: "Pnn"
+  crystal_system: "triclinic"
+
+chemistry:
+  Mn: 5
+  Al: 2
+  Si: 3
+  O: 18
+  H: 8
+
+physical_properties:
+  K:
+    value: 171.383e9
+    ref: "unknown"
+  G:
+    value: 30.989e9
+    ref: "unknown"
+
+cell_data:
+  space_group:
+    value: "C1"
+    ref: "www.handbookofmineralogy.org"
+  a:
+    value: 5.45
+    ref: "www.handbookofmineralogy.org"
+  b:
+    value: 9.50
+    ref: "www.handbookofmineralogy.org"
+  c:
+    value: 14.40
+    ref: "www.handbookofmineralogy.org"
+  alpha:
+    value: 90.0
+    ref: "www.handbookofmineralogy.org"
+  beta:
+    value: 97.3
+    ref: "www.handbookofmineralogy.org"
+  gamma:
+    value: 90.0
+    ref: "www.handbookofmineralogy.org"
+  Z:
+    value: 2
+    ref: "www.handbookofmineralogy.org"
+
+sources:
+  - author: "unknown"
+    title: "unknown"
+    publisher: "www.handbookofmineralogy.org"
+    url: "www.handbookofmineralogy.org"

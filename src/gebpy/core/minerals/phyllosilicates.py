@@ -6,7 +6,7 @@
 # Name:		phyllosilicates.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		21.10.2025
+# Date:		28.10.2025
 
 #-----------------------------------------------
 
@@ -20,6 +20,8 @@ import yaml
 import numpy as np
 import pandas as pd
 from pathlib import Path
+
+from soupsieve.util import lower
 
 # MODULES
 from modules.chemistry import PeriodicSystem
@@ -45,25 +47,19 @@ class Phyllosilicates:
             "Al": PeriodicSystem(name="Al").get_data(),
             "Si": PeriodicSystem(name="Si").get_data(),
             "K": PeriodicSystem(name="K").get_data(),
+            "Mn": PeriodicSystem(name="Mn").get_data(),
             "Fe": PeriodicSystem(name="Fe").get_data(),
+            "Ni": PeriodicSystem(name="Ni").get_data(),
         }
 
         # Geophysics
         self.geophysical_properties = GeophysicalProperties()
 
         # Mineral-specific data
-        if self.name == "Annite":
-            self.yaml_data = self._load_yaml("annite")
-        elif self.name == "Eastonite":
-            self.yaml_data = self._load_yaml("eastonite")
-        elif self.name == "Illite":
-            self.yaml_data = self._load_yaml("illite")
-        elif self.name == "Kaolinite":
-            self.yaml_data = self._load_yaml("kaolinite")
-        elif self.name == "Phlogopite":
-            self.yaml_data = self._load_yaml("phlogopite")
-        elif self.name == "Siderophyllite":
-            self.yaml_data = self._load_yaml("siderophyllite")
+        if self.name in [
+            "Annite", "Eastonite", "Illite", "Kaolinite", "Phlogopite", "Siderophyllite", "Chamosite", "Clinochlore",
+            "Pennantite", "Nimite", "Muscovite", "Talc", "Chrysotile", "Antigorite", "Pyrophyllite"]:
+            self.yaml_data = self._load_yaml(lower(self.name))
 
     def _load_yaml(self, mineral_name: str) -> dict:
         yaml_file = self.data_path / f"{mineral_name.lower()}.yaml"
@@ -93,6 +89,15 @@ class Phyllosilicates:
             "Kaolinite": self.create_mineral_data_fixed_composition,
             "Phlogopite": self.create_mineral_data_fixed_composition,
             "Siderophyllite": self.create_mineral_data_fixed_composition,
+            "Chamosite": self.create_mineral_data_fixed_composition,
+            "Clinochlore": self.create_mineral_data_fixed_composition,
+            "Pennantite": self.create_mineral_data_fixed_composition,
+            "Nimite": self.create_mineral_data_fixed_composition,
+            "Muscovite": self.create_mineral_data_fixed_composition,
+            "Talc": self.create_mineral_data_fixed_composition,
+            "Chrysotile": self.create_mineral_data_fixed_composition,
+            "Antigorite": self.create_mineral_data_fixed_composition,
+            "Pyrophyllite": self.create_mineral_data_fixed_composition,
         }
 
         if self.name not in generators:

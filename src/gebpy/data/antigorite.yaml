@@ -1,0 +1,47 @@
+mineral: Antigorite
+group: Phyllosilicates
+formula: Mg3 Si2 O5 (OH)4
+
+metadata:
+  key: "Atg"
+  crystal_system: "monoclinic"
+
+chemistry:
+  Mg: 3
+  Si: 2
+  O: 9
+  H: 4
+
+physical_properties:
+  K:
+    value: 108.82e9
+    ref: "unknown"
+  G:
+    value: 58.17e9
+    ref: "unknown"
+
+cell_data:
+  space_group:
+    value: "Cm"
+    ref: "www.handbookofmineralogy.org"
+  a:
+    value: 43.53
+    ref: "www.handbookofmineralogy.org"
+  b:
+    value: 9.259
+    ref: "www.handbookofmineralogy.org"
+  c:
+    value: 7.263
+    ref: "www.handbookofmineralogy.org"
+  beta:
+    value: 91.633
+    ref: "www.webmineral.com"
+  Z:
+    value: 16
+    ref: "www.handbookofmineralogy.org"
+
+sources:
+  - author: "unknown"
+    title: "unknown"
+    publisher: "www.handbookofmineralogy.org"
+    url: ["www.handbookofmineralogy.org", "www.webmineral.com"]
