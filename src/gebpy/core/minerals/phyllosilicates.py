@@ -6,7 +6,7 @@
 # Name:		phyllosilicates.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		28.10.2025
+# Date:		29.10.2025
 
 #-----------------------------------------------
 
@@ -83,7 +83,7 @@ class Phyllosilicates:
     def generate_dataset(self, number: int = 1) -> None:
         generators = {
             "Annite": self.create_mineral_data_fixed_composition,
-            "Biotite": self.create_biotite,
+            "Biotite": self.create_mineral_data_variable_composition,
             "Eastonite": self.create_mineral_data_fixed_composition,
             "Illite": self.create_mineral_data_fixed_composition,
             "Kaolinite": self.create_mineral_data_fixed_composition,
@@ -236,6 +236,82 @@ class Phyllosilicates:
             "mineral": val_key, "state": val_state, "M": molar_mass,
             "chemistry": {name: val[1] for name, *val in amounts}, "rho": rho, "rho_e": rho_e, "V": V_m, "vP": vP,
             "vS": vS, "vP/vS": vPvS, "K": val_K*10**(-9), "G": val_G*10**(-9), "E": E*10**(-9), "nu": nu,
+            "GR": gamma_ray, "PE": pe, "U": U, "p": p}
+        return results
+
+    def create_mineral_data_variable_composition(self):
+        """
+        Synthetic mineral data generation for an user-selected mineral.
+        All mechanical properties (K, G, E) are stored in Pascals internally.
+        For output, they are converted to GPa.
+        """
+        val_state = "variable"
+
+        if self.name == "Biotite":
+            name_lower = self.name.lower()
+            val_key = "Bt"
+            x = float(np.round(self.rng.uniform(0, 1), 4))
+            y = float(np.round(self.rng.uniform(0, 1), 4))
+            endmember = ["Annite", "Phlogopite", "Siderophyllite", "Eastonite"]
+        endmember_data = {}
+        list_elements = []
+        for mineral in endmember:
+            mineral_data = Phyllosilicates(name=mineral, random_seed=self.current_seed).generate_dataset(number=1)
+            endmember_data[mineral] = mineral_data
+            for element in mineral_data["chemistry"]:
+                if element not in list_elements:
+                    list_elements.append(element)
+        fraction_endmember = {
+            "Annite": x*y, "Phlogopite": (1 - x)*y, "Siderophyllite": x*(1 - y), "Eastonite": (1 - x)*(1 - y)}
+        helper_results = {"M": 0, "rho": 0, "rho_e": 0, "V": 0, "K": 0, "G": 0, "GR": 0, "PE": 0, "U": 0}
+
+        if not hasattr(self, "cache"):
+            self.cache = {}
+
+        if name_lower not in self.cache:
+            self.cache[name_lower] = {
+                "endmember_data": endmember_data
+            }
+        else:
+            constr_radiation = self.cache[name_lower]["constr_radiation"]
+
+        for property in ["M", "rho", "rho_e", "V", "K", "G", "GR", "PE", "U"]:
+            for mineral in endmember:
+                helper_results[property] += fraction_endmember[mineral]*endmember_data[mineral][property][0]
+        # Amounts
+        amounts = []
+        for element in list_elements:
+            element_order = self.elements[element][1]
+            amount = 0
+            for mineral in endmember:
+                if element in endmember_data[mineral]["chemistry"]:
+                    amount_element = endmember_data[mineral]["chemistry"][element][0]
+                    amount += fraction_endmember[mineral]*amount_element
+            amounts.append([element, element_order, amount])
+        element = [self.elements[name] for name, *_ in amounts]
+        # Elastic properties
+        val_K = helper_results["K"]
+        val_G = helper_results["G"]
+        rho = helper_results["rho"]
+        rho_e = helper_results["rho_e"]
+        E, nu = self.geophysical_properties.calculate_elastic_properties(bulk_mod=val_K, shear_mod=val_G)
+        # Seismic properties
+        vPvS, vP, vS = self.geophysical_properties.calculate_seismic_velocities(
+            bulk_mod=val_K, shear_mod=val_G, rho=rho)
+        # Radiation properties
+        if "constr_radiation" not in self.cache[name_lower]:
+            constr_radiation = wg(amounts=amounts, elements=element)
+            self.cache[name_lower]["constr_radiation"] = constr_radiation
+
+        gamma_ray, pe, U = self.geophysical_properties.calculate_radiation_properties(
+            constr_radiation=constr_radiation, rho_electron=rho_e)
+        # Electrical resistivity
+        p = None
+        # Results
+        results = {
+            "mineral": val_key, "state": val_state, "M": helper_results["M"],
+            "chemistry": {name: val[1] for name, *val in amounts}, "rho": rho, "rho_e": rho_e, "V": helper_results["V"],
+            "vP": vP, "vS": vS, "vP/vS": vPvS, "K": val_K*10**(-9), "G": val_G*10**(-9), "E": E*10**(-9), "nu": nu,
             "GR": gamma_ray, "PE": pe, "U": U, "p": p}
         return results
 
