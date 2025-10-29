@@ -247,26 +247,30 @@ class Phyllosilicates:
         """
         val_state = "variable"
 
+        if not hasattr(self, "cache"):
+            self.cache = {}
+
         if self.name == "Biotite":
             name_lower = self.name.lower()
             val_key = "Bt"
-            x = float(np.round(self.rng.uniform(0, 1), 4))
-            y = float(np.round(self.rng.uniform(0, 1), 4))
             endmember = ["Annite", "Phlogopite", "Siderophyllite", "Eastonite"]
+
+        if "endmembers" not in self.cache:
+            self.cache["endmembers"] = {}
+
         endmember_data = {}
         list_elements = []
         for mineral in endmember:
-            mineral_data = Phyllosilicates(name=mineral, random_seed=self.current_seed).generate_dataset(number=1)
-            endmember_data[mineral] = mineral_data
+            if mineral not in self.cache["endmembers"]:
+                mineral_data = Phyllosilicates(name=mineral, random_seed=self.current_seed).generate_dataset(number=1)
+                self.cache["endmembers"][mineral] = mineral_data
+            endmember_data[mineral] = self.cache["endmembers"][mineral]
+            mineral_data = endmember_data[mineral]
             for element in mineral_data["chemistry"]:
                 if element not in list_elements:
                     list_elements.append(element)
-        fraction_endmember = {
-            "Annite": x*y, "Phlogopite": (1 - x)*y, "Siderophyllite": x*(1 - y), "Eastonite": (1 - x)*(1 - y)}
-        helper_results = {"M": 0, "rho": 0, "rho_e": 0, "V": 0, "K": 0, "G": 0, "GR": 0, "PE": 0, "U": 0}
-
-        if not hasattr(self, "cache"):
-            self.cache = {}
+        weights = self.rng.dirichlet(np.ones(len(endmember)))
+        fraction_endmember = dict(zip(endmember, weights))
 
         if name_lower not in self.cache:
             self.cache[name_lower] = {
@@ -275,19 +279,17 @@ class Phyllosilicates:
         else:
             constr_radiation = self.cache[name_lower]["constr_radiation"]
 
-        for property in ["M", "rho", "rho_e", "V", "K", "G", "GR", "PE", "U"]:
-            for mineral in endmember:
-                helper_results[property] += fraction_endmember[mineral]*endmember_data[mineral][property][0]
+        properties = ["M", "rho", "rho_e", "V", "K", "G", "GR", "PE", "U"]
+        helper_results = {
+            prop: sum(fraction_endmember[m] * endmember_data[m][prop][0] for m in endmember)
+            for prop in properties
+        }
         # Amounts
         amounts = []
         for element in list_elements:
-            element_order = self.elements[element][1]
-            amount = 0
-            for mineral in endmember:
-                if element in endmember_data[mineral]["chemistry"]:
-                    amount_element = endmember_data[mineral]["chemistry"][element][0]
-                    amount += fraction_endmember[mineral]*amount_element
-            amounts.append([element, element_order, amount])
+            amount = sum(fraction_endmember[mineral] * endmember_data[mineral]["chemistry"].get(element, [0])[0]
+                         for mineral in endmember)
+            amounts.append([element, self.elements[element][1], amount])
         element = [self.elements[name] for name, *_ in amounts]
         # Elastic properties
         val_K = helper_results["K"]
