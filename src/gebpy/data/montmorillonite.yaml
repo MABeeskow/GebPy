@@ -1,0 +1,57 @@
+mineral: Montmorillonite
+group: Phyllosilicates
+formula: (Na,Ca)0.3 (Al,Mg)2 Si4O10 (OH)2 (H2O)10
+
+metadata:
+  key: "Mnt"
+  crystal_system: "monoclinic"
+
+chemistry:
+  Na:
+    formula: "0.3*x"
+  Ca:
+    formula: "0.3*(1 - x)"
+  Al:
+    formula: "2*y"
+  Mg:
+    formula: "2*(1 - y)"
+  Si:
+    formula: "4"
+  O:
+    formula: "12 + n"
+  H:
+    formula: "2 + 2*n"
+
+physical_properties:
+  K:
+    value: 114.72e9
+    ref: "unknown"
+  G:
+    value: 58.61e9
+    ref: "unknown"
+
+cell_data:
+  space_group:
+    value: "C2/m"
+    ref: "www.handbookofmineralogy.org"
+  a:
+    value: 5.17
+    ref: "www.handbookofmineralogy.org"
+  b:
+    value: 8.94
+    ref: "www.handbookofmineralogy.org"
+  c:
+    value: 9.95
+    ref: "www.handbookofmineralogy.org"
+  beta:
+    value: 99.99
+    ref: "www.webmineral.com"
+  Z:
+    value: 1
+    ref: "www.handbookofmineralogy.org"
+
+sources:
+  - author: "John W. Anthony, Richard A. Bideaux, Kenneth W. Bladh, and Monte C. Nichols"
+    title: "Handbook of Mineralogy"
+    publisher: "Mineralogical Society of America, Chantilly, VA"
+    url: "http://www.handbookofmineralogy.org/"
