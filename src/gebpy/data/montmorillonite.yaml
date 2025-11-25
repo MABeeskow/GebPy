@@ -23,11 +23,17 @@ chemistry:
     formula: "2 + 2*n"
 
 physical_properties:
-  K:
-    value: 114.72e9
+  a_K:
+    value: 0.040233916009293824
     ref: "unknown"
-  G:
-    value: 58.61e9
+  b_K:
+    value: -72.69857866528147
+    ref: "unknown"
+  a_G:
+    value: 0.014064466833375613
+    ref: "unknown"
+  b_G:
+    value: -19.642063868855626
     ref: "unknown"
 
 cell_data:

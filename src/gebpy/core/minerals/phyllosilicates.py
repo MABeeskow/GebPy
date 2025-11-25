@@ -6,7 +6,7 @@
 # Name:		phyllosilicates.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		29.10.2025
+# Date:		25.11.2025
 
 #-----------------------------------------------
 
@@ -237,10 +237,12 @@ class Phyllosilicates:
         p = None
         # Results
         results = {
-            "mineral": val_key, "state": val_state, "M": molar_mass,
-            "chemistry": {name: val[1] for name, *val in amounts}, "rho": rho, "rho_e": rho_e, "V": V_m, "vP": vP,
-            "vS": vS, "vP/vS": vPvS, "K": val_K*10**(-9), "G": val_G*10**(-9), "E": E*10**(-9), "nu": nu,
-            "GR": gamma_ray, "PE": pe, "U": U, "p": p}
+            "mineral": val_key, "state": val_state, "M": round(molar_mass, 3),
+            "chemistry": {name: round(val[1], 6) for name, *val in amounts}, "rho": round(rho, 3),
+            "rho_e": round(rho_e, 3), "V": round(V_m, 3), "vP": round(vP, 3), "vS": round(vS, 3),
+            "vP/vS": round(vPvS, 3), "K": round(val_K*10**(-9), 3), "G": round(val_G*10**(-9), 3),
+            "E": round(E*10**(-9), 3), "nu": round(nu, 6), "GR": round(gamma_ray, 3), "PE": round(pe, 3),
+            "U": round(U, 3), "p": p}
         return results
 
     def _evaluate_chemistry(self, chemistry_dict, **variables):
@@ -286,35 +288,42 @@ class Phyllosilicates:
 
         if name_lower not in self.cache:
             vals = {}
-            for key in ["K", "G", "a", "b", "c", "alpha", "beta", "gamma", "Z"]:
+            for key in ["K", "G", "a_K", "b_K", "a_G", "b_G", "a", "b", "c", "alpha", "beta", "gamma", "Z"]:
                 if key in self.yaml_data["cell_data"] or key in self.yaml_data["physical_properties"]:
                     vals[key] = self._get_value(self.yaml_data, ["physical_properties", key]) \
-                                if key in ["K", "G"] else \
+                                if key in ["K", "G", "a_K", "b_K", "a_G", "b_G"] else \
                                 self._get_value(self.yaml_data, ["cell_data", key])
             for key in ["key", "crystal_system"]:
                 vals[key] = self._get_value(self.yaml_data, ["metadata", key])
 
-            constr_minchem = MineralChemistry(w_traces=traces_data, molar_mass_pure=molar_mass_pure, majors=majors_data)
-
             self.cache[name_lower] = {
-                "majors_data": majors_data,
-                "molar_mass_pure": molar_mass_pure,
                 "constants": vals,
-                "MineralChemistry": constr_minchem
             }
         else:
             vals = self.cache[name_lower]["constants"]
-            constr_minchem = self.cache[name_lower]["MineralChemistry"]
-            constr_electr_density = self.cache[name_lower]["const_electron_density"]
-            constr_vol = self.cache[name_lower]["constr_volume"]
-            constr_density = self.cache[name_lower]["constr_density"]
-            constr_radiation = self.cache[name_lower]["constr_radiation"]
+
+        # Molar mass, element amounts
+        molar_mass = 0
+        for element, amount in amounts_elements.items():
+            molar_mass += amount*float(self.elements[element][2])
+
+        amounts = []
+        for element, amount in amounts_elements.items():
+            value = amount*float(self.elements[element][2])/molar_mass
+            amounts.append([element, self.elements[element][1], value])
+        element = [self.elements[name] for name, *_ in amounts]
 
         # Reading and assigning the mineral-specific information from the YAML file
         val_key = vals["key"]
         val_system = vals["crystal_system"]
-        val_K = vals["K"]
-        val_G = vals["G"]
+        if "K" in vals:
+            val_K = vals["K"]
+            val_G = vals["G"]
+        else:
+            val_a_K = float(vals["a_K"])
+            val_b_K = float(vals["b_K"])
+            val_a_G = float(vals["a_G"])
+            val_b_G = float(vals["b_G"])
         val_a = vals["a"]
         val_b = vals["b"]
         val_c = vals["c"]
@@ -326,50 +335,42 @@ class Phyllosilicates:
         if "gamma" in vals:
             val_gamma = vals["gamma"]
 
-        molar_mass, amounts = constr_minchem.calculate_molar_mass()
-        element = [self.elements[name] for name, *_ in amounts]
         # (Molar) Volume
-        if "constr_volume" not in self.cache[name_lower]:
-            if "alpha" in vals and "gamma" in vals:
-                constr_vol = CrystalPhysics([[val_a, val_b, val_c], [val_alpha, val_beta, val_gamma], val_system])
-            else:
-                constr_vol = CrystalPhysics([[val_a, val_b, val_c], [val_beta], val_system])
-            self.cache[name_lower]["constr_volume"] = constr_vol
+        if "alpha" in vals and "gamma" in vals:
+            constr_vol = CrystalPhysics([[val_a, val_b, val_c], [val_alpha, val_beta, val_gamma], val_system])
+        else:
+            constr_vol = CrystalPhysics([[val_a, val_b, val_c], [val_beta], val_system])
 
+        constr_minchem = MineralChemistry(w_traces=traces_data, molar_mass_pure=molar_mass_pure, majors=majors_data)
         V, V_m = CrystallographicProperties().calculate_molar_volume(
             constr_volume=constr_vol, constr_molar_volume=constr_minchem, cell_z=val_Z)
         # Density
-        if "constr_density" not in self.cache[name_lower]:
-            constr_density = CrystalPhysics([molar_mass, val_Z, V])
-            self.cache[name_lower]["constr_density"] = constr_density
-
+        constr_density = CrystalPhysics([molar_mass, val_Z, V])
         rho = CrystallographicProperties().calculate_mineral_density(constr_density=constr_density)
-
-        if "const_electron_density" not in self.cache[name_lower]:
-            constr_electr_density = wg(amounts=amounts, elements=element, rho_b=rho)
-            self.cache[name_lower]["const_electron_density"] = constr_electr_density
-
+        constr_electr_density = wg(amounts=amounts, elements=element, rho_b=rho)
         rho_e = CrystallographicProperties().calculate_electron_density(constr_electron_density=constr_electr_density)
         # Elastic properties
+        if "K" not in vals:
+            val_K = (val_a_K*rho + val_b_K)*10**9
+            val_G = (val_a_G*rho + val_b_G)*10**9
         E, nu = self.geophysical_properties.calculate_elastic_properties(bulk_mod=val_K, shear_mod=val_G)
         # Seismic properties
         vPvS, vP, vS = self.geophysical_properties.calculate_seismic_velocities(
             bulk_mod=val_K, shear_mod=val_G, rho=rho)
         # Radiation properties
-        if "constr_radiation" not in self.cache[name_lower]:
-            constr_radiation = wg(amounts=amounts, elements=element)
-            self.cache[name_lower]["constr_radiation"] = constr_radiation
-
+        constr_radiation = wg(amounts=amounts, elements=element)
         gamma_ray, pe, U = self.geophysical_properties.calculate_radiation_properties(
             constr_radiation=constr_radiation, rho_electron=rho_e)
         # Electrical resistivity
         p = None
         # Results
         results = {
-            "mineral": val_key, "state": val_state, "M": molar_mass,
-            "chemistry": {name: val[1] for name, *val in amounts}, "rho": rho, "rho_e": rho_e, "V": V_m, "vP": vP,
-            "vS": vS, "vP/vS": vPvS, "K": val_K*10**(-9), "G": val_G*10**(-9), "E": E*10**(-9), "nu": nu,
-            "GR": gamma_ray, "PE": pe, "U": U, "p": p}
+            "mineral": val_key, "state": val_state, "M": round(molar_mass, 3),
+            "chemistry": {name: round(val[1], 6) for name, *val in amounts}, "rho": round(rho, 3),
+            "rho_e": round(rho_e, 3), "V": round(V_m, 3), "vP": round(vP, 3), "vS": round(vS, 3),
+            "vP/vS": round(vPvS, 3), "K": round(val_K*10**(-9), 3), "G": round(val_G*10**(-9), 3),
+            "E": round(E*10**(-9), 3), "nu": round(nu, 6), "GR": round(gamma_ray, 3), "PE": round(pe, 3),
+            "U": round(U, 3), "p": p}
         return results
 
     def create_mineral_data_endmember_series(self):
@@ -409,18 +410,16 @@ class Phyllosilicates:
             self.cache[name_lower] = {
                 "endmember_data": endmember_data
             }
-        else:
-            constr_radiation = self.cache[name_lower]["constr_radiation"]
 
         properties = ["M", "rho", "rho_e", "V", "K", "G"]
         helper_results = {
-            prop: sum(fraction_endmember[m] * endmember_data[m][prop][0] for m in endmember)
+            prop: sum(fraction_endmember[m]*endmember_data[m][prop][0] for m in endmember)
             for prop in properties
         }
         # Amounts
         amounts = []
         for element in list_elements:
-            amount = sum(fraction_endmember[mineral] * endmember_data[mineral]["chemistry"].get(element, [0])[0]
+            amount = sum(fraction_endmember[mineral]*endmember_data[mineral]["chemistry"].get(element, [0])[0]
                          for mineral in endmember)
             amounts.append([element, self.elements[element][1], amount])
         element = [self.elements[name] for name, *_ in amounts]
@@ -434,20 +433,19 @@ class Phyllosilicates:
         vPvS, vP, vS = self.geophysical_properties.calculate_seismic_velocities(
             bulk_mod=val_K, shear_mod=val_G, rho=rho)
         # Radiation properties
-        if "constr_radiation" not in self.cache[name_lower]:
-            constr_radiation = wg(amounts=amounts, elements=element)
-            self.cache[name_lower]["constr_radiation"] = constr_radiation
-
+        constr_radiation = wg(amounts=amounts, elements=element)
         gamma_ray, pe, U = self.geophysical_properties.calculate_radiation_properties(
             constr_radiation=constr_radiation, rho_electron=rho_e)
         # Electrical resistivity
         p = None
         # Results
         results = {
-            "mineral": val_key, "state": val_state, "M": helper_results["M"],
-            "chemistry": {name: val[1] for name, *val in amounts}, "rho": rho, "rho_e": rho_e, "V": helper_results["V"],
-            "vP": vP, "vS": vS, "vP/vS": vPvS, "K": val_K*10**(-9), "G": val_G*10**(-9), "E": E*10**(-9), "nu": nu,
-            "GR": gamma_ray, "PE": pe, "U": U, "p": p}
+            "mineral": val_key, "state": val_state, "M": round(helper_results["M"], 3),
+            "chemistry": {name: round(val[1], 6) for name, *val in amounts}, "rho": round(rho, 3),
+            "rho_e": round(rho_e, 3), "V": round(helper_results["V"], 3), "vP": round(vP, 3), "vS": round(vS, 3),
+            "vP/vS": round(vPvS, 3), "K": round(val_K*10**(-9), 3), "G": round(val_G*10**(-9), 3),
+            "E": round(E*10**(-9), 3), "nu": round(nu, 6), "GR": round(gamma_ray, 3), "PE": round(pe, 3),
+            "U": round(U, 3), "p": p}
         return results
 
     def create_biotite(self) -> None:
