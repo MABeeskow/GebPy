@@ -520,9 +520,6 @@ class Phyllosilicates:
             "U": round(U, 3), "p": p}
         return results
 
-    def create_biotite(self) -> None:
-        pass
-
 # TEST
 if __name__ == "__main__":
     DEFAULT_DATA = Phyllosilicates(name="Annite", random_seed=42).generate_dataset(number=10)
