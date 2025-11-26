@@ -6,7 +6,7 @@
 # Name:		phyllosilicates.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		25.11.2025
+# Date:		26.11.2025
 
 #-----------------------------------------------
 
@@ -61,7 +61,8 @@ class Phyllosilicates:
         # Mineral-specific data
         if self.name in [
             "Annite", "Eastonite", "Illite", "Kaolinite", "Phlogopite", "Siderophyllite", "Chamosite", "Clinochlore",
-            "Pennantite", "Nimite", "Muscovite", "Talc", "Chrysotile", "Antigorite", "Pyrophyllite", "Montmorillonite"]:
+            "Pennantite", "Nimite", "Muscovite", "Talc", "Chrysotile", "Antigorite", "Pyrophyllite", "Montmorillonite",
+            "Nontronite"]:
             self.yaml_data = self._load_yaml(lower(self.name))
 
     def _load_yaml(self, mineral_name: str) -> dict:
@@ -102,6 +103,7 @@ class Phyllosilicates:
             "Pyrophyllite": self.create_mineral_data_fixed_composition,
             "Biotite": self.create_mineral_data_endmember_series,
             "Montmorillonite": self.create_mineral_data_variable_composition,
+            "Nontronite": self.create_mineral_data_variable_composition,
         }
 
         if self.name not in generators:
@@ -272,16 +274,21 @@ class Phyllosilicates:
         if self.name == "Montmorillonite":
             x = round(self.rng.uniform(0.6, 0.7), 2)
             y = round(self.rng.uniform(0.9, 1), 2)
-            n = self.rng.integers(8, 12) # self.rng.randint(8, 12)
+            n = self.rng.integers(8, 12)
             vars = {"x": x, "y": y, "n": n}
-            amounts_elements = self._evaluate_chemistry(self.yaml_data["chemistry"], **vars)
-            for element, amount in amounts_elements.items():
-                n_order = int(self.elements[element][1])
-                val_amount = float(amount)
-                molar_mass = float(self.elements[element][2])
-                majors_data.append([element, n_order, val_amount, molar_mass])
-                molar_mass_pure += val_amount*molar_mass
-            majors_data.sort(key=lambda x: x[1])
+        elif self.name == "Nontronite":
+            x = round(self.rng.uniform(0.0, 0.5), 2)
+            n = self.rng.integers(1, 10)
+            vars = {"x": x, "n": n}
+
+        amounts_elements = self._evaluate_chemistry(self.yaml_data["chemistry"], **vars)
+        for element, amount in amounts_elements.items():
+            n_order = int(self.elements[element][1])
+            val_amount = float(amount)
+            molar_mass = float(self.elements[element][2])
+            majors_data.append([element, n_order, val_amount, molar_mass])
+            molar_mass_pure += val_amount*molar_mass
+        majors_data.sort(key=lambda x: x[1])
 
         if not hasattr(self, "cache"):
             self.cache = {}

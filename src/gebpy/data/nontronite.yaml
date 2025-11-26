@@ -1,0 +1,61 @@
+mineral: Nontronite
+group: Phyllosilicates
+formula: Na0.3 Fe2 (Si, Al)4 O10 (OH)2 * nH2O
+
+metadata:
+  key: "Nntr"
+  crystal_system: "monoclinic"
+
+chemistry:
+  Na:
+    formula: "0.3"
+  Fe:
+    formula: "2"
+  Si:
+    formula: "4*x"
+  Al:
+    formula: "4*(1 - x)"
+  O:
+    formula: "12 + n"
+  H:
+    formula: "2 + 2*n"
+
+physical_properties:
+  a_K:
+    value: 0.040233916009293824
+    ref: "unknown"
+  b_K:
+    value: -72.69857866528147
+    ref: "unknown"
+  a_G:
+    value: 0.014064466833375613
+    ref: "unknown"
+  b_G:
+    value: -19.642063868855626
+    ref: "unknown"
+
+cell_data:
+  space_group:
+    value: "C2/m"
+    ref: "www.webmineral.com"
+  a:
+    value: 5.23
+    ref: "www.webmineral.com"
+  b:
+    value: 9.11
+    ref: "www.webmineral.com"
+  c:
+    value: 15.25
+    ref: "www.webmineral.com"
+  beta:
+    value: 96.0
+    ref: "www.webmineral.com"
+  Z:
+    value: 2
+    ref: "www.webmineral.com"
+
+sources:
+  - author: "John W. Anthony, Richard A. Bideaux, Kenneth W. Bladh, and Monte C. Nichols"
+    title: "Handbook of Mineralogy"
+    publisher: "Mineralogical Society of America, Chantilly, VA"
+    url: "http://www.handbookofmineralogy.org/"
