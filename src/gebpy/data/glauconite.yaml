@@ -1,0 +1,59 @@
+mineral: Glauconite
+group: Phyllosilicates
+formula: (K, Na) (Fe, Al, Mg)2 (Si, Al)4 O10 (OH)2
+
+metadata:
+  key: "Glt"
+  crystal_system: "monoclinic"
+
+chemistry:
+  K:
+    formula: "x"
+  Na:
+    formula: "(1 - x)"
+  Fe:
+    formula: "2*y1"
+  Al:
+    formula: "2*y2 + 4*(1 - z)"
+  Mg:
+    formula: "2*(1 - y1 - y2)"
+  Si:
+    formula: "4*z"
+  O:
+    formula: "12"
+  H:
+    formula: "2"
+
+physical_properties:
+  K:
+    value: 112.64e9
+    ref: "unknown"
+  G:
+    value: 68.33e9
+    ref: "unknown"
+
+cell_data:
+  space_group:
+    value: "C2/m"
+    ref: "www.webmineral.com"
+  a:
+    value: 5.234
+    ref: "www.webmineral.com"
+  b:
+    value: 9.066
+    ref: "www.webmineral.com"
+  c:
+    value: 10.16
+    ref: "www.webmineral.com"
+  beta:
+    value: 100.5
+    ref: "www.webmineral.com"
+  Z:
+    value: 2
+    ref: "www.webmineral.com"
+
+sources:
+  - author: "unknown"
+    title: "unknown"
+    publisher: "www.handbookofmineralogy.org"
+    url: "www.handbookofmineralogy.org"

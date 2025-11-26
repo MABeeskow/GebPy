@@ -1,0 +1,61 @@
+mineral: Vermiculite
+group: Phyllosilicates
+formula: (Mg, Fe , Al)3 (Al , Si)4 O10 (OH)2 4(H2O)
+
+metadata:
+  key: "Vrm"
+  crystal_system: "monoclinic"
+
+chemistry:
+  Mg:
+    formula: "3*x"
+  Fe:
+    formula: "3*y"
+  Al:
+    formula: "3*(1-x-y)+4*z"
+  Si:
+    formula: "4*(1-z)"
+  O:
+    formula: "16"
+  H:
+    formula: "10"
+
+physical_properties:
+  a_K:
+    value: 0.13999999999999999
+    ref: "unknown"
+  b_K:
+    value: -276.2833333333333
+    ref: "unknown"
+  a_G:
+    value: -0.025391459074733103
+    ref: "unknown"
+  b_G:
+    value: 112.1814353499407
+    ref: "unknown"
+
+cell_data:
+  space_group:
+    value: "C2/m"
+    ref: "www.webmineral.com"
+  a:
+    value: 5.26
+    ref: "www.webmineral.com"
+  b:
+    value: 9.23
+    ref: "www.webmineral.com"
+  c:
+    value: 14.97
+    ref: "www.webmineral.com"
+  beta:
+    value: 96.82
+    ref: "www.webmineral.com"
+  Z:
+    value: 2
+    ref: "www.webmineral.com"
+
+sources:
+  - author: "John W. Anthony, Richard A. Bideaux, Kenneth W. Bladh, and Monte C. Nichols"
+    title: "Handbook of Mineralogy"
+    publisher: "Mineralogical Society of America, Chantilly, VA"
+    url: "http://www.handbookofmineralogy.org/"

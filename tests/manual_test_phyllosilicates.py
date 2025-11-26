@@ -223,3 +223,43 @@ print(f"Runtime: {delta_new:.3f} seconds")
 
 if n_datasets < 20:
     print("Results:", DEFAULT_DATA)
+
+print(f"\nDATA (SAPONITE):")
+start = time.time()
+DEFAULT_DATA = Phyllosilicates(name="Saponite", random_seed=42).generate_dataset(number=n_datasets)
+end = time.time()
+delta_new = end - start
+print(f"Runtime: {delta_new:.3f} seconds")
+
+if n_datasets < 20:
+    print("Results:", DEFAULT_DATA)
+
+print(f"\nDATA (GLAUCONITE):")
+start = time.time()
+DEFAULT_DATA = Phyllosilicates(name="Glauconite", random_seed=42).generate_dataset(number=n_datasets)
+end = time.time()
+delta_new = end - start
+print(f"Runtime: {delta_new:.3f} seconds")
+
+if n_datasets < 20:
+    print("Results:", DEFAULT_DATA)
+
+print(f"\nDATA (VERMICULITE):")
+start = time.time()
+DEFAULT_DATA = Phyllosilicates(name="Vermiculite", random_seed=42).generate_dataset(number=n_datasets)
+end = time.time()
+delta_new = end - start
+print(f"Runtime: {delta_new:.3f} seconds")
+
+if n_datasets < 20:
+    print("Results:", DEFAULT_DATA)
+
+print(f"\nDATA (CHLORITE):")
+start = time.time()
+DEFAULT_DATA = Phyllosilicates(name="Chlorite", random_seed=42).generate_dataset(number=n_datasets)
+end = time.time()
+delta_new = end - start
+print(f"Runtime: {delta_new:.3f} seconds")
+
+if n_datasets < 20:
+    print("Results:", DEFAULT_DATA)
