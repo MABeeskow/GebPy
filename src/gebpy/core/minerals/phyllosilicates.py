@@ -6,7 +6,7 @@
 # Name:		phyllosilicates.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		26.11.2025
+# Date:		27.11.2025
 
 #-----------------------------------------------
 
@@ -28,8 +28,7 @@ from asteval import Interpreter
 from modules.chemistry import PeriodicSystem
 from modules.geochemistry import MineralChemistry
 from modules.geophysics import WellLog as wg
-from modules.minerals import CrystalPhysics
-from src.gebpy.core.minerals.common import GeophysicalProperties, CrystallographicProperties
+from src.gebpy.core.minerals.common import GeophysicalProperties, CrystallographicProperties, CrystalPhysics
 
 # CODE
 class Phyllosilicates:
@@ -496,8 +495,8 @@ class Phyllosilicates:
             amounts.append([element, self.elements[element][1], amount])
         element = [self.elements[name] for name, *_ in amounts]
         # Elastic properties
-        val_K = helper_results["K"]
-        val_G = helper_results["G"]
+        val_K = helper_results["K"]*10**9
+        val_G = helper_results["G"]*10**9
         rho = helper_results["rho"]
         rho_e = helper_results["rho_e"]
         E, nu = self.geophysical_properties.calculate_elastic_properties(bulk_mod=val_K, shear_mod=val_G)

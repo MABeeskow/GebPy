@@ -1,0 +1,41 @@
+mineral: Na-Nepheline
+group: Tectosilicates
+formula: NaAlSiO4
+
+metadata:
+  key: "Na-Nph"
+  crystal_system: "hexagonal"
+
+chemistry:
+  Na: 1
+  Al: 1
+  Si: 1
+  O: 4
+
+physical_properties:
+  K:
+    value: 92.27e9
+    ref: "unknown"
+  G:
+    value: 64.72e9
+    ref: "unknown"
+
+cell_data:
+  space_group:
+    value: "P63"
+    ref: "www.webmineral.com"
+  a:
+    value: 10.01
+    ref: "www.webmineral.com"
+  c:
+    value: 8.405
+    ref: "www.webmineral.com"
+  Z:
+    value: 8
+    ref: "www.webmineral.com"
+
+sources:
+  - author: "John W. Anthony, Richard A. Bideaux, Kenneth W. Bladh, and Monte C. Nichols"
+    title: "Handbook of Mineralogy"
+    publisher: "Mineralogical Society of America, Chantilly, VA"
+    url: "http://www.handbookofmineralogy.org/"

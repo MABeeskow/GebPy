@@ -6,7 +6,7 @@
 # Name:		oxides.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		01.11.2025
+# Date:		27.11.2025
 
 #-----------------------------------------------
 
@@ -27,8 +27,7 @@ from soupsieve.util import lower
 from modules.chemistry import PeriodicSystem
 from modules.geochemistry import MineralChemistry
 from modules.geophysics import WellLog as wg
-from modules.minerals import CrystalPhysics
-from src.gebpy.core.minerals.common import GeophysicalProperties, CrystallographicProperties
+from src.gebpy.core.minerals.common import GeophysicalProperties, CrystallographicProperties, CrystalPhysics
 
 # CODE
 class Oxides:

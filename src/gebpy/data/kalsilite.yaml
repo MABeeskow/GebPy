@@ -1,0 +1,41 @@
+mineral: Kalsilite
+group: Tectosilicates
+formula: KAlSiO4
+
+metadata:
+  key: "Kls"
+  crystal_system: "trigonal"
+
+chemistry:
+  K: 1
+  Al: 1
+  Si: 1
+  O: 4
+
+physical_properties:
+  K:
+    value: 78.87e9
+    ref: "unknown"
+  G:
+    value: 55.98e9
+    ref: "unknown"
+
+cell_data:
+  space_group:
+    value: "P31c"
+    ref: "www.webmineral.com"
+  a:
+    value: 5.157
+    ref: "www.webmineral.com"
+  c:
+    value: 8.706
+    ref: "www.webmineral.com"
+  Z:
+    value: 2
+    ref: "www.webmineral.com"
+
+sources:
+  - author: "John W. Anthony, Richard A. Bideaux, Kenneth W. Bladh, and Monte C. Nichols"
+    title: "Handbook of Mineralogy"
+    publisher: "Mineralogical Society of America, Chantilly, VA"
+    url: "http://www.handbookofmineralogy.org/"

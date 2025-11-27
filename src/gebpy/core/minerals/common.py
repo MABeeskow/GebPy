@@ -6,7 +6,7 @@
 # Name:		common.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		19.10.2025
+# Date:		27.11.2025
 
 #-----------------------------------------------
 
@@ -16,9 +16,10 @@ This module contains several routines that are commonly used by the different mi
 """
 
 # PACKAGES
+import numpy as np
+import scipy
 
 # MODULES
-from modules.minerals import CrystalPhysics
 
 # CODE
 class GeophysicalProperties:
@@ -59,3 +60,82 @@ class CrystallographicProperties:
     def calculate_electron_density(self, constr_electron_density):
         rho_e = constr_electron_density.calculate_electron_density()    # Electron density
         return rho_e
+
+class CrystalPhysics:
+    def __init__(self, properties):
+        self.properties = properties
+        self.avogadro = scipy.constants.physical_constants["Avogadro constant"]
+
+    def calculate_bulk_density(self):
+        # properties = [ molar mass, formula unit, unit cell volume ]
+        M = self.properties[0]  # in g/mol
+        Z = self.properties[1]
+        V = self.properties[2]  # in cm^3
+
+        # density rho in kg/m^3
+        rho = (Z*M)/(V*self.avogadro[0])*1000
+
+        return rho
+
+    def calculate_electron_density(self):
+        # properties = [ elements, amounts, bulk density ]
+        Z = [self.properties[1][i]*self.properties[0][i][1]
+             for i in range(len(self.properties[0]))][0]/np.sum(self.properties[1])
+        A = [self.properties[1][i]*self.properties[0][i][2]
+             for i in range(len(self.properties[0]))][0]/np.sum(self.properties[1])
+        rho_b = self.properties[2]
+
+        rho_e = 2*Z/A * rho_b
+
+        return rho_e
+
+    def calculate_volume(self):
+        # properties = [ list of lattice lengths, list of lattice angles, crystal system ]
+        lenghts = self.properties[0]    # in angstrom
+        angles = self.properties[1]     # in degree
+        crystalsystem = self.properties[2]
+
+        if crystalsystem == "cubic":
+            a = lenghts[0]*10**(-8)
+            V = a**3
+            return V
+        elif crystalsystem == "tetragonal":
+            a = lenghts[0]*10**(-8)
+            c = lenghts[1]*10**(-8)
+            V = a**2 * c
+            return V
+        elif crystalsystem == "hexagonal":
+            a = lenghts[0]*10**(-8)
+            c = lenghts[1]*10**(-8)
+            angle = 60
+            V = (a**2 * c)*np.sin(angle*np.pi/180)
+            return V
+        elif crystalsystem == "trigonal":
+            a = lenghts[0]*10**(-8)
+            c = lenghts[1]*10**(-8)
+            angle = 60
+            V = (a**2 * c)*np.sin(angle*np.pi/180)
+            return V
+        elif crystalsystem == "orthorhombic":
+            a = lenghts[0]*10**(-8)
+            b = lenghts[1]*10**(-8)
+            c = lenghts[2]*10**(-8)
+            V = a * b * c
+            return V
+        elif crystalsystem == "monoclinic":
+            a = lenghts[0]*10**(-8)
+            b = lenghts[1]*10**(-8)
+            c = lenghts[2]*10**(-8)
+            beta = angles[0]
+            V = (a * b * c)*np.sin(beta*np.pi/180)
+            return V
+        elif crystalsystem == "triclinic":
+            a = lenghts[0]*10**(-8)
+            b = lenghts[1]*10**(-8)
+            c = lenghts[2]*10**(-8)
+            alpha = angles[0]
+            beta = angles[1]
+            gamma = angles[2]
+            V = (a * b * c)*(1 - np.cos(alpha*np.pi/180)**2 - np.cos(beta*np.pi/180)**2 - np.cos(gamma*np.pi/180)**2 +
+                             2*(abs(np.cos(alpha*np.pi/180)*np.cos(beta*np.pi/180)*np.cos(gamma*np.pi/180))))**(0.5)
+            return V

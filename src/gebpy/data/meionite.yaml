@@ -1,0 +1,42 @@
+mineral: Meionite
+group: Tectosilicates
+formula: Ca4Al6Si6O24CO3
+
+metadata:
+  key: "Mei"
+  crystal_system: "tetragonal"
+
+chemistry:
+  Ca: 4
+  Al: 6
+  Si: 6
+  O: 27
+  C: 1
+
+physical_properties:
+  K:
+    value: 104.61e9
+    ref: "unknown"
+  G:
+    value: 69.49e9
+    ref: "unknown"
+
+cell_data:
+  space_group:
+    value: "P4m"
+    ref: "www.webmineral.com"
+  a:
+    value: 12.26
+    ref: "www.webmineral.com"
+  c:
+    value: 7.61
+    ref: "www.webmineral.com"
+  Z:
+    value: 2
+    ref: "www.webmineral.com"
+
+sources:
+  - author: "John W. Anthony, Richard A. Bideaux, Kenneth W. Bladh, and Monte C. Nichols"
+    title: "Handbook of Mineralogy"
+    publisher: "Mineralogical Society of America, Chantilly, VA"
+    url: "http://www.handbookofmineralogy.org/"

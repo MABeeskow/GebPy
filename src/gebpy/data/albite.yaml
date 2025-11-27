@@ -1,0 +1,53 @@
+mineral: Albite
+group: Tectosilicates
+formula: NaAlSi3O8
+
+metadata:
+  key: "Ab"
+  crystal_system: "triclinic"
+
+chemistry:
+  Na: 1
+  Al: 1
+  Si: 3
+  O: 8
+
+physical_properties:
+  K:
+    value: 103.45e9
+    ref: "unknown"
+  G:
+    value: 69.0e9
+    ref: "unknown"
+
+cell_data:
+  space_group:
+    value: "C1"
+    ref: "www.handbookofmineralogy.org"
+  a:
+    value: 8.137
+    ref: "www.handbookofmineralogy.org"
+  b:
+    value: 12.785
+    ref: "www.handbookofmineralogy.org"
+  c:
+    value: 7.1583
+    ref: "www.handbookofmineralogy.org"
+  alpha:
+    value: 94.26
+    ref: "www.handbookofmineralogy.org"
+  beta:
+    value: 116.60
+    ref: "www.handbookofmineralogy.org"
+  gamma:
+    value: 87.71
+    ref: "www.handbookofmineralogy.org"
+  Z:
+    value: 4
+    ref: "www.handbookofmineralogy.org"
+
+sources:
+  - author: "John W. Anthony, Richard A. Bideaux, Kenneth W. Bladh, and Monte C. Nichols"
+    title: "Handbook of Mineralogy"
+    publisher: "Mineralogical Society of America, Chantilly, VA"
+    url: "http://www.handbookofmineralogy.org/"

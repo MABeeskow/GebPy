@@ -1,0 +1,53 @@
+mineral: Anorthite
+group: Tectosilicates
+formula: CaAl2Si2O8
+
+metadata:
+  key: "An"
+  crystal_system: "triclinic"
+
+chemistry:
+  Ca: 2
+  Al: 2
+  Si: 2
+  O: 8
+
+physical_properties:
+  K:
+    value: 114.72e9
+    ref: "unknown"
+  G:
+    value: 73.72e9
+    ref: "unknown"
+
+cell_data:
+  space_group:
+    value: "P1"
+    ref: "www.handbookofmineralogy.org"
+  a:
+    value: 8.1768
+    ref: "www.handbookofmineralogy.org"
+  b:
+    value: 12.8768
+    ref: "www.handbookofmineralogy.org"
+  c:
+    value: 14.1690
+    ref: "www.handbookofmineralogy.org"
+  alpha:
+    value: 93.17
+    ref: "www.handbookofmineralogy.org"
+  beta:
+    value: 115.85
+    ref: "www.handbookofmineralogy.org"
+  gamma:
+    value: 92.22
+    ref: "www.handbookofmineralogy.org"
+  Z:
+    value: 8
+    ref: "www.handbookofmineralogy.org"
+
+sources:
+  - author: "John W. Anthony, Richard A. Bideaux, Kenneth W. Bladh, and Monte C. Nichols"
+    title: "Handbook of Mineralogy"
+    publisher: "Mineralogical Society of America, Chantilly, VA"
+    url: "http://www.handbookofmineralogy.org/"

@@ -1,0 +1,53 @@
+mineral: Microcline
+group: Tectosilicates
+formula: KAlSi3O8
+
+metadata:
+  key: "Mcc"
+  crystal_system: "triclinic"
+
+chemistry:
+  K: 1
+  Al: 1
+  Si: 3
+  O: 8
+
+physical_properties:
+  K:
+    value: 89.78e9
+    ref: "unknown"
+  G:
+    value: 61.52e9
+    ref: "unknown"
+
+cell_data:
+  space_group:
+    value: "C1"
+    ref: "www.handbookofmineralogy.org"
+  a:
+    value: 8.5784
+    ref: "www.handbookofmineralogy.org"
+  b:
+    value: 12.9600
+    ref: "www.handbookofmineralogy.org"
+  c:
+    value: 7.2112
+    ref: "www.handbookofmineralogy.org"
+  alpha:
+    value: 90.18
+    ref: "www.handbookofmineralogy.org"
+  beta:
+    value: 115.58
+    ref: "www.handbookofmineralogy.org"
+  gamma:
+    value: 87.75
+    ref: "www.handbookofmineralogy.org"
+  Z:
+    value: 4
+    ref: "www.handbookofmineralogy.org"
+
+sources:
+  - author: "John W. Anthony, Richard A. Bideaux, Kenneth W. Bladh, and Monte C. Nichols"
+    title: "Handbook of Mineralogy"
+    publisher: "Mineralogical Society of America, Chantilly, VA"
+    url: "http://www.handbookofmineralogy.org/"
