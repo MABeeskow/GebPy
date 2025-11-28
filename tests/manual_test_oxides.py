@@ -53,3 +53,13 @@ print("\nSpeed ratio:", round(speed_ratio, 4))
 print("Speed boost:", round(speed_boost, 2), "%")
 
 n_datasets = 5
+
+print(f"\nDATA (ANATASE):")
+start = time.time()
+DEFAULT_DATA = Oxides(name="Anatase", random_seed=42).generate_dataset(number=n_datasets)
+end = time.time()
+delta_new = end - start
+print(f"Runtime: {delta_new:.5f} seconds")
+
+if n_datasets < 20:
+    print("Results:", DEFAULT_DATA)

@@ -20,6 +20,10 @@ chemistry:
   H:
     formula: "2 + 2*n"
 
+variables:
+  x: [0.0, 0.5]
+  n: [1, 10]
+
 physical_properties:
   a_K:
     value: 0.040233916009293824

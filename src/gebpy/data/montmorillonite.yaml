@@ -22,6 +22,11 @@ chemistry:
   H:
     formula: "2 + 2*n"
 
+variables:
+  x: [0.6, 0.7]
+  y: [0.9, 1.0]
+  n: [8, 12]
+
 physical_properties:
   a_K:
     value: 0.040233916009293824

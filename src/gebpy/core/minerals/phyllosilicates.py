@@ -6,7 +6,7 @@
 # Name:		phyllosilicates.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		27.11.2025
+# Date:		28.11.2025
 
 #-----------------------------------------------
 
@@ -18,10 +18,8 @@ This module controls the generation of the synthetic data of the phyllosilicate 
 # PACKAGES
 import yaml
 import numpy as np
-import pandas as pd
 from pathlib import Path
 
-from soupsieve.util import lower
 from asteval import Interpreter
 
 # MODULES
@@ -32,12 +30,15 @@ from src.gebpy.core.minerals.common import GeophysicalProperties, Crystallograph
 
 # CODE
 class Phyllosilicates:
-    def __init__(self, name, random_seed) -> None:
+    def __init__(self, name, random_seed, rounding=3) -> None:
         self.name = name
         self.random_seed = random_seed
         self.rng = np.random.default_rng(random_seed)
         self.current_seed = int(np.round(self.rng.uniform(0, 1000), 0))
         self.data_path = Path(__file__).resolve().parents[2] / "data"
+        self.rounding = rounding
+        self.ae = Interpreter()
+        self.cache = {}
 
         # Chemistry
         self.elements = {
@@ -62,10 +63,10 @@ class Phyllosilicates:
             "Annite", "Eastonite", "Illite", "Kaolinite", "Phlogopite", "Siderophyllite", "Chamosite", "Clinochlore",
             "Pennantite", "Nimite", "Muscovite", "Talc", "Chrysotile", "Antigorite", "Pyrophyllite", "Montmorillonite",
             "Nontronite", "Saponite", "Glauconite", "Vermiculite", "Chlorite"]:
-            self.yaml_data = self._load_yaml(lower(self.name))
+            self.yaml_data = self._load_yaml(self.name.lower())
 
     def _load_yaml(self, mineral_name: str) -> dict:
-        yaml_file = self.data_path / f"{mineral_name.lower()}.yaml"
+        yaml_file = self.data_path / f"{mineral_name}.yaml"
         if not yaml_file.exists():
             raise FileNotFoundError(f"No YAML file found for {mineral_name}.")
         with open(yaml_file, "r") as f:
@@ -83,30 +84,47 @@ class Phyllosilicates:
         except (KeyError, TypeError):
             return default
 
-    def generate_dataset(self, number: int = 1) -> None:
+    def _get_variables(self):
+        if self.name == "Glauconite":
+            x = round(self.rng.uniform(0, 1), 2)
+            y1 = round(self.rng.uniform(0, 1), 2)
+            y2 = round(self.rng.uniform(0, 1 - y1), 2)
+            z = round(self.rng.uniform(0, 1), 2)
+            return {"x": x, "y1": y1, "y2": y2, "z": z}
+        elif self.name == "Vermiculite":
+            x = round(self.rng.uniform(0, 1), 2)
+            y = round(self.rng.uniform(0, (1 - x)), 2)
+            z = round(self.rng.uniform(0, 1), 2)
+            return {"x": x, "y": y, "z": z}
+        elif self.name == "Chlorite":
+            x = round(self.rng.uniform(0, 1), 2)
+            y = round(self.rng.uniform(0, (1 - x)), 2)
+            upper = max(0, (1 - x - y))
+            z = round(self.rng.uniform(0, upper), 2)
+            return {"x": x, "y": y, "z": z}
+        else:
+            if "variables" not in self.yaml_data:
+                return {}
+            vars = {}
+            for k, v in self.yaml_data["variables"].items():
+                if isinstance(v[0], int):
+                    vars[k] = self.rng.integers(v[0], v[1])
+                else:
+                    vars[k] = round(self.rng.uniform(v[0], v[1]), 2)
+            return vars
+
+    def generate_dataset(self, number: int = 1, as_dataframe=False) -> None:
+        fixed = {
+            "Annite", "Eastonite", "Illite", "Kaolinite", "Phlogopite", "Siderophyllite",
+            "Chamosite", "Clinochlore", "Pennantite", "Nimite", "Muscovite",
+            "Talc", "Chrysotile", "Antigorite", "Pyrophyllite"}
+        variable = {"Montmorillonite", "Nontronite", "Saponite", "Glauconite", "Vermiculite", "Chlorite"}
+        endmember = {"Biotite"}
+
         generators = {
-            "Annite": self.create_mineral_data_fixed_composition,
-            "Eastonite": self.create_mineral_data_fixed_composition,
-            "Illite": self.create_mineral_data_fixed_composition,
-            "Kaolinite": self.create_mineral_data_fixed_composition,
-            "Phlogopite": self.create_mineral_data_fixed_composition,
-            "Siderophyllite": self.create_mineral_data_fixed_composition,
-            "Chamosite": self.create_mineral_data_fixed_composition,
-            "Clinochlore": self.create_mineral_data_fixed_composition,
-            "Pennantite": self.create_mineral_data_fixed_composition,
-            "Nimite": self.create_mineral_data_fixed_composition,
-            "Muscovite": self.create_mineral_data_fixed_composition,
-            "Talc": self.create_mineral_data_fixed_composition,
-            "Chrysotile": self.create_mineral_data_fixed_composition,
-            "Antigorite": self.create_mineral_data_fixed_composition,
-            "Pyrophyllite": self.create_mineral_data_fixed_composition,
-            "Biotite": self.create_mineral_data_endmember_series,
-            "Montmorillonite": self.create_mineral_data_variable_composition,
-            "Nontronite": self.create_mineral_data_variable_composition,
-            "Saponite": self.create_mineral_data_variable_composition,
-            "Glauconite": self.create_mineral_data_variable_composition,
-            "Vermiculite": self.create_mineral_data_variable_composition,
-            "Chlorite": self.create_mineral_data_variable_composition,
+            **{m: self.create_mineral_data_fixed_composition for m in fixed},
+            **{m: self.create_mineral_data_variable_composition for m in variable},
+            **{m: self.create_mineral_data_endmember_series for m in endmember},
         }
 
         if self.name not in generators:
@@ -133,8 +151,11 @@ class Phyllosilicates:
                     else:
                         for key_2, value_2 in value.items():
                             dataset[key][key_2].append(value_2)
-
-        return dataset
+        if as_dataframe:
+            import pandas as pd
+            return pd.DataFrame(dataset)
+        else:
+            return dataset
 
     def create_mineral_data_fixed_composition(self):
         """
@@ -156,9 +177,6 @@ class Phyllosilicates:
             majors_data.append([element, n_order, val_amount, molar_mass])
             molar_mass_pure += val_amount*molar_mass
         majors_data.sort(key=lambda x: x[1])
-
-        if not hasattr(self, "cache"):
-            self.cache = {}
 
         if name_lower not in self.cache:
             vals = {}
@@ -242,23 +260,40 @@ class Phyllosilicates:
         p = None
         # Results
         results = {
-            "mineral": val_key, "state": val_state, "M": round(molar_mass, 3),
-            "chemistry": {name: round(val[1], 6) for name, *val in amounts}, "rho": round(rho, 3),
-            "rho_e": round(rho_e, 3), "V": round(V_m, 3), "vP": round(vP, 3), "vS": round(vS, 3),
-            "vP/vS": round(vPvS, 3), "K": round(val_K*10**(-9), 3), "G": round(val_G*10**(-9), 3),
-            "E": round(E*10**(-9), 3), "nu": round(nu, 6), "GR": round(gamma_ray, 3), "PE": round(pe, 3),
-            "U": round(U, 3), "p": p}
+            "mineral": val_key, "state": val_state, "M": round(molar_mass, self.rounding),
+            "chemistry": {name: round(val[1], 6) for name, *val in amounts}, "rho": round(rho, self.rounding),
+            "rho_e": round(rho_e, self.rounding), "V": round(V_m, self.rounding), "vP": round(vP, self.rounding),
+            "vS": round(vS, self.rounding), "vP/vS": round(vPvS, self.rounding),
+            "K": round(val_K*10**(-9), self.rounding), "G": round(val_G*10**(-9), self.rounding),
+            "E": round(E*10**(-9), self.rounding), "nu": round(nu, 6), "GR": round(gamma_ray, self.rounding),
+            "PE": round(pe, self.rounding), "U": round(U, self.rounding), "p": p}
         return results
 
     def _evaluate_chemistry(self, chemistry_dict, **variables):
+        """
+        Evaluates algebraic expressions of element amounts defined in the YAML file.
+
+        Args:
+            chemistry_dict (dict): Dictionary from YAML containing element formulas as strings.
+            **variables: Variable assignments (e.g. x=0.5, y=1, n=8)
+
+        Returns:
+            dict: {element: calculated_amount}
+        """
+        self.ae.symtable.clear()
+        # Übergib alle Variablen an die Symboltabelle
+        for k, v in variables.items():
+            self.ae.symtable[k] = v
+
+        # Berechne für jedes Element den Ausdruck aus der YAML
         results = {}
-        for element, data in chemistry_dict.items():
+        for el, data in chemistry_dict.items():
             expr = str(data["formula"])
             try:
-                value = eval(expr, {}, variables)
-            except Exception:
-                value = float(expr) if expr.replace(".", "", 1).isdigit() else None
-            results[element] = value
+                results[el] = self.ae(expr)
+            except Exception as e:
+                raise ValueError(f"Error evaluating formula for element '{el}': {expr} ({e})")
+
         return results
 
     def create_mineral_data_variable_composition(self):
@@ -274,36 +309,7 @@ class Phyllosilicates:
         # Molar mass, elemental amounts
         majors_data = []
         molar_mass_pure = 0
-        if self.name == "Montmorillonite":
-            x = round(self.rng.uniform(0.6, 0.7), 2)
-            y = round(self.rng.uniform(0.9, 1), 2)
-            n = self.rng.integers(8, 12)
-            vars = {"x": x, "y": y, "n": n}
-        elif self.name == "Saponite":
-            x = round(self.rng.uniform(0.0, 0.75), 2)
-            y = round(self.rng.uniform(0.0, 0.5), 2)
-            n = self.rng.integers(1, 5)
-            vars = {"x": x, "y": y, "n": n}
-        elif self.name == "Glauconite":
-            x = round(self.rng.uniform(0, 1), 2)
-            y1 = round(self.rng.uniform(0, 1), 2)
-            y2 = round(self.rng.uniform(0, (1 - y1)), 2)
-            z = round(self.rng.integers(0, 1), 2)
-            vars = {"x": x, "y1": y1, "y2": y2, "z": z}
-        elif self.name == "Vermiculite":
-            x = round(self.rng.uniform(0, 1), 2)
-            y = round(self.rng.uniform(0, (1-x)), 2)
-            z = round(self.rng.uniform(0, 1), 2)
-            vars = {"x": x, "y": y, "z": z}
-        elif self.name == "Chlorite":
-            x = round(self.rng.uniform(0, 1), 2)
-            y = round(self.rng.uniform(0, (1 - x)), 2)
-            z = round(self.rng.uniform(0, (1 - x - y)), 2)
-            vars = {"x": x, "y": y, "z": z}
-        elif self.name == "Nontronite":
-            x = round(self.rng.uniform(0.0, 0.5), 2)
-            n = self.rng.integers(1, 10)
-            vars = {"x": x, "n": n}
+        vars = self._get_variables()
 
         amounts_elements = self._evaluate_chemistry(self.yaml_data["chemistry"], **vars)
         for element, amount in amounts_elements.items():
@@ -313,9 +319,6 @@ class Phyllosilicates:
             majors_data.append([element, n_order, val_amount, molar_mass])
             molar_mass_pure += val_amount*molar_mass
         majors_data.sort(key=lambda x: x[1])
-
-        if not hasattr(self, "cache"):
-            self.cache = {}
 
         if name_lower not in self.cache:
             vals = {}
@@ -391,7 +394,7 @@ class Phyllosilicates:
             dataRho_Fe = CrystalPhysics([molar_mass, Z_Fe, V_Fe])
             rho_Fe = dataRho_Fe.calculate_bulk_density()
             rho_e_Fe = wg(amounts=amounts, elements=element, rho_b=rho_Fe).calculate_electron_density()
-            #
+
             dataV_Mg = CrystalPhysics([[5.3, 9.3, 14.3], [97], "monoclinic"])
             V_Mg = dataV_Mg.calculate_volume()
             Z_Mg = 2
@@ -399,7 +402,7 @@ class Phyllosilicates:
             dataRho_Mg = CrystalPhysics([molar_mass, Z_Mg, V_Mg])
             rho_Mg = dataRho_Mg.calculate_bulk_density()
             rho_e_Mg = wg(amounts=amounts, elements=element, rho_b=rho_Mg).calculate_electron_density()
-            #
+
             dataV_Mn = CrystalPhysics([[5.454, 9.45, 14.4], [97.2], "monoclinic"])
             V_Mn = dataV_Mn.calculate_volume()
             Z_Mn = 2
@@ -407,7 +410,7 @@ class Phyllosilicates:
             dataRho_Mn = CrystalPhysics([molar_mass, Z_Mn, V_Mn])
             rho_Mn = dataRho_Mn.calculate_bulk_density()
             rho_e_Mn = wg(amounts=amounts, elements=element, rho_b=rho_Mn).calculate_electron_density()
-            #
+
             dataV_Ni = CrystalPhysics([[5.32, 9.214, 14.302], [97.1], "monoclinic"])
             V_Ni = dataV_Ni.calculate_volume()
             Z_Ni = 2
@@ -415,7 +418,10 @@ class Phyllosilicates:
             dataRho_Ni = CrystalPhysics([molar_mass, Z_Ni, V_Ni])
             rho_Ni = dataRho_Ni.calculate_bulk_density()
             rho_e_Ni = wg(amounts=amounts, elements=element, rho_b=rho_Ni).calculate_electron_density()
-            #
+
+            x = vars["x"]
+            y = vars["y"]
+            z = vars["z"]
             V_m = x*V_m_Fe + y*V_m_Mg + z*V_m_Mn + (1-x-y-z)*V_m_Ni
             rho = x*rho_Fe + y*rho_Mg + z*rho_Mn + (1-x-y-z)*rho_Ni
             rho_e = x*rho_e_Fe + y*rho_e_Mg + z*rho_e_Mn + (1-x-y-z)*rho_e_Ni
@@ -436,12 +442,13 @@ class Phyllosilicates:
         p = None
         # Results
         results = {
-            "mineral": val_key, "state": val_state, "M": round(molar_mass, 3),
-            "chemistry": {name: round(val[1], 6) for name, *val in amounts}, "rho": round(rho, 3),
-            "rho_e": round(rho_e, 3), "V": round(V_m, 3), "vP": round(vP, 3), "vS": round(vS, 3),
-            "vP/vS": round(vPvS, 3), "K": round(val_K*10**(-9), 3), "G": round(val_G*10**(-9), 3),
-            "E": round(E*10**(-9), 3), "nu": round(nu, 6), "GR": round(gamma_ray, 3), "PE": round(pe, 3),
-            "U": round(U, 3), "p": p}
+            "mineral": val_key, "state": val_state, "M": round(molar_mass, self.rounding),
+            "chemistry": {name: round(val[1], 6) for name, *val in amounts}, "rho": round(rho, self.rounding),
+            "rho_e": round(rho_e, self.rounding), "V": round(V_m, self.rounding), "vP": round(vP, self.rounding),
+            "vS": round(vS, self.rounding), "vP/vS": round(vPvS, self.rounding),
+            "K": round(val_K*10**(-9), self.rounding), "G": round(val_G*10**(-9), self.rounding),
+            "E": round(E*10**(-9), self.rounding), "nu": round(nu, 6), "GR": round(gamma_ray, self.rounding),
+            "PE": round(pe, self.rounding), "U": round(U, self.rounding), "p": p}
         return results
 
     def create_mineral_data_endmember_series(self):
@@ -451,9 +458,6 @@ class Phyllosilicates:
         For output, they are converted to GPa.
         """
         val_state = "variable"
-
-        if not hasattr(self, "cache"):
-            self.cache = {}
 
         if self.name == "Biotite":
             name_lower = self.name.lower()
@@ -511,12 +515,13 @@ class Phyllosilicates:
         p = None
         # Results
         results = {
-            "mineral": val_key, "state": val_state, "M": round(helper_results["M"], 3),
-            "chemistry": {name: round(val[1], 6) for name, *val in amounts}, "rho": round(rho, 3),
-            "rho_e": round(rho_e, 3), "V": round(helper_results["V"], 3), "vP": round(vP, 3), "vS": round(vS, 3),
-            "vP/vS": round(vPvS, 3), "K": round(val_K*10**(-9), 3), "G": round(val_G*10**(-9), 3),
-            "E": round(E*10**(-9), 3), "nu": round(nu, 6), "GR": round(gamma_ray, 3), "PE": round(pe, 3),
-            "U": round(U, 3), "p": p}
+            "mineral": val_key, "state": val_state, "M": round(helper_results["M"], self.rounding),
+            "chemistry": {name: round(val[1], 6) for name, *val in amounts}, "rho": round(rho, self.rounding),
+            "rho_e": round(rho_e, self.rounding), "V": round(helper_results["V"], self.rounding),
+            "vP": round(vP, self.rounding), "vS": round(vS, self.rounding), "vP/vS": round(vPvS, self.rounding),
+            "K": round(val_K*10**(-9), self.rounding), "G": round(val_G*10**(-9), self.rounding),
+            "E": round(E*10**(-9), self.rounding), "nu": round(nu, 6), "GR": round(gamma_ray, self.rounding), #
+            "PE": round(pe, self.rounding), "U": round(U, self.rounding), "p": p}
         return results
 
 # TEST

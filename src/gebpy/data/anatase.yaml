@@ -1,13 +1,13 @@
-mineral: Quartz
+mineral: Anatase
 group: Oxides
-formula: Si O2
+formula: TiO2
 
 metadata:
-  key: "Qz"
-  crystal_system: "trigonal"
+  key: "Anat"
+  crystal_system: "tetragonal"
 
 chemistry:
-  Si: 1
+  Ti: 1
   O: 2
 
 physical_properties:
@@ -21,16 +21,16 @@ physical_properties:
 cell_data:
   space_group:
     value: "P321"
-    ref: "www.handbookofmineralogy.org"
+    ref: "www.webmineral.com"
   a:
-    value: 4.9135
-    ref: "www.handbookofmineralogy.org"
+    value: 3.793
+    ref: "www.webmineral.com"
   c:
-    value: 5.4050
-    ref: "www.handbookofmineralogy.org"
+    value: 9.52
+    ref: "www.webmineral.com"
   Z:
-    value: 3
-    ref: "www.handbookofmineralogy.org"
+    value: 4
+    ref: "www.webmineral.com"
 
 sources:
   - author: "John W. Anthony, Richard A. Bideaux, Kenneth W. Bladh, and Monte C. Nichols"
