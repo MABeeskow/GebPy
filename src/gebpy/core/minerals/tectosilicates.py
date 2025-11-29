@@ -74,17 +74,21 @@ class Tectosilicates:
             "Orthoclase", "Albite", "Microcline", "Anorthite", "Marialite", "Meionite", "Kalsilite", "NaNepheline"]:
             self.yaml_data = self._load_yaml(self.name.lower())
         if self.name == "Alkali feldspar":
-            for mineral in ["Albite", "Orthoclase"]:
-                self.yaml_data = self._load_yaml(mineral.lower())
+            self.yaml_data = {
+                mineral.lower(): self._load_yaml(mineral.lower())
+                for mineral in ["Albite", "Orthoclase"]}
         elif self.name == "Plagioclase":
-            for mineral in ["Albite", "Anorthite"]:
-                self.yaml_data = self._load_yaml(mineral.lower())
+            self.yaml_data = {
+                mineral.lower(): self._load_yaml(mineral.lower())
+                for mineral in ["Albite", "Anorthite"]}
         elif self.name == "Scapolite":
-            for mineral in ["Marialite", "Meionite"]: #"NaNepheline", "Kalsilite"
-                self.yaml_data = self._load_yaml(mineral.lower())
+            self.yaml_data = {
+                mineral.lower(): self._load_yaml(mineral.lower())
+                for mineral in ["Marialite", "Meionite"]}
         elif self.name == "Nepheline":
-            for mineral in ["NaNepheline", "Kalsilite"]:
-                self.yaml_data = self._load_yaml(mineral.lower())
+            self.yaml_data = {
+                mineral.lower(): self._load_yaml(mineral.lower())
+                for mineral in ["NaNepheline", "Kalsilite"]}
 
     def _load_yaml(self, mineral_name: str) -> dict:
         # 1) Cache-Hit
@@ -290,7 +294,7 @@ class Tectosilicates:
         majors_data, amounts_elements, molar_mass_pure, vars = self._determine_majors_data()
 
         if name_lower not in self.cache:
-            vals = self.cache[name_lower]["constants"]
+            vals = self._extract_values_from_yaml()
             self.cache[name_lower] = {"constants": vals}
         else:
             vals = self.cache[name_lower]["constants"]

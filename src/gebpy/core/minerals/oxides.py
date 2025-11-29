@@ -279,7 +279,7 @@ class Oxides:
         majors_data, amounts_elements, molar_mass_pure, vars = self._determine_majors_data()
 
         if name_lower not in self.cache:
-            vals = self.cache[name_lower]["constants"]
+            vals = self._extract_values_from_yaml()
             self.cache[name_lower] = {"constants": vals}
         else:
             vals = self.cache[name_lower]["constants"]
