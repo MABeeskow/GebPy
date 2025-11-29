@@ -271,6 +271,12 @@ class Phyllosilicates:
             V_m_Ni = MineralChemistry().calculate_molar_volume(volume_cell=V_Ni, z=Z_Ni)
             return V_Ni, V_m_Ni, Z_Ni
 
+    def _calculate_densities_chlorite(self, molar_mass, Z, V, amounts, element):
+        dataRho = CrystalPhysics([molar_mass, Z, V])
+        rho = dataRho.calculate_bulk_density()
+        rho_e = wg(amounts=amounts, elements=element, rho_b=rho).calculate_electron_density()
+        return rho, rho_e
+
     def _extract_values_from_yaml(self):
         vals = {}
         # Physical parameters
@@ -287,17 +293,7 @@ class Phyllosilicates:
 
         return vals
 
-    def create_mineral_data_variable_composition(self):
-        """
-        Synthetic mineral data generation for an user-selected mineral.
-        All mechanical properties (K, G, E) are stored in Pascals internally.
-        For output, they are converted to GPa.
-        """
-        name_lower = self.name.lower()
-        # Chemistry
-        val_state = "variable"
-        traces_data = []
-        # Molar mass, elemental amounts
+    def _determine_majors_data(self):
         majors_data = []
         molar_mass_pure = 0
         vars = self._get_variables()
@@ -309,6 +305,32 @@ class Phyllosilicates:
             majors_data.append([element, n_order, val_amount, molar_mass])
             molar_mass_pure += val_amount*molar_mass
         majors_data.sort(key=lambda x: x[1])
+        return majors_data, amounts_elements, molar_mass_pure, vars
+
+    def _calculate_molar_mass_amounts(self, amounts_elements):
+        molar_mass = 0
+        for element, amount in amounts_elements.items():
+            molar_mass += amount*float(self.elements[element][2])
+
+        amounts = []
+        for element, amount in amounts_elements.items():
+            value = amount*float(self.elements[element][2])/molar_mass
+            amounts.append([element, self.elements[element][1], value])
+        element = [self.elements[name] for name, *_ in amounts]
+        return molar_mass, amounts, element
+
+    def create_mineral_data_variable_composition(self):
+        """
+        Synthetic mineral data generation for an user-selected mineral.
+        All mechanical properties (K, G, E) are stored in Pascals internally.
+        For output, they are converted to GPa.
+        """
+        name_lower = self.name.lower()
+        # Chemistry
+        val_state = "variable"
+        traces_data = []
+        # Molar mass, elemental amounts
+        majors_data, amounts_elements, molar_mass_pure, vars = self._determine_majors_data()
 
         if name_lower not in self.cache:
             vals = self._extract_values_from_yaml()
@@ -332,15 +354,7 @@ class Phyllosilicates:
                 constr_vol = self.cache[name_lower]["constr_vol"]
 
         # Molar mass, element amounts
-        molar_mass = 0
-        for element, amount in amounts_elements.items():
-            molar_mass += amount*float(self.elements[element][2])
-
-        amounts = []
-        for element, amount in amounts_elements.items():
-            value = amount*float(self.elements[element][2])/molar_mass
-            amounts.append([element, self.elements[element][1], value])
-        element = [self.elements[name] for name, *_ in amounts]
+        molar_mass, amounts, element = self._calculate_molar_mass_amounts(amounts_elements=amounts_elements)
 
         # Reading and assigning the mineral-specific information from the YAML file
         val_key = vals["key"]
@@ -393,18 +407,14 @@ class Phyllosilicates:
                     "Fe": [V_Fe, V_m_Fe, Z_Fe], "Mg": [V_Mg, V_m_Mg, Z_Mg], "Mn": [V_Mn, V_m_Mn, Z_Mn],
                     "Ni": [V_Ni, V_m_Ni, Z_Ni]}
             # Density
-            dataRho_Fe = CrystalPhysics([molar_mass, Z_Fe, V_Fe])
-            rho_Fe = dataRho_Fe.calculate_bulk_density()
-            rho_e_Fe = wg(amounts=amounts, elements=element, rho_b=rho_Fe).calculate_electron_density()
-            dataRho_Mg = CrystalPhysics([molar_mass, Z_Mg, V_Mg])
-            rho_Mg = dataRho_Mg.calculate_bulk_density()
-            rho_e_Mg = wg(amounts=amounts, elements=element, rho_b=rho_Mg).calculate_electron_density()
-            dataRho_Mn = CrystalPhysics([molar_mass, Z_Mn, V_Mn])
-            rho_Mn = dataRho_Mn.calculate_bulk_density()
-            rho_e_Mn = wg(amounts=amounts, elements=element, rho_b=rho_Mn).calculate_electron_density()
-            dataRho_Ni = CrystalPhysics([molar_mass, Z_Ni, V_Ni])
-            rho_Ni = dataRho_Ni.calculate_bulk_density()
-            rho_e_Ni = wg(amounts=amounts, elements=element, rho_b=rho_Ni).calculate_electron_density()
+            rho_Fe, rho_e_Fe = self._calculate_densities_chlorite(
+                molar_mass=molar_mass, Z=Z_Fe, V=V_Fe, amounts=amounts, element=element)
+            rho_Mg, rho_e_Mg = self._calculate_densities_chlorite(
+                molar_mass=molar_mass, Z=Z_Mg, V=V_Mg, amounts=amounts, element=element)
+            rho_Mn, rho_e_Mn = self._calculate_densities_chlorite(
+                molar_mass=molar_mass, Z=Z_Mn, V=V_Mn, amounts=amounts, element=element)
+            rho_Ni, rho_e_Ni = self._calculate_densities_chlorite(
+                molar_mass=molar_mass, Z=Z_Ni, V=V_Ni, amounts=amounts, element=element)
 
             x = vars["x"]
             y = vars["y"]

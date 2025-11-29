@@ -239,6 +239,32 @@ class Oxides:
 
         return vals
 
+    def _determine_majors_data(self):
+        majors_data = []
+        molar_mass_pure = 0
+        vars = self._get_variables()
+        amounts_elements = self._evaluate_chemistry(self.yaml_data["chemistry"], **vars)
+        for element, amount in amounts_elements.items():
+            n_order = int(self.elements[element][1])
+            val_amount = float(amount)
+            molar_mass = float(self.elements[element][2])
+            majors_data.append([element, n_order, val_amount, molar_mass])
+            molar_mass_pure += val_amount*molar_mass
+        majors_data.sort(key=lambda x: x[1])
+        return majors_data, amounts_elements, molar_mass_pure, vars
+
+    def _calculate_molar_mass_amounts(self, amounts_elements):
+        molar_mass = 0
+        for element, amount in amounts_elements.items():
+            molar_mass += amount*float(self.elements[element][2])
+
+        amounts = []
+        for element, amount in amounts_elements.items():
+            value = amount*float(self.elements[element][2])/molar_mass
+            amounts.append([element, self.elements[element][1], value])
+        element = [self.elements[name] for name, *_ in amounts]
+        return molar_mass, amounts, element
+
     def create_mineral_data_variable_composition(self):
         """
         Synthetic mineral data generation for an user-selected mineral.
@@ -250,47 +276,7 @@ class Oxides:
         val_state = "variable"
         traces_data = []
         # Molar mass, elemental amounts
-        majors_data = []
-        molar_mass_pure = 0
-        if self.name == "Montmorillonite":
-            x = round(self.rng.uniform(0.6, 0.7), 2)
-            y = round(self.rng.uniform(0.9, 1), 2)
-            n = self.rng.integers(8, 12)
-            vars = {"x": x, "y": y, "n": n}
-        elif self.name == "Saponite":
-            x = round(self.rng.uniform(0.0, 0.75), 2)
-            y = round(self.rng.uniform(0.0, 0.5), 2)
-            n = self.rng.integers(1, 5)
-            vars = {"x": x, "y": y, "n": n}
-        elif self.name == "Glauconite":
-            x = round(self.rng.uniform(0, 1), 2)
-            y1 = round(self.rng.uniform(0, 1), 2)
-            y2 = round(self.rng.uniform(0, (1 - y1)), 2)
-            z = round(self.rng.integers(0, 1), 2)
-            vars = {"x": x, "y1": y1, "y2": y2, "z": z}
-        elif self.name == "Vermiculite":
-            x = round(self.rng.uniform(0, 1), 2)
-            y = round(self.rng.uniform(0, (1 - x)), 2)
-            z = round(self.rng.uniform(0, 1), 2)
-            vars = {"x": x, "y": y, "z": z}
-        elif self.name == "Chlorite":
-            x = round(self.rng.uniform(0, 1), 2)
-            y = round(self.rng.uniform(0, (1 - x)), 2)
-            z = round(self.rng.uniform(0, (1 - x - y)), 2)
-            vars = {"x": x, "y": y, "z": z}
-        elif self.name == "Nontronite":
-            x = round(self.rng.uniform(0.0, 0.5), 2)
-            n = self.rng.integers(1, 10)
-            vars = {"x": x, "n": n}
-
-        amounts_elements = self._evaluate_chemistry(self.yaml_data["chemistry"], **vars)
-        for element, amount in amounts_elements.items():
-            n_order = int(self.elements[element][1])
-            val_amount = float(amount)
-            molar_mass = float(self.elements[element][2])
-            majors_data.append([element, n_order, val_amount, molar_mass])
-            molar_mass_pure += val_amount*molar_mass
-        majors_data.sort(key=lambda x: x[1])
+        majors_data, amounts_elements, molar_mass_pure, vars = self._determine_majors_data()
 
         if name_lower not in self.cache:
             vals = self.cache[name_lower]["constants"]
@@ -299,15 +285,7 @@ class Oxides:
             vals = self.cache[name_lower]["constants"]
 
         # Molar mass, element amounts
-        molar_mass = 0
-        for element, amount in amounts_elements.items():
-            molar_mass += amount*float(self.elements[element][2])
-
-        amounts = []
-        for element, amount in amounts_elements.items():
-            value = amount*float(self.elements[element][2])/molar_mass
-            amounts.append([element, self.elements[element][1], value])
-        element = [self.elements[name] for name, *_ in amounts]
+        molar_mass, amounts, element = self._calculate_molar_mass_amounts(amounts_elements=amounts_elements)
 
         # Reading and assigning the mineral-specific information from the YAML file
         val_key = vals["key"]

@@ -250,6 +250,32 @@ class Tectosilicates:
 
         return vals
 
+    def _determine_majors_data(self):
+        majors_data = []
+        molar_mass_pure = 0
+        vars = self._get_variables()
+        amounts_elements = self._evaluate_chemistry(self.yaml_data["chemistry"], **vars)
+        for element, amount in amounts_elements.items():
+            n_order = int(self.elements[element][1])
+            val_amount = float(amount)
+            molar_mass = float(self.elements[element][2])
+            majors_data.append([element, n_order, val_amount, molar_mass])
+            molar_mass_pure += val_amount*molar_mass
+        majors_data.sort(key=lambda x: x[1])
+        return majors_data, amounts_elements, molar_mass_pure, vars
+
+    def _calculate_molar_mass_amounts(self, amounts_elements):
+        molar_mass = 0
+        for element, amount in amounts_elements.items():
+            molar_mass += amount*float(self.elements[element][2])
+
+        amounts = []
+        for element, amount in amounts_elements.items():
+            value = amount*float(self.elements[element][2])/molar_mass
+            amounts.append([element, self.elements[element][1], value])
+        element = [self.elements[name] for name, *_ in amounts]
+        return molar_mass, amounts, element
+
     def create_mineral_data_variable_composition(self):
         """
         Synthetic mineral data generation for an user-selected mineral.
@@ -261,17 +287,7 @@ class Tectosilicates:
         val_state = "variable"
         traces_data = []
         # Molar mass, elemental amounts
-        majors_data = []
-        molar_mass_pure = 0
-
-        amounts_elements = self._evaluate_chemistry(self.yaml_data["chemistry"], **vars)
-        for element, amount in amounts_elements.items():
-            n_order = int(self.elements[element][1])
-            val_amount = float(amount)
-            molar_mass = float(self.elements[element][2])
-            majors_data.append([element, n_order, val_amount, molar_mass])
-            molar_mass_pure += val_amount*molar_mass
-        majors_data.sort(key=lambda x: x[1])
+        majors_data, amounts_elements, molar_mass_pure, vars = self._determine_majors_data()
 
         if name_lower not in self.cache:
             vals = self.cache[name_lower]["constants"]
@@ -280,15 +296,7 @@ class Tectosilicates:
             vals = self.cache[name_lower]["constants"]
 
         # Molar mass, element amounts
-        molar_mass = 0
-        for element, amount in amounts_elements.items():
-            molar_mass += amount*float(self.elements[element][2])
-
-        amounts = []
-        for element, amount in amounts_elements.items():
-            value = amount*float(self.elements[element][2])/molar_mass
-            amounts.append([element, self.elements[element][1], value])
-        element = [self.elements[name] for name, *_ in amounts]
+        molar_mass, amounts, element = self._calculate_molar_mass_amounts(amounts_elements=amounts_elements)
 
         # Reading and assigning the mineral-specific information from the YAML file
         val_key = vals["key"]
