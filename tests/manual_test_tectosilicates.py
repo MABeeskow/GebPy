@@ -32,7 +32,7 @@ start = time.time()
 DEFAULT_DATA = Tectosilicates(name="Orthoclase", random_seed=42).generate_dataset(number=n_datasets)
 end = time.time()
 delta_new = end - start
-print(f"Runtime: {delta_new:.3f} seconds")
+print(f"Runtime: {delta_new:.5f} seconds")
 
 if n_datasets < 20:
     print("Results:", DEFAULT_DATA)
@@ -42,7 +42,7 @@ start = time.time()
 OLD_DATA = Tectosilicates_old(mineral="Orthoclase", data_type=True, traces_list=[]).generate_dataset(number=n_datasets)
 end = time.time()
 delta_old = end - start
-print(f"Runtime: {delta_old:.3f} seconds")
+print(f"Runtime: {delta_old:.5f} seconds")
 
 if n_datasets < 20:
     print("Results:", OLD_DATA)
@@ -59,7 +59,7 @@ start = time.time()
 DEFAULT_DATA = Tectosilicates(name="Albite", random_seed=42).generate_dataset(number=n_datasets)
 end = time.time()
 delta_new = end - start
-print(f"Runtime: {delta_new:.3f} seconds")
+print(f"Runtime: {delta_new:.5f} seconds")
 
 if n_datasets < 20:
     print("Results:", DEFAULT_DATA)
@@ -69,7 +69,7 @@ start = time.time()
 DEFAULT_DATA = Tectosilicates(name="Microcline", random_seed=42).generate_dataset(number=n_datasets)
 end = time.time()
 delta_new = end - start
-print(f"Runtime: {delta_new:.3f} seconds")
+print(f"Runtime: {delta_new:.5f} seconds")
 
 if n_datasets < 20:
     print("Results:", DEFAULT_DATA)
@@ -79,7 +79,7 @@ start = time.time()
 DEFAULT_DATA = Tectosilicates(name="Anorthite", random_seed=42).generate_dataset(number=n_datasets)
 end = time.time()
 delta_new = end - start
-print(f"Runtime: {delta_new:.3f} seconds")
+print(f"Runtime: {delta_new:.5f} seconds")
 
 if n_datasets < 20:
     print("Results:", DEFAULT_DATA)
@@ -89,7 +89,7 @@ start = time.time()
 DEFAULT_DATA = Tectosilicates(name="Alkali feldspar", random_seed=42).generate_dataset(number=n_datasets)
 end = time.time()
 delta_new = end - start
-print(f"Runtime: {delta_new:.3f} seconds")
+print(f"Runtime: {delta_new:.5f} seconds")
 
 if n_datasets < 20:
     print("Results:", DEFAULT_DATA)
@@ -99,7 +99,7 @@ start = time.time()
 DEFAULT_DATA = Tectosilicates(name="Plagioclase", random_seed=42).generate_dataset(number=n_datasets)
 end = time.time()
 delta_new = end - start
-print(f"Runtime: {delta_new:.3f} seconds")
+print(f"Runtime: {delta_new:.5f} seconds")
 
 if n_datasets < 20:
     print("Results:", DEFAULT_DATA)
@@ -109,7 +109,7 @@ start = time.time()
 DEFAULT_DATA = Tectosilicates(name="Marialite", random_seed=42).generate_dataset(number=n_datasets)
 end = time.time()
 delta_new = end - start
-print(f"Runtime: {delta_new:.3f} seconds")
+print(f"Runtime: {delta_new:.5f} seconds")
 
 if n_datasets < 20:
     print("Results:", DEFAULT_DATA)
@@ -119,7 +119,7 @@ start = time.time()
 DEFAULT_DATA = Tectosilicates(name="Meionite", random_seed=42).generate_dataset(number=n_datasets)
 end = time.time()
 delta_new = end - start
-print(f"Runtime: {delta_new:.3f} seconds")
+print(f"Runtime: {delta_new:.5f} seconds")
 
 if n_datasets < 20:
     print("Results:", DEFAULT_DATA)
@@ -129,7 +129,7 @@ start = time.time()
 DEFAULT_DATA = Tectosilicates(name="Scapolite", random_seed=42).generate_dataset(number=n_datasets)
 end = time.time()
 delta_new = end - start
-print(f"Runtime: {delta_new:.3f} seconds")
+print(f"Runtime: {delta_new:.5f} seconds")
 
 if n_datasets < 20:
     print("Results:", DEFAULT_DATA)
@@ -139,7 +139,7 @@ start = time.time()
 DEFAULT_DATA = Tectosilicates(name="Kalsilite", random_seed=42).generate_dataset(number=n_datasets)
 end = time.time()
 delta_new = end - start
-print(f"Runtime: {delta_new:.3f} seconds")
+print(f"Runtime: {delta_new:.5f} seconds")
 
 if n_datasets < 20:
     print("Results:", DEFAULT_DATA)
@@ -149,7 +149,7 @@ start = time.time()
 DEFAULT_DATA = Tectosilicates(name="NaNepheline", random_seed=42).generate_dataset(number=n_datasets)
 end = time.time()
 delta_new = end - start
-print(f"Runtime: {delta_new:.3f} seconds")
+print(f"Runtime: {delta_new:.5f} seconds")
 
 if n_datasets < 20:
     print("Results:", DEFAULT_DATA)
@@ -159,7 +159,7 @@ start = time.time()
 DEFAULT_DATA = Tectosilicates(name="Nepheline", random_seed=42).generate_dataset(number=n_datasets)
 end = time.time()
 delta_new = end - start
-print(f"Runtime: {delta_new:.3f} seconds")
+print(f"Runtime: {delta_new:.5f} seconds")
 
 if n_datasets < 20:
     print("Results:", DEFAULT_DATA)

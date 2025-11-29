@@ -30,13 +30,19 @@ from src.gebpy.core.minerals.common import GeophysicalProperties, Crystallograph
 from src.gebpy.core.minerals.common import MineralGeneration as MinGen
 
 # CODE
+BASE_PATH = Path(__file__).resolve().parents[2]
+DATA_PATH = BASE_PATH / "data"
+
 class Tectosilicates:
+    _yaml_cache = {}
+    _formula_cache = {}
+
     def __init__(self, name, random_seed, rounding=3) -> None:
         self.name = name
         self.random_seed = random_seed
         self.rng = np.random.default_rng(random_seed)
         self.current_seed = int(np.round(self.rng.uniform(0, 1000), 0))
-        self.data_path = Path(__file__).resolve().parents[2] / "data"
+        self.data_path = DATA_PATH
         self.rounding = rounding
         self.ae = Interpreter()
         self.cache = {}
@@ -79,11 +85,25 @@ class Tectosilicates:
                 self.yaml_data = self._load_yaml(mineral.lower())
 
     def _load_yaml(self, mineral_name: str) -> dict:
+        # 1) Cache-Hit
+        if mineral_name in Tectosilicates._yaml_cache:
+            return Tectosilicates._yaml_cache[mineral_name]
+
+        # 2) Laden von Disk
         yaml_file = self.data_path/f"{mineral_name}.yaml"
         if not yaml_file.exists():
             raise FileNotFoundError(f"No YAML file found for {mineral_name}.")
+
         with open(yaml_file, "r") as f:
-            return yaml.safe_load(f)
+            data = yaml.safe_load(f)
+
+        if "chemistry" in data and mineral_name not in Tectosilicates._formula_cache:
+            self._compile_chemistry_formulas(mineral_name, data["chemistry"])
+
+        # 3) Cache schreiben
+        Tectosilicates._yaml_cache[mineral_name] = data
+
+        return data
 
     def _get_value(self, data: dict, path: list[str], default=None):
         """Safely extract a float or string value from nested YAML data."""
@@ -162,31 +182,53 @@ class Tectosilicates:
                         dataset[key][key_2].append(value_2)
         return dataset
 
+    def _compile_chemistry_formulas(self, mineral_name: str, chemistry_dict: dict):
+        """
+        Extracts and compiles all chemistry formulas from the YAML file.
+        Stores the compiled ASTs in the global formula cache.
+        """
+
+        compiled = {}
+
+        for element, entry in chemistry_dict.items():
+
+            # Fall A: Einfache Zahl (z.B. 2, 3.5)
+            if isinstance(entry, (int, float)):
+                expr = str(entry)
+            # Fall B: dict mit 'formula'
+            elif isinstance(entry, dict) and "formula" in entry:
+                expr = str(entry["formula"])
+            # Fall C: Alles andere ist invalid
+            else:
+                raise ValueError(
+                    f"Invalid chemistry entry for element '{element}' in {mineral_name}.yaml: {entry}")
+            # AST kompilieren
+            compiled[element] = self.ae.parse(expr)
+        # Cache schreiben
+        Tectosilicates._formula_cache[mineral_name] = compiled
+
     def _evaluate_chemistry(self, chemistry_dict, **variables):
         """
         Evaluates algebraic expressions of element amounts defined in the YAML file.
 
-        Args:
+        Parameters:
             chemistry_dict (dict): Dictionary from YAML containing element formulas as strings.
             **variables: Variable assignments (e.g. x=0.5, y=1, n=8)
 
         Returns:
             dict: {element: calculated_amount}
         """
-        # Initialisiere sicheren mathematischen Interpreter
         self.ae.symtable.clear()
-        # Übergib alle Variablen an die Symboltabelle
+
+        # Variablen setzen
         for k, v in variables.items():
             self.ae.symtable[k] = v
 
-        # Berechne für jedes Element den Ausdruck aus der YAML
         results = {}
-        for el, data in chemistry_dict.items():
-            expr = str(data["formula"])
-            try:
-                results[el] = self.ae(expr)
-            except Exception as e:
-                raise ValueError(f"Error evaluating formula for element '{el}': {expr} ({e})")
+        compiled = Tectosilicates._formula_cache[self.name.lower()]
+
+        for el in chemistry_dict:
+            results[el] = self.ae.run(compiled[el])
 
         return results
 
