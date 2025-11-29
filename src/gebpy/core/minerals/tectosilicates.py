@@ -66,6 +66,8 @@ class Tectosilicates:
 
         # Geophysics
         self.geophysical_properties = GeophysicalProperties()
+        # Crystallography
+        self.crystallographic_properties = CrystallographicProperties()
 
         # Mineral-specific data
         if self.name in [
@@ -232,6 +234,22 @@ class Tectosilicates:
 
         return results
 
+    def _extract_values_from_yaml(self):
+        vals = {}
+        # Physical parameters
+        for key in ["K", "G", "a_K", "b_K", "a_G", "b_G"]:
+            if key in self.yaml_data.get("physical_properties", {}):
+                vals[key] = float(self.yaml_data["physical_properties"][key]["value"])
+        # Cell parameters
+        for key in ["a", "b", "c", "alpha", "beta", "gamma", "Z"]:
+            if key in self.yaml_data.get("cell_data", {}):
+                vals[key] = float(self.yaml_data["cell_data"][key]["value"])
+        # Meta data
+        vals["key"] = self.yaml_data["metadata"]["key"]
+        vals["crystal_system"] = self.yaml_data["metadata"]["crystal_system"]
+
+        return vals
+
     def create_mineral_data_variable_composition(self):
         """
         Synthetic mineral data generation for an user-selected mineral.
@@ -255,22 +273,9 @@ class Tectosilicates:
             molar_mass_pure += val_amount*molar_mass
         majors_data.sort(key=lambda x: x[1])
 
-        if not hasattr(self, "cache"):
-            self.cache = {}
-
         if name_lower not in self.cache:
-            vals = {}
-            for key in ["K", "G", "a_K", "b_K", "a_G", "b_G", "a", "b", "c", "alpha", "beta", "gamma", "Z"]:
-                if key in self.yaml_data["cell_data"] or key in self.yaml_data["physical_properties"]:
-                    vals[key] = self._get_value(self.yaml_data, ["physical_properties", key]) \
-                                if key in ["K", "G", "a_K", "b_K", "a_G", "b_G"] else \
-                                self._get_value(self.yaml_data, ["cell_data", key])
-            for key in ["key", "crystal_system"]:
-                vals[key] = self._get_value(self.yaml_data, ["metadata", key])
-
-            self.cache[name_lower] = {
-                "constants": vals,
-            }
+            vals = self.cache[name_lower]["constants"]
+            self.cache[name_lower] = {"constants": vals}
         else:
             vals = self.cache[name_lower]["constants"]
 
@@ -314,13 +319,13 @@ class Tectosilicates:
             constr_vol = CrystalPhysics([[val_a, val_b, val_c], [val_beta], val_system])
 
         constr_minchem = MineralChemistry(w_traces=traces_data, molar_mass_pure=molar_mass_pure, majors=majors_data)
-        V, V_m = CrystallographicProperties().calculate_molar_volume(
+        V, V_m = self.crystallographic_properties.calculate_molar_volume(
             constr_volume=constr_vol, constr_molar_volume=constr_minchem, cell_z=val_Z)
         # Density
         constr_density = CrystalPhysics([molar_mass, val_Z, V])
-        rho = CrystallographicProperties().calculate_mineral_density(constr_density=constr_density)
+        rho = self.crystallographic_properties.calculate_mineral_density(constr_density=constr_density)
         constr_electr_density = wg(amounts=amounts, elements=element, rho_b=rho)
-        rho_e = CrystallographicProperties().calculate_electron_density(
+        rho_e = self.crystallographic_properties.calculate_electron_density(
             constr_electron_density=constr_electr_density)
 
         # Elastic properties

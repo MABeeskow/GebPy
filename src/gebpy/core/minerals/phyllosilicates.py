@@ -64,6 +64,8 @@ class Phyllosilicates:
 
         # Geophysics
         self.geophysical_properties = GeophysicalProperties()
+        # Crystallography
+        self.crystallographic_properties = CrystallographicProperties()
 
         # Mineral-specific data
         if self.name in [
@@ -243,6 +245,48 @@ class Phyllosilicates:
 
         return results
 
+    def _calculate_crystal_physics_object_chlorite(self, key):
+        if key == "Fe":
+            dataV_Fe = CrystalPhysics([[5.373, 9.306, 14.222], [97.88], "monoclinic"])
+            V_Fe = dataV_Fe.calculate_volume()
+            Z_Fe = 2
+            V_m_Fe = MineralChemistry().calculate_molar_volume(volume_cell=V_Fe, z=Z_Fe)
+            return V_Fe, V_m_Fe, Z_Fe
+        elif key == "Mg":
+            dataV_Mg = CrystalPhysics([[5.3, 9.3, 14.3], [97], "monoclinic"])
+            V_Mg = dataV_Mg.calculate_volume()
+            Z_Mg = 2
+            V_m_Mg = MineralChemistry().calculate_molar_volume(volume_cell=V_Mg, z=Z_Mg)
+            return V_Mg, V_m_Mg, Z_Mg
+        elif key == "Mn":
+            dataV_Mn = CrystalPhysics([[5.454, 9.45, 14.4], [97.2], "monoclinic"])
+            V_Mn = dataV_Mn.calculate_volume()
+            Z_Mn = 2
+            V_m_Mn = MineralChemistry().calculate_molar_volume(volume_cell=V_Mn, z=Z_Mn)
+            return V_Mn, V_m_Mn, Z_Mn
+        elif key == "Ni":
+            dataV_Ni = CrystalPhysics([[5.32, 9.214, 14.302], [97.1], "monoclinic"])
+            V_Ni = dataV_Ni.calculate_volume()
+            Z_Ni = 2
+            V_m_Ni = MineralChemistry().calculate_molar_volume(volume_cell=V_Ni, z=Z_Ni)
+            return V_Ni, V_m_Ni, Z_Ni
+
+    def _extract_values_from_yaml(self):
+        vals = {}
+        # Physical parameters
+        for key in ["K", "G", "a_K", "b_K", "a_G", "b_G"]:
+            if key in self.yaml_data.get("physical_properties", {}):
+                vals[key] = float(self.yaml_data["physical_properties"][key]["value"])
+        # Cell parameters
+        for key in ["a", "b", "c", "alpha", "beta", "gamma", "Z"]:
+            if key in self.yaml_data.get("cell_data", {}):
+                vals[key] = float(self.yaml_data["cell_data"][key]["value"])
+        # Meta data
+        vals["key"] = self.yaml_data["metadata"]["key"]
+        vals["crystal_system"] = self.yaml_data["metadata"]["crystal_system"]
+
+        return vals
+
     def create_mineral_data_variable_composition(self):
         """
         Synthetic mineral data generation for an user-selected mineral.
@@ -267,20 +311,25 @@ class Phyllosilicates:
         majors_data.sort(key=lambda x: x[1])
 
         if name_lower not in self.cache:
-            vals = {}
-            for key in ["K", "G", "a_K", "b_K", "a_G", "b_G", "a", "b", "c", "alpha", "beta", "gamma", "Z"]:
-                if key in self.yaml_data["cell_data"] or key in self.yaml_data["physical_properties"]:
-                    vals[key] = self._get_value(self.yaml_data, ["physical_properties", key]) \
-                                if key in ["K", "G", "a_K", "b_K", "a_G", "b_G"] else \
-                                self._get_value(self.yaml_data, ["cell_data", key])
-            for key in ["key", "crystal_system"]:
-                vals[key] = self._get_value(self.yaml_data, ["metadata", key])
-
-            self.cache[name_lower] = {
-                "constants": vals,
-            }
+            vals = self._extract_values_from_yaml()
+            self.cache[name_lower] = {"constants": vals}
         else:
             vals = self.cache[name_lower]["constants"]
+            if self.name == "Chlorite":
+                V_Fe = self.cache[name_lower]["volume"]["Fe"][0]
+                V_m_Fe = self.cache[name_lower]["volume"]["Fe"][1]
+                Z_Fe = self.cache[name_lower]["volume"]["Fe"][2]
+                V_Mg = self.cache[name_lower]["volume"]["Mg"][0]
+                V_m_Mg = self.cache[name_lower]["volume"]["Mg"][1]
+                Z_Mg = self.cache[name_lower]["volume"]["Mg"][2]
+                V_Mn = self.cache[name_lower]["volume"]["Mn"][0]
+                V_m_Mn = self.cache[name_lower]["volume"]["Mn"][1]
+                Z_Mn = self.cache[name_lower]["volume"]["Mn"][2]
+                V_Ni = self.cache[name_lower]["volume"]["Ni"][0]
+                V_m_Ni = self.cache[name_lower]["volume"]["Ni"][1]
+                Z_Ni = self.cache[name_lower]["volume"]["Ni"][2]
+            else:
+                constr_vol = self.cache[name_lower]["constr_vol"]
 
         # Molar mass, element amounts
         molar_mass = 0
@@ -317,50 +366,42 @@ class Phyllosilicates:
 
         if self.name != "Chlorite":
             # (Molar) Volume
-            if "alpha" in vals and "gamma" in vals:
-                constr_vol = CrystalPhysics([[val_a, val_b, val_c], [val_alpha, val_beta, val_gamma], val_system])
-            else:
-                constr_vol = CrystalPhysics([[val_a, val_b, val_c], [val_beta], val_system])
+            if "constr_vol" not in self.cache[name_lower]:
+                if "alpha" in vals and "gamma" in vals:
+                    constr_vol = CrystalPhysics([[val_a, val_b, val_c], [val_alpha, val_beta, val_gamma], val_system])
+                else:
+                    constr_vol = CrystalPhysics([[val_a, val_b, val_c], [val_beta], val_system])
+                self.cache[name_lower]["constr_vol"] = constr_vol
 
             constr_minchem = MineralChemistry(w_traces=traces_data, molar_mass_pure=molar_mass_pure, majors=majors_data)
-            V, V_m = CrystallographicProperties().calculate_molar_volume(
+            V, V_m = self.crystallographic_properties.calculate_molar_volume(
                 constr_volume=constr_vol, constr_molar_volume=constr_minchem, cell_z=val_Z)
             # Density
             constr_density = CrystalPhysics([molar_mass, val_Z, V])
-            rho = CrystallographicProperties().calculate_mineral_density(constr_density=constr_density)
+            rho = self.crystallographic_properties.calculate_mineral_density(constr_density=constr_density)
             constr_electr_density = wg(amounts=amounts, elements=element, rho_b=rho)
-            rho_e = CrystallographicProperties().calculate_electron_density(
+            rho_e = self.crystallographic_properties.calculate_electron_density(
                 constr_electron_density=constr_electr_density)
         else:
+            # (Molar) Volume
+            if "volume" not in self.cache[name_lower]:
+                V_Fe, V_m_Fe, Z_Fe = self._calculate_crystal_physics_object_chlorite(key="Fe")
+                V_Mg, V_m_Mg, Z_Mg = self._calculate_crystal_physics_object_chlorite(key="Mg")
+                V_Mn, V_m_Mn, Z_Mn = self._calculate_crystal_physics_object_chlorite(key="Mn")
+                V_Ni, V_m_Ni, Z_Ni = self._calculate_crystal_physics_object_chlorite(key="Ni")
+                self.cache[name_lower]["volume"] = {
+                    "Fe": [V_Fe, V_m_Fe, Z_Fe], "Mg": [V_Mg, V_m_Mg, Z_Mg], "Mn": [V_Mn, V_m_Mn, Z_Mn],
+                    "Ni": [V_Ni, V_m_Ni, Z_Ni]}
             # Density
-            dataV_Fe = CrystalPhysics([[5.373, 9.306, 14.222], [97.88], "monoclinic"])
-            V_Fe = dataV_Fe.calculate_volume()
-            Z_Fe = 2
-            V_m_Fe = MineralChemistry().calculate_molar_volume(volume_cell=V_Fe, z=Z_Fe)
             dataRho_Fe = CrystalPhysics([molar_mass, Z_Fe, V_Fe])
             rho_Fe = dataRho_Fe.calculate_bulk_density()
             rho_e_Fe = wg(amounts=amounts, elements=element, rho_b=rho_Fe).calculate_electron_density()
-
-            dataV_Mg = CrystalPhysics([[5.3, 9.3, 14.3], [97], "monoclinic"])
-            V_Mg = dataV_Mg.calculate_volume()
-            Z_Mg = 2
-            V_m_Mg = MineralChemistry().calculate_molar_volume(volume_cell=V_Mg, z=Z_Mg)
             dataRho_Mg = CrystalPhysics([molar_mass, Z_Mg, V_Mg])
             rho_Mg = dataRho_Mg.calculate_bulk_density()
             rho_e_Mg = wg(amounts=amounts, elements=element, rho_b=rho_Mg).calculate_electron_density()
-
-            dataV_Mn = CrystalPhysics([[5.454, 9.45, 14.4], [97.2], "monoclinic"])
-            V_Mn = dataV_Mn.calculate_volume()
-            Z_Mn = 2
-            V_m_Mn = MineralChemistry().calculate_molar_volume(volume_cell=V_Mn, z=Z_Mn)
             dataRho_Mn = CrystalPhysics([molar_mass, Z_Mn, V_Mn])
             rho_Mn = dataRho_Mn.calculate_bulk_density()
             rho_e_Mn = wg(amounts=amounts, elements=element, rho_b=rho_Mn).calculate_electron_density()
-
-            dataV_Ni = CrystalPhysics([[5.32, 9.214, 14.302], [97.1], "monoclinic"])
-            V_Ni = dataV_Ni.calculate_volume()
-            Z_Ni = 2
-            V_m_Ni = MineralChemistry().calculate_molar_volume(volume_cell=V_Ni, z=Z_Ni)
             dataRho_Ni = CrystalPhysics([molar_mass, Z_Ni, V_Ni])
             rho_Ni = dataRho_Ni.calculate_bulk_density()
             rho_e_Ni = wg(amounts=amounts, elements=element, rho_b=rho_Ni).calculate_electron_density()
