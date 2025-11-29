@@ -160,6 +160,32 @@ class MineralGeneration:
         except (KeyError, TypeError):
             return default
 
+    def _determine_volume_constructor(self, vals):
+        val_a = vals["a"]
+        val_system = vals["crystal_system"]
+        if val_system in ["isometric", "cubic"]:
+            constr_vol = CrystalPhysics([[val_a], [], val_system])
+        elif val_system in ["tetragonal", "hexagonal", "trigonal"]:
+            val_c = vals["c"]
+            constr_vol = CrystalPhysics([[val_a, val_c], [], val_system])
+        elif val_system in ["orthorhombic"]:
+            val_b = vals["b"]
+            val_c = vals["c"]
+            constr_vol = CrystalPhysics([[val_a, val_b, val_c], [], val_system])
+        elif val_system in ["monoclinic"]:
+            val_b = vals["b"]
+            val_c = vals["c"]
+            val_beta = vals["beta"]
+            constr_vol = CrystalPhysics([[val_a, val_b, val_c], [val_beta], val_system])
+        elif val_system in ["triclinic"]:
+            val_b = vals["b"]
+            val_c = vals["c"]
+            val_alpha = vals["alpha"]
+            val_beta = vals["beta"]
+            val_gamma = vals["gamma"]
+            constr_vol = CrystalPhysics([[val_a, val_b, val_c], [val_alpha, val_beta, val_gamma], val_system])
+        return constr_vol
+
     def create_mineral_data_fixed_composition(self):
         """
         Synthetic mineral data generation for an user-selected mineral.
@@ -209,40 +235,15 @@ class MineralGeneration:
 
         # Reading and assigning the mineral-specific information from the YAML file
         val_key = vals["key"]
-        val_system = vals["crystal_system"]
         val_K = vals["K"]
         val_G = vals["G"]
-        val_a = vals["a"]
         val_Z = vals["Z"]
-
-        if val_system not in ["isometric", "cubic"]:
-            val_c = vals["c"]
-        if val_system in ["orthorhombic", "monoclinic", "triclinic"]:
-            val_b = vals["b"]
-
-        if "alpha" in vals:
-            val_alpha = vals["alpha"]
-        if "beta" in vals:
-            val_beta = vals["beta"]
-        if "gamma" in vals:
-            val_gamma = vals["gamma"]
 
         molar_mass, amounts = constr_minchem.calculate_molar_mass()
         element = [self.elements[name] for name, *_ in amounts]
         # (Molar) Volume
         if "constr_volume" not in self.cache[name_lower]:
-            if val_system in ["isometric", "cubic"]:
-                constr_vol = CrystalPhysics([[val_a], [], val_system])
-            elif val_system in ["tetragonal", "hexagonal", "trigonal"]:
-                constr_vol = CrystalPhysics([[val_a, val_c], [], val_system])
-            elif val_system in ["orthorhombic"]:
-                constr_vol = CrystalPhysics([[val_a, val_b, val_c], [], val_system])
-            elif val_system in ["monoclinic"]:
-                constr_vol = CrystalPhysics([[val_a, val_b, val_c], [val_beta], val_system])
-            elif val_system in ["triclinic"]:
-                constr_vol = CrystalPhysics([[val_a, val_b, val_c], [val_alpha, val_beta, val_gamma], val_system])
-            elif val_system in ["tetragonal", "trigonal", "hexagonal"]:
-                constr_vol = CrystalPhysics([[val_a, val_c], [], val_system])
+            constr_vol = self._determine_volume_constructor(vals=vals)
             self.cache[name_lower]["constr_volume"] = constr_vol
 
         V, V_m = CrystallographicProperties().calculate_molar_volume(
