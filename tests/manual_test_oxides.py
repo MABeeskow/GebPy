@@ -6,7 +6,7 @@
 # Name:		manual_test_oxides.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		01.11.2025
+# Date:		29.11.2025
 
 #-----------------------------------------------
 
@@ -48,7 +48,10 @@ if n_datasets < 20:
     print("Results:", OLD_DATA)
 
 speed_ratio = delta_old/delta_new
-speed_boost = (delta_old - delta_new)/delta_old*100
+try:
+    speed_boost = (delta_old - delta_new)/delta_old*100
+except:
+    speed_boost = (delta_old - delta_new)/0.000001*100
 print("\nSpeed ratio:", round(speed_ratio, 4))
 print("Speed boost:", round(speed_boost, 2), "%")
 

@@ -6,7 +6,7 @@
 # Name:		oxides.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		27.11.2025
+# Date:		29.11.2025
 
 #-----------------------------------------------
 
@@ -29,15 +29,19 @@ from modules.chemistry import PeriodicSystem
 from modules.geochemistry import MineralChemistry
 from modules.geophysics import WellLog as wg
 from src.gebpy.core.minerals.common import GeophysicalProperties, CrystallographicProperties, CrystalPhysics
+from src.gebpy.core.minerals.common import MineralGeneration as MinGen
 
 # CODE
 class Oxides:
-    def __init__(self, name, random_seed) -> None:
+    def __init__(self, name, random_seed, rounding: int = 3) -> None:
         self.name = name
         self.random_seed = random_seed
         self.rng = np.random.default_rng(random_seed)
         self.current_seed = int(np.round(self.rng.uniform(0, 1000), 0))
         self.data_path = Path(__file__).resolve().parents[2] / "data"
+        self.rounding = rounding
+        self.ae = Interpreter()
+        self.cache = {}
 
         # Chemistry
         self.elements = {
@@ -69,7 +73,7 @@ class Oxides:
             self.yaml_data = self._load_yaml(lower(self.name))
 
     def _load_yaml(self, mineral_name: str) -> dict:
-        yaml_file = self.data_path/f"{mineral_name.lower()}.yaml"
+        yaml_file = self.data_path/f"{mineral_name}.yaml"
         if not yaml_file.exists():
             raise FileNotFoundError(f"No YAML file found for {mineral_name}.")
         with open(yaml_file, "r") as f:
@@ -87,35 +91,42 @@ class Oxides:
         except (KeyError, TypeError):
             return default
 
-    def generate_dataset(self, number: int = 1) -> None:
-        generators = {}
-        list_fixed = [
+    def generate_dataset(self, number: int = 1, as_dataframe=False) -> None:
+        fixed = {
             "Anatase", "Arsenolite", "Au(III)-Oxide", "Bismite", "Boehmite", "Brookite", "Brucite", "Cassiterite",
             "Chromite", "Claudetite", "Cochromite", "Corundum", "Crocoite", "Cuprite", "Cuprospinel", "Diaspore",
             "Ferberite", "Franklinite", "Geikielite", "Gibbsite", "Goethite", "Groutite", "Hematite", "Huebnerite",
-            "Ilmenite",
-            "Jacobsite", "Litharge", "Magnesiochromite", "Magnesioferrite", "Magnetite", "Manganite", "Manganochromite",
-            "Massicot", "Minium", "Nichromite", "Plattnerite", "Pyrolusite", "Pyrophanite", "Quartz", "Rutile",
-            "Scrutinyite", "Senarmontite", "Sphaerobismite", "Spinel", "Trevorite", "Ulvospinel",
-            "Uraninite", "Valentinite", "Wolframite", "Wulfenite", "Zincite", "Zincochromite"]
-        list_endmember = [
-            "Al-Spinel", "Cr-Spinel", "Fe-Spinel", "Coltan", "Columbite", "Ferberite-Huebnerite", "Tantalite"]
-        for mineral in list_fixed:
-            generators[mineral] = self.create_mineral_data_fixed_composition
-        for mineral in list_endmember:
-            generators[mineral] = self.create_mineral_data_endmember_series
+            "Ilmenite", "Jacobsite", "Litharge", "Magnesiochromite", "Magnesioferrite", "Magnetite", "Manganite",
+            "Manganochromite", "Massicot", "Minium", "Nichromite", "Plattnerite", "Pyrolusite", "Pyrophanite",
+            "Quartz", "Rutile", "Scrutinyite", "Senarmontite", "Sphaerobismite", "Spinel", "Trevorite", "Ulvospinel",
+            "Uraninite", "Valentinite", "Wolframite", "Wulfenite", "Zincite", "Zincochromite"}
+        variable = {}
+        endmember = {"Al-Spinel", "Cr-Spinel", "Fe-Spinel", "Coltan", "Columbite", "Ferberite-Huebnerite", "Tantalite"}
+
+        generators = {
+            **{m: MinGen(
+                name=self.name, yaml_data=self.yaml_data, elements=self.elements, cache=self.cache,
+                geophysical_properties=self.geophysical_properties, rounding=self.rounding
+            ).create_mineral_data_fixed_composition for m in fixed},
+            **{m: self.create_mineral_data_variable_composition for m in variable},
+            **{m: self.create_mineral_data_endmember_series for m in endmember},
+        }
 
         if self.name not in generators:
             raise ValueError(f"Mineral '{self.name}' not recognized.")
 
         dataset = {}
-        if self.name in list_fixed:
+        if self.name in fixed:
             dataset = self._evaluate_mineral(index=1, generators=generators, dataset=dataset)
         else:
             for index in range(number):
                 dataset = self._evaluate_mineral(index=index, generators=generators, dataset=dataset)
 
-        return dataset
+        if as_dataframe:
+            import pandas as pd
+            return pd.DataFrame(dataset)
+        else:
+            return dataset
 
     def _evaluate_mineral(self, index, generators, dataset):
         self.current_seed = np.uint32(self.random_seed + index)
@@ -140,127 +151,6 @@ class Oxides:
                         dataset[key][key_2].append(value_2)
         return dataset
 
-    def create_mineral_data_fixed_composition(self):
-        """
-        Synthetic mineral data generation for an user-selected mineral.
-        All mechanical properties (K, G, E) are stored in Pascals internally.
-        For output, they are converted to GPa.
-        """
-        name_lower = self.name.lower()
-        # Chemistry
-        val_state = "fixed"
-        traces_data = []
-        # Molar mass, elemental amounts
-        majors_data = []
-        molar_mass_pure = 0
-        for element, amount in self.yaml_data["chemistry"].items():
-            n_order = int(self.elements[element][1])
-            val_amount = float(amount)
-            molar_mass = float(self.elements[element][2])
-            majors_data.append([element, n_order, val_amount, molar_mass])
-            molar_mass_pure += val_amount*molar_mass
-        majors_data.sort(key=lambda x: x[1])
-
-        if not hasattr(self, "cache"):
-            self.cache = {}
-
-        if name_lower not in self.cache:
-            vals = {}
-            for key in ["K", "G", "a", "b", "c", "alpha", "beta", "gamma", "Z"]:
-                if key in self.yaml_data["cell_data"] or key in self.yaml_data["physical_properties"]:
-                    vals[key] = self._get_value(self.yaml_data, ["physical_properties", key]) \
-                        if key in ["K", "G"] else \
-                        self._get_value(self.yaml_data, ["cell_data", key])
-            for key in ["key", "crystal_system"]:
-                vals[key] = self._get_value(self.yaml_data, ["metadata", key])
-
-            constr_minchem = MineralChemistry(w_traces=traces_data, molar_mass_pure=molar_mass_pure,
-                                              majors=majors_data)
-
-            self.cache[name_lower] = {
-                "majors_data": majors_data,
-                "molar_mass_pure": molar_mass_pure,
-                "constants": vals,
-                "MineralChemistry": constr_minchem
-            }
-        else:
-            vals = self.cache[name_lower]["constants"]
-            constr_minchem = self.cache[name_lower]["MineralChemistry"]
-            constr_electr_density = self.cache[name_lower]["const_electron_density"]
-            constr_vol = self.cache[name_lower]["constr_volume"]
-            constr_density = self.cache[name_lower]["constr_density"]
-            constr_radiation = self.cache[name_lower]["constr_radiation"]
-
-        # Reading and assigning the mineral-specific information from the YAML file
-        val_key = vals["key"]
-        val_system = vals["crystal_system"]
-        val_K = vals["K"]
-        val_G = vals["G"]
-        val_a = vals["a"]
-        val_Z = vals["Z"]
-
-        if "b" in vals:
-            val_b = vals["b"]
-        if "c" in vals:
-            val_c = vals["c"]
-        if "alpha" in vals:
-            val_alpha = vals["alpha"]
-        if "beta" in vals:
-            val_beta = vals["beta"]
-        if "gamma" in vals:
-            val_gamma = vals["gamma"]
-
-        molar_mass, amounts = constr_minchem.calculate_molar_mass()
-        element = [self.elements[name] for name, *_ in amounts]
-        # (Molar) Volume
-        if "constr_volume" not in self.cache[name_lower]:
-            if "alpha" in vals and "gamma" in vals:
-                constr_vol = CrystalPhysics([[val_a, val_b, val_c], [val_alpha, val_beta, val_gamma], val_system])
-            elif val_system in ["tetragonal", "trigonal", "hexagonal"]:
-                constr_vol = CrystalPhysics([[val_a, val_c], [], val_system])
-            else:
-                constr_vol = CrystalPhysics([[val_a, val_b, val_c], [val_beta], val_system])
-            self.cache[name_lower]["constr_volume"] = constr_vol
-
-        V, V_m = CrystallographicProperties().calculate_molar_volume(
-            constr_volume=constr_vol, constr_molar_volume=constr_minchem, cell_z=val_Z)
-        # Density
-        if "constr_density" not in self.cache[name_lower]:
-            constr_density = CrystalPhysics([molar_mass, val_Z, V])
-            self.cache[name_lower]["constr_density"] = constr_density
-
-        rho = CrystallographicProperties().calculate_mineral_density(constr_density=constr_density)
-
-        if "const_electron_density" not in self.cache[name_lower]:
-            constr_electr_density = wg(amounts=amounts, elements=element, rho_b=rho)
-            self.cache[name_lower]["const_electron_density"] = constr_electr_density
-
-        rho_e = CrystallographicProperties().calculate_electron_density(
-            constr_electron_density=constr_electr_density)
-        # Elastic properties
-        E, nu = self.geophysical_properties.calculate_elastic_properties(bulk_mod=val_K, shear_mod=val_G)
-        # Seismic properties
-        vPvS, vP, vS = self.geophysical_properties.calculate_seismic_velocities(
-            bulk_mod=val_K, shear_mod=val_G, rho=rho)
-        # Radiation properties
-        if "constr_radiation" not in self.cache[name_lower]:
-            constr_radiation = wg(amounts=amounts, elements=element)
-            self.cache[name_lower]["constr_radiation"] = constr_radiation
-
-        gamma_ray, pe, U = self.geophysical_properties.calculate_radiation_properties(
-            constr_radiation=constr_radiation, rho_electron=rho_e)
-        # Electrical resistivity
-        p = None
-        # Results
-        results = {
-            "mineral": val_key, "state": val_state, "M": round(molar_mass, 3),
-            "chemistry": {name: round(val[1], 6) for name, *val in amounts}, "rho": round(rho, 3),
-            "rho_e": round(rho_e, 3), "V": round(V_m, 3), "vP": round(vP, 3), "vS": round(vS, 3),
-            "vP/vS": round(vPvS, 3), "K": round(val_K*10**(-9), 3), "G": round(val_G*10**(-9), 3),
-            "E": round(E*10**(-9), 3), "nu": round(nu, 6), "GR": round(gamma_ray, 3), "PE": round(pe, 3),
-            "U": round(U, 3), "p": p}
-        return results
-
     def _evaluate_chemistry(self, chemistry_dict, **variables):
         """
         Evaluates algebraic expressions of element amounts defined in the YAML file.
@@ -272,19 +162,17 @@ class Oxides:
         Returns:
             dict: {element: calculated_amount}
         """
-        # Initialisiere sicheren mathematischen Interpreter
-        ae = Interpreter()
-
+        self.ae.symtable.clear()
         # Übergib alle Variablen an die Symboltabelle
         for k, v in variables.items():
-            ae.symtable[k] = v
+            self.ae.symtable[k] = v
 
         # Berechne für jedes Element den Ausdruck aus der YAML
         results = {}
         for el, data in chemistry_dict.items():
             expr = str(data["formula"])
             try:
-                results[el] = ae(expr)
+                results[el] = self.ae(expr)
             except Exception as e:
                 raise ValueError(f"Error evaluating formula for element '{el}': {expr} ({e})")
 
