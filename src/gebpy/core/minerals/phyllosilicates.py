@@ -381,10 +381,18 @@ class Phyllosilicates:
         if self.name != "Chlorite":
             # (Molar) Volume
             if "constr_vol" not in self.cache[name_lower]:
-                if "alpha" in vals and "gamma" in vals:
-                    constr_vol = CrystalPhysics([[val_a, val_b, val_c], [val_alpha, val_beta, val_gamma], val_system])
-                else:
+                if val_system in ["isometric", "cubic"]:
+                    constr_vol = CrystalPhysics([[val_a], [], val_system])
+                elif val_system in ["tetragonal", "hexagonal", "trigonal"]:
+                    constr_vol = CrystalPhysics([[val_a, val_c], [], val_system])
+                elif val_system in ["orthorhombic"]:
+                    constr_vol = CrystalPhysics([[val_a, val_b, val_c], [], val_system])
+                elif val_system in ["monoclinic"]:
                     constr_vol = CrystalPhysics([[val_a, val_b, val_c], [val_beta], val_system])
+                elif val_system in ["triclinic"]:
+                    constr_vol = CrystalPhysics([[val_a, val_b, val_c], [val_alpha, val_beta, val_gamma], val_system])
+                elif val_system in ["tetragonal", "trigonal", "hexagonal"]:
+                    constr_vol = CrystalPhysics([[val_a, val_c], [], val_system])
                 self.cache[name_lower]["constr_vol"] = constr_vol
 
             constr_minchem = MineralChemistry(w_traces=traces_data, molar_mass_pure=molar_mass_pure, majors=majors_data)
