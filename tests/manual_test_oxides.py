@@ -6,7 +6,7 @@
 # Name:		manual_test_oxides.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		29.11.2025
+# Date:		02.12.2025
 
 #-----------------------------------------------
 
@@ -280,6 +280,226 @@ if n_datasets < 20:
 print(f"\nDATA (CR-SPINEL):")
 start = time.time()
 DEFAULT_DATA = Oxides(name="Cr-Spinel", random_seed=42).generate_dataset(number=n_datasets)
+end = time.time()
+delta_new = end - start
+print(f"Runtime: {delta_new:.5f} seconds")
+
+if n_datasets < 20:
+    print("Results:", DEFAULT_DATA)
+
+print(f"\nDATA (CASSITERITE):")
+start = time.time()
+DEFAULT_DATA = Oxides(name="Cassiterite", random_seed=42).generate_dataset(number=n_datasets)
+end = time.time()
+delta_new = end - start
+print(f"Runtime: {delta_new:.5f} seconds")
+
+if n_datasets < 20:
+    print("Results:", DEFAULT_DATA)
+
+print(f"\nDATA (CUPROSPINEL):")
+start = time.time()
+DEFAULT_DATA = Oxides(name="Cuprospinel", random_seed=42).generate_dataset(number=n_datasets)
+end = time.time()
+delta_new = end - start
+print(f"Runtime: {delta_new:.5f} seconds")
+
+if n_datasets < 20:
+    print("Results:", DEFAULT_DATA)
+
+print(f"\nDATA (JACOBSITE):")
+start = time.time()
+DEFAULT_DATA = Oxides(name="Jacobsite", random_seed=42).generate_dataset(number=n_datasets)
+end = time.time()
+delta_new = end - start
+print(f"Runtime: {delta_new:.5f} seconds")
+
+if n_datasets < 20:
+    print("Results:", DEFAULT_DATA)
+
+print(f"\nDATA (MAGNESIOFERRITE):")
+start = time.time()
+DEFAULT_DATA = Oxides(name="Magnesioferrite", random_seed=42).generate_dataset(number=n_datasets)
+end = time.time()
+delta_new = end - start
+print(f"Runtime: {delta_new:.5f} seconds")
+
+if n_datasets < 20:
+    print("Results:", DEFAULT_DATA)
+
+print(f"\nDATA (TREVORITE):")
+start = time.time()
+DEFAULT_DATA = Oxides(name="Trevorite", random_seed=42).generate_dataset(number=n_datasets)
+end = time.time()
+delta_new = end - start
+print(f"Runtime: {delta_new:.5f} seconds")
+
+if n_datasets < 20:
+    print("Results:", DEFAULT_DATA)
+
+print(f"\nDATA (FRANKLINITE):")
+start = time.time()
+DEFAULT_DATA = Oxides(name="Franklinite", random_seed=42).generate_dataset(number=n_datasets)
+end = time.time()
+delta_new = end - start
+print(f"Runtime: {delta_new:.5f} seconds")
+
+if n_datasets < 20:
+    print("Results:", DEFAULT_DATA)
+
+print(f"\nDATA (MAGNETITE):")
+start = time.time()
+DEFAULT_DATA = Oxides(name="Magnetite", random_seed=42).generate_dataset(number=n_datasets)
+end = time.time()
+delta_new = end - start
+print(f"Runtime: {delta_new:.5f} seconds")
+
+if n_datasets < 20:
+    print("Results:", DEFAULT_DATA)
+
+print(f"\nDATA (FE-SPINEL):")
+start = time.time()
+DEFAULT_DATA = Oxides(name="Fe-Spinel", random_seed=42).generate_dataset(number=n_datasets)
+end = time.time()
+delta_new = end - start
+print(f"Runtime: {delta_new:.5f} seconds")
+
+if n_datasets < 20:
+    print("Results:", DEFAULT_DATA)
+
+print(f"\nDATA (HUEBNERITE):")
+start = time.time()
+DEFAULT_DATA = Oxides(name="Huebnerite", random_seed=42).generate_dataset(number=n_datasets)
+end = time.time()
+delta_new = end - start
+print(f"Runtime: {delta_new:.5f} seconds")
+
+if n_datasets < 20:
+    print("Results:", DEFAULT_DATA)
+
+print(f"\nDATA (FERBERITE):")
+start = time.time()
+DEFAULT_DATA = Oxides(name="Ferberite", random_seed=42).generate_dataset(number=n_datasets)
+end = time.time()
+delta_new = end - start
+print(f"Runtime: {delta_new:.5f} seconds")
+
+if n_datasets < 20:
+    print("Results:", DEFAULT_DATA)
+
+print(f"\nDATA (WOLFRAMITE):")
+start = time.time()
+DEFAULT_DATA = Oxides(name="Wolframite", random_seed=42).generate_dataset(number=n_datasets)
+end = time.time()
+delta_new = end - start
+print(f"Runtime: {delta_new:.5f} seconds")
+
+if n_datasets < 20:
+    print("Results:", DEFAULT_DATA)
+
+print(f"\nDATA (URANINITE):")
+start = time.time()
+DEFAULT_DATA = Oxides(name="Uraninite", random_seed=42).generate_dataset(number=n_datasets)
+end = time.time()
+delta_new = end - start
+print(f"Runtime: {delta_new:.5f} seconds")
+
+if n_datasets < 20:
+    print("Results:", DEFAULT_DATA)
+
+print(f"\nDATA (HEMATITE):")
+start = time.time()
+DEFAULT_DATA = Oxides(name="Hematite", random_seed=42).generate_dataset(number=n_datasets)
+end = time.time()
+delta_new = end - start
+print(f"Runtime: {delta_new:.5f} seconds")
+
+if n_datasets < 20:
+    print("Results:", DEFAULT_DATA)
+
+print(f"\nDATA (CORUNDUM):")
+start = time.time()
+DEFAULT_DATA = Oxides(name="Corundum", random_seed=42).generate_dataset(number=n_datasets)
+end = time.time()
+delta_new = end - start
+print(f"Runtime: {delta_new:.5f} seconds")
+
+if n_datasets < 20:
+    print("Results:", DEFAULT_DATA)
+
+print(f"\nDATA (TISTARITE):")
+start = time.time()
+DEFAULT_DATA = Oxides(name="Tistarite", random_seed=42).generate_dataset(number=n_datasets)
+end = time.time()
+delta_new = end - start
+print(f"Runtime: {delta_new:.5f} seconds")
+
+if n_datasets < 20:
+    print("Results:", DEFAULT_DATA)
+
+print(f"\nDATA (CORUNDUM-GROUP):")
+start = time.time()
+DEFAULT_DATA = Oxides(name="Corundum-Group", random_seed=42).generate_dataset(number=n_datasets)
+end = time.time()
+delta_new = end - start
+print(f"Runtime: {delta_new:.5f} seconds")
+
+if n_datasets < 20:
+    print("Results:", DEFAULT_DATA)
+
+print(f"\nDATA (NICHROMITE):")
+start = time.time()
+DEFAULT_DATA = Oxides(name="Nichromite", random_seed=42).generate_dataset(number=n_datasets)
+end = time.time()
+delta_new = end - start
+print(f"Runtime: {delta_new:.5f} seconds")
+
+if n_datasets < 20:
+    print("Results:", DEFAULT_DATA)
+
+print(f"\nDATA (MANGANOCHROMITE):")
+start = time.time()
+DEFAULT_DATA = Oxides(name="Manganochromite", random_seed=42).generate_dataset(number=n_datasets)
+end = time.time()
+delta_new = end - start
+print(f"Runtime: {delta_new:.5f} seconds")
+
+if n_datasets < 20:
+    print("Results:", DEFAULT_DATA)
+
+print(f"\nDATA (COCHROMITE):")
+start = time.time()
+DEFAULT_DATA = Oxides(name="Cochromite", random_seed=42).generate_dataset(number=n_datasets)
+end = time.time()
+delta_new = end - start
+print(f"Runtime: {delta_new:.5f} seconds")
+
+if n_datasets < 20:
+    print("Results:", DEFAULT_DATA)
+
+print(f"\nDATA (CHROMITE-GROUP):")
+start = time.time()
+DEFAULT_DATA = Oxides(name="Chromite-Group", random_seed=42).generate_dataset(number=n_datasets)
+end = time.time()
+delta_new = end - start
+print(f"Runtime: {delta_new:.5f} seconds")
+
+if n_datasets < 20:
+    print("Results:", DEFAULT_DATA)
+
+print(f"\nDATA (BOEHMITE):")
+start = time.time()
+DEFAULT_DATA = Oxides(name="Boehmite", random_seed=42).generate_dataset(number=n_datasets)
+end = time.time()
+delta_new = end - start
+print(f"Runtime: {delta_new:.5f} seconds")
+
+if n_datasets < 20:
+    print("Results:", DEFAULT_DATA)
+
+print(f"\nDATA (DIASPORE):")
+start = time.time()
+DEFAULT_DATA = Oxides(name="Diaspore", random_seed=42).generate_dataset(number=n_datasets)
 end = time.time()
 delta_new = end - start
 print(f"Runtime: {delta_new:.5f} seconds")

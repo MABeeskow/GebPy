@@ -1,0 +1,46 @@
+mineral: Ferberite
+group: Oxides
+formula: FeWO4
+
+metadata:
+  key: "Feb"
+  crystal_system: "monoclinic"
+
+chemistry:
+  Fe: 1
+  W: 1
+  O: 4
+
+physical_properties:
+  K:
+    value: 141.0e9
+    ref: "unknown"
+  G:
+    value: 54.0e9
+    ref: "unknown"
+
+cell_data:
+  space_group:
+    value: "P2c"
+    ref: "www.webmineral.com"
+  a:
+    value: 4.76
+    ref: "www.webmineral.com"
+  b:
+    value: 5.68
+    ref: "www.webmineral.com"
+  c:
+    value: 4.92
+    ref: "www.webmineral.com"
+  beta:
+    value: 90.016
+    ref: "www.webmineral.com"
+  Z:
+    value: 2
+    ref: "www.webmineral.com"
+
+sources:
+  - author: "John W. Anthony, Richard A. Bideaux, Kenneth W. Bladh, and Monte C. Nichols"
+    title: "Handbook of Mineralogy"
+    publisher: "Mineralogical Society of America, Chantilly, VA"
+    url: "http://www.handbookofmineralogy.org/"

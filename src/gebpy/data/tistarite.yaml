@@ -1,0 +1,39 @@
+mineral: Tistarite
+group: Oxides
+formula: Ti2O3
+
+metadata:
+  key: "Tta"
+  crystal_system: "trigonal"
+
+chemistry:
+  Ti: 2
+  O: 3
+
+physical_properties:
+  K:
+    value: 216.0e9
+    ref: "unknown"
+  G:
+    value: 87.0e9
+    ref: "unknown"
+
+cell_data:
+  space_group:
+    value: "R3c"
+    ref: "www.webmineral.com"
+  a:
+    value: 5.158
+    ref: "www.webmineral.com"
+  c:
+    value: 13.611
+    ref: "www.webmineral.com"
+  Z:
+    value: 4
+    ref: "www.webmineral.com"
+
+sources:
+  - author: "John W. Anthony, Richard A. Bideaux, Kenneth W. Bladh, and Monte C. Nichols"
+    title: "Handbook of Mineralogy"
+    publisher: "Mineralogical Society of America, Chantilly, VA"
+    url: "http://www.handbookofmineralogy.org/"

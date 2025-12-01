@@ -1,0 +1,43 @@
+mineral: Boehmite
+group: Oxides
+formula: AlO(OH)
+
+metadata:
+  key: "Bhm"
+  crystal_system: "orthorhombic"
+
+chemistry:
+  Al: 1
+  O: 2
+  H: 1
+
+physical_properties:
+  K:
+    value: 46.0e9
+    ref: "unknown"
+  G:
+    value: 34.0e9
+    ref: "unknown"
+
+cell_data:
+  space_group:
+    value: "Amam"
+    ref: "www.webmineral.com"
+  a:
+    value: 2.868
+    ref: "www.webmineral.com"
+  b:
+    value: 12.227
+    ref: "www.webmineral.com"
+  c:
+    value: 3.7
+    ref: "www.webmineral.com"
+  Z:
+    value: 4
+    ref: "www.webmineral.com"
+
+sources:
+  - author: "John W. Anthony, Richard A. Bideaux, Kenneth W. Bladh, and Monte C. Nichols"
+    title: "Handbook of Mineralogy"
+    publisher: "Mineralogical Society of America, Chantilly, VA"
+    url: "http://www.handbookofmineralogy.org/"

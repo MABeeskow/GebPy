@@ -1,0 +1,39 @@
+mineral: Cassiterite
+group: Oxides
+formula: SnO2
+
+metadata:
+  key: "Cst"
+  crystal_system: "tetragonal"
+
+chemistry:
+  Sn: 1
+  O: 2
+
+physical_properties:
+  K:
+    value: 172.0e9
+    ref: "unknown"
+  G:
+    value: 87.0e9
+    ref: "unknown"
+
+cell_data:
+  space_group:
+    value: "P4mnm"
+    ref: "www.webmineral.com"
+  a:
+    value: 4.738
+    ref: "www.webmineral.com"
+  c:
+    value: 3.118
+    ref: "www.webmineral.com"
+  Z:
+    value: 2
+    ref: "www.webmineral.com"
+
+sources:
+  - author: "John W. Anthony, Richard A. Bideaux, Kenneth W. Bladh, and Monte C. Nichols"
+    title: "Handbook of Mineralogy"
+    publisher: "Mineralogical Society of America, Chantilly, VA"
+    url: "http://www.handbookofmineralogy.org/"

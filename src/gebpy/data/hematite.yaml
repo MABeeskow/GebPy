@@ -1,0 +1,39 @@
+mineral: Hematite
+group: Oxides
+formula: Fe2O3
+
+metadata:
+  key: "Hem"
+  crystal_system: "trigonal"
+
+chemistry:
+  Fe: 2
+  O: 3
+
+physical_properties:
+  K:
+    value: 143.58e9
+    ref: "unknown"
+  G:
+    value: 53.43e9
+    ref: "unknown"
+
+cell_data:
+  space_group:
+    value: "R3c"
+    ref: "www.webmineral.com"
+  a:
+    value: 5.038
+    ref: "www.webmineral.com"
+  c:
+    value: 13.772
+    ref: "www.webmineral.com"
+  Z:
+    value: 6
+    ref: "www.webmineral.com"
+
+sources:
+  - author: "John W. Anthony, Richard A. Bideaux, Kenneth W. Bladh, and Monte C. Nichols"
+    title: "Handbook of Mineralogy"
+    publisher: "Mineralogical Society of America, Chantilly, VA"
+    url: "http://www.handbookofmineralogy.org/"
