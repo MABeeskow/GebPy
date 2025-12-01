@@ -1,0 +1,40 @@
+mineral: Brucite
+group: Oxides
+formula: Mg(OH)2
+
+metadata:
+  key: "Bru"
+  crystal_system: "trigonal"
+
+chemistry:
+  Mg: 1
+  O: 2
+  H: 2
+
+physical_properties:
+  K:
+    value: 46.0e9
+    ref: "unknown"
+  G:
+    value: 34.0e9
+    ref: "unknown"
+
+cell_data:
+  space_group:
+    value: "P3m1"
+    ref: "www.webmineral.com"
+  a:
+    value: 3.147
+    ref: "www.webmineral.com"
+  c:
+    value: 4.769
+    ref: "www.webmineral.com"
+  Z:
+    value: 1
+    ref: "www.webmineral.com"
+
+sources:
+  - author: "John W. Anthony, Richard A. Bideaux, Kenneth W. Bladh, and Monte C. Nichols"
+    title: "Handbook of Mineralogy"
+    publisher: "Mineralogical Society of America, Chantilly, VA"
+    url: "http://www.handbookofmineralogy.org/"

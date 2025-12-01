@@ -1,0 +1,39 @@
+mineral: Pyrolusite
+group: Oxides
+formula: MnO2
+
+metadata:
+  key: "Prl"
+  crystal_system: "tetragonal"
+
+chemistry:
+  Mn: 1
+  O: 2
+
+physical_properties:
+  K:
+    value: 151.32e9
+    ref: "unknown"
+  G:
+    value: 55.66e9
+    ref: "unknown"
+
+cell_data:
+  space_group:
+    value: "P4mnm"
+    ref: "www.webmineral.com"
+  a:
+    value: 4.39
+    ref: "www.webmineral.com"
+  c:
+    value: 2.86
+    ref: "www.webmineral.com"
+  Z:
+    value: 2
+    ref: "www.webmineral.com"
+
+sources:
+  - author: "John W. Anthony, Richard A. Bideaux, Kenneth W. Bladh, and Monte C. Nichols"
+    title: "Handbook of Mineralogy"
+    publisher: "Mineralogical Society of America, Chantilly, VA"
+    url: "http://www.handbookofmineralogy.org/"

@@ -1,0 +1,42 @@
+mineral: Valentinite
+group: Oxides
+formula: Sb2O3
+
+metadata:
+  key: "Val"
+  crystal_system: "orthorhombic"
+
+chemistry:
+  Sb: 2
+  O: 3
+
+physical_properties:
+  K:
+    value: 19.0e9
+    ref: "unknown"
+  G:
+    value: 20.0e9
+    ref: "unknown"
+
+cell_data:
+  space_group:
+    value: "Pccn"
+    ref: "www.webmineral.com"
+  a:
+    value: 4.92
+    ref: "www.webmineral.com"
+  b:
+    value: 12.46
+    ref: "www.webmineral.com"
+  c:
+    value: 5.42
+    ref: "www.webmineral.com"
+  Z:
+    value: 4
+    ref: "www.webmineral.com"
+
+sources:
+  - author: "John W. Anthony, Richard A. Bideaux, Kenneth W. Bladh, and Monte C. Nichols"
+    title: "Handbook of Mineralogy"
+    publisher: "Mineralogical Society of America, Chantilly, VA"
+    url: "http://www.handbookofmineralogy.org/"

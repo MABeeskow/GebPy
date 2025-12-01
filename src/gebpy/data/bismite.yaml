@@ -1,0 +1,45 @@
+mineral: Bismite
+group: Oxides
+formula: Bi2O3
+
+metadata:
+  key: "Bism"
+  crystal_system: "monoclinic"
+
+chemistry:
+  Bi: 2
+  O: 3
+
+physical_properties:
+  K:
+    value: 54.0e9
+    ref: "unknown"
+  G:
+    value: 30.0e9
+    ref: "unknown"
+
+cell_data:
+  space_group:
+    value: "P21c"
+    ref: "www.webmineral.com"
+  a:
+    value: 5.83
+    ref: "www.webmineral.com"
+  b:
+    value: 8.14
+    ref: "www.webmineral.com"
+  c:
+    value: 7.48
+    ref: "www.webmineral.com"
+  beta:
+    value: 67.066
+    ref: "www.webmineral.com"
+  Z:
+    value: 4
+    ref: "www.webmineral.com"
+
+sources:
+  - author: "John W. Anthony, Richard A. Bideaux, Kenneth W. Bladh, and Monte C. Nichols"
+    title: "Handbook of Mineralogy"
+    publisher: "Mineralogical Society of America, Chantilly, VA"
+    url: "http://www.handbookofmineralogy.org/"

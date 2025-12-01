@@ -1,0 +1,37 @@
+mineral: Chromite
+group: Oxides
+formula: FeCr2O4
+
+metadata:
+  key: "Chr"
+  crystal_system: "cubic"
+
+chemistry:
+  Fe: 1
+  Cr: 2
+  O: 4
+
+physical_properties:
+  K:
+    value: 147.21e9
+    ref: "unknown"
+  G:
+    value: 55.77e9
+    ref: "unknown"
+
+cell_data:
+  space_group:
+    value: "Fd3m"
+    ref: "www.webmineral.com"
+  a:
+    value: 8.344
+    ref: "www.webmineral.com"
+  Z:
+    value: 8
+    ref: "www.webmineral.com"
+
+sources:
+  - author: "John W. Anthony, Richard A. Bideaux, Kenneth W. Bladh, and Monte C. Nichols"
+    title: "Handbook of Mineralogy"
+    publisher: "Mineralogical Society of America, Chantilly, VA"
+    url: "http://www.handbookofmineralogy.org/"
