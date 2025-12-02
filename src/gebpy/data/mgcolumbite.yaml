@@ -1,0 +1,43 @@
+mineral: Mg-Columbite
+group: Oxides
+formula: MgNb2O6
+
+metadata:
+  key: "Mg-Clb"
+  crystal_system: "orthorhombic"
+
+chemistry:
+  Mg: 1
+  Nb: 2
+  O: 6
+
+physical_properties:
+  K:
+    value: 170.14e9
+    ref: "unknown"
+  G:
+    value: 89.16e9
+    ref: "unknown"
+
+cell_data:
+  space_group:
+    value: "Pcan"
+    ref: "www.webmineral.com"
+  a:
+    value: 5.02
+    ref: "www.webmineral.com"
+  b:
+    value: 14.17
+    ref: "www.webmineral.com"
+  c:
+    value: 5.65
+    ref: "www.webmineral.com"
+  Z:
+    value: 4
+    ref: "www.webmineral.com"
+
+sources:
+  - author: "John W. Anthony, Richard A. Bideaux, Kenneth W. Bladh, and Monte C. Nichols"
+    title: "Handbook of Mineralogy"
+    publisher: "Mineralogical Society of America, Chantilly, VA"
+    url: "http://www.handbookofmineralogy.org/"

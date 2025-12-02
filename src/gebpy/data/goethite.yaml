@@ -1,0 +1,43 @@
+mineral: Goethite
+group: Oxides
+formula: FeO(OH)
+
+metadata:
+  key: "Goe"
+  crystal_system: "orthorhombic"
+
+chemistry:
+  Fe: 1
+  O: 2
+  H: 1
+
+physical_properties:
+  K:
+    value: 93.2e9
+    ref: "unknown"
+  G:
+    value: 62.2e9
+    ref: "unknown"
+
+cell_data:
+  space_group:
+    value: "Pbnm"
+    ref: "www.webmineral.com"
+  a:
+    value: 4.596
+    ref: "www.webmineral.com"
+  b:
+    value: 9.957
+    ref: "www.webmineral.com"
+  c:
+    value: 3.021
+    ref: "www.webmineral.com"
+  Z:
+    value: 4
+    ref: "www.webmineral.com"
+
+sources:
+  - author: "John W. Anthony, Richard A. Bideaux, Kenneth W. Bladh, and Monte C. Nichols"
+    title: "Handbook of Mineralogy"
+    publisher: "Mineralogical Society of America, Chantilly, VA"
+    url: "http://www.handbookofmineralogy.org/"

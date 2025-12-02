@@ -6,7 +6,7 @@
 # Name:		oxides.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		02.12.2025
+# Date:		03.12.2025
 
 #-----------------------------------------------
 
@@ -57,6 +57,7 @@ class Oxides:
             "Al": PeriodicSystem(name="Al").get_data(),
             "Si": PeriodicSystem(name="Si").get_data(),
             "K": PeriodicSystem(name="K").get_data(),
+            "Ca": PeriodicSystem(name="Ca").get_data(),
             "Ti": PeriodicSystem(name="Ti").get_data(),
             "V": PeriodicSystem(name="V").get_data(),
             "Mn": PeriodicSystem(name="Mn").get_data(),
@@ -66,10 +67,19 @@ class Oxides:
             "Ni": PeriodicSystem(name="Ni").get_data(),
             "Cu": PeriodicSystem(name="Cu").get_data(),
             "Zn": PeriodicSystem(name="Zn").get_data(),
+            "Ge": PeriodicSystem(name="Ge").get_data(),
             "As": PeriodicSystem(name="As").get_data(),
+            "Zr": PeriodicSystem(name="Zr").get_data(),
+            "Nb": PeriodicSystem(name="Nb").get_data(),
+            "Mo": PeriodicSystem(name="Mo").get_data(),
+            "Cd": PeriodicSystem(name="Cd").get_data(),
             "Sn": PeriodicSystem(name="Sn").get_data(),
             "Sb": PeriodicSystem(name="Sb").get_data(),
+            "Te": PeriodicSystem(name="Te").get_data(),
+            "Ta": PeriodicSystem(name="Ta").get_data(),
             "W": PeriodicSystem(name="W").get_data(),
+            "Au": PeriodicSystem(name="Au").get_data(),
+            "Tl": PeriodicSystem(name="Tl").get_data(),
             "Pb": PeriodicSystem(name="Pb").get_data(),
             "Bi": PeriodicSystem(name="Bi").get_data(),
             "U": PeriodicSystem(name="U").get_data(),
@@ -82,14 +92,17 @@ class Oxides:
 
         # Mineral-specific data
         if self.name in [
-            "Anatase", "Arsenolite", "Au(III)-Oxide", "Bismite", "Boehmite", "Brookite", "Brucite",
-            "Cassiterite", "Chromite", "Claudetite", "Cochromite", "Coltan", "Columbite", "Corundum",
-            "Crocoite", "Cuprite", "Cuprospinel", "Diaspore", "Ferberite", "Franklinite", "Geikielite", "Gibbsite",
-            "Goethite", "Groutite", "Hematite", "Huebnerite", "Ilmenite", "Jacobsite", "Litharge", "Magnesiochromite",
+            "Anatase", "Arsenolite", "Au3Oxide", "Bismite", "Boehmite", "Brookite", "Brucite",
+            "Cassiterite", "Chromite", "Claudetite", "Cochromite", "Corundum", "Crocoite", "Cuprite",
+            "Cuprospinel", "Diaspore", "Ferberite", "Franklinite", "Geikielite", "Gibbsite", "Goethite", "Groutite",
+            "Hematite", "Huebnerite", "Ilmenite", "Jacobsite", "Litharge", "Magnesiochromite",
             "Magnesioferrite", "Magnetite", "Manganite", "Manganochromite", "Massicot", "Minium", "Nichromite",
             "Plattnerite", "Pyrolusite", "Pyrophanite", "Quartz", "Rutile", "Scrutinyite", "Senarmontite",
-            "Spinel", "Tantalite", "Trevorite", "Ulvospinel", "Uraninite", "Valentinite", "Wulfenite", "Zincite",
-            "Zincochromite", "Eskolaite", "Karelianite", "Galaxite", "Gahnite", "Hercynite", "Tistarite"]:
+            "Spinel", "Trevorite", "Ulvospinel", "Uraninite", "Valentinite", "Wulfenite", "Zincite",
+            "Zincochromite", "Eskolaite", "Karelianite", "Galaxite", "Gahnite", "Hercynite", "Tistarite",
+            "FeColumbite", "MgColumbite", "MnColumbite", "FeTantalite", "MgTantalite", "MnTantalite", "Argutite",
+            "Paratellurite", "Stishovite", "Baddeleyite", "Bunsenite", "Periclase", "Manganosite", "Monteponite",
+            "Lime", "Wustite", "Avicennite", "Stolzite", "Scheelite", "Powellite"]:
             self.yaml_data = self._load_yaml(lower(self.name))
         if self.name == "Al-Spinel":
             self.yaml_data = {
@@ -100,30 +113,59 @@ class Oxides:
                 mineral.lower(): self._load_yaml(mineral.lower())
                 for mineral in ["Chromite", "Zincochromite", "Magnesiochromite"]}
         if self.name == "Fe-Spinel":
-                self.yaml_data = {
-                    mineral.lower(): self._load_yaml(mineral.lower())
-                    for mineral in [
-                        "Magnetite", "Cuprospinel", "Jacobsite", "Magnesioferrite", "Trevorite", "Franklinite"]}
+            self.yaml_data = {
+                mineral.lower(): self._load_yaml(mineral.lower())
+                for mineral in [
+                    "Magnetite", "Cuprospinel", "Jacobsite", "Magnesioferrite", "Trevorite", "Franklinite"]}
         if self.name == "Wolframite":
-                self.yaml_data = {
-                    mineral.lower(): self._load_yaml(mineral.lower())
-                    for mineral in ["Huebnerite", "Ferberite"]}
+            self.yaml_data = {
+                mineral.lower(): self._load_yaml(mineral.lower())
+                for mineral in ["Huebnerite", "Ferberite"]}
         if self.name == "Corundum-Group":
-                self.yaml_data = {
-                    mineral.lower(): self._load_yaml(mineral.lower())
-                    for mineral in ["Corundum", "Hematite", "Eskolaite", "Karelianite", "Tistarite"]}
+            self.yaml_data = {
+                mineral.lower(): self._load_yaml(mineral.lower())
+                for mineral in ["Corundum", "Hematite", "Eskolaite", "Karelianite", "Tistarite"]}
         if self.name == "Chromite-Group":
-                self.yaml_data = {
-                    mineral.lower(): self._load_yaml(mineral.lower())
-                    for mineral in ["Chromite", "Manganochromite", "Nichromite", "Cochromite", "Zincochromite"]}
+            self.yaml_data = {
+                mineral.lower(): self._load_yaml(mineral.lower())
+                for mineral in ["Chromite", "Manganochromite", "Nichromite", "Cochromite", "Zincochromite"]}
         if self.name == "Ilmenite-Group":
-                self.yaml_data = {
-                    mineral.lower(): self._load_yaml(mineral.lower())
-                    for mineral in ["Ilmenite", "Geikielite", "Pyrophanite"]}
+            self.yaml_data = {
+                mineral.lower(): self._load_yaml(mineral.lower())
+                for mineral in ["Ilmenite", "Geikielite", "Pyrophanite"]}
         if self.name == "Rutile-Group":
-                self.yaml_data = {
-                    mineral.lower(): self._load_yaml(mineral.lower())
-                    for mineral in ["Rutile", "Pyrolusite", "Cassiterite", "Plattnerite"]}
+            self.yaml_data = {
+                mineral.lower(): self._load_yaml(mineral.lower())
+                for mineral in ["Rutile", "Pyrolusite", "Cassiterite", "Plattnerite", "Argutite", "Stishovite"]}
+        if self.name == "Columbite":
+            self.yaml_data = {
+                mineral.lower(): self._load_yaml(mineral.lower())
+                for mineral in ["FeColumbite", "MgColumbite", "MnColumbite"]}
+        if self.name == "Tantalite":
+            self.yaml_data = {
+                mineral.lower(): self._load_yaml(mineral.lower())
+                for mineral in ["FeTantalite", "MgTantalite", "MnTantalite"]}
+        if self.name == "Coltan":
+            self.yaml_data = {
+                mineral.lower(): self._load_yaml(mineral.lower())
+                for mineral in ["FeColumbite", "MgColumbite", "MnColumbite", "FeTantalite", "MgTantalite",
+                                "MnTantalite"]}
+        if self.name == "Periclase-Group":
+            self.yaml_data = {
+                mineral.lower(): self._load_yaml(mineral.lower())
+                for mineral in ["Periclase", "Bunsenite", "Manganosite", "Monteponite", "Lime", "Wustite"]}
+        if self.name == "Wulfenite-Group":
+            self.yaml_data = {
+                mineral.lower(): self._load_yaml(mineral.lower())
+                for mineral in ["Wulfenite", "Stolzite"]}
+        if self.name == "Scheelite-Group":
+            self.yaml_data = {
+                mineral.lower(): self._load_yaml(mineral.lower())
+                for mineral in ["Scheelite", "Powellite"]}
+        if self.name == "Diaspore-Group":
+            self.yaml_data = {
+                mineral.lower(): self._load_yaml(mineral.lower())
+                for mineral in ["Diaspore", "Goethite", "Groutite"]}
 
     def _load_yaml(self, mineral_name: str) -> dict:
         # 1) Cache-Hit
@@ -160,18 +202,22 @@ class Oxides:
 
     def generate_dataset(self, number: int = 1, as_dataframe=False) -> None:
         fixed = {
-            "Anatase", "Arsenolite", "Au(III)-Oxide", "Bismite", "Boehmite", "Brookite", "Brucite", "Cassiterite",
+            "Anatase", "Arsenolite", "Au3Oxide", "Bismite", "Boehmite", "Brookite", "Brucite", "Cassiterite",
             "Chromite", "Claudetite", "Cochromite", "Corundum", "Crocoite", "Cuprite", "Cuprospinel", "Diaspore",
             "Ferberite", "Franklinite", "Geikielite", "Gibbsite", "Goethite", "Groutite", "Hematite", "Huebnerite",
             "Ilmenite", "Jacobsite", "Litharge", "Magnesiochromite", "Magnesioferrite", "Magnetite", "Manganite",
             "Manganochromite", "Massicot", "Minium", "Nichromite", "Plattnerite", "Pyrolusite", "Pyrophanite",
             "Quartz", "Rutile", "Scrutinyite", "Senarmontite", "Sphaerobismite", "Spinel", "Trevorite", "Ulvospinel",
             "Uraninite", "Valentinite", "Wulfenite", "Zincite", "Zincochromite", "Eskolaite",
-            "Karelianite", "Galaxite", "Gahnite", "Hercynite", "Tistarite"}
+            "Karelianite", "Galaxite", "Gahnite", "Hercynite", "Tistarite", "FeColumbite", "MgColumbite", "MnColumbite",
+            "FeTantalite", "MgTantalite", "MnTantalite", "Argutite", "Paratellurite", "Stishovite", "Baddeleyite",
+            "Bunsenite", "Periclase", "Manganosite", "Monteponite", "Lime", "Wustite", "Avicennite", "Stolzite",
+            "Scheelite", "Powellite"}
         variable = {}
         endmember = {
             "Al-Spinel", "Cr-Spinel", "Fe-Spinel", "Coltan", "Columbite", "Wolframite", "Tantalite", "Corundum-Group",
-            "Chromite-Group", "Ilmenite-Group", "Rutile-Group"}
+            "Chromite-Group", "Ilmenite-Group", "Rutile-Group", "Periclase-Group", "Wulfenite-Group", "Scheelite-Group",
+            "Diaspore-Group"}
 
         generators = {
             **{m: MinGen(
@@ -193,7 +239,6 @@ class Oxides:
                 dataset = self._evaluate_mineral(index=index, generators=generators, dataset=dataset)
 
         if as_dataframe:
-            import pandas as pd
             return pd.DataFrame(dataset)
         else:
             return dataset
@@ -456,7 +501,35 @@ class Oxides:
         elif self.name == "Rutile-Group":
             name_lower = self.name.lower()
             val_key = "Rt-group"
-            endmember = ["Rutile", "Pyrolusite", "Cassiterite", "Plattnerite"]
+            endmember = ["Rutile", "Pyrolusite", "Cassiterite", "Plattnerite", "Argutite", "Stishovite"]
+        elif self.name == "Columbite":
+            name_lower = self.name.lower()
+            val_key = "Clb"
+            endmember = ["FeColumbite", "MgColumbite", "MnColumbite"]
+        elif self.name == "Tantalite":
+            name_lower = self.name.lower()
+            val_key = "Tnt"
+            endmember = ["FeTantalite", "MgTantalite", "MnTantalite"]
+        elif self.name == "Coltan":
+            name_lower = self.name.lower()
+            val_key = "Clt"
+            endmember = ["FeColumbite", "MgColumbite", "MnColumbite", "FeTantalite", "MgTantalite", "MnTantalite"]
+        elif self.name == "Periclase-Group":
+            name_lower = self.name.lower()
+            val_key = "Per-group"
+            endmember = ["Periclase", "Bunsenite", "Manganosite", "Monteponite", "Lime", "Wustite"]
+        elif self.name == "Wulfenite-Group":
+            name_lower = self.name.lower()
+            val_key = "Wul-group"
+            endmember = ["Wulfenite", "Stolzite"]
+        elif self.name == "Scheelite-Group":
+            name_lower = self.name.lower()
+            val_key = "Sch-group"
+            endmember = ["Scheelite", "Powellite"]
+        elif self.name == "Diaspore-Group":
+            name_lower = self.name.lower()
+            val_key = "Dsp-group"
+            endmember = ["Diaspore", "Goethite", "Groutite"]
 
         if "endmembers" not in self.cache:
             self.cache["endmembers"] = {}

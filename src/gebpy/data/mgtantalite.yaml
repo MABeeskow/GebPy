@@ -1,0 +1,43 @@
+mineral: Mg-Tantalite
+group: Oxides
+formula: MgTaO6
+
+metadata:
+  key: "Mg-Tnt"
+  crystal_system: "orthorhombic"
+
+chemistry:
+  Mg: 1
+  Ta: 2
+  O: 6
+
+physical_properties:
+  K:
+    value: 192.05e9
+    ref: "unknown"
+  G:
+    value: 97.27e9
+    ref: "unknown"
+
+cell_data:
+  space_group:
+    value: "Pcan"
+    ref: "www.webmineral.com"
+  a:
+    value: 5.735
+    ref: "www.webmineral.com"
+  b:
+    value: 14.355
+    ref: "www.webmineral.com"
+  c:
+    value: 5.058
+    ref: "www.webmineral.com"
+  Z:
+    value: 4
+    ref: "www.webmineral.com"
+
+sources:
+  - author: "John W. Anthony, Richard A. Bideaux, Kenneth W. Bladh, and Monte C. Nichols"
+    title: "Handbook of Mineralogy"
+    publisher: "Mineralogical Society of America, Chantilly, VA"
+    url: "http://www.handbookofmineralogy.org/"

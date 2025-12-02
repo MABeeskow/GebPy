@@ -1,0 +1,40 @@
+mineral: Wulfenite
+group: Oxides
+formula: PbMoO4
+
+metadata:
+  key: "Wul"
+  crystal_system: "tetragonal"
+
+chemistry:
+  Pb: 1
+  Mo: 1
+  O: 4
+
+physical_properties:
+  K:
+    value: 48.9958e9
+    ref: "unknown"
+  G:
+    value: 21.99845e9
+    ref: "unknown"
+
+cell_data:
+  space_group:
+    value: "I41a"
+    ref: "www.webmineral.com"
+  a:
+    value: 5.435
+    ref: "www.webmineral.com"
+  c:
+    value: 12.11
+    ref: "www.webmineral.com"
+  Z:
+    value: 4
+    ref: "www.webmineral.com"
+
+sources:
+  - author: "John W. Anthony, Richard A. Bideaux, Kenneth W. Bladh, and Monte C. Nichols"
+    title: "Handbook of Mineralogy"
+    publisher: "Mineralogical Society of America, Chantilly, VA"
+    url: "http://www.handbookofmineralogy.org/"

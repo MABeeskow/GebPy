@@ -1,0 +1,46 @@
+mineral: Crocoite
+group: Oxides
+formula: PbCrO4
+
+metadata:
+  key: "Crc"
+  crystal_system: "monoclinic"
+
+chemistry:
+  Pb: 1
+  Cr: 1
+  O: 4
+
+physical_properties:
+  K:
+    value: 33.0e9
+    ref: "unknown"
+  G:
+    value: 18.0e9
+    ref: "unknown"
+
+cell_data:
+  space_group:
+    value: "P21n"
+    ref: "www.webmineral.com"
+  a:
+    value: 7.12
+    ref: "www.webmineral.com"
+  b:
+    value: 7.44
+    ref: "www.webmineral.com"
+  c:
+    value: 6.8
+    ref: "www.webmineral.com"
+  beta:
+    value: 77.55
+    ref: "www.webmineral.com"
+  Z:
+    value: 4
+    ref: "www.webmineral.com"
+
+sources:
+  - author: "John W. Anthony, Richard A. Bideaux, Kenneth W. Bladh, and Monte C. Nichols"
+    title: "Handbook of Mineralogy"
+    publisher: "Mineralogical Society of America, Chantilly, VA"
+    url: "http://www.handbookofmineralogy.org/"

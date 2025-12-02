@@ -1,0 +1,42 @@
+mineral: Au(III)-Oxide
+group: Oxides
+formula: Au2O3
+
+metadata:
+  key: "Au2O3"
+  crystal_system: "orthorhombic"
+
+chemistry:
+  Au: 2
+  O: 3
+
+physical_properties:
+  K:
+    value: 81.0e9
+    ref: "unknown"
+  G:
+    value: 38.0e9
+    ref: "unknown"
+
+cell_data:
+  space_group:
+    value: "Fdd2"
+    ref: "www.webmineral.com"
+  a:
+    value: 3.91
+    ref: "www.webmineral.com"
+  b:
+    value: 10.54
+    ref: "www.webmineral.com"
+  c:
+    value: 12.88
+    ref: "www.webmineral.com"
+  Z:
+    value: 8
+    ref: "www.webmineral.com"
+
+sources:
+  - author: "John W. Anthony, Richard A. Bideaux, Kenneth W. Bladh, and Monte C. Nichols"
+    title: "Handbook of Mineralogy"
+    publisher: "Mineralogical Society of America, Chantilly, VA"
+    url: "http://www.handbookofmineralogy.org/"

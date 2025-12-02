@@ -1,0 +1,36 @@
+mineral: Manganosite
+group: Oxides
+formula: MnO
+
+metadata:
+  key: "Mns"
+  crystal_system: "cubic"
+
+chemistry:
+  Mn: 1
+  O: 1
+
+physical_properties:
+  K:
+    value: 155.1e9
+    ref: "unknown"
+  G:
+    value: 79.9e9
+    ref: "unknown"
+
+cell_data:
+  space_group:
+    value: "Fm3m"
+    ref: "www.webmineral.com"
+  a:
+    value: 4.436
+    ref: "www.webmineral.com"
+  Z:
+    value: 4
+    ref: "www.webmineral.com"
+
+sources:
+  - author: "John W. Anthony, Richard A. Bideaux, Kenneth W. Bladh, and Monte C. Nichols"
+    title: "Handbook of Mineralogy"
+    publisher: "Mineralogical Society of America, Chantilly, VA"
+    url: "http://www.handbookofmineralogy.org/"
