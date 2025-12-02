@@ -1,0 +1,42 @@
+mineral: Massicot
+group: Oxides
+formula: PbO
+
+metadata:
+  key: "Mas"
+  crystal_system: "orthorhombic"
+
+chemistry:
+  Pb: 1
+  O: 1
+
+physical_properties:
+  K:
+    value: 54.65e9
+    ref: "unknown"
+  G:
+    value: 20.01e9
+    ref: "unknown"
+
+cell_data:
+  space_group:
+    value: "Pbma"
+    ref: "www.webmineral.com"
+  a:
+    value: 5.459
+    ref: "www.webmineral.com"
+  b:
+    value: 4.723
+    ref: "www.webmineral.com"
+  c:
+    value: 5.859
+    ref: "www.webmineral.com"
+  Z:
+    value: 4
+    ref: "www.webmineral.com"
+
+sources:
+  - author: "John W. Anthony, Richard A. Bideaux, Kenneth W. Bladh, and Monte C. Nichols"
+    title: "Handbook of Mineralogy"
+    publisher: "Mineralogical Society of America, Chantilly, VA"
+    url: "http://www.handbookofmineralogy.org/"

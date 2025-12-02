@@ -1,0 +1,40 @@
+mineral: Ilmenite
+group: Oxides
+formula: FeTiO3
+
+metadata:
+  key: "Ilm"
+  crystal_system: "trigonal"
+
+chemistry:
+  Fe: 1
+  Ti: 1
+  O: 3
+
+physical_properties:
+  K:
+    value: 166.0e9
+    ref: "unknown"
+  G:
+    value: 47.0e9
+    ref: "unknown"
+
+cell_data:
+  space_group:
+    value: "R3"
+    ref: "www.webmineral.com"
+  a:
+    value: 5.093
+    ref: "www.webmineral.com"
+  c:
+    value: 14.06
+    ref: "www.webmineral.com"
+  Z:
+    value: 6
+    ref: "www.webmineral.com"
+
+sources:
+  - author: "John W. Anthony, Richard A. Bideaux, Kenneth W. Bladh, and Monte C. Nichols"
+    title: "Handbook of Mineralogy"
+    publisher: "Mineralogical Society of America, Chantilly, VA"
+    url: "http://www.handbookofmineralogy.org/"

@@ -1,0 +1,42 @@
+mineral: Scrutinyite
+group: Oxides
+formula: PbO2
+
+metadata:
+  key: "Scrt"
+  crystal_system: "orthorhombic"
+
+chemistry:
+  Pb: 1
+  O: 2
+
+physical_properties:
+  K:
+    value: 83.44e9
+    ref: "unknown"
+  G:
+    value: 29.06e9
+    ref: "unknown"
+
+cell_data:
+  space_group:
+    value: "P4nmm"
+    ref: "www.webmineral.com"
+  a:
+    value: 4.971
+    ref: "www.webmineral.com"
+  b:
+    value: 5.956
+    ref: "www.webmineral.com"
+  c:
+    value: 5.438
+    ref: "www.webmineral.com"
+  Z:
+    value: 4
+    ref: "www.webmineral.com"
+
+sources:
+  - author: "John W. Anthony, Richard A. Bideaux, Kenneth W. Bladh, and Monte C. Nichols"
+    title: "Handbook of Mineralogy"
+    publisher: "Mineralogical Society of America, Chantilly, VA"
+    url: "http://www.handbookofmineralogy.org/"

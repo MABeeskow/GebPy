@@ -70,6 +70,7 @@ class Oxides:
             "Sn": PeriodicSystem(name="Sn").get_data(),
             "Sb": PeriodicSystem(name="Sb").get_data(),
             "W": PeriodicSystem(name="W").get_data(),
+            "Pb": PeriodicSystem(name="Pb").get_data(),
             "Bi": PeriodicSystem(name="Bi").get_data(),
             "U": PeriodicSystem(name="U").get_data(),
         }
@@ -115,6 +116,14 @@ class Oxides:
                 self.yaml_data = {
                     mineral.lower(): self._load_yaml(mineral.lower())
                     for mineral in ["Chromite", "Manganochromite", "Nichromite", "Cochromite", "Zincochromite"]}
+        if self.name == "Ilmenite-Group":
+                self.yaml_data = {
+                    mineral.lower(): self._load_yaml(mineral.lower())
+                    for mineral in ["Ilmenite", "Geikielite", "Pyrophanite"]}
+        if self.name == "Rutile-Group":
+                self.yaml_data = {
+                    mineral.lower(): self._load_yaml(mineral.lower())
+                    for mineral in ["Rutile", "Pyrolusite", "Cassiterite", "Plattnerite"]}
 
     def _load_yaml(self, mineral_name: str) -> dict:
         # 1) Cache-Hit
@@ -162,7 +171,7 @@ class Oxides:
         variable = {}
         endmember = {
             "Al-Spinel", "Cr-Spinel", "Fe-Spinel", "Coltan", "Columbite", "Wolframite", "Tantalite", "Corundum-Group",
-            "Chromite-Group"}
+            "Chromite-Group", "Ilmenite-Group", "Rutile-Group"}
 
         generators = {
             **{m: MinGen(
@@ -438,8 +447,16 @@ class Oxides:
             endmember = ["Corundum", "Hematite", "Eskolaite", "Karelianite", "Tistarite"]
         elif self.name == "Chromite-Group":
             name_lower = self.name.lower()
-            val_key = "Chr-group"
+            val_key = "Ilm-group"
             endmember = ["Chromite", "Manganochromite", "Nichromite", "Cochromite", "Zincochromite"]
+        elif self.name == "Ilmenite-Group":
+            name_lower = self.name.lower()
+            val_key = "Chr-group"
+            endmember = ["Ilmenite", "Geikielite", "Pyrophanite"]
+        elif self.name == "Rutile-Group":
+            name_lower = self.name.lower()
+            val_key = "Rt-group"
+            endmember = ["Rutile", "Pyrolusite", "Cassiterite", "Plattnerite"]
 
         if "endmembers" not in self.cache:
             self.cache["endmembers"] = {}

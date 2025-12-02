@@ -506,3 +506,133 @@ print(f"Runtime: {delta_new:.5f} seconds")
 
 if n_datasets < 20:
     print("Results:", DEFAULT_DATA)
+
+print(f"\nDATA (GIBBSITE):")
+start = time.time()
+DEFAULT_DATA = Oxides(name="Gibbsite", random_seed=42).generate_dataset(number=n_datasets)
+end = time.time()
+delta_new = end - start
+print(f"Runtime: {delta_new:.5f} seconds")
+
+if n_datasets < 20:
+    print("Results:", DEFAULT_DATA)
+
+print(f"\nDATA (CUPRITE):")
+start = time.time()
+DEFAULT_DATA = Oxides(name="Cuprite", random_seed=42).generate_dataset(number=n_datasets)
+end = time.time()
+delta_new = end - start
+print(f"Runtime: {delta_new:.5f} seconds")
+
+if n_datasets < 20:
+    print("Results:", DEFAULT_DATA)
+
+print(f"\nDATA (ILMENITE):")
+start = time.time()
+DEFAULT_DATA = Oxides(name="Ilmenite", random_seed=42).generate_dataset(number=n_datasets)
+end = time.time()
+delta_new = end - start
+print(f"Runtime: {delta_new:.5f} seconds")
+
+if n_datasets < 20:
+    print("Results:", DEFAULT_DATA)
+
+print(f"\nDATA (ILMENITE-GROUP):")
+start = time.time()
+DEFAULT_DATA = Oxides(name="Ilmenite-Group", random_seed=42).generate_dataset(number=n_datasets)
+end = time.time()
+delta_new = end - start
+print(f"Runtime: {delta_new:.5f} seconds")
+
+if n_datasets < 20:
+    print("Results:", DEFAULT_DATA)
+
+print(f"\nDATA (RUTILE):")
+start = time.time()
+DEFAULT_DATA = Oxides(name="Rutile", random_seed=42).generate_dataset(number=n_datasets)
+end = time.time()
+delta_new = end - start
+print(f"Runtime: {delta_new:.5f} seconds")
+
+if n_datasets < 20:
+    print("Results:", DEFAULT_DATA)
+
+print(f"\nDATA (BROOKITE):")
+start = time.time()
+DEFAULT_DATA = Oxides(name="Brookite", random_seed=42).generate_dataset(number=n_datasets)
+end = time.time()
+delta_new = end - start
+print(f"Runtime: {delta_new:.5f} seconds")
+
+if n_datasets < 20:
+    print("Results:", DEFAULT_DATA)
+
+print(f"\nDATA (LITHARGE):")
+start = time.time()
+DEFAULT_DATA = Oxides(name="Litharge", random_seed=42).generate_dataset(number=n_datasets)
+end = time.time()
+delta_new = end - start
+print(f"Runtime: {delta_new:.5f} seconds")
+
+if n_datasets < 20:
+    print("Results:", DEFAULT_DATA)
+
+print(f"\nDATA (MASSICOT):")
+start = time.time()
+DEFAULT_DATA = Oxides(name="Massicot", random_seed=42).generate_dataset(number=n_datasets)
+end = time.time()
+delta_new = end - start
+print(f"Runtime: {delta_new:.5f} seconds")
+
+if n_datasets < 20:
+    print("Results:", DEFAULT_DATA)
+
+print(f"\nDATA (MINIUM):")
+start = time.time()
+DEFAULT_DATA = Oxides(name="Minium", random_seed=42).generate_dataset(number=n_datasets)
+end = time.time()
+delta_new = end - start
+print(f"Runtime: {delta_new:.5f} seconds")
+
+if n_datasets < 20:
+    print("Results:", DEFAULT_DATA)
+
+print(f"\nDATA (PLATTNERITE):")
+start = time.time()
+DEFAULT_DATA = Oxides(name="Plattnerite", random_seed=42).generate_dataset(number=n_datasets)
+end = time.time()
+delta_new = end - start
+print(f"Runtime: {delta_new:.5f} seconds")
+
+if n_datasets < 20:
+    print("Results:", DEFAULT_DATA)
+
+print(f"\nDATA (RUTILE-GROUP):")
+start = time.time()
+DEFAULT_DATA = Oxides(name="Rutile-Group", random_seed=42).generate_dataset(number=n_datasets)
+end = time.time()
+delta_new = end - start
+print(f"Runtime: {delta_new:.5f} seconds")
+
+if n_datasets < 20:
+    print("Results:", DEFAULT_DATA)
+
+print(f"\nDATA (SCRUTINYITE):")
+start = time.time()
+DEFAULT_DATA = Oxides(name="Scrutinyite", random_seed=42).generate_dataset(number=n_datasets)
+end = time.time()
+delta_new = end - start
+print(f"Runtime: {delta_new:.5f} seconds")
+
+if n_datasets < 20:
+    print("Results:", DEFAULT_DATA)
+
+print(f"\nDATA (ZINCITE):")
+start = time.time()
+DEFAULT_DATA = Oxides(name="Zincite", random_seed=42).generate_dataset(number=n_datasets)
+end = time.time()
+delta_new = end - start
+print(f"Runtime: {delta_new:.5f} seconds")
+
+if n_datasets < 20:
+    print("Results:", DEFAULT_DATA)

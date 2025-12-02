@@ -1,0 +1,36 @@
+mineral: Cuprite
+group: Oxides
+formula: Cu2O
+
+metadata:
+  key: "Cup"
+  crystal_system: "cubic"
+
+chemistry:
+  Cu: 2
+  O: 1
+
+physical_properties:
+  K:
+    value: 111.0e9
+    ref: "unknown"
+  G:
+    value: 8.0e9
+    ref: "unknown"
+
+cell_data:
+  space_group:
+    value: "Pn3m"
+    ref: "www.webmineral.com"
+  a:
+    value: 4.2696
+    ref: "www.webmineral.com"
+  Z:
+    value: 2
+    ref: "www.webmineral.com"
+
+sources:
+  - author: "John W. Anthony, Richard A. Bideaux, Kenneth W. Bladh, and Monte C. Nichols"
+    title: "Handbook of Mineralogy"
+    publisher: "Mineralogical Society of America, Chantilly, VA"
+    url: "http://www.handbookofmineralogy.org/"

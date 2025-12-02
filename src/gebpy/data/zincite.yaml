@@ -1,0 +1,39 @@
+mineral: Zincite
+group: Oxides
+formula: ZnO
+
+metadata:
+  key: "Znc"
+  crystal_system: "hexagonal"
+
+chemistry:
+  Zn: 1
+  O: 1
+
+physical_properties:
+  K:
+    value: 130.0e9
+    ref: "unknown"
+  G:
+    value: 41.0e9
+    ref: "unknown"
+
+cell_data:
+  space_group:
+    value: "P63mc"
+    ref: "www.webmineral.com"
+  a:
+    value: 3.242
+    ref: "www.webmineral.com"
+  c:
+    value: 5.176
+    ref: "www.webmineral.com"
+  Z:
+    value: 2
+    ref: "www.webmineral.com"
+
+sources:
+  - author: "John W. Anthony, Richard A. Bideaux, Kenneth W. Bladh, and Monte C. Nichols"
+    title: "Handbook of Mineralogy"
+    publisher: "Mineralogical Society of America, Chantilly, VA"
+    url: "http://www.handbookofmineralogy.org/"
