@@ -22,6 +22,9 @@ from functools import cached_property
 
 # MODULES
 from src.gebpy.core.minerals.config import DEFAULT_CONFIG
+from src.gebpy.core.minerals.oxides import Oxides
+from src.gebpy.core.minerals.phyllosilicates import Phyllosilicates
+from src.gebpy.core.minerals.tectosilicates import Tectosilicates
 
 # CODE
 class MineralDataGeneration:
@@ -47,21 +50,10 @@ class MineralDataGeneration:
         "Al-Garnet", "Almandine", "Andalusite", "Anhadrite", "Ca-Garnet", "Ca-Olivine", "Fayalite", "Forsterite",
         "Grossular", "Kyanite", "Liebenbergite", "Olivine", "Pyrope", "Sillimanite", "Staurolite", "Tephroite",
         "Thorite", "Titanite", "Topaz", "Uvarovite", "Zircon"}
-    list_oxides = {
-        "Al-Spinel", "Anatase", "Arsenolite", "Au(III)-Oxide", "Bismite", "Boehmite", "Brookite", "Brucite",
-        "Cassiterite", "Chromite", "Claudetite", "Cochromite", "Coltan", "Columbite", "Corundum", "Cr-Spinel",
-        "Crocoite", "Cuprite", "Cuprospinel", "Diaspore", "Fe-Spinel", "Ferberite", "Ferberite-Huebnerite",
-        "Franklinite", "Geikielite", "Gibbsite", "Goethite", "Groutite", "Hematite", "Huebnerite", "Ilmenite",
-        "Jacobsite", "Litharge", "Magnesiochromite", "Magnesioferrite", "Magnetite", "Manganite", "Manganochromite",
-        "Massicot", "Minium", "Nichromite", "Plattnerite", "Pyrolusite", "Pyrophanite", "Quartz", "Rutile",
-        "Scrutinyite", "Senarmontite", "Sphaerobismite", "Spinel", "Tantalite", "Trevorite", "Ulvospinel",
-        "Uraninite", "Valentinite", "Wolframite", "Wulfenite", "Zincite", "Zincochromite"}
+    list_oxides = Oxides._minerals
     list_phosphates = {"Apatite", "Chloroapatite", "Fluoroapatite", "Hydroxyapatite"}
     list_phospides = {"Allabogdanite"}
-    list_phyllosilicates = {
-        "Annite", "Antigorite", "Biotite", "Chamosite", "Chlorite", "Chrysotile", "Clinochlore", "Eastonite",
-        "Glauconite", "Illite", "Kaolinite", "Montmorillonite", "Muscovite", "Nimite", "Nontronite", "Pennantite",
-        "Phlogopite", "Pyrophyillite", "Saponite", "Siderophyllite", "Talc", "Vermiculite"}
+    list_phyllosilicates = Phyllosilicates._minerals
     list_sorosilicates = {"Epidote", "Gehlenite", "Zoisite"}
     list_sulfates = {
         "Alunite", "Anglesite", "Anhydrite", "Barite", "Celestite", "Chalcanthite", "Gypsum", "Hanksite",
@@ -71,8 +63,7 @@ class MineralDataGeneration:
         "Fahlore", "Galena", "Gallite", "Laforetite", "Lenaite", "Marcasite", "Marmatite", "Millerite",
         "Molybdenite", "Orpiment", "Pentlandite", "Pyrite", "Pyrrhotite", "Realgar", "Roquesite", "Sphalerite",
         "Stibnite", "Vaesite"}
-    list_tectosilicates = {
-        "Alkali Feldspar", "Danburite", "Nepheline", "Orthoclase", "Plagioclase", "Scapolite"}
+    list_tectosilicates = Tectosilicates._minerals
 
     mineral_groups = {
         "carbonates": list_carbonates, "cyclosilicates": list_cyclosilicates, "halides": list_halides,
@@ -109,10 +100,7 @@ class MineralDataGeneration:
     def mineral_map(self):
         from gebpy.modules.carbonates import Carbonates
         from gebpy.modules.halides import Halides
-        #from gebpy.modules.oxides import Oxides
-        from src.gebpy.core.minerals.oxides import Oxides
-        from gebpy.modules.silicates import (
-            Cyclosilicates, Inosilicates, Nesosilicates, Phyllosilicates, Sorosilicates, Tectosilicates)
+        from gebpy.modules.silicates import (Cyclosilicates, Inosilicates, Nesosilicates, Sorosilicates)
         from gebpy.modules.phosphates import Phosphates
         from gebpy.modules.sulfides import Sulfides
         from gebpy.modules.sulfates import Sulfates
@@ -150,14 +138,18 @@ class MineralDataGeneration:
         for group, list_group in self.mineral_groups.items():
             if name in list_group:
                 cls = self.mineral_map[group]
-                try:
-                    return cls(
-                        mineral=name, data_type=True, traces_list=self.trace_elements,
-                        random_seed=self.random_seed).generate_dataset(
-                        number=n_datapoints)
-                except:
-                    return cls(mineral=name, data_type=True, traces_list=self.trace_elements).generate_dataset(
-                        number=n_datapoints)
+                if cls.__name__ in ("Phyllosilicates", "Tectosilicates", "Oxides"):
+                    #print(sorted(cls(name=name, random_seed=self.random_seed)._minerals))
+                    return cls(name=name, random_seed=self.random_seed).generate_dataset(number=n_datapoints)
+                else:
+                    try:
+                        return cls(
+                            mineral=name, data_type=True, traces_list=self.trace_elements,
+                            random_seed=self.random_seed).generate_dataset(
+                            number=n_datapoints)
+                    except:
+                        return cls(mineral=name, data_type=True, traces_list=self.trace_elements).generate_dataset(
+                            number=n_datapoints)
         raise ValueError(f"Unknown mineral '{name}'. Please check available groups.")
 
     def generate_data(self, as_dataframe: bool = True) -> Union[pd.DataFrame, dict]:

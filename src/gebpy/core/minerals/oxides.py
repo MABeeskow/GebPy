@@ -38,6 +38,19 @@ DATA_PATH = BASE_PATH / "data_minerals"
 class Oxides:
     _yaml_cache = {}
     _formula_cache = {}
+    _minerals = {
+        "Anatase", "Arsenolite", "Au3Oxide", "Bismite", "Boehmite", "Brookite", "Brucite", "Cassiterite", "Chromite",
+        "Claudetite", "Cochromite", "Corundum", "Crocoite", "Cuprite", "Cuprospinel", "Diaspore", "Ferberite",
+        "Franklinite", "Geikielite", "Gibbsite", "Goethite", "Groutite", "Hematite", "Huebnerite", "Ilmenite",
+        "Jacobsite", "Litharge", "Magnesiochromite", "Magnesioferrite", "Magnetite", "Manganite", "Manganochromite",
+        "Massicot", "Minium", "Nichromite", "Plattnerite", "Pyrolusite", "Pyrophanite", "Quartz", "Rutile",
+        "Scrutinyite", "Senarmontite", "Spinel", "Trevorite", "Ulvospinel", "Uraninite", "Valentinite", "Wulfenite",
+        "Zincite", "Zincochromite", "Eskolaite", "Karelianite", "Galaxite", "Gahnite", "Hercynite", "Tistarite",
+        "FeColumbite", "MgColumbite", "MnColumbite", "FeTantalite", "MgTantalite", "MnTantalite", "Argutite",
+        "Paratellurite", "Stishovite", "Baddeleyite", "Bunsenite", "Periclase", "Manganosite", "Monteponite", "Lime",
+        "Wustite", "Avicennite", "Stolzite", "Scheelite", "Powellite", "Al-Spinel", "Cr-Spinel", "Fe-Spinel", "Coltan",
+        "Columbite", "Wolframite", "Tantalite", "Corundum-Group", "Chromite-Group", "Ilmenite-Group", "Rutile-Group",
+        "Periclase-Group", "Wulfenite-Group", "Scheelite-Group", "Diaspore-Group"}
 
     def __init__(self, name, random_seed, rounding: int = 3) -> None:
         self.name = name

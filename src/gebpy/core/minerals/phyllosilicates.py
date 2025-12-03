@@ -36,6 +36,10 @@ DATA_PATH = BASE_PATH / "data_minerals"
 class Phyllosilicates:
     _yaml_cache = {}
     _formula_cache = {}
+    _minerals = {
+        "Annite", "Eastonite", "Illite", "Kaolinite", "Phlogopite", "Siderophyllite", "Chamosite", "Clinochlore",
+        "Pennantite", "Nimite", "Muscovite", "Talc", "Chrysotile", "Antigorite", "Pyrophyllite", "Montmorillonite",
+        "Nontronite", "Saponite", "Glauconite", "Vermiculite", "Chlorite", "Biotite"}
 
     def __init__(self, name, random_seed, rounding=3) -> None:
         self.name = name

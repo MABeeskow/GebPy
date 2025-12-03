@@ -36,6 +36,9 @@ DATA_PATH = BASE_PATH / "data_minerals"
 class Tectosilicates:
     _yaml_cache = {}
     _formula_cache = {}
+    _minerals = {
+        "Orthoclase", "Albite", "Microcline", "Anorthite", "Marialite", "Meionite", "Kalsilite", "NaNepheline",
+        "Alkali feldspar", "Plagioclase", "Scapolite", "Nepheline"}
 
     def __init__(self, name, random_seed, rounding=3) -> None:
         self.name = name
