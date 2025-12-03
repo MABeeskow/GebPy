@@ -33,7 +33,7 @@ from src.gebpy.core.minerals.common import MineralGeneration as MinGen
 
 # CODE
 BASE_PATH = Path(__file__).resolve().parents[2]
-DATA_PATH = BASE_PATH / "data"
+DATA_PATH = BASE_PATH / "data_minerals"
 
 class Oxides:
     _yaml_cache = {}

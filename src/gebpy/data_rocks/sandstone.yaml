@@ -1,0 +1,25 @@
+rock: Sandstone
+group: Sedimentary
+normalize: true
+
+mineralogy:
+  Quartz:
+    min: 0.7
+    max: 1.0
+  Alkali feldspar:
+    min: 0.0
+    max: 0.3
+  Plagioclase:
+    min: 0.0
+    max: 0.3
+
+physical_properties:
+  porosity:
+    min: 0.1
+    max: 0.35
+
+sources:
+  - author: "unknown"
+    title: "unknown"
+    publisher: "unknown"
+    url: ["unknown"]

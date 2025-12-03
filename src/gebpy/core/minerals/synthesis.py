@@ -6,7 +6,7 @@
 # Name:		synthesis.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		19.10.2025
+# Date:		03.12.2025
 
 #-----------------------------------------------
 
@@ -109,7 +109,8 @@ class MineralDataGeneration:
     def mineral_map(self):
         from gebpy.modules.carbonates import Carbonates
         from gebpy.modules.halides import Halides
-        from gebpy.modules.oxides import Oxides
+        #from gebpy.modules.oxides import Oxides
+        from src.gebpy.core.minerals.oxides import Oxides
         from gebpy.modules.silicates import (
             Cyclosilicates, Inosilicates, Nesosilicates, Phyllosilicates, Sorosilicates, Tectosilicates)
         from gebpy.modules.phosphates import Phosphates

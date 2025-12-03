@@ -6,7 +6,7 @@
 # Name:		phyllosilicates.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		30.11.2025
+# Date:		03.12.2025
 
 #-----------------------------------------------
 
@@ -31,7 +31,7 @@ from src.gebpy.core.minerals.common import MineralGeneration as MinGen
 
 # CODE
 BASE_PATH = Path(__file__).resolve().parents[2]
-DATA_PATH = BASE_PATH / "data"
+DATA_PATH = BASE_PATH / "data_minerals"
 
 class Phyllosilicates:
     _yaml_cache = {}
