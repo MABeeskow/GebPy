@@ -139,7 +139,7 @@ class SedimentaryRocks:
         return bulk
 
     def generate_dataset(self, number: int = 1, fluid: str = "water", density_fluid=None) -> None:
-        if density_fluid == None:
+        if density_fluid is None:
             if fluid == "water":
                 density_fluid = 1000
             elif fluid == "oil":
