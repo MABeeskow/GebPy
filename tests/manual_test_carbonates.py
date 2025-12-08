@@ -163,3 +163,23 @@ print(f"Runtime: {delta_new:.5f} seconds")
 
 if n_datasets < 20:
     print("Results:", DEFAULT_DATA)
+
+print(f"\nDATA (CALCITE-GROUP):")
+start = time.time()
+DEFAULT_DATA = Carbonates(name="Calcite-Group", random_seed=42).generate_dataset(number=n_datasets)
+end = time.time()
+delta_new = end - start
+print(f"Runtime: {delta_new:.5f} seconds")
+
+if n_datasets < 20:
+    print("Results:", DEFAULT_DATA)
+
+print(f"\nDATA (DOLOMITE-GROUP):")
+start = time.time()
+DEFAULT_DATA = Carbonates(name="Dolomite-Group", random_seed=42).generate_dataset(number=n_datasets)
+end = time.time()
+delta_new = end - start
+print(f"Runtime: {delta_new:.5f} seconds")
+
+if n_datasets < 20:
+    print("Results:", DEFAULT_DATA)

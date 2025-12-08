@@ -74,6 +74,14 @@ class Carbonates:
             "Calcite", "Dolomite", "Magnesite", "Siderite", "Rhodochrosite", "Aragonite", "Cerussite", "Ankerite",
             "Azurite", "Malachite", "Ikaite", "Smithsonite"]:
             self.yaml_data = self._load_yaml(self.name.lower())
+        if self.name == "Calcite-Group":
+            self.yaml_data = {
+                mineral.lower(): self._load_yaml(mineral.lower())
+                for mineral in ["Calcite", "Magnesite", "Siderite", "Rhodochrosite", "Smithsonite"]}
+        elif self.name == "Dolomite-Group":
+            self.yaml_data = {
+                mineral.lower(): self._load_yaml(mineral.lower())
+                for mineral in ["Dolomite", "Ankerite"]}
 
     def _load_yaml(self, mineral_name: str) -> dict:
         # 1) Cache-Hit
@@ -142,7 +150,7 @@ class Carbonates:
             "Calcite", "Dolomite", "Magnesite", "Siderite", "Rhodochrosite", "Aragonite", "Cerussite", "Ankerite",
             "Azurite", "Malachite", "Ikaite", "Smithsonite"}
         variable = {}
-        endmember = {}
+        endmember = {"Calcite-Group", "Dolomite-Group"}
         generators = {
             **{m: MinGen(
                 name=self.name, yaml_data=self.yaml_data, elements=self.elements, cache=self.cache,
@@ -392,10 +400,14 @@ class Carbonates:
         """
         val_state = "variable"
 
-        if self.name == "Biotite":
+        if self.name == "Calcite-Group":
             name_lower = self.name.lower()
-            val_key = "Bt"
-            endmember = ["Annite", "Phlogopite", "Siderophyllite", "Eastonite"]
+            val_key = "Cal-group"
+            endmember = ["Calcite", "Magnesite", "Siderite", "Rhodochrosite", "Smithsonite"]
+        elif self.name == "Dolomite-Group":
+            name_lower = self.name.lower()
+            val_key = "Dol-group"
+            endmember = ["Dolomite", "Ankerite"]
 
         if "endmembers" not in self.cache:
             self.cache["endmembers"] = {}
