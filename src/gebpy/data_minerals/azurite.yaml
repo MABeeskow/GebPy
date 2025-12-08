@@ -1,0 +1,47 @@
+mineral: Azurite
+group: Carbonates
+formula: Cu3 (CO3)2 (OH)2
+
+metadata:
+  key: "Az"
+  crystal_system: "monoclinic"
+
+chemistry:
+  Cu: 3
+  C: 2
+  O: 8
+  H: 2
+
+physical_properties:
+  K:
+    value: 112.35e9
+    ref: "unknown"
+  G:
+    value: 49.33e9
+    ref: "unknown"
+
+cell_data:
+  space_group:
+    value: "P21c"
+    ref: "www.handbookofmineralogy.org"
+  a:
+    value: 5.0109
+    ref: "www.handbookofmineralogy.org"
+  b:
+    value: 5.8485
+    ref: "www.handbookofmineralogy.org"
+  c:
+    value: 10.345
+    ref: "www.handbookofmineralogy.org"
+  beta:
+    value: 92.43
+    ref: "www.handbookofmineralogy.org"
+  Z:
+    value: 2
+    ref: "www.handbookofmineralogy.org"
+
+sources:
+  - author: "unknown"
+    title: "unknown"
+    publisher: "www.handbookofmineralogy.org"
+    url: ["www.handbookofmineralogy.org", "www.webmineral.com"]

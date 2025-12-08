@@ -1,0 +1,47 @@
+mineral: Ikaite
+group: Carbonates
+formula: Ca C O3 * 6*H2O
+
+metadata:
+  key: "Ika"
+  crystal_system: "monoclinic"
+
+chemistry:
+  Ca: 1
+  C: 1
+  O: 9
+  H: 12
+
+physical_properties:
+  K:
+    value: 35.6743e9
+    ref: "unknown"
+  G:
+    value: 17.57775e9
+    ref: "unknown"
+
+cell_data:
+  space_group:
+    value: "C2c"
+    ref: "www.handbookofmineralogy.org"
+  a:
+    value: 8.792
+    ref: "www.handbookofmineralogy.org"
+  b:
+    value: 8.310
+    ref: "www.handbookofmineralogy.org"
+  c:
+    value: 11.021
+    ref: "www.handbookofmineralogy.org"
+  beta:
+    value: 110.53
+    ref: "www.handbookofmineralogy.org"
+  Z:
+    value: 4
+    ref: "www.handbookofmineralogy.org"
+
+sources:
+  - author: "unknown"
+    title: "unknown"
+    publisher: "www.handbookofmineralogy.org"
+    url: ["www.handbookofmineralogy.org", "www.webmineral.com"]

@@ -1,0 +1,40 @@
+mineral: Smithsonite
+group: Carbonates
+formula: Zn C O3
+
+metadata:
+  key: "Smt"
+  crystal_system: "trigonal"
+
+chemistry:
+  Zn: 1
+  C: 1
+  O: 3
+
+physical_properties:
+  K:
+    value: 117.0e9
+    ref: "unknown"
+  G:
+    value: 49.0e9
+    ref: "unknown"
+
+cell_data:
+  space_group:
+    value: "R3c"
+    ref: "www.handbookofmineralogy.org"
+  a:
+    value: 4.6526
+    ref: "www.handbookofmineralogy.org"
+  c:
+    value: 15.0257
+    ref: "www.handbookofmineralogy.org"
+  Z:
+    value: 6
+    ref: "www.handbookofmineralogy.org"
+
+sources:
+  - author: "unknown"
+    title: "unknown"
+    publisher: "www.handbookofmineralogy.org"
+    url: ["www.handbookofmineralogy.org", "www.webmineral.com"]

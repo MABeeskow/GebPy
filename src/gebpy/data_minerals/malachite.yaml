@@ -1,0 +1,47 @@
+mineral: Malachite
+group: Carbonates
+formula: Cu2 (CO3) (OH)2
+
+metadata:
+  key: "Mal"
+  crystal_system: "monoclinic"
+
+chemistry:
+  Cu: 2
+  C: 1
+  O: 5
+  H: 2
+
+physical_properties:
+  K:
+    value: 118.77e9
+    ref: "unknown"
+  G:
+    value: 50.06e9
+    ref: "unknown"
+
+cell_data:
+  space_group:
+    value: "P21a"
+    ref: "www.handbookofmineralogy.org"
+  a:
+    value: 9.502
+    ref: "www.handbookofmineralogy.org"
+  b:
+    value: 11.974
+    ref: "www.handbookofmineralogy.org"
+  c:
+    value: 3.240
+    ref: "www.handbookofmineralogy.org"
+  beta:
+    value: 98.45
+    ref: "www.handbookofmineralogy.org"
+  Z:
+    value: 4
+    ref: "www.handbookofmineralogy.org"
+
+sources:
+  - author: "unknown"
+    title: "unknown"
+    publisher: "www.handbookofmineralogy.org"
+    url: ["www.handbookofmineralogy.org", "www.webmineral.com"]

@@ -55,14 +55,12 @@ class Carbonates:
             "H": PeriodicSystem(name="H").get_data(),
             "C": PeriodicSystem(name="C").get_data(),
             "O": PeriodicSystem(name="O").get_data(),
-            "Na": PeriodicSystem(name="Na").get_data(),
             "Mg": PeriodicSystem(name="Mg").get_data(),
-            "Al": PeriodicSystem(name="Al").get_data(),
-            "K": PeriodicSystem(name="K").get_data(),
             "Ca": PeriodicSystem(name="Ca").get_data(),
             "Mn": PeriodicSystem(name="Mn").get_data(),
             "Fe": PeriodicSystem(name="Fe").get_data(),
-            "Ni": PeriodicSystem(name="Ni").get_data(),
+            "Cu": PeriodicSystem(name="Cu").get_data(),
+            "Zn": PeriodicSystem(name="Zn").get_data(),
             "Pb": PeriodicSystem(name="Pb").get_data(),
         }
 
@@ -242,38 +240,6 @@ class Carbonates:
             results[el] = self.ae.run(compiled[el])
 
         return results
-
-    def _calculate_crystal_physics_object_chlorite(self, key):
-        if key == "Fe":
-            dataV_Fe = CrystalPhysics([[5.373, 9.306, 14.222], [97.88], "monoclinic"])
-            V_Fe = dataV_Fe.calculate_volume()
-            Z_Fe = 2
-            V_m_Fe = MineralChemistry().calculate_molar_volume(volume_cell=V_Fe, z=Z_Fe)
-            return V_Fe, V_m_Fe, Z_Fe
-        elif key == "Mg":
-            dataV_Mg = CrystalPhysics([[5.3, 9.3, 14.3], [97], "monoclinic"])
-            V_Mg = dataV_Mg.calculate_volume()
-            Z_Mg = 2
-            V_m_Mg = MineralChemistry().calculate_molar_volume(volume_cell=V_Mg, z=Z_Mg)
-            return V_Mg, V_m_Mg, Z_Mg
-        elif key == "Mn":
-            dataV_Mn = CrystalPhysics([[5.454, 9.45, 14.4], [97.2], "monoclinic"])
-            V_Mn = dataV_Mn.calculate_volume()
-            Z_Mn = 2
-            V_m_Mn = MineralChemistry().calculate_molar_volume(volume_cell=V_Mn, z=Z_Mn)
-            return V_Mn, V_m_Mn, Z_Mn
-        elif key == "Ni":
-            dataV_Ni = CrystalPhysics([[5.32, 9.214, 14.302], [97.1], "monoclinic"])
-            V_Ni = dataV_Ni.calculate_volume()
-            Z_Ni = 2
-            V_m_Ni = MineralChemistry().calculate_molar_volume(volume_cell=V_Ni, z=Z_Ni)
-            return V_Ni, V_m_Ni, Z_Ni
-
-    def _calculate_densities_chlorite(self, molar_mass, Z, V, amounts, element):
-        dataRho = CrystalPhysics([molar_mass, Z, V])
-        rho = dataRho.calculate_bulk_density()
-        rho_e = wg(amounts=amounts, elements=element, rho_b=rho).calculate_electron_density()
-        return rho, rho_e
 
     def _extract_values_from_yaml(self):
         vals = {}

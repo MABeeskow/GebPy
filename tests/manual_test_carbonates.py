@@ -113,3 +113,53 @@ print(f"Runtime: {delta_new:.5f} seconds")
 
 if n_datasets < 20:
     print("Results:", DEFAULT_DATA)
+
+print(f"\nDATA (ANKERITE):")
+start = time.time()
+DEFAULT_DATA = Carbonates(name="Ankerite", random_seed=42).generate_dataset(number=n_datasets)
+end = time.time()
+delta_new = end - start
+print(f"Runtime: {delta_new:.5f} seconds")
+
+if n_datasets < 20:
+    print("Results:", DEFAULT_DATA)
+
+print(f"\nDATA (AZURITE):")
+start = time.time()
+DEFAULT_DATA = Carbonates(name="Azurite", random_seed=42).generate_dataset(number=n_datasets)
+end = time.time()
+delta_new = end - start
+print(f"Runtime: {delta_new:.5f} seconds")
+
+if n_datasets < 20:
+    print("Results:", DEFAULT_DATA)
+
+print(f"\nDATA (MALACHITE):")
+start = time.time()
+DEFAULT_DATA = Carbonates(name="Malachite", random_seed=42).generate_dataset(number=n_datasets)
+end = time.time()
+delta_new = end - start
+print(f"Runtime: {delta_new:.5f} seconds")
+
+if n_datasets < 20:
+    print("Results:", DEFAULT_DATA)
+
+print(f"\nDATA (IKAITE):")
+start = time.time()
+DEFAULT_DATA = Carbonates(name="Ikaite", random_seed=42).generate_dataset(number=n_datasets)
+end = time.time()
+delta_new = end - start
+print(f"Runtime: {delta_new:.5f} seconds")
+
+if n_datasets < 20:
+    print("Results:", DEFAULT_DATA)
+
+print(f"\nDATA (SMITHSONITE):")
+start = time.time()
+DEFAULT_DATA = Carbonates(name="Smithsonite", random_seed=42).generate_dataset(number=n_datasets)
+end = time.time()
+delta_new = end - start
+print(f"Runtime: {delta_new:.5f} seconds")
+
+if n_datasets < 20:
+    print("Results:", DEFAULT_DATA)

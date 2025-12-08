@@ -1,0 +1,41 @@
+mineral: Ankerite
+group: Carbonates
+formula: Ca Fe (CO3)2
+
+metadata:
+  key: "Ank"
+  crystal_system: "trigonal"
+
+chemistry:
+  Ca: 1
+  Fe: 1
+  C: 2
+  O: 6
+
+physical_properties:
+  K:
+    value: 73.0e9
+    ref: "unknown"
+  G:
+    value: 32.0e9
+    ref: "unknown"
+
+cell_data:
+  space_group:
+    value: "R3"
+    ref: "www.handbookofmineralogy.org"
+  a:
+    value: 4.83
+    ref: "www.handbookofmineralogy.org"
+  c:
+    value: 16.167
+    ref: "www.handbookofmineralogy.org"
+  Z:
+    value: 3
+    ref: "www.handbookofmineralogy.org"
+
+sources:
+  - author: "unknown"
+    title: "unknown"
+    publisher: "www.handbookofmineralogy.org"
+    url: ["www.handbookofmineralogy.org", "www.webmineral.com"]
