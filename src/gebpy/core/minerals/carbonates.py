@@ -394,7 +394,7 @@ class Carbonates:
 
     def create_mineral_data_endmember_series(self):
         """
-        Synthetic mineral data generation for an user-selected mineral.
+        Synthetic mineral data generation for a user-selected mineral.
         All mechanical properties (K, G, E) are stored in Pascals internally.
         For output, they are converted to GPa.
         """

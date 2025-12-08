@@ -6,7 +6,7 @@
 # Name:		manual_test_rocks_sedimentary.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		04.12.2025
+# Date:		08.12.2025
 
 #-----------------------------------------------
 
@@ -26,7 +26,7 @@ from gebpy.modules.siliciclastics import SiliciclasticRocks
 # CODE
 n_datasets = 15
 print("\n--- Manual test for: sedimentary.py ---")
-print(f"\nDEFAULT_DATA (SANDSTONE):")
+print(f"\nDEFAULT_DATA (SANDSTONE, WATER):")
 start = time.time()
 DEFAULT_DATA = SedimentaryRocks(name="Sandstone", random_seed=42).generate_dataset(number=n_datasets)
 end = time.time()
@@ -38,7 +38,7 @@ pd.set_option("display.max_colwidth", None)
 if n_datasets < 20:
     print("Results:", DEFAULT_DATA.describe())
 
-print(f"\nOLD_DATA (SANDSTONE):")
+print(f"\nOLD_DATA (SANDSTONE, WATER):")
 start = time.time()
 OLD_DATA = data = SiliciclasticRocks(fluid="water", actualThickness=0).create_sandstone(
     number=n_datasets, porosity=[0.1, 0.35])
@@ -67,5 +67,10 @@ if n_datasets < 20:
 
 print(f"\nDATA(SANDSTONE, CUSTOM FLUID DENSITY):")
 data_rock = SedimentaryRocks(name="Sandstone", random_seed=42).generate_dataset(number=n_datasets, density_fluid=725)
+if n_datasets < 20:
+    print("Results:", data_rock.describe())
+
+print(f"\nDATA(LIMESTONE, WATER):")
+data_rock = SedimentaryRocks(name="Limestone", random_seed=42).generate_dataset(number=n_datasets)
 if n_datasets < 20:
     print("Results:", data_rock.describe())

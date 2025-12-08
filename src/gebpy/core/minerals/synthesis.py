@@ -6,7 +6,7 @@
 # Name:		synthesis.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		03.12.2025
+# Date:		08.12.2025
 
 #-----------------------------------------------
 
@@ -25,6 +25,8 @@ from src.gebpy.core.minerals.config import DEFAULT_CONFIG
 from src.gebpy.core.minerals.oxides import Oxides
 from src.gebpy.core.minerals.phyllosilicates import Phyllosilicates
 from src.gebpy.core.minerals.tectosilicates import Tectosilicates
+from src.gebpy.core.minerals.carbonates import Carbonates
+from src.gebpy.core.minerals.sulfides import Sulfides
 
 # CODE
 class MineralDataGeneration:
@@ -98,11 +100,9 @@ class MineralDataGeneration:
 
     @cached_property
     def mineral_map(self):
-        from gebpy.modules.carbonates import Carbonates
         from gebpy.modules.halides import Halides
         from gebpy.modules.silicates import (Cyclosilicates, Inosilicates, Nesosilicates, Sorosilicates)
         from gebpy.modules.phosphates import Phosphates
-        from gebpy.modules.sulfides import Sulfides
         from gebpy.modules.sulfates import Sulfates
         from gebpy.modules.organics import Organics
         from gebpy.modules.phospides import Phospides
@@ -138,7 +138,7 @@ class MineralDataGeneration:
         for group, list_group in self.mineral_groups.items():
             if name in list_group:
                 cls = self.mineral_map[group]
-                if cls.__name__ in ("Phyllosilicates", "Tectosilicates", "Oxides"):
+                if cls.__name__ in ("Phyllosilicates", "Tectosilicates", "Oxides", "Carbonates", "Sulfides"):
                     #print(sorted(cls(name=name, random_seed=self.random_seed)._minerals))
                     return cls(name=name, random_seed=self.random_seed).generate_dataset(number=n_datapoints)
                 else:
