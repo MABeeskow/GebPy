@@ -1,0 +1,43 @@
+mineral: Cerussite
+group: Carbonates
+formula: Pb C O3
+
+metadata:
+  key: "Cer"
+  crystal_system: "orthorhombic"
+
+chemistry:
+  Pb: 1
+  C: 1
+  O: 3
+
+physical_properties:
+  K:
+    value: 56.0e9
+    ref: "unknown"
+  G:
+    value: 21.0e9
+    ref: "unknown"
+
+cell_data:
+  space_group:
+    value: "Pmcn"
+    ref: "www.handbookofmineralogy.org"
+  a:
+    value: 5.179
+    ref: "www.handbookofmineralogy.org"
+  b:
+    value: 8.492
+    ref: "www.handbookofmineralogy.org"
+  c:
+    value: 6.141
+    ref: "www.handbookofmineralogy.org"
+  Z:
+    value: 4
+    ref: "www.handbookofmineralogy.org"
+
+sources:
+  - author: "unknown"
+    title: "unknown"
+    publisher: "www.handbookofmineralogy.org"
+    url: ["www.handbookofmineralogy.org", "www.webmineral.com"]

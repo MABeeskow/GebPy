@@ -1,0 +1,41 @@
+mineral: Dolomite
+group: Carbonates
+formula: Ca Mg (CO3)2
+
+metadata:
+  key: "Dol"
+  crystal_system: "trigonal"
+
+chemistry:
+  Ca: 1
+  Mg: 1
+  C: 2
+  O: 6
+
+physical_properties:
+  K:
+    value: 89.0e9
+    ref: "unknown"
+  G:
+    value: 44.0e9
+    ref: "unknown"
+
+cell_data:
+  space_group:
+    value: "R3"
+    ref: "www.handbookofmineralogy.org"
+  a:
+    value: 4.812
+    ref: "www.handbookofmineralogy.org"
+  c:
+    value: 16.020
+    ref: "www.handbookofmineralogy.org"
+  Z:
+    value: 3
+    ref: "www.handbookofmineralogy.org"
+
+sources:
+  - author: "unknown"
+    title: "unknown"
+    publisher: "www.handbookofmineralogy.org"
+    url: ["www.handbookofmineralogy.org", "www.webmineral.com"]

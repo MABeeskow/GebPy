@@ -1,0 +1,43 @@
+mineral: Aragonite
+group: Carbonates
+formula: Ca C O3
+
+metadata:
+  key: "Arg"
+  crystal_system: "orthorhombic"
+
+chemistry:
+  Ca: 1
+  C: 1
+  O: 3
+
+physical_properties:
+  K:
+    value: 69.0e9
+    ref: "unknown"
+  G:
+    value: 33.0e9
+    ref: "unknown"
+
+cell_data:
+  space_group:
+    value: "Pmcn"
+    ref: "www.handbookofmineralogy.org"
+  a:
+    value: 4.9611
+    ref: "www.handbookofmineralogy.org"
+  b:
+    value: 7.9672
+    ref: "www.handbookofmineralogy.org"
+  c:
+    value: 5.7407
+    ref: "www.handbookofmineralogy.org"
+  Z:
+    value: 4
+    ref: "www.handbookofmineralogy.org"
+
+sources:
+  - author: "unknown"
+    title: "unknown"
+    publisher: "www.handbookofmineralogy.org"
+    url: ["www.handbookofmineralogy.org", "www.webmineral.com"]
