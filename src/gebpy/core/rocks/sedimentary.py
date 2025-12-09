@@ -21,9 +21,6 @@ import numpy as np
 import pandas as pd
 from pathlib import Path
 
-from soupsieve.util import lower
-from asteval import Interpreter
-
 # MODULES
 from src.gebpy.core.minerals.synthesis import MineralDataGeneration
 
@@ -180,6 +177,9 @@ class SedimentaryRocks:
             _mineral_data.append(data_mineral)
 
         _bulk_data = self._weighted_sum(dfs=_mineral_data, fractions=mineral_amounts)
+        for index, (mineral, frac) in enumerate(zip(list_minerals, mineral_amounts)):
+            key = _mineral_data[index]["mineral"][0]
+            _bulk_data[f"phi.{key}"] = frac
         # Density adjustment due to porosity
         _bulk_data["porosity"] = porosity
         _bulk_data["rho_s"] = _bulk_data["rho"]
@@ -199,6 +199,7 @@ class SedimentaryRocks:
         _bulk_data["lame"] = (val_K - (2*val_G)/3)*1e-9
         # Cleanup
         _bulk_data.drop(columns=["nu"], errors="ignore", inplace=True)
+        _bulk_data = _bulk_data.rename(columns=lambda c: c.replace("chemistry.", "w.") )
 
         return _bulk_data
 

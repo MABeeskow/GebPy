@@ -66,7 +66,6 @@ class Tectosilicates:
             "Fe": PeriodicSystem(name="Fe").get_data(),
             "Ni": PeriodicSystem(name="Ni").get_data(),
         }
-
         # Geophysics
         self.geophysical_properties = GeophysicalProperties()
         # Crystallography

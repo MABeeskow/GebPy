@@ -6,7 +6,7 @@
 # Name:		manual_test_rocks_sedimentary.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		08.12.2025
+# Date:		09.12.2025
 
 #-----------------------------------------------
 
@@ -72,5 +72,20 @@ if n_datasets < 20:
 
 print(f"\nDATA(LIMESTONE, WATER):")
 data_rock = SedimentaryRocks(name="Limestone", random_seed=42).generate_dataset(number=n_datasets)
+if n_datasets < 20:
+    print("Results:", data_rock.describe())
+
+print(f"\nDATA(LIMESTONE, OIL):")
+data_rock = SedimentaryRocks(name="Limestone", random_seed=42).generate_dataset(number=n_datasets, fluid="oil")
+if n_datasets < 20:
+    print("Results:", data_rock.describe())
+
+print(f"\nDATA(LIMESTONE, NATURAL GAS):")
+data_rock = SedimentaryRocks(name="Limestone", random_seed=42).generate_dataset(number=n_datasets, fluid="natural gas")
+if n_datasets < 20:
+    print("Results:", data_rock.describe())
+
+print(f"\nDATA(LIMESTONE, CUSTOM FLUID DENSITY):")
+data_rock = SedimentaryRocks(name="Limestone", random_seed=42).generate_dataset(number=n_datasets, density_fluid=725)
 if n_datasets < 20:
     print("Results:", data_rock.describe())

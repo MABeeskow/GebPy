@@ -17,7 +17,7 @@ This module contains several routines that are commonly used by the different mi
 
 # PACKAGES
 import numpy as np
-import scipy
+import scipy, re
 
 # MODULES
 from modules.geochemistry import MineralChemistry
@@ -185,6 +185,40 @@ class MineralGeneration:
             val_gamma = vals["gamma"]
             constr_vol = CrystalPhysics([[val_a, val_b, val_c], [val_alpha, val_beta, val_gamma], val_system])
         return constr_vol
+
+    def _parse_formula(self, formula: str):
+        pattern = r"([A-Z][a-z]?)(\d*)"
+        matches = re.findall(pattern, formula)
+
+        composition = {}
+        for elem, amount in matches:
+            amount = int(amount) if amount else 1
+            composition[elem] = composition.get(elem, 0) + amount
+
+        return composition
+
+    def _get_cation_element(self, oxide: str) -> str:
+        first = oxide[0]
+        if len(oxide) > 1 and oxide[1].islower():
+            return oxide[:2]
+
+        return first
+
+    def _determine_oxide_conversion_factors(self):
+        list_oxides = [
+            "H2O", "CO", "CO2", "Na2O", "MgO", "Al2O3", "SiO2", "Cl2O", "K2O", "CaO", "MnO", "Mn2O3", "MnO2", "MnO3",
+            "Mn2O7", "FeO", "Fe2O3", "FeO3", "NiO", "Ni2O3"]
+        mass_oxygen = self.elements["O"][2]
+        _conversion_factors = {}
+        for oxide in list_oxides:
+            _conversion_factors[oxide] = self._parse_formula(formula=oxide)
+            cation = self._get_cation_element(oxide=oxide)
+            mass_cation = self.elements[cation][2]
+            _conversion_factors[oxide]["factor"] = (_conversion_factors[oxide][cation]*mass_cation +
+                                                    _conversion_factors[oxide]["O"]*mass_oxygen)/(
+                    _conversion_factors[oxide][cation]*mass_cation)
+
+        return _conversion_factors
 
     def create_mineral_data_fixed_composition(self):
         """
