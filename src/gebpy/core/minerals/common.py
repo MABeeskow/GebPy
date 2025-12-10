@@ -136,6 +136,62 @@ class CrystalPhysics:
                              2*(abs(np.cos(alpha*np.pi/180)*np.cos(beta*np.pi/180)*np.cos(gamma*np.pi/180))))**(0.5)
             return V
 
+class OxideComposition:
+    """
+    This class calculates the oxide composition of a certain mineral.
+    """
+    def __init__(self):
+        pass
+
+    def _get_cation_element(self, oxide: str) -> str:
+        first = oxide[0]
+        if len(oxide) > 1 and oxide[1].islower():
+            return oxide[:2]
+
+        return first
+
+    def _parse_formula(self, formula: str):
+        pattern = r"([A-Z][a-z]?)(\d*)"
+        matches = re.findall(pattern, formula)
+
+        composition = {}
+        for elem, amount in matches:
+            amount = int(amount) if amount else 1
+            composition[elem] = composition.get(elem, 0) + amount
+
+        return composition
+
+    def _determine_oxide_conversion_factors(self, elements):
+        list_oxides = [
+            "H2O", "CO", "CO2", "Na2O", "MgO", "Al2O3", "SiO2", "Cl2O", "K2O", "CaO", "MnO", "Mn2O3", "MnO2", "MnO3",
+            "Mn2O7", "FeO", "Fe2O3", "FeO3", "NiO", "Ni2O3", "TiO2", "Ti2O3", "VO", "V2O3", "VO2", "V2O10", "CrO",
+            "Cr2O3", "CrO3", "CoO", "Co2O3", "Cu2O", "CuO", "ZnO", "GeO2", "As2O3", "As2O10", "ZrO2", "Nb2O3", "Nb2O10",
+            "MoO", "Mo2O3", "MoO2", "Mo2O10", "MoO3", "CdO", "SnO", "SnO2", "Sb2O3", "Sb2O10", "TeO2", "TeO3", "Ta2O10",
+            "WO", "W2O3", "WO2", "W2O10", "WO3", "Au2O", "Au2O3", "Tl2O", "Tl2O3", "PbO", "PbO2", "Bi2O3", "Bi2O10",
+            "U2O3", "UO2", "U2O10", "UO3"]
+        mass_oxygen = elements["O"][2]
+        _conversion_factors = {}
+        for oxide in list_oxides:
+            _conversion_factors[oxide] = self._parse_formula(formula=oxide)
+            cation = self._get_cation_element(oxide=oxide)
+            if cation in elements:
+                mass_cation = elements[cation][2]
+                _conversion_factors[oxide]["factor"] = (_conversion_factors[oxide][cation]*mass_cation +
+                                                        _conversion_factors[oxide]["O"]*mass_oxygen)/(
+                        _conversion_factors[oxide][cation]*mass_cation)
+            else:
+                pass
+                #print(self.name, ": cation", cation, "not found in chemical container.")
+
+        return _conversion_factors
+
+    def _element_amounts_as_dict(self, amounts):
+        helper_dict = {}
+        for item in amounts:
+            helper_dict[item[0]] = item[2]
+
+        return helper_dict
+
 class MineralGeneration:
     """
     This class controls the mineral data generation for minerals with fixed composition.
@@ -147,6 +203,7 @@ class MineralGeneration:
         self.cache = cache
         self.geophysical_properties = geophysical_properties
         self.rounding = rounding
+        self.conversion_factors = self._determine_oxide_conversion_factors()
 
     def _get_value(self, data: dict, path: list[str], default=None):
         """Safely extract a float or string value from nested YAML data."""
@@ -207,18 +264,33 @@ class MineralGeneration:
     def _determine_oxide_conversion_factors(self):
         list_oxides = [
             "H2O", "CO", "CO2", "Na2O", "MgO", "Al2O3", "SiO2", "Cl2O", "K2O", "CaO", "MnO", "Mn2O3", "MnO2", "MnO3",
-            "Mn2O7", "FeO", "Fe2O3", "FeO3", "NiO", "Ni2O3"]
+            "Mn2O7", "FeO", "Fe2O3", "FeO3", "NiO", "Ni2O3", "TiO2", "Ti2O3", "VO", "V2O3", "VO2", "V2O10", "CrO",
+            "Cr2O3", "CrO3", "CoO", "Co2O3", "Cu2O", "CuO", "ZnO", "GeO2", "As2O3", "As2O10", "ZrO2", "Nb2O3", "Nb2O10",
+            "MoO", "Mo2O3", "MoO2", "Mo2O10", "MoO3", "CdO", "SnO", "SnO2", "Sb2O3", "Sb2O10", "TeO2", "TeO3", "Ta2O10",
+            "WO", "W2O3", "WO2", "W2O10", "WO3", "Au2O", "Au2O3", "Tl2O", "Tl2O3", "PbO", "PbO2", "Bi2O3", "Bi2O10",
+            "U2O3", "UO2", "U2O10", "UO3"]
         mass_oxygen = self.elements["O"][2]
         _conversion_factors = {}
         for oxide in list_oxides:
             _conversion_factors[oxide] = self._parse_formula(formula=oxide)
             cation = self._get_cation_element(oxide=oxide)
-            mass_cation = self.elements[cation][2]
-            _conversion_factors[oxide]["factor"] = (_conversion_factors[oxide][cation]*mass_cation +
-                                                    _conversion_factors[oxide]["O"]*mass_oxygen)/(
-                    _conversion_factors[oxide][cation]*mass_cation)
+            if cation in self.elements:
+                mass_cation = self.elements[cation][2]
+                _conversion_factors[oxide]["factor"] = (_conversion_factors[oxide][cation]*mass_cation +
+                                                        _conversion_factors[oxide]["O"]*mass_oxygen)/(
+                        _conversion_factors[oxide][cation]*mass_cation)
+            else:
+                pass
+                #print(self.name, ": cation", cation, "not found in chemical container.")
 
         return _conversion_factors
+
+    def _element_amounts_as_dict(self, amounts):
+        helper_dict = {}
+        for item in amounts:
+            helper_dict[item[0]] = item[2]
+
+        return helper_dict
 
     def create_mineral_data_fixed_composition(self):
         """
@@ -240,6 +312,11 @@ class MineralGeneration:
             majors_data.append([element, n_order, val_amount, molar_mass])
             molar_mass_pure += val_amount*molar_mass
         majors_data.sort(key=lambda x: x[1])
+        if "oxides" in self.yaml_data:
+            oxides_data = {}
+            for oxide, amount in self.yaml_data["oxides"].items():
+                cation = self._get_cation_element(oxide=oxide)
+                oxides_data[oxide] = [cation, None]
 
         if name_lower not in self.cache:
             vals = {}
@@ -274,7 +351,13 @@ class MineralGeneration:
         val_Z = vals["Z"]
 
         molar_mass, amounts = constr_minchem.calculate_molar_mass()
+        amounts_dict = self._element_amounts_as_dict(amounts=amounts)
         element = [self.elements[name] for name, *_ in amounts]
+        if "oxides" in self.yaml_data:
+            for oxide in oxides_data.keys():
+                cation = self._get_cation_element(oxide=oxide)
+                value = amounts_dict[cation]*self.conversion_factors[oxide]["factor"]
+                oxides_data[oxide][1] = value
         # (Molar) Volume
         if "constr_volume" not in self.cache[name_lower]:
             constr_vol = self._determine_volume_constructor(vals=vals)
@@ -317,4 +400,6 @@ class MineralGeneration:
             "K": round(val_K*10**(-9), self.rounding), "G": round(val_G*10**(-9), self.rounding),
             "E": round(E*10**(-9), self.rounding), "nu": round(nu, 6), "GR": round(gamma_ray, self.rounding),
             "PE": round(pe, self.rounding), "U": round(U, self.rounding), "p": p}
+        if "oxides" in self.yaml_data:
+            results["compounds"] = {name: round(val[1], 6) for name, val in oxides_data.items()}
         return results

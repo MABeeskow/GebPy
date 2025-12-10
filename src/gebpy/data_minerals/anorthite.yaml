@@ -1,6 +1,7 @@
 mineral: Anorthite
 group: Tectosilicates
 formula: CaAl2Si2O8
+last updated: 10.12.2025
 
 metadata:
   key: "An"
@@ -11,6 +12,11 @@ chemistry:
   Al: 2
   Si: 2
   O: 8
+
+oxides:
+  CaO: 1
+  Al2O3: 1
+  SiO2: 1
 
 physical_properties:
   K:

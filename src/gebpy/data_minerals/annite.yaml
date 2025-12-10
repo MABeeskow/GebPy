@@ -1,6 +1,7 @@
 mineral: Annite
 group: Phyllosilicates
 formula: KFe3AlSi3O10(OH)2
+last updated: 10.12.2025
 
 metadata:
   key: "Ann"
@@ -13,6 +14,13 @@ chemistry:
   Si: 3
   O: 12
   H: 2
+
+oxides:
+  K2O: 1
+  FeO: 1
+  Al2O3: 1
+  SiO2: 1
+  H2O: 1
 
 physical_properties:
   K:

@@ -1,6 +1,7 @@
 mineral: Azurite
 group: Carbonates
 formula: Cu3 (CO3)2 (OH)2
+last updated: 10.12.2025
 
 metadata:
   key: "Az"
@@ -11,6 +12,11 @@ chemistry:
   C: 2
   O: 8
   H: 2
+
+oxides:
+  CuO: 1
+  CO2: 1
+  H2O: 1
 
 physical_properties:
   K:

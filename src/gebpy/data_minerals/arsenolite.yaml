@@ -1,6 +1,7 @@
 mineral: Arsenolite
 group: Oxides
 formula: As2O3
+last updated: 10.12.2025
 
 metadata:
   key: "Aso"
@@ -9,6 +10,9 @@ metadata:
 chemistry:
   As: 2
   O: 3
+
+oxides:
+  As2O3: 1
 
 physical_properties:
   K:

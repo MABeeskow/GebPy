@@ -1,6 +1,7 @@
 mineral: Anatase
 group: Oxides
 formula: TiO2
+last updated: 10.12.2025
 
 metadata:
   key: "Anat"
@@ -9,6 +10,9 @@ metadata:
 chemistry:
   Ti: 1
   O: 2
+
+oxides:
+  TiO2: 1
 
 physical_properties:
   K:

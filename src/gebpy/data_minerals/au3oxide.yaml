@@ -1,6 +1,7 @@
 mineral: Au(III)-Oxide
 group: Oxides
 formula: Au2O3
+last updated: 10.12.2025
 
 metadata:
   key: "Au2O3"
@@ -9,6 +10,9 @@ metadata:
 chemistry:
   Au: 2
   O: 3
+
+oxides:
+  Au2O3: 1
 
 physical_properties:
   K:

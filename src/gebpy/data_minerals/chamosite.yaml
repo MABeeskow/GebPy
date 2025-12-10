@@ -1,6 +1,7 @@
 mineral: Chamosite
 group: Phyllosilicates
 formula: Fe5 Al2 Si3 O10 (OH)8
+last updated: 10.12.2025
 
 metadata:
   key: "Chm"
@@ -12,6 +13,13 @@ chemistry:
   Si: 3
   O: 18
   H: 8
+
+oxides:
+  FeO: 1
+  Fe2O3: 1
+  Al2O3: 1
+  SiO2: 1
+  H2O: 1
 
 physical_properties:
   K:

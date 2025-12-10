@@ -1,6 +1,7 @@
 mineral: Chlorite
 group: Phyllosilicates
-formula: (Fe, Mg, Mn,Ni)5 Al2 Si3 O10 (OH)8
+formula: (Fe, Mg, Mn, Ni)5 Al2 Si3 O10 (OH)8
+last updated: 10.12.2025
 
 metadata:
   key: "Chl"
@@ -23,6 +24,15 @@ chemistry:
     formula: "18"
   H:
     formula: "8"
+
+oxides:
+  FeO: 1
+  MgO: 1
+  MnO: 1
+  NiO: 1
+  Al2O3: 1
+  SiO2: 1
+  H2O: 1
 
 physical_properties:
   a_K:

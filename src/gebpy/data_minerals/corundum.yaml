@@ -1,6 +1,7 @@
 mineral: Corundum
 group: Oxides
 formula: Al2O3
+last updated: 10.12.2025
 
 metadata:
   key: "Crn"
@@ -9,6 +10,9 @@ metadata:
 chemistry:
   Al: 2
   O: 3
+
+oxides:
+  Al2O3: 1
 
 physical_properties:
   K:

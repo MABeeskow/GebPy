@@ -1,6 +1,7 @@
 mineral: Ankerite
 group: Carbonates
 formula: Ca Fe (CO3)2
+last updated: 10.12.2025
 
 metadata:
   key: "Ank"
@@ -11,6 +12,11 @@ chemistry:
   Fe: 1
   C: 2
   O: 6
+
+oxides:
+  CaO: 1
+  FeO: 1
+  CO2: 1
 
 physical_properties:
   K:

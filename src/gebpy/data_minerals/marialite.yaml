@@ -1,6 +1,7 @@
 mineral: Marialite
 group: Tectosilicates
 formula: Na4Al3Si9O24Cl
+last updated: 10.12.2025
 
 metadata:
   key: "Mar"
@@ -12,6 +13,12 @@ chemistry:
   Si: 9
   O: 24
   Cl: 1
+
+oxides:
+  Na2O: 1
+  Al2O3: 1
+  SiO2: 1
+  Cl2O: 1
 
 physical_properties:
   K:

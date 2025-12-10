@@ -1,6 +1,7 @@
 mineral: Bunsenite
 group: Oxides
 formula: NiO
+last updated: 10.12.2025
 
 metadata:
   key: "Bsn"
@@ -9,6 +10,9 @@ metadata:
 chemistry:
   Ni: 1
   O: 1
+
+oxides:
+  NiO: 1
 
 physical_properties:
   K:

@@ -1,6 +1,7 @@
 mineral: Argutite
 group: Oxides
 formula: GeO2
+last updated: 10.12.2025
 
 metadata:
   key: "Argt"
@@ -9,6 +10,9 @@ metadata:
 chemistry:
   Ge: 1
   O: 2
+
+oxides:
+  GeO2: 1
 
 physical_properties:
   K:

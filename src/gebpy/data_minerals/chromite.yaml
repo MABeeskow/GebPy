@@ -1,6 +1,7 @@
 mineral: Chromite
 group: Oxides
 formula: FeCr2O4
+last updated: 10.12.2025
 
 metadata:
   key: "Chr"
@@ -10,6 +11,10 @@ chemistry:
   Fe: 1
   Cr: 2
   O: 4
+
+oxides:
+  FeO: 1
+  Cr2O3: 1
 
 physical_properties:
   K:

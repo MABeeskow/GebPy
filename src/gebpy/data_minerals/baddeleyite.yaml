@@ -1,6 +1,7 @@
 mineral: Baddeleyite
 group: Oxides
 formula: ZrO2
+last updated: 10.12.2025
 
 metadata:
   key: "Bdy"
@@ -9,6 +10,9 @@ metadata:
 chemistry:
   Zr: 1
   O: 2
+
+oxides:
+  ZrO2: 1
 
 physical_properties:
   K:

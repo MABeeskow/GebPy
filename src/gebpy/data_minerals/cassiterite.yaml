@@ -1,6 +1,7 @@
 mineral: Cassiterite
 group: Oxides
 formula: SnO2
+last updated: 10.12.2025
 
 metadata:
   key: "Cst"
@@ -9,6 +10,9 @@ metadata:
 chemistry:
   Sn: 1
   O: 2
+
+oxides:
+  SnO2: 1
 
 physical_properties:
   K:

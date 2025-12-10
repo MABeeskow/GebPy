@@ -1,6 +1,7 @@
 mineral: Meionite
 group: Tectosilicates
 formula: Ca4Al6Si6O24CO3
+last updated: 10.12.2025
 
 metadata:
   key: "Mei"
@@ -12,6 +13,12 @@ chemistry:
   Si: 6
   O: 27
   C: 1
+
+oxides:
+  CaO: 1
+  Al2O3: 1
+  SiO2: 1
+  CO2: 1
 
 physical_properties:
   K:

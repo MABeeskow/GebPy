@@ -1,6 +1,7 @@
 mineral: Aragonite
 group: Carbonates
 formula: Ca C O3
+last updated: 10.12.2025
 
 metadata:
   key: "Arg"
@@ -10,6 +11,10 @@ chemistry:
   Ca: 1
   C: 1
   O: 3
+
+oxides:
+  CaO: 1
+  CO2: 1
 
 physical_properties:
   K:

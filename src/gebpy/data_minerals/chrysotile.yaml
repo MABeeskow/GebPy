@@ -1,6 +1,7 @@
 mineral: Chrysotile
 group: Phyllosilicates
 formula: Mg3 Si2 O5 (OH)4
+last updated: 10.12.2025
 
 metadata:
   key: "Ctl"
@@ -11,6 +12,11 @@ chemistry:
   Si: 2
   O: 9
   H: 4
+
+oxides:
+  MgO: 1
+  SiO2: 1
+  H2O: 1
 
 physical_properties:
   K:

@@ -6,7 +6,7 @@
 # Name:		tectosilicates.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		03.12.2025
+# Date:		10.12.2025
 
 #-----------------------------------------------
 
@@ -16,7 +16,7 @@ This module controls the generation of the synthetic data of the tectosilicate m
 """
 
 # PACKAGES
-import yaml
+import yaml, re
 import numpy as np
 from pathlib import Path
 
@@ -28,6 +28,7 @@ from modules.geochemistry import MineralChemistry
 from modules.geophysics import WellLog as wg
 from src.gebpy.core.minerals.common import GeophysicalProperties, CrystallographicProperties, CrystalPhysics
 from src.gebpy.core.minerals.common import MineralGeneration as MinGen
+from src.gebpy.core.minerals.common import OxideComposition as OxComp
 
 # CODE
 BASE_PATH = Path(__file__).resolve().parents[2]
@@ -66,6 +67,7 @@ class Tectosilicates:
             "Fe": PeriodicSystem(name="Fe").get_data(),
             "Ni": PeriodicSystem(name="Ni").get_data(),
         }
+        self.conversion_factors = OxComp()._determine_oxide_conversion_factors(elements=self.elements)
         # Geophysics
         self.geophysical_properties = GeophysicalProperties()
         # Crystallography
@@ -398,40 +400,50 @@ class Tectosilicates:
             name_lower = self.name.lower()
             val_key = "Afs"
             endmember = ["Albite", "Orthoclase"]
+            oxides_data = {"Na2O": ["Na", None], "K2O": ["K", None], "Al2O3": ["Al", None], "SiO2": ["Si", None]}
         elif self.name == "Plagioclase":
             name_lower = self.name.lower()
             val_key = "Pl"
             endmember = ["Albite", "Anorthite"]
+            oxides_data = {"Na2O": ["Na", None], "CaO": ["Ca", None], "Al2O3": ["Al", None], "SiO2": ["Si", None]}
         elif self.name == "Scapolite":
             name_lower = self.name.lower()
             val_key = "Scp"
             endmember = ["Marialite", "Meionite"]
+            oxides_data = {"CaO": ["Ca", None], "Na2O": ["Na", None], "Al2O3": ["Al", None], "SiO2": ["Si", None],
+                           "CO2": ["C", None], "Cl2O": ["Cl", None]}
         elif self.name == "Nepheline":
             name_lower = self.name.lower()
             val_key = "Nph"
             endmember = ["NaNepheline", "Kalsilite"]
+            oxides_data = {"Na2O": ["Na", None], "K2O": ["K", None], "Al2O3": ["Al", None], "SiO2": ["Si", None]}
 
         if "endmembers" not in self.cache:
             self.cache["endmembers"] = {}
 
-        endmember_data = {}
-        list_elements = []
-        for mineral in endmember:
-            if mineral not in self.cache["endmembers"]:
-                mineral_data = Tectosilicates(name=mineral, random_seed=self.current_seed).generate_dataset(number=1)
-                self.cache["endmembers"][mineral] = mineral_data
-            endmember_data[mineral] = self.cache["endmembers"][mineral]
-            mineral_data = endmember_data[mineral]
-            for element in mineral_data["chemistry"]:
-                if element not in list_elements:
-                    list_elements.append(element)
+        if name_lower not in self.cache:
+            endmember_data = {}
+            list_elements = []
+            for mineral in endmember:
+                if mineral not in self.cache["endmembers"]:
+                    mineral_data = Tectosilicates(name=mineral, random_seed=self.current_seed).generate_dataset(
+                        number=1)
+                    self.cache["endmembers"][mineral] = mineral_data
+                endmember_data[mineral] = self.cache["endmembers"][mineral]
+                mineral_data = endmember_data[mineral]
+                for element in mineral_data["chemistry"]:
+                    if element not in list_elements:
+                        list_elements.append(element)
+            constr_OxComp = OxComp()
+
+            self.cache[name_lower] = {
+                "endmember_data": endmember_data, "list_elements": list_elements, "OxComp": constr_OxComp}
+        else:
+            endmember_data = self.cache[name_lower]["endmember_data"]
+            list_elements = self.cache[name_lower]["list_elements"]
+            constr_OxComp = self.cache[name_lower]["OxComp"]
         weights = self.rng.dirichlet(np.ones(len(endmember)))
         fraction_endmember = dict(zip(endmember, weights))
-
-        if name_lower not in self.cache:
-            self.cache[name_lower] = {
-                "endmember_data": endmember_data
-            }
 
         properties = ["M", "rho", "rho_e", "V", "K", "G"]
         helper_results = {
@@ -445,6 +457,15 @@ class Tectosilicates:
                          for mineral in endmember)
             amounts.append([element, self.elements[element][1], amount])
         element = [self.elements[name] for name, *_ in amounts]
+        # Oxide amounts
+        amounts_dict = constr_OxComp._element_amounts_as_dict(amounts=amounts)
+        try:
+            for oxide in oxides_data.keys():
+               cation = constr_OxComp._get_cation_element(oxide=oxide)
+               value = amounts_dict[cation]*self.conversion_factors[oxide]["factor"]
+               oxides_data[oxide][1] = value
+        except:
+            print("No oxide data available!")
         # Elastic properties
         val_K = helper_results["K"]*10**9
         val_G = helper_results["G"]*10**9
@@ -469,6 +490,10 @@ class Tectosilicates:
             "vP/vS": round(vPvS, self.rounding), "K": round(val_K*10**(-9), self.rounding),
             "G": round(val_G*10**(-9), self.rounding), "E": round(E*10**(-9), self.rounding), "nu": round(nu, 6),
             "GR": round(gamma_ray, self.rounding), "PE": round(pe, self.rounding), "U": round(U, self.rounding), "p": p}
+        try:
+            results["compounds"] = {name: round(val[1], 6) for name, val in oxides_data.items()}
+        except:
+            print("No oxide data available!")
         return results
 
 # TEST
