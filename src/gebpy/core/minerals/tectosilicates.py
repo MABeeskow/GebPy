@@ -399,19 +399,19 @@ class Tectosilicates:
                 "oxides": ["Na2O", "K2O", "Al2O3", "SiO2"]
             },
             "Plagioclase": {
-                "name_lower": "Plagioclase",
+                "name_lower": "plagioclase",
                 "key": "Pl",
                 "endmembers": ["Albite", "Anorthite"],
                 "oxides": ["Na2O", "CaO", "Al2O3", "SiO2"]
             },
             "Scapolite": {
-                "name_lower": "Scapolite",
+                "name_lower": "scapolite",
                 "key": "Scp",
                 "endmembers": ["Marialite", "Meionite"],
                 "oxides": ["CaO", "Na2O", "Al2O3", "SiO2", "CO2", "Cl2O"]
             },
             "Nepheline": {
-                "name_lower": "Nepheline",
+                "name_lower": "nepheline",
                 "key": "Nph",
                 "endmembers": ["NaNepheline", "Kalsilite"],
                 "oxides": ["Na2O", "K2O", "Al2O3", "SiO2"]

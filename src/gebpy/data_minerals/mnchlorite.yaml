@@ -1,0 +1,61 @@
+mineral: Mn-Chlorite
+group: Phyllosilicates
+formula: Mn5 Al2 Si3 O10 (OH)8
+last updated: 10.12.2025
+
+metadata:
+  key: "Mn-Chl"
+  crystal_system: "monoclinic"
+
+chemistry:
+  Mn: 5
+  Al: 2
+  Si: 3
+  O: 18
+  H: 8
+
+oxides:
+  MnO: 1
+  Al2O3: 1
+  SiO2: 1
+  H2O: 1
+
+physical_properties:
+  a_K:
+    value: 0.13999999999999999
+    ref: "unknown"
+  b_K:
+    value: -276.2833333333333
+    ref: "unknown"
+  a_G:
+    value: -0.025391459074733103
+    ref: "unknown"
+  b_G:
+    value: 112.1814353499407
+    ref: "unknown"
+
+cell_data:
+  space_group:
+    value: "C2/m"
+    ref: "www.webmineral.com"
+  a:
+    value: 5.454
+    ref: "www.webmineral.com"
+  b:
+    value: 9.45
+    ref: "www.webmineral.com"
+  c:
+    value: 14.4
+    ref: "www.webmineral.com"
+  beta:
+    value: 97.2
+    ref: "www.webmineral.com"
+  Z:
+    value: 2
+    ref: "www.webmineral.com"
+
+sources:
+  - author: "John W. Anthony, Richard A. Bideaux, Kenneth W. Bladh, and Monte C. Nichols"
+    title: "Handbook of Mineralogy"
+    publisher: "Mineralogical Society of America, Chantilly, VA"
+    url: "http://www.handbookofmineralogy.org/"

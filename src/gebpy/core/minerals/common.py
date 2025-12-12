@@ -292,6 +292,34 @@ class MineralGeneration:
 
         return helper_dict
 
+    def _determine_majors_data(self):
+        majors_data = []
+        molar_mass_pure = 0
+        for element, amount in self.yaml_data["chemistry"].items():
+            n_order = int(self.elements[element][1])
+            val_amount = float(amount)
+            molar_mass = float(self.elements[element][2])
+            majors_data.append([element, n_order, val_amount, molar_mass])
+            molar_mass_pure += val_amount*molar_mass
+        majors_data.sort(key=lambda x: x[1])
+        return majors_data, molar_mass_pure
+
+    def _extract_values_from_yaml(self):
+        vals = {}
+        # Physical parameters
+        for key in ["K", "G", "a_K", "b_K", "a_G", "b_G"]:
+            if key in self.yaml_data.get("physical_properties", {}):
+                vals[key] = float(self.yaml_data["physical_properties"][key]["value"])
+        # Cell parameters
+        for key in ["a", "b", "c", "alpha", "beta", "gamma", "Z"]:
+            if key in self.yaml_data.get("cell_data", {}):
+                vals[key] = float(self.yaml_data["cell_data"][key]["value"])
+        # Meta data
+        vals["key"] = self.yaml_data["metadata"]["key"]
+        vals["crystal_system"] = self.yaml_data["metadata"]["crystal_system"]
+
+        return vals
+
     def create_mineral_data_fixed_composition(self):
         """
         Synthetic mineral data generation for an user-selected mineral.
@@ -303,15 +331,7 @@ class MineralGeneration:
         val_state = "fixed"
         traces_data = []
         # Molar mass, elemental amounts
-        majors_data = []
-        molar_mass_pure = 0
-        for element, amount in self.yaml_data["chemistry"].items():
-            n_order = int(self.elements[element][1])
-            val_amount = float(amount)
-            molar_mass = float(self.elements[element][2])
-            majors_data.append([element, n_order, val_amount, molar_mass])
-            molar_mass_pure += val_amount*molar_mass
-        majors_data.sort(key=lambda x: x[1])
+        majors_data, molar_mass_pure = self._determine_majors_data()
         if "oxides" in self.yaml_data:
             oxides_data = {}
             for oxide, amount in self.yaml_data["oxides"].items():
@@ -319,17 +339,8 @@ class MineralGeneration:
                 oxides_data[oxide] = [cation, None]
 
         if name_lower not in self.cache:
-            vals = {}
-            for key in ["K", "G", "a", "b", "c", "alpha", "beta", "gamma", "Z"]:
-                if key in self.yaml_data["cell_data"] or key in self.yaml_data["physical_properties"]:
-                    vals[key] = self._get_value(self.yaml_data, ["physical_properties", key]) \
-                                if key in ["K", "G"] else \
-                                self._get_value(self.yaml_data, ["cell_data", key])
-            for key in ["key", "crystal_system"]:
-                vals[key] = self._get_value(self.yaml_data, ["metadata", key])
-
+            vals = self._extract_values_from_yaml()
             constr_minchem = MineralChemistry(w_traces=traces_data, molar_mass_pure=molar_mass_pure, majors=majors_data)
-
             self.cache[name_lower] = {
                 "majors_data": majors_data,
                 "molar_mass_pure": molar_mass_pure,
@@ -346,9 +357,15 @@ class MineralGeneration:
 
         # Reading and assigning the mineral-specific information from the YAML file
         val_key = vals["key"]
-        val_K = vals["K"]
-        val_G = vals["G"]
         val_Z = vals["Z"]
+        if "K" in vals:
+            val_K = vals["K"]
+            val_G = vals["G"]
+        else:
+            val_a_K = float(vals["a_K"])
+            val_b_K = float(vals["b_K"])
+            val_a_G = float(vals["a_G"])
+            val_b_G = float(vals["b_G"])
 
         molar_mass, amounts = constr_minchem.calculate_molar_mass()
         amounts_dict = self._element_amounts_as_dict(amounts=amounts)
@@ -378,6 +395,9 @@ class MineralGeneration:
 
         rho_e = CrystallographicProperties().calculate_electron_density(constr_electron_density=constr_electr_density)
         # Elastic properties
+        if "K" not in vals:
+            val_K = (val_a_K*rho + val_b_K)*10**9
+            val_G = (val_a_G*rho + val_b_G)*10**9
         E, nu = self.geophysical_properties.calculate_elastic_properties(bulk_mod=val_K, shear_mod=val_G)
         # Seismic properties
         vPvS, vP, vS = self.geophysical_properties.calculate_seismic_velocities(

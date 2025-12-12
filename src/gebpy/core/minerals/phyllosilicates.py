@@ -6,7 +6,7 @@
 # Name:		phyllosilicates.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		03.12.2025
+# Date:		12.12.2025
 
 #-----------------------------------------------
 
@@ -39,7 +39,8 @@ class Phyllosilicates:
     _minerals = {
         "Annite", "Eastonite", "Illite", "Kaolinite", "Phlogopite", "Siderophyllite", "Chamosite", "Clinochlore",
         "Pennantite", "Nimite", "Muscovite", "Talc", "Chrysotile", "Antigorite", "Pyrophyllite", "Montmorillonite",
-        "Nontronite", "Saponite", "Glauconite", "Vermiculite", "Chlorite", "Biotite"}
+        "Nontronite", "Saponite", "Glauconite", "Vermiculite", "Chlorite", "Biotite", "FeChlorite", "MgChlorite",
+        "MnChlorite", "NiChlorite"}
 
     def __init__(self, name, random_seed, rounding=3) -> None:
         self.name = name
@@ -75,12 +76,17 @@ class Phyllosilicates:
         if self.name in [
             "Annite", "Eastonite", "Illite", "Kaolinite", "Phlogopite", "Siderophyllite", "Chamosite", "Clinochlore",
             "Pennantite", "Nimite", "Muscovite", "Talc", "Chrysotile", "Antigorite", "Pyrophyllite", "Montmorillonite",
-            "Nontronite", "Saponite", "Glauconite", "Vermiculite", "Chlorite"]:
+            "Nontronite", "Saponite", "Glauconite", "Vermiculite", "Chlorite", "FeChlorite", "MgChlorite", "MnChlorite",
+            "NiChlorite"]:
             self.yaml_data = self._load_yaml(self.name.lower())
         if self.name == "Biotite":
             self.yaml_data = {
                 mineral.lower(): self._load_yaml(mineral.lower())
                 for mineral in ["Annite", "Phlogopite", "Siderophyllite", "Eastonite"]}
+        elif self.name == "Chlorite":
+            self.yaml_data = {
+                mineral.lower(): self._load_yaml(mineral.lower())
+                for mineral in ["FeChlorite", "MgChlorite", "MnChlorite", "NiChlorite"]}
 
     def _load_yaml(self, mineral_name: str) -> dict:
         # 1) Cache-Hit
@@ -148,9 +154,9 @@ class Phyllosilicates:
         fixed = {
             "Annite", "Eastonite", "Illite", "Kaolinite", "Phlogopite", "Siderophyllite",
             "Chamosite", "Clinochlore", "Pennantite", "Nimite", "Muscovite",
-            "Talc", "Chrysotile", "Antigorite", "Pyrophyllite"}
-        variable = {"Montmorillonite", "Nontronite", "Saponite", "Glauconite", "Vermiculite", "Chlorite"}
-        endmember = {"Biotite"}
+            "Talc", "Chrysotile", "Antigorite", "Pyrophyllite", "FeChlorite", "MgChlorite", "MnChlorite", "NiChlorite"}
+        variable = {"Montmorillonite", "Nontronite", "Saponite", "Glauconite", "Vermiculite"}
+        endmember = {"Biotite", "Chlorite"}
         generators = {
             **{m: MinGen(
                 name=self.name, yaml_data=self.yaml_data, elements=self.elements, cache=self.cache,
@@ -249,38 +255,6 @@ class Phyllosilicates:
 
         return results
 
-    def _calculate_crystal_physics_object_chlorite(self, key):
-        if key == "Fe":
-            dataV_Fe = CrystalPhysics([[5.373, 9.306, 14.222], [97.88], "monoclinic"])
-            V_Fe = dataV_Fe.calculate_volume()
-            Z_Fe = 2
-            V_m_Fe = MineralChemistry().calculate_molar_volume(volume_cell=V_Fe, z=Z_Fe)
-            return V_Fe, V_m_Fe, Z_Fe
-        elif key == "Mg":
-            dataV_Mg = CrystalPhysics([[5.3, 9.3, 14.3], [97], "monoclinic"])
-            V_Mg = dataV_Mg.calculate_volume()
-            Z_Mg = 2
-            V_m_Mg = MineralChemistry().calculate_molar_volume(volume_cell=V_Mg, z=Z_Mg)
-            return V_Mg, V_m_Mg, Z_Mg
-        elif key == "Mn":
-            dataV_Mn = CrystalPhysics([[5.454, 9.45, 14.4], [97.2], "monoclinic"])
-            V_Mn = dataV_Mn.calculate_volume()
-            Z_Mn = 2
-            V_m_Mn = MineralChemistry().calculate_molar_volume(volume_cell=V_Mn, z=Z_Mn)
-            return V_Mn, V_m_Mn, Z_Mn
-        elif key == "Ni":
-            dataV_Ni = CrystalPhysics([[5.32, 9.214, 14.302], [97.1], "monoclinic"])
-            V_Ni = dataV_Ni.calculate_volume()
-            Z_Ni = 2
-            V_m_Ni = MineralChemistry().calculate_molar_volume(volume_cell=V_Ni, z=Z_Ni)
-            return V_Ni, V_m_Ni, Z_Ni
-
-    def _calculate_densities_chlorite(self, molar_mass, Z, V, amounts, element):
-        dataRho = CrystalPhysics([molar_mass, Z, V])
-        rho = dataRho.calculate_bulk_density()
-        rho_e = wg(amounts=amounts, elements=element, rho_b=rho).calculate_electron_density()
-        return rho, rho_e
-
     def _extract_values_from_yaml(self):
         vals = {}
         # Physical parameters
@@ -367,21 +341,7 @@ class Phyllosilicates:
             self.cache[name_lower] = {"constants": vals}
         else:
             vals = self.cache[name_lower]["constants"]
-            if self.name == "Chlorite":
-                V_Fe = self.cache[name_lower]["volume"]["Fe"][0]
-                V_m_Fe = self.cache[name_lower]["volume"]["Fe"][1]
-                Z_Fe = self.cache[name_lower]["volume"]["Fe"][2]
-                V_Mg = self.cache[name_lower]["volume"]["Mg"][0]
-                V_m_Mg = self.cache[name_lower]["volume"]["Mg"][1]
-                Z_Mg = self.cache[name_lower]["volume"]["Mg"][2]
-                V_Mn = self.cache[name_lower]["volume"]["Mn"][0]
-                V_m_Mn = self.cache[name_lower]["volume"]["Mn"][1]
-                Z_Mn = self.cache[name_lower]["volume"]["Mn"][2]
-                V_Ni = self.cache[name_lower]["volume"]["Ni"][0]
-                V_m_Ni = self.cache[name_lower]["volume"]["Ni"][1]
-                Z_Ni = self.cache[name_lower]["volume"]["Ni"][2]
-            else:
-                constr_vol = self.cache[name_lower]["constr_vol"]
+            constr_vol = self.cache[name_lower]["constr_vol"]
 
         # Molar mass, element amounts
         molar_mass, amounts, element = self._calculate_molar_mass_amounts(amounts_elements=amounts_elements)
@@ -398,47 +358,20 @@ class Phyllosilicates:
             val_a_G = float(vals["a_G"])
             val_b_G = float(vals["b_G"])
 
-        if self.name != "Chlorite":
-            # (Molar) Volume
-            if "constr_vol" not in self.cache[name_lower]:
-                constr_vol = self._determine_volume_constructor(vals=vals)
-                self.cache[name_lower]["constr_vol"] = constr_vol
+        # (Molar) Volume
+        if "constr_vol" not in self.cache[name_lower]:
+            constr_vol = self._determine_volume_constructor(vals=vals)
+            self.cache[name_lower]["constr_vol"] = constr_vol
 
-            constr_minchem = MineralChemistry(w_traces=traces_data, molar_mass_pure=molar_mass_pure, majors=majors_data)
-            V, V_m = self.crystallographic_properties.calculate_molar_volume(
-                constr_volume=constr_vol, constr_molar_volume=constr_minchem, cell_z=val_Z)
-            # Density
-            constr_density = CrystalPhysics([molar_mass, val_Z, V])
-            rho = self.crystallographic_properties.calculate_mineral_density(constr_density=constr_density)
-            constr_electr_density = wg(amounts=amounts, elements=element, rho_b=rho)
-            rho_e = self.crystallographic_properties.calculate_electron_density(
-                constr_electron_density=constr_electr_density)
-        else:
-            # (Molar) Volume
-            if "volume" not in self.cache[name_lower]:
-                V_Fe, V_m_Fe, Z_Fe = self._calculate_crystal_physics_object_chlorite(key="Fe")
-                V_Mg, V_m_Mg, Z_Mg = self._calculate_crystal_physics_object_chlorite(key="Mg")
-                V_Mn, V_m_Mn, Z_Mn = self._calculate_crystal_physics_object_chlorite(key="Mn")
-                V_Ni, V_m_Ni, Z_Ni = self._calculate_crystal_physics_object_chlorite(key="Ni")
-                self.cache[name_lower]["volume"] = {
-                    "Fe": [V_Fe, V_m_Fe, Z_Fe], "Mg": [V_Mg, V_m_Mg, Z_Mg], "Mn": [V_Mn, V_m_Mn, Z_Mn],
-                    "Ni": [V_Ni, V_m_Ni, Z_Ni]}
-            # Density
-            rho_Fe, rho_e_Fe = self._calculate_densities_chlorite(
-                molar_mass=molar_mass, Z=Z_Fe, V=V_Fe, amounts=amounts, element=element)
-            rho_Mg, rho_e_Mg = self._calculate_densities_chlorite(
-                molar_mass=molar_mass, Z=Z_Mg, V=V_Mg, amounts=amounts, element=element)
-            rho_Mn, rho_e_Mn = self._calculate_densities_chlorite(
-                molar_mass=molar_mass, Z=Z_Mn, V=V_Mn, amounts=amounts, element=element)
-            rho_Ni, rho_e_Ni = self._calculate_densities_chlorite(
-                molar_mass=molar_mass, Z=Z_Ni, V=V_Ni, amounts=amounts, element=element)
-
-            x = vars["x"]
-            y = vars["y"]
-            z = vars["z"]
-            V_m = x*V_m_Fe + y*V_m_Mg + z*V_m_Mn + (1-x-y-z)*V_m_Ni
-            rho = x*rho_Fe + y*rho_Mg + z*rho_Mn + (1-x-y-z)*rho_Ni
-            rho_e = x*rho_e_Fe + y*rho_e_Mg + z*rho_e_Mn + (1-x-y-z)*rho_e_Ni
+        constr_minchem = MineralChemistry(w_traces=traces_data, molar_mass_pure=molar_mass_pure, majors=majors_data)
+        V, V_m = self.crystallographic_properties.calculate_molar_volume(
+            constr_volume=constr_vol, constr_molar_volume=constr_minchem, cell_z=val_Z)
+        # Density
+        constr_density = CrystalPhysics([molar_mass, val_Z, V])
+        rho = self.crystallographic_properties.calculate_mineral_density(constr_density=constr_density)
+        constr_electr_density = wg(amounts=amounts, elements=element, rho_b=rho)
+        rho_e = self.crystallographic_properties.calculate_electron_density(
+            constr_electron_density=constr_electr_density)
 
         # Elastic properties
         if "K" not in vals:
@@ -471,71 +404,26 @@ class Phyllosilicates:
         All mechanical properties (K, G, E) are stored in Pascals internally.
         For output, they are converted to GPa.
         """
-        val_state = "variable"
-
-        if self.name == "Biotite":
-            name_lower = self.name.lower()
-            val_key = "Bt"
-            endmember = ["Annite", "Phlogopite", "Siderophyllite", "Eastonite"]
-
-        if "endmembers" not in self.cache:
-            self.cache["endmembers"] = {}
-
-        endmember_data = {}
-        list_elements = []
-        for mineral in endmember:
-            if mineral not in self.cache["endmembers"]:
-                mineral_data = Phyllosilicates(name=mineral, random_seed=self.current_seed).generate_dataset(number=1)
-                self.cache["endmembers"][mineral] = mineral_data
-            endmember_data[mineral] = self.cache["endmembers"][mineral]
-            mineral_data = endmember_data[mineral]
-            for element in mineral_data["chemistry"]:
-                if element not in list_elements:
-                    list_elements.append(element)
-        weights = self.rng.dirichlet(np.ones(len(endmember)))
-        fraction_endmember = dict(zip(endmember, weights))
-
-        if name_lower not in self.cache:
-            self.cache[name_lower] = {
-                "endmember_data": endmember_data
+        endmember_series = {
+            "Biotite": {
+                "name_lower": "biotite",
+                "key": "Bt",
+                "endmembers": ["Annite", "Phlogopite", "Siderophyllite", "Eastonite"],
+                "oxides": ["Na2O", "K2O", "Al2O3", "SiO2"]
+            },
+            "Chlorite": {
+                "name_lower": "chlorite",
+                "key": "Bt",
+                "endmembers": ["FeChlorite", "MgChlorite", "MnChlorite", "NiChlorite"],
+                "oxides": ["FeO", "MgO", "MnO", "NiO", "Al2O3", "SiO2", "H2O"]
             }
-
-        properties = ["M", "rho", "rho_e", "V", "K", "G"]
-        helper_results = {
-            prop: sum(fraction_endmember[m]*endmember_data[m][prop][0] for m in endmember)
-            for prop in properties
         }
-        # Amounts
-        amounts = []
-        for element in list_elements:
-            amount = sum(fraction_endmember[mineral]*endmember_data[mineral]["chemistry"].get(element, [0])[0]
-                         for mineral in endmember)
-            amounts.append([element, self.elements[element][1], amount])
-        element = [self.elements[name] for name, *_ in amounts]
-        # Elastic properties
-        val_K = helper_results["K"]*10**9
-        val_G = helper_results["G"]*10**9
-        rho = helper_results["rho"]
-        rho_e = helper_results["rho_e"]
-        E, nu = self.geophysical_properties.calculate_elastic_properties(bulk_mod=val_K, shear_mod=val_G)
-        # Seismic properties
-        vPvS, vP, vS = self.geophysical_properties.calculate_seismic_velocities(
-            bulk_mod=val_K, shear_mod=val_G, rho=rho)
-        # Radiation properties
-        constr_radiation = wg(amounts=amounts, elements=element)
-        gamma_ray, pe, U = self.geophysical_properties.calculate_radiation_properties(
-            constr_radiation=constr_radiation, rho_electron=rho_e)
-        # Electrical resistivity
-        p = None
-        # Results
-        results = {
-            "mineral": val_key, "state": val_state, "M": round(helper_results["M"], self.rounding),
-            "chemistry": {name: round(val[1], 6) for name, *val in amounts}, "rho": round(rho, self.rounding),
-            "rho_e": round(rho_e, self.rounding), "V": round(helper_results["V"], self.rounding),
-            "vP": round(vP, self.rounding), "vS": round(vS, self.rounding), "vP/vS": round(vPvS, self.rounding),
-            "K": round(val_K*10**(-9), self.rounding), "G": round(val_G*10**(-9), self.rounding),
-            "E": round(E*10**(-9), self.rounding), "nu": round(nu, 6), "GR": round(gamma_ray, self.rounding), #
-            "PE": round(pe, self.rounding), "U": round(U, self.rounding), "p": p}
+        results = MinGen(
+            name=self.name, yaml_data=self.yaml_data, elements=self.elements, cache=self.cache,
+            geophysical_properties=self.geophysical_properties,
+            rounding=self.rounding).create_mineral_data_endmember_series(
+            endmember_series=endmember_series, var_class=Phyllosilicates, current_seed=self.current_seed, rng=self.rng)
+
         return results
 
 # TEST
