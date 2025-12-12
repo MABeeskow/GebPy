@@ -6,7 +6,7 @@
 # Name:		common.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		29.11.2025
+# Date:		12.12.2025
 
 #-----------------------------------------------
 
@@ -402,4 +402,101 @@ class MineralGeneration:
             "PE": round(pe, self.rounding), "U": round(U, self.rounding), "p": p}
         if "oxides" in self.yaml_data:
             results["compounds"] = {name: round(val[1], 6) for name, val in oxides_data.items()}
+        return results
+
+    def create_mineral_data_endmember_series(self, endmember_series, var_class, current_seed, rng):
+        """
+        Synthetic mineral data generation for an user-selected mineral.
+        All mechanical properties (K, G, E) are stored in Pascals internally.
+        For output, they are converted to GPa.
+        """
+        val_state = "variable"
+
+        if not hasattr(self, "cache"):
+            self.cache = {}
+
+        name_lower = endmember_series[self.name]["name_lower"]
+        val_key = endmember_series[self.name]["key"]
+        endmember = endmember_series[self.name]["endmembers"]
+        oxides_data = {}
+        for oxide in endmember_series[self.name]["oxides"]:
+            cation = self._get_cation_element(oxide=oxide)
+            oxides_data[oxide] = [cation, None]
+
+        if "endmembers" not in self.cache:
+            self.cache["endmembers"] = {}
+
+        if name_lower not in self.cache:
+            endmember_data = {}
+            list_elements = []
+            for mineral in endmember:
+                if mineral not in self.cache["endmembers"]:
+                    mineral_data = var_class(name=mineral, random_seed=current_seed).generate_dataset(
+                        number=1)
+                    self.cache["endmembers"][mineral] = mineral_data
+                endmember_data[mineral] = self.cache["endmembers"][mineral]
+                mineral_data = endmember_data[mineral]
+                for element in mineral_data["chemistry"]:
+                    if element not in list_elements:
+                        list_elements.append(element)
+            constr_OxComp = OxideComposition()
+
+            self.cache[name_lower] = {
+                "endmember_data": endmember_data, "list_elements": list_elements, "OxComp": constr_OxComp}
+        else:
+            endmember_data = self.cache[name_lower]["endmember_data"]
+            list_elements = self.cache[name_lower]["list_elements"]
+            constr_OxComp = self.cache[name_lower]["OxComp"]
+        weights = rng.dirichlet(np.ones(len(endmember)))
+        fraction_endmember = dict(zip(endmember, weights))
+
+        properties = ["M", "rho", "rho_e", "V", "K", "G"]
+        helper_results = {
+            prop: sum(fraction_endmember[m]*endmember_data[m][prop][0] for m in endmember)
+            for prop in properties
+        }
+        # Amounts
+        amounts = []
+        for element in list_elements:
+            amount = sum(fraction_endmember[mineral]*endmember_data[mineral]["chemistry"].get(element, [0])[0]
+                         for mineral in endmember)
+            amounts.append([element, self.elements[element][1], amount])
+        element = [self.elements[name] for name, *_ in amounts]
+        # Oxide amounts
+        amounts_dict = constr_OxComp._element_amounts_as_dict(amounts=amounts)
+        try:
+            for oxide in oxides_data.keys():
+               cation = constr_OxComp._get_cation_element(oxide=oxide)
+               value = amounts_dict[cation]*self.conversion_factors[oxide]["factor"]
+               oxides_data[oxide][1] = value
+        except:
+            print("No oxide data available!")
+        # Elastic properties
+        val_K = helper_results["K"]*10**9
+        val_G = helper_results["G"]*10**9
+        rho = helper_results["rho"]
+        rho_e = helper_results["rho_e"]
+        E, nu = self.geophysical_properties.calculate_elastic_properties(bulk_mod=val_K, shear_mod=val_G)
+        # Seismic properties
+        vPvS, vP, vS = self.geophysical_properties.calculate_seismic_velocities(
+            bulk_mod=val_K, shear_mod=val_G, rho=rho)
+        # Radiation properties
+        constr_radiation = wg(amounts=amounts, elements=element)
+        gamma_ray, pe, U = self.geophysical_properties.calculate_radiation_properties(
+            constr_radiation=constr_radiation, rho_electron=rho_e)
+        # Electrical resistivity
+        p = None
+        # Results
+        results = {
+            "mineral": val_key, "state": val_state, "M": round(helper_results["M"], self.rounding),
+            "chemistry": {name: round(val[1], 6) for name, *val in amounts}, "rho": round(rho, self.rounding),
+            "rho_e": round(rho_e, self.rounding), "V": round(helper_results["V"], self.rounding),
+            "vP": round(vP, self.rounding), "vS": round(vS, self.rounding),
+            "vP/vS": round(vPvS, self.rounding), "K": round(val_K*10**(-9), self.rounding),
+            "G": round(val_G*10**(-9), self.rounding), "E": round(E*10**(-9), self.rounding), "nu": round(nu, 6),
+            "GR": round(gamma_ray, self.rounding), "PE": round(pe, self.rounding), "U": round(U, self.rounding), "p": p}
+        try:
+            results["compounds"] = {name: round(val[1], 6) for name, val in oxides_data.items()}
+        except:
+            print("No oxide data available!")
         return results

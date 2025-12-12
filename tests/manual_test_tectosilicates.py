@@ -6,7 +6,7 @@
 # Name:		manual_test_tectosilicates.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		27.11.2025
+# Date:		12.12.2025
 
 #-----------------------------------------------
 
@@ -17,8 +17,6 @@ Manual test file related to module phyllosilicates.py
 
 # PACKAGES
 import time
-
-from numpy.core.defchararray import lower
 
 # MODULES
 from src.gebpy.core.minerals.tectosilicates import Tectosilicates
