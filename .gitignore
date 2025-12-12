@@ -8,6 +8,11 @@ notebooks/*.csv
 tests/*.png
 tests/*.csv
 .idea/*
+build/
+dist/
+
+# Files
+*.egg-info
 
 __pycache__/
 *.py[cod]
