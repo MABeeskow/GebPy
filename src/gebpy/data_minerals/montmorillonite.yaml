@@ -1,6 +1,7 @@
 mineral: Montmorillonite
 group: Phyllosilicates
 formula: (Na,Ca)0.3 (Al,Mg)2 Si4O10 (OH)2 (H2O)10
+last updated: 13.12.2025
 
 metadata:
   key: "Mnt"
@@ -21,6 +22,14 @@ chemistry:
     formula: "12 + n"
   H:
     formula: "2 + 2*n"
+
+oxides:
+  Na2O: 1
+  CaO: 1
+  Al2O3: 1
+  MgO: 1
+  SiO2: 1
+  H2O: 1
 
 variables:
   x: [0.6, 0.7]

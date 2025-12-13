@@ -1,6 +1,7 @@
 mineral: Powellite
 group: Oxides
 formula: CaMoO4
+last updated: 12.12.2025
 
 metadata:
   key: "Pwl"
@@ -8,8 +9,12 @@ metadata:
 
 chemistry:
   Ca: 1
-  W: 1
+  Mo: 1
   O: 4
+
+oxides:
+  CaO: 1
+  MoO3: 1
 
 physical_properties:
   K:

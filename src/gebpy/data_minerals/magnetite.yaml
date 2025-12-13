@@ -1,6 +1,7 @@
 mineral: Magnetite
 group: Oxides
 formula: Fe3O4
+last updated: 12.12.2025
 
 metadata:
   key: "Mag"
@@ -9,6 +10,10 @@ metadata:
 chemistry:
   Fe: 3
   O: 4
+
+oxides:
+  FeO: 0.310299700688029
+  Fe2O3: 0.689700299311971
 
 physical_properties:
   K:

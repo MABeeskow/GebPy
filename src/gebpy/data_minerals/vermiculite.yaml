@@ -1,6 +1,7 @@
 mineral: Vermiculite
 group: Phyllosilicates
 formula: (Mg, Fe , Al)3 (Al , Si)4 O10 (OH)2 4(H2O)
+last updated: 13.12.2025
 
 metadata:
   key: "Vrm"
@@ -19,6 +20,13 @@ chemistry:
     formula: "16"
   H:
     formula: "10"
+
+oxides:
+  MgO: 1
+  FeO: 1
+  Al2O3: 1
+  SiO2: 1
+  H2O: 1
 
 physical_properties:
   a_K:

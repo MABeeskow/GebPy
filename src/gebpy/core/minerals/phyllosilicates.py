@@ -6,7 +6,7 @@
 # Name:		phyllosilicates.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		12.12.2025
+# Date:		13.12.2025
 
 #-----------------------------------------------
 
@@ -409,7 +409,7 @@ class Phyllosilicates:
                 "name_lower": "biotite",
                 "key": "Bt",
                 "endmembers": ["Annite", "Phlogopite", "Siderophyllite", "Eastonite"],
-                "oxides": ["Na2O", "K2O", "Al2O3", "SiO2"]
+                "oxides": ["K2O", "FeO", "MgO", "Al2O3", "SiO2", "H2O"]
             },
             "Chlorite": {
                 "name_lower": "chlorite",

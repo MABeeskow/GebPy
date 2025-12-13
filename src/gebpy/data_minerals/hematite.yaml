@@ -1,6 +1,7 @@
 mineral: Hematite
 group: Oxides
 formula: Fe2O3
+last updated: 13.12.2025
 
 metadata:
   key: "Hem"
@@ -9,6 +10,9 @@ metadata:
 chemistry:
   Fe: 2
   O: 3
+
+oxides:
+  Fe2O3: 1
 
 physical_properties:
   K:

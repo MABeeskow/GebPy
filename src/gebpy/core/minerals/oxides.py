@@ -6,7 +6,7 @@
 # Name:		oxides.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		03.12.2025
+# Date:		12.12.2025
 
 #-----------------------------------------------
 
@@ -478,130 +478,105 @@ class Oxides:
         All mechanical properties (K, G, E) are stored in Pascals internally.
         For output, they are converted to GPa.
         """
-        val_state = "variable"
-
-        if not hasattr(self, "cache"):
-            self.cache = {}
-
-        if self.name == "Al-Spinel":
-            name_lower = self.name.lower()
-            val_key = "Al-Spi"
-            endmember = ["Spinel", "Hercynite", "Gahnite", "Galaxite"]
-        elif self.name == "Cr-Spinel":
-            name_lower = self.name.lower()
-            val_key = "Cr-Spi"
-            endmember = ["Chromite", "Zincochromite", "Magnesiochromite"]
-        elif self.name == "Fe-Spinel":
-            name_lower = self.name.lower()
-            val_key = "Fe-Spi"
-            endmember = ["Magnetite", "Cuprospinel", "Jacobsite", "Magnesioferrite", "Trevorite", "Franklinite"]
-        elif self.name == "Wolframite":
-            name_lower = self.name.lower()
-            val_key = "Wf"
-            endmember = ["Huebnerite", "Ferberite"]
-        elif self.name == "Corundum-Group":
-            name_lower = self.name.lower()
-            val_key = "Crn-group"
-            endmember = ["Corundum", "Hematite", "Eskolaite", "Karelianite", "Tistarite"]
-        elif self.name == "Chromite-Group":
-            name_lower = self.name.lower()
-            val_key = "Ilm-group"
-            endmember = ["Chromite", "Manganochromite", "Nichromite", "Cochromite", "Zincochromite"]
-        elif self.name == "Ilmenite-Group":
-            name_lower = self.name.lower()
-            val_key = "Chr-group"
-            endmember = ["Ilmenite", "Geikielite", "Pyrophanite"]
-        elif self.name == "Rutile-Group":
-            name_lower = self.name.lower()
-            val_key = "Rt-group"
-            endmember = ["Rutile", "Pyrolusite", "Cassiterite", "Plattnerite", "Argutite", "Stishovite"]
-        elif self.name == "Columbite":
-            name_lower = self.name.lower()
-            val_key = "Clb"
-            endmember = ["FeColumbite", "MgColumbite", "MnColumbite"]
-        elif self.name == "Tantalite":
-            name_lower = self.name.lower()
-            val_key = "Tnt"
-            endmember = ["FeTantalite", "MgTantalite", "MnTantalite"]
-        elif self.name == "Coltan":
-            name_lower = self.name.lower()
-            val_key = "Clt"
-            endmember = ["FeColumbite", "MgColumbite", "MnColumbite", "FeTantalite", "MgTantalite", "MnTantalite"]
-        elif self.name == "Periclase-Group":
-            name_lower = self.name.lower()
-            val_key = "Per-group"
-            endmember = ["Periclase", "Bunsenite", "Manganosite", "Monteponite", "Lime", "Wustite"]
-        elif self.name == "Wulfenite-Group":
-            name_lower = self.name.lower()
-            val_key = "Wul-group"
-            endmember = ["Wulfenite", "Stolzite"]
-        elif self.name == "Scheelite-Group":
-            name_lower = self.name.lower()
-            val_key = "Sch-group"
-            endmember = ["Scheelite", "Powellite"]
-        elif self.name == "Diaspore-Group":
-            name_lower = self.name.lower()
-            val_key = "Dsp-group"
-            endmember = ["Diaspore", "Goethite", "Groutite"]
-
-        if "endmembers" not in self.cache:
-            self.cache["endmembers"] = {}
-
-        endmember_data = {}
-        list_elements = []
-        for mineral in endmember:
-            if mineral not in self.cache["endmembers"]:
-                mineral_data = Oxides(name=mineral, random_seed=self.current_seed).generate_dataset(
-                    number=1)
-                self.cache["endmembers"][mineral] = mineral_data
-            endmember_data[mineral] = self.cache["endmembers"][mineral]
-            mineral_data = endmember_data[mineral]
-            for element in mineral_data["chemistry"]:
-                if element not in list_elements:
-                    list_elements.append(element)
-        weights = self.rng.dirichlet(np.ones(len(endmember)))
-        fraction_endmember = dict(zip(endmember, weights))
-
-        if name_lower not in self.cache:
-            self.cache[name_lower] = {
-                "endmember_data": endmember_data
+        endmember_series = {
+            "Al-Spinel": {
+                "name_lower": "al-spinel",
+                "key": "Al-Spi",
+                "endmembers": ["Spinel", "Hercynite", "Gahnite", "Galaxite"],
+                "oxides": ["MgO", "Al2O3", "FeO", "ZnO", "MnO"]
+            },
+            "Cr-Spinel": {
+                "name_lower": "cr-spinel",
+                "key": "Cr-Spi",
+                "endmembers": ["Chromite", "Zincochromite", "Magnesiochromite"],
+                "oxides": ["Cr2O3", "FeO", "ZnO", "MgO"]
+            },
+            "Fe-Spinel": {
+                "name_lower": "fespinel",
+                "key": "Fe-Spi",
+                "endmembers": ["Magnetite", "Cuprospinel", "Jacobsite", "Magnesioferrite", "Trevorite", "Franklinite"],
+                "oxides": ["FeO", "Fe2O3", "Cu2O", "MnO", "Mn2O3", "MgO", "NiO", "ZnO"]
+            },
+            "Wolframite": {
+                "name_lower": "wolframite",
+                "key": "Wf",
+                "endmembers": ["Huebnerite", "Ferberite"],
+                "oxides": ["MnO", "WO3", "FeO"]
+            },
+            "Corundum-Group": {
+                "name_lower": "corundum-group",
+                "key": "Crn-group",
+                "endmembers": ["Corundum", "Hematite", "Eskolaite", "Karelianite", "Tistarite"],
+                "oxides": ["Al2O3", "Fe2O3", "Cr2O3", "V2O3", "Ti2O3"]
+            },
+            "Chromite-Group": {
+                "name_lower": "chromite-group",
+                "key": "Chr-group",
+                "endmembers": ["Chromite", "Manganochromite", "Nichromite", "Cochromite", "Zincochromite"],
+                "oxides": ["Cr2O3", "MnO", "NiO", "CoO", "ZnO"]
+            },
+            "Ilmenite-Group": {
+                "name_lower": "ilmenite-group",
+                "key": "Ilm-group",
+                "endmembers": ["Ilmenite", "Geikielite", "Pyrophanite"],
+                "oxides": ["FeO", "TiO2", "MgO", "MnO"]
+            },
+            "Rutile-Group": {
+                "name_lower": "rutile-group",
+                "key": "Rt-group",
+                "endmembers": ["Rutile", "Pyrolusite", "Cassiterite", "Plattnerite", "Argutite", "Stishovite"],
+                "oxides": ["TiO2", "MnO2", "SnO2", "PbO2", "GeO2", "SiO2"]
+            },
+            "Columbite": {
+                "name_lower": "columbite",
+                "key": "Clb",
+                "endmembers": ["FeColumbite", "MgColumbite", "MnColumbite"],
+                "oxides": ["FeO", "MgO", "MnO", "Nb2O5"]
+            },
+            "Tantalite": {
+                "name_lower": "tantalite",
+                "key": "Tnt",
+                "endmembers": ["FeTantalite", "MgTantalite", "MnTantalite"],
+                "oxides": ["FeO", "MgO", "MnO", "Ta2O5"]
+            },
+            "Coltan": {
+                "name_lower": "coltan",
+                "key": "Clt",
+                "endmembers": ["FeColumbite", "MgColumbite", "MnColumbite", "FeTantalite", "MgTantalite",
+                               "MnTantalite"],
+                "oxides": ["FeO", "MgO", "MnO", "Nb2O5", "Ta2O5"]
+            },
+            "Periclase-Group": {
+                "name_lower": "periclase-Group",
+                "key": "Per-group",
+                "endmembers": ["Periclase", "Bunsenite", "Manganosite", "Monteponite", "Lime", "Wustite"],
+                "oxides": ["MgO", "NiO", "MnO", "CdO", "FeO"]
+            },
+            "Wulfenite-Group": {
+                "name_lower": "wulfenite-Group",
+                "key": "Wul-group",
+                "endmembers": ["Wulfenite", "Stolzite"],
+                "oxides": ["PbO", "MoO3", "WO3"]
+            },
+            "Scheelite-Group": {
+                "name_lower": "scheelite-Group",
+                "key": "Sch-group",
+                "endmembers": ["Scheelite", "Powellite"],
+                "oxides": ["CaO", "MoO3", "WO3"]
+            },
+            "Diaspore-Group": {
+                "name_lower": "diaspore-Group",
+                "key": "Dsp-group",
+                "endmembers": ["Diaspore", "Goethite", "Groutite"],
+                "oxides": ["Al2O3", "Fe2O3", "Mn2O3", "H2O"]
             }
-
-        properties = ["M", "rho", "rho_e", "V", "K", "G"]
-        helper_results = {
-            prop: sum(fraction_endmember[m]*endmember_data[m][prop][0] for m in endmember)
-            for prop in properties
         }
-        # Amounts
-        amounts = []
-        for element in list_elements:
-            amount = sum(fraction_endmember[mineral]*endmember_data[mineral]["chemistry"].get(element, [0])[0]
-                         for mineral in endmember)
-            amounts.append([element, self.elements[element][1], amount])
-        element = [self.elements[name] for name, *_ in amounts]
-        # Elastic properties
-        val_K = helper_results["K"]*10**9
-        val_G = helper_results["G"]*10**9
-        rho = helper_results["rho"]
-        rho_e = helper_results["rho_e"]
-        E, nu = self.geophysical_properties.calculate_elastic_properties(bulk_mod=val_K, shear_mod=val_G)
-        # Seismic properties
-        vPvS, vP, vS = self.geophysical_properties.calculate_seismic_velocities(
-            bulk_mod=val_K, shear_mod=val_G, rho=rho)
-        # Radiation properties
-        constr_radiation = wg(amounts=amounts, elements=element)
-        gamma_ray, pe, U = self.geophysical_properties.calculate_radiation_properties(
-            constr_radiation=constr_radiation, rho_electron=rho_e)
-        # Electrical resistivity
-        p = None
-        # Results
-        results = {
-            "mineral": val_key, "state": val_state, "M": round(helper_results["M"], 3),
-            "chemistry": {name: round(val[1], 6) for name, *val in amounts}, "rho": round(rho, 3),
-            "rho_e": round(rho_e, 3), "V": round(helper_results["V"], 3), "vP": round(vP, 3), "vS": round(vS, 3),
-            "vP/vS": round(vPvS, 3), "K": round(val_K*10**(-9), 3), "G": round(val_G*10**(-9), 3),
-            "E": round(E*10**(-9), 3), "nu": round(nu, 6), "GR": round(gamma_ray, 3), "PE": round(pe, 3),
-            "U": round(U, 3), "p": p}
+        results = MinGen(
+            name=self.name, yaml_data=self.yaml_data, elements=self.elements, cache=self.cache,
+            geophysical_properties=self.geophysical_properties,
+            rounding=self.rounding).create_mineral_data_endmember_series(
+            endmember_series=endmember_series, var_class=Oxides, current_seed=self.current_seed, rng=self.rng)
+
         return results
 
 # TEST

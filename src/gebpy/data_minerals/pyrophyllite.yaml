@@ -1,6 +1,7 @@
 mineral: Pyrophyllite
 group: Phyllosilicates
 formula: Al2 Si4 O10 (OH)2
+last updated: 13.12.2025
 
 metadata:
   key: "Prl"
@@ -11,6 +12,11 @@ chemistry:
   Si: 4
   O: 12
   H: 2
+
+oxides:
+  Al2O3: 1
+  SiO2: 1
+  H2O: 1
 
 physical_properties:
   K:

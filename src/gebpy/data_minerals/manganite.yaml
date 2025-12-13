@@ -1,6 +1,7 @@
 mineral: Manganite
 group: Oxides
 formula: MnO(OH)
+last updated: 13.12.2025
 
 metadata:
   key: "Man"
@@ -10,6 +11,10 @@ chemistry:
   Mn: 1
   O: 2
   H: 1
+
+oxides:
+  Mn2O3: 1
+  H2O: 1
 
 physical_properties:
   K:

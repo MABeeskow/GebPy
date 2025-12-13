@@ -1,6 +1,7 @@
 mineral: Stishovite
 group: Oxides
 formula: SiO2
+last updated: 12.12.2025
 
 metadata:
   key: "Stv"
@@ -9,6 +10,9 @@ metadata:
 chemistry:
   Si: 1
   O: 2
+
+oxides:
+  SiO2: 1
 
 physical_properties:
   K:

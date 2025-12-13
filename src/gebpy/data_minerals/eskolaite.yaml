@@ -1,6 +1,7 @@
 mineral: Eskolaite
 group: Oxides
 formula: Cr2O3
+last updated: 12.12.2025
 
 metadata:
   key: "Esk"
@@ -9,6 +10,9 @@ metadata:
 chemistry:
   Cr: 2
   O: 3
+
+oxides:
+  Cr2O3: 1
 
 physical_properties:
   K:

@@ -1,6 +1,7 @@
 mineral: Ferberite
 group: Oxides
 formula: FeWO4
+last updated: 12.12.2025
 
 metadata:
   key: "Feb"
@@ -10,6 +11,10 @@ chemistry:
   Fe: 1
   W: 1
   O: 4
+
+oxides:
+  FeO: 1
+  WO3: 1
 
 physical_properties:
   K:

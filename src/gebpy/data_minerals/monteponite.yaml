@@ -1,6 +1,7 @@
 mineral: Monteponite
 group: Oxides
 formula: CdO
+last updated: 12.12.2025
 
 metadata:
   key: "Mntp"
@@ -9,6 +10,9 @@ metadata:
 chemistry:
   Cd: 1
   O: 1
+
+oxides:
+  CdO: 1
 
 physical_properties:
   K:

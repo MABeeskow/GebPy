@@ -1,6 +1,7 @@
 mineral: Scrutinyite
 group: Oxides
 formula: PbO2
+last updated: 13.12.2025
 
 metadata:
   key: "Scrt"
@@ -9,6 +10,9 @@ metadata:
 chemistry:
   Pb: 1
   O: 2
+
+oxides:
+  PbO2: 1
 
 physical_properties:
   K:

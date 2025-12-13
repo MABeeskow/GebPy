@@ -1,6 +1,7 @@
 mineral: Quartz
 group: Oxides
 formula: Si O2
+last updated: 13.12.2025
 
 metadata:
   key: "Qz"
@@ -9,6 +10,9 @@ metadata:
 chemistry:
   Si: 1
   O: 2
+
+oxides:
+  SiO2: 1
 
 physical_properties:
   K:

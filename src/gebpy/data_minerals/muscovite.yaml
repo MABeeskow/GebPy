@@ -1,6 +1,7 @@
 mineral: Muscovite
 group: Phyllosilicates
 formula: K Al3 Si3 O10 (OH)2
+last updated: 13.12.2025
 
 metadata:
   key: "Ms"
@@ -12,6 +13,12 @@ chemistry:
   Si: 3
   O: 12
   H: 2
+
+oxides:
+  K2O: 1
+  Al2O3: 1
+  SiO2: 1
+  H2O: 1
 
 physical_properties:
   K:

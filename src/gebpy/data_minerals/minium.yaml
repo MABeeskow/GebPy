@@ -1,6 +1,7 @@
 mineral: Minium
 group: Oxides
 formula: Pb3O4
+last updated: 13.12.2025
 
 metadata:
   key: "Min"
@@ -9,6 +10,10 @@ metadata:
 chemistry:
   Pb: 3
   O: 4
+
+oxides:
+  PbO: 0.651109399704782
+  PbO2: 0.348890600295218
 
 physical_properties:
   K:

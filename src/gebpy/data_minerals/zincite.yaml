@@ -1,6 +1,7 @@
 mineral: Zincite
 group: Oxides
 formula: ZnO
+last updated: 13.12.2025
 
 metadata:
   key: "Znc"
@@ -9,6 +10,9 @@ metadata:
 chemistry:
   Zn: 1
   O: 1
+
+oxides:
+  ZnO: 1
 
 physical_properties:
   K:

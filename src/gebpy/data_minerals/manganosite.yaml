@@ -1,6 +1,7 @@
 mineral: Manganosite
 group: Oxides
 formula: MnO
+last updated: 12.12.2025
 
 metadata:
   key: "Mns"
@@ -9,6 +10,9 @@ metadata:
 chemistry:
   Mn: 1
   O: 1
+
+oxides:
+  MnO: 1
 
 physical_properties:
   K:

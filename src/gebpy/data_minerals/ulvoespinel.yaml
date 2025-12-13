@@ -1,6 +1,7 @@
 mineral: Ulvoespinel
 group: Oxides
 formula: TiFe2O4
+last updated: 13.12.2025
 
 metadata:
   key: "Usp"
@@ -10,6 +11,10 @@ chemistry:
   Ti: 1
   Fe: 2
   O: 4
+
+oxides:
+  TiO2: 1
+  FeO: 1
 
 physical_properties:
   K:

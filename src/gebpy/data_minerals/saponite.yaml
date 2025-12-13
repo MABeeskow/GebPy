@@ -1,6 +1,7 @@
 mineral: Saponite
 group: Phyllosilicates
 formula: Ca0.25 (Mg, Fe)3 (Si,Al)4 O10 (OH)2 * nH2O
+last updated: 13.12.2025
 
 metadata:
   key: "Sap"
@@ -21,6 +22,14 @@ chemistry:
     formula: "12 + n"
   H:
     formula: "2 + 2*n"
+
+oxides:
+  CaO: 1
+  MgO: 1
+  FeO: 1
+  SiO2: 1
+  Al2O3: 1
+  H2O: 1
 
 variables:
   x: [0.0, 0.75]

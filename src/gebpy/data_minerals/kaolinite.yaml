@@ -1,6 +1,7 @@
 mineral: Kaolinite
 group: Phyllosilicates
 formula: Al2(OH)4Si2O5
+last updated: 13.12.2025
 
 metadata:
   key: "Kln"
@@ -11,6 +12,11 @@ chemistry:
   Si: 2
   O: 9
   H: 4
+
+oxides:
+  Al2O3: 1
+  SiO2: 1
+  H2O: 1
 
 physical_properties:
   K:

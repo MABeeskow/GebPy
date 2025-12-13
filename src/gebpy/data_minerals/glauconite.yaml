@@ -1,6 +1,7 @@
 mineral: Glauconite
 group: Phyllosilicates
 formula: (K, Na) (Fe, Al, Mg)2 (Si, Al)4 O10 (OH)2
+last updated: 12.12.2025
 
 metadata:
   key: "Glt"
@@ -23,6 +24,15 @@ chemistry:
     formula: "12"
   H:
     formula: "2"
+
+oxides:
+  K2O: 1
+  Na2O: 1
+  FeO: 1
+  Al2O3: 1
+  MgO: 1
+  SiO2: 1
+  H2O: 1
 
 physical_properties:
   K:

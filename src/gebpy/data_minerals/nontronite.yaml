@@ -1,6 +1,7 @@
 mineral: Nontronite
 group: Phyllosilicates
 formula: Na0.3 Fe2 (Si, Al)4 O10 (OH)2 * nH2O
+last updated: 13.12.2025
 
 metadata:
   key: "Nntr"
@@ -19,6 +20,13 @@ chemistry:
     formula: "12 + n"
   H:
     formula: "2 + 2*n"
+
+oxides:
+  Na2O: 1
+  Fe2O3: 1
+  SiO2: 1
+  Al2O3: 1
+  H2O: 1
 
 variables:
   x: [0.0, 0.5]

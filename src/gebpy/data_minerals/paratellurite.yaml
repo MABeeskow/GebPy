@@ -1,6 +1,7 @@
 mineral: Paratellurite
 group: Oxides
 formula: TeO2
+last updated: 13.12.2025
 
 metadata:
   key: "Prtl"
@@ -9,6 +10,9 @@ metadata:
 chemistry:
   Te: 1
   O: 2
+
+oxides:
+  TeO2: 1
 
 physical_properties:
   K:

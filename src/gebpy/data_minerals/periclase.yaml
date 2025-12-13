@@ -1,6 +1,7 @@
 mineral: Periclase
 group: Oxides
 formula: MgO
+last updated: 12.12.2025
 
 metadata:
   key: "Per"
@@ -9,6 +10,9 @@ metadata:
 chemistry:
   Mg: 1
   O: 1
+
+oxides:
+  MgO: 1
 
 physical_properties:
   K:

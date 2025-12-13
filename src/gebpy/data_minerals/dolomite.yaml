@@ -1,6 +1,7 @@
 mineral: Dolomite
 group: Carbonates
 formula: Ca Mg (CO3)2
+last updated: 12.12.2025
 
 metadata:
   key: "Dol"
@@ -11,6 +12,11 @@ chemistry:
   Mg: 1
   C: 2
   O: 6
+
+oxides:
+  CaO: 1
+  MgO: 1
+  CO2: 1
 
 physical_properties:
   K:

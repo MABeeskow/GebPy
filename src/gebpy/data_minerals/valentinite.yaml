@@ -1,6 +1,7 @@
 mineral: Valentinite
 group: Oxides
 formula: Sb2O3
+last updated: 13.12.2025
 
 metadata:
   key: "Val"
@@ -9,6 +10,9 @@ metadata:
 chemistry:
   Sb: 2
   O: 3
+
+oxides:
+  Sb2O3: 1
 
 physical_properties:
   K:

@@ -1,6 +1,7 @@
 mineral: Spinel
 group: Oxides
 formula: MgAl2O4
+last updated: 13.12.2025
 
 metadata:
   key: "Spi"
@@ -10,6 +11,10 @@ chemistry:
   Mg: 1
   Al: 2
   O: 4
+
+oxides:
+  MgO: 1
+  Al2O3: 1
 
 physical_properties:
   K:

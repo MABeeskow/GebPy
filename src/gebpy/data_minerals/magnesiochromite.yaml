@@ -1,6 +1,7 @@
 mineral: Magnesiochromite
 group: Oxides
 formula: MgCr2O4
+last updated: 13.12.2025
 
 metadata:
   key: "Mchr"
@@ -10,6 +11,10 @@ chemistry:
   Mg: 1
   Cr: 2
   O: 4
+
+oxides:
+  MgO: 1
+  Cr2O3: 1
 
 physical_properties:
   K:

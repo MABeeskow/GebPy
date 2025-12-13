@@ -1,6 +1,7 @@
 mineral: Pyrolusite
 group: Oxides
 formula: MnO2
+last updated: 12.12.2025
 
 metadata:
   key: "Prl"
@@ -9,6 +10,9 @@ metadata:
 chemistry:
   Mn: 1
   O: 2
+
+oxides:
+  MnO2: 1
 
 physical_properties:
   K:

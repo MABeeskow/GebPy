@@ -1,6 +1,7 @@
 mineral: Wustite
 group: Oxides
 formula: FeO
+last updated: 12.12.2025
 
 metadata:
   key: "Wus"
@@ -9,6 +10,9 @@ metadata:
 chemistry:
   Fe: 1
   O: 1
+
+oxides:
+  FeO: 1
 
 physical_properties:
   K:

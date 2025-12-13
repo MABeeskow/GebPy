@@ -1,6 +1,7 @@
 mineral: Wulfenite
 group: Oxides
 formula: PbMoO4
+last updated: 12.12.2025
 
 metadata:
   key: "Wul"
@@ -10,6 +11,10 @@ chemistry:
   Pb: 1
   Mo: 1
   O: 4
+
+oxides:
+  PbO: 1
+  MoO3: 1
 
 physical_properties:
   K:

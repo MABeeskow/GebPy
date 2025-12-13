@@ -1,6 +1,7 @@
 mineral: Fe-Tantalite
 group: Oxides
-formula: FeTaO6
+formula: FeTa2O6
+last updated: 12.12.2025
 
 metadata:
   key: "Fe-Tnt"
@@ -10,6 +11,10 @@ chemistry:
   Fe: 1
   Ta: 2
   O: 6
+
+oxides:
+  FeO: 1
+  Ta2O5: 1
 
 physical_properties:
   K:

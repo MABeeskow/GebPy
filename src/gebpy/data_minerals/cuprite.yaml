@@ -1,6 +1,7 @@
 mineral: Cuprite
 group: Oxides
 formula: Cu2O
+last updated: 12.12.2025
 
 metadata:
   key: "Cup"
@@ -9,6 +10,9 @@ metadata:
 chemistry:
   Cu: 2
   O: 1
+
+oxides:
+  Cu2O: 1
 
 physical_properties:
   K:

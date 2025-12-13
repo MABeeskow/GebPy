@@ -1,6 +1,7 @@
 mineral: Nichromite
 group: Oxides
 formula: NiCr2O4
+last updated: 12.12.2025
 
 metadata:
   key: "Ni-Chr"
@@ -10,6 +11,10 @@ chemistry:
   Ni: 1
   Cr: 2
   O: 4
+
+oxides:
+  NiO: 1
+  Cr2O3: 1
 
 physical_properties:
   K:

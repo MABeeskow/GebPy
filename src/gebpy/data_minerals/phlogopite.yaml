@@ -1,6 +1,7 @@
 mineral: Phlogopite
 group: Phyllosilicates
 formula: KMg3AlSi3O10(OH)2
+last updated: 13.12.2025
 
 metadata:
   key: "Phl"
@@ -13,6 +14,13 @@ chemistry:
   Si: 3
   O: 12
   H: 2
+
+oxides:
+  K2O: 1
+  MgO: 1
+  Al2O3: 1
+  SiO2: 1
+  H2O: 1
 
 physical_properties:
   K:

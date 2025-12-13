@@ -1,6 +1,7 @@
 mineral: Crocoite
 group: Oxides
 formula: PbCrO4
+last updated: 12.12.2025
 
 metadata:
   key: "Crc"
@@ -10,6 +11,10 @@ chemistry:
   Pb: 1
   Cr: 1
   O: 4
+
+oxides:
+  PbO: 1
+  CrO3: 1
 
 physical_properties:
   K:

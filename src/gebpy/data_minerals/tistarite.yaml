@@ -1,6 +1,7 @@
 mineral: Tistarite
 group: Oxides
 formula: Ti2O3
+last updated: 13.12.2025
 
 metadata:
   key: "Tta"
@@ -9,6 +10,9 @@ metadata:
 chemistry:
   Ti: 2
   O: 3
+
+oxides:
+  Ti2O3: 1
 
 physical_properties:
   K:

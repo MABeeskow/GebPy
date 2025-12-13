@@ -1,6 +1,7 @@
 mineral: Trevorite
 group: Oxides
 formula: NiFe2O4
+last updated: 13.12.2025
 
 metadata:
   key: "Trv"
@@ -10,6 +11,10 @@ chemistry:
   Ni: 1
   Fe: 2
   O: 4
+
+oxides:
+  NiO: 1
+  Fe2O3: 1
 
 physical_properties:
   K:

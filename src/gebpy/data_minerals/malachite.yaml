@@ -1,6 +1,7 @@
 mineral: Malachite
 group: Carbonates
 formula: Cu2 (CO3) (OH)2
+last updated: 13.12.2025
 
 metadata:
   key: "Mal"
@@ -11,6 +12,11 @@ chemistry:
   C: 1
   O: 5
   H: 2
+
+oxides:
+  CuO: 1
+  CO2: 1
+  H2O: 1
 
 physical_properties:
   K:

@@ -1,6 +1,7 @@
 mineral: Massicot
 group: Oxides
 formula: PbO
+last updated: 13.12.2025
 
 metadata:
   key: "Mas"
@@ -9,6 +10,9 @@ metadata:
 chemistry:
   Pb: 1
   O: 1
+
+oxides:
+  PbO: 1
 
 physical_properties:
   K:

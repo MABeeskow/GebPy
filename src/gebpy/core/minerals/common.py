@@ -6,7 +6,7 @@
 # Name:		common.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		12.12.2025
+# Date:		13.12.2025
 
 #-----------------------------------------------
 
@@ -261,6 +261,24 @@ class MineralGeneration:
 
         return first
 
+    def _determine_sulfide_conversion_factors(self):
+        list_sulfides = ["FeS", "FeS2"]
+        mass_sulfur = self.elements["S"][2]
+        _conversion_factors = {}
+        for sulfide in list_sulfides:
+            _conversion_factors[sulfide] = self._parse_formula(formula=sulfide)
+            cation = self._get_cation_element(oxide=sulfide)
+            if cation in self.elements:
+                mass_cation = self.elements[cation][2]
+                _conversion_factors[sulfide]["factor"] = (_conversion_factors[sulfide][cation]*mass_cation +
+                                                        _conversion_factors[sulfide]["S"]*mass_sulfur)/(
+                        _conversion_factors[sulfide][cation]*mass_cation)
+            else:
+                pass
+                #print(self.name, ": cation", cation, "not found in chemical container.")
+
+        return _conversion_factors
+
     def _determine_oxide_conversion_factors(self):
         list_oxides = [
             "H2O", "CO", "CO2", "Na2O", "MgO", "Al2O3", "SiO2", "Cl2O", "K2O", "CaO", "MnO", "Mn2O3", "MnO2", "MnO3",
@@ -268,7 +286,7 @@ class MineralGeneration:
             "Cr2O3", "CrO3", "CoO", "Co2O3", "Cu2O", "CuO", "ZnO", "GeO2", "As2O3", "As2O10", "ZrO2", "Nb2O3", "Nb2O10",
             "MoO", "Mo2O3", "MoO2", "Mo2O10", "MoO3", "CdO", "SnO", "SnO2", "Sb2O3", "Sb2O10", "TeO2", "TeO3", "Ta2O10",
             "WO", "W2O3", "WO2", "W2O10", "WO3", "Au2O", "Au2O3", "Tl2O", "Tl2O3", "PbO", "PbO2", "Bi2O3", "Bi2O10",
-            "U2O3", "UO2", "U2O10", "UO3"]
+            "U2O3", "UO2", "U2O10", "UO3", "Nb2O5", "Ta2O5"]
         mass_oxygen = self.elements["O"][2]
         _conversion_factors = {}
         for oxide in list_oxides:
@@ -336,7 +354,13 @@ class MineralGeneration:
             oxides_data = {}
             for oxide, amount in self.yaml_data["oxides"].items():
                 cation = self._get_cation_element(oxide=oxide)
-                oxides_data[oxide] = [cation, None]
+                oxides_data[oxide] = [cation, None, amount]
+        elif "sulfides" in self.yaml_data:
+            self.conversion_factors = self._determine_sulfide_conversion_factors()
+            oxides_data = {}
+            for oxide, amount in self.yaml_data["sulfides"].items():
+                cation = self._get_cation_element(oxide=oxide)
+                oxides_data[oxide] = [cation, None, amount]
 
         if name_lower not in self.cache:
             vals = self._extract_values_from_yaml()
@@ -370,11 +394,17 @@ class MineralGeneration:
         molar_mass, amounts = constr_minchem.calculate_molar_mass()
         amounts_dict = self._element_amounts_as_dict(amounts=amounts)
         element = [self.elements[name] for name, *_ in amounts]
-        if "oxides" in self.yaml_data:
-            for oxide in oxides_data.keys():
-                cation = self._get_cation_element(oxide=oxide)
-                value = amounts_dict[cation]*self.conversion_factors[oxide]["factor"]
-                oxides_data[oxide][1] = value
+        for oxide in oxides_data.keys():
+            cation = self._get_cation_element(oxide=oxide)
+            weight = oxides_data[oxide][2]
+            if weight != 1:
+                value = weight
+            else:
+                try:
+                    value = amounts_dict[cation]*self.conversion_factors[oxide]["factor"]
+                except:
+                    value = 0
+            oxides_data[oxide][1] = value
         # (Molar) Volume
         if "constr_volume" not in self.cache[name_lower]:
             constr_vol = self._determine_volume_constructor(vals=vals)
@@ -422,6 +452,9 @@ class MineralGeneration:
             "PE": round(pe, self.rounding), "U": round(U, self.rounding), "p": p}
         if "oxides" in self.yaml_data:
             results["compounds"] = {name: round(val[1], 6) for name, val in oxides_data.items()}
+        elif "sulfides" in self.yaml_data:
+            results["compounds"] = {name: round(val[1], 6) for name, val in oxides_data.items()}
+
         return results
 
     def create_mineral_data_endmember_series(self, endmember_series, var_class, current_seed, rng):
@@ -486,9 +519,9 @@ class MineralGeneration:
         amounts_dict = constr_OxComp._element_amounts_as_dict(amounts=amounts)
         try:
             for oxide in oxides_data.keys():
-               cation = constr_OxComp._get_cation_element(oxide=oxide)
-               value = amounts_dict[cation]*self.conversion_factors[oxide]["factor"]
-               oxides_data[oxide][1] = value
+                cation = constr_OxComp._get_cation_element(oxide=oxide)
+                value = amounts_dict[cation]*self.conversion_factors[oxide]["factor"]
+                oxides_data[oxide][1] = value
         except:
             print("No oxide data available!")
         # Elastic properties
@@ -518,5 +551,5 @@ class MineralGeneration:
         try:
             results["compounds"] = {name: round(val[1], 6) for name, val in oxides_data.items()}
         except:
-            print("No oxide data available!")
+            print("No oxide/sulfide data available!")
         return results

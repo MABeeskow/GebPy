@@ -1,6 +1,7 @@
 mineral: Diaspore
 group: Oxides
 formula: AlO(OH)
+last updated: 12.12.2025
 
 metadata:
   key: "Dsp"
@@ -10,6 +11,10 @@ chemistry:
   Al: 1
   O: 2
   H: 1
+
+oxides:
+  Al2O3: 1
+  H2O: 1
 
 physical_properties:
   K:

@@ -1,6 +1,7 @@
 mineral: Talc
 group: Phyllosilicates
 formula: Mg3 Si4 O10 (OH)2
+last updated: 13.12.2025
 
 metadata:
   key: "Tlc"
@@ -11,6 +12,11 @@ chemistry:
   Si: 4
   O: 12
   H: 2
+
+oxides:
+  MgO: 1
+  SiO2: 1
+  H2O: 1
 
 physical_properties:
   K:

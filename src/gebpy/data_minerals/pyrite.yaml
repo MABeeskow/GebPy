@@ -1,6 +1,7 @@
 mineral: Pyrite
 group: Sulfides
 formula: FeS2
+last updated: 13.12.2025
 
 metadata:
   key: "Py"
@@ -9,6 +10,9 @@ metadata:
 chemistry:
   Fe: 1
   S: 2
+
+sulfides:
+  FeS2: 1
 
 physical_properties:
   K:

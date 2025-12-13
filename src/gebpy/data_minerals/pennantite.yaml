@@ -1,6 +1,7 @@
 mineral: Pennantite
 group: Phyllosilicates
 formula: Mn5 Al2 Si3 O10 (OH)8
+last updated: 13.12.2025
 
 metadata:
   key: "Pnn"
@@ -12,6 +13,12 @@ chemistry:
   Si: 3
   O: 18
   H: 8
+
+oxides:
+  MnO: 1
+  Al2O3: 1
+  SiO2: 1
+  H2O: 1
 
 physical_properties:
   K:
