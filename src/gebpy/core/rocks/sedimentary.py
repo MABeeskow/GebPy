@@ -41,7 +41,9 @@ class SedimentaryRocks:
         self.current_seed = int(np.round(self.rng.uniform(0, 1000), 0))
         self.rounding = rounding
         self.data_path = DATA_PATH
-        self.conversion_factors = RockGeneration()._determine_oxide_conversion_factors()
+        self.rock_gen = RockGeneration()
+        self.conversion_factors = self.rock_gen._determine_oxide_conversion_factors()
+        self.cache = {}
 
     def _load_yaml(self, rock_name: str) -> dict:
         # 1) Cache-Hit
@@ -93,33 +95,33 @@ class SedimentaryRocks:
 
         return sampled
 
-    def _sample_bounded_simplex(self, min_vals, max_vals):
-        min_vals = np.array(min_vals)
-        max_vals = np.array(max_vals)
+    def _sample_bounded_simplex_batch(self, min_vals, max_vals, number):
+        min_vals = np.asarray(min_vals)
+        max_vals = np.asarray(max_vals)
         n = len(min_vals)
 
-        # Schritt 1: freie Menge
-        R = 1 - min_vals.sum()
+        R = 1.0 - min_vals.sum()
         if R < 0:
             raise ValueError("Sum of minimum fractions > 1, impossible mixture")
 
-        # Dirichlet-Sample
-        y = self.rng.dirichlet(alpha=np.ones(n))
+        # 1) Dirichlet für alle Samples auf einmal
+        y = self.rng.dirichlet(np.ones(n), size=number)
 
-        # Skaliere y auf die maximal zulässige Stretch-Länge
+        # 2) Stretch
         stretch = max_vals - min_vals
         y = y * R
 
-        # enforce max boundary by scaling down
+        # 3) Overshoot-Korrektur (sampleweise, aber ohne Python-Objekte)
         overshoot = y > stretch
-        if overshoot.any():
-            # Skaliere nur die Komponenten runter, die zu groß wären
-            scale = np.min(stretch[overshoot] / y[overshoot])
-            y *= scale
 
-        # final mix
+        if np.any(overshoot):
+            for i in np.where(overshoot.any(axis=1))[0]:
+                scale = np.min(stretch[overshoot[i]] / y[i, overshoot[i]])
+                y[i] *= scale
+
+        # 4) Finalisieren
         x = y + min_vals
-        x /= x.sum()  # kleine numerische Korrektur
+        x /= x.sum(axis=1, keepdims=True)
 
         return x
 
@@ -140,12 +142,8 @@ class SedimentaryRocks:
         return _mineral_data
 
     def _extract_mineral_property_data(self, list_minerals, data_mineral, property):
-        _helper = []
-        for index, mineral in enumerate(list_minerals):
-            dataset = data_mineral[index][property]
-            _helper.append(list(dataset))
-
-        return np.array(_helper)
+        arrays = [data_mineral[i][property].to_numpy() for i in range(len(list_minerals))]
+        return np.vstack(arrays)
 
     def _update_bulk_density_data(self, _bulk_data, density_fluid, number):
         porosity = _bulk_data["porosity"]
@@ -175,50 +173,60 @@ class SedimentaryRocks:
         return _bulk_data
 
     def _extract_element_data(self, data_minerals, list_elements):
-        for index, dataset in enumerate(data_minerals):
-            list_keys_i = list(dataset.keys())
-            filtered = [x[len("chemistry."):] for x in list_keys_i if x.startswith("chemistry.")]
-            for element in filtered:
-                if element not in list_elements:
-                    list_elements.append(element)
+        seen = set(list_elements)
+        ordered = list(list_elements)
 
-        return list_elements
+        for dataset in data_minerals:
+            for key in dataset.keys():
+                if key.startswith("chemistry."):
+                    element = key[len("chemistry."):]
+                    if element not in seen:
+                        seen.add(element)
+                        ordered.append(element)
+
+        return ordered
 
     def _extract_oxide_data(self, data_minerals, list_oxides):
-        for index, dataset in enumerate(data_minerals):
-            list_keys_i = list(dataset.keys())
-            filtered = [x[len("compounds."):] for x in list_keys_i if x.startswith("compounds.")]
-            for element in filtered:
-                if element not in list_oxides:
-                    list_oxides.append(element)
-            if dataset["mineral"][0] in ["Py"]:
-                list_oxides.append("Fe2O3")
-                list_oxides.append("SO3")
-                list_oxides.remove("FeS2")
+        seen = set(list_oxides)
+        ordered = list(list_oxides)
 
-        return list_oxides
+        for dataset in data_minerals:
+            for key in dataset.keys():
+                if key.startswith("compounds."):
+                    oxide = key[len("compounds."):]
+                    if oxide not in seen:
+                        seen.add(oxide)
+                        ordered.append(oxide)
+
+            # Spezialfall Pyrit
+            if dataset["mineral"][0] == "Py":
+                for oxide in ("Fe2O3", "SO3"):
+                    if oxide not in seen:
+                        seen.add(oxide)
+                        ordered.append(oxide)
+                if "FeS2" in seen:
+                    seen.remove("FeS2")
+                    ordered = [o for o in ordered if o != "FeS2"]
+
+        return ordered
 
     def _update_chemistry_data(self, _bulk_data, data_minerals, data_composition, element, number):
-        _helper = [[] for _ in range(len(data_minerals))]
+        n_minerals = len(data_minerals)
+        helper = np.zeros((n_minerals, number))
         key_element = "chemistry." + element
-        for index, dataset in enumerate(data_minerals):
-            if key_element in list(dataset.keys()):
-                data = list(dataset[key_element])
-                _helper[index] = data
-            else:
-                data = [0]*number
-                _helper[index] = data
-        _helper = np.array(_helper)
-        _helper_bulk = np.sum(data_composition*_helper.T, axis=1)
-        key_element = "w." + element
-        _bulk_data[key_element] = np.array(_helper_bulk)
+
+        for i, dataset in enumerate(data_minerals):
+            if key_element in dataset:
+                helper[i, :] = dataset[key_element].to_numpy()
+
+        bulk_values = np.sum(data_composition * helper.T, axis=1)
+        _bulk_data["w." + element] = bulk_values
 
         return _bulk_data
 
     def _update_oxide_data(self, bulk_data, list_oxides):
         for oxide in list_oxides:
-            cation = RockGeneration()._get_cation_element(oxide=oxide)
-            anion = RockGeneration()._get_anion_element(compound=oxide)
+            cation, anion = self.rock_gen._get_elements_of_compound(compound=oxide)
             if anion == "O":
                 key_cation = "w." + cation
                 values = self.conversion_factors[oxide]["factor"]*bulk_data[key_cation]
@@ -261,20 +269,14 @@ class SedimentaryRocks:
         _properties = ["rho", "vP", "vS", "K", "G", "GR", "PE"]
         _bulk_data = {}
         # Collect mineralogical composition data
-        _helper_amounts = {}
-        _helper_composition = []
-        _helper_mineral_amounts = {}
-        for index_main in range(number):
-            mineral_amounts = self._sample_bounded_simplex(min_vals=_limits["lower"], max_vals=_limits["upper"])
-            _helper_composition.append(list(mineral_amounts))
-            _helper_dict = {}
-            for j, mineral in enumerate(list_minerals):
-                _helper_dict[mineral] = mineral_amounts[j]
-                if mineral not in _helper_mineral_amounts:
-                    _helper_mineral_amounts[mineral] = []
-                _helper_mineral_amounts[mineral].append(mineral_amounts[j])
-            _helper_amounts[index_main] = _helper_dict
-        _helper_composition = np.array(_helper_composition)
+        n_minerals = len(list_minerals)
+        _helper_composition = np.zeros((number, n_minerals))
+        _helper_mineral_amounts = {mineral: np.zeros(number) for mineral in list_minerals}
+
+        _helper_composition = self._sample_bounded_simplex_batch(
+            min_vals=_limits["lower"], max_vals=_limits["upper"], number=number)
+        _helper_mineral_amounts = {mineral: _helper_composition[:, j] for j, mineral in enumerate(list_minerals)}
+
         # Collect mineral data
         _helper_elements = []
         _helper_oxides = []

@@ -50,6 +50,13 @@ class RockGeneration:
 
         return composition
 
+    def _get_elements_of_compound(self, compound: str) -> str:
+        elements = re.findall(r"[A-Z][a-z]?", compound)
+        first = elements[0]
+        last = elements[-1]
+
+        return  first, last
+
     def _get_cation_element(self, oxide: str) -> str:
         first = oxide[0]
         if len(oxide) > 1 and oxide[1].islower():

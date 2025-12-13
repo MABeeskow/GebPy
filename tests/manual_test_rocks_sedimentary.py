@@ -6,7 +6,7 @@
 # Name:		manual_test_rocks_sedimentary.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		09.12.2025
+# Date:		13.12.2025
 
 #-----------------------------------------------
 
@@ -24,7 +24,7 @@ from src.gebpy.core.rocks.sedimentary import SedimentaryRocks
 from gebpy.modules.siliciclastics import SiliciclasticRocks
 
 # CODE
-n_datasets = 15
+n_datasets = 75
 print("\n--- Manual test for: sedimentary.py ---")
 print(f"\nDEFAULT_DATA (SANDSTONE, WATER):")
 start = time.time()
@@ -55,6 +55,12 @@ print("\nSpeed ratio:", round(speed_ratio, 4))
 print("Speed boost:", round(speed_boost, 2), "%")
 
 n_datasets = 15
+
+print(f"\nDATA(SANDSTONE, WATER):")
+data_rock = SedimentaryRocks(name="Sandstone", random_seed=42).generate_dataset(number=n_datasets, fluid="water")
+if n_datasets < 20:
+    print("Results:", data_rock.describe())
+
 print(f"\nDATA(SANDSTONE, OIL):")
 data_rock = SedimentaryRocks(name="Sandstone", random_seed=42).generate_dataset(number=n_datasets, fluid="oil")
 if n_datasets < 20:
