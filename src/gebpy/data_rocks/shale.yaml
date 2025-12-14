@@ -1,0 +1,50 @@
+rock: Shale
+group: Sedimentary
+normalize: true
+last updated: 14.12.2025
+
+mineral_groups:
+  Clay:
+    minerals:
+      - Illite
+      - Chlorite
+      - Montmorillonite
+    min: 0.3
+    max: 0.8
+
+mineralogy:
+  Illite:
+    min: 0.0
+    max: 1.0
+  Montmorillonite:
+    min: 0.5
+    max: 1.0
+  Chlorite:
+    min: 0.0
+    max: 1.0
+  Quartz:
+    min: 0.0
+    max: 0.2
+  Alkali feldspar:
+    min: 0.0
+    max: 0.2
+  Biotite:
+    min: 0.0
+    max: 0.2
+  Uraninite:
+    min: 0.0
+    max: 0.000025
+  Pyrite:
+    min: 0.0
+    max: 0.05
+
+physical_properties:
+  porosity:
+    min: 0.0
+    max: 0.1
+
+sources:
+  - author: "unknown"
+    title: "unknown"
+    publisher: "unknown"
+    url: ["unknown"]

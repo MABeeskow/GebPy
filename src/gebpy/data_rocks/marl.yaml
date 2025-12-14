@@ -1,0 +1,50 @@
+rock: Marl
+group: Sedimentary
+normalize: true
+
+mineral_groups:
+  Clay:
+    minerals:
+      - Illite
+      - Chlorite
+      - Kaolinite
+      - Montmorillonite
+    min: 0.35
+    max: 0.65
+
+mineralogy:
+  Calcite:
+    min: 0.35
+    max: 0.65
+  Dolomite:
+    min: 0.0
+    max: 0.05
+  Illite:
+    min: 0.0
+    max: 1.0
+  Chlorite:
+    min: 0.0
+    max: 1.0
+  Kaolinite:
+    min: 0.0
+    max: 1.0
+  Montmorillonite:
+    min: 0.0
+    max: 1.0
+  Quartz:
+    min: 0.0
+    max: 0.05
+  Plagioclase:
+    min: 0.0
+    max: 0.05
+
+physical_properties:
+  porosity:
+    min: 0.1
+    max: 0.25
+
+sources:
+  - author: "unknown"
+    title: "unknown"
+    publisher: "unknown"
+    url: ["unknown"]

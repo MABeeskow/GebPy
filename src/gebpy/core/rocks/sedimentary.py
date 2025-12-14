@@ -6,7 +6,7 @@
 # Name:		sedimentary.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		13.12.2025
+# Date:		14.12.2025
 
 #-----------------------------------------------
 
@@ -32,7 +32,8 @@ DATA_PATH = BASE_PATH / "data_rocks"
 class SedimentaryRocks:
     _yaml_cache = {}
     _mineralogy_cache = {}
-    _rocks = {"Sandstone", "Limestone", "Shale"}
+    _mineral_groups_cache = {}
+    _rocks = {"Sandstone", "Limestone", "Dolostone", "Marl"}
 
     def __init__(self, name, random_seed, rounding: int = 3) -> None:
         self.name = name
@@ -61,6 +62,9 @@ class SedimentaryRocks:
         if "mineralogy" in data and rock_name not in SedimentaryRocks._mineralogy_cache:
             self._compile_mineralogy(rock_name, data["mineralogy"])
 
+        if "mineral_groups" in data:
+            self._compile_mineral_groups(rock_name, data["mineral_groups"])
+
         # 3) Cache schreiben
         SedimentaryRocks._yaml_cache[rock_name] = data
 
@@ -82,48 +86,169 @@ class SedimentaryRocks:
             compiled = [lower_limit, upper_limit]
             SedimentaryRocks._mineralogy_cache[rock_name][mineral] = compiled
 
-    def _sample_mineralogy(self, rock_name: str):
-        mineral_ranges = SedimentaryRocks._mineralogy_cache[rock_name]
-        sampled = {}
+    def _compile_mineral_groups(self, rock_name: str, group_dict: dict):
+        if rock_name not in SedimentaryRocks._mineral_groups_cache:
+            SedimentaryRocks._mineral_groups_cache[rock_name] = {}
 
-        for mineral, (lower, upper) in mineral_ranges.items():
-            sampled[mineral] = np.random.uniform(lower, upper)
+        for group, entry in group_dict.items():
+            minerals = entry["minerals"]
+            min_val = entry["min"]
+            max_val = entry["max"]
 
-        # Normalisieren auf Summe = 1
-        total = sum(sampled.values())
-        sampled = {m: v/total for m, v in sampled.items()}
+            SedimentaryRocks._mineral_groups_cache[rock_name][group] = {
+                "minerals": minerals,
+                "min": min_val,
+                "max": max_val
+            }
 
-        return sampled
+    def _sample_mineralogy(self, rock_name: str, number: int):
+        has_groups = rock_name in SedimentaryRocks._mineral_groups_cache
+
+        if not has_groups:
+            # ---- Modus A: flach ----
+            mineral_limits = SedimentaryRocks._mineralogy_cache[rock_name]
+            mins = [v[0] for v in mineral_limits.values()]
+            maxs = [v[1] for v in mineral_limits.values()]
+            minerals = list(mineral_limits.keys())
+
+            comp = self._sample_bounded_simplex_batch(mins, maxs, number)
+            return minerals, comp
+
+        # ---- Modus B: gruppiert ----
+        groups = SedimentaryRocks._mineral_groups_cache[rock_name]
+        mineral_limits = SedimentaryRocks._mineralogy_cache[rock_name]
+
+        # 1️⃣ Gruppen + freie Minerale
+        group_names = list(groups.keys())
+        group_mins = [groups[g]["min"] for g in group_names]
+        group_maxs = [groups[g]["max"] for g in group_names]
+
+        free_minerals = [
+            m for m in mineral_limits
+            if not any(m in groups[g]["minerals"] for g in groups)
+        ]
+
+        free_mins = [mineral_limits[m][0] for m in free_minerals]
+        free_maxs = [mineral_limits[m][1] for m in free_minerals]
+
+        labels = group_names + free_minerals
+        mins = group_mins + free_mins
+        maxs = group_maxs + free_maxs
+
+        # 2️⃣ Top-Level-Sampling
+        top_comp = self._sample_bounded_simplex_batch(mins, maxs, number)
+
+        # 3️⃣ Gruppen intern auflösen
+        mineral_list = []
+        mineral_comp = []
+
+        for i, label in enumerate(labels):
+            frac = top_comp[:, i]
+
+            if label in groups:
+                minerals = groups[label]["minerals"]
+                n = len(minerals)
+                split = self.rng.dirichlet(np.ones(n), size=number)
+
+                for j, m in enumerate(minerals):
+                    mineral_list.append(m)
+                    mineral_comp.append(frac * split[:, j])
+            else:
+                mineral_list.append(label)
+                mineral_comp.append(frac)
+
+        comp = np.vstack(mineral_comp).T
+        return mineral_list, comp
+
+    # def _sample_mineralogy(self, rock_name: str):
+    #     mineral_ranges = SedimentaryRocks._mineralogy_cache[rock_name]
+    #     sampled = {}
+    #
+    #     for mineral, (lower, upper) in mineral_ranges.items():
+    #         sampled[mineral] = np.random.uniform(lower, upper)
+    #
+    #     # Normalisieren auf Summe = 1
+    #     total = sum(sampled.values())
+    #     sampled = {m: v/total for m, v in sampled.items()}
+    #
+    #     return sampled
+
+    # def _sample_bounded_simplex_batch(self, min_vals, max_vals, number):
+    #     min_vals = np.asarray(min_vals, dtype=float)
+    #     max_vals = np.asarray(max_vals, dtype=float)
+    #     n = len(min_vals)
+    #
+    #     # --- 0) Konsistenz der Intervalle erzwingen ---
+    #     min_sum = min_vals.sum()
+    #
+    #     if min_sum > 1.0:
+    #         # Normiere min_vals auf Summe = 1
+    #         min_vals = min_vals / min_sum
+    #
+    #     # max_vals dürfen nicht kleiner als min_vals sein
+    #     max_vals = np.maximum(max_vals, min_vals)
+    #
+    #     # --- 1) Freier Anteil ---
+    #     R = 1.0 - min_vals.sum()
+    #     if R < 0:
+    #         # numerische Sicherheit
+    #         R = 0.0
+    #
+    #     # --- 2) Dirichlet für alle Samples ---
+    #     y = self.rng.dirichlet(np.ones(n), size=number)
+    #
+    #     # --- 3) Stretch ---
+    #     stretch = max_vals - min_vals
+    #     y = y * R
+    #
+    #     # --- 4) Overshoot-Korrektur (sampleweise) ---
+    #     overshoot = y > stretch
+    #
+    #     if np.any(overshoot):
+    #         for i in np.where(overshoot.any(axis=1))[0]:
+    #             valid = overshoot[i]
+    #             if np.any(valid):
+    #                 scale = np.min(stretch[valid] / y[i, valid])
+    #                 y[i] *= scale
+    #
+    #     # --- 5) Finalisieren ---
+    #     x = y + min_vals
+    #     x /= x.sum(axis=1, keepdims=True)
+    #
+    #     return x
 
     def _sample_bounded_simplex_batch(self, min_vals, max_vals, number):
-        min_vals = np.asarray(min_vals)
-        max_vals = np.asarray(max_vals)
+        min_vals = np.asarray(min_vals, dtype=float)
+        max_vals = np.asarray(max_vals, dtype=float)
         n = len(min_vals)
 
-        R = 1.0 - min_vals.sum()
-        if R < 0:
-            raise ValueError("Sum of minimum fractions > 1, impossible mixture")
+        # --- Konsistenz ---
+        if min_vals.sum() > 1:
+            raise ValueError("Sum of minimum fractions > 1")
 
-        # 1) Dirichlet für alle Samples auf einmal
-        y = self.rng.dirichlet(np.ones(n), size=number)
+        if max_vals.sum() < 1:
+            raise ValueError("Sum of maximum fractions < 1")
 
-        # 2) Stretch
-        stretch = max_vals - min_vals
-        y = y * R
+        span = max_vals - min_vals
+        samples = np.zeros((number, n))
 
-        # 3) Overshoot-Korrektur (sampleweise, aber ohne Python-Objekte)
-        overshoot = y > stretch
+        for i in range(number):
+            remaining = 1.0 - min_vals.sum()
+            order = np.arange(n)
 
-        if np.any(overshoot):
-            for i in np.where(overshoot.any(axis=1))[0]:
-                scale = np.min(stretch[overshoot[i]] / y[i, overshoot[i]])
-                y[i] *= scale
+            self.rng.shuffle(order)
+            x = np.zeros(n)
 
-        # 4) Finalisieren
-        x = y + min_vals
-        x /= x.sum(axis=1, keepdims=True)
+            for j in order[:-1]:
+                upper = min(span[j], remaining)
+                val = self.rng.uniform(0, upper)
+                x[j] = val
+                remaining -= val
 
-        return x
+            x[order[-1]] = remaining
+            samples[i] = min_vals + x
+
+        return samples
 
     def _collect_mineral_data(self, list_minerals, number):
         _mineral_data = []

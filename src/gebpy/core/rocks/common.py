@@ -6,7 +6,7 @@
 # Name:		common.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		13.12.2025
+# Date:		14.12.2025
 
 #-----------------------------------------------
 
@@ -37,7 +37,8 @@ class RockGeneration:
             "Ca": PeriodicSystem(name="Ca").get_data(),
             "Mn": PeriodicSystem(name="Mn").get_data(),
             "Fe": PeriodicSystem(name="Fe").get_data(),
-            "Ni": PeriodicSystem(name="Ni").get_data()}
+            "Ni": PeriodicSystem(name="Ni").get_data(),
+            "U": PeriodicSystem(name="U").get_data()}
 
     def _parse_formula(self, formula: str):
         pattern = r"([A-Z][a-z]?)(\d*)"
