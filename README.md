@@ -173,7 +173,10 @@ source code must remain open.
 Geoscientist (Geochemistry, Mineral Systems, Hydrothermal Processes)
 RWTH Aachen University
 
-GitHub: [https://github.com/MABeeskow](https://github.com/MABeeskow)
+* ORCID: https://orcid.org/0000-0003-2456-5228
+
+* GitHub: [https://github.com/MABeeskow](https://github.com/MABeeskow)
+
 
 ---
 
