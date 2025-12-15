@@ -6,7 +6,7 @@
 # Name:		gebpy_app.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0.8
-# Date:		26.01.2025
+# Date:		15.12.2025
 # License:  GPL v3.0
 
 # ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- -
@@ -28,48 +28,48 @@ import matplotlib.patches as mpatches
 from matplotlib.figure import Figure
 # internal
 try:
-    from gebpy.modules.gui_elements import SimpleElements
-    from gebpy.modules.oxides import Oxides
-    from gebpy.modules.carbonates import Carbonates, CarbonateRocks
-    from gebpy.modules.igneous import Plutonic, Volcanic, UltraMafic, Pyroclastic
-    from gebpy.modules.sulfides import Sulfides
-    from gebpy.modules.sulfates import Sulfates
-    from gebpy.modules.halides import Halides
-    from gebpy.modules.phospides import Phospides
-    from gebpy.modules.phosphates import Phosphates
-    from gebpy.modules.silicates import Phyllosilicates, Tectosilicates, Inosilicates, Nesosilicates, Sorosilicates, \
+    from gebpy_legacy.modules.gui_elements import SimpleElements
+    from gebpy_legacy.modules.oxides import Oxides
+    from gebpy_legacy.modules.carbonates import Carbonates, CarbonateRocks
+    from gebpy_legacy.modules.igneous import Plutonic, Volcanic, UltraMafic, Pyroclastic
+    from gebpy_legacy.modules.sulfides import Sulfides
+    from gebpy_legacy.modules.sulfates import Sulfates
+    from gebpy_legacy.modules.halides import Halides
+    from gebpy_legacy.modules.phospides import Phospides
+    from gebpy_legacy.modules.phosphates import Phosphates
+    from gebpy_legacy.modules.silicates import Phyllosilicates, Tectosilicates, Inosilicates, Nesosilicates, Sorosilicates, \
         Cyclosilicates
-    from gebpy.modules.organics import Organics
-    from gebpy.modules.fluids import Water
-    from gebpy.modules.siliciclastics import SiliciclasticRocks, Geophysics
-    from gebpy.modules.ore import OreRocks
-    from gebpy.modules.metamorphics import GranuliteFacies, GreenschistFacies, AmphiboliteFacies
-    from gebpy.modules.exploration import ExplorationInterface
+    from gebpy_legacy.modules.organics import Organics
+    from gebpy_legacy.modules.fluids import Water
+    from gebpy_legacy.modules.siliciclastics import SiliciclasticRocks, Geophysics
+    from gebpy_legacy.modules.ore import OreRocks
+    from gebpy_legacy.modules.metamorphics import GranuliteFacies, GreenschistFacies, AmphiboliteFacies
+    from gebpy_legacy.modules.exploration import ExplorationInterface
     # Sequence Stratigraphy
-    from gebpy.modules.series import Muschelkalk, Zechstein, Buntsandstein
-    from gebpy.modules.petrophysics import SeismicVelocities
-    from gebpy.modules.geophysics import Seismology
+    from gebpy_legacy.modules.series import Muschelkalk, Zechstein, Buntsandstein
+    from gebpy_legacy.modules.petrophysics import SeismicVelocities
+    from gebpy_legacy.modules.geophysics import Seismology
 except:
-    from modules.gui_elements import SimpleElements
-    from modules.oxides import Oxides
-    from modules.carbonates import Carbonates, CarbonateRocks
-    from modules.igneous import Plutonic, Volcanic, UltraMafic, Pyroclastic
-    from modules.sulfides import Sulfides
-    from modules.sulfates import Sulfates
-    from modules.halides import Halides
-    from modules.phospides import Phospides
-    from modules.phosphates import Phosphates
-    from modules.silicates import Phyllosilicates, Tectosilicates, Inosilicates, Nesosilicates, Sorosilicates, \
+    from modules_archive.gui_elements import SimpleElements
+    from modules_archive.oxides import Oxides
+    from modules_archive.carbonates import Carbonates, CarbonateRocks
+    from modules_archive.igneous import Plutonic, Volcanic, UltraMafic, Pyroclastic
+    from modules_archive.sulfides import Sulfides
+    from modules_archive.sulfates import Sulfates
+    from modules_archive.halides import Halides
+    from modules_archive.phospides import Phospides
+    from modules_archive.phosphates import Phosphates
+    from modules_archive.silicates import Phyllosilicates, Tectosilicates, Inosilicates, Nesosilicates, Sorosilicates, \
         Cyclosilicates
-    from modules.organics import Organics
-    from modules.fluids import Water
-    from modules.siliciclastics import SiliciclasticRocks, Geophysics
-    from modules.ore import OreRocks
-    from modules.metamorphics import GranuliteFacies, GreenschistFacies, AmphiboliteFacies
-    from modules.exploration import ExplorationInterface
+    from modules_archive.organics import Organics
+    from modules_archive.fluids import Water
+    from modules_archive.siliciclastics import SiliciclasticRocks, Geophysics
+    from modules_archive.ore import OreRocks
+    from modules_archive.metamorphics import GranuliteFacies, GreenschistFacies, AmphiboliteFacies
+    from modules_archive.exploration import ExplorationInterface
     # Sequence Stratigraphy
-    from modules.series import Muschelkalk, Zechstein, Buntsandstein
-    from modules.petrophysics import SeismicVelocities
+    from modules_archive.series import Muschelkalk, Zechstein, Buntsandstein
+    from modules_archive.petrophysics import SeismicVelocities
 
 ## GUI
 class GebPyGUI(tk.Frame):
