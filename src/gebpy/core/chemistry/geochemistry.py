@@ -10,7 +10,7 @@
 
 #-----------------------------------------------
 
-## MODULES
+# PACKAGES
 import re
 import numpy as np
 from numpy import round
@@ -18,9 +18,10 @@ import scipy.constants as const
 import matplotlib.pyplot as plt
 from random import *
 import random as rd
-from modules import minerals
-from modules.elements import elements
-from modules.chemistry import PeriodicSystem
+
+# MODULES
+from .common import PeriodicSystem
+from .elements import elements
 
 class MassSpectrometry():
     #

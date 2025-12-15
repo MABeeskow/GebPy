@@ -6,7 +6,7 @@
 # Name:		common.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		14.12.2025
+# Date:		15.12.2025
 
 #-----------------------------------------------
 
@@ -19,7 +19,7 @@ This module contains several routines that are commonly used by the different ro
 import re
 
 # MODULES
-from modules.chemistry import PeriodicSystem
+from ..chemistry.common import PeriodicSystem
 
 class RockGeneration:
     def __init__(self):

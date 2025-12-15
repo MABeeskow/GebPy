@@ -6,7 +6,7 @@
 # Name:		common.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		13.12.2025
+# Date:		15.12.2025
 
 #-----------------------------------------------
 
@@ -20,8 +20,8 @@ import numpy as np
 import scipy, re
 
 # MODULES
-from modules.geochemistry import MineralChemistry
-from modules.geophysics import WellLog as wg
+from ..chemistry.geochemistry import MineralChemistry
+from ..physics.geophysics import WellLog as wg
 
 # CODE
 class GeophysicalProperties:
