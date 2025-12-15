@@ -11,6 +11,14 @@
 
 # ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- ---- --- -
 
+"""
+Legacy GUI application for GebPy.
+
+Note:
+This GUI is deprecated and will be removed in a future version.
+GebPy is intended to be used primarily as a Python engine and via Jupyter notebooks.
+"""
+
 ## MODULES
 # external
 import os, sys

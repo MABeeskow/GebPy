@@ -8,7 +8,7 @@ Only import stable, user-facing classes and modules here.
 # Last updated: 15.12.2025
 
 # Version
-__version__ = "1.0.8"
+__version__ = "1.1.0"
 
 # -------------------------
 # High-level Mineral Generators
