@@ -6,7 +6,7 @@
 # Name:		sedimentary.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		14.12.2025
+# Date:		15.12.2025
 
 #-----------------------------------------------
 
@@ -22,8 +22,8 @@ import pandas as pd
 from pathlib import Path
 
 # MODULES
-from src.gebpy.core.minerals.synthesis import MineralDataGeneration
-from src.gebpy.core.rocks.common import RockGeneration
+from ..minerals.synthesis import MineralDataGeneration
+from ..rocks.common import RockGeneration
 
 # Code
 BASE_PATH = Path(__file__).resolve().parents[2]
@@ -159,63 +159,6 @@ class SedimentaryRocks:
 
         comp = np.vstack(mineral_comp).T
         return mineral_list, comp
-
-    # def _sample_mineralogy(self, rock_name: str):
-    #     mineral_ranges = SedimentaryRocks._mineralogy_cache[rock_name]
-    #     sampled = {}
-    #
-    #     for mineral, (lower, upper) in mineral_ranges.items():
-    #         sampled[mineral] = np.random.uniform(lower, upper)
-    #
-    #     # Normalisieren auf Summe = 1
-    #     total = sum(sampled.values())
-    #     sampled = {m: v/total for m, v in sampled.items()}
-    #
-    #     return sampled
-
-    # def _sample_bounded_simplex_batch(self, min_vals, max_vals, number):
-    #     min_vals = np.asarray(min_vals, dtype=float)
-    #     max_vals = np.asarray(max_vals, dtype=float)
-    #     n = len(min_vals)
-    #
-    #     # --- 0) Konsistenz der Intervalle erzwingen ---
-    #     min_sum = min_vals.sum()
-    #
-    #     if min_sum > 1.0:
-    #         # Normiere min_vals auf Summe = 1
-    #         min_vals = min_vals / min_sum
-    #
-    #     # max_vals dürfen nicht kleiner als min_vals sein
-    #     max_vals = np.maximum(max_vals, min_vals)
-    #
-    #     # --- 1) Freier Anteil ---
-    #     R = 1.0 - min_vals.sum()
-    #     if R < 0:
-    #         # numerische Sicherheit
-    #         R = 0.0
-    #
-    #     # --- 2) Dirichlet für alle Samples ---
-    #     y = self.rng.dirichlet(np.ones(n), size=number)
-    #
-    #     # --- 3) Stretch ---
-    #     stretch = max_vals - min_vals
-    #     y = y * R
-    #
-    #     # --- 4) Overshoot-Korrektur (sampleweise) ---
-    #     overshoot = y > stretch
-    #
-    #     if np.any(overshoot):
-    #         for i in np.where(overshoot.any(axis=1))[0]:
-    #             valid = overshoot[i]
-    #             if np.any(valid):
-    #                 scale = np.min(stretch[valid] / y[i, valid])
-    #                 y[i] *= scale
-    #
-    #     # --- 5) Finalisieren ---
-    #     x = y + min_vals
-    #     x /= x.sum(axis=1, keepdims=True)
-    #
-    #     return x
 
     def _sample_bounded_simplex_batch(self, min_vals, max_vals, number):
         min_vals = np.asarray(min_vals, dtype=float)

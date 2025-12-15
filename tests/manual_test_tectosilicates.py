@@ -6,7 +6,7 @@
 # Name:		manual_test_tectosilicates.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		12.12.2025
+# Date:		15.12.2025
 
 #-----------------------------------------------
 
@@ -20,7 +20,7 @@ import time
 
 # MODULES
 from src.gebpy.core.minerals.tectosilicates import Tectosilicates
-from gebpy.modules.silicates import Tectosilicates as Tectosilicates_old
+from gebpy_legacy.modules.silicates import Tectosilicates as Tectosilicates_old
 
 # CODE
 n_datasets = 10

@@ -6,7 +6,7 @@
 # Name:		synthesis.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		08.12.2025
+# Date:		15.12.2025
 
 #-----------------------------------------------
 
@@ -21,12 +21,12 @@ from typing import Optional, Union
 from functools import cached_property
 
 # MODULES
-from src.gebpy.core.minerals.config import DEFAULT_CONFIG
-from src.gebpy.core.minerals.oxides import Oxides
-from src.gebpy.core.minerals.phyllosilicates import Phyllosilicates
-from src.gebpy.core.minerals.tectosilicates import Tectosilicates
-from src.gebpy.core.minerals.carbonates import Carbonates
-from src.gebpy.core.minerals.sulfides import Sulfides
+from ..minerals.config import DEFAULT_CONFIG
+from ..minerals.carbonates import Carbonates
+from ..minerals.oxides import Oxides
+from ..minerals.phyllosilicates import Phyllosilicates
+from ..minerals.sulfides import Sulfides
+from ..minerals.tectosilicates import Tectosilicates
 
 # CODE
 class MineralDataGeneration:
@@ -100,12 +100,12 @@ class MineralDataGeneration:
 
     @cached_property
     def mineral_map(self):
-        from gebpy.modules.halides import Halides
-        from gebpy.modules.silicates import (Cyclosilicates, Inosilicates, Nesosilicates, Sorosilicates)
-        from gebpy.modules.phosphates import Phosphates
-        from gebpy.modules.sulfates import Sulfates
-        from gebpy.modules.organics import Organics
-        from gebpy.modules.phospides import Phospides
+        from gebpy_legacy.modules.halides import Halides
+        from gebpy_legacy.modules.silicates import (Cyclosilicates, Inosilicates, Nesosilicates, Sorosilicates)
+        from gebpy_legacy.modules.phosphates import Phosphates
+        from gebpy_legacy.modules.sulfates import Sulfates
+        from gebpy_legacy.modules.organics import Organics
+        from gebpy_legacy.modules.phospides import Phospides
 
         return {
             "carbonates": Carbonates,

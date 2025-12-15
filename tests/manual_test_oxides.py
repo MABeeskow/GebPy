@@ -6,7 +6,7 @@
 # Name:		manual_test_oxides.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		03.12.2025
+# Date:		15.12.2025
 
 #-----------------------------------------------
 
@@ -22,7 +22,7 @@ from numpy.core.defchararray import lower
 
 # MODULES
 from src.gebpy.core.minerals.oxides import Oxides
-from gebpy.modules.oxides import Oxides as Oxides_old
+from gebpy_legacy.modules.oxides import Oxides as Oxides_old
 
 # CODE
 n_datasets = 10

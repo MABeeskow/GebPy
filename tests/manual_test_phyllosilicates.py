@@ -6,7 +6,7 @@
 # Name:		manual_test_phyllosilicates.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		29.10.2025
+# Date:		15.12.2025
 
 #-----------------------------------------------
 
@@ -22,7 +22,7 @@ from numpy.core.defchararray import lower
 
 # MODULES
 from src.gebpy.core.minerals.phyllosilicates import Phyllosilicates
-from gebpy.modules.silicates import Phyllosilicates as Phyllosilicates_old
+from gebpy_legacy.modules.silicates import Phyllosilicates as Phyllosilicates_old
 
 # CODE
 n_datasets = 10

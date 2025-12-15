@@ -6,7 +6,7 @@
 # Name:		geochemistry.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		17.06.2024
+# Date:		15.12.2025
 
 #-----------------------------------------------
 

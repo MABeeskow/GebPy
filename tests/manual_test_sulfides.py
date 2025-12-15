@@ -6,7 +6,7 @@
 # Name:		manual_test_sulfides.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		08.12.2025
+# Date:		15.12.2025
 
 #-----------------------------------------------
 
@@ -22,7 +22,7 @@ from numpy.core.defchararray import lower
 
 # MODULES
 from src.gebpy.core.minerals.sulfides import Sulfides
-from gebpy.modules.sulfides import Sulfides as Sulfides_old
+from gebpy_legacy.modules.sulfides import Sulfides as Sulfides_old
 
 # CODE
 n_datasets = 10

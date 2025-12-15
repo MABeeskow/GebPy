@@ -6,7 +6,7 @@
 # Name:		tectosilicates.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		12.12.2025
+# Date:		15.12.2025
 
 #-----------------------------------------------
 
@@ -23,12 +23,16 @@ from pathlib import Path
 from asteval import Interpreter
 
 # MODULES
-from modules.chemistry import PeriodicSystem
-from modules.geochemistry import MineralChemistry
-from modules.geophysics import WellLog as wg
-from src.gebpy.core.minerals.common import GeophysicalProperties, CrystallographicProperties, CrystalPhysics
-from src.gebpy.core.minerals.common import MineralGeneration as MinGen
-from src.gebpy.core.minerals.common import OxideComposition as OxComp
+from ..chemistry.common import PeriodicSystem
+from ..chemistry.geochemistry import MineralChemistry
+from ..physics.geophysics import WellLog as wg
+
+from .common import (
+    GeophysicalProperties,
+    CrystallographicProperties,
+    CrystalPhysics,
+    MineralGeneration as MinGen
+)
 
 # CODE
 BASE_PATH = Path(__file__).resolve().parents[2]
@@ -67,7 +71,6 @@ class Tectosilicates:
             "Fe": PeriodicSystem(name="Fe").get_data(),
             "Ni": PeriodicSystem(name="Ni").get_data(),
         }
-        self.conversion_factors = OxComp()._determine_oxide_conversion_factors(elements=self.elements)
         # Geophysics
         self.geophysical_properties = GeophysicalProperties()
         # Crystallography

@@ -6,7 +6,7 @@
 # Name:		manual_test_rocks_sedimentary.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		14.12.2025
+# Date:		15.12.2025
 
 #-----------------------------------------------
 
@@ -21,7 +21,7 @@ import pandas as pd
 
 # MODULES
 from src.gebpy.core.rocks.sedimentary import SedimentaryRocks
-from gebpy.modules.siliciclastics import SiliciclasticRocks
+from gebpy_legacy.modules.siliciclastics import SiliciclasticRocks
 
 # CODE
 n_datasets = 75
