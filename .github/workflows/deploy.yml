@@ -37,6 +37,9 @@ jobs:
         run: |
           pip install jupyter-book mystmd
 
+      - name: Check Jupyter Book version
+        run: jupyter-book --version
+
       - name: Build documentation
         run: |
           cd docs/book
