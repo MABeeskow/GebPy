@@ -44,7 +44,14 @@ jobs:
         run: |
           cd docs/book
           jupyter-book build
+
+      - name: Build html files
+        run: |
+          cd docs/book
           jupyter-book build --html --strict
+
+      - name: Debug - Check if HTML build exists
+        run: ls -la docs/book/_build_html || echo "HTML build directory missing!"
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
