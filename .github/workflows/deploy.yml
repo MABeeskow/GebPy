@@ -50,8 +50,7 @@ jobs:
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          name: "github-pages"
-          path: "docs/book/_build/html"
+          path: docs/book/_build/site
 
       - name: Deploy to GitHub Pages
         id: deployment
