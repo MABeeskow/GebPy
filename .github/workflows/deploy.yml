@@ -48,7 +48,7 @@ jobs:
         run: |
           ls -la docs/book/_build
           ls -la docs/book/_build/site
-          ls -la docs/book/_build/site/index.html
+          ls -la docs/book/_build/html/index.html
 
       - name: Debug – check html build
         run: ls -la docs/book/_build/html || echo "HTML build directory missing!"
