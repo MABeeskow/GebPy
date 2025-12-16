@@ -1,2 +1,4 @@
 # MyST build outputs
-_build
+_build/logs
+_build/site
+_build/templates
