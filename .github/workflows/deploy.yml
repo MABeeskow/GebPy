@@ -39,12 +39,18 @@ jobs:
       - name: Check Jupyter Book version
         run: jupyter-book --version
 
-      - name: Build the book
+      - name: Build static site
         run: |
           cd docs/book
-          jupyter-book build
+          myst build --site --html
 
-      - name: Debug - Check if HTML build exists
+      - name: Debug – check site build
+        run: |
+          ls -la docs/book/_build
+          ls -la docs/book/_build/site
+          ls -la docs/book/_build/site/index.html
+
+      - name: Debug – check html build
         run: ls -la docs/book/_build/html || echo "HTML build directory missing!"
 
       - name: Upload Pages artifact
