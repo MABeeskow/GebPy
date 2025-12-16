@@ -9,6 +9,7 @@ tests/*.png
 tests/*.csv
 .idea/*
 build/
+_build/
 dist/
 
 # Files

@@ -44,7 +44,7 @@ def test_public_api_all():
 
 def test_deep_imports():
     from gebpy.core.minerals.carbonates import Carbonates
-    from gebpy.core.rocks.sedimentary import SedimentaryRocks
+    from gebpy.core.rocks.isotropic_rocks import SedimentaryRocks
 
 
 def test_carbonates_smoke():

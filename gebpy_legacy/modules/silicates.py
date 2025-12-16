@@ -3289,7 +3289,7 @@ class Phyllosilicates:
 
     def create_biotite(self, enrichment=None, x_value=None, y_value=None):
         # Random number generator
-        rng = np.random.default_rng(self.current_seed)
+        rng = np.random.default_rng(int(self.current_seed))
         # Major Elements
         majors_name = ["H", "O", "Mg", "Al", "Si", "K", "Fe"]
         # Minor elements

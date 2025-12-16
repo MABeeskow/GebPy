@@ -3,16 +3,16 @@
 
 #-----------------------------------------------
 
-# Name:		manual_test_rocks_sedimentary.py
+# Name:		manual_test_rocks_isotropic.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		15.12.2025
+# Date:		17.12.2025
 
 #-----------------------------------------------
 
 """
-Module: manual_test_rocks_sedimentary.py
-Manual test file related to module sedimentary.py
+Module: manual_test_rocks_isotropic.py
+Manual test file related to module isotropic_rocks.py
 """
 
 # PACKAGES
@@ -20,7 +20,7 @@ import time
 import pandas as pd
 
 # MODULES
-from src.gebpy.core.rocks.sedimentary import SedimentaryRocks
+from src.gebpy.core.rocks.isotropic_rocks import IsotropicRocks
 from gebpy_legacy.modules.siliciclastics import SiliciclasticRocks
 
 # CODE
@@ -28,7 +28,7 @@ n_datasets = 75
 print("\n--- Manual test for: sedimentary.py ---")
 print(f"\nDEFAULT_DATA (SANDSTONE, WATER):")
 start = time.time()
-DEFAULT_DATA = SedimentaryRocks(name="Sandstone", random_seed=42).generate_dataset(number=n_datasets)
+DEFAULT_DATA = IsotropicRocks(name="Sandstone", random_seed=42).generate_dataset(number=n_datasets)
 end = time.time()
 delta_new = end - start
 print(f"Runtime: {delta_new:.5f} seconds")
@@ -57,56 +57,51 @@ print("Speed boost:", round(speed_boost, 2), "%")
 n_datasets = 15
 
 print(f"\nDATA(SANDSTONE, WATER):")
-data_rock = SedimentaryRocks(name="Sandstone", random_seed=42).generate_dataset(number=n_datasets, fluid="water")
+data_rock = IsotropicRocks(name="Sandstone", random_seed=42).generate_dataset(number=n_datasets, fluid="water")
 if n_datasets < 20:
     print("Results:", data_rock.describe())
 
 print(f"\nDATA(SANDSTONE, OIL):")
-data_rock = SedimentaryRocks(name="Sandstone", random_seed=42).generate_dataset(number=n_datasets, fluid="oil")
+data_rock = IsotropicRocks(name="Sandstone", random_seed=42).generate_dataset(number=n_datasets, fluid="oil")
 if n_datasets < 20:
     print("Results:", data_rock.describe())
 
 print(f"\nDATA(SANDSTONE, NATURAL GAS):")
-data_rock = SedimentaryRocks(name="Sandstone", random_seed=42).generate_dataset(number=n_datasets, fluid="natural gas")
+data_rock = IsotropicRocks(name="Sandstone", random_seed=42).generate_dataset(number=n_datasets, fluid="natural gas")
 if n_datasets < 20:
     print("Results:", data_rock.describe())
 
 print(f"\nDATA(SANDSTONE, CUSTOM FLUID DENSITY):")
-data_rock = SedimentaryRocks(name="Sandstone", random_seed=42).generate_dataset(number=n_datasets, density_fluid=725)
+data_rock = IsotropicRocks(name="Sandstone", random_seed=42).generate_dataset(number=n_datasets, density_fluid=725)
 if n_datasets < 20:
     print("Results:", data_rock.describe())
 
 print(f"\nDATA(LIMESTONE, WATER):")
-data_rock = SedimentaryRocks(name="Limestone", random_seed=42).generate_dataset(number=n_datasets)
+data_rock = IsotropicRocks(name="Limestone", random_seed=42).generate_dataset(number=n_datasets)
 if n_datasets < 20:
     print("Results:", data_rock.describe())
 
 print(f"\nDATA(LIMESTONE, OIL):")
-data_rock = SedimentaryRocks(name="Limestone", random_seed=42).generate_dataset(number=n_datasets, fluid="oil")
+data_rock = IsotropicRocks(name="Limestone", random_seed=42).generate_dataset(number=n_datasets, fluid="oil")
 if n_datasets < 20:
     print("Results:", data_rock.describe())
 
 print(f"\nDATA(LIMESTONE, NATURAL GAS):")
-data_rock = SedimentaryRocks(name="Limestone", random_seed=42).generate_dataset(number=n_datasets, fluid="natural gas")
+data_rock = IsotropicRocks(name="Limestone", random_seed=42).generate_dataset(number=n_datasets, fluid="natural gas")
 if n_datasets < 20:
     print("Results:", data_rock.describe())
 
 print(f"\nDATA(LIMESTONE, CUSTOM FLUID DENSITY):")
-data_rock = SedimentaryRocks(name="Limestone", random_seed=42).generate_dataset(number=n_datasets, density_fluid=725)
+data_rock = IsotropicRocks(name="Limestone", random_seed=42).generate_dataset(number=n_datasets, density_fluid=725)
 if n_datasets < 20:
     print("Results:", data_rock.describe())
 
 print(f"\nDATA(DOLOSTONE, WATER):")
-data_rock = SedimentaryRocks(name="Dolostone", random_seed=42).generate_dataset(number=n_datasets)
+data_rock = IsotropicRocks(name="Dolostone", random_seed=42).generate_dataset(number=n_datasets)
 if n_datasets < 20:
     print("Results:", data_rock.describe())
 
 print(f"\nDATA(MARL, WATER):")
-data_rock = SedimentaryRocks(name="Marl", random_seed=42).generate_dataset(number=n_datasets)
-if n_datasets < 20:
-    print("Results:", data_rock.describe())
-
-print(f"\nDATA(SHALE, WATER):")
-data_rock = SedimentaryRocks(name="Shale", random_seed=42).generate_dataset(number=n_datasets)
+data_rock = IsotropicRocks(name="Marl", random_seed=42).generate_dataset(number=n_datasets)
 if n_datasets < 20:
     print("Results:", data_rock.describe())
