@@ -5,10 +5,10 @@ GebPy – Synthetic data generation of minerals and rocks
 Public API definition.
 Only import stable, user-facing classes and modules here.
 """
-# Last updated: 15.12.2025
+# Last updated: 16.12.2025
 
 # Version
-__version__ = "1.1.0"
+__version__ = "1.1.1"
 
 # -------------------------
 # High-level Mineral Generators

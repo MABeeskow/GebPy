@@ -1,5 +1,6 @@
-[![Python 3.7+](https://img.shields.io/badge/python-3.7+-blue.svg)](https://www.python.org/) [![License: LGPL v3](
-https://img.shields.io/badge/License-LGPL%20v3-blue.svg)](https://www.gnu.org/licenses/lgpl-3.0)
+[![Python 3.7+](https://img.shields.io/badge/python-3.7+-blue.svg)](https://www.python.org/) 
+[![License: LGPL v3](https://img.shields.io/badge/License-LGPL%20v3-blue.svg)](https://www.gnu.org/licenses/lgpl-3.0)
+[![DOI](https://zenodo.org/badge/276040050.svg)](https://doi.org/10.5281/zenodo.17945808)
 
 <a href="https://github.com/MABeeskow/GebPy">
 <img src="https://raw.githubusercontent.com/MABeeskow/GebPy/master/documents/readme_images/readme_header.png" 
@@ -24,7 +25,7 @@ high-quality training data for machine learning applications.
 
 ## 🚀 Project Status
 
-* **Current version:** 1.1.0
+* **Current version:** 1.1.1
 * **License:** LGPL-3.0
 * **Development:** Active
 * **API stability:** evolving (pre-2.0)
@@ -174,9 +175,8 @@ Geoscientist (Geochemistry, Mineral Systems, Hydrothermal Processes)
 RWTH Aachen University
 
 * ORCID: https://orcid.org/0000-0003-2456-5228
-
 * GitHub: [https://github.com/MABeeskow](https://github.com/MABeeskow)
-
+* Zenodo: https://doi.org/10.5281/zenodo.17945809
 
 ---
 
@@ -188,4 +188,4 @@ reference.
 
 ---
 
-*Last updated: 15.12.2025*
+*Last updated: 16.12.2025*
