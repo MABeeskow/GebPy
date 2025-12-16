@@ -1,9 +1,8 @@
-name: Jupyter Book (MyST) GitHub Pages Deploy
+name: deploy-book
 
 on:
   push:
     branches: [master]
-  workflow_dispatch:
 
 env:
   BASE_URL: /${{ github.event.repository.name }}
@@ -18,7 +17,7 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  deploy:
+  deploy-book:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -28,10 +27,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Python
+      - name: Setup Python 3.11
         uses: actions/setup-python@v5
         with:
-          python-version: "3.10"
+          python-version: "3.11"
 
       - name: Install Jupyter Book (MyST)
         run: |
@@ -40,23 +39,18 @@ jobs:
       - name: Check Jupyter Book version
         run: jupyter-book --version
 
-      - name: Build documentation
+      - name: Build the book
         run: |
           cd docs/book
           jupyter-book build
 
-      - name: Build html files
-        run: |
-          cd docs/book
-          jupyter-book build --html --strict
-
       - name: Debug - Check if HTML build exists
-        run: ls -la docs/book/_build_html || echo "HTML build directory missing!"
+        run: ls -la docs/book/_build/html || echo "HTML build directory missing!"
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: docs/book/_build/site
+          path: docs/book/_build/html
 
       - name: Deploy to GitHub Pages
         id: deployment

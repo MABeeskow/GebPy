@@ -31,7 +31,8 @@ project:
     
 site:
   template: book-theme
-  baseurl: /GebPy
+  options:
+    baseurl: /GebPy
   # options:
   #   favicon: favicon.ico
   #   logo: site_logo.png
