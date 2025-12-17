@@ -36,9 +36,11 @@ class IsotropicRocks:
     _mineral_groups_cache = {}
     _rocks = {"Sandstone", "Limestone", "Dolostone", "Marl"}
 
-    def __init__(self, name, random_seed) -> None:
+    def __init__(self, name, random_seed, alpha_K=1.0, alpha_G=1.5) -> None:
         self.name = name
         self.random_seed = random_seed
+        self.alpha_K = alpha_K
+        self.alpha_G = alpha_G
         self.rng = np.random.default_rng(random_seed)
         self.current_seed = int(np.round(self.rng.uniform(0, 1000), 0))
         self.data_path = DATA_PATH
@@ -293,6 +295,8 @@ class IsotropicRocks:
             v_phi=_helper_bulk_data["porosity"], val_rho=_helper_bulk_data["rho"], val_rho_f=rho_f,
             val_n=n)
         # Update bulk seismic velocity data
+        _helper_bulk_data["K"] = _helper_bulk_data["K"]*(1 - _helper_bulk_data["porosity"])**self.alpha_K
+        _helper_bulk_data["G"] = _helper_bulk_data["G"]*(1 - _helper_bulk_data["porosity"])**self.alpha_G
         (_helper_bulk_data["vP"], _helper_bulk_data["vS"],
          _helper_bulk_data["vP/vS"]) = self.geophysics.calculate_seismic_velocities(
             val_K=_helper_bulk_data["K"], val_G=_helper_bulk_data["G"], val_rho=_helper_bulk_data["rho"])

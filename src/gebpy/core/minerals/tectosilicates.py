@@ -6,7 +6,7 @@
 # Name:		tectosilicates.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		15.12.2025
+# Date:		17.12.2025
 
 #-----------------------------------------------
 
@@ -168,7 +168,17 @@ class Tectosilicates:
 
         if as_dataframe:
             import pandas as pd
-            return pd.DataFrame(dataset)
+            helper_data = {}
+            for param, value in dataset.items():
+                if type(value) == str:
+                    helper_data[param] = [value]*number
+                elif type(value) == list:
+                    helper_data[param] = value
+                elif type(value) == dict:
+                    for param2, value2 in value.items():
+                        key_param2 = "w." + param2
+                        helper_data[key_param2] = value2
+            return pd.DataFrame(helper_data)
         else:
             return dataset
 
