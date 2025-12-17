@@ -36,11 +36,13 @@ class AnisotropicRocks:
     _mineral_groups_cache = {}
     _rocks = {"Shale"}
 
-    def __init__(self, name, random_seed, alpha_K=1.0, alpha_G=1.5) -> None:
+    def __init__(self, name, random_seed, alpha_K=1.0, alpha_G=1.5, variability=False, uncertainty=1.0) -> None:
         self.name = name
         self.random_seed = random_seed
         self.alpha_K = alpha_K
         self.alpha_G = alpha_G
+        self.variability = variability
+        self.uncertainty = uncertainty
         self.rng = np.random.default_rng(random_seed)
         self.current_seed = int(np.round(self.rng.uniform(0, 1000), 0))
         self.data_path = DATA_PATH
@@ -199,7 +201,8 @@ class AnisotropicRocks:
     def _collect_mineral_data(self, list_minerals, number):
         _mineral_data = []
         for index, mineral in enumerate(list_minerals):
-            data_init = MineralDataGeneration(mineral, number)
+            data_init = MineralDataGeneration(
+                name=mineral, n_datapoints=number, variability=self.variability, uncertainty=self.uncertainty)
             data_mineral = data_init.generate_data()
             is_fixed = data_mineral.shape[0] == 1
             if is_fixed and number > 1:

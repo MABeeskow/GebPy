@@ -61,17 +61,18 @@ data_rock = AnisotropicRocks(name="Shale", random_seed=42).generate_dataset(numb
 if n_datasets < 20:
     print("Results:", data_rock.describe())
 
-print(f"\nDATA(SANDSTONE, OIL):")
+print(f"\nDATA(SHALE, OIL):")
 data_rock = AnisotropicRocks(name="Shale", random_seed=42).generate_dataset(number=n_datasets, fluid="oil")
 if n_datasets < 20:
     print("Results:", data_rock.describe())
 
-print(f"\nDATA(SANDSTONE, NATURAL GAS):")
+print(f"\nDATA(SHALE, NATURAL GAS):")
 data_rock = AnisotropicRocks(name="Shale", random_seed=42).generate_dataset(number=n_datasets, fluid="natural gas")
 if n_datasets < 20:
     print("Results:", data_rock.describe())
 
-print(f"\nDATA(SANDSTONE, CUSTOM FLUID DENSITY):")
-data_rock = AnisotropicRocks(name="Shale", random_seed=42).generate_dataset(number=n_datasets, density_fluid=725)
+print(f"\nDATA(SHALE, CUSTOM FLUID DENSITY):")
+data_rock = AnisotropicRocks(name="Shale", random_seed=42, variability=True).generate_dataset(
+    number=n_datasets, density_fluid=725)
 if n_datasets < 20:
     print("Results:", data_rock.describe())

@@ -6,7 +6,7 @@
 # Name:		synthesis.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		15.12.2025
+# Date:		17.12.2025
 
 #-----------------------------------------------
 
@@ -19,6 +19,8 @@ Generates the synthetic mineral data based on the settings of the previous confi
 import pandas as pd
 from typing import Optional, Union
 from functools import cached_property
+
+from pyasn1.type.univ import Boolean
 
 # MODULES
 from ..minerals.config import DEFAULT_CONFIG
@@ -78,18 +80,24 @@ class MineralDataGeneration:
                  name: Optional[str] = None,
                  n_datapoints: Optional[int] = None,
                  random_seed: Optional[int] = None,
-                 trace_elements: Optional[list] = None
+                 trace_elements: Optional[list] = None,
+                 variability: Optional[Boolean] = False,
+                 uncertainty: Optional[float] = 1.0
     ) -> None:
         if name is None and n_datapoints is None and random_seed is None:
             self.name = DEFAULT_CONFIG.name
             self.n_datapoints = DEFAULT_CONFIG.n_datapoints
             self.random_seed = DEFAULT_CONFIG.random_seed
             self.trace_elements = []
+            self.variability = variability
+            self.uncertainty = uncertainty
         else:
             self.name = name
             self.n_datapoints = n_datapoints
             self.random_seed = 42 if random_seed is None else random_seed
             self.trace_elements = [] if trace_elements is None else trace_elements
+            self.variability = variability
+            self.uncertainty = uncertainty
 
     def __repr__(self) -> str:
         return (
@@ -140,7 +148,9 @@ class MineralDataGeneration:
                 cls = self.mineral_map[group]
                 if cls.__name__ in ("Phyllosilicates", "Tectosilicates", "Oxides", "Carbonates", "Sulfides"):
                     #print(sorted(cls(name=name, random_seed=self.random_seed)._minerals))
-                    return cls(name=name, random_seed=self.random_seed).generate_dataset(number=n_datapoints)
+                    return cls(
+                        name=name, random_seed=self.random_seed, variability=self.variability,
+                        uncertainty=self.uncertainty).generate_dataset(number=n_datapoints)
                 else:
                     try:
                         return cls(

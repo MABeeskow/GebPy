@@ -6,7 +6,7 @@
 # Name:		common.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		15.12.2025
+# Date:		17.12.2025
 
 #-----------------------------------------------
 
@@ -196,13 +196,18 @@ class MineralGeneration:
     """
     This class controls the mineral data generation for minerals with fixed composition.
     """
-    def __init__(self, name, yaml_data, elements, cache, geophysical_properties, rounding):
+    def __init__(
+            self, name, yaml_data, elements, cache, geophysical_properties, rounding, rng, variability=False,
+            uncertainty=1.0):
         self.name = name
         self.yaml_data = yaml_data
         self.elements = elements
         self.cache = cache
         self.geophysical_properties = geophysical_properties
         self.rounding = rounding
+        self.rng = rng
+        self.variability = variability
+        self.uncertainty = uncertainty
         self.conversion_factors = self._determine_oxide_conversion_factors()
 
     def _get_value(self, data: dict, path: list[str], default=None):
@@ -338,6 +343,18 @@ class MineralGeneration:
 
         return vals
 
+    def vary_elastic_moduli(self, K, G, uncertainty):
+        delta_K = K*uncertainty/100
+        delta_G = G*uncertainty/100
+        lower_K = K - delta_K
+        upper_K = K + delta_K
+        lower_G = G - delta_G
+        upper_G = G + delta_G
+        K = self.rng.uniform(lower_K, upper_K)
+        G = self.rng.uniform(lower_G, upper_G)
+
+        return K, G
+
     def create_mineral_data_fixed_composition(self):
         """
         Synthetic mineral data generation for an user-selected mineral.
@@ -428,6 +445,10 @@ class MineralGeneration:
         if "K" not in vals:
             val_K = (val_a_K*rho + val_b_K)*10**9
             val_G = (val_a_G*rho + val_b_G)*10**9
+
+        if self.variability == True:
+            val_K, val_G = self.vary_elastic_moduli(K=val_K, G=val_G, uncertainty=self.uncertainty)
+
         E, nu = self.geophysical_properties.calculate_elastic_properties(bulk_mod=val_K, shear_mod=val_G)
         # Seismic properties
         vPvS, vP, vS = self.geophysical_properties.calculate_seismic_velocities(
@@ -457,7 +478,8 @@ class MineralGeneration:
 
         return results
 
-    def create_mineral_data_endmember_series(self, endmember_series, var_class, current_seed, rng):
+    def create_mineral_data_endmember_series(
+            self, endmember_series, var_class, current_seed):
         """
         Synthetic mineral data generation for an user-selected mineral.
         All mechanical properties (K, G, E) are stored in Pascals internally.
@@ -500,7 +522,7 @@ class MineralGeneration:
             endmember_data = self.cache[name_lower]["endmember_data"]
             list_elements = self.cache[name_lower]["list_elements"]
             constr_OxComp = self.cache[name_lower]["OxComp"]
-        weights = rng.dirichlet(np.ones(len(endmember)))
+        weights = self.rng.dirichlet(np.ones(len(endmember)))
         fraction_endmember = dict(zip(endmember, weights))
 
         properties = ["M", "rho", "rho_e", "V", "K", "G"]
@@ -527,6 +549,10 @@ class MineralGeneration:
         # Elastic properties
         val_K = helper_results["K"]*10**9
         val_G = helper_results["G"]*10**9
+
+        if self.variability == True:
+            val_K, val_G = self.vary_elastic_moduli(K=val_K, G=val_G, uncertainty=self.uncertainty)
+
         rho = helper_results["rho"]
         rho_e = helper_results["rho_e"]
         E, nu = self.geophysical_properties.calculate_elastic_properties(bulk_mod=val_K, shear_mod=val_G)

@@ -47,13 +47,15 @@ class Phyllosilicates:
         "Nontronite", "Saponite", "Glauconite", "Vermiculite", "Chlorite", "Biotite", "FeChlorite", "MgChlorite",
         "MnChlorite", "NiChlorite"}
 
-    def __init__(self, name, random_seed, rounding=3) -> None:
+    def __init__(self, name, random_seed, rounding=3, variability=False, uncertainty=1.0) -> None:
         self.name = name
         self.random_seed = random_seed
         self.rng = np.random.default_rng(random_seed)
         self.current_seed = int(np.round(self.rng.uniform(0, 1000), 0))
         self.data_path = DATA_PATH
         self.rounding = rounding
+        self.variability = variability
+        self.uncertainty = uncertainty
         self.ae = Interpreter()
         self.cache = {}
 
@@ -165,7 +167,8 @@ class Phyllosilicates:
         generators = {
             **{m: MinGen(
                 name=self.name, yaml_data=self.yaml_data, elements=self.elements, cache=self.cache,
-                geophysical_properties=self.geophysical_properties, rounding=self.rounding
+                geophysical_properties=self.geophysical_properties, rounding=self.rounding, rng=self.rng,
+                variability=self.variability, uncertainty=self.uncertainty
             ).create_mineral_data_fixed_composition for m in fixed},
             **{m: self.create_mineral_data_variable_composition for m in variable},
             **{m: self.create_mineral_data_endmember_series for m in endmember},
@@ -175,7 +178,7 @@ class Phyllosilicates:
             raise ValueError(f"Mineral '{self.name}' not recognized.")
 
         dataset = {}
-        if self.name in fixed:
+        if self.name in fixed and self.variability is False:
             dataset = self._evaluate_mineral(index=1, generators=generators, dataset=dataset)
         else:
             for index in range(number):
@@ -436,8 +439,8 @@ class Phyllosilicates:
         results = MinGen(
             name=self.name, yaml_data=self.yaml_data, elements=self.elements, cache=self.cache,
             geophysical_properties=self.geophysical_properties,
-            rounding=self.rounding).create_mineral_data_endmember_series(
-            endmember_series=endmember_series, var_class=Phyllosilicates, current_seed=self.current_seed, rng=self.rng)
+            rounding=self.rounding, rng=self.rng).create_mineral_data_endmember_series(
+            endmember_series=endmember_series, var_class=Phyllosilicates, current_seed=self.current_seed)
 
         return results
 

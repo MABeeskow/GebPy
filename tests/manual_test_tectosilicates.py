@@ -144,7 +144,7 @@ if n_datasets < 20:
 
 print(f"\nDATA (NA-NEPHELINE):")
 start = time.time()
-DEFAULT_DATA = Tectosilicates(name="NaNepheline", random_seed=42).generate_dataset(number=n_datasets)
+DEFAULT_DATA = Tectosilicates(name="NaNepheline", random_seed=42, variability=True).generate_dataset(number=n_datasets)
 end = time.time()
 delta_new = end - start
 print(f"Runtime: {delta_new:.5f} seconds")
@@ -154,7 +154,7 @@ if n_datasets < 20:
 
 print(f"\nDATA (NEPHELINE):")
 start = time.time()
-DEFAULT_DATA = Tectosilicates(name="Nepheline", random_seed=42).generate_dataset(number=n_datasets, as_dataframe=True)
+DEFAULT_DATA = Tectosilicates(name="Nepheline", random_seed=42).generate_dataset(number=n_datasets)
 end = time.time()
 delta_new = end - start
 print(f"Runtime: {delta_new:.5f} seconds")

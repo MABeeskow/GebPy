@@ -6,7 +6,7 @@
 # Name:		manual_test_carbonates.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		15.12.2025
+# Date:		17.12.2025
 
 #-----------------------------------------------
 
@@ -156,7 +156,7 @@ if n_datasets < 20:
 
 print(f"\nDATA (SMITHSONITE):")
 start = time.time()
-DEFAULT_DATA = Carbonates(name="Smithsonite", random_seed=42).generate_dataset(number=n_datasets)
+DEFAULT_DATA = Carbonates(name="Smithsonite", random_seed=42, variability=True).generate_dataset(number=n_datasets)
 end = time.time()
 delta_new = end - start
 print(f"Runtime: {delta_new:.5f} seconds")

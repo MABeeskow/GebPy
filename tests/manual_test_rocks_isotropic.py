@@ -102,6 +102,6 @@ if n_datasets < 20:
     print("Results:", data_rock.describe())
 
 print(f"\nDATA(MARL, WATER):")
-data_rock = IsotropicRocks(name="Marl", random_seed=42).generate_dataset(number=n_datasets)
+data_rock = IsotropicRocks(name="Marl", random_seed=42, variability=True).generate_dataset(number=n_datasets)
 if n_datasets < 20:
     print("Results:", data_rock.describe())
