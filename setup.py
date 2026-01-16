@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="latin-1") as f:
 
 setup(
     name="gebpy",
-    version="1.1.7",
+    version="1.1.8",
     package_dir={"": "src"},
     packages=find_packages(where="src"),
 
@@ -31,7 +31,7 @@ setup(
 
     entry_points={
         "console_scripts": [
-            "gebpy = gebpy_legacy.gebpy_app:gebpy"
+            "gebpy = gebpy.gebpy_legacy.gebpy_app:gebpy"
         ]
     },
 
