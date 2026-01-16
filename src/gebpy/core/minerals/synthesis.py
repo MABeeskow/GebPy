@@ -208,4 +208,6 @@ class MineralDataGeneration:
 # DEFAULT EXAMPLE
 data_config = DEFAULT_CONFIG
 data_default = MineralDataGeneration(name=data_config.name, n_datapoints=data_config.n_datapoints)
-DEFAULT_DATA = data_default.generate_data()
+def get_default_data():
+    DEFAULT_DATA = data_default.generate_data()
+    return DEFAULT_DATA

@@ -6,7 +6,7 @@
 # Name:		manual_test_synthesis.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		03.12.2025
+# Date:		16.01.2026
 
 #-----------------------------------------------
 
@@ -23,10 +23,11 @@ pd.set_option("display.max_columns", 10)
 pd.set_option("display.max_rows", 10)
 
 # MODULES
-from src.gebpy.core.minerals.synthesis import MineralDataGeneration, DEFAULT_DATA
+from src.gebpy.core.minerals.synthesis import MineralDataGeneration, get_default_data
 
 print("\n--- Manual test for: synthesis.py ---")
 print(f"\nDEFAULT_DATA:")
+DEFAULT_DATA = get_default_data()
 print(
     f"Columns in dataset: {list(DEFAULT_DATA.columns)}\n"
     f"Number of datapoints: {len(DEFAULT_DATA)}\n"

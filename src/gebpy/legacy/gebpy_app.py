@@ -35,49 +35,26 @@ from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, NavigationTool
 import matplotlib.patches as mpatches
 from matplotlib.figure import Figure
 # internal
-try:
-    from gebpy_legacy.modules.gui_elements import SimpleElements
-    from gebpy_legacy.modules.oxides import Oxides
-    from gebpy_legacy.modules.carbonates import Carbonates, CarbonateRocks
-    from gebpy_legacy.modules.igneous import Plutonic, Volcanic, UltraMafic, Pyroclastic
-    from gebpy_legacy.modules.sulfides import Sulfides
-    from gebpy_legacy.modules.sulfates import Sulfates
-    from gebpy_legacy.modules.halides import Halides
-    from gebpy_legacy.modules.phospides import Phospides
-    from gebpy_legacy.modules.phosphates import Phosphates
-    from gebpy_legacy.modules.silicates import Phyllosilicates, Tectosilicates, Inosilicates, Nesosilicates, Sorosilicates, \
-        Cyclosilicates
-    from gebpy_legacy.modules.organics import Organics
-    from gebpy_legacy.modules.fluids import Water
-    from gebpy_legacy.modules.siliciclastics import SiliciclasticRocks, Geophysics
-    from gebpy_legacy.modules.ore import OreRocks
-    from gebpy_legacy.modules.metamorphics import GranuliteFacies, GreenschistFacies, AmphiboliteFacies
-    from gebpy_legacy.modules.exploration import ExplorationInterface
-    # Sequence Stratigraphy
-    from gebpy_legacy.modules.series import Muschelkalk, Zechstein, Buntsandstein
-    from gebpy_legacy.modules.petrophysics import SeismicVelocities
-    from gebpy_legacy.modules.geophysics import Seismology
-except:
-    from modules_archive.gui_elements import SimpleElements
-    from modules_archive.oxides import Oxides
-    from modules_archive.carbonates import Carbonates, CarbonateRocks
-    from modules_archive.igneous import Plutonic, Volcanic, UltraMafic, Pyroclastic
-    from modules_archive.sulfides import Sulfides
-    from modules_archive.sulfates import Sulfates
-    from modules_archive.halides import Halides
-    from modules_archive.phospides import Phospides
-    from modules_archive.phosphates import Phosphates
-    from modules_archive.silicates import Phyllosilicates, Tectosilicates, Inosilicates, Nesosilicates, Sorosilicates, \
-        Cyclosilicates
-    from modules_archive.organics import Organics
-    from modules_archive.fluids import Water
-    from modules_archive.siliciclastics import SiliciclasticRocks, Geophysics
-    from modules_archive.ore import OreRocks
-    from modules_archive.metamorphics import GranuliteFacies, GreenschistFacies, AmphiboliteFacies
-    from modules_archive.exploration import ExplorationInterface
-    # Sequence Stratigraphy
-    from modules_archive.series import Muschelkalk, Zechstein, Buntsandstein
-    from modules_archive.petrophysics import SeismicVelocities
+from gebpy.legacy.modules_archive.gui_elements import SimpleElements
+from gebpy.legacy.modules_archive.oxides import Oxides
+from gebpy.legacy.modules_archive.carbonates import Carbonates, CarbonateRocks
+from gebpy.legacy.modules_archive.igneous import Plutonic, Volcanic, UltraMafic, Pyroclastic
+from gebpy.legacy.modules_archive.sulfides import Sulfides
+from gebpy.legacy.modules_archive.sulfates import Sulfates
+from gebpy.legacy.modules_archive.halides import Halides
+from gebpy.legacy.modules_archive.phospides import Phospides
+from gebpy.legacy.modules_archive.phosphates import Phosphates
+from gebpy.legacy.modules_archive.silicates import Phyllosilicates, Tectosilicates, Inosilicates, Nesosilicates, Sorosilicates, \
+    Cyclosilicates
+from gebpy.legacy.modules_archive.organics import Organics
+from gebpy.legacy.modules_archive.fluids import Water
+from gebpy.legacy.modules_archive.siliciclastics import SiliciclasticRocks, Geophysics
+from gebpy.legacy.modules_archive.ore import OreRocks
+from gebpy.legacy.modules_archive.metamorphics import GranuliteFacies, GreenschistFacies, AmphiboliteFacies
+from gebpy.legacy.modules_archive.exploration import ExplorationInterface
+# Sequence Stratigraphy
+from gebpy.legacy.modules_archive.series import Muschelkalk, Zechstein, Buntsandstein
+from gebpy.legacy.modules_archive.petrophysics import SeismicVelocities
 
 ## GUI
 class GebPyGUI(tk.Frame):
@@ -400,14 +377,14 @@ class GebPyGUI(tk.Frame):
 
         ## Logo
         try:
-            gebpy_logo = tk.PhotoImage(file=self.path_gebpy + "/lib/images/GebPy_Header.png")
+            gebpy_logo = tk.PhotoImage(file=self.path_gebpy + "/images_legacy/GebPy_Header.png")
             gebpy_logo = gebpy_logo.subsample(5, 5)
             img = tk.Label(self.parent, image=gebpy_logo, bg=self.colors_gebpy["Navigation"])
             img.image = gebpy_logo
             img.grid(row=0, column=0, rowspan=5, columnspan=32, sticky="nesw")
 
             ## Icon
-            gebpy_icon = tk.PhotoImage(file=self.path_gebpy + str("/lib/images/GebPy_Icon.png"))
+            gebpy_icon = tk.PhotoImage(file=self.path_gebpy + str("/images_legacy/GebPy_Icon.png"))
             self.parent.iconphoto(False, gebpy_icon)
         except:
             print("Image not found!")
