@@ -6,7 +6,7 @@
 # Name:		manual_test_rocks_anisotropic.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		17.12.2025
+# Date:		16.01.2026
 
 #-----------------------------------------------
 
@@ -73,6 +73,6 @@ if n_datasets < 20:
 
 print(f"\nDATA(SHALE, CUSTOM FLUID DENSITY):")
 data_rock = AnisotropicRocks(name="Shale", random_seed=42, variability=True).generate_dataset(
-    number=n_datasets, density_fluid=725)
+    number=n_datasets, density_fluid=725, element_constraints={"Al": (0.08, 0.12)})
 if n_datasets < 20:
     print("Results:", data_rock.describe())

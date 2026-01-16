@@ -6,7 +6,7 @@
 # Name:		anisotropic_rocks.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		17.12.2025
+# Date:		16.01.2025
 
 #-----------------------------------------------
 
@@ -343,7 +343,99 @@ class AnisotropicRocks:
 
         return _helper_bulk_data
 
-    def generate_dataset(self, number: int = 1, fluid: str = "water", density_fluid=None) -> None:
+    def _compute_bulk_element(self, element, mineral_data, composition):
+        n_samples = composition.shape[0]
+        values = np.zeros(n_samples, dtype=float)
+        key = "chemistry." + element
+
+        for j, dataset in enumerate(mineral_data):
+            if key not in dataset:
+                continue
+
+            chem = dataset[key].to_numpy(dtype=float)
+
+            # Broadcast scalar chemistry
+            if chem.size == 1:
+                chem = np.full(n_samples, chem[0], dtype=float)
+
+            # If chemistry vector but only one sample: take first value deterministically
+            elif n_samples == 1 and chem.size > 1:
+                chem = np.array([chem[0]], dtype=float)
+
+            elif chem.size != n_samples:
+                raise ValueError(
+                    f"Shape mismatch for element '{element}': "
+                    f"chemistry length {chem.size} vs. composition samples {n_samples}"
+                )
+
+            values += composition[:, j]*chem
+
+        return values
+
+    def _calculate_chemical_amounts(self, list_minerals, number, _limits, element_constraints=None):
+        if element_constraints == None:
+            n_minerals = len(list_minerals)
+            _helper_composition = np.zeros((number, n_minerals))
+            _helper_mineral_amounts = {mineral: np.zeros(number) for mineral in list_minerals}
+            _helper_composition = self._sample_bounded_simplex_batch(
+                min_vals=_limits["lower"], max_vals=_limits["upper"], number=number)
+            _helper_mineral_amounts = {mineral: _helper_composition[:, j] for j, mineral in enumerate(list_minerals)}
+        elif element_constraints != None:
+            valid_comp = []
+            attempts = 0
+            max_attempts = number*100
+
+            # Mineral data wird für die Elementberechnung benötigt
+            _mineral_data, _, _ = self.collect_initial_compositional_data(
+                list_minerals=list_minerals, n=1
+            )
+
+            while len(valid_comp) < number:
+                comp = self._sample_bounded_simplex_batch(
+                    min_vals=_limits["lower"],
+                    max_vals=_limits["upper"],
+                    number=1
+                )
+
+                is_valid = True
+                if element_constraints:
+                    for el, (lo, hi) in element_constraints.items():
+                        bulk_val = self._compute_bulk_element(
+                            el, _mineral_data, comp
+                        )[0]
+                        if not (lo <= bulk_val <= hi):
+                            is_valid = False
+                            break
+
+                if is_valid:
+                    valid_comp.append(comp[0])
+
+                attempts += 1
+                if attempts%1000 == 0:
+                    print(f"Acceptance rate: {len(valid_comp)/attempts:.3f}")
+                if attempts > max_attempts:
+                    raise RuntimeError(
+                        "Element constraints too restrictive for given mineralogy."
+                    )
+
+            _helper_composition = np.vstack(valid_comp)
+            _helper_mineral_amounts = {
+                mineral: _helper_composition[:, j]
+                for j, mineral in enumerate(list_minerals)
+            }
+
+        return _helper_composition, _helper_mineral_amounts
+
+    def generate_dataset(
+            self, number: int = 1, fluid: str = "water", density_fluid=None, element_constraints=None) -> None:
+        if element_constraints:
+            for el, (lo, hi) in element_constraints.items():
+                if not (0.0 <= lo < hi <= 1.0):
+                    raise ValueError(
+                        f"Element constraint for {el} must be given as fraction (0–1), "
+                        f"got ({lo}, {hi})."
+                    )
+
         if density_fluid is None:
             if fluid == "water":
                 density_fluid = 1000
@@ -352,7 +444,6 @@ class AnisotropicRocks:
             elif fluid == "natural gas":
                 density_fluid = 750
 
-        siliciclastics = {"Sandstone"}
         data_yaml = self._load_yaml(rock_name=self.name)
         min_porosity = data_yaml["physical_properties"]["porosity"]["min"]
         max_porosity = data_yaml["physical_properties"]["porosity"]["max"]
@@ -365,20 +456,18 @@ class AnisotropicRocks:
             _limits["upper"].append(values[1])
 
         list_minerals = list(AnisotropicRocks._mineralogy_cache[self.name].keys())
-        _properties = ["rho", "vP", "vS", "K", "G", "GR", "PE"]
         _bulk_data = {}
         # Collect mineralogical composition data
-        n_minerals = len(list_minerals)
-        _helper_composition = np.zeros((number, n_minerals))
-        _helper_mineral_amounts = {mineral: np.zeros(number) for mineral in list_minerals}
-
-        _helper_composition = self._sample_bounded_simplex_batch(
-            min_vals=_limits["lower"], max_vals=_limits["upper"], number=number)
-        _helper_mineral_amounts = {mineral: _helper_composition[:, j] for j, mineral in enumerate(list_minerals)}
-
+        _helper_composition, _helper_mineral_amounts = self._calculate_chemical_amounts(
+            list_minerals=list_minerals, number=number, _limits=_limits, element_constraints=element_constraints)
         # Collect mineral data
-        _mineral_data, _helper_elements, _helper_oxides = self.collect_initial_compositional_data(
-            list_minerals=list_minerals, n=number)
+        if element_constraints != None:
+            _mineral_data, _helper_elements, _helper_oxides = self.collect_initial_compositional_data(
+                list_minerals, n=1)
+            _mineral_data = [pd.concat([df]*number, ignore_index=True) for df in _mineral_data]
+        else:
+            _mineral_data, _helper_elements, _helper_oxides = self.collect_initial_compositional_data(
+                list_minerals, n=number)
         # Collect bulk data
         _helper_bulk_data = self.collect_initial_bulk_data(
             list_minerals=list_minerals, _mineral_data=_mineral_data, _helper_composition=_helper_composition)
