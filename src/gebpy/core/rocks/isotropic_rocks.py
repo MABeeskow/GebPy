@@ -49,10 +49,7 @@ class IsotropicRocks:
         self.geophysics = Geophysics()
         self.conversion_factors = self.rock_gen._determine_oxide_conversion_factors()
         self.cache = {}
-
-    def _extract_mineral_property_data(self, list_minerals, data_mineral, property):
-        arrays = [data_mineral[i][property].to_numpy() for i in range(len(list_minerals))]
-        return np.vstack(arrays)
+        self.class_commonrockfunctions = CommonRockFunctions()
 
     def _update_chemistry_data(self, _bulk_data, data_minerals, data_composition, element, number):
         n_minerals = len(data_minerals)
@@ -107,15 +104,6 @@ class IsotropicRocks:
 
         return _helper_bulk_data
 
-    def collect_initial_bulk_data(self, list_minerals, _mineral_data, _helper_composition):
-        _helper_bulk_data = {}
-        for property in ["rho", "K", "G", "GR", "PE"]:
-            _helper_property = self._extract_mineral_property_data(
-                list_minerals=list_minerals, data_mineral=_mineral_data, property=property)
-            _helper_bulk_data[property] = np.sum(_helper_composition*_helper_property.T, axis=1)
-
-        return _helper_bulk_data
-
     def update_compositional_bulk_data(
             self, _helper_elements, _helper_bulk_data, _mineral_data, _helper_composition, _helper_oxides,
             _helper_mineral_amounts, n):
@@ -151,7 +139,7 @@ class IsotropicRocks:
 
         # YAML processing
         (data_yaml, IsotropicRocks._yaml_cache, IsotropicRocks._mineralogy_cache,
-         IsotropicRocks._mineral_groups_cache) = CommonRockFunctions()._load_yaml(
+         IsotropicRocks._mineral_groups_cache) = self.class_commonrockfunctions._load_yaml(
             rock_name=self.name, _yaml_cache=IsotropicRocks._yaml_cache,
             _mineralogy_cache=IsotropicRocks._mineralogy_cache,
             _mineral_groups_cache=IsotropicRocks._mineral_groups_cache, _data_path=self.data_path)
@@ -170,19 +158,21 @@ class IsotropicRocks:
         list_minerals = list(IsotropicRocks._mineralogy_cache[self.name].keys())
         _bulk_data = {}
         # Collect mineralogical composition data
-        _helper_composition, _helper_mineral_amounts = CommonRockFunctions()._calculate_chemical_amounts(
+        _helper_composition, _helper_mineral_amounts = self.class_commonrockfunctions._calculate_chemical_amounts(
             list_minerals=list_minerals, number=number, _limits=_limits, _rng=self.rng,
             _variability=self.variability, _uncertainty=self.uncertainty, element_constraints=element_constraints)
         # Collect mineral data
         if element_constraints != None:
-            _mineral_data, _helper_elements, _helper_oxides = CommonRockFunctions().collect_initial_compositional_data(
-                list_minerals=list_minerals, n=1, _variability=self.variability, _uncertainty=self.uncertainty)
+            _mineral_data, _helper_elements, _helper_oxides = (
+                self.class_commonrockfunctions.collect_initial_compositional_data(
+                list_minerals=list_minerals, n=1, _variability=self.variability, _uncertainty=self.uncertainty))
             _mineral_data = [pd.concat([df]*number, ignore_index=True) for df in _mineral_data]
         else:
-            _mineral_data, _helper_elements, _helper_oxides = CommonRockFunctions().collect_initial_compositional_data(
-                list_minerals=list_minerals, n=number, _variability=self.variability, _uncertainty=self.uncertainty)
+            _mineral_data, _helper_elements, _helper_oxides = (
+                self.class_commonrockfunctions.collect_initial_compositional_data(
+                list_minerals=list_minerals, n=number, _variability=self.variability, _uncertainty=self.uncertainty))
         # Collect bulk data
-        _helper_bulk_data = self.collect_initial_bulk_data(
+        _helper_bulk_data = self.class_commonrockfunctions.collect_initial_bulk_data(
             list_minerals=list_minerals, _mineral_data=_mineral_data, _helper_composition=_helper_composition)
         # Assign porosity data
         _helper_bulk_data["porosity"] = porosity

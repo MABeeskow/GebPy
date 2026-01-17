@@ -358,3 +358,17 @@ class CommonRockFunctions:
             }
 
         return _helper_composition, _helper_mineral_amounts
+
+    # Collecting mineral data
+    def _extract_mineral_property_data(self, list_minerals, data_mineral, property):
+        arrays = [data_mineral[i][property].to_numpy() for i in range(len(list_minerals))]
+        return np.vstack(arrays)
+
+    def collect_initial_bulk_data(self, list_minerals, _mineral_data, _helper_composition):
+        _helper_bulk_data = {}
+        for property in ["rho", "K", "G", "GR", "PE"]:
+            _helper_property = self._extract_mineral_property_data(
+                list_minerals=list_minerals, data_mineral=_mineral_data, property=property)
+            _helper_bulk_data[property] = np.sum(_helper_composition*_helper_property.T, axis=1)
+
+        return _helper_bulk_data
