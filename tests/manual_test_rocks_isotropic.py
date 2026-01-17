@@ -106,3 +106,20 @@ data_rock = IsotropicRocks(name="Marl", random_seed=42, variability=True).genera
     number=n_datasets, element_constraints={"C": (0.10, 0.11)})
 if n_datasets < 20:
     print("Results:", data_rock.describe())
+
+# # TEST
+# print(f"\nTEST(YAML ARCHITECTURE):")
+# IsotropicRocks._yaml_cache.clear()
+# IsotropicRocks._mineralogy_cache.clear()
+# IsotropicRocks._mineral_groups_cache.clear()
+# print("=== First call ===")
+# rock1 = IsotropicRocks(name="Sandstone", random_seed=32)
+# data1 = rock1.generate_dataset(number=5)
+# print("YAML cache after first call:",
+#       IsotropicRocks._yaml_cache.keys())
+#
+# print("=== Second call (same rock) ===")
+# rock2 = IsotropicRocks(name="Sandstone", random_seed=64)
+# data2 = rock2.generate_dataset(number=5)
+# print("YAML cache after second call:",
+#       IsotropicRocks._yaml_cache.keys())

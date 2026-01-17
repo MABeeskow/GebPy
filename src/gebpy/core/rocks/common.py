@@ -6,7 +6,7 @@
 # Name:		common.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		15.12.2025
+# Date:		17.01.2026
 
 #-----------------------------------------------
 
@@ -14,9 +14,9 @@
 Module: common.py
 This module contains several routines that are commonly used by the different rock-related modules.
 """
-
+import pathlib
 # PACKAGES
-import re
+import re, yaml
 
 # MODULES
 from ..chemistry.common import PeriodicSystem
@@ -93,3 +93,79 @@ class RockGeneration:
                 #print(self.name, ": cation", cation, "not found in chemical container.")
 
         return _conversion_factors
+
+class CommonRockFunctions:
+    def __init__(self):
+        pass
+
+    def _compile_mineralogy(self, rock_name: str, mineralogy_dict: dict, _mineralogy_cache: dict):
+        """
+        Extracts and compiles all chemistry formulas from the YAML file.
+        Stores the compiled ASTs in the global formula cache.
+        """
+        if rock_name not in _mineralogy_cache:
+            _mineralogy_cache[rock_name] = {}
+
+        for element, entry in mineralogy_dict.items():
+            mineral = element
+            interval = list(entry.values())
+            lower_limit = interval[0]
+            upper_limit = interval[1]
+            compiled = [lower_limit, upper_limit]
+            _mineralogy_cache[rock_name][mineral] = compiled
+
+        return _mineralogy_cache
+
+    def _compile_mineral_groups(self, rock_name: str, group_dict: dict, _mineral_groups_cache: dict):
+        if rock_name not in _mineral_groups_cache:
+            _mineral_groups_cache[rock_name] = {}
+
+        for group, entry in group_dict.items():
+            minerals = entry["minerals"]
+            min_val = entry["min"]
+            max_val = entry["max"]
+
+            _mineral_groups_cache[rock_name][group] = {
+                "minerals": minerals,
+                "min": min_val,
+                "max": max_val
+            }
+
+        return _mineral_groups_cache
+
+    def _load_yaml(
+            self, rock_name: str, _yaml_cache: dict, _mineralogy_cache: dict, _mineral_groups_cache: dict,
+            _data_path: pathlib.WindowsPath) -> dict:
+        """
+        Extracts and compiles all chemistry formulas from the YAML file. Stores the compiled ASTs in the global formula
+        cache.
+        >> Parameters
+        ----------
+            rock_name: str, Name of the rock (YAML filename without extension).
+        >> Returns
+        -------
+            data: dict, Parsed YAML content.
+        >>Raises
+        ------
+            FileNotFoundError: If the YAML file does not exist.
+        """
+        if rock_name in _yaml_cache:
+            return (_yaml_cache[rock_name], _yaml_cache, _mineralogy_cache, _mineral_groups_cache)
+
+        yaml_file = _data_path/f"{rock_name}.yaml"
+        if not yaml_file.exists():
+            raise FileNotFoundError(f"No YAML file found for {rock_name}.")
+
+        with open(yaml_file, "r") as f:
+            data = yaml.safe_load(f)
+
+        if "mineralogy" in data and rock_name not in _mineralogy_cache:
+            _mineralogy_cache = self._compile_mineralogy(
+                rock_name=rock_name, mineralogy_dict=data["mineralogy"], _mineralogy_cache=_mineralogy_cache)
+        if "mineral_groups" in data:
+            _mineral_groups_cache = self._compile_mineral_groups(
+                rock_name=rock_name, group_dict=data["mineral_groups"], _mineral_groups_cache=_mineral_groups_cache)
+
+        _yaml_cache[rock_name] = data
+
+        return (data, _yaml_cache, _mineralogy_cache, _mineral_groups_cache)

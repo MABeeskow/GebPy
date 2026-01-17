@@ -6,7 +6,7 @@
 # Name:		anisotropic_rocks.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		16.01.2025
+# Date:		17.01.2025
 
 #-----------------------------------------------
 
@@ -23,7 +23,7 @@ from pathlib import Path
 
 # MODULES
 from ..minerals.synthesis import MineralDataGeneration
-from ..rocks.common import RockGeneration
+from ..rocks.common import RockGeneration, CommonRockFunctions
 from ..physics.common import Geophysics
 
 # Code
@@ -50,61 +50,6 @@ class AnisotropicRocks:
         self.geophysics = Geophysics()
         self.conversion_factors = self.rock_gen._determine_oxide_conversion_factors()
         self.cache = {}
-
-    def _load_yaml(self, rock_name: str) -> dict:
-        # 1) Cache-Hit
-        if rock_name in AnisotropicRocks._yaml_cache:
-            return AnisotropicRocks._yaml_cache[rock_name]
-
-        # 2) Laden von Disk
-        yaml_file = self.data_path/f"{rock_name}.yaml"
-        if not yaml_file.exists():
-            raise FileNotFoundError(f"No YAML file found for {rock_name}.")
-
-        with open(yaml_file, "r") as f:
-            data = yaml.safe_load(f)
-
-        if "mineralogy" in data and rock_name not in AnisotropicRocks._mineralogy_cache:
-            self._compile_mineralogy(rock_name, data["mineralogy"])
-
-        if "mineral_groups" in data:
-            self._compile_mineral_groups(rock_name, data["mineral_groups"])
-
-        # 3) Cache schreiben
-        AnisotropicRocks._yaml_cache[rock_name] = data
-
-        return data
-
-    def _compile_mineralogy(self, rock_name: str, mineralogy_dict: dict):
-        """
-        Extracts and compiles all chemistry formulas from the YAML file.
-        Stores the compiled ASTs in the global formula cache.
-        """
-        if rock_name not in AnisotropicRocks._mineralogy_cache:
-            AnisotropicRocks._mineralogy_cache[rock_name] = {}
-
-        for element, entry in mineralogy_dict.items():
-            mineral = element
-            interval = list(entry.values())
-            lower_limit = interval[0]
-            upper_limit = interval[1]
-            compiled = [lower_limit, upper_limit]
-            AnisotropicRocks._mineralogy_cache[rock_name][mineral] = compiled
-
-    def _compile_mineral_groups(self, rock_name: str, group_dict: dict):
-        if rock_name not in AnisotropicRocks._mineral_groups_cache:
-            AnisotropicRocks._mineral_groups_cache[rock_name] = {}
-
-        for group, entry in group_dict.items():
-            minerals = entry["minerals"]
-            min_val = entry["min"]
-            max_val = entry["max"]
-
-            AnisotropicRocks._mineral_groups_cache[rock_name][group] = {
-                "minerals": minerals,
-                "min": min_val,
-                "max": max_val
-            }
 
     def _sample_mineralogy(self, rock_name: str, number: int):
         has_groups = rock_name in AnisotropicRocks._mineral_groups_cache
@@ -444,7 +389,11 @@ class AnisotropicRocks:
             elif fluid == "natural gas":
                 density_fluid = 750
 
-        data_yaml = self._load_yaml(rock_name=self.name)
+        (data_yaml, AnisotropicRocks._yaml_cache, AnisotropicRocks._mineralogy_cache,
+         AnisotropicRocks._mineral_groups_cache) = CommonRockFunctions()._load_yaml(
+            rock_name=self.name, _yaml_cache=AnisotropicRocks._yaml_cache,
+            _mineralogy_cache=AnisotropicRocks._mineralogy_cache,
+            _mineral_groups_cache=AnisotropicRocks._mineral_groups_cache, _data_path=self.data_path)
         min_porosity = data_yaml["physical_properties"]["porosity"]["min"]
         max_porosity = data_yaml["physical_properties"]["porosity"]["max"]
         porosity = self.rng.uniform(min_porosity, max_porosity, number)
