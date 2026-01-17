@@ -16,15 +16,12 @@ This module controls the generation of synthetic data for anisotropic rocks.
 """
 
 # PACKAGES
-import yaml
 import numpy as np
 import pandas as pd
 from pathlib import Path
 
 # MODULES
-from ..minerals.synthesis import MineralDataGeneration
 from ..rocks.common import RockGeneration, CommonRockFunctions
-from ..physics.common import Geophysics
 
 # Code
 BASE_PATH = Path(__file__).resolve().parents[2]
@@ -47,7 +44,6 @@ class AnisotropicRocks:
         self.current_seed = int(np.round(self.rng.uniform(0, 1000), 0))
         self.data_path = DATA_PATH
         self.rock_gen = RockGeneration()
-        self.geophysics = Geophysics()
         self.conversion_factors = self.rock_gen._determine_oxide_conversion_factors()
         self.cache = {}
         self.class_commonrockfunctions = CommonRockFunctions()
@@ -85,25 +81,6 @@ class AnisotropicRocks:
             bulk_data[key_mineral] = values
 
         return bulk_data
-
-    def collect_geophysical_properties(self, _helper_bulk_data, rho_f, n):
-        # Update bulk density data
-        (_helper_bulk_data["rho"], _helper_bulk_data["rho_s"],
-         _helper_bulk_data["rho_f"]) = self.geophysics.calculate_bulk_density_data(
-            v_phi=_helper_bulk_data["porosity"], val_rho=_helper_bulk_data["rho"], val_rho_f=rho_f,
-            val_n=n)
-        # Update bulk seismic velocity data
-        _helper_bulk_data["K"] = _helper_bulk_data["K"]*(1 - _helper_bulk_data["porosity"])**self.alpha_K
-        _helper_bulk_data["G"] = _helper_bulk_data["G"]*(1 - _helper_bulk_data["porosity"])**self.alpha_G
-        (_helper_bulk_data["vP"], _helper_bulk_data["vS"],
-         _helper_bulk_data["vP/vS"]) = self.geophysics.calculate_seismic_velocities(
-            val_K=_helper_bulk_data["K"], val_G=_helper_bulk_data["G"], val_rho=_helper_bulk_data["rho"])
-        # Update elastic parameter data
-        (_helper_bulk_data["E"], _helper_bulk_data["poisson"],
-         _helper_bulk_data["lame"]) = self.geophysics.calculate_elastic_parameter_data(
-            val_K=_helper_bulk_data["K"], val_G=_helper_bulk_data["G"])
-
-        return _helper_bulk_data
 
     def update_compositional_bulk_data(
             self, _helper_elements, _helper_bulk_data, _mineral_data, _helper_composition, _helper_oxides,
@@ -178,8 +155,9 @@ class AnisotropicRocks:
         # Assign porosity data
         _helper_bulk_data["porosity"] = porosity
         # Collect geophysical data
-        _helper_bulk_data = self.collect_geophysical_properties(
-            _helper_bulk_data=_helper_bulk_data, rho_f=density_fluid, n=number)
+        _helper_bulk_data = self.class_commonrockfunctions.collect_geophysical_properties(
+            _helper_bulk_data=_helper_bulk_data, rho_f=density_fluid, n=number, alpha_K=self.alpha_K,
+            alpha_G=self.alpha_G)
         # Update chemistry data
         _helper_bulk_data = self.update_compositional_bulk_data(
             _helper_elements=_helper_elements, _helper_bulk_data=_helper_bulk_data, _mineral_data=_mineral_data,

@@ -24,6 +24,7 @@ from sqlalchemy import BOOLEAN
 # MODULES
 from ..chemistry.common import PeriodicSystem
 from ..minerals.synthesis import MineralDataGeneration
+from ..physics.common import Geophysics
 
 class RockGeneration:
     def __init__(self):
@@ -100,10 +101,9 @@ class RockGeneration:
 
 class CommonRockFunctions:
     def __init__(self):
-        pass
+        self.geophysics = Geophysics()
 
     # YAML processing
-
     def _compile_mineralogy(self, rock_name: str, mineralogy_dict: dict, _mineralogy_cache: dict):
         """
         Extracts and compiles all chemistry formulas from the YAML file.
@@ -370,5 +370,25 @@ class CommonRockFunctions:
             _helper_property = self._extract_mineral_property_data(
                 list_minerals=list_minerals, data_mineral=_mineral_data, property=property)
             _helper_bulk_data[property] = np.sum(_helper_composition*_helper_property.T, axis=1)
+
+        return _helper_bulk_data
+
+    # Collecting geophysical bulk data (no anisotropy consideration)
+    def collect_geophysical_properties(self, _helper_bulk_data, rho_f, n, alpha_K, alpha_G):
+        # Update bulk density data
+        (_helper_bulk_data["rho"], _helper_bulk_data["rho_s"],
+         _helper_bulk_data["rho_f"]) = self.geophysics.calculate_bulk_density_data(
+            v_phi=_helper_bulk_data["porosity"], val_rho=_helper_bulk_data["rho"], val_rho_f=rho_f,
+            val_n=n)
+        # Update bulk seismic velocity data
+        _helper_bulk_data["K"] = _helper_bulk_data["K"]*(1 - _helper_bulk_data["porosity"])**alpha_K
+        _helper_bulk_data["G"] = _helper_bulk_data["G"]*(1 - _helper_bulk_data["porosity"])**alpha_G
+        (_helper_bulk_data["vP"], _helper_bulk_data["vS"],
+         _helper_bulk_data["vP/vS"]) = self.geophysics.calculate_seismic_velocities(
+            val_K=_helper_bulk_data["K"], val_G=_helper_bulk_data["G"], val_rho=_helper_bulk_data["rho"])
+        # Update elastic parameter data
+        (_helper_bulk_data["E"], _helper_bulk_data["poisson"],
+         _helper_bulk_data["lame"]) = self.geophysics.calculate_elastic_parameter_data(
+            val_K=_helper_bulk_data["K"], val_G=_helper_bulk_data["G"])
 
         return _helper_bulk_data
