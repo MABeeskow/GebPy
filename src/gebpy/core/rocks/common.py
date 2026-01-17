@@ -17,9 +17,13 @@ This module contains several routines that are commonly used by the different ro
 import pathlib
 # PACKAGES
 import re, yaml
+import numpy as np
+import pandas as pd
+from sqlalchemy import BOOLEAN
 
 # MODULES
 from ..chemistry.common import PeriodicSystem
+from ..minerals.synthesis import MineralDataGeneration
 
 class RockGeneration:
     def __init__(self):
@@ -98,6 +102,8 @@ class CommonRockFunctions:
     def __init__(self):
         pass
 
+    # YAML processing
+
     def _compile_mineralogy(self, rock_name: str, mineralogy_dict: dict, _mineralogy_cache: dict):
         """
         Extracts and compiles all chemistry formulas from the YAML file.
@@ -169,3 +175,186 @@ class CommonRockFunctions:
         _yaml_cache[rock_name] = data
 
         return (data, _yaml_cache, _mineralogy_cache, _mineral_groups_cache)
+
+    # Mineral sampling
+    def _collect_mineral_data(self, list_minerals, number, _variability, _uncertainty):
+        _mineral_data = []
+        for index, mineral in enumerate(list_minerals):
+            data_init = MineralDataGeneration(
+                name=mineral, n_datapoints=number, variability=_variability, uncertainty=_uncertainty)
+            data_mineral = data_init.generate_data()
+            is_fixed = data_mineral.shape[0] == 1
+            if is_fixed and number > 1:
+                data_mineral = pd.concat([data_mineral]*number, ignore_index=True)
+            elif not is_fixed and data_mineral.shape[0] != number:
+                raise ValueError(
+                    f"Mineral '{mineral}' returned {data_mineral.shape[0]} rows, "
+                    f"but expected {number}.")
+            _mineral_data.append(data_mineral)
+
+        return _mineral_data
+
+    def _extract_element_data(self, data_minerals, list_elements):
+        seen = set(list_elements)
+        ordered = list(list_elements)
+
+        for dataset in data_minerals:
+            for key in dataset.keys():
+                if key.startswith("chemistry."):
+                    element = key[len("chemistry."):]
+                    if element not in seen:
+                        seen.add(element)
+                        ordered.append(element)
+
+        return ordered
+
+    def _extract_oxide_data(self, data_minerals, list_oxides):
+        seen = set(list_oxides)
+        ordered = list(list_oxides)
+
+        for dataset in data_minerals:
+            for key in dataset.keys():
+                if key.startswith("compounds."):
+                    oxide = key[len("compounds."):]
+                    if oxide not in seen:
+                        seen.add(oxide)
+                        ordered.append(oxide)
+
+            # Spezialfall Pyrit
+            if dataset["mineral"][0] == "Py":
+                for oxide in ("Fe2O3", "SO3"):
+                    if oxide not in seen:
+                        seen.add(oxide)
+                        ordered.append(oxide)
+                if "FeS2" in seen:
+                    seen.remove("FeS2")
+                    ordered = [o for o in ordered if o != "FeS2"]
+
+        return ordered
+
+    def collect_initial_compositional_data(self, list_minerals, n, _variability, _uncertainty):
+        _helper_elements = []
+        _helper_oxides = []
+        _mineral_data = self._collect_mineral_data(
+            list_minerals=list_minerals, number=n, _variability=_variability, _uncertainty=_uncertainty)
+        _helper_elements = self._extract_element_data(data_minerals=_mineral_data, list_elements=_helper_elements)
+        _helper_oxides = self._extract_oxide_data(data_minerals=_mineral_data, list_oxides=_helper_oxides)
+
+        return _mineral_data, _helper_elements, _helper_oxides
+
+    def _sample_bounded_simplex_batch(self, min_vals, max_vals, number, _rng):
+        min_vals = np.asarray(min_vals, dtype=float)
+        max_vals = np.asarray(max_vals, dtype=float)
+        n = len(min_vals)
+
+        # --- Consistency ---
+        if min_vals.sum() > 1:
+            raise ValueError("Sum of minimum fractions > 1")
+
+        if max_vals.sum() < 1:
+            raise ValueError("Sum of maximum fractions < 1")
+
+        span = max_vals - min_vals
+        samples = np.zeros((number, n))
+
+        for i in range(number):
+            remaining = 1.0 - min_vals.sum()
+            order = np.arange(n)
+
+            _rng.shuffle(order)
+            x = np.zeros(n)
+
+            for j in order[:-1]:
+                upper = min(span[j], remaining)
+                val = _rng.uniform(0, upper)
+                x[j] = val
+                remaining -= val
+
+            x[order[-1]] = remaining
+            samples[i] = min_vals + x
+
+        return samples
+
+    def _compute_bulk_element(self, element, mineral_data, composition):
+        n_samples = composition.shape[0]
+        values = np.zeros(n_samples, dtype=float)
+        key = "chemistry." + element
+
+        for j, dataset in enumerate(mineral_data):
+            if key not in dataset:
+                continue
+
+            chem = dataset[key].to_numpy(dtype=float)
+
+            # Broadcast scalar chemistry
+            if chem.size == 1:
+                chem = np.full(n_samples, chem[0], dtype=float)
+
+            # If chemistry vector but only one sample: take first value deterministically
+            elif n_samples == 1 and chem.size > 1:
+                chem = np.array([chem[0]], dtype=float)
+
+            elif chem.size != n_samples:
+                raise ValueError(
+                    f"Shape mismatch for element '{element}': "
+                    f"chemistry length {chem.size} vs. composition samples {n_samples}"
+                )
+
+            values += composition[:, j]*chem
+
+        return values
+
+    def _calculate_chemical_amounts(
+            self, list_minerals, number, _limits, _rng, _variability, _uncertainty, element_constraints=None):
+        if element_constraints == None:
+            n_minerals = len(list_minerals)
+            _helper_composition = np.zeros((number, n_minerals))
+            _helper_mineral_amounts = {mineral: np.zeros(number) for mineral in list_minerals}
+            _helper_composition = self._sample_bounded_simplex_batch(
+                min_vals=_limits["lower"], max_vals=_limits["upper"], number=number, _rng=_rng)
+            _helper_mineral_amounts = {mineral: _helper_composition[:, j] for j, mineral in enumerate(list_minerals)}
+        elif element_constraints != None:
+            valid_comp = []
+            attempts = 0
+            max_attempts = number*100
+
+            # Mineral data wird für die Elementberechnung benötigt
+            _mineral_data, _, _ = self.collect_initial_compositional_data(
+                list_minerals=list_minerals, n=1, _variability=_variability, _uncertainty=_uncertainty
+            )
+
+            while len(valid_comp) < number:
+                comp = self._sample_bounded_simplex_batch(
+                    min_vals=_limits["lower"],
+                    max_vals=_limits["upper"],
+                    number=1, _rng=_rng
+                )
+
+                is_valid = True
+                if element_constraints:
+                    for el, (lo, hi) in element_constraints.items():
+                        bulk_val = self._compute_bulk_element(
+                            el, _mineral_data, comp
+                        )[0]
+                        if not (lo <= bulk_val <= hi):
+                            is_valid = False
+                            break
+
+                if is_valid:
+                    valid_comp.append(comp[0])
+
+                attempts += 1
+                if attempts%1000 == 0:
+                    print(f"Acceptance rate: {len(valid_comp)/attempts:.3f}")
+                if attempts > max_attempts:
+                    raise RuntimeError(
+                        "Element constraints too restrictive for given mineralogy."
+                    )
+
+            _helper_composition = np.vstack(valid_comp)
+            _helper_mineral_amounts = {
+                mineral: _helper_composition[:, j]
+                for j, mineral in enumerate(list_minerals)
+            }
+
+        return _helper_composition, _helper_mineral_amounts

@@ -123,3 +123,44 @@ if n_datasets < 20:
 # data2 = rock2.generate_dataset(number=5)
 # print("YAML cache after second call:",
 #       IsotropicRocks._yaml_cache.keys())
+
+# print(f"\nTEST(MINERAL SAMPLING):")
+# print("=== TEST 1: Basic sampling ===")
+# rock = IsotropicRocks(name="Sandstone", random_seed=42)
+# data = rock.generate_dataset(number=10)
+# print(data.head())
+# print("Shape:", data.shape)
+#
+# print("\n=== TEST 2: Mineral fractions sum to 1 ===")
+# phi_cols = [c for c in data.columns if c.startswith("phi.")]
+# row_sums = data[phi_cols].sum(axis=1)
+# print("Row sums:")
+# print(row_sums)
+# print("Min:", row_sums.min(), "Max:", row_sums.max())
+# print("\n=== TEST 3: Reproducibility ===")
+# r1 = IsotropicRocks("Sandstone", random_seed=123)
+# r2 = IsotropicRocks("Sandstone", random_seed=123)
+# d1 = r1.generate_dataset(number=5)
+# d2 = r2.generate_dataset(number=5)
+# phi_cols = [c for c in d1.columns if c.startswith("phi.")]
+# print("Difference in mineral fractions:")
+# print((d1[phi_cols] - d2[phi_cols]).abs().max())
+# print("\n=== TEST 4: Mineral bounds ===")
+# for col in phi_cols:
+#     print(
+#         col,
+#         "min =", data[col].min(),
+#         "max =", data[col].max()
+#     )
+# print("\n=== TEST 5: Element constraints ===")
+# constraints = {"Si": (0.2, 0.4)}
+# rock_c = IsotropicRocks("Sandstone", random_seed=7)
+# data_c = rock_c.generate_dataset(
+#     number=5,
+#     element_constraints=constraints
+# )
+# print(data_c[["w.Si"]])
+# print("Min Si:", data_c["w.Si"].min())
+# print("Max Si:", data_c["w.Si"].max())
+
+
