@@ -21,7 +21,7 @@ import pandas as pd
 from pathlib import Path
 
 # MODULES
-from ..rocks.common import RockGeneration, CommonRockFunctions
+from ..rocks.common import CommonRockFunctions
 
 # Code
 BASE_PATH = Path(__file__).resolve().parents[2]
@@ -43,59 +43,8 @@ class AnisotropicRocks:
         self.rng = np.random.default_rng(random_seed)
         self.current_seed = int(np.round(self.rng.uniform(0, 1000), 0))
         self.data_path = DATA_PATH
-        self.rock_gen = RockGeneration()
-        self.conversion_factors = self.rock_gen._determine_oxide_conversion_factors()
         self.cache = {}
         self.class_commonrockfunctions = CommonRockFunctions()
-
-    def _update_chemistry_data(self, _bulk_data, data_minerals, data_composition, element, number):
-        n_minerals = len(data_minerals)
-        helper = np.zeros((n_minerals, number))
-        key_element = "chemistry." + element
-
-        for i, dataset in enumerate(data_minerals):
-            if key_element in dataset:
-                helper[i, :] = dataset[key_element].to_numpy()
-
-        bulk_values = np.sum(data_composition*helper.T, axis=1)
-        _bulk_data["w." + element] = bulk_values
-
-        return _bulk_data
-
-    def _update_oxide_data(self, bulk_data, list_oxides):
-        for oxide in list_oxides:
-            cation, anion = self.rock_gen._get_elements_of_compound(compound=oxide)
-            if anion == "O":
-                key_cation = "w." + cation
-                values = self.conversion_factors[oxide]["factor"]*bulk_data[key_cation]
-                key_oxide = "w." + oxide
-                bulk_data[key_oxide] = values
-            else:
-                print("There is a non-oxide compound part of the list.")
-
-        return bulk_data
-
-    def _assign_mineral_amounts(self, bulk_data, data_amounts):
-        for mineral, values in data_amounts.items():
-            key_mineral = "phi." + mineral
-            bulk_data[key_mineral] = values
-
-        return bulk_data
-
-    def update_compositional_bulk_data(
-            self, _helper_elements, _helper_bulk_data, _mineral_data, _helper_composition, _helper_oxides,
-            _helper_mineral_amounts, n):
-        for element in _helper_elements:
-            _helper_bulk_data = self._update_chemistry_data(
-                _bulk_data=_helper_bulk_data, data_minerals=_mineral_data, data_composition=_helper_composition,
-                element=element, number=n)
-        # Update oxide data
-        _helper_bulk_data = self._update_oxide_data(bulk_data=_helper_bulk_data, list_oxides=_helper_oxides)
-        # Update rock composition data
-        _helper_bulk_data = self._assign_mineral_amounts(
-            bulk_data=_helper_bulk_data, data_amounts=_helper_mineral_amounts)
-
-        return _helper_bulk_data
 
     def generate_dataset(
             self, number: int = 1, fluid: str = "water", density_fluid=None, element_constraints=None) -> None:
@@ -158,8 +107,10 @@ class AnisotropicRocks:
         _helper_bulk_data = self.class_commonrockfunctions.collect_geophysical_properties(
             _helper_bulk_data=_helper_bulk_data, rho_f=density_fluid, n=number, alpha_K=self.alpha_K,
             alpha_G=self.alpha_G)
+        # Application of anistropic effects
+
         # Update chemistry data
-        _helper_bulk_data = self.update_compositional_bulk_data(
+        _helper_bulk_data = self.class_commonrockfunctions.update_compositional_bulk_data(
             _helper_elements=_helper_elements, _helper_bulk_data=_helper_bulk_data, _mineral_data=_mineral_data,
             _helper_composition=_helper_composition, _helper_oxides=_helper_oxides,
             _helper_mineral_amounts=_helper_mineral_amounts, n=number)

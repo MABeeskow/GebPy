@@ -102,6 +102,8 @@ class RockGeneration:
 class CommonRockFunctions:
     def __init__(self):
         self.geophysics = Geophysics()
+        self.rock_gen = RockGeneration()
+        self.conversion_factors = self.rock_gen._determine_oxide_conversion_factors()
 
     # YAML processing
     def _compile_mineralogy(self, rock_name: str, mineralogy_dict: dict, _mineralogy_cache: dict):
@@ -390,5 +392,55 @@ class CommonRockFunctions:
         (_helper_bulk_data["E"], _helper_bulk_data["poisson"],
          _helper_bulk_data["lame"]) = self.geophysics.calculate_elastic_parameter_data(
             val_K=_helper_bulk_data["K"], val_G=_helper_bulk_data["G"])
+
+        return _helper_bulk_data
+
+    # Update compositional bulk data
+    def _update_chemistry_data(self, _bulk_data, data_minerals, data_composition, element, number):
+        n_minerals = len(data_minerals)
+        helper = np.zeros((n_minerals, number))
+        key_element = "chemistry." + element
+
+        for i, dataset in enumerate(data_minerals):
+            if key_element in dataset:
+                helper[i, :] = dataset[key_element].to_numpy()
+
+        bulk_values = np.sum(data_composition * helper.T, axis=1)
+        _bulk_data["w." + element] = bulk_values
+
+        return _bulk_data
+
+    def _update_oxide_data(self, bulk_data, list_oxides):
+        for oxide in list_oxides:
+            cation, anion = self.rock_gen._get_elements_of_compound(compound=oxide)
+            if anion == "O":
+                key_cation = "w." + cation
+                values = self.conversion_factors[oxide]["factor"]*bulk_data[key_cation]
+                key_oxide = "w." + oxide
+                bulk_data[key_oxide] = values
+            else:
+                print("There is a non-oxide compound part of the list.")
+
+        return bulk_data
+
+    def _assign_mineral_amounts(self, bulk_data, data_amounts):
+        for mineral, values in data_amounts.items():
+            key_mineral = "phi." + mineral
+            bulk_data[key_mineral] = values
+
+        return bulk_data
+
+    def update_compositional_bulk_data(
+            self, _helper_elements, _helper_bulk_data, _mineral_data, _helper_composition, _helper_oxides,
+            _helper_mineral_amounts, n):
+        for element in _helper_elements:
+            _helper_bulk_data = self._update_chemistry_data(
+                _bulk_data=_helper_bulk_data, data_minerals=_mineral_data, data_composition=_helper_composition,
+                element=element, number=n)
+        # Update oxide data
+        _helper_bulk_data = self._update_oxide_data(bulk_data=_helper_bulk_data, list_oxides=_helper_oxides)
+        # Update rock composition data
+        _helper_bulk_data = self._assign_mineral_amounts(
+            bulk_data=_helper_bulk_data, data_amounts=_helper_mineral_amounts)
 
         return _helper_bulk_data
