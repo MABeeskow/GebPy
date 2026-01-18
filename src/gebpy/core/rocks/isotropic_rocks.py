@@ -6,7 +6,7 @@
 # Name:		isotropic_rocks.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		17.01.2026
+# Date:		18.01.2026
 
 #-----------------------------------------------
 
@@ -25,7 +25,8 @@ from ..rocks.common import CommonRockFunctions
 
 # Code
 BASE_PATH = Path(__file__).resolve().parents[2]
-DATA_PATH = BASE_PATH / "data_rocks"
+DATA_PATH = BASE_PATH/"data_rocks"
+
 
 class IsotropicRocks:
     _yaml_cache = {}
@@ -47,7 +48,10 @@ class IsotropicRocks:
         self.class_commonrockfunctions = CommonRockFunctions()
 
     def generate_dataset(
-            self, number: int = 1, fluid: str = "water", density_fluid=None, element_constraints=None) -> None:
+            self, number: int = 1, fluid: str = "water", density_fluid=None, element_constraints=None, *,
+            porosity=None, mineral_comp=None) -> None:
+        if mineral_comp is not None and element_constraints is not None:
+            raise ValueError("element_constraints not allowed with fixed mineral_comp.")
         if element_constraints:
             for el, (lo, hi) in element_constraints.items():
                 if not (0.0 <= lo < hi <= 1.0):
@@ -71,9 +75,14 @@ class IsotropicRocks:
             _mineralogy_cache=IsotropicRocks._mineralogy_cache,
             _mineral_groups_cache=IsotropicRocks._mineral_groups_cache, _data_path=self.data_path)
         # Porosity definition
-        min_porosity = data_yaml["physical_properties"]["porosity"]["min"]
-        max_porosity = data_yaml["physical_properties"]["porosity"]["max"]
-        porosity = self.rng.uniform(min_porosity, max_porosity, number)
+        if porosity is None:
+            min_porosity = data_yaml["physical_properties"]["porosity"]["min"]
+            max_porosity = data_yaml["physical_properties"]["porosity"]["max"]
+            porosity = self.rng.uniform(min_porosity, max_porosity, number)
+        else:
+            if not (0 < porosity < 1):
+                raise ValueError("Porosity must be between 0 and 1.")
+            porosity = np.full(number, porosity)
         # Mineral sampling
         mineral_limits = IsotropicRocks._mineralogy_cache[self.name]
         _limits = {"lower": [], "upper": []}
@@ -85,19 +94,36 @@ class IsotropicRocks:
         list_minerals = list(IsotropicRocks._mineralogy_cache[self.name].keys())
         _bulk_data = {}
         # Collect mineralogical composition data
-        _helper_composition, _helper_mineral_amounts = self.class_commonrockfunctions._calculate_chemical_amounts(
-            list_minerals=list_minerals, number=number, _limits=_limits, _rng=self.rng,
-            _variability=self.variability, _uncertainty=self.uncertainty, element_constraints=element_constraints)
+        if mineral_comp is None:
+            _helper_composition, _helper_mineral_amounts = self.class_commonrockfunctions._calculate_chemical_amounts(
+                list_minerals=list_minerals, number=number, _limits=_limits, _rng=self.rng,
+                _variability=self.variability, _uncertainty=self.uncertainty, element_constraints=element_constraints)
+        else:
+            if set(mineral_comp.keys()) != set(list_minerals):
+                raise ValueError("mineral_comp must define all minerals.")
+            if not np.isclose(sum(mineral_comp.values()), 1.0):
+                raise ValueError("Mineral fractions must sum to 1.")
+            if any(v < 0 for v in mineral_comp.values()):
+                raise ValueError("Mineral fractions must be >= 0.")
+
+            list_amounts = []
+            _helper_mineral_amounts = {}
+            for mineral in list_minerals:
+                amount = mineral_comp[mineral]
+                list_amounts.append(amount)
+                _helper_mineral_amounts[mineral] = np.ones(number)*amount
+            _helper_composition = np.ones((number, len(list_minerals)))*list_amounts
         # Collect mineral data
-        if element_constraints != None:
+        if element_constraints is not None:
             _mineral_data, _helper_elements, _helper_oxides = (
                 self.class_commonrockfunctions.collect_initial_compositional_data(
-                list_minerals=list_minerals, n=1, _variability=self.variability, _uncertainty=self.uncertainty))
+                    list_minerals=list_minerals, n=1, _variability=self.variability, _uncertainty=self.uncertainty))
             _mineral_data = [pd.concat([df]*number, ignore_index=True) for df in _mineral_data]
         else:
             _mineral_data, _helper_elements, _helper_oxides = (
                 self.class_commonrockfunctions.collect_initial_compositional_data(
-                list_minerals=list_minerals, n=number, _variability=self.variability, _uncertainty=self.uncertainty))
+                    list_minerals=list_minerals, n=number, _variability=self.variability,
+                    _uncertainty=self.uncertainty))
         # Collect bulk data
         _helper_bulk_data = self.class_commonrockfunctions.collect_initial_bulk_data(
             list_minerals=list_minerals, _mineral_data=_mineral_data, _helper_composition=_helper_composition)

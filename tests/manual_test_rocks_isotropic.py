@@ -6,7 +6,7 @@
 # Name:		manual_test_rocks_isotropic.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		16.01.2026
+# Date:		18.01.2026
 
 #-----------------------------------------------
 
@@ -102,8 +102,21 @@ if n_datasets < 20:
     print("Results:", data_rock.describe())
 
 print(f"\nDATA(MARL, WATER):")
+data_rock = IsotropicRocks(name="Marl", random_seed=42, variability=True).generate_dataset(number=n_datasets)
+if n_datasets < 20:
+    print("Results:", data_rock.describe())
+
+print(f"\nDATA(MARL, WATER, CONSTRAINED ELEMENT AMOUNT):")
 data_rock = IsotropicRocks(name="Marl", random_seed=42, variability=True).generate_dataset(
     number=n_datasets, element_constraints={"C": (0.10, 0.11)})
+if n_datasets < 20:
+    print("Results:", data_rock.describe())
+
+print(f"\nDATA(MARL, WATER, CONSTRAINED MINERAL COMPOSITION):")
+data_rock = IsotropicRocks(name="Marl", random_seed=42, variability=True).generate_dataset(
+    number=n_datasets, mineral_comp={
+        "Calcite": 0.8, "Dolomite": 0.05, "Illite": 0.05, "Chlorite": 0.0, "Kaolinite": 0.0, "Montmorillonite": 0.0,
+        "Quartz": 0.05, "Plagioclase": 0.05})
 if n_datasets < 20:
     print("Results:", data_rock.describe())
 
