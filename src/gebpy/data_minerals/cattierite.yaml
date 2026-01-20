@@ -1,0 +1,40 @@
+mineral: Cattierite
+group: Sulfides
+formula: CoS2
+last updated: 20.01.2026
+
+metadata:
+  key: "Cat"
+  crystal_system: "cubic"
+
+chemistry:
+  Co: 1
+  S: 2
+
+sulfides:
+  CoS2: 1
+
+physical_properties:
+  K:
+    value: 124.0e9
+    ref: "unknown"
+  G:
+    value: 73.0e9
+    ref: "unknown"
+
+cell_data:
+  space_group:
+    value: "Pa3"
+    ref: "www.handbookofmineralogy.org"
+  a:
+    value: 5.52
+    ref: "www.handbookofmineralogy.org"
+  Z:
+    value: 4
+    ref: "www.handbookofmineralogy.org"
+
+sources:
+  - author: "John W. Anthony, Richard A. Bideaux, Kenneth W. Bladh, and Monte C. Nichols"
+    title: "Handbook of Mineralogy"
+    publisher: "Mineralogical Society of America, Chantilly, VA"
+    url: "http://www.handbookofmineralogy.org/"

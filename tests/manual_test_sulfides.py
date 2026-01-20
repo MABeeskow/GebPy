@@ -6,7 +6,7 @@
 # Name:		manual_test_sulfides.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		17.12.2025
+# Date:		20.01.2026
 
 #-----------------------------------------------
 
@@ -53,3 +53,53 @@ print("\nSpeed ratio:", round(speed_ratio, 4))
 print("Speed boost:", round(speed_boost, 2), "%")
 
 n_datasets = 5
+
+print(f"\nDATA (ACANTHITE):")
+start = time.time()
+DEFAULT_DATA = Sulfides(name="Acanthite", random_seed=42).generate_dataset(number=n_datasets)
+end = time.time()
+delta_new = end - start
+print(f"Runtime: {delta_new:.5f} seconds")
+
+if n_datasets < 20:
+    print("Results:", DEFAULT_DATA)
+
+print(f"\nDATA (BORNITE):")
+start = time.time()
+DEFAULT_DATA = Sulfides(name="Bornite", random_seed=42).generate_dataset(number=n_datasets)
+end = time.time()
+delta_new = end - start
+print(f"Runtime: {delta_new:.5f} seconds")
+
+if n_datasets < 20:
+    print("Results:", DEFAULT_DATA)
+
+print(f"\nDATA (CATTIERITE):")
+start = time.time()
+DEFAULT_DATA = Sulfides(name="Cattierite", random_seed=42).generate_dataset(number=n_datasets)
+end = time.time()
+delta_new = end - start
+print(f"Runtime: {delta_new:.5f} seconds")
+
+if n_datasets < 20:
+    print("Results:", DEFAULT_DATA)
+
+print(f"\nDATA (CHALCOCITE):")
+start = time.time()
+DEFAULT_DATA = Sulfides(name="Chalcocite", random_seed=42).generate_dataset(number=n_datasets)
+end = time.time()
+delta_new = end - start
+print(f"Runtime: {delta_new:.5f} seconds")
+
+if n_datasets < 20:
+    print("Results:", DEFAULT_DATA)
+
+print(f"\nDATA (CHALCOPYRITE):")
+start = time.time()
+DEFAULT_DATA = Sulfides(name="Chalcopyrite", random_seed=42).generate_dataset(number=n_datasets)
+end = time.time()
+delta_new = end - start
+print(f"Runtime: {delta_new:.5f} seconds")
+
+if n_datasets < 20:
+    print("Results:", DEFAULT_DATA)

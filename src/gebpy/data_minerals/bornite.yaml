@@ -1,0 +1,49 @@
+mineral: Bornite
+group: Sulfides
+formula: Cu5FeS4
+last updated: 20.01.2026
+
+metadata:
+  key: "Bn"
+  crystal_system: "orthorhombic"
+
+chemistry:
+  Cu: 5
+  Fe: 1
+  S: 4
+
+sulfides:
+  Cu2S: 0.634305471139763
+  CuS: 0.190520410908402
+  FeS: 0.175174117951835
+
+physical_properties:
+  K:
+    value: 92.29e9
+    ref: "unknown"
+  G:
+    value: 36.85e9
+    ref: "unknown"
+
+cell_data:
+  space_group:
+    value: "Pbca"
+    ref: "www.handbookofmineralogy.org"
+  a:
+    value: 10.95
+    ref: "www.handbookofmineralogy.org"
+  b:
+    value: 21.862
+    ref: "www.handbookofmineralogy.org"
+  c:
+    value: 10.95
+    ref: "www.handbookofmineralogy.org"
+  Z:
+    value: 16
+    ref: "www.handbookofmineralogy.org"
+
+sources:
+  - author: "John W. Anthony, Richard A. Bideaux, Kenneth W. Bladh, and Monte C. Nichols"
+    title: "Handbook of Mineralogy"
+    publisher: "Mineralogical Society of America, Chantilly, VA"
+    url: "http://www.handbookofmineralogy.org/"

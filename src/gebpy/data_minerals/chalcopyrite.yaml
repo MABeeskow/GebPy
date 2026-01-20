@@ -1,0 +1,45 @@
+mineral: Chalcopyrite
+group: Sulfides
+formula: CuFeS2
+last updated: 20.01.2026
+
+metadata:
+  key: "Ccp"
+  crystal_system: "tetragonal"
+
+chemistry:
+  Cu: 1
+  Fe: 1
+  S: 2
+
+sulfides:
+  CuS: 1
+  FeS: 1
+
+physical_properties:
+  K:
+    value: 56.0e9
+    ref: "unknown"
+  G:
+    value: 19.0e9
+    ref: "unknown"
+
+cell_data:
+  space_group:
+    value: "I42d"
+    ref: "www.handbookofmineralogy.org"
+  a:
+    value: 5.281
+    ref: "www.handbookofmineralogy.org"
+  c:
+    value: 10.401
+    ref: "www.handbookofmineralogy.org"
+  Z:
+    value: 4
+    ref: "www.handbookofmineralogy.org"
+
+sources:
+  - author: "John W. Anthony, Richard A. Bideaux, Kenneth W. Bladh, and Monte C. Nichols"
+    title: "Handbook of Mineralogy"
+    publisher: "Mineralogical Society of America, Chantilly, VA"
+    url: "http://www.handbookofmineralogy.org/"

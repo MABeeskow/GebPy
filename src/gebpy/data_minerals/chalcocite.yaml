@@ -1,0 +1,49 @@
+mineral: Chalcocite
+group: Sulfides
+formula: Cu2S
+last updated: 19.01.2026
+
+metadata:
+  key: "Cc"
+  crystal_system: "monoclinic"
+
+chemistry:
+  Cu: 2
+  S: 1
+
+sulfides:
+  Cu2S: 1
+
+physical_properties:
+  K:
+    value: 101.98e9
+    ref: "unknown"
+  G:
+    value: 39.12e9
+    ref: "unknown"
+
+cell_data:
+  space_group:
+    value: "P21c"
+    ref: "www.handbookofmineralogy.org"
+  a:
+    value: 11.82
+    ref: "www.handbookofmineralogy.org"
+  b:
+    value: 27.05
+    ref: "www.handbookofmineralogy.org"
+  c:
+    value: 13.43
+    ref: "www.handbookofmineralogy.org"
+  beta:
+    value: 90.0
+    ref: "www.handbookofmineralogy.org"
+  Z:
+    value: 96
+    ref: "www.handbookofmineralogy.org"
+
+sources:
+  - author: "John W. Anthony, Richard A. Bideaux, Kenneth W. Bladh, and Monte C. Nichols"
+    title: "Handbook of Mineralogy"
+    publisher: "Mineralogical Society of America, Chantilly, VA"
+    url: "http://www.handbookofmineralogy.org/"

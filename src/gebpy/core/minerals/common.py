@@ -6,7 +6,7 @@
 # Name:		common.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		17.12.2025
+# Date:		20.01.2026
 
 #-----------------------------------------------
 
@@ -267,7 +267,7 @@ class MineralGeneration:
         return first
 
     def _determine_sulfide_conversion_factors(self):
-        list_sulfides = ["FeS", "FeS2"]
+        list_sulfides = ["FeS", "FeS2", "Cu2S", "CuS", "Ag2S", "AgS", "CoS", "CoS2"]
         mass_sulfur = self.elements["S"][2]
         _conversion_factors = {}
         for sulfide in list_sulfides:
@@ -275,9 +275,10 @@ class MineralGeneration:
             cation = self._get_cation_element(oxide=sulfide)
             if cation in self.elements:
                 mass_cation = self.elements[cation][2]
-                _conversion_factors[sulfide]["factor"] = (_conversion_factors[sulfide][cation]*mass_cation +
-                                                        _conversion_factors[sulfide]["S"]*mass_sulfur)/(
-                        _conversion_factors[sulfide][cation]*mass_cation)
+                _conversion_factors[sulfide]["factor"] = (
+                        (_conversion_factors[sulfide][cation]*mass_cation +
+                         _conversion_factors[sulfide]["S"]*mass_sulfur)/(
+                        _conversion_factors[sulfide][cation]*mass_cation))
             else:
                 pass
                 #print(self.name, ": cation", cation, "not found in chemical container.")

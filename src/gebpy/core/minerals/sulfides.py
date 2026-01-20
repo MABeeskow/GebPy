@@ -6,7 +6,7 @@
 # Name:		sulfides.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		17.12.2025
+# Date:		19.01.2026
 
 #-----------------------------------------------
 
@@ -68,8 +68,10 @@ class Sulfides:
             "S": PeriodicSystem(name="S").get_data(),
             "Mn": PeriodicSystem(name="Mn").get_data(),
             "Fe": PeriodicSystem(name="Fe").get_data(),
+            "Co": PeriodicSystem(name="Co").get_data(),
             "Cu": PeriodicSystem(name="Cu").get_data(),
             "Zn": PeriodicSystem(name="Zn").get_data(),
+            "Ag": PeriodicSystem(name="Ag").get_data(),
             "Pb": PeriodicSystem(name="Pb").get_data(),
         }
 
