@@ -13,9 +13,9 @@ chemistry:
   S: 4
 
 sulfides:
-  Cu2S: 0.634305471139763
-  CuS: 0.190520410908402
-  FeS: 0.175174117951835
+  Cu2S: 0.5
+  CuS: 0.25
+  FeS: 0.25
 
 physical_properties:
   K:

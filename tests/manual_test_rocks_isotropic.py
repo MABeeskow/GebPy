@@ -6,7 +6,7 @@
 # Name:		manual_test_rocks_isotropic.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		18.01.2026
+# Date:		21.01.2026
 
 #-----------------------------------------------
 
@@ -117,6 +117,13 @@ data_rock = IsotropicRocks(name="Marl", random_seed=42, variability=True).genera
     number=n_datasets, mineral_comp={
         "Calcite": 0.8, "Dolomite": 0.05, "Illite": 0.05, "Chlorite": 0.0, "Kaolinite": 0.0, "Montmorillonite": 0.0,
         "Quartz": 0.05, "Plagioclase": 0.05})
+if n_datasets < 20:
+    print("Results:", data_rock.describe())
+
+print(f"\nDATA(LIMESTONE, WATER, ADDITIONAL MINERAL ASSEMBLAGE):")
+data_rock = IsotropicRocks(name="Limestone", random_seed=42).generate_dataset(
+    number=n_datasets, additional_assemblage={"volume_fraction": 0.15, "mineralogy": {
+        "Galena": 0.4, "Sphalerite": 0.5, "Chalcopyrite": 0.1}})
 if n_datasets < 20:
     print("Results:", data_rock.describe())
 

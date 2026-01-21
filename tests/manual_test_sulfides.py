@@ -6,7 +6,7 @@
 # Name:		manual_test_sulfides.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		20.01.2026
+# Date:		21.01.2026
 
 #-----------------------------------------------
 
@@ -97,6 +97,26 @@ if n_datasets < 20:
 print(f"\nDATA (CHALCOPYRITE):")
 start = time.time()
 DEFAULT_DATA = Sulfides(name="Chalcopyrite", random_seed=42).generate_dataset(number=n_datasets)
+end = time.time()
+delta_new = end - start
+print(f"Runtime: {delta_new:.5f} seconds")
+
+if n_datasets < 20:
+    print("Results:", DEFAULT_DATA)
+
+print(f"\nDATA (GALENA):")
+start = time.time()
+DEFAULT_DATA = Sulfides(name="Galena", random_seed=42).generate_dataset(number=n_datasets)
+end = time.time()
+delta_new = end - start
+print(f"Runtime: {delta_new:.5f} seconds")
+
+if n_datasets < 20:
+    print("Results:", DEFAULT_DATA)
+
+print(f"\nDATA (SPHALERITE):")
+start = time.time()
+DEFAULT_DATA = Sulfides(name="Sphalerite", random_seed=42).generate_dataset(number=n_datasets)
 end = time.time()
 delta_new = end - start
 print(f"Runtime: {delta_new:.5f} seconds")

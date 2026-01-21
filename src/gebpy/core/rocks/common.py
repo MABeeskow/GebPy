@@ -43,7 +43,10 @@ class RockGeneration:
             "Mn": PeriodicSystem(name="Mn").get_data(),
             "Fe": PeriodicSystem(name="Fe").get_data(),
             "Ni": PeriodicSystem(name="Ni").get_data(),
-            "U": PeriodicSystem(name="U").get_data()}
+            "U": PeriodicSystem(name="U").get_data(),
+            "Zn": PeriodicSystem(name="Zn").get_data(),
+            "Pb": PeriodicSystem(name="Pb").get_data(),
+            "Cu": PeriodicSystem(name="Cu").get_data()}
 
     def _parse_formula(self, formula: str):
         pattern = r"([A-Z][a-z]?)(\d*)"
@@ -211,6 +214,14 @@ class CommonRockFunctions:
         return ordered
 
     def _extract_oxide_data(self, data_minerals, list_oxides):
+        SULFIDE_OXIDE_MAP = {
+            "Py": {"add": ["Fe2O3", "SO3"], "remove": ["FeS2"]},
+            "Ccp": {"add": ["Cu2O", "Fe2O3", "SO3"], "remove": ["FeS", "CuS"]},
+            "Bn": {"add": ["Cu2O", "Fe2O3", "SO3"], "remove": ["FeS", "Cu2S", "CuS"]},
+            "Gn": {"add": ["PbO", "SO3"], "remove": ["PbS"]},
+            "Sp": {"add": ["ZnO", "SO3"], "remove": ["ZnS"]}
+        }
+
         seen = set(list_oxides)
         ordered = list(list_oxides)
 
@@ -222,15 +233,17 @@ class CommonRockFunctions:
                         seen.add(oxide)
                         ordered.append(oxide)
 
-            # Spezialfall Pyrit
-            if dataset["mineral"][0] == "Py":
-                for oxide in ("Fe2O3", "SO3"):
+            mineral = dataset["mineral"][0]
+            if mineral in SULFIDE_OXIDE_MAP:
+                mapping = SULFIDE_OXIDE_MAP[mineral]
+                for oxide in mapping["add"]:
                     if oxide not in seen:
                         seen.add(oxide)
                         ordered.append(oxide)
-                if "FeS2" in seen:
-                    seen.remove("FeS2")
-                    ordered = [o for o in ordered if o != "FeS2"]
+                for sulfide in mapping["remove"]:
+                    if sulfide in seen:
+                        seen.remove(sulfide)
+                        ordered.remove(sulfide)
 
         return ordered
 
@@ -444,3 +457,28 @@ class CommonRockFunctions:
             bulk_data=_helper_bulk_data, data_amounts=_helper_mineral_amounts)
 
         return _helper_bulk_data
+
+    def consider_additional_assemblage_data(self, additional_assemblage, _limits, list_minerals):
+        extra_fraction = additional_assemblage["volume_fraction"]
+        list_extra_minerals = list(additional_assemblage["mineralogy"].keys())
+        list_extra_amounts = np.array(list(additional_assemblage["mineralogy"].values()))
+
+        if any(m in list_minerals for m in list_extra_minerals):
+            raise ValueError("Additional minerals already present in host mineralogy.")
+        if not (0.0 < extra_fraction < 1.0):
+            raise ValueError("volume_fraction must be in the interval [0, 1).")
+        if not np.isclose(np.sum(list_extra_amounts), 1.0):
+            raise ValueError("Mineral amounts of additional mineral assemblage must sum to 1.")
+        if any(v < 0 for v in list_extra_amounts):
+            raise ValueError("Mineral amounts of additional mineral assemblage must be non-negative.")
+        if any(v > 1 for v in list_extra_amounts):
+            raise ValueError("Mineral amounts of additional mineral assemblage must be <= 1.")
+
+        list_minerals.extend(list_extra_minerals)
+        list_extra_amounts_corrected = list_extra_amounts*extra_fraction
+        fraction_correction = 1 - extra_fraction
+        for key, values in _limits.items():
+            _limits[key] = list(np.array(values)*fraction_correction)
+            _limits[key].extend(list_extra_amounts_corrected)
+
+        return _limits, list_minerals

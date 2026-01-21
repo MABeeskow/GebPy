@@ -1,38 +1,33 @@
-mineral: Chalcopyrite
+mineral: Sphalerite
 group: Sulfides
-formula: CuFeS2
+formula: ZnS
 last updated: 21.01.2026
 
 metadata:
-  key: "Ccp"
-  crystal_system: "tetragonal"
+  key: "Sp"
+  crystal_system: "cubic"
 
 chemistry:
-  Cu: 1
-  Fe: 1
-  S: 2
+  Zn: 1
+  S: 1
 
 sulfides:
-  CuS: 1
-  FeS: 1
+  ZnS: 1
 
 physical_properties:
   K:
-    value: 56.0e9
+    value: 68.0e9
     ref: "unknown"
   G:
-    value: 19.0e9
+    value: 33.0e9
     ref: "unknown"
 
 cell_data:
   space_group:
-    value: "I42d"
+    value: "F43m"
     ref: "www.handbookofmineralogy.org"
   a:
-    value: 5.281
-    ref: "www.handbookofmineralogy.org"
-  c:
-    value: 10.401
+    value: 5.406
     ref: "www.handbookofmineralogy.org"
   Z:
     value: 4

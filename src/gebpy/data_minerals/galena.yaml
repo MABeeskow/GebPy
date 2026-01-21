@@ -1,38 +1,33 @@
-mineral: Chalcopyrite
+mineral: Galena
 group: Sulfides
-formula: CuFeS2
+formula: PbS
 last updated: 21.01.2026
 
 metadata:
-  key: "Ccp"
-  crystal_system: "tetragonal"
+  key: "Gn"
+  crystal_system: "cubic"
 
 chemistry:
-  Cu: 1
-  Fe: 1
-  S: 2
+  Pb: 1
+  S: 1
 
 sulfides:
-  CuS: 1
-  FeS: 1
+  PbS: 1
 
 physical_properties:
   K:
-    value: 56.0e9
+    value: 52.0e9
     ref: "unknown"
   G:
-    value: 19.0e9
+    value: 29.0e9
     ref: "unknown"
 
 cell_data:
   space_group:
-    value: "I42d"
+    value: "Fm3m"
     ref: "www.handbookofmineralogy.org"
   a:
-    value: 5.281
-    ref: "www.handbookofmineralogy.org"
-  c:
-    value: 10.401
+    value: 5.936
     ref: "www.handbookofmineralogy.org"
   Z:
     value: 4

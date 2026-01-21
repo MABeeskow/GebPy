@@ -6,7 +6,7 @@
 # Name:		anisotropic_rocks.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		18.01.2025
+# Date:		21.01.2025
 
 #-----------------------------------------------
 
@@ -48,7 +48,7 @@ class AnisotropicRocks:
 
     def generate_dataset(
             self, number: int = 1, fluid: str = "water", density_fluid=None, element_constraints=None, *,
-            porosity=None, mineral_comp=None) -> None:
+            porosity=None, mineral_comp=None, additional_assemblage=None) -> None:
         if mineral_comp is not None and element_constraints is not None:
             raise ValueError("element_constraints not allowed with fixed mineral_comp.")
         if element_constraints:
@@ -92,6 +92,10 @@ class AnisotropicRocks:
 
         list_minerals = list(AnisotropicRocks._mineralogy_cache[self.name].keys())
         _bulk_data = {}
+        # Consider additonal mineral assemblage
+        if additional_assemblage is not None:
+            _limits, list_minerals = self.class_commonrockfunctions.consider_additional_assemblage_data(
+                additional_assemblage=additional_assemblage, _limits=_limits, list_minerals=list_minerals)
         # Collect mineralogical composition data
         if mineral_comp is None:
             _helper_composition, _helper_mineral_amounts = self.class_commonrockfunctions._calculate_chemical_amounts(

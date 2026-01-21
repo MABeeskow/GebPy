@@ -6,7 +6,7 @@
 # Name:		common.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		20.01.2026
+# Date:		21.01.2026
 
 #-----------------------------------------------
 
@@ -267,7 +267,7 @@ class MineralGeneration:
         return first
 
     def _determine_sulfide_conversion_factors(self):
-        list_sulfides = ["FeS", "FeS2", "Cu2S", "CuS", "Ag2S", "AgS", "CoS", "CoS2"]
+        list_sulfides = ["FeS", "FeS2", "Cu2S", "CuS", "Ag2S", "AgS", "CoS", "CoS2", "PbS", "PbS2", "ZnS"]
         mass_sulfur = self.elements["S"][2]
         _conversion_factors = {}
         for sulfide in list_sulfides:
