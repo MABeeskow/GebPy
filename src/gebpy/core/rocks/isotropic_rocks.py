@@ -92,7 +92,7 @@ class IsotropicRocks:
         for mineral, values in mineral_limits.items():
             _limits["lower"].append(values[0])
             _limits["upper"].append(values[1])
-        print(mineral_limits, _limits)
+
         list_minerals = list(IsotropicRocks._mineralogy_cache[self.name].keys())
         _bulk_data = {}
         # Consider additonal mineral assemblage
