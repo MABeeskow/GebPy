@@ -123,7 +123,7 @@ if n_datasets < 20:
 print(f"\nDATA(LIMESTONE, WATER, ADDITIONAL MINERAL ASSEMBLAGE):")
 data_rock = IsotropicRocks(name="Limestone", random_seed=42).generate_dataset(
     number=n_datasets, additional_assemblage={"volume_fraction": 0.15, "mineralogy": {
-        "Galena": 0.4, "Sphalerite": 0.5, "Chalcopyrite": 0.1}})
+        "Galena": 0.4, "Sphalerite": 0.5, "Chalcopyrite": 0.1}, "rescaling_host": True})
 if n_datasets < 20:
     print("Results:", data_rock.describe())
 

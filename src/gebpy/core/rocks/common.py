@@ -462,6 +462,7 @@ class CommonRockFunctions:
         extra_fraction = additional_assemblage["volume_fraction"]
         list_extra_minerals = list(additional_assemblage["mineralogy"].keys())
         list_extra_amounts = np.array(list(additional_assemblage["mineralogy"].values()))
+        rescaling_host = additional_assemblage["rescaling_host"]
 
         if any(m in list_minerals for m in list_extra_minerals):
             raise ValueError("Additional minerals already present in host mineralogy.")
@@ -476,9 +477,13 @@ class CommonRockFunctions:
 
         list_minerals.extend(list_extra_minerals)
         list_extra_amounts_corrected = list_extra_amounts*extra_fraction
-        fraction_correction = 1 - extra_fraction
-        for key, values in _limits.items():
-            _limits[key] = list(np.array(values)*fraction_correction)
-            _limits[key].extend(list_extra_amounts_corrected)
+        if rescaling_host == True:
+            fraction_correction = 1 - extra_fraction
+            for key, values in _limits.items():
+                _limits[key] = list(np.array(values)*fraction_correction)
+                _limits[key].extend(list_extra_amounts_corrected)
+        else:
+            _limits["lower"].extend(list_extra_amounts_corrected)
+            _limits["upper"].extend(list_extra_amounts_corrected)
 
         return _limits, list_minerals
