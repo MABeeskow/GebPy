@@ -6,7 +6,7 @@
 # Name:		manual_test_rocks_isotropic.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		21.01.2026
+# Date:		25.01.2026
 
 #-----------------------------------------------
 
@@ -124,6 +124,14 @@ print(f"\nDATA(LIMESTONE, WATER, ADDITIONAL MINERAL ASSEMBLAGE):")
 data_rock = IsotropicRocks(name="Limestone", random_seed=42).generate_dataset(
     number=n_datasets, additional_assemblage={"volume_fraction": 0.15, "mineralogy": {
         "Galena": 0.4, "Sphalerite": 0.5, "Chalcopyrite": 0.1}, "rescaling_host": True})
+if n_datasets < 20:
+    print("Results:", data_rock.describe())
+
+print(f"\nDATA(CUSTOM SANDSTONE, WATER):")
+data_rock = IsotropicRocks(name="Sandstone XY", random_seed=42).generate_dataset(
+    number=n_datasets, comp_constrained=True, mineral_constrained={
+        "Quartz": [0.8, 1.0], "Alkali feldspar": [0.0, 0.2], "Calcite": [0.0, 0.1], "Pyrite": [0.0, 0.05],
+        "Sphalerite": [0.0, 0.1], "Galena": [0.0, 0.1]}, porosity_constrained={"min": 0.1, "max": 0.25})
 if n_datasets < 20:
     print("Results:", data_rock.describe())
 

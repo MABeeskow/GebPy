@@ -6,7 +6,7 @@
 # Name:		anisotropic_rocks.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		21.01.2025
+# Date:		25.01.2025
 
 #-----------------------------------------------
 
@@ -48,7 +48,12 @@ class AnisotropicRocks:
 
     def generate_dataset(
             self, number: int = 1, fluid: str = "water", density_fluid=None, element_constraints=None, *,
-            porosity=None, mineral_comp=None, additional_assemblage=None) -> None:
+            porosity=None, mineral_comp=None, additional_assemblage=None, comp_constrained=False,
+            mineral_constrained=None, porosity_constrained=None) -> None:
+        if additional_assemblage is not None and element_constraints is not None:
+            raise ValueError("additional_assemblage is not supported together with element_constraints.")
+        if comp_constrained and mineral_comp is not None:
+            raise ValueError("mineral_comp (fixed) cannot be used together with comp_constrained (interval sampling).")
         if mineral_comp is not None and element_constraints is not None:
             raise ValueError("element_constraints not allowed with fixed mineral_comp.")
         if element_constraints:
@@ -67,31 +72,56 @@ class AnisotropicRocks:
             elif fluid == "natural gas":
                 density_fluid = 750
 
-        # YAML processing
-        (data_yaml, AnisotropicRocks._yaml_cache, AnisotropicRocks._mineralogy_cache,
-         AnisotropicRocks._mineral_groups_cache) = self.class_commonrockfunctions._load_yaml(
-            rock_name=self.name, _yaml_cache=AnisotropicRocks._yaml_cache,
-            _mineralogy_cache=AnisotropicRocks._mineralogy_cache,
-            _mineral_groups_cache=AnisotropicRocks._mineral_groups_cache, _data_path=self.data_path)
-        # Porosity definition
-        if porosity is None:
-            min_porosity = data_yaml["physical_properties"]["porosity"]["min"]
-            max_porosity = data_yaml["physical_properties"]["porosity"]["max"]
-            porosity = self.rng.uniform(min_porosity, max_porosity, number)
+        if not comp_constrained:
+            # YAML processing
+            (data_yaml, AnisotropicRocks._yaml_cache, AnisotropicRocks._mineralogy_cache,
+             AnisotropicRocks._mineral_groups_cache) = self.class_commonrockfunctions._load_yaml(
+                rock_name=self.name, _yaml_cache=AnisotropicRocks._yaml_cache,
+                _mineralogy_cache=AnisotropicRocks._mineralogy_cache,
+                _mineral_groups_cache=AnisotropicRocks._mineral_groups_cache, _data_path=self.data_path)
+            # Porosity definition
+            if porosity is None:
+                min_porosity = data_yaml["physical_properties"]["porosity"]["min"]
+                max_porosity = data_yaml["physical_properties"]["porosity"]["max"]
+                porosity = self.rng.uniform(min_porosity, max_porosity, number)
+            else:
+                if not (0 < porosity < 1):
+                    raise ValueError("Porosity must be between 0 and 1.")
+                porosity = np.full(number, porosity)
+            # Mineral sampling
+            mineral_limits = AnisotropicRocks._mineralogy_cache[self.name]
+            list_minerals = list(AnisotropicRocks._mineralogy_cache[self.name].keys())
         else:
-            if not (0 < porosity < 1):
-                raise ValueError("Porosity must be between 0 and 1.")
-            porosity = np.full(number, porosity)
-        # Mineral sampling
-        mineral_limits = AnisotropicRocks._mineralogy_cache[self.name]
-        _limits = {"lower": [], "upper": []}
+            # Porosity definition
+            if porosity_constrained is None:
+                raise ValueError("porosity_constrained must be provided when comp_constrained=True.")
 
+            min_porosity = porosity_constrained["min"]
+            max_porosity = porosity_constrained["max"]
+
+            if not (0.0 <= min_porosity < max_porosity <= 1.0):
+                raise ValueError("Invalid porosity_constrained interval.")
+
+            porosity = self.rng.uniform(min_porosity, max_porosity, number)
+            # Mineral sampling
+            if mineral_constrained is None:
+                raise ValueError("mineral_constrained must be provided when comp_constrained=True.")
+            for m, (lo, hi) in mineral_constrained.items():
+                if not (0.0 <= lo <= hi <= 1.0):
+                    raise ValueError(f"Invalid bounds for mineral {m}: ({lo}, {hi})")
+            if sum(v[0] for v in mineral_constrained.values()) > 1.0:
+                raise ValueError("Sum of lower bounds exceeds 1.")
+            if sum(v[1] for v in mineral_constrained.values()) < 1.0:
+                raise ValueError("Sum of upper bounds below 1.")
+
+            mineral_limits = mineral_constrained
+            list_minerals = list(mineral_constrained.keys())
+
+        _limits = {"lower": [], "upper": []}
         for mineral, values in mineral_limits.items():
             _limits["lower"].append(values[0])
             _limits["upper"].append(values[1])
 
-        list_minerals = list(AnisotropicRocks._mineralogy_cache[self.name].keys())
-        _bulk_data = {}
         # Consider additonal mineral assemblage
         if additional_assemblage is not None:
             _limits, list_minerals = self.class_commonrockfunctions.consider_additional_assemblage_data(

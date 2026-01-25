@@ -6,7 +6,7 @@
 # Name:		manual_test_rocks_anisotropic.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		21.01.2026
+# Date:		25.01.2026
 
 #-----------------------------------------------
 
@@ -81,5 +81,13 @@ print(f"\nDATA(SHALE, WATER, ADDITIONAL MINERAL ASSEMBLAGE):")
 data_rock = AnisotropicRocks(name="Shale", random_seed=42).generate_dataset(
     number=n_datasets, additional_assemblage={"volume_fraction": 0.15, "mineralogy": {
         "Galena": 0.4, "Sphalerite": 0.5, "Chalcopyrite": 0.1}, "rescaling_host": True})
+if n_datasets < 20:
+    print("Results:", data_rock.describe())
+
+print(f"\nDATA(CUSTOM SHALE, WATER):")
+data_rock = AnisotropicRocks(name="Shale XY", random_seed=42).generate_dataset(
+    number=n_datasets, comp_constrained=True, mineral_constrained={
+        "Montmorillonite": [0.5, 0.8], "Illite": [0.1, 0.4], "Calcite": [0.0, 0.1], "Pyrite": [0.0, 0.15],
+        "Sphalerite": [0.0, 0.15], "Galena": [0.0, 0.15]}, porosity_constrained={"min": 0.0, "max": 0.1})
 if n_datasets < 20:
     print("Results:", data_rock.describe())
