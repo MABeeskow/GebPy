@@ -6,7 +6,7 @@
 # Name:		synthesis.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		17.12.2025
+# Date:		25.01.2026
 
 #-----------------------------------------------
 
@@ -108,12 +108,12 @@ class MineralDataGeneration:
 
     @cached_property
     def mineral_map(self):
-        from gebpy_legacy.modules.halides import Halides
-        from gebpy_legacy.modules.silicates import (Cyclosilicates, Inosilicates, Nesosilicates, Sorosilicates)
-        from gebpy_legacy.modules.phosphates import Phosphates
-        from gebpy_legacy.modules.sulfates import Sulfates
-        from gebpy_legacy.modules.organics import Organics
-        from gebpy_legacy.modules.phospides import Phospides
+        from gebpy.legacy.modules_archive.halides import Halides
+        from gebpy.legacy.modules_archive.silicates import (Cyclosilicates, Inosilicates, Nesosilicates, Sorosilicates)
+        from gebpy.legacy.modules_archive.phosphates import Phosphates
+        from gebpy.legacy.modules_archive.sulfates import Sulfates
+        from gebpy.legacy.modules_archive.organics import Organics
+        from gebpy.legacy.modules_archive.phospides import Phospides
 
         return {
             "carbonates": Carbonates,
