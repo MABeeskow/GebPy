@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="latin-1") as f:
 
 setup(
     name="gebpy",
-    version="1.1.13",
+    version="1.1.14",
     package_dir={"": "src"},
     packages=find_packages(where="src"),
 
@@ -36,7 +36,14 @@ setup(
     },
 
     include_package_data=True,
-    package_data={"": ["lib/images/*.png"]},
+    #package_data={"": ["lib/images/*.png"]},
+    package_data={
+    "gebpy": [
+        "data_rocks/*.yaml",
+        "data_minerals/*.yaml",
+        "lib/images/*.png",
+    ]
+},
 
     long_description=description,
     long_description_content_type="text/markdown",

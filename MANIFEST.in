@@ -1,0 +1,2 @@
+recursive-include src/gebpy/data_rocks *.yaml
+recursive-include src/gebpy/data_minerals *.yaml
