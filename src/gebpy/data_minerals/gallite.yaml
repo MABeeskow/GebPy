@@ -1,0 +1,45 @@
+mineral: Gallite
+group: Sulfides
+formula: CuGaS2
+last updated: 28.01.2026
+
+metadata:
+  key: "Glt"
+  crystal_system: "tetragonal"
+
+chemistry:
+  Cu: 1
+  Ga: 1
+  S: 2
+
+sulfides:
+  Cu2S: 1
+  Ga2S3: 1
+
+physical_properties:
+  K:
+    value: 75.0e9
+    ref: "unknown"
+  G:
+    value: 36.0e9
+    ref: "unknown"
+
+cell_data:
+  space_group:
+    value: "I42d"
+    ref: "www.handbookofmineralogy.org"
+  a:
+    value: 5.360
+    ref: "www.handbookofmineralogy.org"
+  c:
+    value: 10.49
+    ref: "www.handbookofmineralogy.org"
+  Z:
+    value: 4
+    ref: "www.handbookofmineralogy.org"
+
+sources:
+  - author: "John W. Anthony, Richard A. Bideaux, Kenneth W. Bladh, and Monte C. Nichols"
+    title: "Handbook of Mineralogy"
+    publisher: "Mineralogical Society of America, Chantilly, VA"
+    url: "http://www.handbookofmineralogy.org/"

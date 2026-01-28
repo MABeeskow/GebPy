@@ -6,7 +6,7 @@
 # Name:		common.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		17.01.2026
+# Date:		28.01.2026
 
 #-----------------------------------------------
 
@@ -19,7 +19,6 @@ import pathlib
 import re, yaml
 import numpy as np
 import pandas as pd
-from sqlalchemy import BOOLEAN
 
 # MODULES
 from ..chemistry.common import PeriodicSystem
@@ -27,26 +26,20 @@ from ..minerals.synthesis import MineralDataGeneration
 from ..physics.common import Geophysics
 
 class RockGeneration:
+    _ELEMENT_CACHE = {}
+
     def __init__(self):
-        self.elements = {
-            "H": PeriodicSystem(name="H").get_data(),
-            "C": PeriodicSystem(name="C").get_data(),
-            "O": PeriodicSystem(name="O").get_data(),
-            "Na": PeriodicSystem(name="Na").get_data(),
-            "Mg": PeriodicSystem(name="Mg").get_data(),
-            "Al": PeriodicSystem(name="Al").get_data(),
-            "Si": PeriodicSystem(name="Si").get_data(),
-            "S": PeriodicSystem(name="S").get_data(),
-            "Cl": PeriodicSystem(name="Cl").get_data(),
-            "K": PeriodicSystem(name="K").get_data(),
-            "Ca": PeriodicSystem(name="Ca").get_data(),
-            "Mn": PeriodicSystem(name="Mn").get_data(),
-            "Fe": PeriodicSystem(name="Fe").get_data(),
-            "Ni": PeriodicSystem(name="Ni").get_data(),
-            "U": PeriodicSystem(name="U").get_data(),
-            "Zn": PeriodicSystem(name="Zn").get_data(),
-            "Pb": PeriodicSystem(name="Pb").get_data(),
-            "Cu": PeriodicSystem(name="Cu").get_data()}
+        if not RockGeneration._ELEMENT_CACHE:
+            for el in (
+                "H", "Li", "Be", "B", "C", "N", "O", "F",
+                "Na", "Mg", "Al", "Si", "P", "S", "Cl",
+                "K", "Ca", "Sc", "Ti", "V", "Cr", "Mn", "Fe", "Co", "Ni", "Cu", "Zn", "Ga", "Ge", "As", "Se", "Br",
+                "Rb", "Sr", "Y", "Zr", "Nb", "Mo", "Tc", "Ru", "Rh", "Pd", "Ag", "Cd", "In", "Sn", "Sb", "Te", "I",
+                "Cs", "Ba", "La", "Ce", "Pr", "Nd", "Pm", "Sm", "Eu", "Gd", "Tb", "Dy", "Ho", "Er", "Tm", "Yb", "Lu",
+                "Hf", "Ta", "W", "Re", "Os", "Ir", "Pt", "Au", "Hg", "Tl", "Pb", "Bi", "Po", "At",
+                "Fr", "Ra", "Ac", "Th", "Pa", "U"):
+                RockGeneration._ELEMENT_CACHE[el] = (PeriodicSystem(name=el).get_data())
+        self.elements = RockGeneration._ELEMENT_CACHE
 
     def _parse_formula(self, formula: str):
         pattern = r"([A-Z][a-z]?)(\d*)"

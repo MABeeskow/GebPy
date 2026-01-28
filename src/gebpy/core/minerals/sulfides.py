@@ -6,7 +6,7 @@
 # Name:		sulfides.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		19.01.2026
+# Date:		28.01.2026
 
 #-----------------------------------------------
 
@@ -44,7 +44,9 @@ class Sulfides:
     _minerals = {
         "Acanthite", "Bornite", "Cattierite", "Chalcocite", "Chalcopyrite", "Cinnabar", "Cobaltite", "Covellite",
         "Fahlore", "Galena", "Gallite", "Laforetite", "Lenaite", "Marcasite", "Marmatite", "Millerite", "Molybdenite",
-        "Orpiment", "Pentlandite", "Pyrite", "Pyrrhotite", "Realgar", "Roquesite", "Sphalerite", "Stibnite", "Vaesite"}
+        "Orpiment", "Pentlandite", "Pyrite", "Pyrrhotite", "Realgar", "Roquesite", "Sphalerite", "Stibnite", "Vaesite",
+        "Tetrahedrite", "Tennantite", "Chalcopyrite-Group"}
+    _ELEMENT_CACHE = {}
 
     def __init__(self, name, random_seed, rounding=3, variability=False, uncertainty=1.0) -> None:
         self.name = name
@@ -59,21 +61,17 @@ class Sulfides:
         self.cache = {}
 
         # Chemistry
-        self.elements = {
-            "H": PeriodicSystem(name="H").get_data(),
-            "C": PeriodicSystem(name="C").get_data(),
-            "O": PeriodicSystem(name="O").get_data(),
-            "Mg": PeriodicSystem(name="Mg").get_data(),
-            "Ca": PeriodicSystem(name="Ca").get_data(),
-            "S": PeriodicSystem(name="S").get_data(),
-            "Mn": PeriodicSystem(name="Mn").get_data(),
-            "Fe": PeriodicSystem(name="Fe").get_data(),
-            "Co": PeriodicSystem(name="Co").get_data(),
-            "Cu": PeriodicSystem(name="Cu").get_data(),
-            "Zn": PeriodicSystem(name="Zn").get_data(),
-            "Ag": PeriodicSystem(name="Ag").get_data(),
-            "Pb": PeriodicSystem(name="Pb").get_data(),
-        }
+        if not Sulfides._ELEMENT_CACHE:
+            for el in (
+                "H", "Li", "Be", "B", "C", "N", "O", "F",
+                "Na", "Mg", "Al", "Si", "P", "S", "Cl",
+                "K", "Ca", "Sc", "Ti", "V", "Cr", "Mn", "Fe", "Co", "Ni", "Cu", "Zn", "Ga", "Ge", "As", "Se", "Br",
+                "Rb", "Sr", "Y", "Zr", "Nb", "Mo", "Tc", "Ru", "Rh", "Pd", "Ag", "Cd", "In", "Sn", "Sb", "Te", "I",
+                "Cs", "Ba", "La", "Ce", "Pr", "Nd", "Pm", "Sm", "Eu", "Gd", "Tb", "Dy", "Ho", "Er", "Tm", "Yb", "Lu",
+                "Hf", "Ta", "W", "Re", "Os", "Ir", "Pt", "Au", "Hg", "Tl", "Pb", "Bi", "Po", "At",
+                "Fr", "Ra", "Ac", "Th", "Pa", "U"):
+                Sulfides._ELEMENT_CACHE[el] = (PeriodicSystem(name=el).get_data())
+        self.elements = Sulfides._ELEMENT_CACHE
 
         # Geophysics
         self.geophysical_properties = GeophysicalProperties()
@@ -83,10 +81,18 @@ class Sulfides:
         # Mineral-specific data
         if self.name in [
             "Acanthite", "Bornite", "Cattierite", "Chalcocite", "Chalcopyrite", "Cinnabar", "Cobaltite", "Covellite",
-            "Fahlore", "Galena", "Gallite", "Laforetite", "Lenaite", "Marcasite", "Marmatite", "Millerite",
+            "Galena", "Gallite", "Laforetite", "Lenaite", "Marcasite", "Marmatite", "Millerite",
             "Molybdenite", "Orpiment", "Pentlandite", "Pyrite", "Pyrrhotite", "Realgar", "Roquesite", "Sphalerite",
-            "Stibnite", "Vaesite"]:
+            "Stibnite", "Vaesite", "Tetrahedrite", "Tennantite"]:
             self.yaml_data = self._load_yaml(self.name.lower())
+        if self.name == "Fahlore":
+            self.yaml_data = {
+                mineral.lower(): self._load_yaml(mineral.lower())
+                for mineral in ["Tetrahedrite", "Tennantite"]}
+        if self.name == "Chalcopyrite-Group":
+            self.yaml_data = {
+                mineral.lower(): self._load_yaml(mineral.lower())
+                for mineral in ["Chalcopyrite", "Gallite", "Roquesite", "Lenaite", "Laforetite"]}
 
     def _load_yaml(self, mineral_name: str) -> dict:
         # 1) Cache-Hit
@@ -135,11 +141,11 @@ class Sulfides:
     def generate_dataset(self, number: int = 1, as_dataframe=False) -> None:
         fixed = {
             "Acanthite", "Bornite", "Cattierite", "Chalcocite", "Chalcopyrite", "Cinnabar", "Cobaltite", "Covellite",
-            "Fahlore", "Galena", "Gallite", "Laforetite", "Lenaite", "Marcasite", "Marmatite", "Millerite",
+            "Galena", "Gallite", "Laforetite", "Lenaite", "Marcasite", "Marmatite", "Millerite",
             "Molybdenite", "Orpiment", "Pentlandite", "Pyrite", "Pyrrhotite", "Realgar", "Roquesite", "Sphalerite",
-            "Stibnite", "Vaesite"}
+            "Stibnite", "Vaesite", "Tetrahedrite", "Tennantite"}
         variable = {}
-        endmember = {}
+        endmember = {"Fahlore", "Chalcopyrite-Group"}
         generators = {
             **{m: MinGen(
                 name=self.name, yaml_data=self.yaml_data, elements=self.elements, cache=self.cache,
@@ -398,75 +404,26 @@ class Sulfides:
         All mechanical properties (K, G, E) are stored in Pascals internally.
         For output, they are converted to GPa.
         """
-        val_state = "variable"
-
-        if self.name == "Calcite-Group":
-            name_lower = self.name.lower()
-            val_key = "Cal-group"
-            endmember = ["Calcite", "Magnesite", "Siderite", "Rhodochrosite", "Smithsonite"]
-        elif self.name == "Dolomite-Group":
-            name_lower = self.name.lower()
-            val_key = "Dol-group"
-            endmember = ["Dolomite", "Ankerite"]
-
-        if "endmembers" not in self.cache:
-            self.cache["endmembers"] = {}
-
-        endmember_data = {}
-        list_elements = []
-        for mineral in endmember:
-            if mineral not in self.cache["endmembers"]:
-                mineral_data = Sulfides(name=mineral, random_seed=self.current_seed).generate_dataset(number=1)
-                self.cache["endmembers"][mineral] = mineral_data
-            endmember_data[mineral] = self.cache["endmembers"][mineral]
-            mineral_data = endmember_data[mineral]
-            for element in mineral_data["chemistry"]:
-                if element not in list_elements:
-                    list_elements.append(element)
-        weights = self.rng.dirichlet(np.ones(len(endmember)))
-        fraction_endmember = dict(zip(endmember, weights))
-
-        if name_lower not in self.cache:
-            self.cache[name_lower] = {
-                "endmember_data": endmember_data
+        endmember_series = {
+            "Fahlore": {
+                "name_lower": "fahlore",
+                "key": "Fh",
+                "endmembers": ["Tetrahedrite", "Tennantite"],
+                "sulfides": ["Cu2S", "CuS", "Sb2S3", "As2S3"]
+            },
+            "Chalcopyrite-Group": {
+                "name_lower": "chalcopyrite-group",
+                "key": "Ccp-group",
+                "endmembers": ["Chalcopyrite", "Gallite", "Roquesite", "Lenaite", "Laforetite"],
+                "sulfides": ["CuS", "FeS", "Cu2S", "Ga2S3", "Ag2S", "In2S3", "Fe2S3"]
             }
-
-        properties = ["M", "rho", "rho_e", "V", "K", "G"]
-        helper_results = {
-            prop: sum(fraction_endmember[m]*endmember_data[m][prop][0] for m in endmember)
-            for prop in properties
         }
-        # Amounts
-        amounts = []
-        for element in list_elements:
-            amount = sum(fraction_endmember[mineral]*endmember_data[mineral]["chemistry"].get(element, [0])[0]
-                         for mineral in endmember)
-            amounts.append([element, self.elements[element][1], amount])
-        element = [self.elements[name] for name, *_ in amounts]
-        # Elastic properties
-        val_K = helper_results["K"]*10**9
-        val_G = helper_results["G"]*10**9
-        rho = helper_results["rho"]
-        rho_e = helper_results["rho_e"]
-        E, nu = self.geophysical_properties.calculate_elastic_properties(bulk_mod=val_K, shear_mod=val_G)
-        # Seismic properties
-        vPvS, vP, vS = self.geophysical_properties.calculate_seismic_velocities(
-            bulk_mod=val_K, shear_mod=val_G, rho=rho)
-        # Radiation properties
-        constr_radiation = wg(amounts=amounts, elements=element)
-        gamma_ray, pe, U = self.geophysical_properties.calculate_radiation_properties(
-            constr_radiation=constr_radiation, rho_electron=rho_e)
-        # Electrical resistivity
-        p = None
-        # Results
-        results = {
-            "mineral": val_key, "state": val_state, "M": round(helper_results["M"], self.rounding),
-            "chemistry": {name: round(val[1], 6) for name, *val in amounts}, "rho": round(rho, self.rounding),
-            "rho_e": round(rho_e, self.rounding), "V": round(helper_results["V"], self.rounding),
-            "vP": round(vP, self.rounding), "vS": round(vS, self.rounding), "vP/vS": round(vPvS, self.rounding),
-            "K": round(val_K*10**(-9), self.rounding), "G": round(val_G*10**(-9), self.rounding),
-            "E": round(E*10**(-9), self.rounding), "nu": round(nu, 6), "GR": round(gamma_ray, self.rounding), #
-            "PE": round(pe, self.rounding), "U": round(U, self.rounding), "p": p}
+        results = MinGen(
+            name=self.name, yaml_data=self.yaml_data, elements=self.elements, cache=self.cache,
+            geophysical_properties=self.geophysical_properties,
+            rounding=self.rounding, rng=self.rng).create_mineral_data_endmember_series(
+            endmember_series=endmember_series, var_class=Sulfides, current_seed=self.current_seed)
+
         return results
 
 # TEST

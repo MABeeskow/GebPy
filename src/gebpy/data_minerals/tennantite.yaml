@@ -1,0 +1,43 @@
+mineral: Tetrahedrite
+group: Sulfides
+formula: Cu12As4S13
+last updated: 28.01.2026
+
+metadata:
+  key: "Tn"
+  crystal_system: "cubic"
+
+chemistry:
+  Cu: 12
+  As: 4
+  S: 13
+
+sulfides:
+  Cu2S: 0.538031940068424
+  CuS: 0.129282903544239
+  As2S3: 0.332685156387338
+
+physical_properties:
+  K:
+    value: 70.29e9
+    ref: "unknown"
+  G:
+    value: 28.87e9
+    ref: "unknown"
+
+cell_data:
+  space_group:
+    value: "I43m"
+    ref: "www.handbookofmineralogy.org"
+  a:
+    value: 10.19
+    ref: "www.handbookofmineralogy.org"
+  Z:
+    value: 2
+    ref: "www.handbookofmineralogy.org"
+
+sources:
+  - author: "John W. Anthony, Richard A. Bideaux, Kenneth W. Bladh, and Monte C. Nichols"
+    title: "Handbook of Mineralogy"
+    publisher: "Mineralogical Society of America, Chantilly, VA"
+    url: "http://www.handbookofmineralogy.org/"

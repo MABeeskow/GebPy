@@ -6,7 +6,7 @@
 # Name:		common.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		21.01.2026
+# Date:		28.01.2026
 
 #-----------------------------------------------
 
@@ -136,6 +136,8 @@ class CrystalPhysics:
                              2*(abs(np.cos(alpha*np.pi/180)*np.cos(beta*np.pi/180)*np.cos(gamma*np.pi/180))))**(0.5)
             return V
 
+
+
 class OxideComposition:
     """
     This class calculates the oxide composition of a certain mineral.
@@ -185,6 +187,27 @@ class OxideComposition:
 
         return _conversion_factors
 
+    def _determine_sulfide_conversion_factors(self, elements):
+        list_sulfides = [
+            "FeS", "FeS2", "Cu2S", "CuS", "Ag2S", "AgS", "CoS", "CoS2", "PbS", "PbS2", "ZnS", "HgS", "Co2S3", "As2S3",
+            "As2S", "Sb2S3", "In2S3", "Ga2S3", "Fe2S3"]
+        mass_sulfur = elements["S"][2]
+        _conversion_factors = {}
+        for sulfide in list_sulfides:
+            _conversion_factors[sulfide] = self._parse_formula(formula=sulfide)
+            cation = self._get_cation_element(oxide=sulfide)
+            if cation in elements:
+                mass_cation = elements[cation][2]
+                _conversion_factors[sulfide]["factor"] = (
+                        (_conversion_factors[sulfide][cation]*mass_cation +
+                         _conversion_factors[sulfide]["S"]*mass_sulfur)/(
+                        _conversion_factors[sulfide][cation]*mass_cation))
+            else:
+                pass
+                #print(self.name, ": cation", cation, "not found in chemical container.")
+
+        return _conversion_factors
+
     def _element_amounts_as_dict(self, amounts):
         helper_dict = {}
         for item in amounts:
@@ -209,6 +232,7 @@ class MineralGeneration:
         self.variability = variability
         self.uncertainty = uncertainty
         self.conversion_factors = self._determine_oxide_conversion_factors()
+        self.conversion_factors_sulfide = self._determine_sulfide_conversion_factors()
 
     def _get_value(self, data: dict, path: list[str], default=None):
         """Safely extract a float or string value from nested YAML data."""
@@ -267,7 +291,9 @@ class MineralGeneration:
         return first
 
     def _determine_sulfide_conversion_factors(self):
-        list_sulfides = ["FeS", "FeS2", "Cu2S", "CuS", "Ag2S", "AgS", "CoS", "CoS2", "PbS", "PbS2", "ZnS"]
+        list_sulfides = [
+            "FeS", "FeS2", "Cu2S", "CuS", "Ag2S", "AgS", "CoS", "CoS2", "PbS", "PbS2", "ZnS", "HgS", "Co2S3", "As2S3",
+            "As2S", "Sb2S3", "In2S3", "Ga2S3", "Fe2S3"]
         mass_sulfur = self.elements["S"][2]
         _conversion_factors = {}
         for sulfide in list_sulfides:
@@ -374,7 +400,7 @@ class MineralGeneration:
                 cation = self._get_cation_element(oxide=oxide)
                 oxides_data[oxide] = [cation, None, amount]
         elif "sulfides" in self.yaml_data:
-            self.conversion_factors = self._determine_sulfide_conversion_factors()
+            self.conversion_factors_sulfide = self._determine_sulfide_conversion_factors()
             oxides_data = {}
             for oxide, amount in self.yaml_data["sulfides"].items():
                 cation = self._get_cation_element(oxide=oxide)
@@ -419,7 +445,10 @@ class MineralGeneration:
                 value = weight
             else:
                 try:
-                    value = amounts_dict[cation]*self.conversion_factors[oxide]["factor"]
+                    if "oxides" in self.yaml_data:
+                        value = amounts_dict[cation]*self.conversion_factors[oxide]["factor"]
+                    elif "sulfides" in self.yaml_data:
+                        value = amounts_dict[cation]*self.conversion_factors_sulfide[oxide]["factor"]
                 except:
                     value = 0
             oxides_data[oxide][1] = value
@@ -494,10 +523,16 @@ class MineralGeneration:
         name_lower = endmember_series[self.name]["name_lower"]
         val_key = endmember_series[self.name]["key"]
         endmember = endmember_series[self.name]["endmembers"]
-        oxides_data = {}
-        for oxide in endmember_series[self.name]["oxides"]:
-            cation = self._get_cation_element(oxide=oxide)
-            oxides_data[oxide] = [cation, None]
+        if "oxides" in endmember_series[self.name]:
+            oxides_data = {}
+            for oxide in endmember_series[self.name]["oxides"]:
+                cation = self._get_cation_element(oxide=oxide)
+                oxides_data[oxide] = [cation, None]
+        elif "sulfides" in endmember_series[self.name]:
+            oxides_data = {}
+            for oxide in endmember_series[self.name]["sulfides"]:
+                cation = self._get_cation_element(oxide=oxide)
+                oxides_data[oxide] = [cation, None]
 
         if "endmembers" not in self.cache:
             self.cache["endmembers"] = {}
@@ -541,10 +576,16 @@ class MineralGeneration:
         # Oxide amounts
         amounts_dict = constr_OxComp._element_amounts_as_dict(amounts=amounts)
         try:
-            for oxide in oxides_data.keys():
-                cation = constr_OxComp._get_cation_element(oxide=oxide)
-                value = amounts_dict[cation]*self.conversion_factors[oxide]["factor"]
-                oxides_data[oxide][1] = value
+            if "oxides" in endmember_series[self.name]:
+                for oxide in oxides_data.keys():
+                    cation = constr_OxComp._get_cation_element(oxide=oxide)
+                    value = amounts_dict[cation]*self.conversion_factors[oxide]["factor"]
+                    oxides_data[oxide][1] = value
+            elif "sulfides" in endmember_series[self.name]:
+                for sulfide in oxides_data.keys():
+                    cation = constr_OxComp._get_cation_element(oxide=sulfide)
+                    value = amounts_dict[cation]*self.conversion_factors_sulfide[sulfide]["factor"]
+                    oxides_data[sulfide][1] = value
         except:
             print("No oxide data available!")
         # Elastic properties

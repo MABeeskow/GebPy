@@ -1,0 +1,43 @@
+mineral: Covellite
+group: Sulfides
+formula: CuS
+last updated: 28.01.2026
+
+metadata:
+  key: "Cv"
+  crystal_system: "hexagonal"
+
+chemistry:
+  Cu: 1
+  S: 1
+
+sulfides:
+  CuS: 1
+
+physical_properties:
+  K:
+    value: 74.0e9
+    ref: "unknown"
+  G:
+    value: 24.0e9
+    ref: "unknown"
+
+cell_data:
+  space_group:
+    value: "P63mmc"
+    ref: "www.handbookofmineralogy.org"
+  a:
+    value: 3.7938
+    ref: "www.handbookofmineralogy.org"
+  c:
+    value: 16.341
+    ref: "www.handbookofmineralogy.org"
+  Z:
+    value: 6
+    ref: "www.handbookofmineralogy.org"
+
+sources:
+  - author: "John W. Anthony, Richard A. Bideaux, Kenneth W. Bladh, and Monte C. Nichols"
+    title: "Handbook of Mineralogy"
+    publisher: "Mineralogical Society of America, Chantilly, VA"
+    url: "http://www.handbookofmineralogy.org/"

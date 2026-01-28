@@ -1,0 +1,46 @@
+mineral: Marcasite
+group: Sulfides
+formula: FeS2
+last updated: 28.01.2026
+
+metadata:
+  key: "Mr"
+  crystal_system: "orthorhombic"
+
+chemistry:
+  Fe: 1
+  S: 2
+
+sulfides:
+  FeS2: 1
+
+physical_properties:
+  K:
+    value: 150.0e9
+    ref: "unknown"
+  G:
+    value: 125.0e9
+    ref: "unknown"
+
+cell_data:
+  space_group:
+    value: "Pnnm"
+    ref: "www.handbookofmineralogy.org"
+  a:
+    value: 4.436
+    ref: "www.handbookofmineralogy.org"
+  b:
+    value: 5.414
+    ref: "www.handbookofmineralogy.org"
+  c:
+    value: 3.381
+    ref: "www.handbookofmineralogy.org"
+  Z:
+    value: 2
+    ref: "www.handbookofmineralogy.org"
+
+sources:
+  - author: "John W. Anthony, Richard A. Bideaux, Kenneth W. Bladh, and Monte C. Nichols"
+    title: "Handbook of Mineralogy"
+    publisher: "Mineralogical Society of America, Chantilly, VA"
+    url: "http://www.handbookofmineralogy.org/"

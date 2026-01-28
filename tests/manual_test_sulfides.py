@@ -6,7 +6,7 @@
 # Name:		manual_test_sulfides.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		21.01.2026
+# Date:		28.01.2026
 
 #-----------------------------------------------
 
@@ -18,13 +18,23 @@ Manual test file related to module sulfides.py
 # PACKAGES
 import time
 
-from numpy.core.defchararray import lower
-
 # MODULES
 from src.gebpy.core.minerals.sulfides import Sulfides
 from gebpy_legacy.modules.sulfides import Sulfides as Sulfides_old
 
 # CODE
+def benchmark_sulfide(name, n_datasets, seed=42, verbose=True):
+    print(f"\nDATA ({name.upper()}):")
+    start = time.perf_counter()
+    data = Sulfides(name=name, random_seed=seed).generate_dataset(number=n_datasets)
+    delta = time.perf_counter() - start
+    print(f"Runtime: {delta:.5f} seconds")
+
+    if verbose and n_datasets < 20:
+        print("Results:", data)
+
+    return delta, data
+
 n_datasets = 10
 print("\n--- Manual test for: sulfides.py ---")
 print(f"\nDEFAULT_DATA (PYRITE):")
@@ -54,72 +64,12 @@ print("Speed boost:", round(speed_boost, 2), "%")
 
 n_datasets = 5
 
-print(f"\nDATA (ACANTHITE):")
-start = time.time()
-DEFAULT_DATA = Sulfides(name="Acanthite", random_seed=42).generate_dataset(number=n_datasets)
-end = time.time()
-delta_new = end - start
-print(f"Runtime: {delta_new:.5f} seconds")
+minerals = [
+    "Pyrite", "Acanthite", "Bornite", "Cattierite", "Chalcocite", "Galena", "Sphalerite", "Cinnabar", "Cobaltite",
+    "Covellite", "Tetrahedrite", "Tennantite", "Fahlore", "Gallite", "Laforetite", "Lenaite", "Roquesite",
+    "Chalcopyrite-Group", "Marcasite"]
 
-if n_datasets < 20:
-    print("Results:", DEFAULT_DATA)
-
-print(f"\nDATA (BORNITE):")
-start = time.time()
-DEFAULT_DATA = Sulfides(name="Bornite", random_seed=42).generate_dataset(number=n_datasets)
-end = time.time()
-delta_new = end - start
-print(f"Runtime: {delta_new:.5f} seconds")
-
-if n_datasets < 20:
-    print("Results:", DEFAULT_DATA)
-
-print(f"\nDATA (CATTIERITE):")
-start = time.time()
-DEFAULT_DATA = Sulfides(name="Cattierite", random_seed=42).generate_dataset(number=n_datasets)
-end = time.time()
-delta_new = end - start
-print(f"Runtime: {delta_new:.5f} seconds")
-
-if n_datasets < 20:
-    print("Results:", DEFAULT_DATA)
-
-print(f"\nDATA (CHALCOCITE):")
-start = time.time()
-DEFAULT_DATA = Sulfides(name="Chalcocite", random_seed=42).generate_dataset(number=n_datasets)
-end = time.time()
-delta_new = end - start
-print(f"Runtime: {delta_new:.5f} seconds")
-
-if n_datasets < 20:
-    print("Results:", DEFAULT_DATA)
-
-print(f"\nDATA (CHALCOPYRITE):")
-start = time.time()
-DEFAULT_DATA = Sulfides(name="Chalcopyrite", random_seed=42).generate_dataset(number=n_datasets)
-end = time.time()
-delta_new = end - start
-print(f"Runtime: {delta_new:.5f} seconds")
-
-if n_datasets < 20:
-    print("Results:", DEFAULT_DATA)
-
-print(f"\nDATA (GALENA):")
-start = time.time()
-DEFAULT_DATA = Sulfides(name="Galena", random_seed=42).generate_dataset(number=n_datasets)
-end = time.time()
-delta_new = end - start
-print(f"Runtime: {delta_new:.5f} seconds")
-
-if n_datasets < 20:
-    print("Results:", DEFAULT_DATA)
-
-print(f"\nDATA (SPHALERITE):")
-start = time.time()
-DEFAULT_DATA = Sulfides(name="Sphalerite", random_seed=42).generate_dataset(number=n_datasets)
-end = time.time()
-delta_new = end - start
-print(f"Runtime: {delta_new:.5f} seconds")
-
-if n_datasets < 20:
-    print("Results:", DEFAULT_DATA)
+results = {}
+for mineral in sorted(minerals):
+    dt, data = benchmark_sulfide(mineral, n_datasets)
+    results[mineral] = dt

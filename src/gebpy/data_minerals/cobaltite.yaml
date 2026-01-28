@@ -1,0 +1,48 @@
+mineral: Cobaltite
+group: Sulfides
+formula: CoAsS
+last updated: 28.01.2026
+
+metadata:
+  key: "Cbt"
+  crystal_system: "orthorhombic"
+
+chemistry:
+  Co: 1
+  As: 1
+  S: 1
+
+sulfides:
+  Co2S3: 0.5
+  As2S: 0.5
+
+physical_properties:
+  K:
+    value: 139.0e9
+    ref: "unknown"
+  G:
+    value: 104.0e9
+    ref: "unknown"
+
+cell_data:
+  space_group:
+    value: "Pca21"
+    ref: "www.handbookofmineralogy.org"
+  a:
+    value: 5.5833
+    ref: "www.handbookofmineralogy.org"
+  b:
+    value: 5.5892
+    ref: "www.handbookofmineralogy.org"
+  c:
+    value: 5.5812
+    ref: "www.handbookofmineralogy.org"
+  Z:
+    value: 4
+    ref: "www.handbookofmineralogy.org"
+
+sources:
+  - author: "John W. Anthony, Richard A. Bideaux, Kenneth W. Bladh, and Monte C. Nichols"
+    title: "Handbook of Mineralogy"
+    publisher: "Mineralogical Society of America, Chantilly, VA"
+    url: "http://www.handbookofmineralogy.org/"
