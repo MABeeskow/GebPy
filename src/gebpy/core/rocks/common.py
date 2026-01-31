@@ -480,3 +480,62 @@ class CommonRockFunctions:
             _limits["upper"].extend(list_extra_amounts_corrected)
 
         return _limits, list_minerals
+
+class ElasticCalibration:
+    """
+    Utility class for deriving effective elastic moduli from bulk density and seismic velocities.
+
+    Assumptions:
+    - isotropic effective medium
+    - rho in kg/m^3
+    - vp, vs in m/s
+    - returns moduli in Pa
+    """
+
+    @staticmethod
+    def _to_array(x):
+        return np.asarray(x)
+
+    @staticmethod
+    def determine_shear_modulus(rho_bulk, vs_bulk):
+        rho_b = ElasticCalibration._to_array(rho_bulk)
+        vs_b = ElasticCalibration._to_array(vs_bulk)
+        if np.any(rho_b <= 0) or np.any(vs_b <= 0):
+            raise ValueError("rho_bulk and vs_bulk must be positive.")
+
+        shear_modulus = rho_b*vs_b**2
+        return shear_modulus
+
+    @staticmethod
+    def determine_bulk_modulus(rho_bulk, vp_bulk, vs_bulk):
+        rho_b = ElasticCalibration._to_array(rho_bulk)
+        vp_b = ElasticCalibration._to_array(vp_bulk)
+        vs_b = ElasticCalibration._to_array(vs_bulk)
+        if np.any(rho_b <= 0) or np.any(vp_b <= 0) or np.any(vs_b <= 0):
+            raise ValueError("rho_bulk, vp_bulk and vs_bulk must be positive.")
+
+        shear_modulus = rho_b*vs_b**2
+        bulk_modulus = rho_b*vp_b**2 - 4/3*shear_modulus
+        return bulk_modulus
+
+    @staticmethod
+    def determine_elastic_moduli(rho_bulk, vp_bulk, vs_bulk):
+        rho_b = ElasticCalibration._to_array(rho_bulk)
+        vp_b = ElasticCalibration._to_array(vp_bulk)
+        vs_b = ElasticCalibration._to_array(vs_bulk)
+        if np.any(rho_b <= 0) or np.any(vp_b <= 0) or np.any(vs_b <= 0):
+            raise ValueError("rho_bulk, vp_bulk and vs_bulk must be positive.")
+
+        shear_modulus = rho_b*vs_b**2
+        bulk_modulus = rho_b*vp_b**2 - 4/3*shear_modulus
+        return bulk_modulus, shear_modulus
+
+    @staticmethod
+    def determine_scaling_factors(reference_data, sample_data):
+        ref_data = ElasticCalibration._to_array(reference_data)
+        smpl_data = ElasticCalibration._to_array(sample_data)
+        if np.any(ref_data <= 0) or np.any(smpl_data <= 0):
+            raise ValueError("reference_data and sample_data must be positive.")
+
+        scaling_factor = smpl_data/ref_data
+        return scaling_factor
