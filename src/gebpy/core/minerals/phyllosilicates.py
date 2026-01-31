@@ -6,7 +6,7 @@
 # Name:		phyllosilicates.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		17.12.2025
+# Date:		31.01.2026
 
 #-----------------------------------------------
 
@@ -46,6 +46,7 @@ class Phyllosilicates:
         "Pennantite", "Nimite", "Muscovite", "Talc", "Chrysotile", "Antigorite", "Pyrophyllite", "Montmorillonite",
         "Nontronite", "Saponite", "Glauconite", "Vermiculite", "Chlorite", "Biotite", "FeChlorite", "MgChlorite",
         "MnChlorite", "NiChlorite"}
+    _ELEMENT_CACHE = {}
 
     def __init__(self, name, random_seed, rounding=3, variability=False, uncertainty=1.0) -> None:
         self.name = name
@@ -60,19 +61,17 @@ class Phyllosilicates:
         self.cache = {}
 
         # Chemistry
-        self.elements = {
-            "H": PeriodicSystem(name="H").get_data(),
-            "O": PeriodicSystem(name="O").get_data(),
-            "Na": PeriodicSystem(name="Na").get_data(),
-            "Mg": PeriodicSystem(name="Mg").get_data(),
-            "Al": PeriodicSystem(name="Al").get_data(),
-            "Si": PeriodicSystem(name="Si").get_data(),
-            "K": PeriodicSystem(name="K").get_data(),
-            "Ca": PeriodicSystem(name="Ca").get_data(),
-            "Mn": PeriodicSystem(name="Mn").get_data(),
-            "Fe": PeriodicSystem(name="Fe").get_data(),
-            "Ni": PeriodicSystem(name="Ni").get_data(),
-        }
+        if not Phyllosilicates._ELEMENT_CACHE:
+            for el in (
+                "H", "Li", "Be", "B", "C", "N", "O", "F",
+                "Na", "Mg", "Al", "Si", "P", "S", "Cl",
+                "K", "Ca", "Sc", "Ti", "V", "Cr", "Mn", "Fe", "Co", "Ni", "Cu", "Zn", "Ga", "Ge", "As", "Se", "Br",
+                "Rb", "Sr", "Y", "Zr", "Nb", "Mo", "Tc", "Ru", "Rh", "Pd", "Ag", "Cd", "In", "Sn", "Sb", "Te", "I",
+                "Cs", "Ba", "La", "Ce", "Pr", "Nd", "Pm", "Sm", "Eu", "Gd", "Tb", "Dy", "Ho", "Er", "Tm", "Yb", "Lu",
+                "Hf", "Ta", "W", "Re", "Os", "Ir", "Pt", "Au", "Hg", "Tl", "Pb", "Bi", "Po", "At",
+                "Fr", "Ra", "Ac", "Th", "Pa", "U"):
+                Phyllosilicates._ELEMENT_CACHE[el] = (PeriodicSystem(name=el).get_data())
+        self.elements = Phyllosilicates._ELEMENT_CACHE
 
         # Geophysics
         self.geophysical_properties = GeophysicalProperties()
@@ -83,7 +82,7 @@ class Phyllosilicates:
         if self.name in [
             "Annite", "Eastonite", "Illite", "Kaolinite", "Phlogopite", "Siderophyllite", "Chamosite", "Clinochlore",
             "Pennantite", "Nimite", "Muscovite", "Talc", "Chrysotile", "Antigorite", "Pyrophyllite", "Montmorillonite",
-            "Nontronite", "Saponite", "Glauconite", "Vermiculite", "Chlorite", "FeChlorite", "MgChlorite", "MnChlorite",
+            "Nontronite", "Saponite", "Glauconite", "Vermiculite", "FeChlorite", "MgChlorite", "MnChlorite",
             "NiChlorite"]:
             self.yaml_data = self._load_yaml(self.name.lower())
         if self.name == "Biotite":

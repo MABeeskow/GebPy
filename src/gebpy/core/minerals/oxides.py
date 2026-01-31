@@ -6,7 +6,7 @@
 # Name:		oxides.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		17.12.2025
+# Date:		31.01.2026
 
 #-----------------------------------------------
 
@@ -56,6 +56,7 @@ class Oxides:
         "Wustite", "Avicennite", "Stolzite", "Scheelite", "Powellite", "Al-Spinel", "Cr-Spinel", "Fe-Spinel", "Coltan",
         "Columbite", "Wolframite", "Tantalite", "Corundum-Group", "Chromite-Group", "Ilmenite-Group", "Rutile-Group",
         "Periclase-Group", "Wulfenite-Group", "Scheelite-Group", "Diaspore-Group"}
+    _ELEMENT_CACHE = {}
 
     def __init__(self, name, random_seed, rounding: int = 3, variability=False, uncertainty=1.0) -> None:
         self.name = name
@@ -70,40 +71,17 @@ class Oxides:
         self.cache = {}
 
         # Chemistry
-        self.elements = {
-            "H": PeriodicSystem(name="H").get_data(),
-            "O": PeriodicSystem(name="O").get_data(),
-            "Mg": PeriodicSystem(name="Mg").get_data(),
-            "Al": PeriodicSystem(name="Al").get_data(),
-            "Si": PeriodicSystem(name="Si").get_data(),
-            "K": PeriodicSystem(name="K").get_data(),
-            "Ca": PeriodicSystem(name="Ca").get_data(),
-            "Ti": PeriodicSystem(name="Ti").get_data(),
-            "V": PeriodicSystem(name="V").get_data(),
-            "Mn": PeriodicSystem(name="Mn").get_data(),
-            "Cr": PeriodicSystem(name="Cr").get_data(),
-            "Fe": PeriodicSystem(name="Fe").get_data(),
-            "Co": PeriodicSystem(name="Co").get_data(),
-            "Ni": PeriodicSystem(name="Ni").get_data(),
-            "Cu": PeriodicSystem(name="Cu").get_data(),
-            "Zn": PeriodicSystem(name="Zn").get_data(),
-            "Ge": PeriodicSystem(name="Ge").get_data(),
-            "As": PeriodicSystem(name="As").get_data(),
-            "Zr": PeriodicSystem(name="Zr").get_data(),
-            "Nb": PeriodicSystem(name="Nb").get_data(),
-            "Mo": PeriodicSystem(name="Mo").get_data(),
-            "Cd": PeriodicSystem(name="Cd").get_data(),
-            "Sn": PeriodicSystem(name="Sn").get_data(),
-            "Sb": PeriodicSystem(name="Sb").get_data(),
-            "Te": PeriodicSystem(name="Te").get_data(),
-            "Ta": PeriodicSystem(name="Ta").get_data(),
-            "W": PeriodicSystem(name="W").get_data(),
-            "Au": PeriodicSystem(name="Au").get_data(),
-            "Tl": PeriodicSystem(name="Tl").get_data(),
-            "Pb": PeriodicSystem(name="Pb").get_data(),
-            "Bi": PeriodicSystem(name="Bi").get_data(),
-            "U": PeriodicSystem(name="U").get_data(),
-        }
+        if not Oxides._ELEMENT_CACHE:
+            for el in (
+                "H", "Li", "Be", "B", "C", "N", "O", "F",
+                "Na", "Mg", "Al", "Si", "P", "S", "Cl",
+                "K", "Ca", "Sc", "Ti", "V", "Cr", "Mn", "Fe", "Co", "Ni", "Cu", "Zn", "Ga", "Ge", "As", "Se", "Br",
+                "Rb", "Sr", "Y", "Zr", "Nb", "Mo", "Tc", "Ru", "Rh", "Pd", "Ag", "Cd", "In", "Sn", "Sb", "Te", "I",
+                "Cs", "Ba", "La", "Ce", "Pr", "Nd", "Pm", "Sm", "Eu", "Gd", "Tb", "Dy", "Ho", "Er", "Tm", "Yb", "Lu",
+                "Hf", "Ta", "W", "Re", "Os", "Ir", "Pt", "Au", "Hg", "Tl", "Pb", "Bi", "Po", "At",
+                "Fr", "Ra", "Ac", "Th", "Pa", "U"):
+                Oxides._ELEMENT_CACHE[el] = (PeriodicSystem(name=el).get_data())
+        self.elements = Oxides._ELEMENT_CACHE
 
         # Geophysics
         self.geophysical_properties = GeophysicalProperties()
