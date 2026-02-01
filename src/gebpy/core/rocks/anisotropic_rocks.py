@@ -6,7 +6,7 @@
 # Name:		anisotropic_rocks.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		25.01.2025
+# Date:		01.02.2026
 
 #-----------------------------------------------
 
@@ -22,6 +22,7 @@ from pathlib import Path
 
 # MODULES
 from ..rocks.common import CommonRockFunctions
+from ..rocks.common import ElasticCalibration
 
 # Code
 BASE_PATH = Path(__file__).resolve().parents[2]
@@ -49,7 +50,8 @@ class AnisotropicRocks:
     def generate_dataset(
             self, number: int = 1, fluid: str = "water", density_fluid=None, element_constraints=None, *,
             porosity=None, mineral_comp=None, additional_assemblage=None, comp_constrained=False,
-            mineral_constrained=None, porosity_constrained=None) -> None:
+            mineral_constrained=None, porosity_constrained=None, elastic_transformation=False,
+            data_smpl: dict = None, porosity_transformation=True) -> None:
         if additional_assemblage is not None and element_constraints is not None:
             raise ValueError("additional_assemblage is not supported together with element_constraints.")
         if comp_constrained and mineral_comp is not None:
@@ -166,6 +168,23 @@ class AnisotropicRocks:
         _helper_bulk_data = self.class_commonrockfunctions.collect_geophysical_properties(
             _helper_bulk_data=_helper_bulk_data, rho_f=density_fluid, n=number, alpha_K=self.alpha_K,
             alpha_G=self.alpha_G)
+        # Consider structural effects
+        if elastic_transformation == True:
+            if porosity_transformation == True:
+                data_rho_phi_trans = ElasticCalibration.transform_bulk_density_and_porosity(
+                    rho_smpl=data_smpl["rho"], rho_s_ref=_helper_bulk_data["rho_s"],
+                    rho_f_ref=_helper_bulk_data["rho_f"], porosity_ref=_helper_bulk_data["porosity"])
+                for param in ["rho", "porosity"]:
+                    _helper_bulk_data[param] = data_rho_phi_trans[param + "_opt"]
+            data_elast_transf = ElasticCalibration.transform_elastic_moduli(
+                rho_smpl=data_smpl["rho"], vp_smpl=data_smpl["vP"], vs_smpl=data_smpl["vS"],
+                k_ref=_helper_bulk_data["K"], g_ref=_helper_bulk_data["G"], rho_ref=_helper_bulk_data["rho"])
+            for param in ["K", "G", "E", "poisson", "lame", "vP", "vS"]:
+                _helper_bulk_data[param] = data_elast_transf[param + "_opt"]
+            _helper_bulk_data["vP/vS"] = data_elast_transf["vP_opt"]/data_elast_transf["vS_opt"]
+            _helper_bulk_data["SDI"] = data_elast_transf["SDI"]
+            _helper_bulk_data["fK"] = data_elast_transf["fK"]
+            _helper_bulk_data["fG"] = data_elast_transf["fG"]
         # Update chemistry data
         _helper_bulk_data = self.class_commonrockfunctions.update_compositional_bulk_data(
             _helper_elements=_helper_elements, _helper_bulk_data=_helper_bulk_data, _mineral_data=_mineral_data,

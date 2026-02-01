@@ -6,7 +6,7 @@
 # Name:		manual_test_rocks_anisotropic.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		25.01.2026
+# Date:		01.02.2026
 
 #-----------------------------------------------
 
@@ -17,6 +17,7 @@ Manual test file related to module anisotropic_rocks.py
 
 # PACKAGES
 import time
+import numpy as np
 import pandas as pd
 
 # MODULES
@@ -89,5 +90,39 @@ data_rock = AnisotropicRocks(name="Shale XY", random_seed=42).generate_dataset(
     number=n_datasets, comp_constrained=True, mineral_constrained={
         "Montmorillonite": [0.5, 0.8], "Illite": [0.1, 0.4], "Calcite": [0.0, 0.1], "Pyrite": [0.0, 0.15],
         "Sphalerite": [0.0, 0.15], "Galena": [0.0, 0.15]}, porosity_constrained={"min": 0.0, "max": 0.1})
+if n_datasets < 20:
+    print("Results:", data_rock.describe())
+
+print(f"\nDATA(CUSTOM ORE ROCK, WATER):")
+data_rock = AnisotropicRocks(name="KC12xy,av", random_seed=42).generate_dataset(
+    number=n_datasets, comp_constrained=True, mineral_constrained={
+        "Chlorite": [0.5, 0.54], "Chalcopyrite": [0.46, 0.5]}, porosity_constrained={"min": 0.0, "max": 0.1})
+if n_datasets < 20:
+    print("Results:", data_rock.describe())
+
+print(f"\nDATA(CUSTOM ORE ROCK, WATER, TRANSFORMED):")
+data_rock = AnisotropicRocks(name="KC12xy,av", random_seed=42).generate_dataset(
+    number=n_datasets, comp_constrained=True, mineral_constrained={
+        "Chlorite": [0.5, 0.54], "Chalcopyrite": [0.46, 0.5]}, porosity_constrained={"min": 0.0, "max": 0.1},
+    elastic_transformation=True, data_smpl={
+        "rho": np.ones(n_datasets)*3540, "vP": np.ones(n_datasets)*5830, "vS": np.ones(n_datasets)*2980},
+    porosity_transformation=False)
+if n_datasets < 20:
+    print("Results:", data_rock.describe())
+
+print(f"\nDATA(CUSTOM ORE ROCK, WATER, TRANSFORMED (incl. porosity):")
+data_rock = AnisotropicRocks(name="KC12xy,av", random_seed=42).generate_dataset(
+    number=n_datasets, comp_constrained=True, mineral_constrained={
+        "Chlorite": [0.5, 0.54], "Chalcopyrite": [0.46, 0.5]}, porosity_constrained={"min": 0.0, "max": 0.1},
+    elastic_transformation=True, data_smpl={
+        "rho": np.ones(n_datasets)*3540, "vP": np.ones(n_datasets)*5830, "vS": np.ones(n_datasets)*2980})
+if n_datasets < 20:
+    print("Results:", data_rock.describe())
+
+print(f"\nDATA(SHALE, WATER), TRANSFORMED (incl. porosity):")
+data_rock = AnisotropicRocks(name="Shale", random_seed=42).generate_dataset(
+    number=n_datasets, fluid="water", porosity_constrained={"min": 0.0, "max": 0.1},
+    elastic_transformation=True, data_smpl={
+        "rho": np.ones(n_datasets)*3540, "vP": np.ones(n_datasets)*5830, "vS": np.ones(n_datasets)*2980})
 if n_datasets < 20:
     print("Results:", data_rock.describe())

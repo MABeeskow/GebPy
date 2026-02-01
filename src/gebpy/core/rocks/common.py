@@ -6,7 +6,7 @@
 # Name:		common.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		28.01.2026
+# Date:		01.02.2026
 
 #-----------------------------------------------
 
@@ -398,6 +398,9 @@ class CommonRockFunctions:
         (_helper_bulk_data["E"], _helper_bulk_data["poisson"],
          _helper_bulk_data["lame"]) = self.geophysics.calculate_elastic_parameter_data(
             val_K=_helper_bulk_data["K"], val_G=_helper_bulk_data["G"])
+        _helper_bulk_data["SDI"] = np.zeros(n)
+        _helper_bulk_data["fK"] = np.ones(n)
+        _helper_bulk_data["fG"] = np.ones(n)
 
         return _helper_bulk_data
 
@@ -493,13 +496,14 @@ class ElasticCalibration:
     """
 
     @staticmethod
-    def _to_array(x):
-        return np.asarray(x)
+    def _as_float_array(x):
+        return np.asarray(x, dtype=float)
 
     @staticmethod
     def determine_shear_modulus(rho_bulk, vs_bulk):
-        rho_b = ElasticCalibration._to_array(rho_bulk)
-        vs_b = ElasticCalibration._to_array(vs_bulk)
+        rho_b = ElasticCalibration._as_float_array(rho_bulk)
+        vs_b = ElasticCalibration._as_float_array(vs_bulk)
+
         if np.any(rho_b <= 0) or np.any(vs_b <= 0):
             raise ValueError("rho_bulk and vs_bulk must be positive.")
 
@@ -508,9 +512,10 @@ class ElasticCalibration:
 
     @staticmethod
     def determine_bulk_modulus(rho_bulk, vp_bulk, vs_bulk):
-        rho_b = ElasticCalibration._to_array(rho_bulk)
-        vp_b = ElasticCalibration._to_array(vp_bulk)
-        vs_b = ElasticCalibration._to_array(vs_bulk)
+        rho_b = ElasticCalibration._as_float_array(rho_bulk)
+        vp_b = ElasticCalibration._as_float_array(vp_bulk)
+        vs_b = ElasticCalibration._as_float_array(vs_bulk)
+
         if np.any(rho_b <= 0) or np.any(vp_b <= 0) or np.any(vs_b <= 0):
             raise ValueError("rho_bulk, vp_bulk and vs_bulk must be positive.")
 
@@ -520,20 +525,17 @@ class ElasticCalibration:
 
     @staticmethod
     def determine_elastic_moduli(rho_bulk, vp_bulk, vs_bulk):
-        rho_b = ElasticCalibration._to_array(rho_bulk)
-        vp_b = ElasticCalibration._to_array(vp_bulk)
-        vs_b = ElasticCalibration._to_array(vs_bulk)
-        if np.any(rho_b <= 0) or np.any(vp_b <= 0) or np.any(vs_b <= 0):
+        if np.any(rho_bulk <= 0) or np.any(vp_bulk <= 0) or np.any(vs_bulk <= 0):
             raise ValueError("rho_bulk, vp_bulk and vs_bulk must be positive.")
-
-        shear_modulus = rho_b*vs_b**2
-        bulk_modulus = rho_b*vp_b**2 - 4/3*shear_modulus
+        shear_modulus = rho_bulk*vs_bulk**2
+        bulk_modulus = rho_bulk*vp_bulk**2 - 4/3*shear_modulus
         return bulk_modulus, shear_modulus
 
     @staticmethod
     def determine_scaling_factors(reference_data, sample_data):
-        ref_data = ElasticCalibration._to_array(reference_data)
-        smpl_data = ElasticCalibration._to_array(sample_data)
+        ref_data = ElasticCalibration._as_float_array(reference_data)
+        smpl_data = ElasticCalibration._as_float_array(sample_data)
+
         if np.any(ref_data <= 0) or np.any(smpl_data <= 0):
             raise ValueError("reference_data and sample_data must be positive.")
 
@@ -542,17 +544,15 @@ class ElasticCalibration:
 
     @staticmethod
     def determine_elastic_moduli_weights(reference_data, sample_data):
-        ref_data = ElasticCalibration._to_array(reference_data)
-        smpl_data = ElasticCalibration._to_array(sample_data)
-        if np.any(ref_data <= 0) or np.any(smpl_data <= 0):
+        if np.any(reference_data <= 0) or np.any(sample_data <= 0):
             raise ValueError("reference_data and sample_data must be positive.")
 
-        results = (smpl_data/ref_data)
+        results = (sample_data/reference_data)
         weight = np.mean(results)
         w_std = np.std(results)
         w_min = np.min(results)
         w_max = np.max(results)
-        return {"Mean": weight, "Std": w_std, "Min": w_min, "Max": w_max}
+        return {"Mean": weight, "Std": w_std, "Min": w_min, "Max": w_max, "Values": results}
 
     @staticmethod
     def adjust_elastic_model_parameters(rho_smpl, vp_smpl, vs_smpl, k_ref, g_ref):
@@ -561,9 +561,86 @@ class ElasticCalibration:
         f_g_stats = ElasticCalibration.determine_elastic_moduli_weights(g_ref, g_mod*1e-9)
         k_opt = f_k_stats["Mean"]*k_ref
         g_opt = f_g_stats["Mean"]*g_ref
-        return {"K_opt": k_opt, "G_opt": g_opt, "K_weight": f_k_stats["Mean"], "G_weight": f_g_stats["Mean"]}
+        return {
+            "K_opt": k_opt, "G_opt": g_opt, "K_weight": f_k_stats["Mean"], "G_weight": f_g_stats["Mean"],
+            "K_weight_values": f_k_stats["Values"], "G_weight_values": f_g_stats["Values"]}
 
     @staticmethod
     def determine_difference_from_ideality(w_k, w_g):
+        """
+        Compute the Structural Deviation Index (SDI) as the Euclidean distance from the isotropic reference state
+        (fK = 1, fG = 1).
+
+        Parameters
+        ----------
+        w_k : array_like
+            Scaling factors for the bulk modulus (fK).
+        w_g : array_like
+            Scaling factors for the shear modulus (fG).
+
+        Returns
+        -------
+        ndarray
+            Structural Deviation Index (SDI) in percent.
+        """
         difference = (((w_k - 1)**2 + (w_g - 1)**2)**0.5)*100
         return difference
+
+    @staticmethod
+    def transform_elastic_moduli(rho_smpl, vp_smpl, vs_smpl, k_ref, g_ref, rho_ref):
+        rho_smpl = ElasticCalibration._as_float_array(rho_smpl)
+        vp_smpl = ElasticCalibration._as_float_array(vp_smpl)
+        vs_smpl = ElasticCalibration._as_float_array(vs_smpl)
+        k_ref = ElasticCalibration._as_float_array(k_ref)
+        g_ref = ElasticCalibration._as_float_array(g_ref)
+        rho_ref = ElasticCalibration._as_float_array(rho_ref)
+
+        opt_elastic_params = ElasticCalibration.adjust_elastic_model_parameters(
+            rho_smpl=rho_smpl, vp_smpl=vp_smpl, vs_smpl=vs_smpl, k_ref=k_ref, g_ref=g_ref)
+        k_opt = opt_elastic_params["K_opt"]
+        g_opt = opt_elastic_params["G_opt"]
+        e_opt = (9*k_opt*g_opt)/(3*k_opt + g_opt)
+        poisson_opt = (3*k_opt - 2*g_opt)/(6*k_opt + 2*g_opt)
+        lame_opt = k_opt - 2/3*g_opt
+        vp_opt = ((k_opt*1e9 + 4/3*g_opt*1e9)/(rho_ref))**0.5
+        vs_opt = ((g_opt*1e9)/(rho_ref))**0.5
+        sdi = ElasticCalibration.determine_difference_from_ideality(
+            w_k=opt_elastic_params["K_weight_values"], w_g=opt_elastic_params["G_weight_values"])
+        return {
+            "K_opt": k_opt, "G_opt": g_opt, "E_opt": e_opt, "poisson_opt": poisson_opt, "lame_opt": lame_opt,
+            "vP_opt": vp_opt, "vS_opt": vs_opt, "SDI": sdi, "fK": opt_elastic_params["K_weight_values"],
+            "fG": opt_elastic_params["G_weight_values"]}
+
+    @staticmethod
+    def transform_bulk_density_and_porosity(
+            rho_smpl, rho_s_ref, rho_f_ref, porosity_ref, max_iter=25, tol=0.01):
+        rho_smpl = ElasticCalibration._as_float_array(rho_smpl)
+        rho_s_ref = ElasticCalibration._as_float_array(rho_s_ref)
+        rho_f_ref = ElasticCalibration._as_float_array(rho_f_ref)
+        porosity = ElasticCalibration._as_float_array(porosity_ref).copy()
+
+        rho_target = np.mean(rho_smpl)
+        for n in range(max_iter):
+            # current situation
+            rho_bulk = (1.0 - porosity)*rho_s_ref + porosity*rho_f_ref
+            rho_mean = np.mean(rho_bulk)
+            # relative deviation
+            rel_diff = abs(rho_mean - rho_target)/rho_target
+            # Break condition
+            if rel_diff <= tol:
+                break
+
+            # Adjusting porosity
+            denom = np.mean(rho_s_ref - rho_f_ref)
+            if denom <= 0:
+                raise ValueError("Matrix density must exceed fluid density.")
+
+            delta_phi = (rho_mean - rho_target)/denom
+            porosity = porosity + delta_phi
+            porosity = np.maximum(porosity, 0.0)
+
+        rho_opt = (1.0 - porosity)*rho_s_ref + porosity*rho_f_ref
+
+        return {
+            "rho_opt": rho_opt, "porosity_opt": porosity, "iterations": n + 1, "rho_mean_final": np.mean(rho_opt),
+            "rho_mean_target": rho_target, "relative_misfit": abs(np.mean(rho_opt) - rho_target)/rho_target}

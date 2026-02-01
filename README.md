@@ -25,7 +25,7 @@ high-quality training data for machine learning applications.
 
 ## 🚀 Project Status
 
-* **Current version:** 1.1.15
+* **Current version:** 1.1.16
 * **License:** LGPL-3.0
 * **Development:** Active
 * **API stability:** evolving (pre-2.0)
@@ -188,4 +188,4 @@ reference.
 
 ---
 
-*Last updated: 28.01.2026*
+*Last updated: 01.02.2026*

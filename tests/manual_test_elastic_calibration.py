@@ -6,7 +6,7 @@
 # Name:		manual_test_elastic_calibration.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		31.01.2026
+# Date:		01.02.2026
 
 #-----------------------------------------------
 
@@ -95,6 +95,8 @@ opt_vp_bulk = ((k_opt*1e9 + 4/3*g_opt*1e9)/(ref_rho_bulk))**0.5
 opt_vs_bulk = ((g_opt*1e9)/(ref_rho_bulk))**0.5
 difference = EC.determine_difference_from_ideality(
     w_k=opt_elastic_params["K_weight"], w_g=opt_elastic_params["G_weight"])
+difference2 = EC.determine_difference_from_ideality(
+    w_k=opt_elastic_params["K_weight_values"], w_g=opt_elastic_params["G_weight_values"])
 
 print("--- Results: elastic moduli optimization:")
 print("Results: bulk modulus K")
@@ -107,3 +109,5 @@ print("Results: s-wave velocity vs")
 print(min(opt_vs_bulk), np.mean(opt_vs_bulk), max(opt_vs_bulk), "\n")
 print("Results: difference from isotropic ideality")
 print(difference, "\n")
+print("Results: difference from isotropic ideality")
+print(difference2, "\n")

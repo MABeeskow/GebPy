@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="latin-1") as f:
 
 setup(
     name="gebpy",
-    version="1.1.15",
+    version="1.1.16",
     package_dir={"": "src"},
     packages=find_packages(where="src"),
 
