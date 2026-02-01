@@ -539,3 +539,31 @@ class ElasticCalibration:
 
         scaling_factor = smpl_data/ref_data
         return scaling_factor
+
+    @staticmethod
+    def determine_elastic_moduli_weights(reference_data, sample_data):
+        ref_data = ElasticCalibration._to_array(reference_data)
+        smpl_data = ElasticCalibration._to_array(sample_data)
+        if np.any(ref_data <= 0) or np.any(smpl_data <= 0):
+            raise ValueError("reference_data and sample_data must be positive.")
+
+        results = (smpl_data/ref_data)
+        weight = np.mean(results)
+        w_std = np.std(results)
+        w_min = np.min(results)
+        w_max = np.max(results)
+        return {"Mean": weight, "Std": w_std, "Min": w_min, "Max": w_max}
+
+    @staticmethod
+    def adjust_elastic_model_parameters(rho_smpl, vp_smpl, vs_smpl, k_ref, g_ref):
+        k_mod, g_mod = ElasticCalibration.determine_elastic_moduli(rho_bulk=rho_smpl, vp_bulk=vp_smpl, vs_bulk=vs_smpl)
+        f_k_stats = ElasticCalibration.determine_elastic_moduli_weights(k_ref, k_mod*1e-9)
+        f_g_stats = ElasticCalibration.determine_elastic_moduli_weights(g_ref, g_mod*1e-9)
+        k_opt = f_k_stats["Mean"]*k_ref
+        g_opt = f_g_stats["Mean"]*g_ref
+        return {"K_opt": k_opt, "G_opt": g_opt, "K_weight": f_k_stats["Mean"], "G_weight": f_g_stats["Mean"]}
+
+    @staticmethod
+    def determine_difference_from_ideality(w_k, w_g):
+        difference = (((w_k - 1)**2 + (w_g - 1)**2)**0.5)*100
+        return difference
