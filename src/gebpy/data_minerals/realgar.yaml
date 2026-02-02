@@ -1,0 +1,49 @@
+mineral: Realgar
+group: Sulfides
+formula: AsS
+last updated: 02.02.2026
+
+metadata:
+  key: "Rl"
+  crystal_system: "monoclinic"
+
+chemistry:
+  As: 1
+  S: 1
+
+sulfides:
+  AsS: 1
+
+physical_properties:
+  K:
+    value: 25.6e9
+    ref: "unknown"
+  G:
+    value: 13.64e9
+    ref: "unknown"
+
+cell_data:
+  space_group:
+    value: "P21n"
+    ref: "www.handbookofmineralogy.org"
+  a:
+    value: 9.325
+    ref: "www.handbookofmineralogy.org"
+  b:
+    value: 13.571
+    ref: "www.handbookofmineralogy.org"
+  c:
+    value: 6.587
+    ref: "www.handbookofmineralogy.org"
+  beta:
+    value: 106.23
+    ref: "www.handbookofmineralogy.org"
+  Z:
+    value: 16
+    ref: "www.handbookofmineralogy.org"
+
+sources:
+  - author: "John W. Anthony, Richard A. Bideaux, Kenneth W. Bladh, and Monte C. Nichols"
+    title: "Handbook of Mineralogy"
+    publisher: "Mineralogical Society of America, Chantilly, VA"
+    url: "http://www.handbookofmineralogy.org/"

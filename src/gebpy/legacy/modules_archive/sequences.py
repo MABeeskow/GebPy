@@ -16,13 +16,13 @@ import numpy as np
 from numpy import round
 import random as rd
 from random import randint
-from modules.carbonates import limestone, dolomite
-from modules.siliciclastics import sandstone, shale, Soil
-from modules.igneous import plutonic, volcanic, Plutonic, Volcanic
-from modules.evaporites import evaporites, Evaporites
-from modules import minerals
-from modules.elements import elements
-from modules import fluids
+from src.gebpy.legacy.modules_archive.carbonates import limestone, dolomite
+from src.gebpy.legacy.modules_archive.siliciclastics import sandstone, shale, Soil
+from src.gebpy.legacy.modules_archive.igneous import plutonic, volcanic, Plutonic, Volcanic
+from src.gebpy.legacy.modules_archive.evaporites import evaporites, Evaporites
+from src.gebpy.legacy.modules_archive import minerals
+from src.gebpy.legacy.modules_archive.elements import elements
+from src.gebpy.legacy.modules_archive import fluids
 
 class DataProcessing:
     #

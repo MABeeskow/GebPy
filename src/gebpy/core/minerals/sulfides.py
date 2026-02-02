@@ -6,7 +6,7 @@
 # Name:		sulfides.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		28.01.2026
+# Date:		02.02.2026
 
 #-----------------------------------------------
 
@@ -45,7 +45,8 @@ class Sulfides:
         "Acanthite", "Bornite", "Cattierite", "Chalcocite", "Chalcopyrite", "Cinnabar", "Cobaltite", "Covellite",
         "Fahlore", "Galena", "Gallite", "Laforetite", "Lenaite", "Marcasite", "Marmatite", "Millerite", "Molybdenite",
         "Orpiment", "Pentlandite", "Pyrite", "Pyrrhotite", "Realgar", "Roquesite", "Sphalerite", "Stibnite", "Vaesite",
-        "Tetrahedrite", "Tennantite", "Chalcopyrite-Group"}
+        "Tetrahedrite", "Tennantite", "Chalcopyrite-Group", "FeSphalerite", "Digenite", "Carrollite", "Berthierite",
+        "Alabandite", "Argentite", "Arsenopyrite"}
     _ELEMENT_CACHE = {}
 
     def __init__(self, name, random_seed, rounding=3, variability=False, uncertainty=1.0) -> None:
@@ -81,9 +82,10 @@ class Sulfides:
         # Mineral-specific data
         if self.name in [
             "Acanthite", "Bornite", "Cattierite", "Chalcocite", "Chalcopyrite", "Cinnabar", "Cobaltite", "Covellite",
-            "Galena", "Gallite", "Laforetite", "Lenaite", "Marcasite", "Marmatite", "Millerite",
+            "Galena", "Gallite", "Laforetite", "Lenaite", "Marcasite", "Millerite", "Alabandite", "Arsenopyrite",
             "Molybdenite", "Orpiment", "Pentlandite", "Pyrite", "Pyrrhotite", "Realgar", "Roquesite", "Sphalerite",
-            "Stibnite", "Vaesite", "Tetrahedrite", "Tennantite"]:
+            "Stibnite", "Vaesite", "Tetrahedrite", "Tennantite", "FeSphalerite", "Digenite", "Carrollite",
+            "Berthierite", "Argentite"]:
             self.yaml_data = self._load_yaml(self.name.lower())
         if self.name == "Fahlore":
             self.yaml_data = {
@@ -93,6 +95,10 @@ class Sulfides:
             self.yaml_data = {
                 mineral.lower(): self._load_yaml(mineral.lower())
                 for mineral in ["Chalcopyrite", "Gallite", "Roquesite", "Lenaite", "Laforetite"]}
+        if self.name == "Marmatite":
+            self.yaml_data = {
+                mineral.lower(): self._load_yaml(mineral.lower())
+                for mineral in ["Sphalerite", "FeSphalerite"]}
 
     def _load_yaml(self, mineral_name: str) -> dict:
         # 1) Cache-Hit
@@ -141,11 +147,11 @@ class Sulfides:
     def generate_dataset(self, number: int = 1, as_dataframe=False) -> None:
         fixed = {
             "Acanthite", "Bornite", "Cattierite", "Chalcocite", "Chalcopyrite", "Cinnabar", "Cobaltite", "Covellite",
-            "Galena", "Gallite", "Laforetite", "Lenaite", "Marcasite", "Marmatite", "Millerite",
-            "Molybdenite", "Orpiment", "Pentlandite", "Pyrite", "Pyrrhotite", "Realgar", "Roquesite", "Sphalerite",
-            "Stibnite", "Vaesite", "Tetrahedrite", "Tennantite"}
-        variable = {}
-        endmember = {"Fahlore", "Chalcopyrite-Group"}
+            "Galena", "Gallite", "Laforetite", "Lenaite", "Marcasite", "Millerite", "Berthierite", "Alabandite",
+            "Molybdenite", "Orpiment", "Pyrite", "Realgar", "Roquesite", "Sphalerite", "Argentite", "Arsenopyrite",
+            "Stibnite", "Vaesite", "Tetrahedrite", "Tennantite", "FeSphalerite", "Digenite"}
+        variable = {"Pentlandite", "Pyrrhotite", "Carrollite"}
+        endmember = {"Fahlore", "Chalcopyrite-Group", "Marmatite"}
         generators = {
             **{m: MinGen(
                 name=self.name, yaml_data=self.yaml_data, elements=self.elements, cache=self.cache,
@@ -416,6 +422,12 @@ class Sulfides:
                 "key": "Ccp-group",
                 "endmembers": ["Chalcopyrite", "Gallite", "Roquesite", "Lenaite", "Laforetite"],
                 "sulfides": ["CuS", "FeS", "Cu2S", "Ga2S3", "Ag2S", "In2S3", "Fe2S3"]
+            },
+            "Marmatite": {
+                "name_lower": "marmatite",
+                "key": "Sp",
+                "endmembers": ["Sphalerite", "FeSphalerite"],
+                "sulfides": ["ZnS", "FeS"]
             }
         }
         results = MinGen(

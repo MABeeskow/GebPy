@@ -6,7 +6,7 @@
 # Name:		manual_test_sulfides.py
 # Author:	Maximilian A. Beeskow
 # Version:	1.0
-# Date:		28.01.2026
+# Date:		02.02.2026
 
 #-----------------------------------------------
 
@@ -67,7 +67,9 @@ n_datasets = 5
 minerals = [
     "Pyrite", "Acanthite", "Bornite", "Cattierite", "Chalcocite", "Galena", "Sphalerite", "Cinnabar", "Cobaltite",
     "Covellite", "Tetrahedrite", "Tennantite", "Fahlore", "Gallite", "Laforetite", "Lenaite", "Roquesite",
-    "Chalcopyrite-Group", "Marcasite"]
+    "Chalcopyrite-Group", "Marcasite", "FeSphalerite", "Marmatite", "Millerite", "Molybdenite", "Orpiment",
+    "Pentlandite", "Pyrrhotite", "Realgar", "Stibnite", "Vaesite", "Digenite", "Carrollite", "Berthierite",
+    "Alabandite", "Argentite", "Arsenopyrite"]
 
 results = {}
 for mineral in sorted(minerals):

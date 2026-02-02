@@ -1,0 +1,44 @@
+mineral: Digenite
+group: Sulfides
+formula: Cu9S5
+last updated: 02.02.2026
+
+metadata:
+  key: "Dg"
+  crystal_system: "trigonal"
+
+chemistry:
+  Cu: 9
+  S: 5
+
+sulfides:
+  Cu2S: 0.8
+  CuS: 0.2
+
+physical_properties:
+  K:
+    value: 101.13e9
+    ref: "unknown"
+  G:
+    value: 38.28e9
+    ref: "unknown"
+
+cell_data:
+  space_group:
+    value: "Fm3m"
+    ref: "www.handbookofmineralogy.org"
+  a:
+    value: 3.919
+    ref: "www.handbookofmineralogy.org"
+  c:
+    value: 48.0
+    ref: "www.handbookofmineralogy.org"
+  Z:
+    value: 3
+    ref: "www.handbookofmineralogy.org"
+
+sources:
+  - author: "John W. Anthony, Richard A. Bideaux, Kenneth W. Bladh, and Monte C. Nichols"
+    title: "Handbook of Mineralogy"
+    publisher: "Mineralogical Society of America, Chantilly, VA"
+    url: "http://www.handbookofmineralogy.org/"

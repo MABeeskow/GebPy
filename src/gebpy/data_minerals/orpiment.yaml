@@ -1,0 +1,49 @@
+mineral: Orpiment
+group: Sulfides
+formula: As2S3
+last updated: 02.02.2026
+
+metadata:
+  key: "Orp"
+  crystal_system: "monoclinic"
+
+chemistry:
+  As: 2
+  S: 3
+
+sulfides:
+  As2S3: 1
+
+physical_properties:
+  K:
+    value: 27.89e9
+    ref: "unknown"
+  G:
+    value: 14.22e9
+    ref: "unknown"
+
+cell_data:
+  space_group:
+    value: "P21n"
+    ref: "www.handbookofmineralogy.org"
+  a:
+    value: 11.475
+    ref: "www.handbookofmineralogy.org"
+  b:
+    value: 9.577
+    ref: "www.handbookofmineralogy.org"
+  c:
+    value: 4.256
+    ref: "www.handbookofmineralogy.org"
+  beta:
+    value: 90.41
+    ref: "www.handbookofmineralogy.org"
+  Z:
+    value: 4
+    ref: "www.handbookofmineralogy.org"
+
+sources:
+  - author: "John W. Anthony, Richard A. Bideaux, Kenneth W. Bladh, and Monte C. Nichols"
+    title: "Handbook of Mineralogy"
+    publisher: "Mineralogical Society of America, Chantilly, VA"
+    url: "http://www.handbookofmineralogy.org/"

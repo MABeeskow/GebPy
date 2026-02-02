@@ -1,0 +1,43 @@
+mineral: Millerite
+group: Sulfides
+formula: NiS
+last updated: 02.02.2026
+
+metadata:
+  key: "Mlr"
+  crystal_system: "hexagonal"
+
+chemistry:
+  Ni: 1
+  S: 1
+
+sulfides:
+  NiS: 1
+
+physical_properties:
+  K:
+    value: 129.85e9
+    ref: "unknown"
+  G:
+    value: 53.78e9
+    ref: "unknown"
+
+cell_data:
+  space_group:
+    value: "R3m"
+    ref: "www.handbookofmineralogy.org"
+  a:
+    value: 9.607
+    ref: "www.handbookofmineralogy.org"
+  c:
+    value: 3.143
+    ref: "www.handbookofmineralogy.org"
+  Z:
+    value: 9
+    ref: "www.handbookofmineralogy.org"
+
+sources:
+  - author: "John W. Anthony, Richard A. Bideaux, Kenneth W. Bladh, and Monte C. Nichols"
+    title: "Handbook of Mineralogy"
+    publisher: "Mineralogical Society of America, Chantilly, VA"
+    url: "http://www.handbookofmineralogy.org/"

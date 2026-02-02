@@ -1,0 +1,48 @@
+mineral: Pentlandite
+group: Sulfides
+formula: (Fe,Ni)9S8
+last updated: 02.02.2026
+
+metadata:
+  key: "Pn"
+  crystal_system: "cubic"
+
+chemistry:
+  Fe:
+    formula: "9*x"
+  Ni:
+    formula: "9*(1 - x)"
+  H:
+    formula: "8"
+
+sulfides:
+  FeS: 1
+  NiS: 1
+
+variables:
+  x: [0.0, 1.0]
+
+physical_properties:
+  K:
+    value: 113.02e9
+    ref: "unknown"
+  G:
+    value: 48.54e9
+    ref: "unknown"
+
+cell_data:
+  space_group:
+    value: "Fm3m"
+    ref: "www.handbookofmineralogy.org"
+  a:
+    value: 9.928
+    ref: "www.handbookofmineralogy.org"
+  Z:
+    value: 4
+    ref: "www.handbookofmineralogy.org"
+
+sources:
+  - author: "John W. Anthony, Richard A. Bideaux, Kenneth W. Bladh, and Monte C. Nichols"
+    title: "Handbook of Mineralogy"
+    publisher: "Mineralogical Society of America, Chantilly, VA"
+    url: "http://www.handbookofmineralogy.org/"

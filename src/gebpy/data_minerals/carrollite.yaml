@@ -1,0 +1,51 @@
+mineral: Carrollite
+group: Sulfides
+formula: Cu(Co,Ni)2S4
+last updated: 02.02.2026
+
+metadata:
+  key: "Carr"
+  crystal_system: "cubic"
+
+chemistry:
+  Cu:
+    formula: "1"
+  Co:
+    formula: "x*1"
+  Ni:
+    formula: "(1 - x)*1"
+  S:
+    formula: "4"
+
+sulfides:
+  CuS: 1
+  CoS: 1
+  NiS: 1
+
+variables:
+  x: [0.0, 1.0]
+
+physical_properties:
+  K:
+    value: 106.49e9
+    ref: "unknown"
+  G:
+    value: 45.71e9
+    ref: "unknown"
+
+cell_data:
+  space_group:
+    value: "Fd3m"
+    ref: "www.handbookofmineralogy.org"
+  a:
+    value: 9.458
+    ref: "www.handbookofmineralogy.org"
+  Z:
+    value: 8
+    ref: "www.handbookofmineralogy.org"
+
+sources:
+  - author: "John W. Anthony, Richard A. Bideaux, Kenneth W. Bladh, and Monte C. Nichols"
+    title: "Handbook of Mineralogy"
+    publisher: "Mineralogical Society of America, Chantilly, VA"
+    url: "http://www.handbookofmineralogy.org/"

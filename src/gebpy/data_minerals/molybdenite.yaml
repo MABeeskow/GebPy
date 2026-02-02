@@ -1,0 +1,43 @@
+mineral: Molybdenite
+group: Sulfides
+formula: MoS2
+last updated: 02.02.2026
+
+metadata:
+  key: "Mol"
+  crystal_system: "hexagonal"
+
+chemistry:
+  Mo: 1
+  S: 2
+
+sulfides:
+  MoS2: 1
+
+physical_properties:
+  K:
+    value: 25.0e9
+    ref: "unknown"
+  G:
+    value: 17.0e9
+    ref: "unknown"
+
+cell_data:
+  space_group:
+    value: "P63mmc"
+    ref: "www.handbookofmineralogy.org"
+  a:
+    value: 3.1604
+    ref: "www.handbookofmineralogy.org"
+  c:
+    value: 12.295
+    ref: "www.handbookofmineralogy.org"
+  Z:
+    value: 2
+    ref: "www.handbookofmineralogy.org"
+
+sources:
+  - author: "John W. Anthony, Richard A. Bideaux, Kenneth W. Bladh, and Monte C. Nichols"
+    title: "Handbook of Mineralogy"
+    publisher: "Mineralogical Society of America, Chantilly, VA"
+    url: "http://www.handbookofmineralogy.org/"

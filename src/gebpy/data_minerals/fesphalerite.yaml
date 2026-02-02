@@ -1,0 +1,43 @@
+mineral: Fe-Sphalerite
+group: Sulfides
+formula: FeS
+last updated: 02.02.2026
+
+metadata:
+  key: "Sp"
+  crystal_system: "tetragonal"
+
+chemistry:
+  Fe: 1
+  S: 1
+
+sulfides:
+  FeS: 1
+
+physical_properties:
+  K:
+    value: 30.0e9
+    ref: "unknown"
+  G:
+    value: 19.0e9
+    ref: "unknown"
+
+cell_data:
+  space_group:
+    value: "unknown"
+    ref: "unknown"
+  a:
+    value: 3.60
+    ref: "unknown"
+  c:
+    value: 5.45
+    ref: "unknown"
+  Z:
+    value: 4
+    ref: "unknown"
+
+sources:
+  - author: "unknown"
+    title: "unknown"
+    publisher: "unknown"
+    url: "hunknown"

@@ -1,0 +1,51 @@
+mineral: Arsenopyrite
+group: Sulfides
+formula: FeAsS
+last updated: 02.02.2026
+
+metadata:
+  key: "Apy"
+  crystal_system: "monoclinic"
+
+chemistry:
+  Fe: 1
+  As: 1
+  S: 1
+
+sulfides:
+  FeS: 0.5
+  FeAs: 0.5
+
+physical_properties:
+  K:
+    value: 143.0e9
+    ref: "unknown"
+  G:
+    value: 117.0e9
+    ref: "unknown"
+
+cell_data:
+  space_group:
+    value: "P21c"
+    ref: "www.handbookofmineralogy.org"
+  a:
+    value: 5.744
+    ref: "www.handbookofmineralogy.org"
+  b:
+    value: 5.675
+    ref: "www.handbookofmineralogy.org"
+  c:
+    value: 5.785
+    ref: "www.handbookofmineralogy.org"
+  beta:
+    value: 112.17
+    ref: "www.handbookofmineralogy.org"
+  Z:
+    value: 4
+    ref: "www.handbookofmineralogy.org"
+
+sources:
+  - author: "John W. Anthony, Richard A. Bideaux, Kenneth W. Bladh, and Monte C. Nichols"
+    title: "Handbook of Mineralogy"
+    publisher: "Mineralogical Society of America, Chantilly, VA"
+    url: "http://www.handbookofmineralogy.org/"
