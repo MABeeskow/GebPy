@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="latin-1") as f:
 
 setup(
     name="gebpy",
-    version="1.1.17",
+    version="1.1.18",
     package_dir={"": "src"},
     packages=find_packages(where="src"),
 
@@ -26,7 +26,7 @@ setup(
     ],
 
     install_requires=[
-        "numpy", "scipy", "pandas", "matplotlib"
+        "numpy", "scipy", "pandas", "matplotlib", "pyyaml", "asteval", "soupsieve", "bs4", "pyasn1"
     ],
 
     entry_points={
